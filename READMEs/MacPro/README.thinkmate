@@ -1,0 +1,314 @@
+==================================================================================
+Apple ThinkMate installation notes
+==================================================================================
+Last updated on 10/4/15; 10/5/15; 10/8/15
+==================================================================================
+
+1.  Chant "sudo bsh phnol4k" instead of 
+  "sudo bash cuda_7.5.18_linux.run" at "Install CUDA" step
+
+2.  After CUDA was installed, we need to make sure that 
+PATH includes /usr/local/cuda-7.5/bin
+
+LD_LIBRARY_PATH includes /usr/local/cuda-7.5/lib64
+or add /usr/local/cuda-7.5/lib64 to /etc/ld.so.conf and run ldconfig as
+root
+
+To uninstall the CUDA toolkit, run the uninstall script in
+/usr/local/cuda-7.5/bin
+To uninstall the nvidia driver, run nvidia-uninstall
+
+logfile is in /tmp/cuda_install_37747.log
+
+3.  Press "escape" key at startup in order to enter into BIOS settings menu
+
+We reset the boot devices order on 8/4/15 so that USB key will boot before
+ubuntu on thinkmate's SSD.
+
+4.  To create a bootable live USB drive for Clonezilla live, DRBL live, Gparted
+live and Tux2live, see www.tuxboot.org/download
+
+5.  Used gparted-live installed via tuxboot onto our Flash Voyager #2 USB
+stick in order to repartition /dev/sda when none of its partitions were
+mounted:
+
+		       Original partition	  New partition
+			size				size
+
+/dev/sda1  =  /boot	0.476 GB		--> 0.476 GB
+/dev/sda2  =  /		18.63 GB		--> 116.28 GB
+/dev/sda3  =  swap	7.45 GB			--> 7.45 GB
+/dev/sda4  =  /home	718.67 GB 		--> 621.01 GB
+
+
+6.  In /usr/lib/x86_64-linux-gnu/mesa, libGL.so --> libGL.so.1.2.0 which is
+a dead link.  But /usr/lib/x86_64-linux-gnu/libGL.so.1 is an alive link.
+So relink /usr/lib/x86_64-linux-gnu/libGL.so -->
+/usr/lib/x86_64-linux-gnu/libGL.so.1
+
+7.  FSTAB file which automatically mounts cc2-gpfs, 1 GB and 4GB data
+drives from MacPro:
+
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/sda2 during installation
+UUID=8bef2657-e688-4016-8992-592f44c673f9 /               ext4    errors=remount-ro 0       1
+# /boot was on /dev/sda1 during installation
+UUID=499a57bb-7ea0-46d0-8275-a2e28a1867e2 /boot           ext2    defaults        0       2
+# /home was on /dev/sda4 during installation
+UUID=fb495da4-6508-444f-87a5-2248ed79c5bb /home           ext4    defaults        0       2
+# swap was on /dev/sda3 during installation
+UUID=5e7b9c4a-2c0e-462c-bf76-0aabfb95d8fd none            swap    sw              0       0
+flyover-cnfs.geo.apple.com:/gpfs/sputnik00/storage	/cc2-gpfs/storage	nfs	rw,nosuid,nodev,users,exec,noatime,vers=3,rsize=1048576,wsize=1048576,hard,sec=sys,acl	0	0
+/dev/mapper/ubuntu--vg--13.4-root /macpro_1GB_disk               ext4    errors=remount-ro 0       1
+/dev/mapper/ubuntu--vg-root /macpro_4GB_disk               ext4    errors=remount-ro 0       1
+
+
+8.  In order to manually mount 1 TB and 4 TB disks pulled from MacPro and
+physically installed into Thinkmate, chant
+
+  sudo mount /dev/ubuntu-vg-13.4/root /mnt/sdb1
+
+  sudo mount /dev/ubuntu-vg/root /mnt/sdc1
+
+
+9.  Information about 1 TB and 4 TB drives physically removed from MacPro
+and installed into Thinkmate machine on 10/5/2015:
+
+ubuntu:pcho% sudo fdisk -l
+[sudo] password for pcho: 
+
+Disk /dev/sda: 800.2 GB, 800166076416 bytes
+255 heads, 63 sectors/track, 97281 cylinders, total 1562824368 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disk identifier: 0x000dc6be
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048      976895      487424   83  Linux
+/dev/sda2          976896   244838399   121930752   83  Linux
+/dev/sda3       244838400   260462591     7812096   82  Linux swap / Solaris
+/dev/sda4       260462592  1562822655   651180032   83  Linux
+
+WARNING: GPT (GUID Partition Table) detected on '/dev/sdb'! The util fdisk doesn't support GPT. Use GNU Parted.
+
+
+Disk /dev/sdb: 1000.2 GB, 1000204886016 bytes
+255 heads, 63 sectors/track, 121601 cylinders, total 1953525168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x0000288b
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdb1               1        4095        2047+  ee  GPT
+/dev/sdb2   *        4096      503807      249856   83  Linux
+/dev/sdb3          503808  1953523711   976509952   da  Non-FS data
+
+WARNING: GPT (GUID Partition Table) detected on '/dev/sdc'! The util fdisk doesn't support GPT. Use GNU Parted.
+
+
+Disk /dev/sdc: 4000.8 GB, 4000787030016 bytes
+255 heads, 63 sectors/track, 486401 cylinders, total 7814037168 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+Disk identifier: 0x00000000
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdc1               1     1050623      525311+  ee  GPT
+Partition 1 does not start on physical sector boundary.
+/dev/sdc2   *     1050624     1550335      249856   83  Linux
+/dev/sdc3         1550336  3519068159  1758758912   da  Non-FS data
+
+rwxrwxrwx 1 root root  10 Oct  5 11:17 5e7b9c4a-2c0e-462c-bf76-0aabfb95d8fd -> ../../sda3
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 e8dc24df-75c5-42e0-9663-87db987d6ae3 -> ../../sdc2
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 499a57bb-7ea0-46d0-8275-a2e28a1867e2 -> ../../sda1
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 0319-F2DD -> ../../sdc1
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 8bef2657-e688-4016-8992-592f44c673f9 -> ../../sda2
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 1ef75e9f-7f29-42cb-80d3-b1dd7163708d -> ../../dm-0
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 ee7b8275-d4d0-4bb4-a976-1cee619efabd -> ../../dm-1
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 fb495da4-6508-444f-87a5-2248ed79c5bb -> ../../sda4
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 081b43b1-5dac-4c75-b83c-027623a72c0d -> ../../sdb2
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 bcb31a3f-5ea5-4b48-aa94-a5537269c1fd -> ../../dm-2
+lrwxrwxrwx 1 root root  10 Oct  5 11:17 9a3a8439-38f4-43f9-be00-3acbf06d543f -> ../../dm-3
+ubuntu:by-uuid% 
+
+
+
+ubuntu:pcho% sudo vgdisplay
+[sudo] password for pcho: 
+  --- Volume group ---
+  VG Name               ubuntu-vg
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  9
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               3.64 TiB
+  PE Size               4.00 MiB
+  Total PE              953672
+  Alloc PE / Size       953672 / 3.64 TiB
+  Free  PE / Size       0 / 0   
+  VG UUID               HREYz3-T34e-6Nai-Krxj-5AtN-3N7M-tteHk3
+   
+  --- Volume group ---
+  VG Name               ubuntu-vg-13.4
+  System ID             
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  6
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               0
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               931.27 GiB
+  PE Size               4.00 MiB
+  Total PE              238405
+  Alloc PE / Size       238394 / 931.23 GiB
+  Free  PE / Size       11 / 44.00 MiB
+  VG UUID               8dlDyF-T1xE-uTxO-1aGg-2fju-JAjX-aFYVAa
+   
+
+ubuntu:ubuntu-vg% sudo lvdisplay
+  --- Logical volume ---
+  LV Path                /dev/ubuntu-vg/root
+  LV Name                root
+  VG Name                ubuntu-vg
+  LV UUID                hrMQhh-zH9J-QEae-WIow-RiYh-mXpu-H6OSNI
+  LV Write Access        read/write
+  LV Creation host, time ubuntu, 2015-04-10 11:01:59 -0700
+  LV Status              available
+  # open                 0
+  LV Size                3.58 TiB
+  Current LE             937291
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:0
+   
+  --- Logical volume ---
+  LV Path                /dev/ubuntu-vg/swap_1
+  LV Name                swap_1
+  VG Name                ubuntu-vg
+  LV UUID                GEq9bP-P0Gw-P29V-SIlH-m3EP-9UNa-U95Jef
+  LV Write Access        read/write
+  LV Creation host, time ubuntu, 2015-04-10 11:01:59 -0700
+  LV Status              available
+  # open                 0
+  LV Size                63.99 GiB
+  Current LE             16381
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:1
+   
+  --- Logical volume ---
+  LV Path                /dev/ubuntu-vg-13.4/root
+  LV Name                root
+  VG Name                ubuntu-vg-13.4
+  LV UUID                uDgmLz-CAjt-IqW8-Y8uJ-uvB3-twmS-35h6d6
+  LV Write Access        read/write
+  LV Creation host, time ubuntu, 2014-01-22 17:40:26 -0800
+  LV Status              available
+  # open                 0
+  LV Size                907.24 GiB
+  Current LE             232254
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:2
+   
+  --- Logical volume ---
+  LV Path                /dev/ubuntu-vg-13.4/swap_1
+  LV Name                swap_1
+  VG Name                ubuntu-vg-13.4
+  LV UUID                A3uNGJ-fkFI-P7ZA-k8fq-uJHF-280R-cb3xU5
+  LV Write Access        read/write
+  LV Creation host, time ubuntu, 2014-01-22 17:40:26 -0800
+  LV Status              available
+  # open                 0
+  LV Size                23.98 GiB
+  Current LE             6140
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           252:3
+   
+ubuntu:ubuntu-vg% 
+ubuntu:READMEs% sudo pvs
+[sudo] password for pcho: 
+  PV         VG             Fmt  Attr PSize   PFree 
+  /dev/sdb3  ubuntu-vg-13.4 lvm2 a--  931.27g 44.00m
+  /dev/sdc3  ubuntu-vg      lvm2 a--    3.64t     0 
+
+
+*.  GPU information
+
+cd /usr/local/cuda-7.5/samples/1_Utilities/deviceQuery
+and run ./deviceQuery :
+
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: "GeForce GTX TITAN X"
+  CUDA Driver Version / Runtime Version          7.5 / 7.5
+  CUDA Capability Major/Minor version number:    5.2
+  Total amount of global memory:                 12287 MBytes (12883345408 bytes)
+  (24) Multiprocessors, (128) CUDA Cores/MP:     3072 CUDA Cores
+  GPU Max Clock rate:                            1076 MHz (1.08 GHz)
+  Memory Clock rate:                             3505 Mhz
+  Memory Bus Width:                              384-bit
+  L2 Cache Size:                                 3145728 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(65536), 2D=(65536, 65536), 3D=(4096, 4096, 4096)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(16384), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(16384, 16384), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 2 copy engine(s)
+  Run time limit on kernels:                     Yes
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 129 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 7.5, CUDA Runtime Version = 7.5, NumDevs = 1, Device0 = GeForce GTX TITAN X
+Result = PASS
+
+*.  

@@ -1,0 +1,9 @@
+/media/490D-C93A/new_york/RTV/filled_fused_EO_RTV/osga_files/*.osga 
+--height_colormap 10 # wrap 3
+--prob_colormap 6 --height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.05
+--max_threshold_frac 1.0
+--longitude_lo -74.06
+--longitude_hi -73.92
+--latitude_lo 40.66
+--latitude_hi 40.86

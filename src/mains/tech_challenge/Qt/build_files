@@ -1,0 +1,10 @@
+make -f anotserv_makefile 
+make -f dataloader_makefile 
+make -f D7frames_makefile 
+make -f flipframes_makefile 
+make -f panopix_makefile 
+make -f tocserv_makefile 
+
+cd  ~/programs/c++/svn/projects/src/mains/video/Qt
+make -f movieviewer_makefile 
+cd  ~/programs/c++/svn/projects/src/mains/tech_challenge/Qt

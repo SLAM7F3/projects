@@ -1,0 +1,512 @@
+============================================================================
+Notes about DLIB SVM results
+============================================================================
+Last updated on 6/23/12; 6/25/12; 6/26/12; 7/6/12; 7/13/12
+============================================================================
+
+LOST-ubuntu:text_recognition% svm_text
+
+Starting time: 2012-07-13 09:06:41.00
+
+Loading text window descriptors
+text_descriptors.rows = 51404
+text_descriptors.cols = 4608
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 4608
+
+Number of positive and negative training examples: N = 50000
+
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 4.5742 mins = 0.0762367 hours
+Number of support vectors in our learned_function =  1
+Number of training samples: N = 50000
+
+Exported learned binary function to learned_function_50000.dat
+
+Current time: 2012-07-13 09:06:41.00
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+Elapsed time = 14.5395 mins = 0.242326 hours
+Number of support vectors in our learned_pfunct =  1
+Number of training samples: N = 50000
+
+Exported learned probabilistic function to learned_pfunct_50000.dat
+
+Current time: 2012-07-13 09:06:41.00
+Text binary decision function = 0.98738 0.99632 
+
+
+============================================================================
+LOST-ubuntu:text_recognition% svm_text
+
+Starting time: 2012-07-12 17:38:31.00
+
+Loading text window descriptors
+text_descriptors.rows = 51404
+text_descriptors.cols = 4608
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 4608
+
+Number of positive and negative training examples: N = 50000
+
+Performing cross validation
+C/N = 0.1
+  Cross validation accuracy: 0.978479   0.9893 
+
+  Product_correct = 0.968009 sum_correct = 1.96778
+
+C/N = 0.2
+  Cross validation accuracy: 0.979359   0.9891 
+
+  Product_correct = 0.968684 sum_correct = 1.96846
+
+C/N = 0.4
+  Cross validation accuracy: 0.979579   0.9879 
+
+  Product_correct = 0.967726 sum_correct = 1.96748
+
+C/N = 0.8
+  Cross validation accuracy: 0.979499 0.987019 
+
+  Product_correct = 0.966785 sum_correct = 1.96652
+
+C/N = 1.6
+  Cross validation accuracy: 0.979239 0.985819 
+
+  Product_correct = 0.965353 sum_correct = 1.96506
+
+C/N = 3.2
+  Cross validation accuracy: 0.978719 0.985079 
+
+  Product_correct = 0.964116 sum_correct = 1.9638
+
+C/N = 6.4
+  Cross validation accuracy: 0.977799 0.984019 
+
+  Product_correct = 0.962173 sum_correct = 1.96182
+
+max_product_correct = 0.968684
+best_product_pos_correct = 0.979359
+best_product_neg_correct = 0.9891
+best_product_C = 10000
+
+max_sum_correct = 1.96846
+best_sum_pos_correct = 0.979359
+best_sum_neg_correct = 0.9891
+best_sum_C = 10000
+
+============================================================================
+
+
+LOST-ubuntu:text_recognition% svm_shape 
+
+Starting time: 2012-07-06 19:09:51.00
+
+Number of text features = 1143
+Number of non-text features = 3568
+Positive-to-negative data ratio = 0.320348
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 0.00953048 mins = 0.000158841 hours
+Number of support vectors in our learned_function =  1220
+Number of text+non-text training samples = 4711
+
+Exported learned binary function to learned_bifunc_1143_3568.dat
+
+Current time: 2012-07-06 19:09:51.00
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+Elapsed time = 0.0230208 mins = 0.00038368 hours
+Number of support vectors in our learned_pfunct =  1220
+Number of text+non-text training samples = 4711
+Text binary decision function =  0.95888 0.854821 
+
+
+Exported learned probabilistic function to learned_pfunct_1143_3568.dat
+
+
+
+============================================================================
+
+Cross-validation values derived on 7/6/12 with 
+
+Cpositive=C
+Cnegative=C*postive_to_negative_data_ratio ~ C/3
+
+
+max_pos_correct = 0.964129
+best_pos_correct_pos_correct = 0.964129
+best_pos_correct_neg_correct = 0.778806
+best_pos_correct_gamma = 0.2
+best_pos_correct_C = 4
+
+max_product_correct = 0.798222
+best_product_pos_correct = 0.947507
+best_product_neg_correct = 0.842445
+best_product_gamma = 3.2
+best_product_C = 4
+
+max_sum_correct = 1.78995
+best_sum_pos_correct = 0.947507
+best_sum_neg_correct = 0.842445
+best_sum_gamma = 3.2
+best_sum_C = 4
+
+============================================================================
+-----------------------------------------------------
+
+LOST-ubuntu:text_recognition% svm_text
+
+Starting time: 2012-06-25 18:36:59.00
+
+Loading text window descriptors
+text_descriptors.rows = 20174
+text_descriptors.cols = 4608
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 4608
+
+Number of positive and negative training examples: N = 19871
+
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 11.086 mins = 0.184766 hours
+Number of support vectors in our learned_function =  1
+Number of training samples: N = 19871
+
+Exported learned binary function to learned_function_19871.dat
+
+Current time: 2012-06-25 18:36:59.00
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+Elapsed time = 38.1505 mins = 0.635841 hours
+Number of support vectors in our learned_pfunct =  1
+Number of training samples: N = 19871
+
+Exported learned probabilistic function to learned_pfunct_19871.dat
+
+Current time: 2012-06-25 18:36:59.00
+Text binary decision function =  0.96432 0.995873 
+
+-----------------------------------------------------
+Mon Jun 25, 2012 at 6:30 pm
+
+Number of positive and negative training examples: N = 19871
+
+Performing cross validation
+C/N = 0.1
+  Cross validation accuracy: 0.908501 0.971966 
+
+  Product_correct = 0.883032 sum_correct = 1.88047
+
+C/N = 0.2
+  Cross validation accuracy: 0.912074 0.970607 
+
+  Product_correct = 0.885266 sum_correct = 1.88268
+
+C/N = 0.4
+  Cross validation accuracy: 0.913836 0.967839 
+
+  Product_correct = 0.884446 sum_correct = 1.88167
+
+C/N = 0.8
+  Cross validation accuracy: 0.914943 0.964568 
+
+  Product_correct = 0.882525 sum_correct = 1.87951
+
+C/N = 1.6
+  Cross validation accuracy: 0.916453 0.961296 
+
+  Product_correct = 0.880983 sum_correct = 1.87775
+
+C/N = 3.2
+  Cross validation accuracy: 0.917208 0.957169 
+
+  Product_correct = 0.877923 sum_correct = 1.87438
+
+C/N = 6.4
+
+-----------------------------------------------------
+Mon Jun 25, 2012 at 3:30 pm
+
+SVM TEXT cross correlation results 
+Number of positive and negative training examples: N = 2000
+
+Performing cross validation
+C/N = 0.025
+  Cross validation accuracy: 0.830831 0.965966 
+
+  Product_correct = 0.802554 sum_correct = 1.7968
+
+C/N = 0.05
+  Cross validation accuracy: 0.837337 0.963964 
+
+  Product_correct = 0.807163 sum_correct = 1.8013
+
+C/N = 0.1
+  Cross validation accuracy: 0.838338  0.96046 
+
+  Product_correct = 0.805191 sum_correct = 1.7988
+
+C/N = 0.2
+  Cross validation accuracy:  0.84034 0.956456 
+
+  Product_correct = 0.803749 sum_correct = 1.7968
+
+C/N = 0.4
+  Cross validation accuracy: 0.843844 0.953954 
+
+  Product_correct = 0.804988 sum_correct = 1.7978
+
+C/N = 0.8
+  Cross validation accuracy: 0.85035 0.95045 
+
+  Product_correct = 0.808216 sum_correct = 1.8008
+
+C/N = 1.6
+  Cross validation accuracy:  0.84985 0.946446 
+
+  Product_correct = 0.804337 sum_correct = 1.7963
+
+max_product_correct = 0.808216
+best_product_pos_correct = 0.85035
+best_product_neg_correct = 0.95045
+best_product_C = 1600
+
+max_sum_correct = 1.8013
+best_sum_pos_correct = 0.837337
+best_sum_neg_correct = 0.963964
+best_sum_C = 100
+
+-----------------------------------------------------
+SVM SHAPE cross correlation results for 1.5K text and 3K non-text training
+samples:
+
+max_product_correct = 0.848757
+best_product_pos_correct = 0.92278
+best_product_neg_correct = 0.919783
+best_product_gamma = 3.2
+best_product_C = 16
+
+max_sum_correct = 1.84256
+best_sum_pos_correct = 0.92278
+best_sum_neg_correct = 0.919783
+best_sum_gamma = 3.2
+best_sum_C = 16
+
+-----------------------------------------------------
+
+svm objective: 65786.8
+gap: 68.1605
+num planes: 924
+iter: 1588
+
+svm objective: 65785.1
+gap: 66.4464
+num planes: 925
+iter: 1589
+
+svm objective: 65784.5
+gap: 65.7376
+num planes: 925
+iter: 1590
+
+Elapsed time = 24.2608 mins = 0.404347 hours
+Number of support vectors in our learned_pfunct =  1
+Number of training samples: N = 50000
+
+Exported learned probabilistic function to learned_pfunct_50000.dat
+
+Current time: 2012-06-22 14:16:53.00
+
+
+-----------------------------------------------------
+
+LOST-ubuntu:text_recognition% !svm
+svm_text
+
+Starting time: 2012-06-11 11:21:39.00
+
+Loading text window descriptors
+text_descriptors.rows = 51884
+text_descriptors.cols = 512
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 512
+
+Number of positive and negative training examples: N = 50000
+
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 6.67245 mins = 0.111208 hours
+Number of support vectors in our learned_function =  1
+Number of training samples = 50000
+
+Exported learned binary function to learned_function_50000.dat
+
+Current time: 2012-06-11 11:21:39.00
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+Elapsed time = 24.1696 mins = 0.402827 hours
+Number of support vectors in our learned_pfunct =  1
+Number of training samples = 50000
+
+Exported learned probabilistic function to learned_pfunct_50000.dat
+
+Current time: 2012-06-11 11:21:39.00
+
+
+============================================================================
+
+LOST-ubuntu:text_recognition% svm_text
+
+Starting time: 2012-06-11 11:19:46.00
+
+Loading text window descriptors
+text_descriptors.rows = 51884
+text_descriptors.cols = 512
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 512
+
+Number of positive and negative training examples: N = 15000
+
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 0.249268 mins = 0.00415446 hours
+Number of support vectors in our learned_function =  1
+Number of training samples = 15000
+
+Exported learned binary function to learned_function_15000.dat
+
+Current time: 2012-06-11 11:19:46.00
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+Elapsed time = 0.820546 mins = 0.0136758 hours
+Number of support vectors in our learned_pfunct =  1
+Number of training samples = 15000
+
+Exported learned probabilistic function to learned_pfunct_15000.dat
+
+Current time: 2012-06-11 11:19:46.00
+
+
+============================================================================
+Starting time = 2012-06-11 11:02:10.00
+
+Loading text window descriptors
+text_descriptors.rows = 51884
+text_descriptors.cols = 512
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 512
+
+Number of positive and negative examples: N = 15000
+
+Performing cross validation
+C/N = 0.25
+  Cross validation accuracy: 0.766533 0.931667 
+
+  Product_correct = 0.714154 sum_correct = 1.6982
+
+C/N = 0.5
+  Cross validation accuracy:   0.7722 0.929733 
+
+  Product_correct = 0.71794 sum_correct = 1.70193
+
+C/N = 1
+  Cross validation accuracy: 0.776467   0.9296 
+
+  Product_correct = 0.721803 sum_correct = 1.70607
+
+C/N = 2
+  Cross validation accuracy: 0.7784  0.928 
+
+  Product_correct = 0.722355 sum_correct = 1.7064
+
+C/N = 4
+  Cross validation accuracy: 0.779867 0.926667 
+
+  Product_correct = 0.722676 sum_correct = 1.70653
+
+C/N = 8
+  Cross validation accuracy:    0.782 0.924533 
+
+  Product_correct = 0.722985 sum_correct = 1.70653
+
+C/N = 16
+  Cross validation accuracy: 0.783867 0.923933 
+
+  Product_correct = 0.724241 sum_correct = 1.7078
+
+max_product_correct = 0.724241
+best_product_pos_correct = 0.783867
+best_product_neg_correct = 0.923933
+best_product_C = 240000
+
+max_sum_correct = 1.7078
+best_sum_pos_correct = 0.783867
+best_sum_neg_correct = 0.923933
+best_sum_C = 240000
+
+
+
+============================================================================
+Weds June 6, 2012 - Sat Jun 10, 2012:
+
+LOST-ubuntu:text_recognition% svm_text
+Loading text window descriptors
+text_descriptors.rows = 51884
+text_descriptors.cols = 512
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 512
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 6205.31 mins = 103.422 hours
+Number of support vectors in our learned_function =  33194
+Number of training samples = 50000
+
+Exported learned binary function to learned_function_50000.dat
+
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+
+
+============================================================================
+
+LOST-ubuntu:text_recognition% svm_text
+Loading text window descriptors
+text_descriptors.rows = 51884
+text_descriptors.cols = 512
+Loading non-text window descriptors
+nontext_descriptors.rows = 55896
+nontext_descriptors.cols = 512
+
+-----------------------------------------------------
+Starting to train binary decision function:
+Elapsed time = 127.852 mins = 2.13086 hours
+Number of support vectors in our learned_function =  10214
+Number of training samples = 15000
+
+-----------------------------------------------------
+Starting to train probabilistic decision function:
+Elapsed time = 215.211 mins = 3.58684 hours
+Number of support vectors in our learned_pfunct =  10214
+Number of training samples = 15000
+

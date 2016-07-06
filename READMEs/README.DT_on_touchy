@@ -1,0 +1,135 @@
+============================================================================
+Notes on setting up DiamondTouch using "Touchy" linux box
+============================================================================
+Last updated on 9/17/07; 10/1/07; 10/30/07; 11/10/07; 11/20/07
+============================================================================
+
+0.  Bring up a windows Virtual Machine from within linux by selecting
+Applications->System Tools->VMware Workstation.  Virtual windows machine
+files are located in /data/vmware/Windows XP Professional.  On 11/20/07,
+the virtual Windows XP files were copied to /usr/local/vmware/Windows XP
+Professional.  
+
+Login to VM Windows Explorer:
+
+	User = Adminstrator
+	Password = admin94
+
+1.  When virtual Windows machine first comes up, we need to connect DT to
+it via VM -> Removable Devices -> USB Devices -> Mitsubishi DT.  We then
+need to perform this operation a 2nd time in order to DT to be connected to
+virtual Windows machine.
+
+2. Make sure virtual windows machine's screen resolution = 1024 x 768 in
+order to have proper alignment with X screen resolution.  Right click
+within Desktop area to bring up properties -> settings.  Windows screen
+resolution is specified in this menu.
+
+3.  When Virtual Windows machine first comes up, we need to run DT calibrate
+projector calibration tool in order to set corner locations for Diamond
+Touch.  Click on desktop icon (which looks like a barcode).
+
+4.  Double click on desktop icon which is shortcut to Dt Portal Server.  A
+command window should open up and report Screen Size: 1024 x 786.  Make
+sure that only ONE (and not MULTIPLE) Dt Portal Server is running.
+
+5.  From within a Virtual Windows command window, chant "ipconfig" (instead of
+"ifconfig") in order to see IP address for ethernet adapter local area
+connection (155.34.125.142).  [ 192.168.139.128 for NAT as of Oct 2007;
+192.168.139.129 as of Jan 2008]
+
+6.  Reset ubuntu machine's static IP address via
+system->Administration->network->wired connection.  use 155.34.125.216 (for
+family day demo)
+
+7.  Back on real linux machine, we need to run 
+/home/cho/programs/c++/svn/dt-portal/bin/dt-portal-client.  
+
+Set DT portal client's host IP to the value reported by ipconfig:
+
+Dt Portal Client:
+Host: 192.168.139.129 for NAT as of Jan 2008
+// Host: 192.168.139.128 for NAT as of Oct 2007
+// Host: 172.16.170.128
+
+Change config from default Google Earth setting to Eyeglass when running
+Ross' ladar viewer.
+
+8.  Reset Ross' Zoom Scale so that it has a small, POSITIVE value for
+Peter's ladar viewer (which emulates Google Earth's mouse controls).
+
+9.  Before running TESTCITIES, make sure postgresql is running.  As of Nov
+2007, the postgres daemon should automatically start at bootup.  Chant
+"psql -l" and see whether databases on touchy are listed.  If not, cd to
+/etc/init.d and chant
+
+	sudo ./postgresql start
+
+10.  To avoid unintentional pressing of minimized windows on bottom ubuntu
+tool bars, right click on bottom tool bars, then select "properties -> show
+hide buttons".  This will minimize bottom tool bars and yet allow them to
+be restored if needed.
+
+11. Make sure ActiveMQ broker is running on touchy.  Chant sudo
+/usr/local/bin/activemq .  As of 11/20/07, ActiveMQ broker should start up
+at boottime.
+
+12.  In order to bring up Wiki pages on our ISDS3D laptop running as a
+windows machine when signposts are doubleclicked, we need to change the
+network settings on the windows side of our ISDS3D laptop:
+
+a.  Ping 155.34.125.143 (under ubuntu linux) to make sure nobody is using
+this static IP address.
+
+b.  We first need to reset network addresses on ISDS3D.  Click start ->
+settings -> network -> local area connection.  Then click on the
+"properties" button and subsequently select "internet protocol" from the
+menu.
+
+c.  Enter following static IP information (OK for family day setup)
+
+IP address:  155.34.125.143  
+Subnet mask: 255.255.255.0
+Default gateway: 155.34.125.1
+
+d.  Use the following DNS servers:
+
+Preferred DNS server: 155.34.3.8
+Alternative DNS server: 155.34.3.22
+
+13.  Once windows networking has been reset, we need to fire up the Michael
+Yee's/Dave Ceddia's Java monitoring program:
+
+a.  Fire up a DOS terminal via start->run->"cmd".
+
+b.  cd Desktop\GoogleLauncher
+
+c.  run "c:\Program Files\Mozilla Firefox\Firefox.exe"
+tcp://155.34.162.230:61616 wiki
+
+Note:  The last IP address should correspond to that for the ActiveMQ
+broker.  So if we're set up as for Family Day, replace the IP with
+tcp://155.34.125.216:61616.
+
+Note 2:  These windows commands are saved within Word file My
+Documents\Word\Family Day Cheat Sheet.doc.
+
+14.  Run ISDS3D laptop on windows side in "twin view" mode.  Right click on
+desktop.  Then press properties -> settings.  Arrange two monitors so that
+monitor 2 appears to left of monitor 1.  Set screen resolution to 1280 by
+720 pixels.  When a google page starts up, drag it to window 1 and resize
+its dimensions so that it fits precisely in that window.
+
+15.  We need to alter a firefox setting so that multiple Wiki pages are not
+brought up in separate tabs but rather overwrite their predecessors within
+the same tab.  In the main firefox search line, chant "about:config" to
+bring up a list of firefox settings.  Then chant "browser" within the
+filter line.  Make sure browser.link.open_external is set equal to 1.  [We
+also set the values for browser.link.open_newwindow and
+browser.link.open_newwindow.restriction to 1, but we're not sure if these
+last changes are really necessary.]
+
+16.  Once demo is finished, we need to reset networking on the windows side
+of ISDS3D back to using a dynamic IP address when we're in S3-300.  Click
+the "Obtain an IP address automatically" radial button.
+

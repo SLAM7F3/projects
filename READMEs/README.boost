@@ -1,0 +1,26 @@
+========================================================================
+Boost library notes
+========================================================================
+Last updated on 2/18/13; 11/19/15
+========================================================================
+
+*.  In order to compile all of the boost library, need to chant 
+
+		./bootstrap.sh --with-libraries=all --prefix=/opt/boost-1.59.0
+
+Then chant
+
+		sudo ./b2 install
+
+*.  After boost root directory (e.g. boost-1.59.0) is installed into
+/opt/boost-1.59.0, create soft link /opt/boost/ --> /opt/boost-1.59.0/ .
+Also create soft links from /opt/geo/ext/boost-1.48.0 --> /opt/boost and
+/opt/geo/ext/boost --> /opt/boost
+
+*.  For pwin linking purposes, create following soft-link from within
+/opt/geo/ext/boost-1.48.0/lib/ :
+
+	sudo ln -s ./libboost_thread.so ./libboost_thread-mt.so
+
+
+*.  Need to add /opt/boost to CMAKE_PREFIX_PATH environmental variable

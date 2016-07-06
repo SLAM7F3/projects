@@ -1,0 +1,113 @@
+========================================================================
+Generating AVI movies via DVI2USB frame grabber
+========================================================================
+Last updated on 7/18/11; 5/1/12; 2/25/13
+========================================================================
+
+1.  Login to windows partition on touchy2
+Username = cho
+Password = @Beebop12
+
+2.  Click VGA2USB icon.  Probably need to press FN+F8 key on linux Dell
+laptop.  But generally do not need to reboot Dell laptop.  [On 10/5/10, we
+DID need to reboot before the frame grabber under windows detected Ubuntu
+10.04 output from our ROBOT laptop.]
+
+3.  In order to see 1920x1200 Ubuntu laptop screen within VGA2USB
+application running under windows, need to run nvidia-settings from command
+line.  Then drag EPH Epiphan D2U screen on top of LGD laptop screen.
+
+[
+3.  In order to see entire Ubuntu laptop screen within DVI2USB application
+running under windows, we need to reset the resolution on Ubuntu laptop to
+1600x1200 using Applications -> System Tools -> Nvidia X Server.  May need
+to run instead nvidia-settings from command line in order to reset screen
+resolution.
+]
+
+4.  In ViewerManager::initialize_dual_windows(), need to reset dual OSG
+window sizes to 800x600 in order for them to both fit within 1600x1200
+DVI2USB frame grabber window.
+
+[ 5. Plug DVI2USB DVI cable into backside of laptop.  Framegrabber then
+automatically detects laptop after VGA2USB icon is doubleclicked. ]
+
+4.1: Place HDMI2DVI converter from framegrabber into HDMI port on source
+laptop.  
+
+4.2  Unconnect touchy2 from LLAN.  Take its ethernet cable into ETH1 port
+on framegrabber.
+
+4.3  Power framegrabber on.
+
+4.4  As of April 2011, the windows side of touchy2 has the following
+hardwired values: 
+
+Ip Address: 192.168.255.249
+Subnet mask: 255.255.255.252
+
+Can verify these values by pressing
+start -> control panel -> network connections-> Local Area Connection -> 
+Support
+
+5.  As of Mar 2011, we have started to use the DVI2ETHERNET framegrabber
+which runs noticeably faster than the older DVI2USB device.  The default
+static IP for ETH1 ("left"/"top" port on frame grabber) is 192.168.255.250
+.  So after doubleclicking the VGA2USB icon, we need to enter this IP
+address under Capture -> Connect Network Device.  Alternatively, this IP is
+hopefully already listed under Recent Network Devices.
+
+5b.  On 5/1/12, Dan Dumanis installed epiphan framegrabber software onto
+the Windows partition of G106clone.  He also configured the windows
+partition to have IP address = 192.168.255.249, and to connect to the
+framegrabber at ETH1 IP address 192.168.155.250.  After plugging in the
+HDMI cable into a second LOST laptop running Ubuntu, we were able to
+generate dummy JPEG screen grabs of the LOST laptop on the G106 windows
+partition.
+
+6.  Capture JPEG images with every frame captured setting.  Specify some
+new folder for JPEG files to be saved into.  
+
+7.  After all JPEG files have been captured, plug an orange drive into
+touchy2 and copy them onto the orange disk.  (Orange drive copying seems to
+be dramatically faster than USB stick copying.)  
+
+8.  Reboot touchy2 into Ubuntu.  
+
+9.  Use GIMP to determine desired cropped image size.
+
+10.  Run mains/utility/CROP_IMAGES in order to resize each individual JPEG
+into perfect multiples of 4 in both the horizontal and vertical
+directions.  CROP_IMAGES also reddens each frame to counteract the blue
+shift which MKMPEG4 seems to introduce.
+
+11.  Once final set of cropped JPEG files has been prepared on touchy2,
+invoke MKMPEG4 via a command such as
+
+	mkmpeg4 -v -f 25 -b 15000000 -o propagator_25fps_90sec.avi  *.jpg
+
+	mkmpeg4 -v -f 12 -b 24000000 -o rasr_geo.avi *.jpg
+
+	mkmpeg4 -v -f 8 -b 24000000 -o marriott_tour_8fps.avi *.jpg
+
+	mkmpeg4 -v -f 12 -b 24000000 -o gmap_12fps.avi *.jpg
+
+Note:  The bitrate value following the -b flag must be <= 24 000 000
+
+========================================================================
+
+In order to extract frames at 10 fps from an input movie such as
+input_movie.mov as jpeg images, chant
+
+ffmpeg -i input_movie.mov -r 10 -f image2 output_frame%05d.jpg
+
+========================================================================
+
+On 2/25/13, we discovered to our horror that movies generated via
+RecordMyDesktop do NOT play under powerpoint_2010 on the auditorium's
+computer.  So we ended up having to split apart the RecordMyDesktop AVIs
+into PNGs and then reassemble then via mkmpeg4:
+
+ffmpeg -i garden-graph.avi -r 15 -f image2 ./png/frame-%04d.png
+
+mkmpeg4 -v -f 15 -b 24000000 -o garden_new.avi *.png

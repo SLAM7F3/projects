@@ -1,0 +1,9 @@
+/bin/rm ./convert_2D_features
+/bin/rm ./croptdp
+/bin/rm ./drape_EO
+/bin/rm ./eotif2tdp
+/bin/rm ./findground
+/bin/rm ./tdp2tif
+/bin/rm ./tif2tdp
+/bin/rm ./transform_points
+/bin/rm ./waterways

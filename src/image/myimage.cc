@@ -1,0 +1,3499 @@
+// On 1/6/03, we doublechecked that double loops over pixels should
+// definitely have the px loop on the outside and the py loop on the
+// inside!
+
+// ==========================================================================
+// MYIMAGE base class member function definitions
+// ==========================================================================
+// Last modified on 12/28/09; 12/4/10; 4/4/14; 4/5/14
+// ==========================================================================
+
+#include "math/complex.h"
+#include "image/compositefuncs.h"
+#include "datastructures/dataarray.h"
+#include "general/filefuncs.h"
+#include "filter/filterfuncs.h"
+#include "geometry/frustum.h"
+#include "geometry/mybox.h"
+#include "image/imagefuncs.h"
+#include "datastructures/Linkedlist.h"
+#include "math/mathfuncs.h"
+#include "image/myimage.h"
+#include "templates/mytemplates.h"
+
+#include "numrec/nrfuncs.h"
+#include "general/outputfuncs.h"
+#include "plot/plotfuncs.h"
+#include "geometry/polygon.h"
+#include "math/prob_distribution.h"
+#include "image/recursivefuncs.h"
+#include "general/stringfuncs.h"
+#include "math/threevector.h"
+#include "time/timefuncs.h"
+#include "image/TwoDarray.h"
+#include "math/twovector.h"
+
+using std::cout;
+using std::endl;
+using std::ios;
+using std::string;
+
+// ---------------------------------------------------------------------
+// Initialization, constructor and destructor functions:
+// ---------------------------------------------------------------------
+
+void myimage::allocate_member_objects()
+{
+}		       
+
+void myimage::initialize_member_objects()
+{
+   NSUBTICS=5;
+   
+   black_corresponds_to_minimum_z=true;
+   classified=false;
+   adjust_x_scale=true;
+   imagecrop=false;
+   viewgraph_mode=false;
+   dynamic_colortable=true;
+//   dynamic_colortable=false;
+   imagenumber=0;
+   dynamic_colortable_minz=NEGATIVEINFINITY;
+   dynamic_colortable_maxz=POSITIVEINFINITY;
+   z2Darray_orig_ptr=NULL;
+   z2Darray_ptr=NULL;
+   ztwoDarray_tmp_ptr=NULL;
+   xtic=xsubtic=ytic=ysubtic=0;
+   pagetitle=pagesubtitle=title=subtitle=xaxislabel=yaxislabel="";
+}		       
+
+myimage::myimage()
+{	
+   allocate_member_objects();
+   initialize_member_objects();
+}		       
+
+// Copy constructor:
+
+myimage::myimage(const myimage& m)
+{
+   allocate_member_objects();
+   initialize_member_objects();
+   docopy(m);
+}
+
+myimage::myimage(int Nxbins,int Nybins)
+{
+   allocate_member_objects();
+   initialize_member_objects();
+
+   if (Nxbins*Nybins > 5000000)
+   {
+      cout << "Metafile image routine will fail since" << endl;
+      cout << "Nxbins*Nybins = " << Nxbins*Nybins << endl;
+      cout << "exceeds 5,000,000 !!!" << endl;
+   }
+}
+
+myimage::myimage(const twoDarray& T) 
+{		  
+   allocate_member_objects();
+   initialize_member_objects();
+
+   z2Darray_orig_ptr=new twoDarray(T.get_mdim(),T.get_ndim());
+   z2Darray_ptr=new twoDarray(T.get_mdim(),T.get_ndim());
+
+// Next fill up image array with values from twoDarray T.  Remember to
+// vertically flip the rows within the image array compared to the
+// twoDarray!
+
+   for (unsigned int i=0; i<T.get_mdim(); i++)
+   {
+      for (unsigned int j=0; j<T.get_ndim(); j++)
+      {
+         z2Darray_orig_ptr->put(i,T.get_ndim()-1-j,T.get(i,j));
+         z2Darray_ptr->put(i,T.get_ndim()-1-j,T.get(i,j));
+      }
+   }
+}		       
+
+myimage::~myimage()
+{
+   delete z2Darray_orig_ptr;
+   z2Darray_orig_ptr=NULL;
+   delete z2Darray_ptr;
+   z2Darray_ptr=NULL;
+   delete ztwoDarray_tmp_ptr;
+   ztwoDarray_tmp_ptr=NULL;
+}
+
+// ---------------------------------------------------------------------
+void myimage::docopy(const myimage & m)
+{
+   black_corresponds_to_minimum_z=m.black_corresponds_to_minimum_z;
+   classified=m.classified;
+   adjust_x_scale=m.adjust_x_scale;
+   imagecrop=m.imagecrop;
+   viewgraph_mode=m.viewgraph_mode;
+   dynamic_colortable=m.dynamic_colortable;
+   imagedir=m.imagedir;
+   imagefilenamestr=m.imagefilenamestr;
+   colortablefilename=m.colortablefilename;
+   extrainfo=m.extrainfo;
+   pagetitle=m.pagetitle;
+   pagesubtitle=m.pagesubtitle;
+   title=m.title;
+   subtitle=m.subtitle;
+   xaxislabel=m.xaxislabel;
+   yaxislabel=m.yaxislabel;
+
+   imagenumber=m.imagenumber;
+   extra_linenumber=m.extra_linenumber;
+
+   xsize=m.xsize;
+   ysize=m.ysize;
+   minz=m.minz;
+   maxz=m.maxz;
+   dynamic_colortable_minz=m.dynamic_colortable_minz;
+   dynamic_colortable_maxz=m.dynamic_colortable_maxz;
+   
+   xtic=m.xtic;
+   xsubtic=m.xsubtic;
+   ytic=m.ytic;
+   ysubtic=m.ysubtic;
+   
+   (*z2Darray_orig_ptr)=(*m.z2Darray_orig_ptr);
+   (*z2Darray_ptr)=(*m.z2Darray_ptr);
+   (*ztwoDarray_tmp_ptr)=(*m.ztwoDarray_tmp_ptr);
+}
+
+// Overload = operator:
+
+myimage& myimage::operator= (const myimage& m)
+{
+   if (this==&m) return *this;
+   docopy(m);
+   return *this;
+}
+
+/*
+// ---------------------------------------------------------------------
+// Member function readin_png_image was created in order to readin
+// fake model images generated by XELIAS.  Such images can be saved
+// from XELIAS in JPEG format, cropped using the GIMP (images -->
+// scale) and then resaved in PNG format.  Using this clumsy approach,
+// we can generate fake passes of satellite model data to use as a
+// diagnostic tool for feature extraction and template matching
+// algorithm development.
+
+// This method is also used, in conjunction with Tim Wallace's Xmap
+// method, to generate annotated map images for the STO project.  
+
+void myimage::readin_png_image(string png_filename)
+{
+   FILE *pngin;
+   int colorindex,redvalue,greenvalue,bluevalue;
+   gdImagePtr im_ptr;	
+
+// Dynamically allocate the PNG image as well as the twoDarray objects
+// within the current myimage:
+
+   pngin=fopen(png_filename.c_str(),"rb");
+   im_ptr=gdImageCreateFromPng(pngin);
+   fclose(pngin);
+
+   z2Darray_orig_ptr=new twoDarray(im_ptr->sx,im_ptr->sy);
+   z2Darray_ptr=new twoDarray(im_ptr->sx,im_ptr->sy);
+
+//   if (z2Darray_orig_ptr->get_xdim() > Nx_max || 
+//       z2Darray_orig_ptr->get_ydim() > Ny_max)
+//   {
+//      outputfunc::newline();
+//      cout << "Trouble inside myimage::readin_png_image() !!" << endl;
+//      cout << "im_ptr->sx = " << im_ptr->sx
+//           << " im_ptr-> sy = " << im_ptr->sy
+//           << " Nx_max = " << Nx_max
+//           << " Ny_max = " << Ny_max << endl;
+//      outputfunc::newline();
+//   }
+ 
+   for (unsigned int i=0; i<z2Darray_orig_ptr->get_mdim(); i++)
+   {
+      for (unsigned int j=0; j<z2Darray_orig_ptr->get_ndim(); j++)
+      {
+         colorindex=gdImageGetPixel(im_ptr,i,j);
+         redvalue=im_ptr->red[colorindex];
+         greenvalue=im_ptr->green[colorindex];
+         bluevalue=im_ptr->blue[colorindex];
+         z2Darray_orig_ptr->put(
+            i,j,sqr(redvalue)+sqr(greenvalue)+sqr(bluevalue));
+      }	// loop over index j
+   } // loop over index i
+}
+*/
+
+// ---------------------------------------------------------------------
+// Member function renormalize_raw_image renormalizes raw input data
+// (e.g. coming from an imagecdf file) so that its minimum (maximum)
+// values equal renorm_zmin (renorm_zmax):
+
+void myimage::renormalize_raw_image_intensities(
+   double renorm_zmin,double renorm_zmax)
+{
+//   const double renorm_zorig_min=0;	// dBsm
+//   const double renorm_zorig_max=60;	// dBsm
+
+   minmax_zarray_values(z2Darray_orig_ptr);
+   reset_zero_level(z2Darray_orig_ptr);
+   renormalize_pixel_intensities(
+      z2Darray_orig_ptr,minz,renorm_zmin,renorm_zmax);
+}
+
+// =====================================================================
+// FFT member functions 
+// =====================================================================
+
+/*
+// Initialize FFTW algorithm by either calculating FFT weights from
+// scratch or else reading in previously computed values from files
+// "fftw_myimage.forward" and "fftw_myimage.backward" within
+// cplusplusrootdir/classes:
+
+// Note: The senses of "theforward" and "thebackward" are adjusted
+// here so as to be compatible with Numerical Recipes' Fourier
+// transform conventions.
+
+void myimage::init_fftw()
+{
+   bool save_forward_wisdom=false;
+   bool save_backward_wisdom=false;
+   string prefix,forwardfilename,backwardfilename;
+   FILE *forward_wisdomfile,*backward_wisdomfile;
+
+//   prefix=sysfunc::get_cplusplusrootdir()+"classes/";
+   prefix="./";
+   forwardfilename=prefix+"fftw_myimage.forward";
+   backwardfilename=prefix+"fftw_myimage.backward";
+
+   forward_wisdomfile=fopen(forwardfilename.c_str(),"r");
+   backward_wisdomfile=fopen(backwardfilename.c_str(),"r");
+
+   if (FFTW_FAILURE==fftw_import_wisdom_from_file(forward_wisdomfile))
+   {
+      cout << "Forward FFT wisdom file not found." << endl;
+      cout << "New wisdom will be generated and saved." << endl;
+      outputfunc::newline();
+      save_forward_wisdom=true;
+   } 
+   else 
+   {
+      fclose(forward_wisdomfile);
+   }
+
+   if (FFTW_FAILURE==fftw_import_wisdom_from_file(backward_wisdomfile))
+   {
+      cout << "Backward FFT wisdom file not found." << endl;
+      cout << "New wisdom file will be generated and saved." << endl;
+      outputfunc::newline();
+      save_backward_wisdom=true;
+   } 
+   else 
+   {
+      fclose(backward_wisdomfile);
+   }
+
+   cout << "Initializing FFTW arrays:" << endl;
+   outputfunc::newline();
+
+   theforward=fftw2d_create_plan(
+      nxbins,nybins,FFTW_FORWARD,FFTW_MEASURE | FFTW_IN_PLACE);
+//      Nx_max,Ny_max,FFTW_FORWARD,FFTW_MEASURE | FFTW_IN_PLACE);
+   thebackward=fftw2d_create_plan(
+      nxbins,nybins,FFTW_BACKWARD,FFTW_MEASURE | FFTW_IN_PLACE);
+//      Nx_max,Ny_max,FFTW_BACKWARD,FFTW_MEASURE | FFTW_IN_PLACE);
+
+   if (save_forward_wisdom)
+   {
+      forward_wisdomfile = fopen(forwardfilename.c_str(),"w");
+      fftw_export_wisdom_to_file(forward_wisdomfile);
+      fclose(forward_wisdomfile);
+   }
+
+   if (save_backward_wisdom)
+   {
+      backward_wisdomfile = fopen(backwardfilename.c_str(),"w");
+      fftw_export_wisdom_to_file(backward_wisdomfile);
+      fclose(backward_wisdomfile);
+   }
+}
+
+// ---------------------------------------------------------------------
+// Function fouriertransform returns the *true* momentum space Fourier
+// transform H(kx,ky) of the 2D spatial signal contained within the
+// complex value array.  The number of rows and columns within the
+// incoming data array must be ODD!  Recall that the *discrete*
+// fourier transform H(m,n) is related to the continuous true Fourier
+// transform H(kx,ky) by H(kx,ky) = dx * dy * H(m,n) where dx and dy
+// denote the sampling step sizes in the x and y directions.  As of
+// 11/00, we take dx=dy.  We *do* include a factor of dx*dy into the
+// momentum space tilde array values which are computed by this
+// routine.
+
+void myimage::fouriertransform(
+   const complex value_in[Nx_max][Ny_max],
+   complex tilde_out[Nx_max][Ny_max])
+{
+   const double EXTREMELY_TINY=1.0E-15;
+
+   int i,iskip,j,jskip;
+   complex (*tmp_value)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tmp_value2)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tmp_tilde)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tmp_tilde2)[Ny_max]=new complex[Nx_max][Ny_max];
+
+// Introduce arrays in_fftw and out_fftw of type fftw_complex in order
+// to use the FFTW ("fastest fourier transform in the west")
+// algorithms.  See section 2.1 within the FFTW user's manual:
+
+   fftw_complex *in_fftwnd=new fftw_complex[nxbins*nybins];
+   fftw_complex *out_fftwnd=new fftw_complex[nxbins*nybins];
+
+// Wrap input data columns:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins/2+1; i++)
+      {
+         iskip=i+nxbins/2;
+         tmp_value[i][j]=value_in[iskip][j];
+      }
+      for (i=0; i<nxbins/2; i++)
+      {
+         iskip=i+nxbins/2;
+         tmp_value[iskip+1][j]=value_in[i][j];
+      }
+   }
+
+// Wrap input data rows:
+
+   for (i=0; i<nxbins; i++)
+   {
+      for (j=0; j<nybins/2+1; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_value2[i][j]=tmp_value[i][jskip];
+      }
+      for (j=0; j<nybins/2; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_value2[i][jskip+1]=tmp_value[i][j];
+      }
+   }
+
+// Copy real and imaginary values into in_fftwnd array in "row major
+// order":
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         in_fftwnd[i+nxbins*j].re=tmp_value2[i][j].x;
+         in_fftwnd[i+nxbins*j].im=tmp_value2[i][j].y;
+      }
+   }
+
+// Take Fourier transform using fftwnd:
+
+   fftwnd_one(theforward,in_fftwnd,NULL);
+//   fftwnd_one(theforward,in_fftwnd,out_fftwnd);
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+//         tmp_tilde2[i][j]=complex(out_fftwnd[i+nxbins*j].re,
+//                                  out_fftwnd[i+nxbins*j].im);
+         tmp_tilde2[i][j]=complex(in_fftwnd[i+nxbins*j].re,
+                                  in_fftwnd[i+nxbins*j].im);
+      }
+   }
+
+// Unwrap output data rows:
+
+   for (i=0; i<nxbins; i++)
+   {
+      for (j=0; j<nybins/2+1; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_tilde[i][jskip]=tmp_tilde2[i][j];
+      }
+      for (j=0; j<nybins/2; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_tilde[i][j]=tmp_tilde2[i][jskip+1];
+      }
+   }
+
+// Unwrap output data columns and return results within array tilde.
+// Multiply *discrete* fourier transform results by deltax*deltay to
+// turn them into *true* continuous fourier transform values.  See eqn
+// (12.1.8) in Numerical Recipes.
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins/2+1; i++)
+      {
+         iskip=i+nxbins/2;
+         tilde_out[iskip][j]=deltax*deltay*tmp_tilde[i][j];
+      }
+
+      for (i=0; i<nxbins/2; i++)
+      {
+         iskip=i+nxbins/2;
+         tilde_out[i][j]=deltax*deltay*tmp_tilde[iskip+1][j];
+      }
+   }
+
+// To minimize build-up of machine round-off errors, we null out any
+// fourier transformed value less than EXTREMELY TINY:
+
+   for (i=0; i<nxbins; i++)
+   {
+      for (j=0; j<nybins; j++)
+      {
+         if (fabs(tilde_out[i][j].x) < EXTREMELY_TINY) tilde_out[i][j].x=0;
+         if (fabs(tilde_out[i][j].y) < EXTREMELY_TINY) tilde_out[i][j].y=0;
+      }
+   }
+
+   delete [] tmp_value;
+   delete [] tmp_value2;
+   delete [] tmp_tilde;
+   delete [] tmp_tilde2;
+   delete [] in_fftwnd;
+   delete [] out_fftwnd;
+}
+
+// ---------------------------------------------------------------------
+// Function inversefouriertransform returns the *true* spatial domain
+// inverse Fourier transform h(x,y) of the 2D momentum space signal
+// contained within the complex array tilde.  The number of rows and
+// columns within the incoming data array must be ODD!  Recall that
+// the *discrete* inverse fourier transform H(m,n) is related to the
+// continuous true inverse Fourier transform h(x,y) by h(x,y) =
+// H(m,n)/(nxbins*nybins).  We *do* include a factor of
+// 1/(nxbins*nybins) into the spatial domain value array computed by
+// this method.
+
+void myimage::inversefouriertransform(
+   const complex tilde_in[Nx_max][Ny_max],
+   complex value_out[Nx_max][Ny_max])
+{
+   const double EXTREMELY_TINY=1.0E-15;
+
+   int i,iskip,j,jskip;
+   complex (*tmp_tilde)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tmp_tilde2)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tmp_value)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tmp_value2)[Ny_max]=new complex[Nx_max][Ny_max];
+
+// Introduce arrays in_fftwnd and out_fftwnd of type fftw_complex in
+// order to use the FFTW ("fastest fourier transform in the west")
+// algorithms.  See section 2.1 within the FFTW user's manual:
+
+   fftw_complex *in_fftwnd=new fftw_complex[nxbins*nybins];
+   fftw_complex *out_fftwnd=new fftw_complex[nxbins*nybins];
+
+// Wrap input data columns.  Recall the tilde_in array contains *true*
+// continuous fourier transform values.  We must first divide these by
+// (deltax*deltay) to convert them into *discrete* fourier transform
+// values before calling the inverse FFTW method:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins/2+1; i++)
+      {
+         iskip=i+nxbins/2;
+         tmp_tilde[i][j]=tilde_in[iskip][j]/(deltax*deltay);
+      }
+      for (i=0; i<nxbins/2; i++)
+      {
+         iskip=i+nxbins/2;
+         tmp_tilde[iskip+1][j]=tilde_in[i][j]/(deltax*deltay);
+      }
+   }
+
+// Wrap input data rows:
+
+   for (i=0; i<nxbins; i++)
+   {
+      for (j=0; j<nybins/2+1; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_tilde2[i][j]=tmp_tilde[i][jskip];
+      }
+      for (j=0; j<nybins/2; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_tilde2[i][jskip+1]=tmp_tilde[i][j];
+      }
+   }
+
+// Copy real and imaginary values into in_fftwnd array in "row major
+// order":
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         in_fftwnd[i+nxbins*j].re=tmp_tilde2[i][j].x;
+         in_fftwnd[i+nxbins*j].im=tmp_tilde2[i][j].y;
+      }
+   }
+
+// Take Fourier transform using fftwnd:
+
+   fftwnd_one(thebackward,in_fftwnd,NULL);
+//   fftwnd_one(thebackward,in_fftwnd,out_fftwnd);
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+//         tmp_value2[i][j]=complex(out_fftwnd[i+nxbins*j].re,
+//                                  out_fftwnd[i+nxbins*j].im);
+         tmp_value2[i][j]=complex(in_fftwnd[i+nxbins*j].re,
+                                  in_fftwnd[i+nxbins*j].im);
+      }
+   }
+  
+// Unwrap output data rows:
+
+   for (i=0; i<nxbins; i++)
+   {
+      for (j=0; j<nybins/2+1; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_value[i][jskip]=tmp_value2[i][j];
+      }
+      for (j=0; j<nybins/2; j++)
+      {
+         jskip=j+nybins/2;
+         tmp_value[i][j]=tmp_value2[i][jskip+1];
+      }
+   }
+
+// Unwrap output data columns and return results within array value.
+// Multiply *discrete* inverse fourier transform results
+// 1/(nxbins*nybins) to turn them into *true* continuous inverse
+// fourier transform values.  See eqn (12.1.8) in Numerical Recipes.
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins/2+1; i++)
+      {
+         iskip=i+nxbins/2;
+         value_out[iskip][j]=tmp_value[i][j]/(nxbins*nybins);
+      }
+
+      for (i=0; i<nxbins/2; i++)
+      {
+         iskip=i+nxbins/2;
+         value_out[i][j]=tmp_value[iskip+1][j]/(nxbins*nybins);
+      }
+   }
+
+// To minimize build-up of machine round-off errors, we null out any
+// inverse fourier transformed value less than EXTREMELY TINY:
+
+   for (i=0; i<nxbins; i++)
+   {
+      for (j=0; j<nybins; j++)
+      {
+         if (fabs(value_out[i][j].x) < EXTREMELY_TINY) value_out[i][j].x=0;
+         if (fabs(value_out[i][j].y) < EXTREMELY_TINY) value_out[i][j].y=0;
+      }
+   }
+
+   delete [] tmp_value;
+   delete [] tmp_value2;
+   delete [] tmp_tilde;
+   delete [] tmp_tilde2;
+   delete [] in_fftwnd;
+   delete [] out_fftwnd;
+}
+
+// ---------------------------------------------------------------------
+// Member function correlation uses Fourier transform methods
+// to compute the correlation function between two input arrays value1
+// and value2.  The result is returned within array corr.  It also
+// returns the maximum value of the correlation function along with
+// the (x,y) location of that maximum value.
+
+void myimage::correlation(
+   twoDarray const *value1_twoDarray_ptr,
+   twoDarray const *value2_twoDarray_ptr,
+   twoDarray* corr_twoDarray_ptr,double& max_corr_value,
+   double& x_max,double& y_max)
+{
+   complex (*tilde2_conj)[Ny_max]=new complex[Nx_max][Ny_max];
+
+   conjugate_transform_array(value2_twoDarray_ptr,tilde2_conj);
+   correlation(value1_twoDarray_ptr,tilde2_conj,corr_twoDarray_ptr,
+               max_corr_value,x_max,y_max);
+
+   delete [] tilde2_conj;
+}
+
+// ---------------------------------------------------------------------
+// Member function conjugate_transform_array returns the complex
+// conjugate fourier transform tilde2_conj of an input array value2
+// containing real values.  Tilde2_conj is needed as an input to the
+// correlation member function below:
+
+void myimage::conjugate_transform_array(
+   twoDarray const *value2_twoDarray_ptr,complex tilde2_conj[Nx_max][Ny_max])
+{
+   int i,j;
+   complex (*complex_value2)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tilde2)[Ny_max]=new complex[Nx_max][Ny_max];
+
+// First load values within real value2 array into corresponding
+// complex array:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         complex_value2[i][j]=complex(value2_twoDarray_ptr->get(i,j),0);
+      }
+   }
+   fouriertransform(complex_value2,tilde2);
+
+// Set kx --> -kx and ky --> -ky in tilde2 array:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         tilde2_conj[i][j]=tilde2[i][j].Conjugate();
+      }
+   }
+   
+   delete [] complex_value2;
+   delete [] tilde2;
+}
+
+// ---------------------------------------------------------------------
+// This overloaded version of member function correlation takes in two
+// arrays and calculates their correlation function.  But to save
+// time, the second array enters after already having been Fourier
+// transformed and complex conjugated.  Since we often want to
+// correlate several candidate images against some constant image, it
+// makes sense to not recompute the conjugate transform of the
+// constant image each time we want to calculate a correlation
+// function.
+
+void myimage::correlation(
+   twoDarray const *value1_twoDarray_ptr,
+   const complex tilde2_conj[Nx_max][Ny_max],
+   twoDarray *corr_twoDarray_ptr,
+   double& max_corr_value,double& x_max,double& y_max)
+{
+   int i,j;
+   double x_min,y_min;
+   complex (*complex_value1)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*tilde1)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*corr_tilde)[Ny_max]=new complex[Nx_max][Ny_max];
+   complex (*complex_corr)[Ny_max]=new complex[Nx_max][Ny_max];
+
+// Load values within real value1 array into corresponding complex
+// array.  Then take its Fourier transform:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         complex_value1[i][j]=complex(value1_twoDarray_ptr->get(i,j),0);
+      }
+   }
+   fouriertransform(complex_value1,tilde1);
+
+// Multiply together entries in tilde1 and tilde2_conj arrays:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         corr_tilde[i][j]=tilde1[i][j]*tilde2_conj[i][j];
+      }
+   }
+   inversefouriertransform(corr_tilde,complex_corr);
+
+// Unload values within complex complex_corr array into output real
+// array corr:
+
+   for (j=0; j<nybins; j++)
+   {
+      for (i=0; i<nxbins; i++)
+      {
+         corr_twoDarray_ptr->put(i,j,float(complex_corr[i][j].getmod()));
+      }
+   }
+
+// Find maximum correlation value along with its corresponding x and y
+// locations:
+
+   minmax_zarray_values(corr_twoDarray_ptr,x_min,y_min,x_max,y_max);
+   max_corr_value=maxz;
+//   cout << "Maximum correlation value = " << max_corr_value << endl;
+//   cout << "x_max = " << x_max << " y_max = " << y_max << endl;
+//   cout << "minz = " << minz << " x_min = " << x_min 
+//        << " y_min = " << y_min << endl;
+
+//   dynamic_colortable=true;
+//   imagefunc::draw_axes(colorfunc::white,corr_twoDarray_ptr);
+//   writeimage("correlation","correlation",corr_twoDarary_ptr);
+//   dynamic_colortable=false;
+
+   delete [] complex_value1;
+   delete [] tilde1;
+   delete [] corr_tilde;
+   delete [] complex_corr;
+}
+
+*/
+
+// ---------------------------------------------------------------------
+// Member function brute_binary_correlation avoids Fourier transform
+// methods and simply calculates the overlap between some binary mask
+// image and some target image contained within zarray.  The overlap
+// integral between the two is calculated inside the bounding box
+// defined by min/max px and py pixels:
+
+double myimage::brute_binary_correlation(
+   unsigned int min_px,unsigned int min_py,
+   unsigned int max_px,unsigned int max_py,
+   int px_offset,int py_offset,double maskvalue,
+   int& npixels_inside_mask,twoDarray const *binarymask_twoDarray_ptr,
+   twoDarray const *ztwoDarray_ptr)
+{
+   double zsum=0;
+
+   npixels_inside_mask=0;
+   for (unsigned int px=min_px; px<max_px; px++)
+   {
+      for (unsigned int py=min_py; py<max_py; py++)
+      {
+         if (binarymask_twoDarray_ptr->get(px,py)==maskvalue)
+         {
+            if (int(px) >= -px_offset && 
+                px < ztwoDarray_ptr->get_mdim()-px_offset &&
+                int(py) >= -py_offset && 
+                py < ztwoDarray_ptr->get_ndim()-py_offset)
+            {
+               npixels_inside_mask++;
+               zsum += ztwoDarray_ptr->get(px+px_offset,py+py_offset);
+            }
+         }
+      }
+   }
+   return zsum;
+}
+
+// ==========================================================================
+// Meta file manipulation member functions 
+// ==========================================================================
+
+// Use default axis labels and tic mark settings if these parameters
+// have not previously been explicitly set:
+
+void myimage::setup_imageheader()
+{
+   setup_imageheader(1,1);
+}
+
+void myimage::setup_imageheader(double relative_xsize,double relative_ysize)
+{
+   if (xaxislabel=="") xaxislabel="Cross Range (meters)";
+   if (yaxislabel=="") yaxislabel="Range (meters)";
+   
+   if (xtic==0) xtic=2;	// meters
+   if (ytic==0) ytic=2;	// meters
+   if (xsubtic==0) xsubtic=xtic/2;	// meters
+   if (ysubtic==0) ysubtic=ytic/2;	// meters
+
+   if (relative_xsize > relative_ysize)
+   {
+      xsize=6.5;	// inches
+      ysize=relative_ysize/relative_xsize*xsize;
+   }
+   else
+   {
+      ysize=6.5;
+      xsize=relative_xsize/relative_ysize*ysize;
+   }
+   cout << "xsize = " << xsize << " ysize = " << ysize << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function adjust_horizontal_scale renormalizes the minimum
+// and maximum horizontal x values which are to be plotted in a meta
+// file so that their difference equals that between the minimum and
+// maximum vertical y values.  The linear spacing deltax of each pixel
+// is left unchanged.  However, the number of pixels in the
+// xdirection, ztwoDarray_ptr->get_mdim_tmp(), is adjusted so that
+// xhi-xlo=yhi-ylo:
+
+void myimage::adjust_horizontal_scale(twoDarray *ztwoDarray_ptr) 
+{
+//   outputfunc::newline();
+//   cout << "Inside myimage::adjust_horizontal_scale()" << endl;
+//   outputfunc::newline();
+   
+   if (adjust_x_scale)
+   {
+      ztwoDarray_ptr->set_xhi_orig(ztwoDarray_ptr->get_xhi());
+      ztwoDarray_ptr->set_xlo_orig(ztwoDarray_ptr->get_xlo());
+
+      double ydifference=(ztwoDarray_ptr->get_yhi()-
+                          ztwoDarray_ptr->get_ylo())-
+         (ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo());
+      ztwoDarray_ptr->set_xhi(ztwoDarray_ptr->get_xhi()+ydifference/2);
+      ztwoDarray_ptr->set_xlo(ztwoDarray_ptr->get_xlo()-ydifference/2);
+      ztwoDarray_ptr->set_mdim_tmp(basic_math::round(
+         (ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo())/
+         ztwoDarray_ptr->get_deltax())+1);
+      if (is_odd(ztwoDarray_ptr->get_mdim()-ztwoDarray_ptr
+                           ->get_mdim_tmp())) 
+      {
+         ztwoDarray_ptr->set_mdim_tmp(ztwoDarray_ptr->get_mdim_tmp()-1);
+      }
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function reset_horizontal_scale resets the values of xhi and
+// xlo to their original values before member function
+// myimage::adjust_horizontal_scale was called.  
+
+void myimage::reset_horizontal_scale(twoDarray *ztwoDarray_ptr) const
+{
+//   outputfunc::newline();
+//   cout << "inside myimage::reset_horizontal_scale()" << endl;
+//   outputfunc::newline();
+   
+   ztwoDarray_ptr->set_xhi(ztwoDarray_ptr->get_xhi_orig());
+   ztwoDarray_ptr->set_xlo(ztwoDarray_ptr->get_xlo_orig());
+   ztwoDarray_ptr->set_mdim_tmp(ztwoDarray_ptr->get_mdim());
+}
+
+// ---------------------------------------------------------------------
+// Member function axes_info writes x and y axis tic and label
+// information to the output metafile:
+
+void myimage::axes_info(twoDarray const *ztwoDarray_ptr)
+{
+   double xminimum=ztwoDarray_ptr->get_xlo()-0.5*ztwoDarray_ptr->get_deltax();
+   double xmaximum=ztwoDarray_ptr->get_xhi()+0.5*ztwoDarray_ptr->get_deltax();
+   if (xminimum < -2) xminimum=basic_math::round(xminimum);
+   if (xmaximum > 2) xmaximum=basic_math::round(xmaximum);
+   imagestream << "x axis min "+stringfunc::number_to_string(xminimum)
+      +" max "+stringfunc::number_to_string(xmaximum) << endl;
+
+   if (xaxislabel=="")
+   {
+      imagestream << "label 'X'" << endl;
+   }
+   else
+   {
+      imagestream << "label '"+xaxislabel+"'" << endl;
+   }
+
+// Allow for manual overriding of automatic horizontal x axis tic settings
+
+   if (xtic==0)
+   {
+      imagestream << "tics "
+         +stringfunc::number_to_string(
+            trunclog(fabs(ztwoDarray_ptr->get_xhi()
+                          -ztwoDarray_ptr->get_xlo())))+" "
+         +stringfunc::number_to_string(
+            trunclog(fabs(ztwoDarray_ptr->get_xhi()-
+                          ztwoDarray_ptr->get_xlo()))/NSUBTICS) << endl;
+   }
+   else
+   {
+      imagestream << "tics "+stringfunc::scinumber_to_string(xtic)
+         +" "+stringfunc::scinumber_to_string(xsubtic) << endl;
+   }
+
+   double yminimum=ztwoDarray_ptr->get_ylo()-0.5*ztwoDarray_ptr->get_deltay();
+   double ymaximum=ztwoDarray_ptr->get_yhi()+0.5*ztwoDarray_ptr->get_deltay();
+   if (yminimum < -2) yminimum=basic_math::round(yminimum);
+   if (ymaximum > 2) ymaximum=basic_math::round(ymaximum);
+   imagestream << "y axis min "+stringfunc::number_to_string(yminimum)
+      +" max "+stringfunc::number_to_string(ymaximum) << endl;
+
+   if (yaxislabel=="")
+   {
+      imagestream << "label 'Y'" << endl;
+   }
+   else
+   {
+      imagestream << "label '"+yaxislabel+"'" << endl;
+   }
+
+// Allow for manual overriding of automatic vertical axis tic settings
+
+   if (ytic==0)
+   {
+      imagestream << "tics "
+         +stringfunc::number_to_string(
+            trunclog(fabs(ztwoDarray_ptr->get_yhi()
+                          -ztwoDarray_ptr->get_ylo())))+" "
+         +stringfunc::number_to_string(
+            trunclog(fabs(ztwoDarray_ptr->get_yhi()
+                          -ztwoDarray_ptr->get_ylo()))/NSUBTICS) << endl;
+   }
+   else
+   {
+      imagestream << "tics "+stringfunc::scinumber_to_string(ytic)
+         +" "+stringfunc::scinumber_to_string(ysubtic) << endl;
+   }
+}
+
+// ---------------------------------------------------------------------
+// In this variant of member function axes_info, no axis labels or tic
+// marks information is written to the output metafile:
+
+void myimage::axes_info_nolabels(twoDarray const *ztwoDarray_ptr)
+{
+   double xminimum=ztwoDarray_ptr->get_xlo()-0.5*ztwoDarray_ptr->get_deltax();
+   double xmaximum=ztwoDarray_ptr->get_xhi()+0.5*ztwoDarray_ptr->get_deltax();
+   if (xminimum < -2) xminimum=basic_math::round(xminimum);
+   if (xmaximum > 2) xmaximum=basic_math::round(xmaximum);
+   imagestream << "x axis min "+stringfunc::number_to_string(xminimum)
+      +" max "+stringfunc::number_to_string(xmaximum) << endl;
+
+   double yminimum=ztwoDarray_ptr->get_ylo()-0.5*ztwoDarray_ptr->get_deltay();
+   double ymaximum=ztwoDarray_ptr->get_yhi()+0.5*ztwoDarray_ptr->get_deltay();
+   if (yminimum < -2) yminimum=basic_math::round(yminimum);
+   if (ymaximum > 2) ymaximum=basic_math::round(ymaximum);
+   imagestream << "y axis min "+stringfunc::number_to_string(yminimum)
+      +" max "+stringfunc::number_to_string(ymaximum) << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function insert_colortable_header writes to metafile output
+// various lines needed to set up a colortable.
+
+void myimage::insert_colortable_header(
+   double height,double width,double legloc_x,double legloc_y)
+{
+   unsigned int nlines=0;
+   string legendline[100];
+
+   legendline[nlines++]="image_legend";
+   legendline[nlines++]="height "+stringfunc::number_to_string(height);
+   legendline[nlines++]="width "+stringfunc::number_to_string(width);
+   legendline[nlines++]="label ''";
+   legendline[nlines++]="legloc "+stringfunc::number_to_string(legloc_x)
+      +" "+stringfunc::number_to_string(legloc_y);
+   legendline[nlines++]="reverse_colors";
+
+   for (unsigned int i=0; i<nlines; i++)
+   {
+      imagestream << legendline[i] << endl;
+   }
+   imagestream << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_colortable inserts a dynamically generated
+// colortable into an output metafile.  The colortable's range spans
+// from minimumz to maximumz which are passed as input parameters.
+
+void myimage::generate_colortable(
+   double minimumz,double maximumz,double height,double width,
+   double legloc_x,double legloc_y)
+{
+   insert_colortable_header(height,width,legloc_x,legloc_y);
+
+   unsigned int nlines=0;
+   string legendline[100];
+   legendline[nlines++]="colortable";
+   legendline[nlines++]=
+      "# index    red     green   blue    interpolations  label";
+
+   const unsigned int ncolors=7;
+   string colorline[ncolors];
+   colorline[0]=" 0	0	0	20  '";
+   colorline[1]=" 255	0	255	20  '";
+   colorline[2]=" 0	0	250	20  '";
+   colorline[3]=" 0	200	200	20  '";
+   colorline[4]=" 150	250	0	20  '";
+   colorline[5]=" 200	150	0	20  '";
+   colorline[6]=" 255	0	1	20  '";
+   double delta=(maximumz-minimumz)/(ncolors-1);
+   for (unsigned int i=0; i<ncolors; i++)
+   {
+      double zcolor_value=minimumz+i*delta;
+      legendline[nlines++]=stringfunc::scinumber_to_string(zcolor_value,2)
+         +colorline[i]+stringfunc::number_to_string(zcolor_value,2)+"'";
+   }
+
+   for (unsigned int i=0; i<nlines; i++)
+   {
+      imagestream << legendline[i] << endl;
+   }
+   imagestream << endl;
+}
+
+// ---------------------------------------------------------------------
+// These overloaded versions of member function generate_colortable
+// dynamically insert a colortable into the output meta based upon the
+// intensity values contained within *ztwoDarray_ptr.  If boolean flag
+// black_corresponds_to_minimum_z==true, the minimum [maximum] values
+// in *ztwoDarray_ptr are mapped onto black [red], while intermediate
+// values are mapped onto purple, blue, cyan, yellow-green and orange.
+// Otherwise, the minimum value within ztwoDarray_ptr is mapped onto
+// purple.  This latter case is useful, for instance, if black is
+// reserved for pixels which have null (rather than zero) intensities.
+
+void myimage::generate_colortable(
+   double legloc_x,double legloc_y,twoDarray const *ztwoDarray_ptr)
+{
+   cout << "inside myimage::generate_colortable()" << endl;
+   
+   insert_colortable_header(4,0.15,legloc_x,legloc_y);
+
+   unsigned int nlines=0;
+   string legendline[100];
+   legendline[nlines++]="colortable";
+   legendline[nlines++]=
+      "# index    red     green   blue    interpolations  label";
+
+   const unsigned int ncolors=7;
+   string colorline[ncolors];
+   colorline[0]=" 0	0	0	20  '";
+   colorline[1]=" 255	0	255	20  '";
+   colorline[2]=" 0	0	250	20  '";
+   colorline[3]=" 0	200	200	20  '";
+   colorline[4]=" 150	250	0	20  '";
+   colorline[5]=" 200	150	0	20  '";
+   colorline[6]=" 255	0	1	20  '";
+   
+   minmax_zarray_values(ztwoDarray_ptr);
+
+// Adopt user specified values for minimumz and maximumz colortable
+// values stored in dynamic_colortable_minz and
+// dynamic_colortable_maxz if these two variables do not equal
+// NEGATIVEINFINITY and POSITIVEINFINITY.  Otherwise, calculate
+// extremal function values based upon data stored in image:
+
+   cout << "dynamic_colortable_minz = " 
+        << dynamic_colortable_minz << endl;
+   cout << "dynanmic_colortable_maxz = " 
+        << dynamic_colortable_maxz << endl;
+
+   double minimumz,maximumz,next_to_minz,next_to_maxz;
+   if (dynamic_colortable_minz > NEGATIVEINFINITY)
+   {
+      minimumz=dynamic_colortable_minz;
+   }
+   else
+   {
+      if (minz<=NEGATIVEINFINITY)
+      {
+         next_to_minmax_values(next_to_minz,next_to_maxz,ztwoDarray_ptr);
+         minimumz=next_to_minz;
+      }
+      else
+      {
+         minimumz=minz;
+      }
+   }
+    
+   if (dynamic_colortable_maxz < POSITIVEINFINITY)
+   {
+      maximumz=dynamic_colortable_maxz;
+   }
+   else
+   {   
+      if (maxz>=POSITIVEINFINITY)
+      {
+         next_to_minmax_values(next_to_minz,next_to_maxz,ztwoDarray_ptr);
+         maximumz=next_to_maxz;
+      }
+      else
+      {
+         maximumz=maxz;
+      }
+   }
+
+   cout << "minimumz = " << minimumz << " maximumz = "
+        << maximumz << endl;
+   
+   double delta;
+   if (black_corresponds_to_minimum_z)
+   {
+      delta=(maximumz-minimumz)/(ncolors-1);
+   }
+   else
+   {
+      delta=(maximumz-minimumz)/(ncolors-2);
+   }
+
+   for (unsigned int i=0; i<ncolors; i++)
+   {
+      double zcolor_value;
+      if (black_corresponds_to_minimum_z)
+      {
+         zcolor_value=minimumz+i*delta;
+      }
+      else
+      {
+         zcolor_value=minimumz+(i-1)*delta;
+      }
+      legendline[nlines++]=stringfunc::scinumber_to_string(zcolor_value,2)
+         +colorline[i]+stringfunc::scinumber_to_string(zcolor_value,2)+"'";
+   }
+
+   for (unsigned int i=0; i<nlines; i++)
+   {
+      imagestream << legendline[i] << endl;
+   }
+   imagestream << "999  255	0	0	2 " << endl;
+   imagestream << "1000 255	255	255	2 " << endl;
+   imagestream << endl;
+}
+
+// ---------------------------------------------------------------------
+void myimage::addextrainfo(twoDarray const *ztwoDarray_ptr)
+{
+   extrainfo.push_back("ztwoDarray.xdim = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_xdim()));
+   extrainfo.push_back("ztwoDarray.ydim = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_ydim()));
+   extrainfo.push_back("ztwoDarray.mdim = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_mdim()));
+   extrainfo.push_back("ztwoDarray.ndim = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_ndim()));
+   extrainfo.push_back("ztwoDarray.xlo = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_xlo()));
+   extrainfo.push_back("ztwoDarray.xhi = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_xhi()));
+   extrainfo.push_back("ztwoDarray.ylo = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_ylo()));
+   extrainfo.push_back("ztwoDarray.yhi = "
+      +stringfunc::number_to_string(ztwoDarray_ptr->get_yhi()));
+   extrainfo.push_back("Min nonzero intensity  = "
+      +stringfunc::number_to_string(imagefunc::min_intensity_above_floor(
+         0,ztwoDarray_ptr),2));
+   extrainfo.push_back("Max intensity  = "
+      +stringfunc::number_to_string(imagefunc::max_intensity_below_ceiling(
+         POSITIVEINFINITY,ztwoDarray_ptr),2));
+}
+
+// ---------------------------------------------------------------------
+// Member function imagearray_info writes 2D imagearray corner point,
+// bin and colortable information to the output meta file:
+
+void myimage::imagearray_info(twoDarray const *ztwoDarray_ptr)
+{
+// Coordinates of lower left hand and upper right hand corners:
+
+   imagestream << "image" << endl;
+   imagestream << stringfunc::number_to_string(ztwoDarray_ptr->get_xlo()) 
+               << "\t" 
+               << stringfunc::number_to_string(ztwoDarray_ptr->get_ylo()) 
+               << endl;
+   imagestream << stringfunc::number_to_string(ztwoDarray_ptr->get_xhi()) 
+               << "\t" 
+               << stringfunc::number_to_string(ztwoDarray_ptr->get_yhi()) 
+               << endl;
+
+// Number of pixels within a row and in a column.  The total number of
+// pixels must not exceed 500,000:
+
+   imagestream << endl;
+   imagestream << stringfunc::number_to_string(ztwoDarray_ptr->get_mdim_tmp()) 
+               << endl;
+   imagestream << stringfunc::number_to_string(ztwoDarray_ptr->get_ndim_tmp()) 
+               << endl;
+   imagestream << endl;
+
+// Read in myimage colortable information from colortable file, or
+// else dynamically generate a colortable based upon values within
+// image.  We incorporate this info straight into the myimage file,
+// but we do NOT use it to generate a colorbar legend in order to
+// avoid spurious white spots:
+
+   if (dynamic_colortable)
+   {
+      generate_colortable(10.5,4.5,ztwoDarray_ptr);
+   }
+   else
+   {
+      unsigned int nlines;
+      string lines[1000];
+      filefunc::ReadInfile(colortablefilename,lines,nlines);
+      for (unsigned int i=0; i<nlines; i++) imagestream << lines[i] << endl;
+      imagestream << endl;
+   }
+   
+   imagestream << "data" << endl;
+   imagestream << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function imagefileheader writes out preliminary header
+// information at top of myimage file to set up for meta plotting.
+
+void myimage::imagefileheader(twoDarray *ztwoDarray_ptr)
+{
+// Two sets of "story" commands cannot be requested within one plot.
+// So to get more than one column of story output to appear, we need
+// to create dummy plots with no content and then call the story
+// command.  Title, x axis and y axis calls are mandatory when setting
+// up a plot.
+   
+   if (extrainfo.size() > 0)
+   {
+      imagestream << "title ''" << endl;
+      imagestream << "size "+stringfunc::number_to_string(xsize)+" "
+         +stringfunc::number_to_string(ysize) << endl;
+      imagestream << "x axis min 0 max 0.0001" << endl;
+      imagestream << "y axis min 0 max 0.0001" << endl;
+      
+      for (unsigned int i=0; i<extrainfo.size(); i++)
+      {
+         imagestream << "story '"+extrainfo[i]+"'" << endl;
+      }
+      imagestream << "storysize 0.75" << endl;
+
+      double yposn=basic_math::max(ysize+0.8,6.25);
+      imagestream << "storyloc 6.6 "+stringfunc::number_to_string(yposn) 
+                  << endl;
+      imagestream << "" << endl;
+   }
+
+// After speaking with Iva Mooney on 4/24/00, we realized that we would have
+// to include the following dumb cluge into our metafile output in order to
+// circumvent a limitation of the metafile plotting program.  The lines
+// below draw a colorbar legend which includes no white space.  Recall that
+// white regions within myimages represent zones where a missile cannot
+// intercept a target.  Since the miss distance in such zones is effectively
+// infinite, there should be no white appearing within the miss distance
+// colorbar legend.  We need to incorporate a separate colortable after this
+// section of metafile code which does include white RGB values so that
+// portions of the myimage itself can be colored white in the appropriate
+// dead zones.  But we cannot use that 2nd colortable for the color legend
+// bar, for some white will inevitably appear within the legend.
+
+   unsigned int nlines;
+   if (dynamic_colortable)
+   {
+      imagestream << "title ''" << endl;
+      imagestream << "size 0 0" << endl;
+      imagestream << "x axis min -100 max -99" << endl;
+      imagestream << "y axis min -100 max -99" << endl;
+      imagestream << "legend ''" << endl;
+      imagestream << "image -100 -100 -99 -99 1 1" << endl;
+      generate_colortable(4,2,ztwoDarray_ptr);
+      imagestream << "data 0" << endl;
+      imagestream << endl;
+   }
+   else
+   {
+      string lines[1000];
+      filefunc::ReadInfile(colortablefilename+"_nowhite",lines,nlines);
+      for (unsigned int i=0; i<nlines; i++)
+      {
+         imagestream << lines[i] << endl;
+      }
+      imagestream << endl;
+   }
+   
+
+   if (title=="")
+   {
+      imagestream << "title 'Myimage'" << endl;
+   }
+   else
+   {
+      imagestream << "title '"+title+"'" << endl;
+   }
+   if (subtitle != "")
+   {
+      imagestream << "subtitle '"+subtitle+"'" << endl;
+   }
+
+   imagestream << "size "+stringfunc::number_to_string(xsize)+" "
+      +stringfunc::number_to_string(ysize) << endl;
+
+   axes_info(ztwoDarray_ptr);
+
+// Add secret labels if image is classified:
+
+   if (classified)
+   {
+      imagefunc::add_secret_labels(imagestream,ztwoDarray_ptr);
+   }
+
+// Add story information:
+
+   imagestream << "story 'Filename = "+imagefilenamestr+"'" << endl;
+   imagestream << "story '"+timefunc::getcurrdate()+"'" << endl;
+   double yposn=basic_math::max(ysize+0.8,6.25);
+   imagestream << "storyloc -2.0 "+stringfunc::number_to_string(yposn) 
+               << endl;
+   imagestream << endl;
+
+// If filefunc::ReadInfile() statement above was successful and a
+// cluged together colortable has already been incorporated into the
+// myimage metafile, then comment out legend command below.
+// Otherwise, include colorbar with potentially spurious white marks
+// at this point:
+   
+   if (nlines > 0)
+   {
+      imagestream << "#legend ' '" << endl;
+   }
+   else
+   {
+      imagestream << "legend ' '" << endl;
+   }
+   
+   imagearray_info(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function singletfileheader writes out preliminary header
+// information at top of myimage file to set up for viewing a single
+// image in movie format:
+
+void myimage::singletfileheader(twoDarray *ztwoDarray_ptr)
+{
+   unsigned int nlines;
+   string lines[100];
+
+// After speaking with Iva Mooney on 4/24/00, we realized that we would have
+// to include the following dumb cluge into our metafile output in order to
+// circumvent a limitation of the metafile plotting program.  The lines
+// below draw a colorbar legend which includes no white space.  Recall that
+// white regions within myimages represent zones where a missile cannot
+// intercept a target.  Since the miss distance in such zones is effectively
+// infinite, there should be no white appearing within the miss distance
+// colorbar legend.  We need to incorporate a separate colortable after this
+// section of metafile code which does include white RGB values so that
+// portions of the myimage itself can be colored white in the appropriate
+// dead zones.  But we cannot use that 2nd colortable for the color legend
+// bar, for some white will inevitably appear within the legend.
+
+   if (!viewgraph_mode)
+   {
+      filefunc::ReadInfile(colortablefilename+"_nowhite",lines,nlines);
+      for (unsigned int i=0; i<nlines; i++)
+      {
+         imagestream << lines[i] << endl;
+      }
+      imagestream << endl;
+   }
+
+   if (pagetitle != "")
+   {
+      imagestream << "pagetitle '"+pagetitle+"'" << endl;
+      imagestream << "title ''" << endl;
+   }
+   else if (title != "")
+   {
+      imagestream << "title '"+title+"'" << endl;
+   }
+
+//   imagestream << "size 5 5" << endl;
+//   imagestream << "physor 3 2" << endl;
+   imagestream << "size 6 6" << endl;
+   imagestream << "physor 2.5 1.55" << endl;
+
+   axes_info(ztwoDarray_ptr);
+   imagearray_info(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function doubletfileheader writes out preliminary header
+// information at top of myimage file to set up for viewing 2
+// SAME-TYPE images side-by-side (e.g. two radar images - one raw, one
+// cleaned).  Both images are assumed to share the same horizontal and
+// vertical scales.
+
+void myimage::doubletfileheader(
+   bool display_titles,int doublet_pair_member,
+   string doublet_title,twoDarray *ztwoDarray_ptr)
+{
+// First adjust cross range scale so that it matches as closely as
+// possible with the range scale:
+
+   if (adjust_x_scale) adjust_horizontal_scale(ztwoDarray_ptr);
+
+// Next interactively query user to specify xlo,xhi,ylo,yhi values
+// which are used to crop images if imagecrop flag is set to true:
+
+   if (imagecrop) imagefunc::crop_image(ztwoDarray_ptr);
+
+   if (pagetitle != "")
+   {
+      imagestream << "pagetitle '"+pagetitle+"'" << endl;
+   }
+   if (!display_titles)
+   {
+      imagestream << "title ''" << endl;
+   }
+   else
+   {
+      imagestream << "title '"+doublet_title+"'" << endl;
+   }
+   
+   imagestream << "size 5 5" << endl;
+   if (doublet_pair_member==0)
+   {
+      imagestream << "physor 0.7 2" << endl;
+   }
+   else
+   {
+      imagestream << "physor 5.8 2" << endl;
+   }
+
+   double xminimum=ztwoDarray_ptr->get_xlo()-0.5*ztwoDarray_ptr->get_deltax();
+   double xmaximum=ztwoDarray_ptr->get_xhi()+0.5*ztwoDarray_ptr->get_deltax();
+   if (xminimum < -2) xminimum=basic_math::round(xminimum);
+   if (xmaximum > 2) xmaximum=basic_math::round(xmaximum);
+   imagestream << "x axis min "+stringfunc::number_to_string(xminimum)
+      +" max "+stringfunc::number_to_string(xmaximum) << endl;
+
+   if (xaxislabel=="")
+   {
+      imagestream << "label 'X'" << endl;
+   }
+   else
+   {
+      imagestream << "label '"+xaxislabel+"'" << endl;
+   }
+
+// Allow for manual overriding of automatic horizontal x axis tic settings
+
+   if (xtic==0)
+   {
+      imagestream << "tics "
+         +stringfunc::number_to_string(
+            trunclog(ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo()))+" "
+         +stringfunc::number_to_string(
+            trunclog(ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo())
+            /NSUBTICS) << endl;
+   }
+   else
+   {
+      imagestream << "tics "+stringfunc::scinumber_to_string(xtic)
+         +" "+stringfunc::scinumber_to_string(xsubtic) << endl;
+   }
+
+   double yminimum=ztwoDarray_ptr->get_ylo()-0.5*ztwoDarray_ptr->get_deltay();
+   double ymaximum=ztwoDarray_ptr->get_yhi()+0.5*ztwoDarray_ptr->get_deltay();
+   if (yminimum < -2) yminimum=basic_math::round(yminimum);
+   if (ymaximum > 2) ymaximum=basic_math::round(ymaximum);
+   imagestream << "y axis min "+stringfunc::number_to_string(yminimum)
+      +" max "+stringfunc::number_to_string(ymaximum) << endl;
+
+   if (doublet_pair_member==0)
+   {
+      if (yaxislabel=="")
+      {
+         imagestream << "label 'Y'" << endl;
+      }
+      else
+      {
+         imagestream << "label '"+yaxislabel+"'" << endl;
+      }
+
+// Allow for manual overriding of automatic vertical axis tic settings
+
+      if (ytic==0)
+      {
+         imagestream << "tics "
+            +stringfunc::number_to_string(
+               trunclog(ztwoDarray_ptr->get_yhi()-ztwoDarray_ptr->get_ylo()))
+            +" "
+            +stringfunc::number_to_string(
+               trunclog(ztwoDarray_ptr->get_yhi()-ztwoDarray_ptr->get_ylo())
+               /NSUBTICS) << endl;
+      }
+      else
+      {
+         imagestream << "tics "+stringfunc::scinumber_to_string(ytic)
+            +" "+stringfunc::scinumber_to_string(ysubtic) << endl;
+      }
+   }
+   imagearray_info(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function dual_singlets_header writes out initial header
+// information for doublet images which contain one standard image on
+// the LHS and a corresponding mapimage or pitch-roll plot on the RHS.
+// This method is called by A2/AU program GROUNDTRACE (as of Jan
+// 01) and RH programs COARSE_RHPARAMS and FINEPARAMS (as of Mar 02)
+
+// In order to provide Margarita with simplified movies for her Tech
+// Expo demo on 3/23/01, we hacked this method up on 3/13/01 so
+// that image and axes labels can be neglected.
+
+void myimage::dual_singlets_header(
+   bool display_titles,string doublet_title,
+   int doublet_pair_member,double imagesize,double yphysor,
+   twoDarray *ztwoDarray_ptr)
+{
+// First adjust cross range scale so that it matches as closely as
+// possible with the range scale:
+
+   if (doublet_pair_member==0)
+   {
+      if (adjust_x_scale) adjust_horizontal_scale(ztwoDarray_ptr);
+   }
+   
+   if (!viewgraph_mode)
+   {
+      if (pagetitle != "")
+      {
+         imagestream << "pagetitle '"+pagetitle+"'" << endl;
+      }
+   }
+
+   if (!display_titles)
+   {
+      imagestream << "title ''" << endl;
+   }
+   else
+   {
+      imagestream << "title '"+doublet_title
+         +stringfunc::number_to_string(imagenumber)+"'" << endl;
+   }
+   imagestream << "size "+stringfunc::number_to_string(imagesize)+" "
+      +stringfunc::number_to_string(imagesize) << endl;
+
+   if (doublet_pair_member==0)
+   {
+      imagestream << "physor 0.7 "+stringfunc::number_to_string(yphysor) 
+                  << endl;
+   }
+   else
+   {
+      imagestream << "physor 5.8 "+stringfunc::number_to_string(yphysor) 
+                  << endl;
+   }
+
+   if (display_titles)
+   {
+      axes_info(ztwoDarray_ptr);
+   }
+   else
+   {
+      axes_info_nolabels(ztwoDarray_ptr);
+   }
+   imagearray_info(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function tripletfileheader writes out preliminary header
+// information at top of myimage file to set up for viewing 3
+// SAME-TYPE images side-by-side (e.g. 3 synthetic radar images at
+// corresponding to 3 different crossover elevations).  All 3 images
+// are assumed to share the same horizontal and vertical scales.
+
+void myimage::tripletfileheader(
+   bool display_titles,int triplet_member,
+   string triplet_title,twoDarray *ztwoDarray_ptr)
+{
+// First adjust cross range scale so that it matches as closely as
+// possible with the range scale:
+
+   if (adjust_x_scale) adjust_horizontal_scale(ztwoDarray_ptr);
+
+// Next interactively query user to specify xlo,xhi,ylo,yhi values
+// which are used to crop images if imagecrop flag is set to true:
+
+   if (imagecrop) imagefunc::crop_image(ztwoDarray_ptr);
+
+   if (pagetitle != "")
+   {
+      imagestream << "pagetitle '"+pagetitle+"'" << endl;
+   }
+   if (!display_titles)
+   {
+      imagestream << "title ''" << endl;
+   }
+   else
+   {
+      imagestream << "title '"+triplet_title+"'" << endl;
+   }
+   
+   imagestream << "size 3.3 3.3" << endl;
+   if (triplet_member==0)
+   {
+      imagestream << "physor 0.7 3" << endl;
+   }
+   else if (triplet_member==1)
+   {
+      imagestream << "physor 4.1 3" << endl;
+   }
+   else if (triplet_member==2)
+   {
+      imagestream << "physor 7.5 3" << endl;
+   }
+
+   double xminimum=ztwoDarray_ptr->get_xlo()-0.5*ztwoDarray_ptr->get_deltax();
+   double xmaximum=ztwoDarray_ptr->get_xhi()+0.5*ztwoDarray_ptr->get_deltax();
+   if (xminimum < -2) xminimum=basic_math::round(xminimum);
+   if (xmaximum > 2) xmaximum=basic_math::round(xmaximum);
+   imagestream << "x axis min "+stringfunc::number_to_string(xminimum)
+      +" max "+stringfunc::number_to_string(xmaximum) << endl;
+
+   if (xaxislabel=="")
+   {
+      imagestream << "label 'X'" << endl;
+   }
+   else
+   {
+      imagestream << "label '"+xaxislabel+"'" << endl;
+   }
+
+// Allow for manual overriding of automatic horizontal x axis tic settings
+
+   if (xtic==0)
+   {
+      imagestream << "tics "
+         +stringfunc::number_to_string(
+            trunclog(ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo()))+" "
+         +stringfunc::number_to_string(
+            trunclog(ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo())
+            /NSUBTICS) << endl;
+   }
+   else
+   {
+      imagestream << "tics "+stringfunc::scinumber_to_string(xtic)
+         +" "+stringfunc::scinumber_to_string(xsubtic) << endl;
+   }
+
+   double yminimum=ztwoDarray_ptr->get_ylo()-0.5*ztwoDarray_ptr->get_deltay();
+   double ymaximum=ztwoDarray_ptr->get_yhi()+0.5*ztwoDarray_ptr->get_deltay();
+   if (yminimum < -2) yminimum=basic_math::round(yminimum);
+   if (ymaximum > 2) ymaximum=basic_math::round(ymaximum);
+   imagestream << "y axis min "+stringfunc::number_to_string(yminimum)
+      +" max "+stringfunc::number_to_string(ymaximum) << endl;
+
+   if (triplet_member==0)
+   {
+      if (yaxislabel=="")
+      {
+         imagestream << "label 'Y'" << endl;
+      }
+      else
+      {
+         imagestream << "label '"+yaxislabel+"'" << endl;
+      }
+
+// Allow for manual overriding of automatic vertical axis tic settings
+
+      if (ytic==0)
+      {
+         imagestream << "tics "
+            +stringfunc::number_to_string(
+               trunclog(ztwoDarray_ptr->get_yhi()-ztwoDarray_ptr->get_ylo()))
+            +" "
+            +stringfunc::number_to_string(
+               trunclog(ztwoDarray_ptr->get_yhi()-ztwoDarray_ptr->get_ylo())
+               /NSUBTICS) << endl;
+      }
+      else
+      {
+         imagestream << "tics "+stringfunc::scinumber_to_string(ytic)
+            +" "+stringfunc::scinumber_to_string(ysubtic) << endl;
+      }
+   }
+   imagearray_info(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function writeimagedata writes out to a meta file the
+// contents of the 2D intensity array.  Columns of pixels are either
+// added or subtracted so that the cross range extent of the image
+// approximately equals its range extent.  On 7/24/01, we implemented
+// a rudimentary cropping capability which assumes that the variable
+// ztwoDarray_ptr->get_ndim_tmp() is always less than or equal to
+// ztwoDarray_ptr->get_ndim().
+
+// As of June 03, this method basically handles only the special case
+// where xlo=-xhi and ylo=-yhi.  We have attempted to generalize this
+// in a small way by introducing xpad_minus and xpad_plus.  But much
+// more work is needed to be done before this method can handle
+// arbitrary values for xlo, xhi, ylo and yhi.
+
+void myimage::writeimagedata(twoDarray const *ztwoDarray_ptr) 
+{
+// In mid-July 2003, we learned (the extremely painful & hard way!)
+// that optimized vs unoptimized codes yield slightly different values
+// for "zero".  So in order for padding to be independent of
+// optimization setting, we test whether xlo+xhi is close, but not
+// necessarily exactly equal, to zero:
+
+   int xpad_minus,xpad_plus;
+   double TINY=1E-5;
+   if (fabs(ztwoDarray_ptr->get_xlo()+ztwoDarray_ptr->get_xhi()) < TINY)
+   {
+      xpad_minus=basic_math::round(double(
+         abs((ztwoDarray_ptr->get_mdim()-ztwoDarray_ptr->get_mdim_tmp())/2)));
+   }
+   else
+   {
+      xpad_minus=basic_math::round(
+         (ztwoDarray_ptr->get_xlo()-ztwoDarray_ptr->get_xlo_orig())/
+         ztwoDarray_ptr->get_deltax());
+   }
+   xpad_plus=basic_math::round(double(abs(
+      ztwoDarray_ptr->get_mdim()-ztwoDarray_ptr->get_mdim_tmp())
+                             -xpad_minus));
+
+   xpad_minus=abs(xpad_minus);
+   xpad_plus=abs(xpad_plus);
+
+   int ypad=abs((ztwoDarray_ptr->get_ndim()-
+                  ztwoDarray_ptr->get_ndim_tmp())/2);
+
+//   outputfunc::newline();
+//   cout.precision(10);
+//   cout << "Inside myimage::writeimagedata()" << endl;
+//   cout << " ztwoDarray_ptr->get_mdim() = " << ztwoDarray_ptr->get_mdim() 
+//        << " ztwoDarray_ptr->get_mdim_tmp() = " 
+//        << ztwoDarray_ptr->get_mdim_tmp() << endl;
+//   cout << " ztwoDarray_ptr->get_ndim() = " << ztwoDarray_ptr->get_ndim() 
+//        << " ztwoDarray_ptr->get_ndim_tmp() = " 
+//        << ztwoDarray_ptr->get_ndim_tmp() << endl;
+//   cout << "xlo = " << ztwoDarray_ptr->get_xlo() 
+//        << " xhi = " << ztwoDarray_ptr->get_xhi() << endl;
+//   cout << "xlo_orig = " << ztwoDarray_ptr->get_xlo_orig() 
+//        << " xhi_orig = " << ztwoDarray_ptr->get_xhi_orig() << endl;
+//   cout << "deltax = " << ztwoDarray_ptr->get_deltax() << endl;
+//   cout << "ylo = " << ztwoDarray_ptr->get_ylo() 
+//        << " yhi = " << ztwoDarray_ptr->get_yhi() << endl;
+//   cout << "ylo_orig = " << ztwoDarray_ptr->get_ylo_orig() 
+//        << " yhi_orig = " << ztwoDarray_ptr->get_yhi_orig() << endl;
+//   cout << "deltay = " << ztwoDarray_ptr->get_deltay() << endl;
+//   cout << "xpad_minus = " << xpad_minus << " xpad_plus = " << xpad_plus
+//        << endl;
+//   cout << "ypad = " << ypad << endl;
+//   cout << "imagecrop = " << imagecrop << endl;
+
+   imagestream.precision(2);
+   imagestream.setf(ios::scientific);
+   imagestream.setf(ios::showpoint);  
+
+   unsigned i,j;
+   unsigned int counter=0;
+   double currz;
+   if (ztwoDarray_ptr->get_ndim_tmp() <= ztwoDarray_ptr->get_ndim())
+   {
+      for (j=ypad; j<ypad+ztwoDarray_ptr->get_ndim_tmp(); j++)  
+      {
+
+         if (ztwoDarray_ptr->get_mdim_tmp() <= ztwoDarray_ptr->get_mdim())
+         {
+
+// Case 1:  ztwoDarray_ptr->get_ndim_tmp() <= ztwoDarray_ptr->get_ndim() && 
+//	    ztwoDarray_ptr->get_mdim_tmp() <= ztwoDarray_ptr->get_mdim()
+
+            for (i=xpad_minus; i<xpad_minus+ztwoDarray_ptr->
+                    get_mdim_tmp(); i++)
+            {
+               currz=ztwoDarray_ptr->get(i,j);
+
+// Set any points whose value >= POSITIVEINFINITY equal to 1000 and
+// any points whose values <= NEGATIVEINFINITY equal to -1000:
+
+               if (fabs(currz) < POSITIVEINFINITY)
+               {
+                  imagestream << currz << " ";
+               }
+               else if (currz >= POSITIVEINFINITY)
+               {
+                  imagestream << " +1000 ";
+               }
+               else if (currz <= NEGATIVEINFINITY)
+               {
+                  imagestream << " -1000 ";
+               }
+         
+// According to Iva, each line of output in an metafile image must
+// contain no more than 2000 characters.  However, the metaplot parser
+// ignores all carriage returns.  So we simply need to insert enough
+// carriage returns in the output so that there are never more than
+// 2000 characters on any given line:
+
+               if ((i+1)%10==0) imagestream << endl;
+
+            } // index i over horizontal direction x loop
+            imagestream << endl;
+            imagestream << endl;
+         }
+
+// Case 2:  ztwoDarray_ptr->get_ndim_tmp() <= ztwoDarray_ptr->get_ndim() && 
+//	    ztwoDarray_ptr->get_mdim_tmp() > ztwoDarray_ptr->get_mdim()
+
+         else if (ztwoDarray_ptr->get_mdim_tmp() > ztwoDarray_ptr->get_mdim())
+         {
+            for (int i2=0; i2<xpad_minus; i2++)
+            {
+               imagestream << minz << " ";
+               if ((i2+1)%10==0) imagestream << endl;
+            }
+            for (i=0; i<ztwoDarray_ptr->get_mdim(); i++)
+            {
+/*
+               if (i >= Nx_max) 
+               {
+                  cout << "Error inside myimage::writeimagedata()!" << endl;
+                  cout << "i = " << i << " xpad_minus = " << xpad_minus
+                       << " ztwoDarray_ptr->get_mdim() = " 
+                       << ztwoDarray_ptr->get_mdim()  << endl;
+               }
+*/
+
+               currz=ztwoDarray_ptr->get(i,j);
+
+// Set any points whose value >= POSITIVEINFINITY equal to 1000 and
+// any points whose values <= NEGATIVEINFINITY equal to -1000:
+
+               if (fabs(currz) < POSITIVEINFINITY)
+               {
+                  imagestream << currz << " ";
+               }
+               else if (currz >= POSITIVEINFINITY)
+               {
+                  imagestream << " +1000 ";
+               }
+               else if (currz <= NEGATIVEINFINITY)
+               {
+                  imagestream << " -1000 ";
+               }
+         
+// According to Iva, each line of output in an metafile image must
+// contain no more than 2000 characters.  However, the metaplot parser
+// ignores all carriage returns.  So we simply need to insert enough
+// carriage returns in the output so that there are never more than
+// 2000 characters on any given line:
+
+               if ((i+1)%10==0) imagestream << endl;
+            }
+         
+            for (int i=0; i<xpad_plus; i++)
+            {
+               imagestream << minz << " ";
+               if ((i+1)%10==0) imagestream << endl;
+            }
+            imagestream << endl;
+            imagestream << endl;
+
+         } // ztwoDarray_ptr->get_mdim() and ztwoDarray_ptr->get_mdim_tmp() 
+	   //   conditional comparison
+      }  // index j over vertical direction y loop
+   } // ztwoDarray_ptr->get_ndim_tmp() <= ztwoDarray_ptr->get_ndim() 
+     //   conditional
+
+   else if (ztwoDarray_ptr->get_ndim_tmp() > ztwoDarray_ptr->get_ndim())
+
+   {
+      for (j=0; j<ztwoDarray_ptr->get_ndim_tmp(); j++)
+      {
+         if (ztwoDarray_ptr->get_mdim_tmp() <= ztwoDarray_ptr->get_mdim())
+         {
+
+// Case 3:  ztwoDarray_ptr->get_ndim_tmp() > ztwoDarray_ptr->get_ndim() && 
+//	    ztwoDarray_ptr->get_mdim_tmp() <= ztwoDarray_ptr->get_mdim()
+
+            for (i=xpad_minus; i<xpad_minus+ztwoDarray_ptr->get_mdim_tmp(); 
+                 i++)
+            {
+               currz=ztwoDarray_ptr->get(i,j);
+
+// Set any points whose value >= POSITIVEINFINITY equal to 1000 and
+// any points whose values <= NEGATIVEINFINITY equal to -1000:
+
+               if (fabs(currz) < POSITIVEINFINITY)
+               {
+                  imagestream << currz << " ";
+               }
+               else if (currz >= POSITIVEINFINITY)
+               {
+                  imagestream << " +1000 ";
+               }
+               else if (currz <= NEGATIVEINFINITY)
+               {
+                  imagestream << " -1000 ";
+               }
+               counter++;
+         
+// According to Iva, each line of output in an metafile image must
+// contain no more than 2000 characters.  However, the metaplot parser
+// ignores all carriage returns.  So we simply need to insert enough
+// carriage returns in the output so that there are never more than
+// 2000 characters on any given line:
+
+               if ((i+1)%10==0) imagestream << endl;
+
+            } // index i over horizontal direction x loop
+            imagestream << endl;
+            imagestream << endl;
+         } // ztwoDarray_ptr->get_mdim_tmp() <= ztwoDarray_ptr->get_mdim()
+
+// Case 4:  ztwoDarray_ptr->get_ndim_tmp() > ztwoDarray_ptr->get_ndim() && 
+//  	    ztwoDarray_ptr->get_mdim_tmp() > ztwoDarray_ptr->get_mdim()
+
+         else if (ztwoDarray_ptr->get_mdim_tmp() > ztwoDarray_ptr->get_mdim())
+         {
+            for (int i2=0; i2<xpad_minus; i2++)
+            {
+               imagestream << minz << " ";
+               counter++;
+               if ((i2+1)%10==0) imagestream << endl;
+            }
+            for (i=0; i<ztwoDarray_ptr->get_mdim(); i++)
+            {
+/*
+               if (i >= Nx_max) 
+               {
+                  cout << "Error inside myimage::writeimagedata()!" << endl;
+                  cout << "i = " << i << " xpad_minus = " << xpad_minus
+                       << " ztwoDarray_ptr->get_mdim() = " 
+                       << ztwoDarray_ptr->get_mdim() << endl;
+               }
+*/
+
+               currz=ztwoDarray_ptr->get(i,j);
+
+// Set any points whose value >= POSITIVEINFINITY equal to 1000 and
+// any points whose values <= NEGATIVEINFINITY equal to -1000:
+
+               if (fabs(currz) < POSITIVEINFINITY)
+               {
+                  imagestream << currz << " ";
+               }
+               else if (currz >= POSITIVEINFINITY)
+               {
+                  imagestream << " +1000 ";
+               }
+               else if (currz <= NEGATIVEINFINITY)
+               {
+                  imagestream << " -1000 ";
+               }
+               counter++;
+
+// According to Iva, each line of output in an metafile image must
+// contain no more than 2000 characters.  However, the metaplot parser
+// ignores all carriage returns.  So we simply need to insert enough
+// carriage returns in the output so that there are never more than
+// 2000 characters on any given line:
+
+               if ((i+1)%10==0) imagestream << endl;
+            } // loop over index i
+
+            for (int i=0; i<xpad_plus; i++)
+            {
+               imagestream << minz << " ";
+               if ((i+1)%10==0) imagestream << endl;
+               counter++;
+            }
+            imagestream << endl;
+            imagestream << endl;
+
+         } // ztwoDarray_ptr->get_mdim_tmp() > ztwoDarray_ptr->get_mdim() 
+	   // conditional 
+      }  // index j over vertical direction y loop
+      imagestream << endl;
+   } // ztwoDarray_ptr->get_ndim_tmp() > ztwoDarray_ptr->get_ndim() conditional
+}
+
+// ---------------------------------------------------------------------
+// Write out current image to meta file:
+
+void myimage::writeimage(string base_imagefilename,twoDarray *ztwoDarray_ptr) 
+{
+   writeimage(base_imagefilename,imagenumber,title,ztwoDarray_ptr);
+}
+
+void myimage::writeimage(string base_imagefilename,
+                         string currtitle,twoDarray *ztwoDarray_ptr) 
+{
+   writeimage(base_imagefilename,imagenumber,currtitle,ztwoDarray_ptr);
+}
+
+void myimage::writeimage(string base_imagefilename,int imgnumber,
+                         string currtitle,twoDarray *ztwoDarray_ptr) 
+{
+   writeimage(base_imagefilename,imgnumber,currtitle,1,1,ztwoDarray_ptr);
+}
+
+void myimage::writeimage(
+   string base_imagefilename,int imgnumber,string currtitle,
+   double relative_xsize,double relative_ysize,twoDarray *ztwoDarray_ptr)
+{
+   cout << "inside myimage::writeimage()" << endl;
+   
+   imagefilenamestr=imagedir+base_imagefilename;
+   if (imgnumber > 0) imagefilenamestr += 
+                         stringfunc::number_to_string(imgnumber);
+   string metafilename=imagefilenamestr+".meta";
+
+   cout << "metafilename = " << metafilename << endl;
+   title=currtitle;
+
+   filefunc::openfile(metafilename,imagestream);
+
+// Interactively query user to specify xlo,xhi,ylo,yhi values which
+// are used to crop images if imagecrop flag is set to true:
+
+   if (imagecrop)
+   {
+      imagefunc::crop_image(ztwoDarray_ptr);
+      relative_ysize=ztwoDarray_ptr->get_yhi()-ztwoDarray_ptr->get_ylo();
+      relative_xsize=ztwoDarray_ptr->get_xhi()-ztwoDarray_ptr->get_xlo();
+   }
+   else
+   {
+      
+// Adjust horizontal scale so that it matches as closely as possible
+// with the vertical scale:
+
+      if (adjust_x_scale) adjust_horizontal_scale(ztwoDarray_ptr);
+   }
+   setup_imageheader(relative_xsize,relative_ysize);
+
+   addextrainfo(ztwoDarray_ptr);
+   
+   if (viewgraph_mode)
+   {
+      singletfileheader(ztwoDarray_ptr);
+   }
+   else
+   {
+      imagefileheader(ztwoDarray_ptr);
+   }
+
+   writeimagedata(ztwoDarray_ptr);
+   filefunc::closefile(metafilename,imagestream);
+   filefunc::meta_to_jpeg(imagefilenamestr);
+   filefunc::gzip_file(metafilename);
+
+   if (adjust_x_scale) reset_horizontal_scale(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function write_first_singlet_member writes out an image on
+// the LHS of a doublet.
+
+string myimage::write_first_singlet_member(
+   bool display_titles,string doublet_title,string base_imagefilename,
+   double imagesize,double yphysor,twoDarray *ztwoDarray_ptr)
+{
+   imagefilenamestr=imagedir+base_imagefilename+
+      stringfunc::number_to_string(imagenumber);
+   string metafilename=imagefilenamestr+".meta";
+   setup_imageheader();
+   filefunc::openfile(metafilename,imagestream);
+   dual_singlets_header(
+      display_titles,doublet_title,0,imagesize,yphysor,ztwoDarray_ptr);
+   writeimagedata(ztwoDarray_ptr);
+   filefunc::closefile(metafilename,imagestream);
+
+   if (adjust_x_scale) reset_horizontal_scale(ztwoDarray_ptr);
+   return imagefilenamestr;
+}
+
+// ---------------------------------------------------------------------
+void myimage::write_second_singlet_member(
+   string doublet_title,double imagesize,double yphysor,
+   twoDarray *ztwoDarray_ptr) 
+{
+   string metafilename=imagefilenamestr+".meta";
+   filefunc::appendfile(metafilename,imagestream);
+   dual_singlets_header(
+      true,doublet_title,1,imagesize,yphysor,ztwoDarray_ptr);
+   write_second_singlet_data(ztwoDarray_ptr);
+   filefunc::closefile(metafilename,imagestream);
+   filefunc::meta_to_jpeg(metafilename);
+   filefunc::gzip_file(metafilename);
+   if (viewgraph_mode) crop_jpegimage(2);
+}
+
+// ---------------------------------------------------------------------
+// Member function write_second_singlet_data dumps the contents of
+// input array zarray to metafile output with no row or column
+// alterations.  This member function is used to output A2/AU ground
+// trace map information as well as RH roll-pitch pairs.  Both of
+// these examples represent second members of doublet metafile plots
+// where the first "input" element of the doublet contains raw imagery
+// + wireframe fits wireframe information.  The second element of the
+// doublet represents automated "output" information.
+
+void myimage::write_second_singlet_data(twoDarray *ztwoDarray_ptr) 
+{
+   imagestream.precision(2);
+   imagestream.setf(ios::scientific);
+   imagestream.setf(ios::showpoint);  
+
+// Order in which data is sent to metafile is critical!  Do NOT swap
+// loops over rows and columns below!
+
+   for (unsigned int j=0; j<ztwoDarray_ptr->get_ndim(); j++)  
+   {
+      for (unsigned int i=0; i<ztwoDarray_ptr->get_mdim(); i++)
+      {
+         imagestream << ztwoDarray_ptr->get(i,j) << " ";
+         
+// According to Iva, each line of output in an metafile image must
+// contain no more than 2000 characters.  However, the metaplot parser
+// ignores all carriage returns.  So we simply need to insert enough
+// carriage returns in the output so that there are never more than
+// 2000 characters on any given line:
+
+         if ((i+1)%10==0) imagestream << endl;
+
+      } // index i over horizontal direction x loop
+      imagestream << endl;
+      imagestream << endl;
+   }  // index j over vertical direction y loop
+}
+
+// ---------------------------------------------------------------------
+void myimage::writedoublet(
+   string base_imagefilename,string title1,string title2,
+   twoDarray *ztwoDarray1_ptr,twoDarray *ztwoDarray2_ptr)
+{
+   adjust_x_scale=true;
+   imagefilenamestr=imagedir+base_imagefilename
+      +stringfunc::number_to_string(imagenumber);
+   string metafilename=imagefilenamestr+".meta";
+   setup_imageheader();
+   filefunc::openfile(metafilename,imagestream);
+   doubletfileheader(true,0,title1,ztwoDarray1_ptr);
+   writeimagedata(ztwoDarray1_ptr);
+   doubletfileheader(true,1,title2,ztwoDarray2_ptr);
+   writeimagedata(ztwoDarray2_ptr);
+   filefunc::closefile(metafilename,imagestream);
+   filefunc::meta_to_jpeg(imagefilenamestr);
+   filefunc::gzip_file(metafilename);
+   if (viewgraph_mode) crop_jpegimage(2);
+
+   if (adjust_x_scale) reset_horizontal_scale(ztwoDarray1_ptr);
+   if (adjust_x_scale) reset_horizontal_scale(ztwoDarray2_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function crop_jpegimage trims the white edges around a jpeg
+// viewgraph image.  We learned from James Wanken on 11/28/00 that the
+// SGI "dmconvert" utility which we can use to string together
+// separate JPEG images into AVI or QUICKTIME movies requires that all
+// input images be of exactly the same size.  So we have hardwired
+// fixed dimensions for cropped singlet and doublet images which will
+// appear within powerpoint movies.
+
+// On 3/13/01, we realized that we can use ghostview to easily
+// determine the precise dimensions and pixel locations for any
+// postscript image:
+
+void myimage::crop_jpegimage(int n_tableau)
+{
+   string jpgfilename=imagefilenamestr+".jpg";
+   if (n_tableau==1)
+   {
+// Crop away ALL x and y labels and ticmarks:
+//      imagefunc::crop_image(432,432,175,67);
+      imagefunc::crop_image(jpgfilename,480,495,130,47);
+   }
+   else if (n_tableau==2)
+   {
+// Crop away ALL x and y labels and ticmarks:
+//      imagefunc::crop_image(728,360,46,106);
+      imagefunc::crop_image(jpgfilename,772,425,6,82);
+   }
+   else if (n_tableau==3)
+   {
+      imagefunc::crop_image(jpgfilename,772,425,6,25);
+   }
+}
+
+// ==========================================================================
+// Image processing member functions 
+// ==========================================================================
+
+// Member function minmax_zarray_values scans through all
+// pixel values within the image and sets minz (maxz) equal to the
+// minimum (maximum) one:
+
+void myimage::minmax_zarray_values(twoDarray const *ztwoDarray_ptr)
+{
+   ztwoDarray_ptr->minmax_values(minz,maxz);
+}
+
+// In this overloaded version of minmax_zarray_values, both the
+// extremal values within *ztwoDarray_ptr along with their x and y
+// locations are returned:
+
+void myimage::minmax_zarray_values(
+   twoDarray const *ztwoDarray_ptr,double& x_min,double& y_min,
+   double& x_max,double& y_max)
+{ 
+   minz=POSITIVEINFINITY;
+   maxz=NEGATIVEINFINITY;
+   
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_mdim(); i++)
+   {
+      for (unsigned int j=0; j<ztwoDarray_ptr->get_ndim(); j++)
+      {
+         double currz=ztwoDarray_ptr->get(i,j);
+         if (currz < minz)
+         {
+            minz=currz;
+            ztwoDarray_ptr->pixel_to_point(i,j,x_min,y_min);
+         }
+         if (currz > maxz)
+         {
+            maxz=currz;
+            ztwoDarray_ptr->pixel_to_point(i,j,x_max,y_max);
+         }
+      }
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function next_to_min scans through all pixel values within
+// the image and returns the 2nd largest and smallest values:
+
+void myimage::next_to_minmax_values(
+   double& next_to_minz,double& next_to_maxz,
+   twoDarray const *ztwoDarray_ptr)
+{
+   minmax_zarray_values(ztwoDarray_ptr);
+   next_to_minz=POSITIVEINFINITY;
+   next_to_maxz=NEGATIVEINFINITY;
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      double currz=ztwoDarray_ptr->get(i);
+      if (currz < next_to_minz && currz > minz)
+      {
+         next_to_minz=currz;
+      }
+      if (currz > next_to_maxz && currz < maxz)
+      {
+         next_to_maxz=currz;
+      }
+   }
+}
+
+// ---------------------------------------------------------------------
+double myimage::max_intensity_inside_bbox(
+   double minimum_x,double maximum_x,double minimum_y,double maximum_y,
+   twoDarray const *ztwoDarray_ptr)
+{
+   unsigned int min_px,max_px,min_py,max_py;
+   if (ztwoDarray_ptr->bbox_corners_to_pixels(
+      minimum_x,minimum_y,maximum_x,maximum_y,
+      min_px,min_py,max_px,max_py))
+   {
+      double max_zvalue=NEGATIVEINFINITY;
+      for (unsigned int px=basic_math::max(Unsigned_Zero,min_px-1); 
+           px<basic_math::min(ztwoDarray_ptr->get_mdim(),max_px+1); px++)
+      {
+         for (unsigned int py=basic_math::max(Unsigned_Zero,min_py-1);
+              py<basic_math::min(ztwoDarray_ptr->get_ndim(),max_py
+                                 +1); py++)
+         {
+            max_zvalue=basic_math::max(max_zvalue,ztwoDarray_ptr->get(px,py));
+         }
+      }
+      return max_zvalue;
+   } // bbox_corners_to_pixels
+   else
+   {
+      return NEGATIVEINFINITY;
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function reset_zero_level subtracts minz from all pixel
+// values.  The minimum intensity level within the z array is
+// consequently shifted to zero.
+
+void myimage::reset_zero_level(twoDarray* ztwoDarray_ptr)
+{
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      ztwoDarray_ptr->increment(i,-minz);
+   }
+   maxz -= minz;
+   minz=0;
+}
+
+// ---------------------------------------------------------------------
+// Member function add_constant_to_zarray adds some input specified
+// value to all intensity levels within input array zarray whose
+// initial values do NOT equal z_fixed:
+
+void myimage::add_constant_to_zarray(
+   twoDarray* ztwoDarray_ptr,double z_fixed,double value)
+{
+   const double TINY=1E-8;
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      double currz=ztwoDarray_ptr->get(i);
+      if (fabs(currz-z_fixed) > TINY)
+      {
+         ztwoDarray_ptr->increment(i,value);
+      }
+   } 
+   minmax_zarray_values(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function rescale_zarray multiplies all intensity levels
+// within input array zarray by the user specified constant alpha:
+
+void myimage::rescale_zarray(twoDarray* ztwoDarray_ptr,double alpha)
+{
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      ztwoDarray_ptr->put(i,ztwoDarray_ptr->get(i)*alpha);
+   }
+   minmax_zarray_values(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function renormalize_pixel_intensities takes in an intensity
+// twoDarray.  It scans through the intensity values and sets any
+// pixel value less than some specified zthresh equal to zmin.  All
+// pixel values greater than zthresh are linearly rescaled so that
+// maxz (zthresh) is mapped on to zhi (zlo).
+
+void myimage::renormalize_pixel_intensities(
+   twoDarray* ztwoDarray_ptr,double zthresh,double zlo,double zhi)
+{
+   minmax_zarray_values(ztwoDarray_ptr);
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      double currz=ztwoDarray_ptr->get(i);
+      if (currz < zthresh)
+      {
+         ztwoDarray_ptr->put(i,minz);
+      }
+      else
+      {
+         ztwoDarray_ptr->put(
+            i,zlo+(currz-zthresh)*(zhi-zlo)/(maxz-zthresh));
+      }
+   } // loop over index i
+
+// Recompute minimum and maximum values within zarray after data
+// values have been renormalized.  These values should equal zhi and
+// zlo, respectively:
+
+   minmax_zarray_values(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Overloaded member function renormalize_zarray takes in an intensity
+// twoDarray.  It scales the values within this array so that the
+// renormalized image array has mean and standard deviation
+// respectively equal to mu and sigma:
+
+void myimage::renormalize_zarray(
+   double zthresh,twoDarray* ztwoDarray_ptr,double mu,double sigma)
+{
+   double mean,std_dev;
+
+   minmax_zarray_values(ztwoDarray_ptr);
+   zarray_mean_and_stddev(ztwoDarray_ptr,zthresh,mean,std_dev);
+
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      double currz=ztwoDarray_ptr->get(i);
+      if (currz < zthresh)
+      {
+         ztwoDarray_ptr->put(i,minz);
+      }
+      else
+      {
+
+// Random variable y has zero mean and unit standard deviation:
+
+         double y=(currz-mean)/std_dev;
+         ztwoDarray_ptr->put(i,sigma*y+mu);
+      }
+   }
+
+// Recompute minimum and maximum values within zarray after data
+// values have been renormalized:
+
+   minmax_zarray_values(ztwoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function zarray_mean_and_stddev computes the mean and average of
+// the elements within an input image array which exceed some user
+// specified threshold value:
+
+void myimage::zarray_mean_and_stddev(
+   twoDarray const *ztwoDarray_ptr,double zthresh,
+   double& mean,double& std_dev)
+{
+   int nbins=0;
+   double zsqavg=0;
+   
+   mean=0;
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_dimproduct(); i++)
+   {
+      double currz=ztwoDarray_ptr->get(i);
+      if (currz > zthresh)
+      {
+         mean += currz;
+         zsqavg += sqr(currz);
+         nbins++;
+      }
+   }
+   mean /= nbins;
+   zsqavg /= nbins;
+   std_dev = sqrt(zsqavg-sqr(mean));
+}
+
+/*
+// ---------------------------------------------------------------------
+// Member function interlace_zarray builds up an interlaced image by
+// taking the first pixel from *ztwoDarray1_ptr, the 2nd from
+// *ztwoDarray2_ptr, the 3rd from *ztwoDarray1_ptr, etc.
+
+void myimage::interlace_zarrays(
+   double z_null,
+   twoDarray const *ztwoDarray1_ptr,twoDarray const *ztwoDarray2_ptr,
+   twoDarray *ztwoDarray_interlace_ptr)
+{
+   int k=0;
+
+   for (unsigned int i=0; i<ztwoDarray1_ptr->get_mdim(); i++)
+   {
+      for (unsigned int j=0; j<ztwoDarray1_ptr->get_ndim(); j++)
+      {
+         if (nearly_equal(ztwoDarray1_ptr->get(i,j),z_null) && 
+             ztwoDarray2_ptr->get(i,j) > z_null)
+         {
+            ztwoDarray_interlace_ptr->put(i,j,ztwoDarray2_ptr->get(i,j));
+         }
+         else if (ztwoDarray1_ptr->get(i,j) > z_null && 
+                  nearly_equal(ztwoDarray2_ptr->get(i,j),z_null))
+         {
+            ztwoDarray_interlace_ptr->put(i,j,ztwoDarray1_ptr->get(i,j));
+         }
+         else
+         {
+            if (is_odd(k++))
+            {
+               ztwoDarray_interlace_ptr->put(i,j,ztwoDarray1_ptr->get(i,j));
+            }
+            else
+            {
+               ztwoDarray_interlace_ptr->put(i,j,ztwoDarray2_ptr->get(i,j));
+            }
+         }
+      } // i loop
+   } // j loop
+}
+*/
+
+// ---------------------------------------------------------------------
+// Member function add_zarrays adds together the intensity values from
+// *ztwoDarray1_ptr and *ztwoDarray2_ptr within the bounding box
+// defined by pixel limits px_lo <= px < px_hi & py_lo <= py < py_hi:
+
+void myimage::add_zarrays(
+   unsigned int px_lo,unsigned int px_hi,
+   unsigned int py_lo,unsigned int py_hi,double w1,double w2,
+   twoDarray const *ztwoDarray1_ptr,twoDarray const *ztwoDarray2_ptr,
+   twoDarray* ztwoDarray_sum_ptr)
+{
+// Do not sum values from any pixels which do not lie within both
+// *ztwoDarray1_ptr and *ztwoDarray2_ptr:
+
+   unsigned int px_min=basic_math::max(px_lo,Unsigned_Zero);
+   unsigned int px_max=basic_math::min(px_hi,ztwoDarray1_ptr->get_mdim(),
+                                       ztwoDarray2_ptr->get_mdim());
+   unsigned int py_min=basic_math::max(py_lo,Unsigned_Zero);
+   unsigned int py_max=basic_math::min(py_hi,ztwoDarray1_ptr->get_ndim(),
+                                       ztwoDarray2_ptr->get_ndim());
+
+   ztwoDarray_sum_ptr->clear_values();
+   for (unsigned int px=px_min; px<px_max; px++)
+   {
+      for (unsigned int py=py_min; py<py_max; py++)
+      {
+         ztwoDarray_sum_ptr->put(
+            px,py,w1*ztwoDarray1_ptr->get(px,py)+
+            w2*ztwoDarray2_ptr->get(px,py));
+      }
+   }   
+}
+
+// ---------------------------------------------------------------------
+// Member function integrate_zarray returns the surface integral of
+// input image array zarray:
+
+double myimage::integrate_zarray(twoDarray const *ztwoDarray_ptr)
+{
+   double area_integral;
+   return integrate_zarray(
+      ztwoDarray_ptr,0,ztwoDarray_ptr->get_mdim(),
+      0,ztwoDarray_ptr->get_ndim(),area_integral);
+}
+
+double myimage::integrate_zarray(
+   twoDarray const *ztwoDarray_ptr,double& area_integral)
+{
+   return integrate_zarray(
+      ztwoDarray_ptr,0,ztwoDarray_ptr->get_mdim(),
+      0,ztwoDarray_ptr->get_ndim(),area_integral);
+}
+
+double myimage::integrate_zarray_inside_bbox(
+   double minimum_x,double minimum_y,double maximum_x,double maximum_y,
+   twoDarray const *ztwoDarray_ptr,double& area_integral)
+{
+   unsigned int min_px,max_px,min_py,max_py;
+   if (ztwoDarray_ptr->bbox_corners_to_pixels(
+      minimum_x,minimum_y,maximum_x,maximum_y,
+      min_px,min_py,max_px,max_py))
+   {
+      return integrate_zarray(
+         ztwoDarray_ptr,min_px,max_px,min_py,max_py,area_integral);
+   }
+   else
+   {
+      return NEGATIVEINFINITY;
+   }
+}
+
+// This overloaded version of member function integrate_zarray
+// integrates the contents on input array zarray only within the
+// bounding box defined by the pixel limits px_min <= px < px_max &
+// py_min <= py < py_max:
+
+double myimage::integrate_zarray(
+   twoDarray const *ztwoDarray_ptr,
+   unsigned int px_min,unsigned int px_max,
+   unsigned int py_min,unsigned int py_max,double& area_integral)
+{
+   const double dA=ztwoDarray_ptr->get_deltax()*ztwoDarray_ptr->get_deltay();
+   double intensity_integral=0;
+
+   area_integral=(px_max-px_min)*(py_max-py_min)*dA;
+   for (unsigned int px=px_min; px<px_max; px++)
+   {
+      for (unsigned int py=py_min; py<py_max; py++)
+      {
+         intensity_integral += ztwoDarray_ptr->get(px,py);
+      }
+   }
+   intensity_integral *= dA;
+   return intensity_integral;
+}
+
+// ---------------------------------------------------------------------
+// Member function integrate_difference_image calculates the
+// integrated difference only within the bounding box defined by pixel
+// limits px_min <= px <= px_max and py_min <= py <= py_max.
+
+double myimage::integrate_difference_image(
+   bool absolute_difference_flag,
+   unsigned int px_min,unsigned int px_max,
+   unsigned int py_min,unsigned int py_max,
+   twoDarray const *ztwoDarray1_ptr,twoDarray const *ztwoDarray2_ptr)
+{
+   twoDarray* ztwoDarray_diff_ptr=new twoDarray(ztwoDarray2_ptr);
+
+// Subtract contents of *ztwoDarray2_ptr from *ztwoDarray1_ptr:
+
+   add_zarrays(px_min,px_max,py_min,py_max,1,-1,
+               ztwoDarray1_ptr,ztwoDarray2_ptr,ztwoDarray_diff_ptr);
+
+// Take absolute value of difference between *ztwoDarray1_ptr and
+// *ztwoDarray2_ptr if absolute_difference_flag==true:
+
+   if (absolute_difference_flag)
+   {
+      for (unsigned int px=px_min; px<px_max; px++)
+      {
+         for (unsigned int py=py_min; py<py_max; py++)
+         {
+            ztwoDarray_diff_ptr->put(
+               px,py,fabs(ztwoDarray_diff_ptr->get(px,py)));
+         }
+      }
+//      outputfunc::newline();
+//      cout << "Writing out difference image:" << endl;
+//      outputfunc::newline();
+//      dynamic_colortable=true;
+//      subtitle="Difference image";
+//      imagefunc::crop_image(ztwoDarray_diff_ptr);
+//      writeimage("diff",imagenumber,"Difference image",ztwoDarray_diff_ptr);
+   }
+   
+// Integrate difference array values:
+
+   double area_integral;
+   double diff_integral=integrate_zarray(
+      ztwoDarray_diff_ptr,px_min,px_max,py_min,py_max,area_integral);
+   delete ztwoDarray_diff_ptr;
+   return diff_integral;
+}
+
+// ---------------------------------------------------------------------
+// Member function chisq_difference computes the integrated squared
+// difference between pixel intensities within input arrays zarray1
+// and zarray2.  Input parameters x2_offset and y2_offset specify the
+// amount by which the second array is displaced relative to the first
+// before the squared difference computation is performed.
+
+double myimage::chisq_difference(
+   double x2_offset,double y2_offset,
+   twoDarray const *ztwoDarray1_ptr,twoDarray const *ztwoDarray2_ptr,
+   double black_pixel_penalty_factor,double z_threshold)
+{
+   const double dA=ztwoDarray1_ptr->get_deltax()*ztwoDarray1_ptr->get_deltay();
+   unsigned int i0,j0,i2,j2;
+   ztwoDarray1_ptr->point_to_pixel(0,0,i0,j0);
+   ztwoDarray2_ptr->point_to_pixel(x2_offset,y2_offset,i2,j2);
+   int ioffset=i2-i0;
+   int joffset=j2-j0;
+   
+   double chisq=0;
+   for (unsigned int i=0; i<ztwoDarray1_ptr->get_mdim(); i++)
+   {
+      for (unsigned int j=0; j<ztwoDarray1_ptr->get_ndim(); j++)
+      {
+         if (i+ioffset >= 0 && i+ioffset < ztwoDarray1_ptr->get_mdim() &&
+             j+joffset >= 0 && j+joffset < ztwoDarray1_ptr->get_ndim())
+         {
+            double dchisq=sqr(ztwoDarray1_ptr->get(i,j)-
+                       ztwoDarray2_ptr->get(i-ioffset,j-joffset))*dA;
+            if (ztwoDarray1_ptr->get(i,j) < z_threshold && 
+                ztwoDarray2_ptr->get(i-ioffset,j-joffset) > z_threshold)
+            {
+               chisq += black_pixel_penalty_factor*dchisq;
+            }
+            else
+            {
+               chisq += dchisq;
+            }
+         }
+      } // i loop
+   } // j loop
+   return chisq;
+}
+
+// ---------------------------------------------------------------------
+// Member function null_half_plane takes in an image array and
+// translates it so that the input center_pnt lies at the imageplane
+// origin.  It then rotates the translated image so that the input
+// null_axis lies in the positive cross range direction.  All pixels
+// in the rotated image lying in the negative cross range half-plane
+// are then nulled.  After being re-rotated (but not re-translated)
+// back to its original orientation, the result is returned in image
+// zarray zhalfnull.  We cooked up this specialized method in
+// order to eliminate main body pixels from solar panel pixels in
+// cleaned RH imagery which had otherwise escaped previous filtering
+// operations.
+
+void myimage::null_half_plane(
+   const threevector& center_pnt,const threevector& null_axis,
+   twoDarray const *ztwoDarray_ptr,twoDarray* zhalfnull_twoDarray_ptr)
+{
+   ztwoDarray_ptr->copy(zhalfnull_twoDarray_ptr);
+   zhalfnull_twoDarray_ptr->translate(-center_pnt);
+   double alpha=atan2(null_axis.get(1),null_axis.get(0));
+   zhalfnull_twoDarray_ptr->rotate(-alpha);
+
+   for (unsigned int j=0; j<ztwoDarray_ptr->get_ndim(); j++)
+   {
+      for (unsigned int i=0; i<ztwoDarray_ptr->get_mdim()/2; i++)
+      {
+         zhalfnull_twoDarray_ptr->put(i,j,0);
+      }
+   }
+   zhalfnull_twoDarray_ptr->rotate(alpha);
+//   writeimage("null","Null",*zhalfnull_twoDarray_ptr);
+}
+
+// ---------------------------------------------------------------------
+// Member function linear_correlation calculates the linear
+// correlation coefficient of locations inside the input polygon poly
+// whose intensity values exceed threshold_value.
+
+double myimage::linear_correlation(
+   polygon& poly,double threshold_value,twoDarray const *ztwoDarray_ptr)
+{
+// First place bounding box around input polygon:
+
+   unsigned int min_px,max_px,min_py,max_py;
+   ztwoDarray_ptr->locate_extremal_xy_pixels(
+      poly,min_px,min_py,max_px,max_py);
+   
+   int npoints=0;
+   double *xarray,*yarray;
+   new_clear_array(xarray,(max_px-min_px+1)*(max_py-min_py+1));
+   new_clear_array(yarray,(max_px-min_px+1)*(max_py-min_py+1));
+   for (unsigned int i=min_px; i<max_px; i++)
+   {
+      for (unsigned int j=min_py; j<max_py; j++)
+      {
+         if (ztwoDarray_ptr->get(i,j) > threshold_value)
+         {
+            ztwoDarray_ptr->pixel_to_point(
+               i,j,xarray[npoints],yarray[npoints]);
+            npoints++;
+         }
+      }
+   }
+   double rho=mathfunc::correlation_coeff(npoints,xarray,yarray);
+
+   delete [] xarray;
+   delete [] yarray;
+   return rho;
+}
+
+// ---------------------------------------------------------------------
+// Member function add_noise adds to each pixel within an image array
+// some random noise value.  We have tested normal, log-normal and
+// exponential distributions for random amplitude and power variables.
+
+void myimage::add_noise(double sigma,twoDarray* ztwoDarray_ptr)
+{
+//   double lambda=1/sigma;
+
+   for (unsigned int i=0; i<ztwoDarray_ptr->get_mdim(); i++)  	       	// cross range
+   {
+      for (unsigned int j=0; j<ztwoDarray_ptr->get_ndim(); j++)        // down range
+      {
+//         lognormal(0,sigma,x,y);
+//         x=sigma*gasdev();
+//         y=sigma*gasdev();
+//         p=sqr(x)+sqr(y);
+//         pdB=mathfunc::dB(p);
+//         ztwoDarray_ptr->increment(basic_math::max(pdB,0));
+
+// FAKE FAKE:  Comment out next lines on Sat, Mar 31, 2012 at 8 am.
+// Will restore after redoing complex class...
+
+
+/*
+         double phase1=2*PI*nrfunc::ran1();
+         double phase2=2*PI*nrfunc::ran1();
+         double amp1=sqrt(mathfunc::dBinv(ztwoDarray_ptr->get(i,j)));
+         double amp2=sqrt(mathfunc::dBinv(nrfunc::expdev()/lambda));
+         complex z1=amp1*complex(cos(phase1),sin(phase1));
+         complex z2=amp2*complex(cos(phase2),sin(phase2));
+         complex ztot=z1+z2;
+         ztwoDarray_ptr->put(i,j,mathfunc::dB(sqr(ztot.getmod())));
+*/
+
+         if (ztwoDarray_ptr->get(i,j) < minz) ztwoDarray_ptr->put(i,j,minz);
+         if (ztwoDarray_ptr->get(i,j) > maxz) ztwoDarray_ptr->put(i,j,maxz);
+      }  // loop over index j
+   }   // loop over index i
+}
+
+// ==========================================================================
+// Profiling member functions
+// ==========================================================================
+
+// Member function generate_horizontal_profile returns the integrated
+// horizontal profile within the bounding box defined by xmin <= x <=
+// xmax and ymin <= y <= ymax for the input image contained within
+// twoDarray *ztwoDarray_ptr.  The horizontal profile's total number
+// of bins imax is returned.  The median profile value is also
+// returned by this method.
+
+void myimage::generate_horizontal_profile(
+   double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,double crossrange_profile[],
+   bool plot_profile)
+{
+   unsigned int px_min,px_max;
+   int imax;
+   double profile_median;
+   generate_horizontal_profile(
+      false,xmin,xmax,ymin,ymax,ztwoDarray_ptr,px_min,px_max,imax,
+      crossrange_profile,profile_median,plot_profile);
+}
+
+void myimage::generate_horizontal_profile(
+   double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,
+   unsigned int& px_min,unsigned int& px_max,int& imax,
+   double crossrange_profile[],double &profile_median,bool plot_profile)
+{
+   generate_horizontal_profile(
+      false,xmin,xmax,ymin,ymax,ztwoDarray_ptr,px_min,px_max,imax,
+      crossrange_profile,profile_median,plot_profile);
+}
+
+// In this overloaded version of generate_horizontal_profile, the
+// range integrals are divided by the number of pixels in the range
+// direction if boolean input parameter intensity_normalization==true.
+// In this case, the crossrange profile then contains essentially
+// average intensity values.
+
+void myimage::generate_horizontal_profile(
+   bool intensity_normalization,
+   double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,
+   unsigned int& px_min,unsigned int& px_max,int& imax,
+   double crossrange_profile[],double &profile_median,bool plot_profile)
+{
+//   cout << "inside myimage::generate_horizontal_profile()" << endl;
+
+// Fill horizontal profile with intensity integrals taken in vertical
+// direction:
+
+   unsigned int py_max,py_min;
+   ztwoDarray_ptr->point_to_pixel(xmax,ymax,px_max,py_min);
+   ztwoDarray_ptr->point_to_pixel(xmin,ymin,px_min,py_max);
+
+// Make sure extremal pixel values correspond to points lying inside image!
+
+   px_min=basic_math::max(Unsigned_Zero,px_min);
+   px_max=basic_math::min(ztwoDarray_ptr->get_mdim(),px_max);
+   py_min=basic_math::max(Unsigned_Zero,py_min);
+   py_max=basic_math::min(ztwoDarray_ptr->get_ndim(),py_max);
+
+   twoDarray profile_twoDarray(1,px_max-px_min+1);
+
+//   outputfunc::newline();
+//   cout << "Inside myimage::generate_horizontal_profile()" << endl;
+//   cout << "xmin = " << xmin << " xmax = " << xmax << endl;
+//   cout << "px_min = " << px_min << " px_max = " << px_max << endl;
+//   cout << "py_min = " << py_min << " py_max = " << py_max << endl;
+//   cout << "ztwoDarray_ptr->get_mdim() = "
+//        << ztwoDarray_ptr->get_mdim() << endl;
+//   cout << "ztwoDarray_ptr->get_ndim() = "
+//        << ztwoDarray_ptr->get_ndim() << endl;
+//   outputfunc::newline();
+
+   int i=0;
+   unsigned int px=px_min;
+   while (px<px_max)
+   {
+      crossrange_profile[i]=0;
+      for (unsigned int py=py_min; py<py_max; py++)
+      {
+         crossrange_profile[i] += ztwoDarray_ptr->get(px,py);
+      }
+      if (intensity_normalization) crossrange_profile[i] /= (py_max-py_min);
+      profile_twoDarray.put(0,i,crossrange_profile[i]);
+      px++;
+      i++;
+   }
+   imax=i;
+   
+// Write out cross range profile:
+
+   double dx=(xmax-xmin)/imax;
+//   for (i=0; i<imax; i++)
+//   {
+//      double x=xmin+i*dx;
+//      cout << "x = " << x << " i = " << i 
+//           << " crossrange_profile = " << crossrange_profile[i] << endl;
+//   }
+
+   if (plot_profile)
+   {
+      dataarray crprofile(xmin,dx,profile_twoDarray);
+      crprofile.title="Cross range profile";
+      crprofile.xlabel="Cross range (meters)";
+      crprofile.ylabel="Integrated intensity";
+      crprofile.datafilenamestr=imagedir+"crossrange_profile"
+         +stringfunc::number_to_string(imagenumber);
+      crprofile.xmin=xmin;
+      crprofile.xmax=xmax;
+//      crprofile.xtic=1;
+      crprofile.xtic=5;
+      crprofile.xsubtic=1;
+      crprofile.npoints=imax;
+      crprofile.opendatafile();
+      crprofile.writedataarray();
+      filefunc::meta_to_jpeg(crprofile.datafilenamestr);
+      crprofile.closedatafile();
+   }
+
+// Find min/max values of histogram values:
+   
+   double xhist_min=POSITIVEINFINITY;
+   double xhist_max=NEGATIVEINFINITY;
+   for (i=0; i<imax; i++)
+   {
+      xhist_min=basic_math::min(xhist_min,crossrange_profile[i]);
+      xhist_max=basic_math::max(xhist_max,crossrange_profile[i]);
+   }
+//   cout << "xhist_min = " << xhist_min << endl;
+//   cout << "xhist_max = " << xhist_max << endl;
+
+// Calculate probability distribution of histogrammed values exceeding
+// fraction_of_peak*xhist_max:
+
+   const double fraction_of_peak=0.05;
+   double profile[imax];
+   int n_nonzerobins=0;
+   for (i=0; i<imax; i++)
+   {
+      if (crossrange_profile[i] > fraction_of_peak*xhist_max)
+      {
+         profile[n_nonzerobins]=crossrange_profile[i];
+         n_nonzerobins++;
+      }
+   }
+   prob_distribution prob(n_nonzerobins,profile,20);
+   profile_median=prob.median();
+
+//   if (imagenumber > 12)
+//   {
+//      prob.set_cumulativefilenamestr(imagedir+"horizprofile_intensity_distr"
+//         +stringfunc::number_to_string(imagenumber)+".meta");
+//      prob.set_xlabel("Relative Normalized Intensity (dB)");
+//      prob.writeprobdists();
+//      cout << "Cross range profile median = " << profile_median << endl;
+//   }
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_vertical_profile returns the range profile
+// within the bounding box defined by xmin <= x <= xmax and ymin <= y
+// <= ymax for the input image contained within *ztwoDarray_ptr.  The
+// vertical profile's total number of bins jmax is returned.  If the
+// vertical profile contains some nonzero number of bins whose values
+// exceed some small fraction_of_peak times the peak value, this
+// boolean method returns true as well as the median range profile
+// value.
+
+bool myimage::generate_vertical_profile(
+   double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,double range_profile[],
+   bool plot_profile)
+{
+   unsigned int py_min,py_max;
+   int jmax;
+   double profile_median;
+   return generate_vertical_profile(
+      false,0,xmin,xmax,ymin,ymax,ztwoDarray_ptr,py_min,py_max,jmax,
+      range_profile,profile_median,plot_profile);
+}
+
+bool myimage::generate_vertical_profile(
+   double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,
+   unsigned int& py_min,unsigned int& py_max,int& jmax,
+   double range_profile[],double &profile_median,bool plot_profile)
+{
+   return generate_vertical_profile(
+      false,0,xmin,xmax,ymin,ymax,ztwoDarray_ptr,py_min,py_max,jmax,
+      range_profile,profile_median,plot_profile);
+}
+
+bool myimage::generate_vertical_profile(
+   bool remove_floor,double profile_endregion,
+   double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,
+   unsigned int& py_min,unsigned int& py_max,int& jmax,
+   double range_profile[],double &profile_median,bool plot_profile)
+{
+// Fill range_profile with intensity integrals taken in cross range
+// direction:
+
+   unsigned int px_max,px_min;
+   ztwoDarray_ptr->point_to_pixel(xmax,ymax,px_max,py_min);
+   ztwoDarray_ptr->point_to_pixel(xmin,ymin,px_min,py_max);
+
+// Make sure extremal pixel values correspond to points lying inside image!
+
+   px_min=basic_math::max(Unsigned_Zero,px_min);
+   px_max=basic_math::min(ztwoDarray_ptr->get_mdim(),px_max);
+   py_min=basic_math::max(Unsigned_Zero,py_min);
+   py_max=basic_math::min(ztwoDarray_ptr->get_ndim(),py_max);
+
+//   outputfunc::newline();
+//   cout << "Inside myimage::generate_vertical_profile()" << endl;
+//   cout << "imagenumber = " << imagenumber << endl;
+//   cout << "ymin = " << ymin << " ymax = " << ymax << endl;
+//   cout << "py_max = " << py_max << " py_min = " << py_min << endl;
+//   cout << "px_min = " << px_min << " px_max = " << px_max << endl;
+//   outputfunc::newline();
+
+   int j=0;
+   unsigned int py=py_min;
+   twoDarray profile_twoDarray(1,py_max-py_min+1);
+   while (py<py_max)
+   {
+      range_profile[j]=0;
+      for (unsigned int px=px_min; px<px_max; px++)
+      {
+         range_profile[j] += ztwoDarray_ptr->get(px,py);
+      }
+      profile_twoDarray.put(0,j,range_profile[j]);
+      py++;
+      j++;
+   }
+   jmax=j;
+
+// On 12/11/01, we found that range profiles generated for images
+// which have only been minimally cleaned can sometimes be
+// contaminated by non-negligible noise floors which extend all the
+// way to the ends of the profile.  We therefore fit a linear ramp to
+// the profile's end values and subtract it out in order to remove
+// these troublesome noise floors:
+
+   if (remove_floor)
+   {
+      int j_end=basic_math::round(
+         profile_endregion/
+         basic_math::min(ztwoDarray_ptr->get_deltax(),
+                         ztwoDarray_ptr->get_deltay()));
+      double hiend_profile_value=templatefunc::average(range_profile,j_end);
+      double loend_profile_value=templatefunc::average(
+         &range_profile[jmax-1-j_end],j_end);
+      for (j=0; j<jmax; j++)
+      {
+         range_profile[j] -= 
+            (hiend_profile_value+
+             j/double(jmax)*(loend_profile_value-hiend_profile_value));
+         if (range_profile[j] < 0) range_profile[j]=0;
+      }
+   }
+   
+// Find min/max values of histogram values:
+   
+//   double yhist_min=POSITIVEINFINITY;
+   double yhist_max=NEGATIVEINFINITY;
+   for (j=0; j<jmax; j++)
+   {
+//      yhist_min=basic_math::min(yhist_min,range_profile[j]);
+      yhist_max=basic_math::max(yhist_max,range_profile[j]);
+   }
+ 
+// Calculate probability distribution of histogrammed values exceeding
+// fraction_of_peak*yhist_max:
+
+   const double fraction_of_peak=0.05;
+   int n_nonzerobins=0;
+   double profile[ztwoDarray_ptr->get_ndim()];
+   for (j=0; j<jmax; j++)
+   {
+      if (range_profile[j] > fraction_of_peak*yhist_max)
+      {
+         profile[n_nonzerobins]=range_profile[j];
+         n_nonzerobins++;
+      }
+   }
+
+   bool non_degenerate_profile=false;
+   if (n_nonzerobins > 0)
+   {
+      non_degenerate_profile=true;
+      prob_distribution prob(n_nonzerobins,profile,20);
+      profile_median=prob.median();
+//      prob.set_cumulativefilenamestr(imagedir+"vertprofile_intensity_distr"
+//         +stringfunc::number_to_string(imagenumber)+".meta");
+//      prob.set_xlabel("Relative Normalized Intensity (dB)");
+//      prob.writeprobdists();
+//      cout << "Range profile median = " << profile_median << endl;
+   }
+
+// Write out vertical profile:
+
+   if (plot_profile)
+   {
+      double dy=(ymax-ymin)/jmax;
+//      for (j=0; j<jmax; j++)
+//      {
+//         double y=ymax-j*dy;
+//         cout << "y = " << y << " j = " << j << " vertical_profile = "
+//              << range_profile[j] << endl;
+//      }
+
+      dataarray rprofile(ymax,-dy,profile_twoDarray);
+      double maxval,minval;
+      rprofile.find_max_min_vals(0,jmax-1,maxval,minval);
+
+//      outputfunc::newline();
+//      cout << "maxval = " << maxval << " minval = " << minval << endl;
+//      outputfunc::newline();
+      
+      rprofile.title="Range profile";
+      rprofile.xlabel="Range (meters)";
+      rprofile.ylabel="Integrated intensity";
+      rprofile.datafilenamestr=imagedir+"range_profile"
+         +stringfunc::number_to_string(imagenumber);
+      rprofile.xmin=ymin;
+      rprofile.xmax=ymax;
+//      rprofile.xtic=1;
+//      rprofile.xsubtic=0.5;
+      rprofile.xtic=5;
+      rprofile.xsubtic=5;
+      rprofile.yplotmaxval=1.2*maxval;
+      rprofile.yplotminval=0;
+      rprofile.npoints=jmax;
+      rprofile.opendatafile();
+      rprofile.writedataarray();
+      filefunc::meta_to_jpeg(rprofile.datafilenamestr);
+      rprofile.closedatafile();
+   }
+   return non_degenerate_profile;
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_vertical_profile returns the vertical
+// profile within the bounding box defined by xmin <= x <= xmax and
+// ymin <= y <= ymax for the input image contained within zarray.  The
+// vertical profile's total number of bins jmax is returned.  The
+// median vertical profile value is also returned by this method.
+
+bool myimage::generate_vertical_profile(
+   bool plot_profile,bool remove_floor,
+   double profile_endregion,double xmin,double xmax,double ymin,double ymax,
+   twoDarray const *ztwoDarray_ptr,
+   unsigned int& py_min,unsigned int& py_max,int& jmax,
+   double range_profile[],double &profile_median)
+{
+// Fill range_profile with intensity integrals taken in cross range
+// direction:
+
+   unsigned int px_max,px_min;
+   ztwoDarray_ptr->point_to_pixel(xmax,ymax,px_max,py_min);
+   ztwoDarray_ptr->point_to_pixel(xmin,ymin,px_min,py_max);
+
+// Make sure extremal pixel values correspond to points lying inside image!
+
+   px_min=basic_math::max(Unsigned_Zero,px_min);
+   px_max=basic_math::min(ztwoDarray_ptr->get_mdim(),px_max);
+   py_min=basic_math::max(Unsigned_Zero,py_min);
+   py_max=basic_math::min(ztwoDarray_ptr->get_ndim(),py_max);
+   twoDarray profile_twoDarray(1,py_max-py_min+1);
+
+   int j=0;
+   unsigned int py=py_min;
+   while (py<py_max)
+   {
+      range_profile[j]=0;
+      for (unsigned int px=px_min; px<px_max; px++)
+      {
+         range_profile[j] += ztwoDarray_ptr->get(px,py);
+      }
+      profile_twoDarray.put(0,j,range_profile[j]);
+      py++;
+      j++;
+   }
+   jmax=j;
+   
+// On 12/11/01, we found that range profiles generated for images
+// which have ony been minimally cleaned can sometimes be contaminated
+// by non-negligible noise floors which extend far out from the main
+// solar panel peak(s) all the way to the ends of the profile.  We
+// therefore fit a linear ramp to the profile's end values and
+// subtract it out in order to remove these troublesome noise floors:
+
+   cout << "remove_floor = " << remove_floor << endl;
+   if (remove_floor)
+   {
+      int j_end=basic_math::round(
+         profile_endregion/
+         basic_math::min(ztwoDarray_ptr->get_deltax(),
+                         ztwoDarray_ptr->get_deltay()));
+      cout << "j_end = " << j_end << endl;
+      
+      double hiend_profile_value=templatefunc::average(range_profile,j_end);
+      double loend_profile_value=templatefunc::average(
+         &range_profile[jmax-1-j_end],j_end);
+
+      cout << "hiend_profile_value = " << hiend_profile_value
+           << " loend_profile_value = " << loend_profile_value << endl;
+      
+      for (j=0; j<jmax; j++)
+      {
+         range_profile[j] -= 
+            (hiend_profile_value+
+             j/double(jmax)*(loend_profile_value-hiend_profile_value));
+         if (range_profile[j] < 0) range_profile[j]=0;
+         profile_twoDarray.put(0,j,range_profile[j]);
+      }
+   }
+   
+// Write out range profile:
+
+//   double y;
+   double dy=(ymax-ymin)/jmax;
+/*
+   for (j=0; j<jmax; j++)
+   {
+      y=ymax-j*dy;
+//      cout << "y = " << y << " j = " << j << " range_profile = "
+//           << range_profile[j] << endl;
+   }
+*/
+
+   if (plot_profile)
+   {
+      dataarray rprofile(ymax,-dy,profile_twoDarray);
+      double maxval,minval;
+      rprofile.find_max_min_vals(0,jmax-1,maxval,minval);
+
+      outputfunc::newline();
+      cout << "maxval = " << maxval << " minval = " << minval << endl;
+      outputfunc::newline();
+      
+      rprofile.title="Range profile";
+      rprofile.xlabel="Range (meters)";
+//      rprofile.ylabel="Integrated intensity through body region";
+      rprofile.datafilenamestr=imagedir+"range_profile"
+         +stringfunc::number_to_string(imagenumber);
+      rprofile.xmin=ymin;
+      rprofile.xmax=ymax;
+      rprofile.xtic=30;
+      rprofile.xsubtic=15;
+      rprofile.yplotmaxval=1.2*maxval;
+      rprofile.yplotminval=0;
+      rprofile.npoints=jmax;
+      rprofile.opendatafile();
+      rprofile.writedataarray();
+      filefunc::meta_to_jpeg(rprofile.datafilenamestr);
+      rprofile.closedatafile();
+   }
+
+// Find min/max values of histogram values:
+   
+//   double yhist_min=POSITIVEINFINITY;
+   double yhist_max=NEGATIVEINFINITY;
+   for (j=0; j<jmax; j++)
+   {
+//      yhist_min=basic_math::min(yhist_min,range_profile[j]);
+      yhist_max=basic_math::max(yhist_max,range_profile[j]);
+   }
+ 
+// Calculate probability distribution of histogrammed values exceeding
+// fraction_of_peak*yhist_max:
+
+   const double fraction_of_peak=0.05;
+   int n_nonzerobins=0;
+   double profile[ztwoDarray_ptr->get_ndim()];
+   for (j=0; j<jmax; j++)
+   {
+      if (range_profile[j] > fraction_of_peak*yhist_max)
+      {
+         profile[n_nonzerobins]=range_profile[j];
+         n_nonzerobins++;
+      }
+   }
+
+   bool non_degenerate_profile=false;
+   if (n_nonzerobins > 0)
+   {
+      non_degenerate_profile=true;
+      prob_distribution prob(n_nonzerobins,profile,20);
+      profile_median=prob.median();
+      prob.set_cumulativefilenamestr(imagedir+"vertprofile_intensity_distr"
+         +stringfunc::number_to_string(imagenumber)+".meta");
+      prob.set_xlabel("Relative Normalized Intensity (dB)");
+      prob.writeprobdists();
+      cout << "Range profile median = " << profile_median << endl;
+   }
+   return non_degenerate_profile;
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_radial_intensity_profile takes in an image
+// in polar coordinates within input twoDarray *ztwoDarray_polar_ptr.
+// It computes the 1D radial profile from the 2D polar image.  The
+// profile is then through a brute-force gaussian filter and returned
+// in the dynamically generated output array *filtered_r_profile.
+// This method also returns the number of bins within the output
+// filtered array.
+
+int myimage::compute_radial_intensity_profile(
+   double*& filtered_r_profile,twoDarray* ztwoDarray_polar_ptr)
+{
+//   outputfunc::write_banner("Computing radial intensity profile:");
+
+// Compute raw radial profile:
+
+   int mdim=ztwoDarray_polar_ptr->get_mdim();
+//   double r_profile[mdim]; 
+//   cleararray(r_profile,mdim);
+   double* r_profile;
+   new_clear_array(r_profile,mdim);
+   generate_horizontal_profile(
+      ztwoDarray_polar_ptr->get_xlo(),ztwoDarray_polar_ptr->get_xhi(),
+      ztwoDarray_polar_ptr->get_ylo(),ztwoDarray_polar_ptr->get_yhi(),
+      ztwoDarray_polar_ptr,r_profile);
+//   twoDarray* r_profile_twoDarray_ptr=imagefunc::prepare_profile_twoDarray(
+//      mdim,ztwoDarray_polar_ptr->get_xlo(),
+//      ztwoDarray_polar_ptr->get_xhi(),r_profile);
+//   dataarray* r_profile_dataarray_ptr=
+//      imagefunc::prepare_profile_dataarray(
+//         r_profile_twoDarray_ptr,"radial_profile","R (meters)",
+//         "Integrated intensity",imagedir,1);
+//   delete r_profile_twoDarray_ptr;
+//   imagefunc::plot_profile(r_profile_dataarray_ptr);
+//   delete r_profile_dataarray_ptr;
+
+// Filter noisy radial profile:
+
+   double sigma=0.333;	// meter
+   double h[mdim];
+//   filtered_r_profile=new double[mdim];
+//   cleararray(filtered_r_profile,mdim);
+   new_clear_array(filtered_r_profile,mdim);
+   filterfunc::gaussian_filter(
+      mdim,ztwoDarray_polar_ptr->get_deltax(),sigma,h);
+   filterfunc::brute_force_filter(mdim,mdim,r_profile,h,filtered_r_profile);
+
+//   twoDarray* filtered_r_profile_twoDarray_ptr=
+//      imagefunc::prepare_profile_twoDarray(
+//         mdim,ztwoDarray_polar_ptr->get_xlo(),
+//         ztwoDarray_polar_ptr->get_xhi(),filtered_r_profile);
+//   dataarray* filtered_r_profile_dataarray_ptr=
+//      imagefunc::prepare_profile_dataarray(
+//         filtered_r_profile_twoDarray_ptr,
+//         "radial_profile_filtered","R (meters)","Integrated intensity",
+//         imagedir,1);
+//   delete filtered_r_profile_twoDarray_ptr;
+//   imagefunc::plot_profile(filtered_r_profile_dataarray_ptr);
+//   delete filtered_r_profile_dataarray_ptr;
+   delete r_profile;
+   return mdim;
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_polar_angle_intensity_profile takes in an
+// image in polar coordinates within input twoDarray
+// *ztwoDarray_polar_ptr.  It returns a dynamically generated 1D polar
+// angle profile obtained after integrating out radial information
+// from the 2D polar image.  This integer valued method also returns
+// the number of bins within the output angular profile.
+
+int myimage::compute_polar_angle_intensity_profile(
+   double*& filtered_theta_profile,twoDarray const *ztwoDarray_polar_ptr)
+{
+//   outputfunc::write_banner("Computing polar angle intensity profile:");
+
+// Compute raw polar angle profile:
+
+// Force number of bins in output filtered array to be even so that we
+// have the option of easily adding together filtered values for theta
+// and theta+PI:
+
+   unsigned int ndim=ztwoDarray_polar_ptr->get_ndim();
+   if (is_odd(ndim)) ndim++;
+
+   double* theta_profile;
+   new_clear_array(theta_profile,ndim);
+   generate_vertical_profile(
+      ztwoDarray_polar_ptr->get_xlo(),ztwoDarray_polar_ptr->get_xhi(),
+      ztwoDarray_polar_ptr->get_ylo(),ztwoDarray_polar_ptr->get_yhi(),
+      ztwoDarray_polar_ptr,theta_profile);
+   reverse_array_order(ndim,theta_profile);
+
+   twoDarray* theta_profile_twoDarray_ptr=
+      imagefunc::prepare_profile_twoDarray(
+         ndim,ztwoDarray_polar_ptr->get_ylo(),
+         ztwoDarray_polar_ptr->get_yhi(),theta_profile);
+   dataarray* theta_profile_dataarray_ptr=
+      imagefunc::prepare_profile_dataarray(
+         theta_profile_twoDarray_ptr,"theta_profile","Theta (degs)",
+         "Integrated intensity",imagedir,30);
+   delete theta_profile_twoDarray_ptr;
+//   imagefunc::plot_profile(theta_profile_dataarray_ptr);
+   delete theta_profile_dataarray_ptr;
+
+// Filter noisy theta profile:
+
+   double sigma=4;	// degrees
+   double htheta[ndim];
+   new_clear_array(filtered_theta_profile,ndim);
+   filterfunc::gaussian_filter(
+      ndim,fabs(ztwoDarray_polar_ptr->get_deltay()),sigma,htheta);
+   filterfunc::brute_force_filter(
+      ndim,ndim,theta_profile,htheta,filtered_theta_profile,true);
+
+   twoDarray* filtered_theta_profile_twoDarray_ptr=
+      imagefunc::prepare_profile_twoDarray(
+         ndim,ztwoDarray_polar_ptr->get_ylo(),
+         ztwoDarray_polar_ptr->get_yhi(),filtered_theta_profile);
+   dataarray* filtered_theta_profile_dataarray_ptr=
+      imagefunc::prepare_profile_dataarray(
+         filtered_theta_profile_twoDarray_ptr,
+         "theta_profile_filtered","Theta (degs)",
+         "Integrated intensity",imagedir,30);
+   delete filtered_theta_profile_twoDarray_ptr;
+//   imagefunc::plot_profile(filtered_theta_profile_dataarray_ptr);
+   delete filtered_theta_profile_dataarray_ptr;
+
+   delete theta_profile;
+   return ndim;
+}
+
+// ==========================================================================
+// Miscellaneous member functions
+// ==========================================================================
+
+// Auxilliary member function loop_test is for timing testing purposes
+// only...
+
+void myimage::loop_test(twoDarray const *ztwoDarray2_ptr)
+{
+   cout << "inside myimage::loop_test()" << endl;
+   cout << "ztwoDarray2_ptr->get_mdim() = " << ztwoDarray2_ptr->get_mdim()
+        << endl;
+   cout << "ztwoDarray2_ptr->get_ndim() = " << ztwoDarray2_ptr->get_ndim()
+        << endl;
+   time_t start_processing_time=time(NULL);
+   for (unsigned int loop=0; loop < 50000; loop++)
+   {
+      int counter=0;
+      for (unsigned int px=0; px<ztwoDarray2_ptr->get_mdim()-1; px++)
+      {
+         for (unsigned int py=0; py<ztwoDarray2_ptr->get_ndim()-1; py++)
+         {
+            counter++;
+         }
+      }
+   }
+   double new_time=outputfunc::processing_time(start_processing_time);
+   cout << "Time to evaluate x outer loop and y inner loop = " 
+        << new_time*60.0 << " secs" << endl;
+
+   for (unsigned int loop=0; loop < 50000; loop++)
+   {
+      int counter=0;
+      for (unsigned py=0; py<ztwoDarray2_ptr->get_ndim()-1; py++)
+      {
+         for (unsigned int px=0; px<ztwoDarray2_ptr->get_mdim()-1; px++)
+         {
+            counter++;
+         }
+      }
+   }
+   new_time=outputfunc::processing_time(start_processing_time);
+   cout << "Time to evaluate y outer loop and x inner loop = " 
+        << new_time*60.0 << " secs" << endl;
+}
+

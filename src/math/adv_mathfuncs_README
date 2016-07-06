@@ -1,0 +1,18 @@
+======================================================================
+Notes about file dependencies
+======================================================================
+Last updated on 1/27/05
+======================================================================
+
+
+On 1/27/05, we were forced to move mypolynomial.h and mypolynomial.cc out
+of src/math (where they really belong) into src/plot.  The mypolynomial
+class depends upon linkedlist and datapoint classes which resides within
+the src/datastructures.  
+
+Unfortunately, the adv_mathfuncs namespace also depends upon the
+mypolynomial class.  So it really should also have to move into src/plot.
+Yet for reasons which we do not understand, it appears that our entire
+projects source tree correctly compiles and links even with this
+inconsistency.  For now, we'll live with this inconsistency.  But
+ultimately, this vicious circle of dependencies must be resolved...

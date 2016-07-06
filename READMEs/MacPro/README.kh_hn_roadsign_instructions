@@ -1,0 +1,196 @@
+==================================================================
+Instructions for generating and viewing house numbers/roadsigns
+for Kitty Hawk production data sets
+==================================================================
+Last updated on 9/29/15; 11/3/15
+==================================================================
+
+Note: We work here with the "la_downtown_pr" project and its corresponding
+project database
+"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150408_161712.xml"
+as an illustrative example.  Please be sure to replace this project name
+and project database with project information relevant for Kitty Hawk
+deliveries.
+
+
+I.  Running the house number or roadsign pipelines on the distrib cluster:
+
+*.  Start the c3-viewer using the latest pwin binaries within
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.1/
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.1/latest_pr -vv \
+-do "view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.1/latest_pr"
+
+*.  Choose some entry in the project menu (e.g. la_downtown_pr)
+
+  - Choose some shape for the project (e.g. mini_la.shp). 
+  - Press the "SELECT" button near the bottom-left of the c3-viewer window.
+  - Mouse click on the dark blue shape polygon which should then turn 
+    bright blue.
+
+*.  Click on the "SETTINGS" button near the top-center of the c3-viewer window.
+  - Unclick the Build, Mopt, Subtree, Tex, Treetex and Meta buttons.
+  - To run the house numbers pipeline, click on the "HN detect", "HN recog"
+    and "HN filter" buttons.
+  - To run the roadsigns pipeline, click on the "Signs" button.
+  - Press the "OK" button located near the bottom of the "Build Settings"
+    pop-up menu.
+
+*.  Reset the priority level from its default 0 to some reasonable value.  
+  - Press the "RUN" button near the top-center of the c3-viewer window.
+  _ Select the "OK" button in the pop-up menu to start jobs running on distrib.
+
+
+II.  Finding a "run ID" for a house number or roadsign run:
+
+*.  Whenever the house numbers or roadsign pipelines are run on distrib, a
+new "run ID" string is created and stored within a Mongo database.  In
+order to view house number/roadsign results and/or transfer them to a
+machine from which Apple people outside the 3D Vision group can access
+them, we need to know the exact value of the "run ID" string.
+
+*.  First connect to the Mongo database on fly14 by chanting in a terminal
+
+   mongo flyover1/10.182.141.180,10.182.141.181,10.182.141.182/pr -u 'pr' -p 'rind451,jute'
+
+*.  At the mongo ">" prompt, enter the mongo command
+
+	db.run.distinct("run_id",{project_name:"la_downtown_pr"})
+
+where "la_downtown_pr" is replaced by the project name of interest.  Mongo
+will trespond with a list of strings which looks similar to 
+
+	"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150807_092734.xml",
+	"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_105203.xml",
+	"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_120832.xml",
+	"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_132445.xml",
+	"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml",
+	"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu_micro_la_downtown_pr_150925_161943.xml"
+
+Find the string time stamp matches when the house number or roadsign
+pipeline was started on distrib.  That string is the "run ID".
+
+*.  Type "exit" at the mongo prompt to leave mongo.
+
+
+III.  Viewing house number or roadsign output in a GUI display:
+
+*.  In order to visualize house number results, enter an appropriate project
+name, project database and run ID information within the following pwin
+command in a terminal:
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.1/latest -vv \
+-do "rdn rdn_on_map  \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150408_161712.xml \
+-prj la_downtown_pr \
+-run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml \
+-dver 21156 "
+
+*.  In order to visualize road sign results, enter appropriate project
+name, project database and run ID information within the following pwin
+command in a terminal:
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.1/latest -vv \
+-do "rdn rdn_on_map  \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150408_161712.xml \
+-prj la_downtown_pr \
+-run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu_micro_la_downtown_pr_150925_161943.xml \
+-dver -1 "
+
+
+IV.  Transferring house number and roadsign results from mongo database on
+fly14 to mongo database on fly6:
+
+*.  House number and roadsign results are generated on fly14.  But they
+need to be transferred to fly6 so that they can be accessed by Apple people
+outside the 3D vision group.
+
+  - Change the "la_downtown_pr" project name in the command below and then
+execute the modified command in a terminal:
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{project_name:"la_downtown_pr"}'
+
+This dump command will create a new subfolder called "dump/" in the folder
+from which it was executed.  
+
+*.  Create a gzipped tarfile of the dump folder and all its contents.  From
+the folder in which the dump subfolder was created, chant
+
+   tar cvzf dump.tgz ./dump
+
+*.  Upload the gzipped tarfile to fly6 by chanting  
+
+	sftp st21f01ls-fly0006.st.geo.apple.com 
+
+At the sftp> prompt, chant
+
+	mput dump.tgz
+
+When the file transfer is complete, type "exit" at the sftp prompt.
+
+*.  Next login to fly6
+
+	ssh st21f01ls-fly0006.st.geo.apple.com 
+
+ and unpack the gzipped tarfile on fly6:
+
+	tar xvzf dump.tgz
+
+*. Finally, we need to import the transferred dump files' contents into the
+Mongo database on fly6.  In the example below, replace
+"NAME_OF_COLLECTION_ON_FLY6" with something more descriptive:
+
+mongorestore -ssl -h flyover0/10.182.138.60,10.182.138.61,10.182.138.62 -u pwin -p IP9haDYzeZyE -d prjdb -c NAME_OF_COLLECTION_ON_FLY6 ./dump/pr/detection.bson
+
+For example, here are some collection names used for previous Kitty Hawk
+deliveries:
+
+	"KH1A_INTERCHANGE_20150406",
+	"KH1A_INTERCHANGE_20150414",
+	"KH1A_ROADSIGN_20150406",
+	"KH1A_ROADSIGN_20150414",
+	"KH1B_HIGHWAY_INTERCHANGE_20150515",
+	"KH1B_HIGHWAY_INTERCHANGE_20150603",
+	"KH1B_INTERCHANGE_20150406",
+	"KH1B_INTERCHANGE_20150414",
+	"KH1B_ROADSIGN_20150406",
+	"KH1B_ROADSIGN_20150414",
+	"KH1C_INTERCHANGE_20150518",
+	"KH1C_INTERCHANGE_20150521",
+	"KH1C_ROADSIGN_20150518",
+	"KH1C_ROADSIGN_20150521",
+	"KH_1A_addresses",
+	"KH_1B_addresses",
+
+
+
+
+
+
+----------------------
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.1/latest -vv -do
+"rdn rdn_on_map -prjdb
+/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml
+-prj bay_area-ground -run_id
+/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml
+-dver 21156"
+
+
+
+> db.detection.count({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"})
+3659983
+
+
+> db.detection.count({sub_type:"house_number", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"})
+2959506
+
+
+> db.detection.count({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"})
+  54892
+
+> db.detection.count({sub_type:"house_number", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"})
+  30888
+
+> db.detection.count({type:"us_road_sign", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"})
+  0

@@ -1,0 +1,10 @@
+/bin/rm ./cannon_kalman
+/bin/rm ./collab_filter
+/bin/rm ./display_table
+/bin/rm ./letters
+/bin/rm ./newsgroups
+/bin/rm ./spam
+/bin/rm ./tennis
+/bin/rm ./testkalman
+/bin/rm ./tictac2
+/bin/rm ./voltage_kalman

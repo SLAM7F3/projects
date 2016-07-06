@@ -1,0 +1,317 @@
+#ifndef COLOR_SPACE_UTILS_CGH
+#define COLOR_SPACE_UTILS_CGH
+
+#include "Arithmetic.cgh"
+
+////////////////////////////////////////////////////////////////////////////////
+// RGB --> HSV
+////////////////////////////////////////////////////////////////////////////////
+
+float3 rgb2hsv( float3 rgbIn )
+{
+	float h;
+	float s;
+	float v;
+
+	float r = rgbIn.r;
+	float g = rgbIn.g;
+	float b = rgbIn.b;
+
+	float rgbMax = max( max( r, g ), b );
+	float rgbMin = min( min( r, g ), b );
+	float maxMinusMin = rgbMax - rgbMin;
+	
+	if( rgbMax == r )
+	{
+		if( g >= b )
+		{
+			h = 60 * ( g - b ) / ( maxMinusMin );
+		}
+		else
+		{
+			h = 60 * ( g - b ) / ( maxMinusMin ) + 360;
+		}
+	}
+	else if( rgbMax == g )
+	{
+		h = 60 * ( b - r ) / ( maxMinusMin ) + 120;
+	}
+	else if( rgbMax == b )
+	{
+		h = 60 * ( r - g ) / ( maxMinusMin ) + 240;
+	}
+	else
+	{
+		h = -1; // h is undefined, min = max ==> all 3 values equal, v stores all you need
+	}
+	
+	s = ( rgbMax == 0 ) ? 0 : ( 1 - rgbMin / rgbMax );
+	v = rgbMax;
+	
+	return float3( h, s, v );
+}
+
+float4 rgba2hsva( float4 rgbaIn )
+{
+	return float4( rgb2hsv( rgbaIn.rgb ), rgbaIn.a );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// HSV --> RGB
+////////////////////////////////////////////////////////////////////////////////
+
+float3 hsv2rgb( float3 hsvIn )
+{
+	float r;
+	float g;
+	float b;
+
+	float h = hsvIn.x;
+	float s = hsvIn.y;
+	float v = hsvIn.z;
+	
+	if( h < 0 )
+	{
+		// h is undefined, but v is the original grey level
+		return float3( v, v, v );
+	}
+	
+	float hi = remainder( floor( h / 60 ), 6 );
+	float f = h / 60 - hi;
+	float p = v * ( 1 - s );
+	float q = v * ( 1 - f * s );
+	float t = v * ( 1 - ( 1 - f ) * s );
+	
+	if( hi == 0 )
+	{
+		r = v;
+		g = t;
+		b = p;
+	}
+	else if( hi == 1 )
+	{
+		r = q;
+		g = v;
+		b = p;
+	}
+	else if( hi == 2 )
+	{
+		r = p;
+		g = v;
+		b = t;
+	}
+	else if( hi == 3 )
+	{
+		r = p;
+		g = q;
+		b = v;
+	}
+	else if( hi == 4 )
+	{
+		r = t;
+		g = p;
+		b = v;
+	}
+	else
+	{
+		r = v;
+		g = p;
+		b = q;
+	}
+	
+	return float3( r, g, b );
+}
+
+float4 hsva2rgba( float4 hsvaIn )
+{
+	return float4( hsv2rgb( hsvaIn.rgb ), hsvaIn.a );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RGB --> Lab
+////////////////////////////////////////////////////////////////////////////////
+
+float3 rgb2xyz( float3 rgbIn )
+{
+	float rOut = ( rgbIn.r > 0.04045 ) ?
+		pow( ( rgbIn.r + 0.055 ) / 1.055, 2.4 ) :
+		rgbIn.r / 12.92;
+	float gOut = ( rgbIn.g > 0.04045 ) ?
+		pow( ( rgbIn.g + 0.055 ) / 1.055, 2.4 ) :
+		rgbIn.g / 12.92;
+	float bOut = ( rgbIn.b > 0.04045 ) ?
+		pow( ( rgbIn.b + 0.055 ) / 1.055, 2.4 ) :
+		rgbIn.b / 12.92;
+	
+	float3 rgbOut = 100 * float3( rOut, gOut, bOut );
+	
+	return float3
+	(
+		dot( rgbOut, float3( 0.4124, 0.3576, 0.1805 ) ),
+		dot( rgbOut, float3( 0.2126, 0.7152, 0.0722 ) ),
+		dot( rgbOut, float3( 0.0193, 0.1192, 0.9505 ) )
+	);	
+}
+
+// xyzRef = float3( 95.047, 100, 108.883 )
+// epsilon = 216 / 24389 = 0.00856
+// kappa = 24389 / 27 = 903.2963
+float3 xyz2lab( float3 xyzIn, float3 xyzRef, float epsilon, float kappa )
+{
+	float3 xyzNormalized = xyzIn / xyzRef;
+	
+	float fx = ( xyzNormalized.x > epsilon ) ?
+		pow( xyzNormalized.x, 1.0 / 3.0 ) :
+		( ( kappa * xyzNormalized.x + 16.0 ) / 116.0 );
+	float fy = ( xyzNormalized.y > epsilon ) ?
+		pow( xyzNormalized.y, 1.0 / 3.0 ) :
+		( ( kappa * xyzNormalized.y + 16.0 ) / 116.0 );
+	float fz = ( xyzNormalized.z > epsilon ) ?
+		pow( xyzNormalized.z, 1.0 / 3.0 ) :
+		( ( kappa * xyzNormalized.z + 16.0 ) / 116.0 );
+		
+	return float3
+	(
+		( 116 * fy ) - 16,
+		500 * ( fx - fy ),
+		200 * ( fy - fz )
+	);
+}
+
+float3 rgb2lab( float3 rgbIn )
+{
+	const float3 xyzRef = float3( 95.047, 100, 108.883 );
+	const float epsilon = 216.0 / 24389.0;
+	const float kappa = 24389.0 / 27.0;
+	
+	float3 xyzOut = rgb2xyz( rgbIn );
+	return xyz2lab( xyzOut, xyzRef, epsilon, kappa );
+}
+
+float3 rgba2lab( float4 rgbaIn )
+{
+	return rgb2lab( rgbaIn.rgb );
+}
+
+float4 rgba2laba( float4 rgbaIn )
+{
+	return float4( rgb2lab( rgbaIn.rgb ), rgbaIn.a );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Lab --> RGB
+////////////////////////////////////////////////////////////////////////////////
+
+float3 lab2xyz( float3 labIn, float3 xyzRef, float epsilon, float kappa )
+{
+	float kappaEpsilon = kappa * epsilon;
+	
+	float L = labIn.r;
+	float a = labIn.g;
+	float b = labIn.b;
+	
+	float yr = ( L > kappaEpsilon ) ?
+		( ( ( L + 16 ) / 116 ) * ( ( L + 16 ) / 116 ) * ( ( L + 16 ) / 116 ) ) :
+		L / kappa;
+		
+	float fy = ( yr > epsilon ) ?
+		( ( L + 16 ) / 116 ) :
+		( kappa * yr + 16 ) / 116;
+	float fx = a / 500 + fy;
+	float fz = fy - b / 200;
+	
+	float fxCubed = fx * fx * fx;
+	float fzCubed = fz * fz * fz;
+	
+	float xr = ( fxCubed > epsilon ) ?
+		fxCubed :
+		( 116 * fx - 16 ) / kappa;
+	float zr = ( fzCubed > epsilon ) ?
+		fzCubed :
+		( 116 * fz - 16 ) / kappa;
+		
+	return xyzRef * float3( xr, yr, zr );
+}
+
+float3 xyz2rgb( float3 xyzIn )
+{
+	float3 xyzTmp = 0.01 * xyzIn;
+	
+	const float3x3 mat = float3x3
+	( 
+		3.2406, -1.5372, -0.4986,
+		-0.9689, 1.8758, 0.0415,
+		0.0557, -0.2040, 1.0570
+	);
+	
+	float3 rgbTmp =	mul( mat, xyzTmp );
+	
+	float rOut = ( rgbTmp.r > 0.0031308 ) ?
+		( ( 1.055 * pow( rgbTmp.r, ( 1.0 / 2.4 ) ) ) - 0.055 ) :
+		12.92 * rgbTmp.r;
+		
+	float gOut = ( rgbTmp.g > 0.0031308 ) ?
+		( ( 1.055 * pow( rgbTmp.g, ( 1.0 / 2.4 ) ) ) - 0.055 ) :
+		12.92 * rgbTmp.g;
+		
+	float bOut = ( rgbTmp.b > 0.0031308 ) ?
+		( ( 1.055 * pow( rgbTmp.b, ( 1.0 / 2.4 ) ) ) - 0.055 ) :
+		12.92 * rgbTmp.b;
+	
+	return float3( rOut, gOut, bOut );
+}
+
+float3 lab2rgb( float3 labIn )
+{
+	const float3 xyzRef = float3( 95.047, 100, 108.883 );
+	const float epsilon = 216.0 / 24389.0;
+	const float kappa = 24389.0 / 27.0;
+	
+	float3 xyzTmp = lab2xyz( labIn, xyzRef, epsilon, kappa );
+	return xyz2rgb( xyzTmp );
+}
+
+float3 laba2rgb( float3 labaIn )
+{
+	return lab2rgb( labaIn.xyz );
+}
+
+float4 laba2rgba( float4 labaIn )
+{
+	return float4( lab2rgb( labaIn.xyz ), labaIn.w );
+}
+
+// Log L
+#define LOG_L_EPSILON 10.0
+#define LOG_L_MIN ( log( LOG_L_EPSILON ) )
+#define LOG_L_RANGE ( log( 100 + LOG_L_EPSILON ) - LOG_L_MIN )
+
+float logL( float x )
+{
+	float logX = log( x + LOG_L_EPSILON );
+	float logX_ZO = ( logX - LOG_L_MIN ) / LOG_L_RANGE;
+	return 100 * logX_ZO;
+}
+
+float expL( float x )
+{
+	float logX_ZO = x / 100;
+	float logX = logX_ZO * LOG_L_RANGE + LOG_L_MIN;
+	return exp( logX ) - LOG_L_EPSILON;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RGB --> Luminance
+////////////////////////////////////////////////////////////////////////////////
+
+float rgb2Luminance( float3 rgb )
+{
+	return 0.3279 * rgb.r + 0.6557 * rgb.g + 0.0164 * rgb.b;
+}
+
+float rgba2Luminance( float4 rgba )
+{
+	return 0.3279 * rgba.r + 0.6557 * rgba.g + 0.0164 * rgba.b;
+}
+
+#endif // COLOR_SPACE_UTILS_CGH

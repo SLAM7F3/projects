@@ -1,0 +1,109 @@
+#include "ColorSpaceUtils.cgh"
+#include "GridUtils.cgh"
+
+///////////////////////////////////////////////////////////////
+// TODO: remove these
+// these are only used by ITM
+///////////////////////////////////////////////////////////////
+
+#define LOG_LUMINANCE_EPSILON 0.1
+
+float log10Luminance( float luminance )
+{
+	return log10( luminance + LOG_LUMINANCE_EPSILON );
+}
+
+float exp10Luminance( float logLuminance )
+{
+	return pow( 10, logLuminance ) - LOG_LUMINANCE_EPSILON;
+}
+
+float rgb2LogLuminance( float3 rgb )
+{
+	return log10Luminance( rgb2Luminance( rgb ) );
+}
+
+float rgba2LogLuminance( float4 rgba )
+{
+	return log10Luminance( rgba2Luminance( rgb ) );
+}
+
+float linearRemapRangeToZeroOne( float value, float inputMin, float inputMax )
+{
+	return saturate( ( value - inputMin ) / ( inputMax - inputMin ) );
+}
+
+float linearRemapZeroOneToRange( float fraction, float outputMin, float outputMax )
+{
+	return( outputMin + fraction * ( outputMax - outputMin ) );
+}
+
+float linearRemapRangeToRange( float value, float inputMin, float inputMax,
+							  float outputMin, float outputMax )
+{
+	float fraction = ( value - inputMin ) / ( inputMax - inputMin );
+	return( outputMin + fraction * ( outputMax - outputMin ) );
+}
+
+///////////////////////////////////////////////////////////////
+
+
+const float3 g_f3PaddingXYZ = float3( 1, 1, 1 );
+
+void initializeGrid( uniform float2 logLuminanceMinMax,
+					uniform float compressionFactor,
+					uniform float3 gridWidthHeightDepth,
+
+					float2 xy : WPOS,
+					
+					out float output : COLOR )
+{
+	float3 gridXYZ = getGridXYZ( xy, gridWidthHeightDepth );
+	output = gridXYZ.z / ( gridWidthHeightDepth.z - 1 ) - 1;
+}
+
+void sliceGridAndToneMap( uniform samplerRECT inputSampler,
+						 uniform samplerRECT logBaseSampler,
+						 uniform samplerRECT baseGridSampler,
+						 
+						 uniform float3 rcpSigma,
+						 uniform float3 gridSize,
+						 
+						 uniform float2 logBaseMinMax,
+						 uniform float logAbsoluteScale,
+						 
+						 float2 xy : WPOS,
+						 
+						 out float4 output : COLOR )
+{
+	float4 inputRGBA = texRECT( inputSampler, xy );
+	float luminance = rgba2Luminance( inputRGBA );
+	float3 normalizedRGB = inputRGBA.rgb / luminance;
+	float logLuminance = log10Luminance( luminance );
+	
+	float logBase = texRECT( logBaseSampler, xy ).x;
+	float logDetail = logLuminance - logBase;
+	
+	float logBaseZeroOne =
+		linearRemapRangeToZeroOne
+		(
+			logBase,
+
+			logBaseMinMax.x,
+ 			logBaseMinMax.y
+		);
+	
+	// TODO: deal with min/max issue for grid
+	// size grid appropriately, etc
+	// sigmas need to be adjusted
+	
+	float3 xyzIn = float3( floor( xy ), logBaseZeroOne );
+	float3 gridXYZ = gridDownsampleFloat( xyzIn, rcpSigma, g_f3PaddingXYZ );
+	float gridValue = texTiledLinear( baseGridSampler, gridSize, gridXYZ );
+	
+	float logCompressedLuminance = gridValue + logDetail;
+	float compressedLuminance = pow( 10, logCompressedLuminance );
+	
+	float3 outputRGB = saturate( normalizedRGB * compressedLuminance );
+	output = float4( outputRGB, inputRGBA.a );
+}

@@ -1,0 +1,11 @@
+~/bin/MAKE program=analyze_SAR
+~/bin/MAKE program=cjsontest
+~/bin/MAKE program=clean_L1
+~/bin/MAKE program=crop_L1
+~/bin/MAKE program=density_L1
+~/bin/MAKE program=fishing
+~/bin/MAKE program=flatten
+~/bin/MAKE program=flip_cloud
+~/bin/MAKE program=generate_SAR
+~/bin/MAKE program=SAR_propagator
+~/bin/MAKE program=viewground

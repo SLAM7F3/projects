@@ -1,0 +1,67 @@
+===========================================================================================
+Objective C notes 
+===========================================================================================
+Last updated on 1/29/16; 2/1/16; 2/5/16; 2/18/16
+===========================================================================================
+
+*.  Class properties in objective C are analogous to member variables in C++.
+
+*.  "+" methods are "class" methods - they are called "globally" for a class and do
+	not need to be called for a particular object instance. They are
+        called using name of class and cannot access any data in a
+	particular instance of the class.
+
+    "-" methods are "instance" methods - they are called on individual object instances
+
+    +/- do NOT refer to public and private methods in Objective C
+
+
+*.  Examples of class methods:
+
+-(void) someMethod;
+
+  This is an instance method which returns void and does not take any input
+  arguments.  Note that return type is contained inside parantheses.
+
+-(int) timesTen: (int) num;
+
+  Use colon to separate name of method from its input arguments.
+
+-(NSString *) createMessage: (NSString *) input;
+
+-(int) addNumber:(int) a toNumber: (int) b;
+
+*.  When Objective-C compiler sees an @property statement in a .h file, it
+automatically instantiates a member variable inside the class (with a
+leading underscore) along with getter and setter methods for the property.
+The setter/getter methods are invisible but are created at compile time.
+
+*.  Property attributes
+
+@property (attributes) type name;
+
+@property int score   [ No attribute needed for primitive types]
+
+@property (strong) NSString *firstName;  [strong indicates object should be
+					  reference counted.  By default,
+					  all properties are strong]
+
+@property (readonly) int *employeeID;  [Objective C will synthesize a
+					getter but not a setter method for this property]
+ 
+
+*.  "option mouse-click" while hovering mouse over some class brings up
+small description box for that class.  More extensive class documentation 
+
+*.  On 2/18/16, Carlos Folgar told us that a ".xib" file (which holds GUI
+elements such as buttons, text entry fields, etc) is pronounced "nib"
+
+*.  In order to connect a gui element such as a menu label
+(e.g. "Shrinkwrap Polygon") to some method (e.g. , File's Owner
+shrinkPolygon()), we first need to right mouse click on the "Shrinkwrap
+Polygon" menu label.  We should then see a dropdown menu with potential
+methods to which the menu label can be connected.  After selecting the
+shrinkPolygon() method for connection, we should then control-mouse drag
+the selected menu to the "3D cube" icon located on the far left.  This act
+should connect the gui element with the desired method to be called.
+

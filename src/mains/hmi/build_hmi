@@ -1,0 +1,14 @@
+~/bin/MAKE program=convert_lla_to_utm
+~/bin/MAKE program=fixpanos
+~/bin/MAKE program=generate_D7_panels
+~/bin/MAKE program=generate_thumbnails
+~/bin/MAKE program=generate_wagonwheels
+~/bin/MAKE program=indoorgstreets
+~/bin/MAKE program=rf_dirfinder
+~/bin/MAKE program=us2tdp
+~/bin/MAKE program=UV2EN
+~/bin/MAKE program=viewpanos
+~/bin/MAKE program=viewrf
+
+
+

@@ -1,0 +1,7 @@
+--PostGIS_hostname localhost
+--PostGIS_database_name isds_gis
+# --PostGIS_database_name babygis
+--PostGIS_username postgres
+# --PostGIS_username cho
+--gislines_tablename nyc_streets
+--gispoints_tablename individual_landmarks

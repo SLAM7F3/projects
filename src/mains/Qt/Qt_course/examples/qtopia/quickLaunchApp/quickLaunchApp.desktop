@@ -1,0 +1,9 @@
+[Desktop Entry]
+Comment=A simple editor
+Comment[no]=Skide go editor
+Exec=quickLaunchApp
+Icon=quickLaunchApp
+Type=Application
+Name[en]=Simple Application
+Name[no]=Fantasktisk
+MimeType=text/*

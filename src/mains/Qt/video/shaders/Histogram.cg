@@ -1,0 +1,204 @@
+//////////////////////////////////////////////////////////////////////////
+// Histogram
+//////////////////////////////////////////////////////////////////////////
+
+void scatterHistogramVertexCore( float LZeroOne,
+								float4x4 mvp,
+								float nBins,
+								float reciprocalNumPixels,		
+								
+								out float4 clipSpaceOut,
+								out float normalizedOut )
+{
+	// compute which bin it goes into
+	float binIndex = clamp( round( LZeroOne * ( nBins - 1 ) ), 0, nBins - 1 );
+
+	float2 xyOut = float2( binIndex + 0.5, 0.5 );
+	clipSpaceOut = mul( mvp, float4( xyOut, 0.5, 1 ) );	// doesn't change xy coordinates, just converts it to clip space	
+	normalizedOut = reciprocalNumPixels;
+}
+
+// histograms are always stored in [0,1]
+void scatterHistogramVertexStandard( uniform float4x4 mvp,
+									uniform float nBins,
+									uniform float reciprocalNumPixels,
+									uniform samplerRECT inputLabASampler,
+									
+									float2 xyIn : POSITION,
+									
+									out float4 clipSpaceOut : POSITION,
+									out float normalizedOut : TEXCOORD0 )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	xyIn = xyIn + halfdxdy;
+
+	// just get the L
+	float L = texRECT( inputLabASampler, xyIn ).x;
+	
+	// normalize to [0,1]
+	float LZeroOne = saturate( 0.01 * L );
+	
+	scatterHistogramVertexCore
+	(
+		LZeroOne,
+		mvp,
+		nBins,
+		reciprocalNumPixels,
+		
+		clipSpaceOut,
+		normalizedOut
+	);
+}
+
+// histograms are always stored in [0,1]
+void scatterHistogramVertexAbsoluteValue( uniform float4x4 mvp,
+										 uniform float nBins,
+										 uniform float reciprocalNumPixels,
+										 uniform samplerRECT inputLabASampler,
+										 
+										 float2 xyIn : POSITION,
+										 
+										 out float4 clipSpaceOut : POSITION,
+										 out float normalizedOut : TEXCOORD0 )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	xyIn = xyIn + halfdxdy;
+	
+	float L = texRECT( inputLabASampler, xyIn ).x;
+
+	// take abs( detailL ), range is now [0, 100]
+	float absL = abs( L );
+	
+	// normalize to [0,1]
+	float absLZeroOne = saturate( 0.01 * absL );
+	
+	scatterHistogramVertexCore
+	(
+		absLZeroOne,
+		mvp,
+		nBins,
+		reciprocalNumPixels,
+		
+		clipSpaceOut,
+		normalizedOut
+	);
+}
+
+
+void scatterHistogramFragment( float normalizedIn : TEXCOORD0,
+							  out float normalizedOut : COLOR )
+{
+	normalizedOut = normalizedIn;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// CDF
+//////////////////////////////////////////////////////////////////////////
+
+void accumulateCDF( uniform samplerRECT histogramSampler,
+
+				   float2 xyIn : WPOS,
+				   
+				   out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1, 0 );
+	float sum = 0;
+	float2 binTexCoord = float2( 0.5, 0.5 );	
+	
+	for( float i = 0; i < xyIn.x; ++i )
+	{
+		sum += texRECT( histogramSampler, binTexCoord ).x;
+		binTexCoord += dx;
+	}
+	
+	colorOut = sum;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Histogram Transfer
+//////////////////////////////////////////////////////////////////////////
+
+void transferHistogramStandard( uniform samplerRECT inputLabASampler,
+							   uniform samplerRECT inputCDFSampler,
+							   uniform samplerRECT modelInverseCDFSampler,
+							   
+							   uniform float2 inputCDFNumBinsModelInverseCDFNumBins,
+							   
+							   float2 xyIn : WPOS,
+							   
+							   out float4 colorOut : COLOR )
+{
+	float nInputCDFBins = inputCDFNumBinsModelInverseCDFNumBins.x;
+	float nModelInverseCDFBins = inputCDFNumBinsModelInverseCDFNumBins.y;
+	
+	float4 inputLabA = texRECT( inputLabASampler, xyIn );
+	float L = inputLabA.x;
+	float LZeroOne = saturate( 0.01 * inputLabA.x );
+
+	// ---- do histogram matching ----
+	
+	// find the bin for the input CDF
+	float inputCDFBinIndex = clamp( LZeroOne * ( nInputCDFBins - 1 ), 0, nInputCDFBins - 1 ) + 0.5;
+	
+	// sample to get the CDF
+ 	float cdfL = texRECT( inputCDFSampler, float2( inputCDFBinIndex, 0.5 ) ).x;
+ 	
+ 	// find the bin of the inverse CDF
+ 	float modelInverseCDFBinIndex = clamp( cdfL * ( nModelInverseCDFBins - 1 ), 0, nModelInverseCDFBins - 1 ) + 0.5;
+ 	
+ 	// sample to get the inverse CDF
+ 	float outputL = texRECT( modelInverseCDFSampler, float2( modelInverseCDFBinIndex, 0.5 ) ).x;
+
+	outputL = clamp( 100 * outputL, 0, 100 );
+	
+	// colorOut = float4( outputL, inputLabA.yzw );
+	colorOut = outputL;
+}
+
+void transferHistogramAbsoluteValue( uniform samplerRECT inputLabASampler,
+									uniform samplerRECT inputCDFSampler,
+									uniform samplerRECT modelInverseCDFSampler,
+									
+									uniform float2 inputCDFNumBinsModelInverseCDFNumBins,
+									
+									float2 xyIn : WPOS,
+									
+									out float4 colorOut : COLOR )
+{
+	float nInputCDFBins = inputCDFNumBinsModelInverseCDFNumBins.x;
+	float nModelInverseCDFBins = inputCDFNumBinsModelInverseCDFNumBins.y;
+	
+	// read the detail, range is [-100, 100]
+	float4 inputLabA = texRECT( inputLabASampler, xyIn );
+	float L = inputLabA.x;
+	
+	// save the sign
+	float signL = sign( L );
+	// get absDetail, range is now [0, 100]
+	float absL = abs( L );
+	
+	// normalize absDetail to [0, 1]
+	float absLZeroOne = saturate( 0.01 * absL );
+	
+	// ---- do histogram matching ----
+	
+	// find the bin for the input CDF
+	float inputCDFBinIndex = clamp( absLZeroOne * ( nInputCDFBins - 1 ), 0, nInputCDFBins - 1 ) + 0.5;
+	
+	// sample to get the CDF
+	float cdfL = texRECT( inputCDFSampler, float2( inputCDFBinIndex, 0.5 ) ).x;
+	
+	// find the bin for the inverse CDF
+ 	float modelInverseCDFBinIndex = clamp( cdfL * ( nModelInverseCDFBins - 1 ), 0, nModelInverseCDFBins - 1 ) + 0.5;
+
+	// sample to get the inverse CDF
+	float invCDFL = texRECT( modelInverseCDFSampler, float2( modelInverseCDFBinIndex, 0.5 ) ).x; // [0, 1]
+
+	// recover sign, range is now [-1, 1]
+	float outputL = signL * invCDFL;
+	// stretch back to original range: [-100, 100]
+	outputL = 100 * outputL;
+	
+	// colorOut = float4( outputL, 0, 0, 1 );
+	colorOut = outputL;
+}

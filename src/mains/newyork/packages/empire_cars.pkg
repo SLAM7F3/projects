@@ -1,0 +1,31 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/stabilized_clip1.vid
+--portrait_mode true
+--frustum_sidelength 2000
+# --downrange_distance 25
+# --downrange_distance 150
+--downrange_distance 225
+# --downrange_distance 300
+--projection_matrix
+
+# 3D/2D projection matrix fit
+
+-7.840277824e-08        4.185531464e-08 2.147813995e-07 -0.1429811153
+-1.118185114e-07        -2.033985062e-07        1.397130905e-08 0.9830774834
+3.515292566e-08 -2.995081262e-08        3.571016148e-08 0.1145210121
+
+# ===============================================
+# RMS residual between measured and calculated UV points = 0.01168913593
+# RMS U pixel offset = 5.661296155 out of 1280 = 0.4422887621 %
+# RMS V pixel offset = 6.227501567 out of 720 = 0.8649307731 %
+# ===============================================
+
+# Normalization factor rho = 17129730.3325
+# fu = -3.83399284172 fv = -3.90580437338
+# u0 = 1.07400120811 v0 = 0.780552916127
+# theta = 90.4461121315 degs
+# Camera world X = 585604.350897
+# Camera world Y = 4511344.12383
+# Camera world Z = 327.754380658
+# Camera azimuth = 139.568511715 degs
+# Camera elevation = -37.7129195318 degs
+# Camera roll = 85.5797637063 degs

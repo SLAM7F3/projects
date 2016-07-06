@@ -1,0 +1,70 @@
+// dogEdges: edges are BLACK
+// so if you want FAINTER edges, and fainter by alpha, do 1 - alpha * ( 1 - edge )
+
+void combineQuantizationAndEdges( uniform samplerRECT quantizedLabAInputSampler,
+								 uniform samplerRECT dogEdgesInputSampler,
+								 uniform samplerRECT detailMapSampler,
+								 
+								 uniform float2 gammaSaturation,
+								 
+								 float2 xy : WPOS,
+								 
+								 out float4 colorOut : COLOR )
+{
+	float gamma = gammaSaturation.x;
+	float saturation = gammaSaturation.y;
+	
+	float4 LabA = texRECT( quantizedLabAInputSampler, xy );
+	float edge = texRECT( dogEdgesInputSampler, xy );	
+	
+	float L = LabA.x;
+	float2 ab = LabA.yz;
+		
+	L /= 100; // recale L to [0,1]
+	L = pow( L, gamma ); // apply gamma
+	L *= 100; // recale L to [0,100]
+	
+	ab = ab * saturation;	
+	
+	// edge = 1 - detail * ( 1 - edge );
+	
+	float LwithEdge = L * edge;
+	
+	colorOut = float4( LwithEdge, ab, LabA.w );	
+}
+
+/*
+void combineQuantizationAndEdges( uniform samplerRECT quantizedLabAInputSampler,
+								 uniform samplerRECT dogEdgesInputSampler,
+								 uniform samplerRECT detailMapSampler,
+								 
+								 uniform float2 gammaSaturation,
+								 
+								 float2 xy : WPOS,
+								 
+								 out float4 colorOut : COLOR )
+{
+	float gamma = gammaSaturation.x;
+	float saturation = gammaSaturation.y;
+	
+	float4 LabA = texRECT( quantizedLabAInputSampler, xy );
+	float edge = texRECT( dogEdgesInputSampler, xy );
+	float detail = 1 - texRECT( detailMapSampler, xy ).x; // texture stores 0 as most detail
+	
+	float L = LabA.x;
+	float2 ab = LabA.yz;
+		
+	L /= 100; // recale L to [0,1]
+	L = pow( L, gamma ); // apply gamma
+	L *= 100; // recale L to [0,100]
+	
+	// ab = ab * saturation;
+	ab = ab * saturation * detail;
+	
+	edge = 1 - detail * ( 1 - edge );
+	
+	float LwithEdge = L * edge;
+	
+	colorOut = float4( LwithEdge, ab, LabA.w );	
+}
+*/

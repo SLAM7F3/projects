@@ -1,0 +1,48 @@
+========================================================================
+Peter's 3D visualization programs 
+========================================================================
+Last updated on 6/8/10
+========================================================================
+
+
+========================================================================
+INTRO STEPS
+========================================================================
+
+1a.  In this README, we'll define the following root directory:
+
+	$root= ~/programs/c++/svn/projects/src/mains/rasr
+
+Change directory to $root:
+
+	cd ~/programs/c++/svn/projects/src/mains/rasr
+
+------------------------------------------------------------------------
+2a.  If a /ladar subdirectory of $root doesn't already exist, then create
+one:
+
+	mkdir ladar
+
+Place all raw ladar data text files into $root/ladar.
+
+========================================================================
+3D VISUALIZATION PROGRAMS
+========================================================================
+
+1b.  Execute the run_raw_ladar_to_osga script in order to convert the raw
+ladar data text file into an "OSGA" file which Peter's 3D viewer can
+visualize:
+
+~/programs/c++/svn/projects/src/mains/rasr/run_raw_ladar_to_osga
+
+2b.  Execute the run_view_osga script in order to see the ladar point cloud
+with the 3D viewer:
+
+~/programs/c++/svn/projects/src/mains/rasr/run_view_osga
+
+Press "c" key to toggle between 3D coloring for point cloud "height"
+display to ladar "intensity" display.
+
+Press "l" key in order to toggle on/off XY grid underlying ladar point
+cloud.
+

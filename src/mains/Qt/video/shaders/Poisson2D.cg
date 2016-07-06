@@ -1,0 +1,133 @@
+void restrictConstraints( uniform samplerRECT fullConstraintsSampler,
+				  
+						 float2 xy : WPOS,
+				  
+						 out float4 colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+		
+	float2 full00 = 2 * floor( xy ) + halfdxdy;
+
+	float2 constraints[4];
+	constraints[0] = texRECT( fullConstraintsSampler, full00 ).xy;
+	constraints[1] = texRECT( fullConstraintsSampler, full00 + dx ).xy;
+	constraints[2] = texRECT( fullConstraintsSampler, full00 + dy ).xy;
+	constraints[3] = texRECT( fullConstraintsSampler, full00 + dx + dy ).xy;
+	
+	float numConstraints = 0;
+	float constraintSum = 0;
+	for( int i = 0; i < 4; ++i )
+	{
+		if( constraints[i].y > 0 )
+		{
+			numConstraints += 1;
+			constraintSum += constraints[i].x;
+		}
+	}
+	
+	// constraint
+	colorOut.x = ( numConstraints > 0 ) ? ( constraintSum / numConstraints ) : 0;
+	
+	// mask
+	colorOut.y = ( numConstraints > 0 ) ? 1 : 0;
+}
+
+void smoothGrid( uniform samplerRECT gridSampler,
+				uniform samplerRECT rhsSampler,
+				
+				float2 xy : WPOS,
+				
+				out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	
+	float2 center = xy;
+	float2 north = xy + dy;
+	float2 east = xy + dx;
+	float2 south = xy - dy;
+	float2 west = xy - dx;
+	float2 rhs = texRECT( rhsSampler, center ).xy;
+	
+	float mask = rhs.y;	
+	if( mask > 0 )
+	{
+		colorOut.x = rhs.x;
+	}	
+	else // plain jacobi
+	{
+		float source = rhs.y;
+	
+		float northValue = texRECT( gridSampler, north ).x;
+		float eastValue = texRECT( gridSampler, east ).x;
+		float southValue = texRECT( gridSampler, south ).x;
+		float westValue = texRECT( gridSampler, west ).x;
+		
+		float sumNeighbors = northValue + eastValue + southValue + westValue;		
+		float numerator = sumNeighbors - source;		
+		colorOut = numerator / 4;
+	}
+}
+
+void prolongEstimate( uniform samplerRECT restrictedGridLinearSampler,
+				  
+					 float2 xy : WPOS,
+				  
+					 out float colorOut : COLOR )
+{
+	colorOut = texRECT( restrictedGridLinearSampler, xy / 2 ).x;
+}
+
+void convergenceTest( uniform samplerRECT gridSampler,
+					 uniform samplerRECT rhsSampler,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+
+	float2 center = xy;
+	float2 rhs = texRECT( rhsSampler, center ).xy;
+	
+	float mask = rhs.y;
+	if( mask > 0 )
+	{
+		discard;
+	}
+	
+	float source = rhs.x;
+	
+	float2 north = xy + dy;
+	float2 east = xy + dx;
+	float2 south = xy - dy;
+	float2 west = xy - dx;
+	
+	float residual;	
+	
+	float centerValue = texRECT( gridSampler, center ).x;
+	float northValue = texRECT( gridSampler, north ).x;
+	float eastValue = texRECT( gridSampler, east ).x;
+	float southValue = texRECT( gridSampler, south ).x;
+	float westValue = texRECT( gridSampler, west ).x;
+
+	residual = source -
+	(
+		northValue + eastValue + southValue + westValue -
+		4 * centerValue
+	);
+	
+	float absResidual = abs( residual );
+	
+	if( absResidual < 0.001 )
+	{
+		discard;
+	}
+	else
+	{
+		colorOut = absResidual;
+	}
+}

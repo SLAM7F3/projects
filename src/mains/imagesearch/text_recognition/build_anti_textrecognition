@@ -1,0 +1,15 @@
+/bin/rm ./chop_words
+/bin/rm ./compute_shape_decriptors
+/bin/rm ./descriptors
+/bin/rm ./dictionary
+/bin/rm ./extract_nontext
+/bin/rm ./generate_extremal_regions
+/bin/rm ./locate_chars
+/bin/rm ./normalize_chars
+/bin/rm ./normalize_words
+/bin/rm ./parse_words
+/bin/rm ./pool_features
+/bin/rm ./svm_shape
+/bin/rm ./svm_stats
+/bin/rm ./svm_text
+/bin/rm ./whiten_descriptors

@@ -1,0 +1,123 @@
+===============================================================================
+Numbers-in-the-wild demo notes
+===============================================================================
+Last updated on 6/12/14; 6/13/14
+===============================================================================
+
+*.  Display "Number recognition pipeline" JPG image on 2nd desktop
+in upper left corner.  Expand flow diagram display as much as possible.
+
+*.  cd /home/pcho/sputnik/peter_stuff/text_in_wild/scripts
+
+    Clear terminal
+
+    Chant "run_demo"
+
+*.  Press "l" to load detector 1004
+
+*.  Press "n" to run successive stages of number detection pipeline.
+    Press "p" to run any previous stage within pipeline.
+
+*.  Start with "2487" image.  When we start with an image, we have no a
+priori idea if it contains any man-made text.  If so, we don't know where
+such text might lie within the image nor what its scale is.  So we'd like
+to first nominate a set of possible candidate regions within the image
+plane that might plausibly correspond to text.  We'll then apply a series
+of increasingly expensive filters to eliminate huge numbers of false alarms
+while hopefully retaining genuine text signal.
+
+*.  Stage 1 for 2487:  
+
+"Text in the wild" is generally written by humans to be observed by other
+humans.  One very basic property of text is that it's almost always
+brighter or darker than its local background.  This simple idea motivates
+us to find all "extremal regions" within an image.  An extremal region is a
+set of connected pixels which are all brighter/darker than their immediate
+surrounding neighbors.
+
+For a typical 4K x 3K outdoor image, we've empirically observed that it
+contains O(10**6) extremal regions.  Such a large number of candidate
+locations for potential text is much too large to process.  So we apply a
+series of simple incremental tests to reject extremal regions which could
+not possibly correpond to text characters (e.g. pixel count, bbox width and
+height, aspect ratio, compactness, etc).
+
+Zoom into house number and observe dark extremal regions against brighter
+backgrounds.  Look at lower part of "8" which is bright region surrounded
+by dark background.  [Move down to hose to find more examples of bright
+regions surrounded by locally darker backgrounds.]  Note that many extremal
+regions correspond to essentially random patches with no interesting signal
+content.  So we'd like to eliminate such uninteresting regions from further
+consideration.
+
+*.  Stage 2 for 2487: 
+
+Apply additional (non-incremental) tests to candidate extremal regions
+which are too expensive to perform on every node within the connected
+components tree.  In particular, examine bounding box intensity standard
+deviations and reject any connected component whose pixels have too much or
+too little intensity variation.  Similarly, reject any bbox whose entropy
+is too large or small.  Also, eliminate highly nested bboxes.  Zoom back
+into 2487 house number and observe fewer nested bboxes.
+
+*.  Stage 3 for 2487: 
+
+Zoom into grass located on LHS.  Observe that coloring and texture for
+large number of densely packed bboxes is similar.  For each surviving bbox,
+compare its color and texture content with those of its nearby neighbors.
+If a bbox has a lot of similarly colored and textured nearby neighbors, we
+regard it as "generic" and representing "stuff" rather than a "thing".
+Discard highly generic "stuff" bboxes.  This requirement tends to do a good
+job in eliminating most vegetation bbox candidates.
+
+*.  Stage 4: 
+
+For each surviving bbox, look for nearby "buddy" bboxes of the same
+polarity (dark region against bright or vice-versa) which have comparable
+pixel heights.  Group such "buddy" bboxes together and discard any "lonely"
+bboxes as unlikely to correpond to genuine characters.  Resulting bbox
+groups represent candidates for multi-digit numbers.
+
+*.  Stage 5: 
+
+Pass each surviving bounding box into a convolutional neural network
+developed by another group at Apple.  Each bounding box is classified as
+either representing a 0, 1, 2, ..., 8, 9 or else not-a-digit.
+
+Zoom into classified digits and view their labels plus recognition
+probabilities.  Also zoom into false "2" located on upper RHS within pine
+tree.  Zoom into false driveway "1" located at very bottom of image.
+
+*.  Stage 6: 
+
+Perform a series of tests on sequences of classified digits to determine if
+they form a genuine number.  Firstly, reject digits which overlap too much.
+Secondly, eliminate "lonely" digits which are isolated from "friends" in
+the image plane.  Require heights for digits within number strings to be
+comparable.  Thirdly, reject any number string whose average CNN matching
+score calculated from each component digits does not exceed some strong
+threshold value.  Finally, require all digits within an extract number
+string to lie along a 2D line within the image plane to good approximation.
+
+Zoom into final extract house number.
+
+*.  Goto 3rd image "2497".  Step through stages 1 - 6 for this example.
+
+*.  Goto "2527" image.  Press "m" to run entire pipeline.
+
+*.  Goto some heavy vegetation image.  Press "m" and demonstrate that no
+false alarms are returned.
+
+*.  Goto 2557-2553 image.  Press "m" to run pipeline on this image
+with 2 house addresses.
+
+*.  Goto Mission Bay 383 with 330 lamppost image.  Press "m" to run 
+pipeline on this qualitatively different urban image.
+
+*.  Goto Wells Fargo, Starbucks Coffee and white pickup truck.  Misses
+distant 286, cateches "3040" part of 735 040 on side of truck
+
+*.  Wells Fargo, Starbucs, Vim Vigor:
+
+Catches 274 but misses 286 and 272
+

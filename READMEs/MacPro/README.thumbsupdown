@@ -1,0 +1,25 @@
+===========================================================================================
+Notes for thumbs up/down tool
+===========================================================================================
+Last updated on 3/11/16; 3/29/16; 4/6/16; 4/14/16
+===========================================================================================
+
+*.  Access thumbs up/down webpage via flyover-admin --> PR --> Verification
+Project Viewer.  Then choose verification project.  This should lead to a
+URL such as 
+
+https://flyover-admin.geo.apple.com/admin/pr/verification/project/viewer/test_carlos_dec16
+
+*.  In order to select individual subtypes, hold down "cntrl" button while
+clicking on desired subtypes within scrolling menu
+
+*.  As of 3/29/16, Carlos Folgar has added a "Run Id" field to the Create
+Verification Project webpage.  He also pointed out that image chips can be
+grouped by type, subtype, description and cluster_id.
+
+*.  On 4/6/16, Carlos showed us that we can purge all verification entries
+within Mongo for a particular verification project.  First goto the
+"Verification Project List" webpage.  Then click on the empty checkbox
+located to the extreme left next to the project name.  Next click on the
+blue "With selected" option located near upper right.  Finally, select
+"Reset project" from within the dropdown menu.

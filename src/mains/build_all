@@ -1,0 +1,119 @@
+cd ./aerialEO
+build_aerialEO
+cd ../aerosynth
+build_aerosynth
+cd ../afghanistan
+build_afghanistan
+cd ../alirt_acc
+build_alirt
+cd ../baghdad
+build_baghdad
+cd ../bluegrass
+build_bluegrass
+cd ../china
+build_china
+cd ../dime
+build_dime
+cd ../exif
+build_exif
+cd ../faces
+build_faces
+cd ../falconI
+build_falconI
+cd ../flyover
+build_flyover
+cd ../../fusion
+build_fusion
+cd ../geo
+build_geo
+cd ../gist
+build_gist
+cd ../graphs
+build_graphs
+cd ../hmi
+build_hmi
+cd ../ied
+build_ied
+cd ../inter_process_comm
+build_ipc
+cd ../imagesearch
+build_imagesearch
+cd ../imagesearch/text_recognition
+build_textrecognition
+cd ../../imagetext
+build_imagetext
+cd ../imagevocab
+build_imagevocab
+cd ../interview
+build_interview
+cd ../isds
+build_isds
+cd ../JAV
+build_JAV
+cd ../korea
+build_korea
+cd ../learning
+build_learning
+cd ../machine_learning
+build_machine_learning
+cd ./caffe
+build_caffe
+cd ../deeplab
+build_deeplab
+cd ../../mapping
+build_mapping
+cd ../mit
+build_mit
+cd ../modeling
+build_modeling
+cd ../newyork
+build_newyork
+cd ../nti
+build_nti
+cd ../OSG
+build_OSG
+cd ../pathplanning
+build_pathplanning
+cd ../photosynth
+build_photosynth
+cd ../plume
+build_plume
+cd ../postgres
+build_postgres
+cd ../puma
+build_puma
+cd ../rasr
+build_rasr
+cd ../raven
+build_raven
+cd ../satellite
+build_satellite
+cd ../sift
+build_sift
+cd ../sigint
+build_sigint
+cd ../spase
+build_spase
+cd ../structmotion
+build_structmotion
+cd ../../syntext
+build_syntext
+cd ../tech_challenge
+build_tech_challenge
+cd ../textsearch
+build_textsearch
+cd ../thunderstorm
+build_thunderstorm
+cd ../TOC12
+build_TOC12
+cd ../tracking
+build_tracking
+cd ../uavs
+build_uavs
+cd ../utility
+build_utility
+cd ../video
+build_video
+cd ../wisp
+build_wisp
+

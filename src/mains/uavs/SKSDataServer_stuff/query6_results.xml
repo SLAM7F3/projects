@@ -1,0 +1,7 @@
+<response><success>true</success><message><![CDATA[Found 1 object(s)]]></message><content><entityList>
+  <entity id="0fddcd3b-c41d-48e1-a80e-f002b05d15e0" type="sam">
+    <attribute name="name" value="Russia" fullname="{country|country:owns(this)}/name[f941e15e-e805-4b12-b8fc-f9fcfcbcd6bf]"/>
+    <attribute name="name" value="Iran" fullname="{country|country:owns(this)}/name[f6d3af6a-060d-49ad-b07e-d8f1430e8cbc]"/>
+    <attribute name="name" value="China" fullname="{country|country:owns(this)}/name[2ef499ce-0c47-45e9-81d8-45e014cf01e0]"/>
+  </entity>
+</entityList></content></response>

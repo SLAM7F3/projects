@@ -1,0 +1,4490 @@
+=====================================================================
+Fusion1 code changes made on Fri Aug 8:
+
+*.  Added notes about iPod web pages and social network startup script to
+README.bluegrass_demo
+
+=====================================================================
+Fusion1 code changes made on Mon, Jun 23:
+
+*.  Added README.apt_commands to repository
+
+=====================================================================
+Fusion1 code changes made on Thurs, May 15:
+
+*.  Fixed bad memory bug in G99VideoDisplay which crept in several weeks
+ago when we were working on FFMPEG playing mp4 files.
+
+
+=====================================================================
+Fusion1 code changes made on Fri, Apr 25:
+
+*.  Modified mains/utility/CREATE_KAKADU_SCRIPT.cc to use gdal_translate
+rather than convert to subsample tif files extracted from jp2 files.
+Learned hard and painful way that convert's subsampling is awful, whereas
+gdal's is quite good.
+
+=====================================================================
+Fusion1 code changes made on Mon, Mar 24:
+
+*.  Fixed SA-11 typo in SAMform.html.  Added touchy's IP to SAMform.html.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Mar 20:
+
+*.  Added SKSDataServer_hostname as member of PassInfo class along with
+set/get methods.  Now pass this parameter as an input argument rather than
+hardwiring it into SAMServer class.
+
+*.  Added sanity check to SAMServer::process_global_queries() on requested
+SAM type to prevent SAMServer from failing if SA-7 is queried.
+
+*.  Added SKS_interface_ptr member to SAMServer class.
+
+*.  In WebClient::readData(), replaced equals with plusequals in
+returned_output = outstream.readAll().toStdString() in order to fix partial
+message retrieval problem.
+
+*.  Eliminate trailing white spaces from XML output.
+
+=====================================================================
+Fusion1 code changes made on Mon, Mar 17:
+
+*.  In SAMServer::process_global_queries(), we now follow Ross' suggestion
+to call app_ptr->processEvents() in order to have Qt execute WebClient
+calls to SKS DataServer.  Basic strategy seems to be viable for getting
+info back from DataServer with blocking enabled.
+
+=====================================================================
+Fusion1 code changes made on Sun, Mar 16:
+
+*.  Added several more examples from Delsey of how to make queries of her
+SKS DataServer within mains/uav/SKSDataServer_stuff subdir.  Implemented
+several of these examples within SKSDataServerInterfacer query methods.
+
+*.  Added mains/uav/MYCLIENT.cc to repository.
+
+=====================================================================
+Fusion1 code changes made on Fri, Mar 14:
+
+*.  SAMServer::process_local_queries() takes in the ID for some specific
+SAM site.  It generates a URL containing SAM parameters appropriate for the
+selected site which can be parsed by the PHP scripting language.  PHP
+dynamically generates html pages by filling variables within a template.
+On 3/14/08, Dave Ceddia installed PHP onto touchy so that it is
+automaticallly invoked by Apache when the URL returned by this method is
+submitted to a browser.
+
+*. As of Friday, Mar 14 at 12:40 pm, we experiment with dynamically
+instantiating WebClients for each individual GET call.  We believe Qt
+should delete the dynamically allocated WebClient object once the data has
+been read out from the WebClient object.
+
+*.  Performed crude experiments with WebClient calling SKS DataServer on
+Friday Mar 14.  We currently instantiate a new WebClient for each call.
+Eventually, delete dynamically allocate WebClient once its string holding
+the DataServer information has been read.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Mar 13:
+
+*.  Added WebServer_hostname as member to PassInfo class.  Added WebServer
+argument parsing lines to PassesGroup.
+
+*.  Pass WebServer IP address as input argument in main program QTLOGIC.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Mar 6:
+
+*. Added vector<pair<string,string>> properties members to messenger
+and message classes along with set/get methods.
+
+=====================================================================
+Fusion1 code changes made on Weds, Mar 5:
+
+*.  stringfunc::integer_to_hexadecimal() takes in integer i along with the
+number of desired output hexadecimal digits.  It returns a string
+containing the hexadecimal format for the integer which is pre-padded with
+zeros.
+
+*. colorfunc::RGBA_to_AABBGGRR_hex() takes in r,g,b,a color values ranging
+between 0 and 1.  It first converts each color double into the integer
+interval [0,255].  It then converts each integer to its hexadecimal
+representation.  The concatenated version is returned in a format which is
+suitable for KML file generation.
+
+=====================================================================
+Photon code changes made on Weds, Jan 23:
+
+*.  Recall ColormapPtrs is an osg::Referenced object.  Since it
+automatically goes out of scope, we should NOT explicitly delete it within
+PointCloud's destructor.
+
+=====================================================================
+Fusion1 code changes made on Tues, Jan 15:
+
+*.  Added extra white space between columns within
+FeaturesGroup::save_feature_info_to_file().
+
+*.  G99VideoDisplay::planar_orthorectify() takes in physical world-space
+dimensions for some planar object and an orthorectifying homography.  It
+colors output orthorectified pixels according to input image plane pixels'
+RGB values.  Orthorectified imagery output is returned within a char*
+array.
+
+*.  Mains/satellite/HOMOPROJECT reads in a G99 video file which contains
+some planar target.  It applies a homography (which may have been
+precalculated via mains/isds/HOMO) to the input still image and generates a
+new G99 video file containing the transformed output.
+
+=====================================================================
+Fusion1 code changes made on Mon, Jan 14:
+
+*. Unprivatized SignPost::reset_attitude_posn() so that VIEWSATELLITE can
+compile.
+
+=====================================================================
+Fusion1 code changes made on Sun, Jan 6:
+
+*.  Added orthographic_projection_flag member to FusionGroup along with set
+method.  tiepoint_backprojection() now takes the value of this bool into
+account.
+
+=====================================================================
+Fusion1 code changes made on Fri, Dec 21:
+
+*.  Fixed bug in PointCloud::write_output_file() so that TDP and IVE files
+can be written out by pressing 'y'
+
+*.  Moved write_IVE_file() from PointCloud into DataGraph.
+
+*.  DecorationsKeyHandler class allows user to write out IVE file for
+decorations independent of point clouds.
+
+...................
+
+*.  Tried incorporating more XELIAS info into optshadow, but still cannot
+make sense out of opimagecdf pass...
+
+=====================================================================
+Fusion1 code changes made on Thurs, Dec 20
+
+*.  Added mains/utility/CREATE_KAKADU_SCRIPT.cc to repository.
+
+*.  Added mains/bluegrass/README.truth_data to repository.
+
+*.  Started to extend mains/satellite/OPTSHADOW to compute Uhat, Vhat in
+ECI coords for az/el mount telescopes.
+
+=====================================================================
+Fusion1 code changes made on Tues, Dec 18
+
+*.  Added PostGis notes to projects/README subdir.
+
+=====================================================================
+Fusion1 code changes made on Mon, Dec 17:
+
+*.  Fixed sign for anti-nadir a_hat dir vector in
+satellitepass::compute_physics_params_for_each_image().
+
+*.  Mains/satellite/OPTSHADOW computes camera direction vector given
+satellite time, position, orbit-normal and anti-nadir direction.
+
+=====================================================================
+Fusion1 code changes made on Weds, Nov 28:
+
+*.  Added README.NY_EO to repository.
+
+=====================================================================
+Fusion1 code changes made on Fri, Nov 23:
+
+*.  Added mains/bluegrass subdir to repository.
+
+*.  Wrote mains/utility/create_fill_script
+
+=====================================================================
+Fusion1 code changes made on Weds, Nov 21:
+
+*.  Eliminated all references to string UTM_zones within
+astro_geo/latlong2utmfuncs.cc, astro_geo/geopoint class and video/scb.cc.
+Now work exclusively instead with int UTM_zonenumbers and bool
+northern_hemisphere_flags.
+
+*. Overloaded latlong2utmfunc::LLtoUTM() which takes in a ZoneNumber_offset
+that can be used to force UTM output be returned within a particular UTM
+zone.
+
+=====================================================================
+Fusion1 code changes made on Sun, Nov 11:
+
+*. Added tdpfunc methods npoints_in_tdpfile(), read_curr_XYZ_points(), and
+read_XYZ_points_from_tdpfile().
+
+...................
+
+*.  Methods xyzpfunc::write_xyz_data and tdpfunc::write_xyz_data take in
+STL vectors X,Y,Z and boolean STL vector include_point_flag.  They write to
+output files whose names are passed as input arguments those XYZ points for
+which include_point_flag==true.
+
+*.  Program newyork/MERGEPOINTS is a specialized utility program which
+combines median-filled TDP tiles with building wall points from
+original NYC RTV tiles.  Combined output information is written to a TDP
+file.
+
+*.  Program mains/utility/CREATE_MERGE_SCRIPT generates an executable
+script which calls MERGEPOINTS and LODTREE for every RTV NYC tile.
+
+=====================================================================
+Fusion1 code changes made on Sat, Nov 10:
+
+*.  Allowing for manual identification of ground seed points.
+
+.........................
+
+*.  Generalized FINDGROUND so that it either takes manual inputs for ground
+seed points or else uses pixels at lowest end of height distribution.
+
+=====================================================================
+Fusion1 code changes made on Mon, Nov 5:
+
+*.  Set max_ground_prob=0.10 in groundfunc::identify_ground_seed_pixels().
+
+=====================================================================
+Fusion1 code changes made on Thurs, Nov 1
+
+*.  TESTCITIES is massively messed up on ISDS3D laptop.  It's also not
+working correctly so far as lat-long grids are concerned on FUSION1.  But
+it's less bad on FUSION1 than ISDS3D.
+
+
+=====================================================================
+Fusion1 code changes made on Tues, Oct 30:
+
+*.  Added TDP2XYZP to mains/OSG.  
+
+............
+
+*.   LatLongGrid::set_world_origin_and_middle() is now a protected rather
+than public method.
+
+*.  Overloaded LatLongGrid::set_world_origin_and_middle(
+start_east,stop_east,start_north,stop_north) to start handling two UTM
+zones covering common point cloud region (e.g. Lubbock!)
+
+*.  TEMPORARILY suspended guards in Terrain_Manipulator::zoom() and
+translate() for Bluegrass latlong grid debugging purposes.
+
+=====================================================================
+Fusion1 code changes made on Fri, Oct 26:
+
+*.  Moved a few .pkg files out of mains/OSG into its packages subdir.
+
+*.  Replaced (px,py) for loops with single index loop in
+imagefunc::count_pixels_below_zmax(), count_pixels_above_zmin() and
+count_pixels_in_z_interval().  min_intensity_above_floor(),
+max_intensity_below_ceiling(), threshold_intensities_below[above]_cutoff().
+
+*.  Eliminating parallelogram bbox checks speeds up median filling by
+orders of magnitude!
+
+............................
+
+*.  groundfunc::find_low_local_pixels() now searches for obviously low
+pixels that lie within 0.5 meter of min(*ztwoDarray_ptr) rather than of 0.
+
+............................
+
+*.  Automated NYC ground finding via oozing as well as lattice site
+thresholding is seriously messed up!
+
+=====================================================================
+Fusion1 code changes made on Thurs, Oct 25:
+
+*.  In PointCloud::read_extrainfo_from_TDP_file(), eliminated unnecessary
+(and incorrect!) 'r+b' argument to tdp_file.file_open() call.  VIEWPOINTS
+is then able to read Luke Skelly's TDP files converted from LAS input.
+
+=====================================================================
+Fusion1 code changes made on Tues, Oct 23 & Weds, Oct 24:
+
+*. Program mains/tracking/BLOBTRACK reads in a raw text track file
+generated by OPENCV program blobtrack.  It parses the raw text file and
+generates (U,V) tracks as functions of image time and track ID.
+
+*.  Added member vector<track>* tracks_ptr to Movie class.
+
+*.  Added AnimationController argument to 2 of 3 CylindersGroup
+constructors.
+
+*.  Fixed OBSFRUSTUM::draw_rays_thru_imageplane_features_to_worldplane() st
+imageplane cyls are now normal to imageplane.  
+
+*.  Split beginning section of groundfunc::generate_threshold_field()
+into groundfunc::generate_threshold_centers().
+
+*.  Added README.nyc_demo to READMEs subdir.
+
+*.  imagefunc::fast_threshold_field() now works with STL vectors rather
+than C-style arrays.  
+
+......................
+
+*.  Added src/kakadu subdir to repository.
+
+=====================================================================
+Fusion1 code changes made on Tues, Oct 16:
+
+*.  In G99VideoDisplay constructor, determine n_channels for an osg::Image
+based on its InternalTextureFormat value.
+
+*.  Creating new src/kakadu subdir to integrate namespace funcs and classes
+extracted from Kakadu source into our code tree.
+
+=====================================================================
+Fusion1 code changes made on Weds, Oct 3
+
+*.  Pressing 'f' while in MANIPULATE_FUSION_MODE now causes
+OBSFRUSTAKeyHandler to toggle between flying into OBSFRUSTUM apex with
+accompanying setting of rotate_about_current_eyept_flag=true and setting of
+boolean to false.
+
+*. Terrain_Manipulator::set_rotate_about_current_eyepoint_flag() now prints
+out messages indicating whether rotation pt is about Z-grid center or
+current eyepoint.
+
+=====================================================================
+Fusion1 code changes made on Tues, Oct 2
+
+*.  Removed dependence of Custom3DManipulator::parse_scroll_events(ea) upon
+event stack _ga_t0 which caused zoom motion to continue when any key was
+pressed following scroll wheel movement.  This method now only depends upon
+current event ea.
+
+=====================================================================
+Fusion1 code changes made on Mon, Oct 1
+
+*. Created new projects/READMEs subdirectory for important README files
+which are not directly related to src code.
+
+=====================================================================
+Fusion1 code changes made on Tues, Sep 18:
+
+*.  Moved several public pixel value manipulation methods out of VidFile
+class into G99VideoDisplay class as private members.
+
+*.  G99VideoDisplay::initialize_general_video() now copies image data
+already read into image_refptr's data array into scratch data array member
+m_image.
+
+*.  OBSFRUSTUM::backproject_pixels_into_2nd_imageplane backprojects every
+pixel in current OBSFRUSTUM's movie onto grid's z-plane.  The backprojected
+pt is then reprojected onto a 2nd image plane.  If it lies inside a 2nd
+OBSFRUSTUM's viewing window, the original pixel is recolored translucent
+red.
+
+*.  Added EventHandlers = list<GUIEventHandler> member var to
+WindowCoordConverter class along with set/get methods.  
+
+*.  Working towards globally replacing every viewer.getEventHandlerList()
+in all main programs with call to this class get method.  Need to perform
+this conversion for OSG2.1 migration purposes.
+
+............
+
+*.  Globally replaced every viewer.getEventHandlerList().push_back() with
+window_coord_converter.get_EventHandlers_ptr()->push_back().
+
+=====================================================================
+Fusion1 code changes made on Sat, Sep 15 early am:
+
+*.  Added constraint on Terrain_Manipulator::rotation() so that point
+clouds can no longer be viewed from the undersides.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Sep 13:
+
+*.  Modified mains/ISDS/PEOPLE to take IP addr+port number of ActiveMQ
+broker as command line argument.
+
+*.  Added SignPostPickHandler::doubleclick() which can be used to select
+SignPosts in MANIPULATE_ANNOTATION mode without having to hold down shift
+key.
+
+*.  SignPostsGroup::issue_invocation_message() method chops SignPost label
+into substrings separated by '+' for Google search purposes.  
+
+*.  Instantiate wiki messengers in PEOPLE and VIEWCITIES and send its
+pointer to SignPostsGroup objects.
+
+..............
+
+*.  Pressing 't' in MANIPULATE FUSED DATA mode now causes
+ObsFrustaKeyHandler to toggle between unerasing/erasing all ObsFrusta.  
+
+=====================================================================
+Fusion1 code changes made on Tues, Sept 11:
+
+*. Changed Custom3DManipulator and Terrain_Manipulator so that mouse
+button functions match those of Google Earth.
+
+*. In PickHandler class, use GUIEventAdapter time for mouse clicks rather
+than timefunc::elaspsed_timeofday_time().  At least curr mouse click time
+is independent of specific PickHandler object.  But time between two rapid
+mouse clicks is still 0.1 - 0.3 secs rather than 10X smaller as we would
+have thought it should be.
+
+=====================================================================
+Fusion1 code changes made on Weds, Sept 5 and Thurs, Sept 6:
+
+*. Fixed SKS database accessing within EARTH program.
+
+=====================================================================
+Fusion1 code changes made on Friday, Aug 24:
+
+*. CylindersGroup::parse_messages() now listens only for 'SELECT ID' and
+'LINK ID1 ID2' messages coming from the ActiveMQ message queue.
+
+*.  Wrote GraphicalsGroup::generate_proximity_messages() which sends out a
+message whenever a dragged Graphical is released close to some other
+Graphical of the same type.
+
+*.  Created PowerPoint classes within osg/osgAnnotators.  Can now
+instantiate and move powerpoint icons.  Can also send message to invoke
+powerpoint via doubleclick.
+
+................
+
+*.  Added PowerPoint decoration to VIEWCITIES.
+
+................
+
+*.  Tracked down problem with PolyLine deletion to its constituent
+PointsGroup.  Cannot delete PointsGroup itself with node mask hack
+eliminated without seg faulting.  So we want to try instead instantiating a
+permanent PointsGroup within PolyLinePickHandler and never delete it.
+Instead, we'll just destroy its graphical contents whenever a PolyLine is
+destroyed.  As of late Friday evening, this is not working correctly, and
+our codes are in a messed up state....
+
+=====================================================================
+Fusion1 code changes made on Thurs, Aug 23:
+
+*.  Added missing return statement within polyline::min_distance_to_point()
+
+*.  Implemented PolyLinePickHandler::select_PolyLine() which compares mouse
+point with polyline vertices projected into 2D screen space.
+
+*.  Wrote GraphicalsGroup::parse_messages() and issue_selection_message()
+member functions.  
+
+*.  Added text_screen_axis_alignment_flag boolean member and setter method
+to CylinderPickHandler.  By setting this bool to false, cylinder text
+appears within XY rather than SCREEN plane.  Easier to read cylinder IDs
+representing people moving in cities.
+
+*.  Added response to Key_UP and Key_DOWN within CylindersKeyHandler.  Also
+modified relative rates at which cylinders and their text change size as
+they are enlarged/diminished.
+
+*.  Added messenger to VIEWCITIES as well as Cylinder decorations.
+
+=====================================================================
+Fusion1 code changes made on Weds, Aug 22:
+
+*.  Eliminated linking to libgd.a from Makefile to avoid having to install
+this static library on touchy.  Copied Makefile from touchy (which
+successfully built and ran VIEWCITIES) onto Makefile_projects on FUSION1.
+No longer build Axis codes (for which we haven't installed the necessary
+libraries on touchy).
+
+*.  Created new messenger/message.h , .cc class to act as a container for
+text message plus producer ID strings.  By comparing producer ID strings,
+message consumers can now ignore messages which they sent to themselves.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Aug 21:
+
+*.  Modified Makefile to start working on touchy.
+
+*.  Drawing of polylines within program BASEMENT is starting to work.  We
+now destroy and recreate a new polyline each time a new vertex is added.
+Coloring of vertices and lines is still messed up.
+
+=====================================================================
+Fusion1 code changes made on Monday, Aug 20:
+
+*.  Fixed catastrophic bug in Terrain_Manipulator::parse_keyboard_events().
+Graphical picking works again after explicitly returning bool from this
+method!
+
+*.  Changed EarthManipulator zoom so that camera moves towards earth as
+mouse moves downwards toward user's body.
+
+*.  Globally eliminated osgfunc::initialize_window() in favor of
+ViewerCoordConverter::initialize_window().
+
+......
+
+*.  Eliminated unnecessary classnames in a few header files which gcc-4.1.2 on
+touchy throws errors. 
+
+*.  Eliminated 'using TwoDarray<A>::get' statement from TwoDarray.h.
+Gcc-4.1.2 now appears to explicitly require replacing all get() to
+this->get() within TwoDarray.cc.  
+
+=====================================================================
+Fusion1 code changes made on Friday, Aug 17:
+
+*.  Created PolyLinePickHandler class.  Added PolyLinePickHandler member to
+Decorations class.
+
+*.  Added pure virtual doubleclick() member function to PickHandler class.
+Explicitly time interval between 2 mouse button pushes.  If they're less
+than 1/4 sec, call doubleclick() rather than pick().
+
+*.  Added PointsGroup member ptr to PolyLine for optional display of
+vertices.
+
+*.  Can insert sequence of 3D points onto Grid plane within program
+BASEMENT.  After sequence insertion is terminated via mouse doubleclick, 3D
+points all change color.  PolyLine segments between 3D points do not yet
+correctly appear.  
+
+=====================================================================
+Fusion1 code changes made on Thurs, Aug 16:
+
+*.  Added src/messenger and include/messenger subdirs containing Dave
+Ceddia's messenger class which uses ActiveMQ to pass messages between main
+C++/java programs.
+
+*.  Added Messenger ptr member to GraphicalsGroup class along with set/get
+methods.  Added check_messages() which stores Messenger messages into
+GraphicalsGroup vector<string> member messages.
+
+*.  Wrote little test programs mains/isds/message_receiver.cc and
+mains/isds/message_sender.cc  
+
+*.  Added blinking flags and methods to Geometrical classes.  Cylinders
+picked via external messages now blink for a few seconds before turning
+into their quiescent selected colors.
+
+.............
+
+*.  Added Messenger ptr member to GraphicalPickHandler class along with
+set/get methods.
+
+=====================================================================
+Fusion1 code changes made on Weds, Aug 15:
+
+*.  Added text_size member var & setter/getter methods to
+CylinderPickHandler class.  Now draw Cylinder text in white rather than in
+Cylinder's own color.
+
+*.  Reset Cylinder's permanent color to yellow in order to distinguish it
+from instantaneous selected red color.
+
+*.  Wrote mains/isds/PEOPLE.cc which is a variant of BASEMENT for starting
+to test C++/java message passing using ActiveMQ.
+
+=====================================================================
+Fusion1 code changes made on Fri, Aug 10:
+
+*.  GraphicalsGroup::get_Graphical_ptr(int n) now returns NULL if n >=
+Graphicalslist size rather than throwing exit(-1).
+
+*.  Eliminated ugly
+ObsFrustaGroup[OBSFRUSTAGROUP]::collate_still_imagery_info() methods!
+VIEWCITIES [TESTCITIES] pgms now directly read in copley.jpg and
+copley_north.jpg via pkg files.  Initially, they are masked.  Pressing 'c'
+in ObsFrustaKeyhandler sequentially unerased ObsFrusta PAT's.  Pressing 'c'
+OBSFRUSTAKEYHANDLER sequentially unmasks their Pyramids' OSG groups.
+
+=====================================================================
+Fusion1 code changes made on Tues, Aug 7:
+
+*.  Split apart G99VideoDisplay::init_vidfile() into initialize_G99_video()
+and initialize_general_video() methods.
+
+*.  Replaced PassesGroup::get_curr_videopass_ID() with
+get_videotexture_pass_ID().
+
+*.  Moved grid_origin_ptr member and set/get methods out of
+AlirtManipulator class into Custom3DManipulator.
+
+*.  Added explicit --newpass to spase.pkg to separate xyzp point cloud and
+reordered_sar.vid files.
+
+*.  Use osgDB::ReadImageFile to parse jpeg, png, tif files as generalized
+video files within G99VideoFile class.  Main VIDEO program can now display
+digital photos as one-frame videos.
+
+*.  Explicitly pass --surface_texture in front of packages
+(sanclemente_EO.pkg and sandiego_EO.pkg) which contain jpg/png pics that
+are meant to be laid as map images.  We now otherwise interpret all .jpg,
+.png, .tif files as inputs to video passes.  Starting to decouple pass type
+from input file type (which only sometimes correctly correlate).
+
+=====================================================================
+Fusion1 code changes made on Fri, Aug 3:
+
+*.  Added pcum_to_one_minus_pcum_flag argument to
+prob_distribution::write_cumulative_dist() for redisplaying
+tracklet_lifetime cumulative distribution as Mike Braun had suggested.
+
+*.  Added June 2007 Makefile.MacOSX to repository.
+
+=====================================================================
+Fusion1 code changes made on Weds, Aug 1:
+
+*.  Compute decimal_year within Clock class.
+
+=====================================================================
+Fusion1 code changes made on Tues, July 31:
+
+*.  Encapsulated UGLY C code downloaded from geomagnetism website within
+astro_geo/geomagnet class.
+
+=====================================================================
+Fusion1 code changes made on Fri, July 27:
+
+*.  OBSFRUSTUM::build_current_frustum() now stores time-dependent zplane
+vertices for zplane face animation purposes.  LiMIT GMTI Dwell OBSFRUSTUM
+now correctly hops among 4 San Clemente target regions.
+
+=====================================================================
+Fusion1 code changes made on Weds, July 25:
+
+*.  GMTI dwell OBSFRUSTUM is partially working.  Hopping among legitimate
+GMTI targets within FOV is messed up...
+
+=====================================================================
+Fusion1 code changes made on Fri, July 20:
+
+*.  Wrote polyhedron::write_OFF_file();
+
+*.  Started creating osgModel/MODEL classes which contain new OBSFRUSTA
+rather than old ObsFrusta objects.
+
+*.  Added polyhedron::clear_vertices_edges_faces() as prelim for working
+with time-dependent polyhedra (e.g. HAFB video view frusta)
+
+*.  In OBSFRUSTUM, viewing_pyramid and viewing_pyramid_above_zplane objects
+are now instantiated just once and deleted just one within class
+destructor.
+
+*.  OBSFRUSTUM::initialize_frustum_with_movie() is now independent of time
+and pass_number params.  All time-dependence moved into
+OBSFRUSTUM::absolute_posn_and_orientation() methods.
+
+*.  Trying to cleanly separate time-independent OBSFRUSTUM initialization
+methods from time-dependent translation and rotation methods.
+
+=====================================================================
+Fusion1 code changes made on Weds, July 18, Thurs, July 19 and Fri am, July
+20:
+
+*.  Added OBSFRUSTUM::set_color() which globally recolors the pyramid
+objects.
+
+*.  Eliminated LineSegment::set_linewidth() in favor of
+LineSegment::get_LineWidth_ptr().  
+
+*.  Explicitly pass linewidths for side, base and zplane edges in
+Pyramid::build_current_pyramid().
+
+*.  Added OBSFRUSTUM::absolute_position() method.
+
+*.  Wrote mathfunc::weighted_mean() and weighted_std_dev() methods.
+
+*.  Eliminated templatized mathfunc::mean() method which is seriously f__d
+up!
+
+*.  Added touchtable_demo.README to mains/isds.
+
+*.  Fixed internal edge bug in Pyramid::set_color().
+
+*.  Explicitly transfer face handedness within polyhedron::docopy().
+
+*.  Pyramid::operator<< no longer calls Polyhedron::operator<<
+
+=====================================================================
+Fusion1 code changes made on Tues, July 17:
+
+*. Added mymatrix(genmatrix&) constructor for 3x3 genmatrices.
+
+*. Can now rotate and translate OBSFRUSTA pyramid, above z-plane pyramid
+and camera model as single object.  Can also generate OBSFRUSTA containing
+still images.
+
+=====================================================================
+Fusion1 code changes made on Mon, July 16:
+
+*.  Added sanity check for nvertices < 3 within polygon::locate_origin()
+
+*.  Added zplane_face member to geometry/pyramid class.
+
+..........................................
+
+*.  Starting overhaul of OBSFRUSTUM class which now contains a Pyramid
+object.
+
+*.  decorations::add_OBSFRUSTAGROUP() now returns a pointer to the
+instantiated OBSFRUSTAGROUP.
+
+*.  face::compute_area_COM_and_normal() now assumes face is convex. 
+
+*.  polygon::compute_area() and compute_COM() no longer form triangle fans
+using the polygon's ill-defined origin point.  Instead, they form fans
+anchored at vertex[0].  These methods (still) only work for convex
+polygons.
+
+=====================================================================
+Fusion1 code changes made on Fri, July 13:
+
+*.  Photograph class now extracts camera make, model and focal length from
+Exif metadata.
+
+*.  Clock class now computes integer UTM zone hour offset given zone
+number.
+
+=====================================================================
+Fusion1 code changes made on Thurs, July 12:
+
+*.  Starting to understand how to parse EXIF geolocation metadata.
+
+*.  Wrote new src/image/photograph class to parse and store EXIF metadata.
+
+*.  Added src/mains/exif and its C++ contents to SVN repository.
+
+=====================================================================
+Fusion1 code changes made on Weds, July 11:
+
+*.  Added exiv2 library to Makefile.
+
+=====================================================================
+Fusion1 code changes made on Tues, July 10:
+
+*.  Added src/mains/Qt subdir to repository.  Typed in Chapter1 programs
+from 'C++ GUI programming with Qt4' book.  Started typing in Chapter 2
+programs.
+
+=====================================================================
+Fusion1 code changes made on Mon, July 9:
+
+*.  Eliminated STL vector member edges from face class in favor of
+edge_chain.
+
+*.  In pyramid::face_part_above_Z(), explicitly verify that at least 3 face
+vertices lie above Z-plane before attempting to instantiate a new face
+object.
+
+*.  Generalized polyhedron::find_vertex_ID_given_posn() and
+find_edge_ID_given_vertices_posns() to take in STL vectors of vertices and
+edges rather than just using member variables.
+
+=====================================================================
+Fusion1 code changes made on Fri, July 6:
+
+*.  Added notes in VIEWPOINTS and osgfuncs::init_window() about
+Producer::Viewer windows issues which arise when porting from linux to Mac
+OS X.
+
+............................
+
+*.  In Linkedlist::get_data(int n), now throw error (actually terminate) if
+n >= n_nodes (and not just n > n_nodes).
+
+*.  In Pyramid::set_edge_color(), no longer color internal edges (which are
+not instantiated as LineSegments within Polyhedron).
+
+*.  Fixed absolute_position() methods within polyhedron and pyramid
+classes.  Program VIEWPYRAMIDS now places colored pyramid volume and edges
+at correct locations. 
+
+*.  Fixed counting of internal and external polyhedron edges.
+
+=====================================================================
+Fusion1 code changes made on Tues, July 3:
+
+*.  Starting to experiment with computing faces and tetrahedra portions
+lying above some Z-plane.  
+
+=====================================================================
+Fusion1 code changes made on Mon, July 2:
+
+*.  Created new geometry/face class which replaces polyhedron typedef.
+
+*.  Overhauled geometry/polyhedron class.  Moved several methods out of
+polyhedron into vertex, edge and face classes.  
+
+=====================================================================
+
+PHOTON code changes made on Mon, July 2:
+
+*.  Eliminated myvector references from math/threevector & Tensor classes.
+
+*.  Deprecated myvector class completely eliminated from entire code
+structure!
+
+=====================================================================
+PHOTON code changes made on Fri, Jun 29:
+
+*.  Changed all myvectors to threevectors within geometry/linesegment class.
+
+*.  Eliminated all myvectors within math/fourvector.cc, twovector.cc and
+mymatrix classes.
+
+=====================================================================
+PHOTON code changes made on Thurs, Jun 28:
+
+*.  Changed all myvectors to threevectors within geometry/polygon class.
+
+=====================================================================
+Fusion1 code changes made on Weds, Jun 27:
+
+*.  Globally renamed osgSceneGraph/ColorThresholds class as ColormapPtrs.  
+
+*.  Added find_alt_given_long_and_lat(),
+find_alt_given_easting_and_northing() and find_closest_world_point(ray)
+methods to PointFinder class.
+
+*.  Started to write assign_heights_using_pointcloud() methods in PolyLine
+and PolyLinesGroup classes.  Initial experiments with NYC roads look
+hopeful.
+
+=====================================================================
+Fusion1 code changes made on Tues, June 26:
+
+*.  Print out city and UTM zone info at start of Ross' LODTREE.  Program
+now sleeps for 2 seconds to allow user to verify this information.
+
+*.  Can now pass absolute max and min height thresholds (and not just
+height threshold fractions) within input .pkg files.
+
+*.  Added height_offset parameter into PassInfo.  Enables point clouds to
+float above blue marble surface so that earth does not peek through.  
+
+*.  Renamed GraphicalsGroup::get_OSGsubPAT() as get_OSGsubPAT_ptr().
+
+*.  Added strings_map to SignPostsgroup to keep track of signpost tables
+previously read in.  No longer read in a GIS table more than once.
+
+=====================================================================
+Fusion1 code changes made on Mon, June 25:
+
+*.  Added adjustable animation_speed_factor into
+EarthManipulator::generate_animation_path() for debugging purposes.
+
+*.  Hacked up TESTEARTH.cc so that it can automatically display 2 Copley
+ObsFrusta.  Unsuccessfully spent hours trying to figure out why we cannot
+attach ObsFrusta to subPATs rather than to OSGgroup.  But hopefully this
+hack will allow us to show 2 NYC ObsFrusta for tomorrow's demo.
+
+=====================================================================
+Fusion1 code changes made on Fri, June 22:
+
+*. Generalized polyhedron class so that it can generate a Gnu triangulated
+surface for arbitrary tetrahedra, square pyramids and boxes.
+
+*.  Added abs_posn, scale and rotation methods into polyhedron class.
+
+=====================================================================
+Fusion1 code changes made on Thurs, June 21:
+
+*. Wrapped osgGeometry::Point and Polygon classes within a new
+'osgGeometry' namespace in order to avoid clashes with old, unprotected Mac
+C structures.  Necessary for porting our codes to Mac OS X.
+
+*.  No longer support deprecated src/image/pngfuncs.cc within code tree.
+Eliminate this antiquated set of methods in order to avoid having to link
+to libpng.  Helps with Mac OS X porting.
+
+*.  Eliminated dependence of myimage.cc upon ancient gd graphics library
+(used to read in png images).  Helps with Mac OS X porting.
+
+Not yet checked in:
+
+*.  Changed unsigned int to size_t within line 884 of sksfuncs.cc in order
+to compile on Mac.
+
+*.  Cast size_t to unsigned int within kdtreefuncs.cc in order to compile
+on Mac.
+
+*.  Changed #include malloc.h to stdlib.h in Wallace's bbnupdate.cc in
+order to compile on Mac.
+
+=====================================================================
+Fusion1 code changes made on Weds, June 20:
+
+*.  Verified EARTH program works OK after changing ordering of
+ViewFrustum's rays.
+
+=====================================================================
+Fusion1 code changes made on Tues, Jun 19:
+
+*.  Renamed 'panorama' web photo shot from hotel near Copley plaza looking
+northward as 'copley_north'.
+
+*.  Testcities program can now display two (east & north) Copley still
+image ObsFrusta.
+
+*.  Added copley_north.pkg to repository.
+
+............................
+
+*.  Added missing 'e' and 'E' letters into lowerletters and upperletters
+string consts within stringfunc::decompose_string_into_substrings().
+............................
+
+*.  On PHOTON, moved simple, single typedef command from twoDarray.h into
+TwoDarray.h.  Eliminated former file in order to migrate codes from linux
+to Mac OS which does not distinguish between lower/upper case letters in
+filenames.
+
+*.  On PHOTON, deleted unused network/strand.h and strand.cc files.  These
+classes have been superceded by templatized network/Strand.h and Strand.cc.
+
+*.  Increased default ray length for virtual camera ObsFrustum from 10 to
+100 kms.  
+
+*.  Moved typedefs out of genarray.h, mynode.h, hashtable.h and
+linkedlist.h into Genarray.h,  Mynode.h, Hashtable.h and Linkedlist.h
+
+*.  Standard set of test and ACC programs seem to work OK after typedef
+movement and massive numbers of new #include statements.
+
+*.  Moved typedef out of tensor.h into Tensor.h.
+
+............................
+
+Not yet checked in...
+
+
+=====================================================================
+Fusion1 code changes made on Mon, Jun 18:
+
+*.  Added projection_matrix and downrange_distance tags to PassInfo class
+as well as docopy() and operator=() methods.  Can parse ObsFrustum
+calibration info from .pkg files.
+
+*.  Added copley.pkg to repository.
+
+*.  Added mains/OSG/testcities.cc to repository.  Can now instantiate
+Copley Obsfrustum after reading its parameters in from .pkg file rather
+than from params hardwired into ObsFrustaGroup class.
+
+=====================================================================
+Fusion1 code changes made on Fri, June 15:
+
+*.  Added data/OpenSceneGraph-Data/Camera.osg to repository.
+
+*.  Starting to incorporate optional 3D Camera models at ObsFrusta
+vertices.
+
+=====================================================================
+Fusion1 code changes made on Tues, June 5:
+
+*.  Fixed more problems with determining absolute sgns of Uhat, Vhat and
+*R_camera_ptr in camera class.
+
+*.  Added focal_length, rel_az, rel_el and rel_roll as PassInfo params.
+
+*.  Created mains/china/shanghai_04,5,6.pkg.  mains/china/fov.cc can now
+read in these package files and display 3 Shanghai photo composite.
+
+=====================================================================
+Fusion1 code changes made on Monday, June 4:
+
+*.  Can now display more than one ObsFrustum within china/FOV.cc.
+
+*.  Can start to display aligned Shanghai photos in china/RELROT.cc.
+
+=====================================================================
+Fusion1 code changes made on Friday, Jun 1:
+
+*. Can now fly to camera position at ObsFrustum vertex in china/fov.cc
+
+*. Figured out how to rotate AlirtManipulator about current eyepoint
+(e.g. following flying to camera's ObsFrustum vertex).
+
+*.  camera::pixel_ray_direction() now determines half-ray's absolute sgns
+by comparing with pointing_direction.
+
+*.  Tried to eliminate worst hacks from
+camera::compute_corner_ray_and_UV_axes_dirs().
+
+=====================================================================
+Fusion1 code changes made on Thurs, May 31:
+
+*.  Realized right-handed camera coord system defined by Hartley and
+Zisserman is rotated relative to our UVW coordinate system by 180 degs.
+Hartley & Zimmerman's U and W coords are opposite in sign to ours.  To
+compensate for this coordinate system difference, we introduce minus signs
+into camera::compute_pointing_direction() and pixel_ray_direction().  We
+also need to take the sgn of detM into account when computing pixel ray
+directions.
+
+=====================================================================
+Fusion1 code changes made on Weds, May 30:
+
+*.  Wrote mathfunc methods quaternion_corresponding_to_rotation,
+rotation_corresponding_to_quaternion, rotation_from_az_el_roll and
+az_el_roll_from_rotation.
+
+*.  Deleted unnecessary feature files from mains/isds.  Copies are sitting
+in mains/isds/textfiles.
+
+*.  Perform check within ObsFrustum::build_current_frustum(V,nhat) to
+ensure footprint corners are not crossed when elevation angle approaches
++/- 90 degs.
+
+*.  Wrote main program china/rot.cc to simulate extracting relative
+3D rotations between 2 photos using tiepoint dir vectors.
+
+*.  Wrote main program china/fov.cc to start drawing ObsFrusta on world
+grid.
+
+=====================================================================
+Fusion1 code changes made on Tues, May 29:
+
+*.  Created new mains/china and copied linked few Shanghai photos into this
+subdir.  
+
+*.  Wrote program MOSAIC which is a lab for generating composite panoramas
+via planar homographies.
+
+*.  Wrote osg2D/TextureQuad and TextureQuadsGroup classes to texture
+arbitrary convex quadrilaterals with rectangular photos.
+
+=====================================================================
+Fusion1 code changes made on Friday, May 11:
+
+*.  Added cyclic_frac_offset capability into
+ColorMap::retrieve_curr_color().
+
+=====================================================================
+Fusion1 code changes made on Thurs, May 10:
+
+*.  Added mains/OSG/ross_tile.cc to repository.  
+
+*.  UV coord extrema are now adjustable via
+G99VideoDisplay::reset_UV_coords().
+
+*.  Wrote little utility program UV_COORDS computes the video-space (U,V)
+coordinates for the corners of the Baghdad satellite EO tiles lying within
+rows 2 - 3 and columns 1 - 3.
+
+*.  Generalized G99VideoDisplay::get_pixel_coords() and get_uv_coords() to
+work for arbitrary min/max U,V values.
+
+=====================================================================
+Fusion1 code changes made on Weds, May 9:
+
+*.  Cleaned up main program baghdad/tdp2tif which can now write height info
+as floats to output geotiff files.
+
+=====================================================================
+Fusion1 code changes made on Tues, May 8:
+
+*.  In PointCloud::compute_prob_dist(), do NOT allocate osg::Vec3Array*
+vertices_ptr if vertices.valid()==true!
+
+*.  No longer unnecessarily waste memory filling PointCloud member
+osg::UIntArray indices_refptr.  Now only fill this deprecated array within
+PointCloud::GenerateCloudGraph() immediately prior to Generate_Ross_Tree()
+call.
+
+*.  In tdpfunc::write_relative_xyz_points(), now write out 1 rather than 10
+million points to avoid running out of memory when working with Baghdad
+tiles.
+
+*.  Started to eliminate wasteful duplication within
+tdpfunc::write_relative_xyz_data() & write_relative_xyzp_data() methods.
+
+*.  Wrote main program baghdad/tdp2tif which maps XYZ points onto a
+ztwoDarray and then outputs the array's contents into a geotiff file.
+
+=====================================================================
+Fusion1 code changes made on Mon, May 7:
+
+*. Determined linear transformation needed to align Baghdad ladar data with
+Baghdad satellite EO imagery.
+
+=====================================================================
+Fusion1 code changes made on Thurs, May 3 & Friday, May 4:
+
+*.  Eliminated ununused CM_3D_refptr member of FusionGroup class.
+
+*.  mains/baghdad/drape_EO can now generate reasonable looking fused
+ladar/EO point clouds for baghdad subtiles.
+
+=====================================================================
+Fusion1 code changes made on Weds, May 2:
+
+*.  In SetupGeomVisitor::apply(), only reset paged-in geometries' stateset
+ptrs if they initially equal null.  No longer overwrite stateset ptr info
+from .osga files generated by osgdem for baghdad EO texture "point cloud".
+
+*.  Wrote main program baghdad/convert_2D_features which rescales easting
+and northing coordinates for features selected from Baghdad texture surface
+'point cloud' to renormalized 'video' UV coords.
+
+*.  Started writing main program baghdad/drape_EO to fuse huge Baghdad EO
+image onto subtile tdp files.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Apr 26:
+
+*.  No longer instantiate TextureSectorsGroup within VIEWTEXTURE.  Instead,
+this object is now automatically instantiated within EarthRegionsGroup.
+
+*.  No longer hardwire any info about composite San Clemente image within
+EarthRegionsGroup::generate_regions().  Instead, filename extracted from
+Pass.get_first_filename(). Long/lat extents for texture bbox are parsed
+from a .pkg file.
+
+=====================================================================
+Fusion1 code changes made on Weds, Apr 25:
+
+*. Split off postgis_database::parse_polygon_geometry() from
+parse_multipolygon_geometry().  No longer subtract reference_vertex from
+polygon vertices within parse_polygon_geometry().  
+
+*.  Wrote experimental program mains/baghdad/waterways.cc for displaying
+polygonal boundaries of water (& airport, neighborhood, etc) regions on top
+of Baghdad 3D map.
+
+=====================================================================
+Fusion1 code changes made on Tues, Apr 24:
+
+*.  FeaturesGroup::read_feature_info_from_file() now takes
+use_default_input_filename bool argument.  If true, this method no longer
+pauses to wait for user to enter feature filename.  Useful for
+automatic ground extraction of multiple tiles.
+
+*.  tdpfunc::write_zp_twoDarrays() now outputs fake XYZP points at zeroth
+vertex location for p-coloring purposes.
+
+*.  Generalized Tensor::minmax_values() to set floor and ceiling values
+which limit search for extremal values.
+
+*.  Added RasterParser::write_raster_data() method which can convert
+twoDarray contents into a geotiff output file.
+
+=====================================================================
+Fusion1 code changes made on Mon, April 23:
+
+*.  Started to fix up ground finding for Baghdad data to work along edges.
+
+*.  Started to write tdpfunc::write_zp_twoDarrays() which takes in
+ztwoDarray and ptwoDarray and outputs tdp file.
+
+=====================================================================
+Fusion1 code changes made on Fri, Apr 20:
+
+*.  Wrote new src/fusion/PassInfo class to hold non-pass info needed to
+display data contents of a pass (e.g. thresholds, colormaps, cyclic wrap
+fractions).
+
+*.  Eliminated unnecessary PointCloud::initialize_points() method.  Added
+min[max]_thresh_frac members to PointCloud class.
+
+*.  Implemented Dave Ceddia's suggestion to use POSIX glob function to
+match files containing wild * char within
+filefunc::files_matching_pattern().  
+
+*.  VIEWPOINTS and VIEWCITIES can now read in regional_files containing
+data filenames as well as non-pass display information.
+
+*.  Added .pkg files containing display params for different cities to
+repository.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Apr 19:
+
+*.  Split off calibration methods from latlongfuncs namespace into new
+astro_geo/geocalibfuncs namespace.
+
+*.  Generalized mathfunc::mean(vector<double>) to templatized form
+mathfunc::mean(vector<T>).
+
+*.  Added previously overlooked initialization
+Wpseudo_inverse.clear_values() in genmatrix::pseudo_inverse().  Quadratic
+transformation of ALIRT-A NYC points now works.
+
+*.  Add trailing zeros onto integer output within
+stringfunc::number_to_string(double x,int nprecision)
+
+.......................................
+
+*.  Starting to generalize argument parsing in
+PassesGroup::parse_ext_file_args(string ext_filename)
+
+=====================================================================
+Fusion1 code changes made on Weds, Apr 18:
+
+*. Added inverse OGRCoordinateTransformation member to postgis_database
+class which can be used to transform from WGS84 to state-plane coordinates.
+
+*.  Set spatial filter rectangle (in state-plane coords) prior to
+retrieving feature info from GIS database layer.  Leads to noticeable
+speedup in rendering Boston major roads!
+
+*.  Created derivative program mains/newyork/nyroads.cc as playground for
+NYC roads.
+
+.......................................
+
+*.  Added where_clause argument to postgis_database::parse_table_contents()
+which can be used to restrict features retrieved from PostGIS layers via
+an OGR SetAttributeFilter command.
+
+=====================================================================
+Fusion1 code changes made on Fri, April 13:
+
+*. Copied into scenegraphfunc::get_geometry() several lines from Ross'
+SetupGraphVisitor::apply(osg::Geode&) member of Application.cpp.  Ross
+reads metadata stored within .osga files into FogCoordArrays of geometries.
+He then sets the geometries' UserData pointers to these FogCoordArrays.
+
+*.  No longer set max/min colormap thresholds for p-values to max_p and
+min_p within PointCloud::init_point_colors().  Extremal p thresholds are
+set to 1 & 0 within ColorMap constructor.  Baghdad ground masks now
+correctly appear in .osga files read by VIEWPOINTS.
+
+=====================================================================
+Fusion1 code changes made on Thurs, April 12:
+
+*.  Copied several programs from mains/isds into mains/newyork and modified
+them for purposes of georegistering RTV NYC map.  Made minor Boston ->
+NYC modifications to a few methods within PointCloud class and latlongfuncs
+namespace.
+
+=====================================================================
+Fusion1 code changes made on Weds, April 11:
+
+*.  Wrote utility program mains/nti/missed_movers.cc for truth testing
+tabulation purposes.
+
+=====================================================================
+Fusion1 code changes made on Fri, Apr 6:
+
+*.   Added large_hue_value_sans_white.txt colormap to repository.
+
+*.  Started to write hacked tdpfunc::write_xyz_data() to circumvent viewer
+problems handling .osga files with p-data.
+
+=====================================================================
+Fusion1 code changes made on Tues, Apr 3:
+
+*.  Wrote xyzpfunc::fuse_z_and_binary_p_images which maps binary mask
+regions into "hot" and "cold" regions with colors varying according to
+height.  Baghdad ground maps are easier to interpret.
+
+*.  Changed manipulator within VIEWPOINTS from general Custom3DManipulator
+to more specific AlirtManipulator.  
+
+=====================================================================
+Fusion1 code changes made on Mon, Apr 2:
+
+*.  Started to add primitive functionality to Pass and PointCloud classes
+to read .xyz files.  
+
+*.  Changed int colormap_number member of osgSceneGraph/ColorThresholds
+class to int* colormap_number_ptr.  Incrementing of colormaps within
+VIEWPOINTS now works again after this bug fix.
+
+*.  Wrote mains/baghdad/findground which oozes manually selected ground
+points to determine potentially trafficable areas within Baghdad.
+
+*.  Added mains/baghdad/croptdp which chops baghdad TDP tiles down to
+smaller, more manageable sizes.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Mar 29:
+
+*.  Created new subdir src/mains/baghdad.  Moved mains/testdir/gdaltest.cc
+to mains/baghdad/tif2tdp.cc.
+
+=====================================================================
+Fusion1 code changes made on Weds, Mar 28:
+
+*.  Wrote osg/osgGIS/raster_parser class which encapsulates simple GDAL
+commands for parsing image files.
+
+*.  Wrote mains/gdaltest.cc which uses GDAL routines to convert an input
+geotiff file into TDP output.
+
+=====================================================================
+Fusion1 code changes made on Tues, Mar 27:
+
+*.  Overhauled WindowCoordConverter base class and made its
+osgProducer::Viewer specific methods pure virtual.  ViewerCoordConverter
+subclass now implements those methods.  Future QTCoordConverter class will
+incorporate analogous implementation for QT.  Added ViewerCoordConverter
+files to repository.
+
+=====================================================================
+Fusion1 code changes made on Mon, Mar 26:
+
+*.  Wrote main program tracking/kalman.cc which implements a Kalman filter
+that appears to successfully track a vehicle using both noisy x and xdot
+information.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Mar 22:
+
+*.  Hacked up SignPostsGroup::retrieved_SignPost_altitude() with ugly local
+variable extra_delta_z to allow Baghdad clock tower signpost to be elevated
+by 20 meters
+
+*.  Wrote mains/tracking/gaussmarkov.cc which implements a Gauss-Markov
+random process.
+
+=====================================================================
+Fusion1 code changes made on Weds, Mar 21:
+
+*.  Created new src/mains/tracking subdir to hold GMTI/EO tracking programs.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Mar 13:
+
+*.  Take into acct bbox_zmin value for surfaces placed onto blue marble
+when assigning SignPost altitudes in
+SignPostsGroup::retrieved_SignPost_altitude().
+
+*.  Tried to clean up SignPost::set_max_text_width().  Still not working
+great.
+
+*.  Standard set of ISDS test programs seems to work OK as of 1:30 pm on
+fusion1.  All other programs also work OK except for VIEWDRAPE which does
+not progress past zeroth frame.
+
+=====================================================================
+Fusion1 code changes made on Monday, Mar 12:
+
+*.  Commented out unused method DataGraphsGroup::generate_new_datagraph().
+Eliminates dependence of DatagraphsGroup on Transformer class.
+
+*.  Replaced DataGraphsGroup* member of Transformer with
+vector<DataGraphsGroup*>.  Transformer::find_closest_world_point() now
+loops over all DataGraphsGroups within this STL vector when searching for
+closest points.
+
+*.  Standard set of ISDS test programs seems to work OK as of 11:30 am on
+fusion1.
+
+*.  PlanetsGroup constructor now takes Clock ptr as argument.  PlanetsGroup
+also has members PlanetSpinTransform_refptr and EarthSpinTransform_refptr.
+The former holds the MatrixTransform needed to rotate the blue marble
+itself, while the latter holds the MT needed to rotate all graphicals
+locked to the marble's surface & which should appear bright even on the
+night-side.  Significantly overhauled & simplified solarsystem code lines
+in main programs.
+
+*.  Eliminated ugly include_into_Decorations_OSGgroup_flag for
+Decorations::add_SignPosts() by instantiating both picked and database
+signposts in absolute ECI rather than geocentric XYZ coordinates.
+
+=====================================================================
+Fusion1 code changes made on Monday, Mar 5:
+
+*.  Pressing 'c' in MANIPULATE_FUSED_DATA sequentially displays still image
+ObsFrusta.
+
+*.  Wrote ObsFrustaGroup::compute_polyhedra_intersections() which
+instantiates an alpha-blended OSG Polyhedron for the intersection
+sub-volume between a pair of distinct ObsFrusta.
+
+*.  Wrote quick & dirty ObsFrustaGroup::display_intersection_footprint()
+which reads in and displays ground-plane footprint for intersection volume
+for 2 Copley photos.  Method also projects footprint's corners from 3D
+world-space into the two 2D Copley image planes.
+
+*.  Added 'i' and 'd' keys to ObsFrustaKeyhandler which call
+compute_polyhedra_intersections() and display_intersection_footprint() in
+ObsFrustraGroup class.
+
+*.  Hardwired projections of ground footprint of intersection volume
+between 2 Copley ObsFrusta within the 2 image planes in
+MoviesGroup::generate_Copley_photo_intersection_polys()
+
+=====================================================================
+Fusion1 code changes made on Friday, Mar 2:
+
+*.  Downloaded and installed GNU triangulated surface (GTS) library as well
+as ancient 3D GeomView viewer.  Started to convert some simple GTS examples
+from C to C++ within mains/testdir.  Added those converted programs to
+repository.
+
+*.  Wrote new geometry/polyhedron class to hold vertex, edge and face
+connectivity information.
+
+*.  Added nearly_equal() method to Tensor class.
+
+*.  ObsFrustum::generate_curr_polyhedron() records vertex, edge and face
+information for 5-faced and 6-faced frusta.
+ObsFrustum:compute_polyhedron_volume() uses GTS library to instantiate GTS
+surface & call its volume method.  These methods are called by
+ObsFrustaGroup::generate_still_image_ObsFrustum().
+
+=====================================================================
+Fusion1 code changes made on Thurs, Mar 1:
+
+*.  Fixed serious error in fourvector::operator- involving last component.
+
+*.  Use splines to model OSG camera acceleration/glide/deceleration during
+flight to a static image ObsFrustum.
+
+*.  Selecting an ObsFrustum via a mouse click now masks off all other
+ObsFrusta.  
+
+=====================================================================
+Fusion1 code changes made on Weds, Feb 28:
+
+*. Solve for sgn of scalefactor rho in
+camera::extract_external_and_internal_params().
+
+*.  Cleaned up some camera class members.  Eliminated redundant & confusing
+member vars rel_posn & XYZ_world_posn in favor of camera_world_posn.
+
+*.  Eliminate camera_ptr member in ObsFrustum class.  Instead, use multiple
+cameras already contained within Movie_ptr member of ObsFrustum (one for
+each frame).
+
+=====================================================================
+Fusion1 code changes made on Tues, Feb 27:
+
+*.  Created new ObsFrustumPickHandler class. 
+
+*.  Created new MANIPULATE_OBSFRUSTUM mode.
+
+*.  ObsFrustaGroup now inherits directly from GeometricalsGroup and not
+from GraphicalsGroup.
+
+*.  Standard set of ISDS test programs seems to work OK as of 4 pm on
+fusion1.
+
+*.  Eliminated vertex & n_hat members of ObsFrustum class.  ObsFrustum
+position is now taken to be its camera location.  Coords of frustum's
+linesegments are measured relative to world posn of camera.
+
+...........................................
+
+*.  G99VideoDisplay class now has string video_filename as a member.
+
+*. ObsFrustaGroup::generate_movie_ObsFrustum() now takes movie filename as
+an argument.
+
+=====================================================================
+Fusion1 code changes made on Mon, Feb 26:
+
+*. Altered AlirtManipulator::translateModel() so that horizontal/vertical
+movements occur along camera (and not world!) x_hat and y_hat directions.
+
+*.  Started to generalize ObsFrustum to potentially hold more than 8
+linesegments when it partially intercept ground z-plane.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Feb 22:
+
+*.  Globally renamed OSGsubgroup as OSGsubPAT; Globally renamed
+GraphicalsGroup::insert_graphical_into_OSGsubgroup() as
+insert_graphical_PAT_into_OSGsubPAT().
+
+=====================================================================
+Fusion1 code changes made on Weds, Feb 21:
+
+*.  Converted SetupGeom, ColorGeode & HiresData Visitor ptrs to refptrs in
+PointCloudsGroup.
+
+*.  Globally eliminated GraphicalsGroup::sort_Graphicals_list().
+
+*.  Added GraphicalsGroup::set_OSGsubgroup_mask();
+
+*.  Wrote ModelsGroup::unmask_next_model() for San Clemente demo purposes.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Feb 20:
+
+*.  Added 2nd instantaneous dwell ObsFrustum to LiMIT model which hops
+around among GMTI targets defined on San Clemente.  Logic for determining
+whether dwell ObsFrustum resides inside FOV ObsFrustum is badly flawed.
+
+=====================================================================
+Photon code changes made on Tuesday, Feb 20:
+
+*.  Ran VALGRIND on reduced version of TESTJUSTEARTH.  
+
+*.  Eliminated bad line delete LeafNodeVisitor_refptr.get() from
+DataGraphsGroup destructor.
+
+*.  Changed Viewer_refptr member of WindowCoordConvert and Decorations
+classes to Viewer_ptr.
+
+*.  Moved generate_Coordinate_System_Node() out of geofuncs namespace into
+Ellipsoid_model class.
+
+=====================================================================
+Fusion1 code changes made on Fri, Feb 16:
+
+*.  Generalized stringfunc::prefix and suffix methods so that the separator
+between a prefix and suffix can be any character and not just '.' 
+
+*.  web/curl class can now retrieve San Clemente image from mapserver,
+determine its file type, and store in a file with appropriate suffix within
+/tmp.  Not yet able to read http results into a temporary array in memory.
+
+*.  Wrote mains/testdir/webtest.cc as playground for libcurl.
+
+*.  In SignPostsGroup::retrieve_signposts_from_babygis_database(), assign
+IDs to new signposts which are guaranteed to be greater than any existing
+signpost ID.  This fixes earlier problem with new signposts clobbering
+existing ones.
+
+...........................................
+
+*.  Added Earth::toggle_long_lat_lines_depth_buffering() which can be used
+to force long/lat lines to appear from underneath point clouds on blue
+marble surface.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Feb 15:
+
+*.  Added libraries into Makefile needed by libcurl.
+
+=====================================================================
+Fusion1 code changes made on Monday, Feb 12:
+
+*.  Added geom_refptr->setColorArray(colors) to
+G99VideoDisplay::set_alpha().
+
+*.  Added disgusting hack to ObsFrustaGroup::update_display() to suppress
+geometry vertex resetting for movie holding Copley image but allow such
+resetting for HAFB video.
+
+=====================================================================
+Fusion1 code changes made on Friday, Feb 9:
+
+*.  Overhauled G99VideoDisplay class.  Privatized several methods &
+eliminated others which made trivial calls to AnimationController.  Turned
+OSG pointers into refpointers.  Eliminated unused constructor in G99VD and
+Movie classes.
+
+*.  G99VideoDisplay objects can now have varying number of images.  The
+first and last frames to be displayed can be set by the user.  But their
+timing is slaved to the master clock within AnimationController.  All
+G99VideoDisplays simply take the master frame from AC and perform a modulo
+operation to determine which frame they should actually display at any
+given time.
+
+*.  Eliminated redundant GraphicalsGroup::get_imagenumber() method in favor
+of GG::get_curr_framenumber().
+
+*.  Decorations class can now instantiate and hold more than one
+ModelsGroup.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Feb 8:
+
+*. Added specialized (and ugly) methods into ObsFrustaGroup to parse HAFB
+video pass metadata.
+
+*.  Can (basically) reproduce VIDEO3D program output using ObsFrustum
+object rather than individual LineSegments and Movie objects.  ObsFrustum
+belongs to model class.  
+
+*.  Eliminated unused movie_ptr member from ObsFrustum class.
+
+*.  Wrote high-level, specialized method
+ModelsGroup::generate_HAFB_video_pass_model() which can hopefully be used
+to insert Cessna model with HAFB video displayed at its bottom into main
+programs VIEWCITIES and EARTH.
+
+*.  Changed OSGsubgroups member in GraphicalsGroup from an STL vector of
+osg::Group to a vector of OSG::PAT.  Verified that most of our working
+programs are OK after this major alteration.
+
+*. Moved some lines out of GraphicalsGroup::rotate_zhat_to_rhat() into
+Ellipsoid_model::rotate_zhat_to_rhat().  
+
+*.  Started to place HAFB_video+model onto blue marble nearby Baghdad.
+Major problems with clock timing need to be fixed.
+
+=====================================================================
+Fusion1 code changes made on Weds, Feb 7:
+
+*.  Eliminated unnecessary dependence of SignPostsGroup upon pass_ptr in
+postgis database classes.
+
+*.  Alphabetized members and methods in Decorations class.
+
+*.  Eliminated unused reset_values() methods in geopoint class.
+
+*.  GraphicalsGroup::rotate_zhat_to_rhat() now explicitly computes ENR
+direction vectors based upon Graphical's longitude & latitude.
+
+*.  San Clemente signposts can now be displayed on blue marble.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Feb 6:
+
+*. Eliminated unnecessary AnimationController_ptr member of
+SphereSegmentsGroup class.  SphereSegmentsGroup now also inherits from
+AnnotatorsGroup.
+
+*.  Added SphereSegmentPickHandler_ptr member to Decorations class.
+
+*.  Overhauled SphereSegment classes.  Their structures now closely
+resemble those of their SignPost counterparts.  Can now manually insert
+bomb blasts into Baghdad imagery on blue marble.
+
+*.  Added colormap_number member to osgSceneGraph/ColorThresholds class to
+allow future colormap variation for different regions on the blue marble.
+
+=====================================================================
+Fusion1 code changes made on Friday, Feb 2:
+
+*.  Attach solarsystem to root node in program JUSTEARTH.  But start by
+explicitly toggling off sunlight.
+
+*. Added osg_problems.txt to top level directory in projects repository.
+
+*.  Earth and EarthRegion [EarthsGroup and EarthRegionsGroup] now inherit
+from Geometrical [GeometricalsGroup].
+
+*.  Eliminated EarthSpinTransform pointer member of EarthRegionsGroup.
+
+*.  Added boolean flag argument to Decorations::add_ModelsGroup() which
+prevents automatic incorporation of ModelsGroup OSGgroup into Decorations
+OSGgroup.  
+
+=====================================================================
+Fusion1 code changes made on Thurs, Feb 1:
+
+*.  Implemented homography transformation between image plane features and
+corresponding geolocations within mains/isds/image2map in order to find
+best estimate for geolocations of hires San Clemente composite EO image.
+
+*.  Predator model's ObsFrustum now executes a lissajous figure in its two
+angular DOF in order to simulate quasi-random UAV camera slewing.
+
+=====================================================================
+Fusion1 code changes made on Weds, Jan 31:
+
+*.  Wrote EarthsGroup::texture_sectors() which stores (long,lat) corner
+info for San Clemente island, instantiates a texture geode and attaches it
+to Earth's PAT.
+
+*.  Wrote program mains/isds/IMAGE2MAP which computes (long,lat)
+coordinates for an orthrectified image's four corners based upon 2D feature
+and Google Earth geolocation information.
+
+*.  Quasi-intelligently compute world border vertex altitudes in
+postgis_database::parse_worldline_geometry().  World borders now more
+closely hug blue marble surface.
+
+...........................................
+
+*.  Added projects/changes_fusion.txt to repository
+
+*.  Fixed AWACS model so that its default orientation matches that of
+mycessna and its origin lies close to (0,0,0).
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Jan 30:
+
+*.  Finished eliminating unnecessary repetition of lines within
+GraphicalsGroup::insert_Graphical_into_list().  Deleted these lines from
+multiple classes inheriting from GraphicalsGroup class.
+
+*.  Initialize mode to MANIPULATE_EARTH in program earth.
+
+*.  Began to implement rudimentary texturing of images onto blue marble
+long-lat sectors.
+
+=====================================================================
+Fusion1 code changes made on Monday, Jan 29:
+
+*.  Fixed some inconsistencies within a few main programs in mains/OSG.  
+
+=====================================================================
+Fusion1 code changes made on Friday, Jan 26:
+
+*.  Started to generalize
+SignPostsGroup_ptr->retrieve_signposts_from_babygis_database() so that it
+can handle multiple sets of SignPosts from different MassGIS layers within
+different OSGsubgroups. Definitely not working right as of 5 pm on Friday,
+Jan 26.
+
+...........................................
+
+*.  Wrote postgis_database::long_lat_for_specified_geosite() which extracts
+long/lat coords for a case insensitive input geosite text string.
+
+*.  To ensure animation paths run to completion, we now force
+_animStartOfTimedPeriod to initially equal 0 in
+CustomAnimationPathManipulator::handleFrame.
+
+...........................................
+
+*.  Wrote Ellipsoid_model::align_text_with_cardinal_dirs() method.
+
+*.  Country names are now aligned from west-to-east, while city names
+always appear horizontally wrt screen.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Jan 25:
+
+*.  Realized that cylinders drawables need to be treated like OpenGL point
+vertices inasmuch as their translations and rotations should NOT be handled
+by PATs.  Instead, use built-in setCenter and SetRotation methods within
+osg::Shape class to manipulate location and orientation of multiple
+cylinder primitives.  From a scenegraph efficiency standpoint, we prefer to
+attach 1000s of Shapes to a single geode rather than 1000s of geodes to an
+osg::Group.
+
+*.  Added Earth::retrieve_cities_from_babygis_database() which instantiates
+a set of red discs + attendant city names on the blue marble.
+
+*.  Can toggle cities display on/off via 'j' key within MANIPULATE_EARTH
+mode.
+
+*.  Mask off cities, borders and latlong lines at increasing eye altitudes.
+
+*.  Country names are starting to appear at area-weighted centroids of
+country polygons.
+
+=====================================================================
+Fusion1 code changes made on Weds, Jan 24:
+
+*.  Globally eliminated all references to postgis_database header within
+osg/osgEarth in favor of its new location in osg/osgGIS.
+
+*.  Moved several general text member variables and methods out of PolyLine
+classes into Geometrical classes.
+
+*.  Moved change_size method out of SignPostsGroup into GeometricalsGroup.
+SPG now inherits from GeometricalsGroup.
+
+*.  Cleaned up ConePickHandler and SignPostPickHandler classes.
+
+*.  Added CylinderPickHandler_ptr member to Decorations class.  
+
+*.  Can pick cylinders on blue marble's surface with Text labels that hover
+above and always face the camera.
+
+*.  Moved reset_color() from SignPostsGroup into GeometricalsGroup.  Made
+Graphical::set_color() a virtual method which is actually defined within
+(e.g.) SignPost class.
+
+...........................................
+
+*.  Created osg/osgGeometry/CylinderPickHandler class.
+
+*.  Eliminated unused MANIPULATE_POLYLINE mode from ModeController class.
+Added INSERT_CYLINDER and MANIPULATE_CYLINDER modes.
+
+*.  Added lib/libosgGIS.a to repository.
+
+*.  PolyLine constructor takes n_text_messages (=0,1) as input argument.
+No longer waste memory allocating text for national borders.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Jan 23:
+
+*.  Tried to streamline OGR linestring instantiation so that Boston major
+road network creation goes faster.  Main bottleneck unfortunately appears
+to be in poFeature_ptr = poLayer_ptr->GetNextFeature() call over which we
+have no control.
+
+*.  Added mains/OSG/roads.cc to repository.
+
+...........................................
+
+*.  Eliminated color from PolyLine constructor argument list.
+PolyLine::set_uniform_color() now effectively sets color binding to
+BIND_OVERALL.
+
+*.  Earth::retrieve_borders_from_babygis_database() now instantiates
+PolyLines directly within postgis_database::parse_worldborder_geometry().
+National boundaries appear 4 secs after we press "r" within
+MANIPULATE_EARTH mode.
+
+*.  Made reasonable efforts to speedup importing and instantiation of
+polylines from PostGIS databases.
+
+=====================================================================
+Fusion1 code changes made on Monday, Jan 22:
+
+*.  Force call to GraphicalPickHandler::pick_3D_point() within
+ArmySymbolPickHandler rather than to default BoxPickHandler which chooses
+points on Z-plane world grid.
+
+*.  Starting to directly generate PolyLines within
+postgis_database::parse_multipolygon_geometry(). Not yet working as of 7 pm
+on Jan 22.  Need to move postgis_database class into osg/osgEarth and give
+it Ellipsoid_model information.
+
+=====================================================================
+Fusion1 code changes made on Friday, Jan 19:
+
+*.  Can now store names associated with LineString geometries read from
+PostGIS database tables within STL vector member geometry_names of our
+postgis_database class.
+
+...........................................
+
+*.  Added borders_group_ptr->get_OSGsubgroup(0)->setNodeMask(1) in
+Earth::retrieve_borders_from_babygis_database()
+
+...........................................
+
+*. Added more altitude steps where national borders are thickened within
+Earth::set_altitude_dependent_border_width().  Also copied contents of
+TESTEARTH onto JUSTEARTH.
+
+*.   postgis_database::parse_multilinestring_geometry() now calls 
+postgis_database::parse_linestring_geometry(OGRGeometry* OGRGeometry_ptr).
+
+=====================================================================
+Fusion1 code changes made on Thurs, Jan 18:
+
+*.  Created src/postgres/postgis_database class which inherits from
+database base class.  Member functions call OGR library to set up
+coordinate transformations, parse table contents and extract
+multilinestring geometry.
+
+*.  Added PolyLinesGroup* member stateborders_group_ptr to Earth class.
+Added method retrieve_polylines_from_babygis_database() and
+retrieve_borders_from_babygis_database() which draw natl/state borders as
+polylines on blue marble's surface.  Since borders layer is not hyper
+accurate, suppress its display if camera's altitude is less than 10**4.7
+meters.
+
+*.  Automatically mask out lines of longitude/latitude if log_eye_alt >
+7.75, irrespective of boolean long_lat_lines_on_flag.  Set max angular
+separation between longitude/latitude lines to 30 degs up from 20.
+
+=====================================================================
+Fusion1 code changes made on Weds, Jan 17:
+
+*.  Tried to globally eliminate all calls of type
+get_OSGgroup_ptr()->addChild(someGraphical_ptr->get_PAT_ptr()) in favor of
+GG::insert_graphical_into_OSGsubgroup().
+
+*.  Created new PolyLinesKeyHandler class along with MANIPULATE_POLYLINE
+mode within ModeController class.
+
+*.  Wrote mains/postgres/psql2lines.cc which parses a POSTGIS table and
+extracts North American state borders into an ascii file.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Jan16:
+
+*.  Initialize earth_flag member of ParentVisitor class to false in
+initialize_member_objects().
+
+*.  Added vector<osg::ref_ptr<osg::Group> > OSGsubgroups member to
+GraphicalsGroup.  Currently instantiate single OSGsubgroup and attach to
+OSGgroup member of GraphicalsGroup.  Wrote new method
+Graphicalsgroup::insert_graphical_into_OSGsubgroup() and no longer directly
+insert Graphicals into OSGgroup within
+GraphicalsGroup::instantiate_Graphical().  Explicitly added call to former
+method after calling latter method throughout our entire library.
+OSGsubgroups which eventually allow multiple sets of SignPosts, etc to be
+handled separately (e.g. colored differently, turned on/off separately).
+
+*.  No longer destroy any SignPosts within
+SignPostsGroup::retrieve_signposts_from_babygis_database().
+
+...........................................
+
+*. Added common_signpost_size member to SignPostGroup class.  Signposts are
+now instantiated with the same size as all their predecessors.  So all
+signposts should always have a common size independent of their change_size
+history.
+
+*.  Can start to color bunches of SignPosts read in from different babygis
+database tables.
+
+=====================================================================
+Fusion1 code changes made on Friday, Jan 12:
+
+*.  VIEWCITIES now instantiates world_model_database and babygis_database
+objects.  It passes pointers to both as arguments to
+Decorations::add_SignPosts().
+
+*.  VIEWCITIES can now display one set of SignPosts coming from the SKS
+world model database.  And it can simultaneously display another set of
+SignPosts coming from the babygis database.  The former are distinguished
+from the latter via a worldmodel_database_flag within SignPost objects.
+
+=====================================================================
+Fusion1 code changes made on Thursday, Jan 11:
+
+*.  Changes in SignPost size is now accompanied by corresponding changes in
+text size and width.
+
+=====================================================================
+Fusion1 code changes made on Friday, Jan 5:
+
+*.  Added while loop to filefunc::getsingleline() which forces input
+strings to have nonzero length.
+
+*.  Eliminated irrelevant method SignPostPickHandler::pick_3D_point().
+Turned instantiate_SignPost() and select_SignPost() in SPPH class into
+private methods.
+
+*.  Rewrote GraphicalsGroup::get_ID_labeled_Graphical_ptr() so that it
+explicitly iterates over nodes in *Graphicalslist_ptr and does not use our
+deprecated LinkedList node finding routines.  Rewrote
+SignpostsGroup::get_ID_labeled_SignPost_ptr() so that it dynamically
+recasts result from GG::get_ID_labeled_Graphical_ptr().
+
+*. Fixed signpost ID bug by changing entity_ID to entity_id in argument
+list for SignPostsGroup::insert_into_worldmodel_database().
+
+=====================================================================
+				*** 2006 ***
+=====================================================================
+
+Fusion1 code changes made on Fri, Dec 29:
+
+*.  Added models classes and methods to decoration class.
+
+*.  Wrote new WindowCoordConverter class which keeps track of window
+manager being used by a main program (Producer Viewer or QT) and holds
+pointers to those managers.  It also contains a
+convert_renormalized_to_pixel_window_coords() method needed by
+GraphicalPickHandler.  We now instantiate a WindowCoordConverter object in
+each main program and pass its pointer to the Decorations object.  Inside
+of Decorations, the WCC pointer is passed to every PickHandler.  
+
+*.  Globally added WindowCoordConverter objects to all main programs which
+have decoration objects that depend upon PickHandlers.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Dec 28:
+
+*.  Eliminated use_maps_to_color boolean member variable from
+PointCloudsGroup class.  No longer pass this boolean as input parameter to
+PointCloud constructor.
+
+=====================================================================
+Fusion1 code changes made on Weds, Dec 27:
+
+*.  Eliminated trivial GraphicalsGroup::reassign_PAT_ptrs() method.
+
+*.  Streamlined Graphicals::set_PAT() member function.
+
+*.  Overhauled GraphicalsGroup::update_display() so that no more
+unnecessary and very inefficient brute force PAT_ptr search is conducted.
+Major MassGIS streets can then be displayed with very responsive runtime
+performance.  But SATCITIES program quickly runs out of memory when all
+Boston major roads are displayed.  Instantiating 2500 polylines requires 2
+Gbytes more than the 5 polylines needed for the HUMMER trails...
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Dec 26
+
+*.  Fixed loop error in PassesGroup destructor which was leading to memory
+core dumps and segmentation faults.
+
+*.  Finished incorporating decorations class into all main programs.
+
+*.  Wrote mains/postgres/LANDMARKS.cc which parses MassGIS landmark shape
+file and writes out a new shape file containing just those landmarks lying
+inside Boston with nontrivial string names.  Long/lat info is stored within
+output shape file.
+
+=====================================================================
+Fusion1 code changes made on Friday, Dec 22:
+
+*. Wrote mains/postgres/shp2polylines.cc which uses OGR maptools library to
+parse major roads shape file downloaded from MassGIS website and extract
+road vertex information.  This program generates an output ascii file which
+can be read in by SATCITIES to overlay major roads on the Boston point
+cloud.
+
+=====================================================================
+Fusion1 code changes made on Weds, Dec 20:
+
+*.  Eliminated DataGraph::determine_input_filetype() in favor of
+pass_ptr->get_input_filetype().
+
+*.  Eliminated dependence of PointCloud on PointCloudsGroup.
+
+*.  Restored PointCloudsGroup::generate_Clouds() member function which
+instantiates a PointCloud for each cloud within an input PassesGroup.
+Starting to convert main calls from generate_new_Cloud() to this more
+general method.
+
+*.  Starting to generate lat/long grids corresponding to pointclouds within
+EarthRegionsGroup::initialize_regions().
+
+*.  Added longitude_middle & latitude_middle members to LatLongGrid class.
+
+*.  Eliminated dependence of DataGraph on ArgumentParser.  ReadGraph()
+method now retrieves input file constituents for a particular pass from
+pass::get_filenames().
+
+*.  Copied sequence of MatrixTransforms needed to map from UTM to earth
+ellipsoid coordinates from main EARTH program into EarthRegion class.
+
+=====================================================================
+Fusion1 code changes made on Tuesday, Dec 19:
+
+*.  Performed massive overhaul of Pass and PassesGroup classes.  
+
+*.  Reworked argument parsing within PassesGroup so that groups of files
+corresponding to separate passes can be explicitly indicated via a
+--newpass flag within the command line argument list.  Can also still pass
+a randomly ordered list of command line arguments involving multiple types
+of input files (.xyzp, .osga, .vid, etc).  Arguments are grouped into
+contiguous bunches corresponding to the same input file type.  Individual
+passes are instantiated for each bunch.
+
+*.  PointCloud constructor no longer takes in a cloud filename.  Instead,
+it currently fetches filename information from a Pass object.  Eventually,
+PointCloud's dependence on filenames should be drastically overhauled...
+
+*.  MoviesGroup::generate_new_Movie() now takes a pass rather than a movie
+filename as input.
+
+Fusion1 code changes made on Monday, Dec 18:
+
+*.  Changed '+', '=', '_' and '-' keys so that they affect point sizes
+within VIEW_DATA mode and frame skip values within
+RUN_MOVIE/MANIPULATE_MOVIE modes.
+
+............................................................
+
+*.  Fixed problems with missing lat/long grid lines near long =+/- 180 by
+bringing starting and stopping longitudes to canonical intervals in
+Earth::initialize_extremal_longitudes_and_latitudes().
+
+*.  Added return statement to geofunc::groundpoints_ellipsoidal_earth()
+which hopefully eliminates EarthManipulator's occasional freezing behavior
+when spinning about nadir point.
+
+*.  Added osgSpace/EarthKeyHandler class to repository.  Can now toggle
+on/off lines of longitude & latitude inside MANIPULATE_EARTH mode via 'l'
+key.
+
+*.  Generalized Earth::generate_datagraph_translation_MatrixTransform() to
+handle any input pass' UTM zone.
+
+=====================================================================
+Fusion1 code changes made on Friday, Dec 15:
+
+*.  Added new classes to src/axis provided by Jason Hepp.
+
+*.  Experimented with homography and projective transformations to warp
+long/lat bbox onto blue marble.  No robust 4x4 matrix transformation found
+after several hours of searching.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Dec 14:
+
+*.  Implemented Ross' suggestion to trump depth buffering for lat/long
+polylines set at annotation altitudes nearly equal to zero.  Use StateSet
+and osg::Depth objects in PolyLine::generate_drawable_geode().
+
+=====================================================================
+Fusion1 code changes made on Monday, Dec 11:
+
+*.  Added Earth::generate_animation_path() which takes in starting &
+stopping posns in ECI coords.  It interpolates a great circle trajectory
+between the 2 posns with a piecewise linear altitude function.  Camera posn
+& orientation info is written to an output anim path file.
+
+*.  In main program EARTH, add signposts_group to TransTransform_ptr in
+order to get signposts to appear on blue marble surface.
+
+=====================================================================
+Fusion1 code changes made on Thurs, Dec 7:
+
+*.  Wrote mains/video/histequal.cc which performs histogram equalization on
+grey scale videos (that may have been polygonally segmented and partially
+nulled).
+
+*.  Added mains/video/images2vid.cc which generalizes pngs2vid to
+repository.
+
+=====================================================================
+Fusion1 code changes made on Weds, Dec 6:
+
+*.  Added mains/satellite/iplanes.cc to repository.
+
+*.  Updated mains/video/grey2rgb.cc.  
+
+*.  Added MovieKeyHandler to mains/video/video.cc.  
+
+*.  Fleshed out methods in MoviesGroup, PolygonsGroup, Polygon classes to
+build and display 2D polygons generated from user selected points on top of
+2D video images.
+
+*.  Can select vertices within each image of a video and generate their
+corresponding polygon.  Each image's polygon vertices are saved to text
+output file.  Polygons and their vertices are erased for all images other
+than the ones in which they were instantiated.
+
+..............
+
+*.  Constructor for PointCloudKeyHandler now takes in a PointCloudsGroup
+rather than just a single PointCloud.  Various keyboard manipulations like
+changing point size, color maps, etc are now applied to multiple clouds.
+
+*.  Size of points in multiple clouds is now controlled by PointCloudsGroup
+set and get size methods and no longer handled within PointCloud class.
+
+*. Moved dependent_var, color_map, max/min threshold manipulation methods
+out of PointCloud into PointCloudsGroup.
+
+=====================================================================
+Code changes made on Monday, Dec 4 & Tuesday, Dec 5:
+
+*.  Updated mains/satellite/viewsat.cc, imageplanes.cc and fourd.cc so that
+they more closely match fiasco versions.
+
+*.  Added Grid::set_ticks_in_xy_plane_flag() method.
+
+*.  Started to generalize src/fusion/PassesGroup so that it can handle
+multiple cloud passes as well as video passes.
+
+*.  Eliminated dependence of PointCloud class upon Transformer.  We now
+also instantiate a  HiresDataVisitor within PointCloudsGroup rather than
+PointCloud.
+
+*.  Globally eliminated dependence of SignPostsGroup on unused PointCloud
+class.  Eliminated dependence of PlanetsGroup on Transformer class.
+
+*.  Fixed bug in Feature::generate_drawable_geode() to
+Point::generate_drawable_geode() call.
+
+*.  fusion/Pass class now stores UTM zonenumber and northern hemisphere
+information read in from CoordinateSystemNodes near the top of DataGraphs.
+Eliminated string UTM_zone member of Pass class.
+
+=====================================================================
+Code changes made on Monday, Dec 4:
+
+*.  Restored connectivity of SignPostsGroup to world_model_database.  
+
+*.  Tested as many main programs as possible on fusion1.  All of them seem
+to be working OK as of 8 am.
+
+=====================================================================
+Code changes made on Weds, Nov 22:
+
+*.  Moved SKS specific web service headers out of mains/webservices into
+src/isds subdirectory.
+
+*.  Created new osg/osgGrid/AlirtGridsGroup class.  
+
+*.  Performed yet another massive overhaul of all our Grid classes.
+Flickering due to floating point roundoff error is now eliminated when we
+create grids with relative rather than absolute vertex positions.  
+
+*.  Grid no longer appears on blue marble in main program EARTH.  Moreover,
+axes and tic labels may not appear in main program SPASE_IMAGEPLANES.  But
+we can't stand to work on this grid stuff any more as of Weds, Nov 12
+around noontime...
+
+*.  Wrote geofunc methods for creating and retrieving UTM info from
+CoordinateSystemNodes.
+
+*.  Altered Ross' LODTREE program to insert CoordinateSystemNode containing
+UTM zone information at top of each .osga file.
+
+*.  Trying to move away from reading UTMzone info from osga filenames.
+Altered LatLongGrid classes to directly extract UTM zone info from
+datagraphs containing CoordinateSystemNodes.  But main programs
+SPASE_IMAGEPLANES and EARTH now core dump.  
+
+=====================================================================
+Code changes made on Tuesday, Nov 21:
+
+*.  Created new osgGrid/LatLongGridsGroup class which inherits from
+GridsGroup.
+
+=====================================================================
+Code changes made on Monday, Nov 20:
+
+*.  Moved several members and methods out of Feature and into Point class.
+
+*.  Can draw array of lat/long points on blue marble surface.
+
+*.  Added new src/webservices subdirectory to repository with lots of help
+from Jason Hepp in Group 104.
+
+*.  Manually added eyeglass/src/model/CoordinateSpace.cpp, .h from Ross'
+eyeglass_coord_system branch which enables his LODTREE program to insert a
+CoordinateSystemNode at top of .osga files.  If this works well, we'll ask
+Ross to make permanent changes to his SVN eyeglass trunk repository.
+
+=====================================================================
+*.  Renamed main program OSG/good_earth.cc as OSG/earth.cc.  
+
+=====================================================================
+Code changes made on Friday, Nov 17:
+
+*.  Cleaned up GenericHUD and ModeHUD classes a bit.
+
+*.  No longer automatically call TreeVisitor->apply() within PointCloud
+generation methods.
+
+=====================================================================
+Code changes made on Monday, Nov 13:
+
+*.  Store and display PAT GraphNode information in scenegraph output.
+
+=====================================================================
+Code changes made on Thurs, Nov 9:
+
+*.  Added 2nd data window to mains/OSG/scenegraph.cc so that both
+scenegraph and pointclouds can be simultaneously viewed.
+
+*.  Moved scenegraph tree formation methods out of LeafNodeVisitor class
+into new osgSceneGraph/TreeVisitor class.
+
+*.  Instantiate LeafNodeVisitor within DataGraphsGroup rather than in each
+DataGraph object.  Also instantiate TreeVisitor within DataGraphsGroup.
+Pass pointers for both these Visitor objects from DataGraphsGroup into
+DataGraph.
+
+*.  PlanetsGroup now inherits from DataGraphsGroup rather than from
+GraphicalsGroup.
+
+=====================================================================
+Code changes made on Weds, Nov 8:
+
+*.  Overhauled Box, BoxesGroup and BoxPickHandler classes.  Can now
+instantiate fixed as well as pick variable Boxes within main program
+graph3d.  Selected face on inserted boxes no longer lights up.  Something
+has gone wrong with rectangle face display.  But we are willing to live
+with this loss of functionality for the time being.  Moreover, when
+multiple boxes are statically created, their selection-coloring is messed
+up.  We tried for over an hour to fix this bug but without success.  Again,
+we'll live with it for now.
+
+*.  GraphNodesGroup class can now generate a primitive OSG plot of an
+existing Tree object.
+
+*.  Moved AlirtManipulator::home() into Custom3DManipulator::home().  3D
+camera's default view is down Z axis onto XY plane.  Moved member matrices
+M,Minv from AlirtManipulator into Custom3DManipulator as well.
+
+*.  Store ID and total_indices labels for each TreeNode within templatized
+Tree class.  Can now retrieve particular TreeNodes using these labels as
+inputs.
+
+*.  Started to minimize dependence of PickHandler classes on
+osgProducer::Viewer for Qt frontend purposes.
+
+=====================================================================
+Code changes made on Tues, Nov 7:
+
+*.  Created new Tree and Treenode classes within src/datastructures subdir
+for eventually mimicing scenegraph trees.  Nodes can be inserted into tree
+via addChild methods.  They can subsequently be easily accessed via their
+level and column values.
+
+*.  Generalized osg/osgGeometry/Box class so that it can display a text
+label for eventual scenegraph display purposes.
+
+*.  Created new GraphNode and GraphNodesGroup classes in osg/osgAnnotators
+which inherit from Box and BoxesGroup classes in osg/osgGeometry.
+GraphNode holds LineSegmentsGroup for links between parent and children
+nodes in tree datastructure.
+
+=====================================================================
+Code changes made on Mon, Nov 6:
+
+*.  Overhauled FusionGroup & FusionKeyHandler classes; Completely
+eliminated FusionController class.
+
+*.  Overhauled main programs SPASE_RGBA2ARRAY, SATDRAPE and VIEWDRAPE.  Tested
+that the 4D main programs work after extensive changes we've made to
+animation control over the past several days!
+
+*.  Generalized Transformer class so that it can either take in a
+osgProducer::Viewer or osgUtil::SceneView object.  Latter is needed for Qt
+front-end purposes.
+
+=====================================================================
+Code changes made on Fri, Nov 3:
+
+*.  Cessna model animation for program RAYTRACER now works with new
+AnimatorController classes.  Can create polyline path for Cessna and then
+animate Cessna's motion along that path.  Cessna yaws so that its nose
+always points along its velocity vector.
+
+*.  RayTracer now inherits from GraphicalsGroup.  We can then register
+RayTracer with the AnimationController and have it call the trace() method
+at every time step.  Color instantaneous lines-of-sight green/red to
+indicate clear/blocked views between airborne transmitter and ground
+receiver.  Terminate blocks LOSs at ground surface intercept points.
+Compute clear LOS fraction over entire flight path.
+
+*.  Shadowing results for lowest level-of-detail Puget Sound DTED map are
+OK.  But paging in of higher level-of-detail DTED info is not yet
+implemented.
+
+=====================================================================
+Code changes made on Weds, Nov 1:
+
+*.  All Geometry and Annotator PickHandlers now inherit from 'pure virtual'
+AnnotatorPickHandler.
+
+*.  Can now instantiate and translate Cessna model above DTED surface.
+Raytracer class then determines whether its LOS to an arbitrarily placed
+ground receiver is blocked by terrain.
+
+*.  ModelsGroup can take in a PolyLinesGroup to hold aircraft flight
+manually constructucted via waypoint entry.
+
+*.  Created geometry/polyline.cc.h which should someday become base class
+for polygon.cc.  Can decompose polyline into regularly spaced samples along
+path.
+
+*.  Started to move general time keeping methods and members out of
+VideoController into GraphicalsController.  Eventually want to be able to
+animate general Graphicals without ever refering to videos or movies.
+
+*.  Created stripped-down version of VIEWPOINTS within MINIVIEW for
+integration with Anye's QT front end.
+
+=====================================================================
+Code changes made on Tues, Oct 31:
+
+*.  Wrote LineSegmentsGroup::generate_new_canonical_LineSegment() which
+takes in draw_endpoint1,2 flags.  In
+LineSegment::set_scale_attitude_posn(), scale in X,Y,Z if drawing arrow
+head or endpoints1,2.
+
+*.  Modified SignPost cone vertical position to take into account cone's
+COM lies at 0.25 its height.  Cone tip now precisely touches signpost's
+intercept location with DTED surface.
+
+*.  Reworked Model and ModelsGroup classes so that they more closely
+parallel SignPost and SignPostsGroup classes.  Wrote new ModelPickHandler
+and ModelsKeyHandler classes.
+
+*.  Added INSERT_MODEL and MANIPULATE_MODEL modes to ModeController and
+ModeKeyHandler classes.
+
+=====================================================================
+Code changes made on Mon, Oct 30:
+
+*.  Globally eliminated osgfunc::generate_black_backdrop() in favor of
+viewer.setClearColor(osg::Vec4(0,0,0,0));
+
+*.  Declare root to be an active DepthPartitionNode which inherits from
+osg::Group.  Starfield and signposts can then be reintroduced into earth
+and spase_imageplanes main programs!
+
+*.  Created osg/osg3D/RayTraceKeyHandler class to enable interactive ray
+intersection with DTED surfaces.
+
+*.  Generalized RayTracer class so that single canonical ray linesegment is
+initialized.  Its endpoints can subsequently be reset to any 2
+threevectors.  After computing ray from some aerial point to a receiver
+SignPost placed by the user on DTED map, RayTracer determines whether LOS
+is blocked.
+
+*.  Can now destroy ArmySymbols after they're placed onto surface or point
+cloud.
+
+*.  Can now assign a priori permanent labels to SignPosts.
+
+=====================================================================
+Code changes made on Fri, Oct 27:
+
+*.  Renamed src/isds/sks_annotate.cc as sksfuncs.cc
+
+*.  Had to introduce several ugly hacks into SignPost, SignPostsGroup and
+SignPostPickHandler to achieve minimal compatibility with the stupid old
+SKS database.  These hacks must definitely be deleted once Group 104
+completely abandons the old in favor of the new SKS databases.  But at
+least we now have a quasi-reasonable demo of 3D signposts flowing down to
+the 2D zoomify display.  3D signpost movement is not captured by 2D output.
+
+=====================================================================
+Code changes made on Thurs, Oct 26:
+
+*.  Eliminated unused min_vertex & max_vertex members of LineSegmentsGroup
+class.
+
+*.  Added public
+LineSegmentsGroup::generate_new_segment(V1,V2,draw_arrow_flag,ID) method.
+
+*.  Created osg/osgSceneGraph/MyIntersectVisitor & osg/osg3D/RayTracer
+classes.  Latter computes where linesegment pierces a terrain surface map.
+
+=====================================================================
+Code changes made on Mon, Oct 23:
+
+*.  EarthManipulator is finally starting to work reasonably well!  Right
+mouse button rotates about earth's center which reduces to translations
+when zoomed close in to surface.  Left mouse button rotates about
+instantaneous screen intercept point which reduces to trackball rotations
+when zoomed close in to surface.  Still need to work out prefactor values
+which move rotation_center in and out wrt earth's origin in
+spin_about_earthcenter() and spin_about_nadir().
+
+=====================================================================
+Code changes made on Thurs, Oct 19:
+
+*.  Updated some methods within Ben Landon's sks_annotate namespace.
+
+*.  Modified signpost label information is now sent to Postgres comments
+database.  Now set text box width which forces long labels to wrap onto
+multiple lines.
+
+*.  Globally eliminated all flyover classes which have been rendered
+superfluous by AlirtManipulator and EarthManipulator.
+
+******
+
+*.  Starting to turn sks_annotate namespace into SKSlabel class within
+src/isds.
+
+=====================================================================
+Code changes made on Tuesday, Oct 17 & Weds, Oct 18:
+
+*.  Updated const earth ellipsoid params in astro_geo/geofuncs namespace so
+that they match those hardwired into OSG.
+
+*.  Overrode and simplified groundpoints_spherical_earth() &
+groundpoints_ellipsoidal_earth() methods in groundfuncs namespace.
+
+*.  Added compute_screen_ray_intercept_with_ellipsoid() method to
+Transformer class.
+
+*.  Added closest_pnt_on_sphere() method to linesegment class.
+
+*.  Added east_ECI_hat, north_ECI_hat and radial_ECI_hat member
+threevectors to Ellipsoid_model class to avoid confusion with direction
+vectors calculated in surface XYZ basis locked to spinning earth.
+
+*.  Radial zoom(), translate_model() and spin_about_nadir() members of
+EarthManipulator class work pretty well for manipulating blue marble.  But
+spin_about_earth_center() still introduces discontinuous jumps due to
+rotation center changing abruptly from nadir to earth center locations.
+Not sure how to fix this abrupt change.
+
+=====================================================================
+Code changes made on Monday, Oct 16:
+
+*.  Features inserted onto blue marble are oriented along east, north &
+radial directions.
+
+=====================================================================
+Code changes made on Friday, Oct 13
+
+*.  Created src/isds and added Ben Landon's sks_annotate header and source
+into this subdir.  Wrapped methods within a new sksfunc namespace.
+
+=====================================================================
+Code changes made on Weds, Oct 4:
+
+*.  Added SignPostsGroup::update_display() which periodically polls the
+Postgres database for current annotation information.  Signposts can now be
+manipulated externally and displayed within our 3D viewer.
+
+.........
+
+*.  Added SignPostsGroup::destroy_Graphical() which purges deleted SignPost
+info from Postgres database if database is active.
+
+*.  Modified drag methods in SignPostPickHandler so that modified SignPost
+position information is sent to SignPostsGroup::update_database_entry().
+
+=====================================================================
+Code changes made on Tues, Oct 3:
+
+*.  Added YYYY_MM_DD_H_M_S method to Clock() for database timestamp storage
+purposes.
+
+*.  Can now insert signpost information into and retrieve info from
+annotation table within toy world_model Postgres database.
+
+*.  Movie recording now stops generating rgb screen snaps when maximum
+cumulative number of images has been exceeded.
+
+=====================================================================
+Code changes made on Mon, Oct 2:
+
+*.  Fetching of partial database results is enabled in database class.
+
+*.  Asynchronous query sending and receiving is partially enabled.
+
+*.  Started to incorporate postgres database interaction into
+SignPostsGroup class.
+
+*.  Added Anye Li's fake Blender satellite model to
+/data/OpenSceneGraph-Data/ subdir.
+
+=====================================================================
+Code changes made on Fri, Sep 29:
+
+*.  Enabled asynchronous query to database class.
+
+=====================================================================
+Code changes made on Thurs, Sep 28
+
+*.  Added src/mains/postgres & src/postgres to library tree.  Started to
+write src/postgres/database class to interact with postgres databases.
+
+=====================================================================
+Code changes made on Tues, Sept 26:
+
+*.  Added signposts to main program basement for Text manipulation testing
+purposes.
+
+*.  Overhauled text display within SignPost class.  No longer display
+problematic rectangle behind signpost label.  Label is now always correctly
+centered above signpost, and it always faces towards the screen.
+Dropshadow outlining around text characters help them standout against busy
+pointcloud backgrounds.
+
+*.  Added MatrixTransform_ptr member to GraphicalsGroup which can be added
+to top of scenegraph associated with current GraphicalsGroup.  Allows
+rotation from canonical to world lat/long coordinates.
+
+*.  HiresDataVisitor class now inherits from MyNodeVisitor.  Moved members
+and methods out of HDV into MNV related to finding Z given (X,Y).
+Signposts can now be placed given an (X,Y) input.
+
+=====================================================================
+Code changes made on Mon, Sept 25:
+
+*.  Eliminated MoviesGroup from MovieController class in favor of
+GraphicalsGroup.
+
+*.  Globally renamed osg2D/MovieController as video/VideoController.  
+
+*.  Removed dependence of osgGeometry library on osg2D movies.
+Significantly rearranged order of libraries within Makefile & removed some
+bad dependencies.
+
+=====================================================================
+Code changes made on Thurs, Sep 21:
+
+*.  Can now instantiate cone with specified tip and base locations in XYZ
+world space.
+
+*.  Wrote Transformer::find_world_point_nearest_to_ray() which can be used
+to determine lat/long positions of 2D corner points in calibrated images.
+
+*.  Fixed meters->kilometers axis label bug in
+AlirtGrid::initalize_ALIRT_grid();
+
+=====================================================================
+Code changes made on Weds, Sept 20:
+
+*.  Created osgGeometry/Cone, ConesGroup, ConePickHandler and
+ConesKeyHandler classes.  
+
+*.  Can rotate, scale and transform cones via
+ConesGroup::scale_rotate_then_translate_cone() so that its orientation,
+shape and location can be easily set at will.
+
+=====================================================================
+Code changes made on Tues, Sept 19:
+
+*.  Created new Pass class to take place of PassData::pass_info structure
+in src/fusion.  Globally changed every pass_info reference to Pass.
+
+*.  Renamed PassData class as PassesGroup.  Made necessary global changes
+to accomodate this name change.
+
+*.  Moved passname_filename_prefix() method out of GraphicalsGroup and
+GraphicalsController classes into Pass class.
+
+=====================================================================
+Code changes made on Mon, Sept 18:
+
+*.  Added new set of army icons to OSG-Data/army_symbols.
+
+*.  Generalized PassData so that it can start to handle multiple point
+cloud and/or video input files.  Can now search for and extract UTM zone
+info within pass filenames.  If UTM zone info is extracted, save within
+PassInfo objects.
+
+*.  GraphicalsGroup::retrieve_lat_long_alt() converts UVW coords into
+geopoints provided UTMzone has been defined. Works for features and
+signposts.
+
+=====================================================================
+Code changes made on Fri, Sept 15:
+
+*.  camera::check_projection_matrix() now reports discrepancies in pixel
+units and as percentage fractions.
+
+*.  Simplified extraction of camera world posn, image plane normal and UV
+ray directions in camera class methods.
+
+*.  Display FOV linesegments within fused point cloud after draping EO
+image RGB values onto XYZ points.
+
+=====================================================================
+Code changes made on Thurs, Sept 14:
+
+*.  Deleted old set of low resolution ppt army symbol icons from
+OSG_data/army_symbols subdir.  Added new set of higher resolution symbols
+in their place.
+
+*.  Program VIEWCITIES now supports different army symbol placement and
+manipulation within INSERT_BOX and MANIPULATE_BOX modes.  
+
+=====================================================================
+Code changes made on Tuesday, Sept 12:
+
+*.  Box width, length and height can now be set to arbitrary values at the
+time they're instantiated via call to BoxesGroup::set_wlh().  Box
+generation now returns an OSG group containing box and face geodes.
+
+*.  Moved more general axes and tick labels lines of code out of AlirtGrid
+class into Grid2d.  AlirtGrid, EarthGrid and LatLongGrid class now appear
+to work OK and support user modification of grid spacing.
+
+*.  /data/OpenSceneGraph-Data/army_symbols now includes a few symbols which
+have been added to repository.
+
+*.  Created osg/osgAnnotators/ArmySymbol, ArmySymbolsGroup,
+ArmySymbolPickHandler and ArmySymbolsKeyHandler classes which inherit from
+osgGeometry/Box classes.  As of 3 pm on Tues, Sep 12, the ArmySymbol
+classes are trivial extensions of the Box classes.  But eventually they'll
+become differentiated.
+
+=====================================================================
+Code changes made on Monday, Sept 11:
+
+*.  Attempted to generalize PointCloud::write_tdp_file() so that it can
+convert an arbitrary scene graph into a TDP output.  Made several
+modifications to HiresDataVisitor so that it can now export all paged
+vertices to a TDP file.  But coloring of paged XYZ points is still badly
+messed up. 
+
+*.  Trying to get mains/OSG/earth program to display Boston point cloud on
+blue marble.  At least compiles and runs on 9/11/06.  But doesn't work at
+all correctly.
+
+*.  Made yet another round of massive changes to all osg Grid classes.  As
+of 9/11/06, grid resizing no longer works.  But inner structure of Grid
+classes is less stupid than in the past.
+
+*.  Hardwired earth grid's fixed size into EarthGrid::initialize().
+
+*.  No longer attempt to maintain backwards compatability with JigsawGrid
+class.  Remove from Makefile (but not yet from repository).
+
+=====================================================================
+Code changes made on Weds, Sep 6:
+
+*.  Generalized PassData class to take an osg::ArgumentParser in a
+constructor.  Searches for .vid file among its arguments, instantiates a
+video pass and sets special videopass_ID equal to pass' ID.
+
+*.  Generalized FusionGroup::retrieve_XYZUV_feature_info() so that pass IDs
+for point cloud and video data are no longer hardwired.
+
+=====================================================================
+
+Code changes made on Friday, Sep 1:
+
+*.  Deleted unused osg/KeyboardHandler, osg/FollowNodeManip and
+osg/TransformAccumulator classes from repository.  Deleted obsolete
+osg/ObjectKeyboardHandler header, osg/findNodeVisitor class and
+mains/OSG/visitor.cc program.
+
+=====================================================================
+Code changes made on Tuesday, Aug 29:
+
+*.  Added OSG_OP_OT_PATH environmental variable to .cshrc file and into
+Makefile in order to maintain compatability with fiasco.
+
+*. Fixed bug in decimal_day computation within Clock class.
+
+==============
+
+*.  Added target_locations method to satelliteorbit class which fills STL
+vector with ECI locations of target over its entire orbit.
+
+*.  Use PolyLines to draw satellite orbits in IMAGEPLANES and
+SPASE_IMAGEPLANES.
+
+=============
+
+*.  Implemented Ross' fix for starfield coloring problem 
+
+=====================================================================
+Code changes made on Monday Aug 28:
+
+*.  Give sun a material property so that it becomes a light emitter.
+
+*.  Starting to rewrite PointCloud::write_xyzp_file() using
+LeafGeodeVisitor approach.
+
+=====================================================================
+Code changes made on Friday, Aug 25:
+
+*.  Moved all global translation, scaling and rotation methods out of
+DataGraph class into Graphical.  
+
+*.  Moved most sun and earth generation specific methods and constants into
+PlanetsGroup class.  Solarsystem group now holds sun plus illumination
+information.  Moreover, it can hold a MatrixTransform which specifies how
+attached EarthGraph plus any decorations are rotated about earth's axis.
+
+*.  Eliminated an unused GraphicalsGroup constructor.
+
+*.  Simplified GPH::instantiate_Graphical() method's argument list to take
+just a single osg::Node* argument from two separate osg::Geode* and
+osg::Group* arguments.
+
+=====================================================================
+Code changes made on Thurs, Aug 24:
+
+*.  PointsCloudGroup now inherits from DataGraphsGroup
+
+*.  Created astro_geo/Clock class which holds onto year down to sec time
+info in local and UTC coordinates.  It also stores juliandate &
+phi_greenwich astro params.
+
+*.  Program JUSTEARTH can now rotate earth so that its orientation in ECI
+space is astronomically correct.  It can also place the sun at its correct
+ECI direction as a function of calendar date.  Solar lighting of earth
+ellipsoid is also now implemented.  Other graphicals locked to earth's
+surface still need to be rotated along with planet.
+
+=====================================================================
+Code changes made on Weds, Aug 23:
+
+*.  Wrote methods to convert back & forth between decimal degs and hms in
+astrofuncs namespace.
+
+*.  Moved DataGraph global manipulation methods out of PointCloud class
+into DataGraph.  Moved get_curr_p() type methods out of DataGraph and into
+PointCloud class.  Moved tdpfuncs namespace out of threeDgraphics subdir
+into osg/osg3D.  Also moved osg Plane classes out of osg/osgGeometry into
+osg/osg3D.
+
+*.  Created osgSceneGraph/DataGraphsGroup class.  Can use it to spin earth
+ellipsoid about its axis within JUSTEARTH program.
+
+=====================================================================
+Code changes made on Tues, Aug 22:
+
+*.  Cleaned up more of Boven's Grid class code.  Created new EarthGrid
+class for use with blue marble displays.  Tick values now symmetrically
+span a negative to positive range and are centered upon ellipsoid's origin.
+
+*.  Fixed bug in DataGraph::get_leaf_geometry() which caused color
+thresholding problems for VIEWCITIES program.  get_leaf_geometry() now
+returns pair<osg::Geometry*,osg::MatrixTransform>.
+
+*.  Reorganized methods within timefuncs namespace from alphabetical to
+time/coordinate system order.
+
+=====================================================================
+Code changes made on Mon, Aug 21:
+
+*.  LeafNodeVisitor now inherits from MyNodeVisitor class.  We now bundle
+together geode pointers with corresponding Matrix Transform within STL
+vector members of LeafNodeVisitor.  Also eliminated
+LeafNodeVisitor::GetCurrMatrixTransform_ptr() method.  Restored
+curr_MatrixTransform member of DataGraph in favor of
+curr_MatrixTransform_ptr.  Trying to work towards picking closest geode on
+ellipsoid datagraph.
+
+*.  Added mains/spase/justearth.cc to repository.
+
+=====================================================================
+Code changes made on Thurs, Aug 17:
+
+*.  Made minor updates to mains/satellite/fourd.cc and viewsat.cc
+
+*.  Made minor upgrade to Feature::set_crosshairs_color().  Privatized a
+few dynamic generation methods.  Eliminated all unused references to
+Linkedlists within FeaturePickHandlers.
+
+*.  Created osgGeometry/Point, PointsGroup & PointPickHandler classes.
+Added INSERT_POINT and MANIPULATE_POINT modes to ModeController and
+ModeKeyHandler classes.
+
+=====================================================================
+Code changes made on Monday, Aug 14:
+
+*.  Consolidated blue marble program into mains/OSG/earth.cc.  Use Ross'
+master program to generate a boston_all.ive file within new_boston.ive/
+subdir.  Also put hires_earth.osga into /Openscenegraph-data/SolarSystem/
+which is where program earth expects to find it.  Chant earth
+boston_all.ive to see entire Boston data set placed onto ellipsoid's
+surface.
+
+=====================================================================
+Code changes made on Friday, Aug 11:
+
+*.  Continued to overhaul DataGraph and other Visitor classes within
+osgSceneGraph subdir.  ColorGeodeVisitor and SetupGeomVisitor now inherit
+from a rewritten MyNodeVisitor class which holds MatrixTransform
+information.  MyDatabasePager takes in zero, one or two MyNodeVisitor
+arguments in its constructors.  It no longer depends upon DataGraph, nor
+does it explicitly know about ColorGeodeVisitor or SetupGeomVisitor.
+
+*.  Moved MyDatabasePager out of DataGraph class.  It's now instantiated
+within each main program.  Moved SetupGeomVisitor and ColorGeodeVisitor out
+of DataGraph and into PointCloudsGroup.  
+
+*.  SetupGeomVisitor writes "PointCloud" label into MatrixTransform node at
+top of PointClouds (which are now DataGraphs) to distinguish them in
+ColorGeodeVisitor runs from non-pointclouds.
+
+*.  Lowell suburb can now appear on osga earth file.  But Boston files are
+not yet correctly translated...
+
+=====================================================================
+Code changes made on Thurs, Aug 10:
+
+*.  Extensively overhauled DataGraph and PointCloud classes.  DataGraph now
+inherits from Graphical, and PointCloud inherits from DataGraph.  
+
+*.  No longer pass colormap initialization params into PointCloud
+constructor.  We instead pass those params directly into the ColorMap
+constructor within most main programs.
+
+=====================================================================
+Code changes made on Weds, Aug 9:
+
+*.  Fixed a bad < to <= bug in mathfunc::orthogonal_dirs().
+
+*.  Must explicitly set index_tree_flag=false in viewpoints main program to
+avoid each geometry from being filled with every index rather than just a
+bucket of vertices.
+
+*.  Created astro_geo/EllipsoidModel class which thinly wraps OSG's
+EllipsoidModel class.
+
+=====================================================================
+Code changes made on Monday, Aug 7 and Tuesday, Aug 8
+
+*.  Updated space codes.
+
+*.  Overhauled PointCloudsGroup class.  Finished adding PointCloudsGroup
+instead of individual PointClouds to all main programs.  FUSION, VIDEO3D,
+VIEWPOINTS, VIEWCITIES, SATCITIES, SPASE_IMAGEPLACES all seem to work OK.
+
+*.  Added significant number of text files (e.g. containing feature and
+triangle info) to repository.  Added link /fusion/my_cessna.osg to
+repository.
+
+*.  Started to write main program spase/earth to play with draped globe
+endowed with an ECI coordinate system.  Can stick signposts at arbitrary
+lat,long,height locations.
+
+*.  Added SignPost::set_scale_attitude_posn() in order to easily manipulate
+signposts for earth implantation purposes.
+
+..............
+
+*.  Updated space codes.
+
+=====================================================================
+Code changes made on Friday, Aug 4:
+
+*.  Eliminated myvector in favor of threevector in threeDgraphics subdir as
+well as space/spasefuncs namespace.
+
+*.  Upgraded Ross' eyeglass subdir.  We now use his wicked fast scenegraph
+generated by his latest main lodtree program!
+
+*.  Added write_dotVidfile() to G99VideoDisplay class.  Added
+save_to_file() to MoviesGroup class.  Added MANIPULATE_MOVIE mode which is
+toggled by pressing 'R'.  Toggle between VIEW_DATA and GENERATE_AVI_MOVIE
+mode by pressing 'V'.
+
+*.  Convert RGB_twoDarray to RGBA_twoDarray in video/VidFile class.
+Generalized RGB -> RGBA in colorfuncs namespace.
+
+=====================================================================
+Code changes made on Thurs, Aug 3:
+
+*.  Eliminated myvector in favor of threevector in urban/urbanimage.cc.
+Had to update several other classes & namespaces as well.
+
+..........................
+
+*.  Eliminated myvector in favor of threevector in ladar subdir namespaces
+and classes.
+
+=====================================================================
+Code changes made on Weds, Aug 2:
+
+*.  Added get_default_info_filename, get_output_filename and
+get_input_filename methods to GraphicalsGroup().
+
+*.  Added toggle_rotate_mode() method to RectanglesPickHandler class.
+
+*.  Reset Features OSG group's node mask to 1 at end of
+FeaturesGroup::read_feature_info_from_file().
+
+=====================================================================
+Code changes made on Tuesday, Aug 1:
+
+*.  Renamed osg3D/CloudKeyHandler and CloudsGroup classes as
+PointCloudKeyHandler and PointCloudsGroup.
+
+.............................
+
+*.  Deleted and recreated include/newmat and src/newmat subdirs with all
+header files moved out of the former and into the latter.  Only softlinks
+now exist within include/newmat.
+
+.............................
+
+*.  Wrote mains/video/image2vid.cc which uses OSG plugins to parse image
+stills and turn them into G99 video files.
+
+*.  Save feature locations to 10 place precision.
+
+=====================================================================
+Code changes made on Monday, July 31:
+
+*.  Changed constructor for osg/AnimationPathCreator to enable compilation
+on isds3d laptop.
+
+*.  Added Ross' main lodtree program to repository.
+.............................
+
+*.  Renamed osg3D/CloudController as PointCloudController.
+
+*.  Added globe textures in OpenSceneGraph-Data/Images to repository.
+
+*.  Created osgSpace/Planet and PlanetsGroup classes for Sun/Earth/Moon
+textured objects.
+
+=====================================================================
+Code changes made on Thurs, July 27 & Fri, July 28
+
+*.  Updated satellite classes
+
+*.  Downloaded  updated latest version of Ross' eyeglass software
+
+*.  Separated off geometry parameter setting within
+DataGraph::set_geometry_params() from DataGraph::color_geometry_vertices().
+
+*.  Created osgSceneGraph/SetupGeomVisitor class which initializes some
+osg:;Geometry parameters (e.g. StateSet) and checks whether input color
+arrays are null.  
+
+*.  Add mutable_colors_label string as a name for each geometry which has
+no pre-determined color information in order for subsequent
+ColorGeodeVisitor calls to know which geometries to color and which to
+leave alone.
+
+=====================================================================
+Code changes made on Weds, July 26
+
+*.  Eliminated unused method ColorMap::compute_points_thresholds()
+
+*.  Fixed RBG -> RGB in FusionGroup::HSV_fuse() argument list !!!
+
+==================================================================== 
+Code changes made on Tuesday, July 25:
+
+*.  Generalized osgAnnotators/PolyLinesGroup class to accommodate reading
+in and displaying multiple satcomm tracks.
+
+*.  Toggle lat/long grid on/off via 'l' key in programs VIEWCITIES and
+SATCITIES.  After running Ross' lodtree on all max_level=5 files whose
+sizes exceeded 20 Mbytes and resetting max_level=4, both of these programs
+now appear to be stable and run reasonably smoothly on entire Boston data
+set.
+
+*******
+
+*.  Added write_TDP_file() to PointCloud class.
+
+==================================================================== 
+Code changes made on Monday, July 24:
+
+*.  Added mains/OSG/satcities.cc to repository.
+
+*.  Add Linesegments_group OSG group as child to ImageFramesGroup in
+ImageFramesGroup::generate_new_ImageFrame().
+
+*.  Implemented Ross' suggestions to fix page loading within
+HiresDatavisitor class.
+
+*.  Program isds/hummerheight converts fake constant vehicle altitudes in
+polyline file generated by isds/satcomm into z values which trace surface
+heights of Boston map.
+
+==================================================================== 
+Code changes made on Fri, July 21 and Sat, July 22:
+
+*.  Tried to streamline latlongfunc::compute_Boston_UTM() to speed up
+reconversion of raw Boston data into genuine map.
+
+==================================================================== 
+Code changes made on Thurs, July 20:
+
+*.  Updated satellite classes in src/space
+
+*.  Moved HiresDataVisitor out of DataGraph class.  Started to add logic
+into HiresDataVisitor to determine if XY points lie within geode bounding
+spheres.  Needs lot more work.
+
+==================================================================== 
+Code changes made on Weds, July 19:
+
+*.  Eliminated final cout<<endl from FeaturesGroup::update_feature_text()
+which caused console info to scroll offscreen when videos were played.
+
+*.  Added setNodeMask(0) for all graphicals which do not automatically
+appear when VIEWPOINTS & VIEWCITIES start up.  Added setNodeMask(1) in
+GraphicalsGroup::instantiate_Graphical().
+
+*.  Wrote osg3D/FlyOverKeyHandler class which depends on
+CustomManipulator3D class.  Eliminated dependence of CustomManipulator3D on
+Flyover classes.
+
+.......
+
+*.  Created osg/osgSceneGraph/scenegraphfuncs namespace, and moved
+standalone methods out of DataGraph class which can be reused by other
+classes.
+
+*.  Started to create osgSceneGraph/HiresDataVisitor class which visits
+every high resolution geode within a .ive tree, including those which must
+be paged in from disk.
+
+*.  Moved MyDatabasePager initialization params out of main programs and
+into MyDatabasePager::initialize_member_objects().  Moved registry
+singleton code into MyDatabasePager::allocate_member_objects().
+
+==================================================================== 
+Code changes made on Tuesday, July 18:
+
+*.  Created osgGeometry/PolyLine and PolyLinesGroup classes to hold OpenGL
+LineStrips which have multi vertex and color information inside them.   
+
+*.  Changed program SATCOMM so that it can read in filenames from command
+line.  Allows program to be run in batch mode on all HUMVEE text files.
+
+*.  Enlarged sizes of axes labels and tick marks in LatLongGrid for Boston
+data set.
+
+==================================================================== 
+Code changes made on Thurs, July 13:
+
+*.  Added z_coordinate() member to geometry/plane class
+
+*.  Fixed XY sampling of Delaunay triangle network.
+
+*.  Eliminated dependence of osg/osgGeometry subdir on PointCloud class
+which appears higher up on the linking list within our Makefile.
+Eliminated dependence of PlanesGroup on PointCloud.  PlanesGroup now
+depends only on DataGraph.
+
+*.  Added cloud_filename as member of PointCloud.
+
+*.  Consolidated manual TIN thresholding of aerial dark counts with
+statistical removal of belowground noise in
+PointCloud::remove_snowflakes().  Tile cleaning is not too manually
+intensive and reasonably rapid.
+
+==================================================================== 
+Code changes made on Weds, July 12:
+
+*. Fixed bug in PointCloud::reload_colormap_array() so that colormap
+switching works with yesterday's ColorGeodeVisitor mechanism.
+
+*.  Upgraded all twovectors to threevectors in delaunay subdir.  Delaunay
+triangulation of 3D feature points now works!
+
+*.  Added network member to TrianglesGroup which keeps track of neighboring
+triangles.  Store vertex IDs within OSG Triangle objects.  Implemented
+brute force coloring algorithm which should ensure no two neighboring
+triangles within a Delaunay network share the same color.
+
+*.  Implemented fast PointInsideTriangle algorithm within geometry_funcs
+namespace.  
+
+*.  Added plane member to osgGeometry/Triangle class.
+
+*.  Moved most of GraphicalPickHandler::instantiate_Graphical() into
+GraphicalsGroup().
+
+*.  Consolidated some redundant lines of code into
+Feature::generate_drawable_geode() and
+FeaturesGroup::generate_new_feature() methods.
+
+*.  Started to implement sampling of Delaunay triangle network within
+FeaturesGroup::display_XY_samples().
+
+==================================================================== 
+Code changes made on Tuesday, July 11:
+
+*. Renamed osgFeature/feature class as Feature.
+
+*.  Moved mark_snowflake_points() method from ladarimage class into
+ladarfuncs namespace.  Added remove_snow() method to PointCloud which
+writes out TDP file sans snowflake points.
+
+*.  Abandoned InsertColorsCallbackVisitor & UpdateColorsCallback approach
+to coloring after multiple out-of-memory errors occured for entire Boston
+data set.  Restored ColorGeodeVisitor to osgSceneGraph subdir.
+
+*.  Created osgSceneGraph/ParentVisitor class to accumulate upstream
+NodePaths for nodes paged into memory from disk.  Cumulative upstream
+matrix transforms returned by ParentVisitors are passed into
+DataGraph::color_geometry_vertices().  ColorGeodeVisitor then colors all
+geodes within paged-in branch.
+
+==================================================================== 
+Code changes made on Monday, July 10:
+
+*.  Added mains/isds/transform_points.cc to repository.
+
+*.  Renamed osgFeatures/featurePickHandler class as FeaturePickHandler
+
+*.  Created osgGraphicals/CentersKeyHandler class.  Added
+edit_center_location() method to CenterPickHandler to enable reseting
+camera position based upon input (lat,long) pair.  Can also fix camera to
+point straight down along Grid's Z axis.
+
+*.  Started to clean methods in ladarimage class and ladarfuncs namespace.
+
+*.  Fixed serious bug in prob_distribution::fill_distribution().  Now
+push_back density values onto vector p rather than assign using p[j]=....
+
+==================================================================== 
+Code changes made on Friday, July 7:
+
+*.  Added method to write out quadratically warped bbox surrounding Boston
+2005 image.
+
+*.  Streamlined outerproduct method in Tensor class.
+
+*.  Added member vector<int> Indices to Tensor class.  Use this member to
+privately pass around Indices info to Tensor methods rather than explicitly
+instantiating local vector<int>.  
+
+*.  Fixed more MatrixTransform problems in DataGraph, LeafNodeVisitor,
+ColorGeodeVisitor and HyperExtentsVisitor classes.
+
+==================================================================== 
+Code changes made on Thurs, July 6:
+
+*.  Added genmatrix(tensor) constructor to genmatrix class
+
+*.  Eliminated genvector::outerproduct() in favor of Tensor::outerproduct()
+
+*.  Overloaded operator* in scalar class to allow for scalar multiplication
+of Tensors.
+
+*.  Implemented closed-form solution for best-fit tensor parameters
+entering into quadratic warp of ALIRT XY features into Google's UV UTM
+values.
+
+*.  Eliminated DataGraph::color_current_geometries() in favor of
+DataGraph::UpdateColors() which accepts ColorGeodeVisitor.  Eliminated
+DataGraph::get_n_leaf_geodes() in favor of
+LeafNodeVisitor::get_n_leaf_geodes().
+
+==================================================================== 
+Code changes made on Weds, July 5:
+
+*.  Added specialized constructors, get, increment and put methods for rank
+0, 3 and 4 tensors into Tensor class.
+
+*.  Added Genarray(int m) and genmatrix(int m) constructors which should
+fix rank=2 bug for genvectors.
+
+*.  Added outerproduct and contraction methods to Tensor class.
+
+*.  Privatized all member variables in Tensor class.  Eliminated some
+integer arrays in favor of STL vectors.
+
+==================================================================== 
+Code changes made on Tuesday, July 4:
+
+*.  Eliminated superfluous arguments from ColorGeodeVisitor constructor
+
+*.  MatrixTransforms incorporated into DataGraph class.  But paging of
+canonical Boston tile is now very slow.
+
+==================================================================== 
+Code changes made on Monday, July 3:
+
+*.  Added FLTK window libraries to Makefile.  Created src/mains/fltk
+subdir.
+
+*.  Changed stringfunc::prefix() so that it returns the location of the
+last period (and not the first) in any input string.
+
+*.  Added Ross' HyperExtentsVisitor member to DataGraph class.  Eliminated
+total_bbox member of DataGraph class in favor of
+HyperExtentsVisitor->getBound() which takes into account MatrixTransforms
+embedded into the data graph.
+
+*.  Moved compute_points_thresholds() from PointCloud to DataGraph class.
+
+*.  tdpfunc::write_relative_xyz_data() now adds UTMZone and UTMOffset info
+into output TDP file.
+
+==================================================================== 
+Code changes made on Tues, June 27:
+
+*.  Moved Boston vertex manipulation methods out of GraphicalsGroup class
+into latlong2utmfuncs namespace.  
+
+*.  Started to add methods to PointCloud class to write out perturbed XYZ
+information to TDP files.
+
+==================================================================== 
+Code changes made on Mon, June 26:
+
+*.  Simplified generate_crosshairsnumber_text() and
+generate_nimages_appearance_text() members of feature class so that they
+return osgText::Text pointers rather than OSG groups.
+
+==================================================================== 
+Code changes made on Fri, June 23:
+
+*.  Generalized geopoint class to contain UTM members as well as deg, min,
+sec decompositions of lat/long values.  Added compute_geopoint() method to
+GraphicalsGroup class.
+
+*.  Added empirically determined linear transformation which maps ALIRT z
+values to actual elevations above sea level to
+GraphicalsGroup::compute_Boston_UTM().
+
+==================================================================== 
+Code changes made on Thurs, June 22
+
+*.  Derived and implemented closed form least squares solution to linear
+transformation that maps ALIRT XY values to UTM coordinates extracted from
+Google Earth imagery.  Computed & compared warped vs translated bounding
+box surrounding Boston point cloud.
+
+*.  Generalized LineSegmentsGroup::reconstruct_lines_from_file_info() to
+instantiate multiple line segments corresponding to the same time.
+
+==================================================================== 
+Code changes made on Weds, June 21
+
+*.  UTM zone is now explicitly passed as an input or output to lat/long
+<---> UTM coord conversion methods in latlongfunc namespace.  Eliminated
+global UTMzone variable within this namespace in favor of local variables.
+
+*.  Eliminated obsolete inlined methods in latlongfunc namespace.  Made
+corresponding minor changes in video/videofuncs.cc and scb.cc.
+
+*.  Wrote mains/isds/transform_coords to search for best linear
+transformation that warps ALIRT XY values to match lat and long values
+extracted from Google Earth for 16 random features.
+
+==================================================================== 
+Code changes made on Mon, June 19:
+
+*.  Modified new class osg/osgSceneGraph/MyDatabasePager to update Geode
+info within DataGraph each time pages are swapped in or out of memory.
+Feature picking now works rapidly & accurately for Boston data set.
+
+*.  Consolidated src/astro_geo/ellipsoid_params.h into latlongfunc
+namespace.  Cleaned up several methods in latlongfunc namespace.  Cleaned
+up src/astro_geo/Ellipsoid class.
+
+*.  Created new subdir src/mains/isds to hold programs specifically related
+to Boston data set.
+
+==================================================================== 
+Code changes made on Fri, June 16:
+
+*.  Increased prob_distribution::nmax_bins from 600 to 10001.  Added
+get_minimum_x() and get_maximum_x() methods.  Made get_x, get_p, get_pcum
+methods const.
+
+*.  Added poor man gaussian dist methods to advmath namespace for speed
+purposes.
+
+*.  Implemented histogram specification within
+DataGraph::color_geometry_vertices() to allow for height content
+amplification.  Added bool members to PointCloud & ColorGeodeVisitor
+classes to allow user to easily switch histogram specification on or off.
+
+==================================================================== 
+Code changes made on Thurs, June 15:
+
+*.  Removed from building destructor repetitions code that deletes
+instantiated buildings which are automatically removed by Linkedlist's
+destructor via call to delete box_list_ptr.
+
+*.  Eliminated LeafGeometries_ptr & Geometries_ptr member variables of
+DataGraph class.  Cleaned up some of the contorted global variable logic
+within DataGraph.
+
+*.  Changed optimizer.optimize(root) to optimizer.optimize(data_root.get())
+in VIEWPOINTS to help prevent catastrophic out of memory errors on Boston
+data set.
+
+*.  Moved common geometry coloring methods out of
+PointCloud::reload_colormap_array and ColorGeodeVisitor::apply(geode) into
+DataGraph::color_geometry_vertices().  Moved ColorMap class from osg/osg3D
+down to osg/osgSceneGraph.
+
+==================================================================== 
+Code changes made on Weds, June 14:
+
+*.  Changed free to delete within FREE macro in delaunay namespace
+following multiple VALGRIND mismatched free/delete/delete [] error
+messages.  Also added appropriate delete[] for integer arrays in
+voronoifuncs::generate_Delaunay_triangle_list() methods.
+
+..............................
+
+*. Eliminated redundant contour_ptr member variable from cityblock class
+which overlapped with contour_ptr member of contour_element class
+
+..............................
+
+*.  Added destructor_flag bool to Linkedlist::purge_all_nodes() to fix
+Valgrind mem leak
+
+*.  Separated all geometry dependent members and methods from
+network/network_element class into geometry/contour_element.  Updated
+classes such as tree_cluster, roadsegment, cityblock to now inherit from
+contour_element.
+
+*.  Moved geometry dependent templatized methods out of
+network/Networkfuncs and into geometry/voronoifuncs.h to avoid linking
+problems
+
+==================================================================== 
+Code changes made on Tuesday, June 13:
+
+*.  Did more cleaning & generalizing of the Grid classes.
+
+*.  No longer store bbox information within DataGraph.  Bbox info is
+instead easily computed via Geometry methods after DataGraph is
+constructed.
+
+*.  In order to alter point sizes, height thresholds, etc, we now pass
+PointCloud StateSet pointer to ColorGeodeVisitor.
+
+*.  Commented out overloaded registerPagedLODs() method in
+eyeglass/src/viewer/CustomDatabasePager.h which incorrectly ends up
+coloring our Grid.
+
+==================================================================== 
+Code changes made on Monday, June 12:
+
+*.  Eliminated DataGraph::retrieve_total_bbox in favor of
+compute_total_bbox().  Method can be used with Ross' Data Graphs which do
+not store bbox info within geometries.
+
+*.  Instantiate and fill geometry color arrays if they do not already exist
+(e.g. from input Boston .ive files) within PointCloud::reload_color_map().
+
+*.  Created osg/osgSceneGraph/ColorGeodeVisitor class to add color to paged
+data read in from disk.
+
+==================================================================== 
+Code changes made on Friday, June 9
+
+*.  Added checks for null metadata ptrs in
+DataGraph::build_datagraph_tree().
+
+*.  Eliminated osgData, osgUtil, osgViewer, osgIO, osgLODtree libraries and
+headers from projects subdir.  We now use Ross' eyeglass codes put into
+their own libraries which can be regularly updated via SVN calls.
+
+*.  Restored runtime library libtdp.so in /usr/local/lib which is needed
+for TDP executables such as tdp_index.  But created link libtdpstatic.a ->
+libtdp.a and now force our main programs to link with static library to
+circumvent some bad bug in dynamic TDP libraries.
+
+==============================-
+
+*.  VIEWPOINTS, VIEWRACE, VIDEO3D & FUSION appear to work after installing
+libtdp-3.1.0pre7 via CVS checkout call to glows repository, making minor
+#include modificiations & deleting dynamic libtdp-3.1.0.pre7.so library
+from /usr/local/lib.  Must force link with static libtdp-3.1.0.pre7.a
+library instead.
+
+==================================================================== 
+Code changes made on Thursday, June 8
+
+*.  Tried to incorporate FIASCO modifications.  
+
+==================================================================== 
+Code changes made on Weds, June 7
+
+*.  Finished first round incorporation of Ross' Eyeglass codes with a few
+#include changes into our projects structure.
+
+==================================================================== 
+Code changes made on Tues, June 6
+
+*.  DataSceneGraph holding indices as well as vertex/color/metadata buckets
+has basic functionality restored.  Program VIEWDRAPE works again with
+existing HAFB color data.  Program FOURD appears to work OK on fiasco.
+
+*.  Eliminated unused display_info member from PointCloud class.
+
+*.  Trying to encapsulate Ross Eyeglass codes with no changes within our
+projects structure via symbolic links and Makefile modifications
+
+==================================================================== 
+Code changes made on Monday, June 5
+
+*.  Generalized build_datagraph_tree() in DataGraph class to store indices
+to global vertex, color and metadata arrays for eventual 4D display
+purposes as well as reduced copies of these data.
+
+*.  Started to restore index retrieval methods in DataGraph class to allow
+for eventual 4D display.
+
+==================================================================== 
+Code changes made on Friday, June 2:
+
+*.  Changed DataGroup_ptr to DataNode_ptr in DataGraph class.  Eliminated
+all references to DataNode_ptr within MyViewerEventHandler class.
+Eliminated ndims_label member of MyViewerEventHandler for font_filename.
+
+*.  Added ive filetype to PassData class.
+
+*.  Can now write out and read in .ive file containing z-color information.
+
+==================================================================== 
+Code changes made on Friday, May 19:
+
+*.  Restored global color array to DataGraph generation methods so that
+color info can be stored directly into geometries.  XYZRGBA file I/O now
+works after moving libosgSceneGraph to precede libthreeDgraphics in
+Makefile.
+
+*.  Eliminated PointCloud->get_colors_ptr() method which violates privacy.
+
+*.  Loop over all leaf geodes in Transformer::find_closest_world_point()
+and compute their bounding sphere's distance to current line-of-sight ray.
+Ignore any leaf geodes whose distance exceeds their sphere's radius.  This
+trick inspired by Ross' approach should enable us to pick features in very
+large data sets!
+
+==================================================================== 
+Code changes made on Weds, May 17 & Thurs, May 18
+
+*.  Created osg/osgSceneGraph/ActiveData class to hold counters and
+pointers to scenegraph data currently active & visible in viewfrustum.
+
+*.  Pass pointers of previously instantiated ActiveData and DataGraph
+objects into each Data SceneGraph node's CullCallback.
+
+*.  Tried to streamline Transformer class by introducing members PV_ptr and
+PVinverse_ptr & eliminating irrelevant function calls.
+
+*.  Attach buckets of osg::Vec3s and osg::Vec4ubs directly to geodes.  No
+longer store uint indices within each geode to holding point data instead
+withing geometry buckets.  Eliminated retrieve_curr_index method from
+DataGraph class.
+
+*.  Overhauled and streamlined osg/osg3D/ColorMap class.  Now read in once
+ascii files for all maps.  Convert and store them as Vec4ubArrays.  Return
+pointers to current Vec4ubArray.
+
+*.  Modified & simplified FusionGroup class.  Iterate over vertices &
+colors in geometries of DataGraph rather than monolithic arrays.
+
+==================================================================== 
+Code changes made on Tuesday, May 16:
+
+*.  Created osg/osgSceneGraph/ViewFrustum class to hold computations
+related to view frusta from OpenGL viewmodel and projection matrices.
+
+*.  Added brute force method to compute intersection point of 3 planes in
+geometry_funcs namespace.
+
+*.  Added ViewFrustum member to InsertCallbacksVisitor class.  Instantiate
+ViewFrustum once and add pointer to it to all Callbacks inserted into nodes
+in data scene graph.
+
+*.  Separated off CullCallback class into its own file in
+/osg/osgSceneGraph.
+
+==================================================================== 
+Code changes made on Friday, May 12:
+
+*.  Added set method to Ross' Metadata class and get/set_curr_p methods to
+DataGraph class.
+
+*.  Eliminated get_intensities_ptr() from PointCloud class which violates
+privacy.  Then eliminated intensities array from PointCloud.  We now use
+Ross' Metadata table to hold all p and other dependent variable
+information.
+
+==================================================================== 
+Code changes made on Thurs, May 11:
+
+*.  Reduced (but not completely eliminated) dependence of FusionGroup on
+PointCloud's get_colors_ptr() which violates privacy.  Added get and set
+methods for curr and next colors to DataGraph class.
+
+*.  Created new osg/osgSceneGraph subdir.  Moved DataGraph &
+LeafNodeVisitor classes into this subdir.
+
+*.  Now use Ross classes to read in vertex and metadata info from XYZP and
+TDP files.  Must use old, ugly methods to parse XYZRGBA files.
+
+==================================================================== 
+Code changes made on Weds, May 10:
+
+*.  Created osg/osg3D/DataGraph class to hold part of scene graph with
+point cloud info (or other future graphicals).  DataGraph uses
+LeafNodeVisitor to identify and store leaf Geodes in STL vector.  Wrote
+get_next_vertex() method which loops over all leaf vertices in Data scene
+graph.
+
+*.  Renamed CreateSceneGraph method in PointCloud class as
+GenerateCloudGraph().  Moved Ross Anderson's recursive graph generation
+methods out of PointCloud class into DataGraph class.
+
+*.  Started to incorporate Ross' classes into our PointCloud XYZP/TDP file
+parser methods.
+
+*.  Eliminated get_vertices_ptr() methods from PointCloud class.  Moving
+towards using only get_next_vertex() method from DataGraph class.
+
+==================================================================== 
+Code changes made on Tuesday, May 9:
+
+*.  Scenegraph building method in PointCloud class slightly streamlined and
+generalized.
+
+*.  LeafNodeVisitor class can now find all leaf nodes within Ross' old
+scene graph, extract their indices and compute a total center-of-mass as an
+example.
+
+==================================================================== 
+Code changes made on Monday, May 8:
+
+*.  Finished incorporating Ross' viewer libraries into our own.  Tried to
+streamline and fix up few dependency problems.
+
+*.  Started to learn about NodeVisitors; created LeafNodeVisitor class in
+osg/osg3D which is quite buggy as of 5:22 pm.
+
+==================================================================== 
+Code changes made on Weds, May 3 & Thurs, May 4:
+
+*.  Can now display either p over coverage data as 4th element extracted
+from TDP files.
+
+*.  Wrote src/mains/OSG/xyzp2tdp which converts .xyzp into .tdp files.
+
+*.  Can now parse TDP files holding either xyzp or xyzrgba info.  Can write
+out fused XYZ-RGBA data as TDP files.
+
+==================================================================== 
+Code changes made on Tues, May 2:
+
+*.  Simplified tdp file parsing methods after reading Matt Herrington's TDP
+tutorial.
+
+==================================================================== 
+Code changes made on Fri, April 28:
+
+*.  Consolidated all files in src/latlong into src/astro_geo.  Delete
+former from repository.
+
+*.  Added satellitefuncs namespace & satelliteorbit class to src/space.
+
+*.  Privatized length and e_hat members of linesegment class
+
+==================================================================== 
+Code changes made on Thurs, April 27:
+
+*.  Added mains/satellite/imagecdf2vid.cc to repository.  This program can
+read in an imagecdf and generate a G99 video file based upon a jet-like
+colormap.
+
+*.  Added satellite class to src/space to hold instanteous COM and attitude
+information about physical target (not models!)
+
+*.  Deleted ancient and unused statevector class in osg/osgFeatures.  We
+now work only with src/math/statevector class.
+
+*.  Reworked osg Grid classes so that kilometer-sized ALIRT strips are
+labeled by ticks measured in km in one direction and possibly meters in the
+other.
+
+==================================================================== 
+Code changes made on Weds, April 26:
+
+*.  Created new src/mains/satellite and moved non-SPASE programs from
+src/mains/spase into this new subdir.
+
+*.  Eliminated global constants in myimage class.
+
+*.  Can convert imagecdf to a G99 video file for display via VIDEO program.
+
+*.  Can now parse tdp files within PassData and PointCloud classes.
+
+==================================================================== 
+Code changes made on Tuesday, April 25:
+
+*.  Started to create satelliteimage and satellitepass classes in src/space
+subdir
+
+*.  Started to create threeDgraphics/tdpfuncs namespace to parse TDP files.
+
+==================================================================== 
+Code changes made on Friday, April 21:
+
+*.  Privatized member variables in frustum and parallelpiped classes.
+
+*.  Started to understand how to read TDP files via
+mains/testdir/read_tdp.cc
+
+==================================================================== 
+Code changes made on Friday, April 14:
+
+*.  Modified Makefile in order to link in Group 106 TDP library
+
+*.  Made public members of regular_poly class private.
+
+==================================================================== 
+Code changes made on Thursday, April 13:
+
+*.  Started to convert some members of parallelepiped class from public to
+protected.
+
+*.  Made pnt member private in mypoint class.
+
+==================================================================== 
+*.  Added get and put methods to myvector class for individual myvector
+elements.  Then reset myvector components to private from public.
+
+==================================================================== 
+Code changes made on Friday, April 7:
+
+*.  Wrote program spase/FOURD which attempts to merge 3D imageplane
+visualization with 4D ISAR imagery display.
+
+==================================================================== 
+Code changes made on Thurs, April 6:
+
+*.  Wrote program SPASE/SCINTILLATE which blends together static composite
+and instantaneous ISAR images.
+
+*. Wrote program OSG/FILTER_PROBS which performs gaussian filtering of
+probability values in a sequence of XYZP values to remove the worst of
+temporal noise fluctuations.
+
+==================================================================== 
+Code changes made on Weds, April 5:
+
+*.  Added methods in Transformer class to get and set Camera position and
+orientation in world space coordinates.
+
+==================================================================== 
+Code changes made on Tuesday, April 4, late pm:
+
+*.  Incorporated unclass changes to main programs P2RGBA and RGBA2ARRAY
+made on FIASCO.
+
+*.  Added set_min/max_threshold methods to PointCloud class.
+
+==================================================================== 
+Code changes made on Tuesday, April 4:
+
+*.  Eliminated unnecessary private get_ColorMap_ptr() and
+get_Tranformer_ptr() methods from PointCloud class.  Generalized
+write_XYZRGBA_file method.
+
+*.  Wrote mains/OSG/P2RGBA to convert a sequence of XYZP files into XYZRGBA
+files without going through OSG viewer.
+
+*.  Wrote mains/OSG/RGBA2ARRAY to extract color info from a sequence of
+XYZRGBA files and generate a binary color file.  Wrote mains/spase/SATDRAPE
+to read in this color info file and play back a 4D satellite movie.
+
+==================================================================== 
+Code changes made on Monday, Apr 3 & early morning on Tuesday, April 4:
+
+*.  Fixed image number counting bug in video/grey2rgb.cc
+
+*.  Implemented unclass modifications from FIASCO for
+instantaneous/composite ISAR imagery fusion.
+
+*.  Explicitly set CustomManipulator's world space center to midpoint of
+Grid.  Fixes viewing problems in programs VIDEO3D and VIEWSAT.
+
+*.  Added set_coords_erase(false) to
+LineSegment::set_scale_attitude_posn().  Also cleaned up
+LineSegmentsGroup::regenerate_segments() so that only a single linesegment
+is instantiated and its endpoints vary over time.  After these bug fixes,
+program VIEWRACE works again.
+
+==================================================================== 
+Code changes made on Friday, Mar 31:
+
+*.  Wrote program mains/utility/hue_colormap.cc to generate RGB colormap
+for pure hues ranging from red to purple.  Added pure_hue.txt colormap to 
+data/OpenSceneGraph-Data/3D_colormaps.
+
+*.  Wrote program mains/spase/isar_isar_fusion.cc which fuses pure hues
+from time averaged composite 3D image with pure intensities from
+instantaneous 3D image to form a time-dependent 3D image.  Wrote procedure
+for performing this fusion in mains/spase/README_INST_COMP.FUSION.
+
+==================================================================== 
+Code changes made on Thurs, Mar 30
+
+*.  Moved annotator class from src/osg/osgAnnotators to
+src/osg/osgGeometry.
+
+*.  Created ImageFrame, ImageFramesGroup and ImageFramesController classes
+to hold lines and text surrounding 3D image planes.
+
+*.  Added bool flag to AlirtGrid class constructor which controls whether
+world-space (0,0,0) lands in lower left corner of grid or not.
+
+*.  Eliminated dependence of MovieKeyHandler on LineSegmentsGroup.
+
+*.  Add vector arrow heads to range and cross range image frame axes.
+Added text label to range axis.  
+
+==================================================================== 
+Code changes made on Weds, Mar 29
+
+*.  In DOUBLES2VID, remap p values from min_p and max_p to 0 and 1.  Also
+allow user to crop excessively large cross range windows.
+
+*.  Wrote mains/spase/PARSE_TXT to parse Hyrum's text dump of imagecdf
+header information.
+
+==================================================================== 
+Code changes made on Tues, Mar 28:
+
+*. Incorporated translations and scalings of SPASE image planes so that
+they align with canonical SPASE model.
+
+*.  Wrote program PLANAR_TRANS to fit for trans and scales needed to align
+SPASE data with model.
+
+*.  Templatized read/write_p_data in xyzpfuncs namespace to handle
+float/double IO data.
+
+*.  Wrote mains/video/DOUBLES2VID to parse Hyrum's intensity double string
+files and circumvent XELIAS.
+
+==================================================================== 
+Code changes made on Mon, Mar 27:
+
+*.  Introduced direction vectors Uhat,Vhat,What into instantaneous_obs
+class which can vary over time.  Graphical UVW coords can now be calculated
+relative to Uhat,Vhat,What rather than Xhat,Yhat,Zhat.
+
+*.  Added FeaturesGroup constructor which can take in Movie.  UVW dir
+vector info in Movie can be transfered to FeaturesGroup for text dialog box
+display purposes.
+
+*.  Created new GridKeyHandler class and moved methods from deprecated
+osgGridfuncs namespace into this class.  Trying to completely eliminate
+osgGridfuncs namespace.
+
+==================================================================== 
+Code changes made on Thurs, Mar 23:
+
+*.  Fixed sign error in mathfunc::construct_orthogonal_matrix().  
+
+*.  Implemented angle-axis approach to determing quaternion which maps XYZ
+into UVW for 3D imageplane purposes.
+
+==================================================================== 
+Code changes made on Weds, Mar 22:
+
+*.  Movie objects can now take in OSG linesegments for 3D border drawing
+purposes.
+
+*.  Alpha blended video image planes can now be scaled, rotated and
+translated in 3D.
+
+*.  Fixed catastrophic seg fault error discovered yesterday in program
+ORTHO.  Initial nulling of edge member pointer in polygon and contour
+classes is performed in initialize_member_objects().  But a call to this
+method was not included in the copy constructor of these two classes.  We
+have fixed this bad oversight which occurred in the Feb13f.tgz file on our
+laptop.
+
+*.  Program spase/imageplane.cc can now rotate a SPASE ISAR image into its
+proper orientation relative to SPASE model axes.
+
+==================================================================== 
+Code changes made on Tuesday, Mar 21:
+
+*.  Cleaned up linesegment class and eliminated unused ds member
+
+*.  Started to write main programs spase/imageplane.cc which can read in a
+G99 video file containing SPASE ISAR images and display them arbitrarily
+scaled, rotated and translated in world space.
+
+*. Catastrophic seg fault error in ladarfunc::crop_data_bbox found in main
+program alirt_acc/ORTHO.  The error appears to have creeped in sometime
+after Feb10 SVN revision 528 [works for Feb 9, SVN revision 525 ; Jan 30,
+SVN revision 517; Dec 23, SVN revision 489] and before Feb 14a, 10:30 am on
+Fusion [ fails for Feb 14, SVN revision; Feb 14, SVN revision 535; Mar1,
+SVN revision 551]
+
+==================================================================== 
+Code changes made on Thursday, Mar 16:
+
+*.  Wrote mains/spase/isar_opt_fusion.cc which performs an HSV merging of
+ISAR and optical 3D XYZRGBA files.
+
+==================================================================== 
+Code changes made on Monday, Mar 13
+
+*.  Can flip parity of OSG planes.
+
+*.  Feature based OSG planes have their a-axes aligned with the segment
+joining the first two input features.
+
+*.  Can replace noisy entries in point cloud with regularized bilayer
+planar substitutes.
+
+*.  Allow parallelogram fit to be performed to first 4 features within
+FeaturesGroup.  Useful for solar panel feature selection purposes.
+
+*.  Compute extremal planar rectangle coordinates amin,amax,bmin,bmax based
+upon feature input.  Use to cull rectangle's worth of XYZ points from a
+cloud.
+
+==================================================================== 
+Code changes made on Friday, Mar 10
+
+*.  Reworked LineSegment creation so that all OSG segments are now first
+generated from (0,0,0) to (1,0,0).  Segments are subsequently scaled,
+rotated and translated via call to LineSegment::set_scale_attitude_posn.
+
+*.  LineSegments can now be drawn with osg::Cones at their V2 vertices.  So
+general vector annotators can be included in OSG output.
+
+*.  Moved TrianglesGroup & LineSegmentsGroup from osg/osgAnnotators to
+osg/osgGeometry subdir.
+
+*.  Started to implement code to draw OSG planes.  Doesn't work as of 5:50
+pm on Friday, Mar 10.
+
+==================================================================== 
+Code changes made on Thurs, Mar 9
+
+*.  Created new osgGeometry subdir to hold PlanesGroup and PlanesKeyHandler
+for manipulating planes within OSG
+
+*.  Tested shadowing and cosine weighting composition procedure on SPASE.
+Entire procedure works OK.
+
+==================================================================== 
+Code changes made on Weds, Mar 8:
+
+*.  Added shading method to PointCloud class.
+
+*.  Draping method in FusionGroup now calls shadowing and shading methods
+in PointCloud.
+
+==================================================================== 
+Code changes made on Mon, Mar 6:
+
+*.  Compute RMS 3D separation between points in cloud in xyzpfuncs
+namespace.
+
+*.  Implemented shadow map computation within PointCloud class.
+
+==================================================================== 
+Code changes made on Sun, Mar 5:
+
+*.  Generalized mains/spase/SUBDIVIDE.cc to generate refined normal as well
+as XYZP information.
+
+
+*.  Save and read normals to XYZP in addition to XYZ files
+
+*.  Implement cosine weighting of composite optical images.
+
+*.  Created README.COMPOSITE in mains/spase which outlines procedure for
+draping multiple, overlapping greyscale optical images onto 3D model.
+
+==================================================================== 
+Code changes made on Fri, Mar 3:
+
+*.  Added histogram specialization member function to PointCloud class in
+order to increase contrast in grey scale 3D images.
+
+*.  Modify p values of unshadowed voxels within *intensities_ptr member of
+PointCloud class when draping RGB video values.
+
+*.  Began to implement planar surface construction within FeaturesGroup
+class.  Eventually, a SurfacesGroup class should be created...
+
+*.  Added construct and get methods to Plane class.
+
+*.  Wrote specialized program mains/spase/normals to generate XYZP file
+containing SPASE face normal information.  Compute shading dotproduct
+between surface normal and illumination direction vector in new FusionGroup
+method.
+
+*.  Added STL vector member to PointCloud class to hold normal information.
+
+*.  Added methods to xyzpfuncs namespace to read and write binary P and XYZ
+files.
+
+==================================================================== 
+Code changes made on Thurs, Mar 2:
+
+*.  Wrote mains/spase/NULL_PROBS.cc to reset all p values in an XYZP file
+to some user specified null value.  Useful for multi-imagery composition
+purposes.
+
+*.  Wrote naive multi-XYZP cloud composition program in
+mains/spase/COMPSAT.cc.  As of 3/2/06, this program only performs trivial
+averaging of multiple 3D images, and it's clunky to use.  
+
+==================================================================== 
+Code changes made on Weds, Mar 1:
+
+*.  Wrote mains/video/RGB2VID and RGBS2VID to circumvent problems with
+converting PNGs on FIASCO to G99 video format.
+
+==================================================================== 
+Code changes made on Friday, Feb 24:
+
+*.  Moved FUSESAT from mains/src/fusion to mains/src/spase.  Can now
+sequentially drape optical images onto SPASE point cloud with shadowing
+enabled.  Can also fuse ISAR & optical results using hue [intensity] for
+the former [latter] and taking saturation as a linear combination.
+
+==================================================================== 
+Code changes made on Thurs, Feb 23:
+
+*.  Created main program FUSESAT variant of FUSION for SPASE draping
+purposes
+
+*.  Compute relative distance of every XYZ world space point to camera
+image plane.
+
+*.  Use depth buffer to determine which voxels are shadowed by others
+
+*.  Fixed apparently bad bug in G99VideoDisplay::get_uv_coords()
+
+==================================================================== 
+Code changes made on Weds, Feb 22:
+
+*.  Copied range tail squishing methods from real-time code into
+src/threeDgraphics/voxel_lattice.cc class for ray tracing purposes.
+
+====================================================================
+Code changes made on Monday, Feb 20 & Tuesday, Feb 21:
+
+*.  Program mains/spase/SUBDIVIDED uses KDtree and voxelization methods to
+interpolate Hyrum's SPASE point cloud onto a finer XYZP lattice.
+
+*.  Created src/threeDgraphics/voxel_lattice.cc class to store quantized
+voxel information for XYZP point clouds.  Created
+src/threeDgraphics/voxel_coords class from realtime progenitor.
+
+====================================================================
+Code changes made on Monday, Feb 20:
+
+*.  Created specialized src/mains/OSG/VIEWSAT for satellite point cloud
+viewing purposes.
+
+*.  Modified genmatrix::pseudo_inverse() to check sizes of absolute values
+of singular values in SVD decomposition matrix W.
+
+*.  Created class src/geometry/projective.cc to compute Euclidean
+transformation (rot + trans) relating two sets of 3D tiepoints
+
+*.  Created program mains/spase/register.cc which uses 3D tiepoints
+manually picked from composite ISAR and model XYZP files to
+rotate/translate the former point cloud so that it matches the latter.
+
+====================================================================
+Code changes made on Friday, Feb 17:
+
+*.  Added utility program PNGBLACK which sets near black pixels in PNG
+images to pure black to repository.
+
+*.  Moved missing data algorithms from main program src/testdir/rank.cc
+into src/structmotion/reconstruction class.
+
+====================================================================
+Code changes made on Thurs, Feb 16:
+
+*. Deleted unused files in src/templates from SVN repository.
+
+*.  Added extremal element methods to genmatrix class.
+
+====================================================================
+Code changes made on Weds, Feb 15:
+
+*.  Compute rank of m x n matrix based upon number of its nonzero singular
+values.  Use reduced SVD to compute rank r approximation to an m x n matrix.
+
+*.  Implemented elementwise product of two genmatrices and sqrd Frobenius
+norm of a genmatrix.
+
+*.  Started to implement row-column algorithm of Aguiar and Guerreiro for
+estimating missing entries in rank deficient matrices
+
+====================================================================
+Code changes made on Tuesday, Feb 14:
+
+*.  Split off src/structmotion/reconstruction.cc class from
+src/structmotion/fundamental.cc
+
+====================================================================
+Code changes made on Friday, Feb 10
+
+*.  Made spinoff mains/video/PNGS2VID of PNG2VID which converts a sequence
+of PNG images into a G99 video.
+
+*.  Created mains/utility/CROP_IMAGES which can be used to crop an entire
+sequence of PNG, JPG, RGB, etc image files.
+
+====================================================================
+Code changes made on Thurs, Feb 9
+
+*.  Introduced member matrices S=A^T A and Sinv=Ainv Ainvtrans in class
+newton.
+
+*.  Use median of absolute values of entries in F genvector in class newton
+as score function to be minimized.
+
+*.  Can explicitly evaluate F entries using S or Sinv.
+
+*.  Implement brute-force search over 6D parameter space to find optimal
+point for camera motion and 3D target constraints.
+
+*.  Can perform Cholesky decomposition on S=Atrans*A to recover affine to
+Euclidean matrix A.
+
+*.  Incorporate 2nd pair of threevectors (Eps,Epsp) into structure/motion
+constraint equations to enable imposition of box edge length conditions
+
+====================================================================
+Code changes made on Weds, Feb 8
+
+*.  Added mathfunc methods decompose_orthogonal_matrix and
+construct_orthogonal_matrix which uses matrix trace and homogeneous soln to
+(R-detR)n_hat=0 to determine rotation angle and axis.  Significantly
+rearranged mathfunc namespace methods.
+
+*.  Can generate orthonormal basis given a direction vector.
+
+*.  Can decompose [reconstruct] 3x3 symmetric matrices into [from] 6
+continuous plus 1 discrete parameters.
+
+====================================================================
+Code changes made on Thursday, Feb 2 & Friday, Feb 3
+
+*.  Use least squares to fit best plane to >= 4 threevectors.  Compute
+distance from points to plane and project them into plane.
+
+*.  Implemented simple "best parallelogram fit" to 4 noisy points in
+parallelogram class.  Implemented simple "best parallelepiped fit" to 8
+noisy points in parallelepiped class.
+
+*.  Implemented "best rectangle approx" to a parallelogram which matches
+long sides.  Implemented "best box approx" to a parallelepiped which tries
+to optimally match long sides.
+
+*.  Can project polygon into an arbitrary plane.
+
+====================================================================
+Code changes made on Wednesday, Feb 1:
+
+*.  Euclidean reconstruction returns cross range scale values.
+
+====================================================================
+Code changes made on Tuesday, Jan 31:
+
+*.  Fixed bugs in Euclidean upgrade from multiple affine views algorithm.
+Can now successfully reconstruct arbitrary rectangular parallelpiped from 3
+affine images.
+
+*.  U and V camera axes in 3D world space can be extracted for each affine
+image.
+
+*.  Euclidean reconstruction can be performed even if all images are cross
+range scaled by unknown factors provided tiepoints are specified in 5
+affine images.
+
+====================================================================
+Code changes made on Monday, Jan 30:
+
+*.  Implemented Tomasi-Kanade factorization algorithm for affine shape from
+motion.  Can now reconstruct cube for 3 affine images!
+
+====================================================================
+Code changes made on Friday, Jan 27:
+
+*.  Created new newton class in src/numerical to implement Newton's method
+applied to 3D symmetrical quadratic forms.
+
+====================================================================
+Code changes made on Friday, Jan 20:
+
+*.  Added NEWMAT11 matrix library downloaded from web to our library
+structure.  We hope its SVD routines are more stable than those of
+Numerical Recipes.
+
+====================================================================
+Code changes made on Thursday, Jan 12, 2006
+
+*.  Fixed obscure algorithm error in contour::align_edges_with_sym_dirs().
+Use handedness of a contour to determine whether a revised edge turn should
+be + or - 90 degrees.  After this fix, program ORTHO works for all 4 Lowell
+chunks on fusion1!
+
+====================================================================
+Code changes made on Weds, Jan 11, 2006
+
+*.  Fixed bad error in prob_distribution::fill_distribution().  No longer
+clear STL vector xhist.  Instead, explicitly reset all its existing values
+to zero.
+
+*.  Wrote contour::consolidate_parallel_edges() to search for and merge
+adjacent parallel contour edges.  Fixed some but not all problems with
+mains/alirt_acc/ORTHO for chunk66-72.  
+
+====================================================================
+Code changes made on Sunday, Jan 1, 2006
+
+*.  Added mains/nti/REJECT to repository.  
+
+*.  Added segment member objects and methods to track class.
+
+====================================================================
+*.  Created new src/track subdir with track.cc class.  
+
+*.  Moved all KLT files from src/tracking into new subdir src/KLT.  Deleted
+old src/tracking subdir.
+
+====================================================================
+Code changes made on Wedsnesday, Dec 28
+
+*.  Made minor changes to prob_distribution class
+
+====================================================================
+Code changes made on Tuesday, Dec 27
+
+*.  Use sqr(2*q_extent+1) XY-UV pairs to construct local homography between
+orthorectified map and image planes in FusionGroup.  Taking q_extent=3
+is a lower bound for obtaining reasonable homographies.  
+
+*.  Generate 2D gaussian filter in filterfuncs namespace to use as weights
+in overloaded version of FusionGroup:: get_backprojected_video_intensity();
+
+*.  Implemented score function based upon average integrated intensity
+differences over plaquettes centered upon trial KLT feature locations.
+Approach is hampered by temporal fluctations and slow speed of evaluating
+large plaquette scores.
+
+*.  Tried to fix FusionGroup::construct_local_homography to use the closest
+4 XY lattice sites in *ztwoDarray_ptr to develop a map between the XY
+neighborhood of a projected feature in the orthorectified map plane and the
+UV image plane.
+
+*.  Improved "KLT-like" scoring method in orthorectified map plane.  Can
+now "refine" averaged KLT XY locations for multiple images.  Some KLT
+results are improved, but others are actually worsened by this approach.
+
+====================================================================
+Code changes made on Friday, Dec 23
+
+*.  Did a little cleaning of ladarimage class.  Member image_origin now
+always equals (xmin,ymin,zmin).  Method
+convert_from_absolute_to_relative_xyz takes in an explicit absolute origin
+which depends on boolean renormalization flags.  ztwoDarray & ptwoDarray no
+longer automatically have xlo,ylo set to zero.
+
+*.  Wrote mains/alirt_acc/gridALIRTdata.cc which reads in ALIRT point
+cloud, generates ztwoDarray and writes out the gridded datapoints.  Since
+floats are written to output binary file, precise deltax and deltay steps
+between gridded points is NOT achieved.
+
+*.  Added ladarimage pointer member to PointCloud class.  Can instantiate
+ladarimage member and fill its z2Darray with height information.  z2Darray
+provides rapid access to xy points and their neighbors.
+
+*.  Added PointCloud method which computes gaussian zeroth, first and
+second order derivative filters for eventual intensity gradient computation
+purposes.
+
+====================================================================
+Code changes made on Thursday, Dec 22
+
+*.  Had to temporarily undo yesterday's bug fix in video/VidFile.cc in
+order to get program fusion/FUSION to work.  Will go back later and make
+all pixel coordinate references consistent.
+
+*.  Created new FUSE_DATA mode in ModeController class.  
+
+*.  Eliminated all dependence of Feature classes on Fusion classes.  Moved
+all fusion methods out of FeaturesGroup into FusionGroup class.  Fusion
+library now depends on feature library.
+
+*.  In main program FUSION, can now read in KLT propagated UV tiepoints for
+all images, consolidate them with XYZ tiepoints for a single image, compute
+3x4 projection matrix, backproject all 3D points onto video image, and
+display recolored pointcloud in 3D ladar window.  Can also write RGBA color
+array to output binary file for subsequent playback via program VIEWDRAPE.
+
+====================================================================
+Code changes made on Wednesday, Dec 21
+
+*.  Eliminated FeaturesController class
+
+*.  Keep track of number of original nearby KLT features as a function of
+UV point propagation forward and backward in time.  Erase propagated point
+when too few original nearby features remain.
+
+*.  Can read in KLT features, shift their IDs, read in 2D tiepoints for a
+single image and propagate tiepoints' UV values to all images.  Propagated
+tiepoint locations look reasonable!
+
+*.  We believe we fixed a bug in video/VidFile.cc:  p=py*getWidth+px -->
+p=(getHeight-1-py)*getWidth+px.
+
+*.  Erase propagated tiepoint locations whose intensity values==0.  This
+helps to eliminate 2D tiepoints which move away from video image area.
+
+====================================================================
+Code changes made on Tuesday, Dec 20
+
+*.  Can search for some fixed number of KLT features closest to some input
+UV position in a video image.  
+
+*.  Fixed variable sizing of feature cross hairs and text IDs
+
+*.  Can propagate an arbitrary input UV point over multiple images based
+upon local homographies generated from nearby KLT neighbors.
+
+====================================================================
+Code changes made on Friday, Dec 16
+
+*.  Added another overloaded version of colorfunc::get_color which takes in
+RGB and returns colorfunc::color.
+
+*.  Moved as many color members and methods out of LineSegment, Triangle
+and Rectangle classes into Annotator.
+
+*.  Rewrote regenerate_segments() in LineSegmentsGroup so that it matches
+its counterpart in RectanglesGroup().
+
+*.  Tried to create a permanent_color member of Annotator class.  Currently
+selected annotator colors may differ from their permanent color.  But when
+not selected, they should return to their permanent color.  Buggy as of end
+of day on Friday Dec 16.
+
+====================================================================
+
+Code changes made on Weds, Dec 14 afternoon
+
+*.  Added operator<<, operator== and operator= to templatized Triple and
+Quadruple structures in src/datastructures.
+
+*.  Created new src/delaunay and moved all Delaunay triangulation methods
+from src/geometry into this new subdir.
+
+*.  src/delaunay/delaunay_tree.cc contains a user-friendly Delaunay
+triangulation method which we believe is robust
+
+====================================================================
+
+Code changes made on Weds, Dec 14 morning
+
+*.  Created new homography class in src/geometry.
+
+*.  Converted new Delaunay triangulation methods obtained from French
+website into series of classes in src/geometry.
+
+*.  Assign integer IDs to Delaunay vertices.  Then pack a dynamically
+generated Network with vertex connectivity information.  
+
+======================================================================
+Code changes made on Tuesday, Dec 13
+
+*.  Modified mains/fusion/internals to search over roll, pitch and yaw in
+addition to internal camera parameters when trying to minimize chisq
+function involving 2D/3D tiepoints.
+
+
+======================================================================
+Code changes made on Friday, Dec 9
+
+*.  Fixed continuous (U,V) to discrete (pu,pv) pixel coord conversions in
+G99VideoDisplay class
+
+*.  Stored discrete (pu,pv) coordinates for all pixels underneath line
+segments in a video image within STL member variable
+G99VideoDisplay::segment_pixels.
+
+*.  Implemented simple horizontal and vertical gradient filters in
+MoviesGroup::compute_pixel_segment_gradients().  Save pixels associated
+with a line segment edge in a structure defined in MoviesGroup class.  Take
+average intensity directional deriv along segment's normal as
+goodness-of-fit score function.
+
+*.  Moved all edge scoring methods out of MoviesGroup into
+LineSegmentsGroup.  The former is linked BEFORE the latter.  So Movie
+classes cannot depend upon LineSegment classes.
+
+======================================================================
+Code changes made on Thursday, Dec 8
+
+*.  Developed simple simulation of spurious track identification within
+mains/testdir/alarm.cc and mains/alirt_acc/reject.cc
+
+======================================================================
+Code changes made on Wednesday, Dec 7
+
+*.  Save linesegment info to ascii file by pressing 's' in MANIPULATE LINE
+mode.  Press 'r' to restore saved segments.
+
+*.  Invoke all save and restore graphicals commands via 's'/'r' rather than
+'S'/'R'.  (Reserve capital letters for mode changes.)  Feature crosshair
+rotation must now be toggled on and off via 'r' in INSERT_FEATURE mode.
+
+*.  Added set_RGB_pixel_value methods to VidFile class for annotation
+purposes.
+
+*.  MovieKeyHandler now inherits from GraphicalsKeyHandler
+
+*.  Added annotation capability within G99VideoDisplay class.  After an
+image is read from a .vid file, pixels in the image can be colored to
+represent lines.  A pointer to the *altered* image is then passed to the
+osg::Image setImage() method.
+
+======================================================================
+Code changes made on Tuesday, Dec 6
+
+*.  Eliminated trivial dependence of RectanglesController and
+LineSegmentsController on communicator class.
+
+*.  LineSegmentsKeyHandler and RectanglesKeyHandler now inherit from
+GraphicalsKeyHandler.
+
+*.  Fixed problems with deleting line segments and rectangles.
+
+======================================================================
+
+Code changes made on Monday, Dec 5
+
+*.  Created new LineSegmentPickHandler class which allows lines to be
+inserted and manipulated within video program.
+
+*.  LineSegmentsGroup and LineSegment constructors now take ndims as an
+input parameter.
+
+*.  Eliminated trivial dependence of RectanglesKeyHandler class on
+communicator.
+
+*.  Created new LineSegmentsKeyHandler class
+
+======================================================================
+
+Code changes made on Friday, Dec 2
+
+*.  Tried to streamline draping of video images onto point clouds.  Also
+RGB color info is now stored in pngfuncs::RGB_twoDarrays for future image
+processing purposes.
+
+==================================================================
+
+*.  Eliminated stringfunc::string_to_n_substrings in favor of
+stringfunc::decompose_string_into_substrings which returns an STL vector
+filled with substrings.
+
+*.  FeaturesGroup::read_feature_info_from_file() now handles feature text
+files whether or not they contain a KLT score column
+
+==================================================================
+
+*.  Removed all dependence on threeDdatafuncs namespace which was
+subsequently deleted from osg3D subdir.
+
+*.  Moved 3D_colormaps subdir from PROJECTSDIR/data to PROJECTSDIR/data/OpenSceneGraph-Data/
+
+
+======================================================================
+Code changes made on Thursday, Dec 1
+
+*.  Eliminated trivial dependence of FusionKeyHandler on FusionController
+
+*.  Main program osg/DRAPE drapes individual video image onto point cloud
+by pressing 'D' in Run Movie mode.  It then projects all colored points
+into zmin plane after 'o' is pressed to create an orthorectified image.
+Orthorectified image is written to output .rgb file via OSG::Image file
+writer pluging.
+
+*.  Can generate entire movie sequence of orthorectified HAFB imagery.
+
+*.  Added member function to Movie class which plots camera posn and
+attitude as functions of time.
+
+======================================================================
+
+Code changes made on Tuesday, Nov 15:
+
+*.  mains/video/TRACKFEATURES now writes out KLT scores for each feature at
+its instantiation time
+
+*.  KLT feature scores can be displayed within TRACK FEATURES mode by
+pressing 's'.
+
+*.  Tried to implement Delaunay triangulation of feature locations.
+Computational Geometry's as well as OSG's Delaunay triangulation algorithms
+are badly flawed !!!  Found another Delaunay triangulation code which
+correctly generates triangles edges for 100's of KLT features.  But new
+code doesn't easily output triangles themselves.
+
+
+======================================================================
+Code changes made on Thursday, Nov 10
+
+*.  Turned some public into private methods in prob_distribution class
+
+*.  Generate frequency histogram for intensity eigenvalues within
+mains/video/TRACKFEATURES.cc
+
+*.  'a' key remapped to displaying feature lifetimes rather than invoking
+animation mode in track features mode.
+
+======================================================================
+
+Code changes made on Monday, Nov 7
+
+*.  Separated off INSERT_RECTANGLE & MANIPULATE_RECTANGLE modes from
+ANNOTATION modes.
+
+*.  Separated off frame counter increment/decrement functions from
+display_next/prev_frame methods in G99VideoDisplay class.  
+
+*.  Implemented new Movie and G99VideoDisplay constructors which do not
+explicitly need a G99 .vid file as input for 3D model animation purposes
+
+*.  Animated circular, spinning motion of aircraft executing racetrack orbit
+above Lowell chunk 45-51
+
+*.  Implemented XY -> uv planar homography determination via SVD in
+camerafunc namespace method.

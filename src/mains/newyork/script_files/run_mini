@@ -1,0 +1,6 @@
+
+cd /home/cho/programs/c++/svn/projects/src/mains/newyork
+/home/cho/programs/c++/svn/projects/src/mains/OSG/testcities \
+--region_filename ./packages/nyc_rtv_EO.pkg \
+--GIS_layer ./packages/nyc_landmarks.pkg \
+--initial_mode Manipulate_Annotation_Mode 

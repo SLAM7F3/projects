@@ -1,0 +1,46 @@
+=========================================================================
+To-do list for LOS project
+=========================================================================
+Last updated on 6/8/09; 6/11/09; 6/15/09; 6/16/09
+=========================================================================
+
+*.  Establish JMS/ActiveMQ messaging between thick & thin clients
+
+	- Display percentage occlusion in some browser box
+
+*.  Save flight paths and results so that they can be reloaded later
+
+*.  Add MPEG1, MPEG2, MPEG4 codec choice on Movie tab.  
+
+*.  Add capability to retrieve screen shots on Movie tab.
+
+*.  Initial sizing of Ground target SignPosts when virtual camera is zoomed
+far out is reasonable.  But subsequent creation yields SignPosts which too
+small...
+
+*.  Make ground target labels adjustable.  
+
+*.  Fix composite LOS ptwoDarray files so that they don't have obviously
+incorrect grey strips
+
+*.  Write help info 
+
+=========================================================================
+Accomplished tasks
+=========================================================================
+
+*.  Added toggle for compass on 3D viewer tab
+
+*.  Add circular flightpath orbit entries onto flight path tab.  
+
+*.  Add ground bbox entries on Ground Targets tab
+
+*.  Add MGRS - long/lat conversion capability
+
+*.  Added nmi as another length unit
+
+*.  Add clear capability for ROI entry
+
+*.  Optimize raytracing of ground bbox so that it proceeds faster.
+
+*.  Make ground target signpost size adjustable.

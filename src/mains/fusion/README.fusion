@@ -1,0 +1,201 @@
+=========================================================================
+Chain of programs needs for ladar/video imagery fusion
+=========================================================================
+Last updated on 10/10/05; 12/1/05
+=========================================================================
+
+*. Program video/TELEMETRY is a linux port of Mike Braun's RawImgFooterview
+C program which runs under Windows.  TELEMETRY extracts meta information
+from Group 99 .raw video files.  It creates output files times.txt and
+telemetry.txt.
+
+-------------------------------------------------------------------------
+
+*. Program video/SPLINE reads in raw GPS/IMU information from "TPA.txt"
+after it is extracted from G99 video data via program TELEMETRY.  It
+returns interpolated and temporally filtered results in "TPA_filtered.txt".
+
+-------------------------------------------------------------------------
+
+*.  Program osg/WANDER iteratively performs a sequence of brute-force
+ minimizations of a chisq function that measures the difference
+ between input and output UV pairs for a particular video image.
+ Interpolated and temporally filtered aircraft GPS/IMU information
+ is read in from ascii file "TPA_filtered.txt".  Input UV members of
+ 3D/2D tie-point pairs are next read in from XYZUV_imagenumber.txt
+ files stored within the tiepoint subdirectory.  Output UV values
+ are calculated by projecting XYZ members of 3D/2D tie-point pairs
+ onto the image plane.  As of 8/30/05, we equate lengths f=fu=fv and
+ ignore any skew within CCD pixels.  But we attempt to compensate
+ for some radial distortion.
+
+ We initiate the search for the camera's internal parameters within
+ reasonable ranges that we determined empirically.  The machine
+ minimizes chisq over a coarse grid defined in the initial search
+ space.  It subsequently generates a finer grid centered upon the
+ previous iteration's optimal location in the parameter space and
+ searches again.  This iterative approach to function minimization
+ over a multi-dimensional space appears to yield RMS chisq values
+ that look reasonable for at least the HAFB death pass.
+
+ Inevitable errors in GPS/IMU readings and filtering as well as
+ 3D/2D tie-point selection make it impossible to find a set of truly
+ constant internal camera parameters.  In principle, we need to
+ perturb the tie point information, the extrinsic and intrinsic
+ parameters in such a way as to optimize a chisq function.  But we
+ are willing to settle for adjusting only the internal parameters by
+ small amounts for different images.  The best fit values for image
+ n are taken as seeds for the parameter space search for image n+1.
+ Moreover, the volume of the parameter search space is taken to be
+ several orders of magnitude smaller for the second, third, fourth,
+ etc images compared to the first.  This restricts the path through
+ the intrinsic parameter space to not jerk wildly from image to
+ image.  
+
+ The best fit intrinsic parameter values are written out to text
+ file "camera_params_imagenumber.txt".
+
+*. Program osg/BUNDLE iteratively performs a sequence of brute-force
+minimizations of a chisq function that measures the difference between
+input and output UV pairs for a particular video image.  Interpolated and
+temporally filtered aircraft GPS/IMU information is read in from ascii file
+"TPA_filtered.txt".  Input UV members of 3D/2D tie-point pairs are next
+read in from XYZUV_imagenumber.txt files stored within the tiepoint
+subdirectory.  Output UV values are calculated by projecting XYZ members of
+3D/2D tie-point pairs onto the image plane.  As of 8/30/05, we equate
+lengths fu=fv and ignore any skew within CCD pixels.  But we attempt to
+compensate for some radial distortion.
+
+We initiate the search for the camera's internal parameters within
+reasonable ranges that we determined empirically.  The machine minimizes
+chisq over a coarse grid defined in the initial search space.  It
+subsequently generates a finer grid centered upon the previous iteration's
+optimal location in the parameter space and searches again.  This iterative
+approach to function minimization over a multi-dimensional space appears to
+yield RMS chisq values that look reasonable for at least the HAFB death
+pass.
+
+We also believe that inevitable errors in GPS/IMU readings and filtering as
+well as 3D/2D tie-point selection make it impossible to find a set of truly
+constant internal camera parameters.  Instead, we have to be willing to
+settle for internal parameters that change by small amounts for different
+images.  We hope that we can simply interpolate between their values
+determined at a few images in order to derive a set of projection matrices
+which smoothly vary over time.
+
+The best fit intrinsic parameter values are written out to text file
+"camera_params_imagenumber.txt".
+
+-------------------------------------------------------------------------
+Note: BUNDLE needs to be run for every video image for which we have
+manually or semi-automatically extracted tie-point pairs.  Internal camera
+parameters for the separate images need to be aggregated together into
+ascii text file "camera_params_with_distort.txt".
+
+-------------------------------------------------------------------------
+
+*.  Program osg/FILTER_PARAMS reads in best chisq-fit internal camera
+ parameter information derived by program BUNDLE/WANDER.  This
+ program instantiates a gaussian filter which is used to temporally
+ smooth each of the sets of internal parameters.  The filtered
+ values are written to output text file "filtered_params.txt".
+-------------------------------------------------------------------------
+
+*. Program osg/BACKPROJECT takes in filtered camera posn and attitude
+information from text file "TPA_filtered.txt".  It also reads in camera
+intrinsics info generated by BUNDLE from "camera_params_with_distort.txt".
+BACKPROJECT interpolates the intrinsic and extrinsic camera parameters for
+each video image time and saves the results to output text file
+"interp_params.txt".
+-------------------------------------------------------------------------
+
+*. Program osg/GENERATE_COLOR_ARRAYS takes as command line arguments an
+ XYZP file along with a Group 99 .vid file.  It also reads in
+ interpolated camera intrinsic & extrinsic parameters for every
+ video image from an ascii text file which we assume has previously
+ been generated by program BACKPROJECT.  
+
+ As of 10/4/05, every video image is automatically draped onto the
+ point cloud if the user presses the "D" key while in "RUN_MOVIE"
+ mode.  Those XYZ points which project onto the video frame are
+ colored according to the RGB information in the image.  Other XYZ
+ points that do not project onto the video frame are colored
+ according to their heights.  All of the XYZ points' color
+ information for every image is written to binary output file
+ "draped_color_arrays.rgba".  (For our canonical HAFB pass, the
+ total size of this binary file is approximately 4 Gbytes!)  This
+ color information stored in this file can subsequently be played
+ back via program VIEWDRAPE much faster than it can be calculated in
+ real-time.  
+
+-------------------------------------------------------------------------
+
+*. Program VIEWDRAPE takes as command line arguments an XYZP file along
+with a Group 99 .vid file.  It also reads in interpolated camera intrinsic
+& extrinsic parameters for every video image from
+"interp_camera_params.txt" which we assume has previously been generated by
+program BACKPROJECT.  VIEWDRAPE asks the user to the number of an video
+image to be draped onto the point cloud.  It then colors those XYZ points
+which project onto the video frame according to the RGB information in the
+image.  Other XYZ points that do not project onto the video frame are
+colored according to height.
+
+-------------------------------------------------------------------------
+*.  Program src/mains/video/INTERP_BBOX reads in bounding box information
+which was manually extracted from a few images in a video sequence
+indicating where ladar data overlaps.  INTERP_BBOX temporally interpolates
+the corners of the bounding boxes so that a bounding box can be placed onto
+every image in the video sequence.
+
+We created this program to restrict the spatial area over which the KLT
+algorithm tries to track video features over time.
+
+-------------------------------------------------------------------------
+*.  Program src/mains/video/CROP_BBOX is a special-purpose program which
+attempts to cull out the region within the HAFB video that roughly
+corresponds to the Dec 2004 HAFB "death-pass" ladar data.  It reads in
+interpolated bounding box information generated by program INTERP_BBOX.
+Intensity information lying outside the bounding boxes are nulled in each
+image of the input video pass (which as of 9/21/05 we assume to be
+HAFB_overlap_corrected_grey.vid).
+
+We cluged together this program in order to minimize the number of features
+tracked outside the overlap region between the ladar and video data.
+
+=========================================================================
+Programs created after Dec 1, 2005
+=========================================================================
+
+*.  Program INTERNALS is a smaller version of program WANDER.  It is
+ meant to compute internal camera parameters using manually
+ extracted 2D and 3D tiepoints for just a single video image.
+ Internal parameter information is written to output file
+ camera_params_imagenumber.txt in subdirectory
+ ./manual_camera_params/.
+
+-------------------------------------------------------------------------
+*.  Program CAMERA_PARAMS is a stripped down version of program
+ BACKPROJECT.  It takes in filtered camera posn and attitude
+ information from text file "TPA_filtered.txt".  It also reads in
+ best chisq-fit internal camera parameter information derived for
+ some small number of video images where 3D/2D tiepoint pairs have
+ been manually extracted.  Internal camera parameters before the
+ first and after the last of these fitted images are respectively
+ set equal to the first/last image values.  Internal parameters for
+ other images falling between two fitted images are linearly
+ interpolated.
+
+ The intrinsic and extrinsic camera parameters for each video image
+ time are also saved to output text file "camera_params.txt".
+
+-------------------------------------------------------------------------
+*.  Program DRAPE takes as command line arguments an XYZP file along
+ with a Group 99 .vid file.  It also reads in interpolated camera
+ intrinsic & extrinsic parameters for every video image from
+ "camera_params.txt" which we assume has previously been
+ generated by program CAMERA_PARAMS.  DRAPE asks the user to enter
+ the number of a video image to be draped onto the point cloud.  It
+ then colors those XYZ points which project onto the video frame
+ according to the RGB information in the image.  Other XYZ points
+ that do not project onto the video frame are colored according to
+ height.

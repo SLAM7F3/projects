@@ -1,0 +1,30 @@
+===========================================================================
+Kermie VM notes
+===========================================================================
+Last updated on 5/23/13
+===========================================================================
+
+In May 2013, Dan Dumanis set up a windows Virtual Machine which takes the
+place of our ancient Kermie RAID that broke down in spring 2013.  
+
+IP = 
+
+Data drive has 750 GB space
+
+
+In order to login to kermie from ubuntu, we 
+
+Places --> Connect to Server
+
+Set service type = windows share
+
+server = kermie
+
+share = data
+
+user name = cho
+
+press connect button
+
+When queried for password, enter "@Admin94"
+

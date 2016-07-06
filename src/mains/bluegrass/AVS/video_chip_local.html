@@ -1,0 +1,204 @@
+<!-- =================================================================
+HTML input form for Video Chip Server
+======================================================================
+Last updated on 6/15/08; 6/26/08; 5/12/09
+======================================================================  -->
+
+<html>
+
+<head>
+
+<title>Video Chip Client</title>
+
+<!-- ================================================================   -->
+
+<style type="text/css">
+
+tr {
+   background-color: #F0F0F0;
+   bottom-margin: 1px;
+}
+
+td {
+   padding: 4px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================================================================   -->
+
+<h2>Current video chip bounding box</h2>
+
+<form action="http://127.0.0.1:4042/video_chip_bbox/" method="GET">
+
+<table>
+
+  <tr>
+    <td align="left" width="200px">Minimum Longitude</td>
+    <td>
+      <input type="text" id="MinimumLongitude" name="MinimumLongitude" style="width: 200px;" value="-101.924798"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Maximum Longitude</td>
+    <td>
+      <input type="text" id="MaximumLongitude" name="MaximumLongitude" style="width: 200px;" value="-101.920367"></input>
+    </td>
+  </tr>
+
+
+  <tr>
+    <td align="left" width="200px">Minimum Latitude</td>
+    <td>
+      <input type="text" id="MinimumLatitude" name="MinimumLatitude" style="width: 200px;" value="33.518227"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Maximum Latitude</td>
+    <td>
+      <input type="text" id="MaximumLatitude" name="MaximumLatitude" style="width: 200px;" value="33.520614"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Number of output horizontal pixels</td>
+    <td>
+      <input type="text" id="NHorizPixels" name="NHorizPixels" style="width: 200px;" value="500"></input>
+    </td>
+  </tr>
+
+</table>
+
+<br/>
+
+<input type="submit" />
+
+</form>
+
+<!-- ================================================================   -->
+
+<h2>Current video chip location & radius</h2>
+
+<form action="http://127.0.0.1:4042/video_chip_posn_and_radius/" method="GET">
+
+<table>
+
+  <tr>
+    <td align="left" width="200px">Center Longitude</td>
+    <td>
+      <input type="text" id="CenterLongitude" name="CenterLongitude" style="width: 200px;" value="-101.940380"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Center Latitude</td>
+    <td>
+      <input type="text" id="CenterLatitude" name="CenterLatitude" style="width: 200px;" value="33.496184"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Radius (meters)</td>
+    <td>
+      <input type="text" id="RadiusInMeters" name="RadiusInMeters" style="width: 200px;" value="150"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Number of output horizontal pixels</td>
+    <td>
+      <input type="text" id="NHorizPixels" name="NHorizPixels" style="width: 200px;" value="500"></input>
+    </td>
+  </tr>
+
+</table>
+
+<br/>
+
+<input type="submit" />
+
+</form>
+
+
+<!-- ================================================================   -->
+
+<h2>Current video chip on truth vehicle</h2>
+
+<form action="http://127.0.0.1:4042/video_chip_on_track/" method="GET">
+
+<table>
+
+  <tr>
+    <td align="left" width="200px">Vehicle ID</td>
+    <td>
+      <input type="text" id="TrackID" name="TrackID" style="width: 200px;" value="104"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Radius (meters) </td>
+    <td>
+      <input type="text" id="RadiusInMeters" name="RadiusInMeters" style="width: 200px;" value="150"></input>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left" width="200px">Number of output horizontal pixels</td>
+    <td>
+      <input type="text" id="NHorizPixels" name="NHorizPixels" style="width: 200px;" value="500"></input>
+    </td>
+  </tr>
+
+</table>
+
+<br/>
+
+<input type="submit" />
+
+</form>
+
+
+<!-- ================================================================   -->
+
+<h2>iPhone photo</h2>
+
+<form enctype="multipart/form-data" 
+action="http://127.0.0.1:4042/iPhone_photo/" method="POST">
+
+<table>
+
+  <tr>
+    <td align="left" width="200px">Photo filename</td>
+    <td>
+      <input type="file" name="photo_filename" style="width: 200px;" value="copley.jpg"></input>
+    </td>
+  </tr>
+
+
+
+</table>
+
+<p>
+An image:<br>
+<img src="copley.jpg"
+width="450" height="300"></p>
+<br><br>
+
+
+<br/>
+
+<input type="submit" />
+
+</form>
+
+
+
+</body>
+
+</html>

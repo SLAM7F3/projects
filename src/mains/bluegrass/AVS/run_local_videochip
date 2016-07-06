@@ -1,0 +1,13 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS
+
+http_proxy=""
+
+/home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS/videochip \
+--region_filename ./packages/ar1_texture_frames_all_orig.pkg \
+--VideoServer_URL 127.0.0.1:4042 \
+--initial_mode Run_Movie_Mode 
+
+
+
+
+# --region_filename ./packages/photo_frames.pkg \

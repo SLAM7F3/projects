@@ -1,0 +1,5 @@
+/data/DTED/HAFB/osga/z_and_p/*.osga  
+--height_colormap 11
+--prob_colormap 6 
+--height_cyclic_frac_offset 0.2
+--independent_var 1

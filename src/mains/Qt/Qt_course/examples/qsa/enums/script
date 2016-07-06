@@ -1,0 +1,2 @@
+Application.companies.button1.setEnum( Application.companies.button1.TT )
+Application.companies.button2.setEnum( CompanyButton.KDAB )

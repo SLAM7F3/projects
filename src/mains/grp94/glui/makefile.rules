@@ -1,0 +1,83 @@
+
+#CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
+#	  else if [ -x /bin/bash ]; then echo /bin/bash; \
+#	  else echo sh; fi ; fi)
+
+OS := $(shell uname  | sed -e y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/)
+#OS := $(shell uname  | perl -ne y/[A-Z]/[a-z]/; print $_; )
+
+
+
+
+bindir  =$(DESTDIR)/bin/$(OSARCH)
+libdir  =$(SUPERLOCAL)/lib/$(OSARCH)
+incdir  =$(SUPERLOCAL)/include
+datadir =$(DESTDIR)/data
+infodir =$(DESTDIR)/info
+mandir  =$(DESTDIR)/man
+
+
+#LIBPATH = -L$(libdir)
+#INCPATH = -I$(incdir)
+
+
+include makefile.$(OS)
+
+
+
+####### Implicit rules
+
+#.SUFFIXES:                    #clears out the suffix lis
+# .SUFFIXES: .cpp .cxx .cc .C .c
+
+%.o : %.cc %.cpp %.cxx %.C 
+	$(COMPILE_CXX)
+
+%.o : %.c 
+	$(COMPILE_CC)
+
+%.d: %.c
+	set -e; $(CC) -M $(CPPFLAGS) $< \
+		| sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
+		[ -s $@ ] || rm -f $@
+%.a: %.o
+	$(LINK_LIB)
+
+%.so: %.o
+	$(LINK_SO)
+
+%: %.o
+	$(LINK_CXX)
+
+####### Generic build rules
+
+
+
+.PHONY: clean maketest depend
+
+default:  $(TARGET_LIB)
+
+maketest:
+	echo $(TARGETS)
+	echo $(ARCH)
+	echo $(TOPDIR)
+	echo $(OS)
+clean:
+	$(RM) $(TARGETS)
+	$(RM) -f *.[oO]
+	$(RM) -f *~
+	$(RM) -f \#*\#
+	$(RM) -f core*
+
+installdirs: $(TARGETS)
+	$(MKDIR) $(bindir)
+
+$(bindir)/$(TARGETS): $(TARGETS)
+#	$(MAKE) $(TARGETS)
+
+#install: $(bindir)/$(TARGETS)
+#	$(MKDIR) $(bindir)
+#	$(CP) $(TARGETS) $(bindir)
+
+depend:
+	$(CC) -MM *.[c,cc,cpp,C]* > makefile.d

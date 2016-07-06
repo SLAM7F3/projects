@@ -1,0 +1,17 @@
+~/bin/MAKE program=basement
+~/bin/MAKE program=dpm_bboxes
+~/bin/MAKE program=facade_warp
+~/bin/MAKE program=georeg
+~/bin/MAKE program=linemodeler
+~/bin/MAKE program=map_VSFM_imagenames
+~/bin/MAKE program=model_bldgs
+~/bin/MAKE program=modelprop
+~/bin/MAKE program=package_finder
+~/bin/MAKE program=pointmodeler
+~/bin/MAKE program=poly_difference
+~/bin/MAKE program=propagator
+~/bin/MAKE program=pushcartreg
+~/bin/MAKE program=reconstructed_posns
+~/bin/MAKE program=viewmodels
+~/bin/MAKE program=viewsubfrusta
+~/bin/MAKE program=write_view_pushcarts_script

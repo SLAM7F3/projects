@@ -1,0 +1,15 @@
+/bin/rm ./compsat
+/bin/rm ./fourd
+/bin/rm ./fusesat
+/bin/rm ./imagecdf_info
+/bin/rm ./imagecdf2vid
+/bin/rm ./iplanes
+/bin/rm ./imageplanes
+/bin/rm ./initweights
+/bin/rm ./isar_isar_fusion
+/bin/rm ./isar_opt_fusion
+/bin/rm ./null_probs
+/bin/rm ./optshadow
+/bin/rm ./scintillate
+/bin/rm ./subdivide
+/bin/rm ./viewsat

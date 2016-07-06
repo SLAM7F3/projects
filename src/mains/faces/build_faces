@@ -1,0 +1,11 @@
+~/bin/MAKE program=bbox_widths
+~/bin/MAKE program=clean_images
+~/bin/MAKE program=downsize_images
+~/bin/MAKE program=generate_bbox_tiles
+~/bin/MAKE program=homogenize_images
+~/bin/MAKE program=partition_labeled_imgs
+~/bin/MAKE program=prepare_deeplab_inputs
+~/bin/MAKE program=pyramid_training_images
+~/bin/MAKE program=reset_img_numbers
+~/bin/MAKE program=wider_images
+~/bin/MAKE program=xml2txt

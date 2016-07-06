@@ -1,0 +1,291 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>FloatingFrame</class>
+ <widget class="QDialog" name="FloatingFrame" >
+  <property name="objectName" >
+   <string notr="true" >FloatingFrame</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>248</width>
+    <height>150</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Floating Frames</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="objectName" >
+    <string notr="true" />
+   </property>
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <layout class="QGridLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item row="2" column="1" >
+      <widget class="QComboBox" name="positionEdit" >
+       <property name="objectName" >
+        <string notr="true" >positionEdit</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>118</x>
+         <y>65</y>
+         <width>111</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" >
+      <widget class="QLabel" name="widthLabel" >
+       <property name="objectName" >
+        <string notr="true" >widthLabel</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>32</y>
+         <width>111</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Width:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" >
+      <widget class="QLabel" name="label_2" >
+       <property name="objectName" >
+        <string notr="true" >label_2</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>65</y>
+         <width>111</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Position:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" >
+      <widget class="QLabel" name="label_3" >
+       <property name="objectName" >
+        <string notr="true" >label_3</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>1</y>
+         <width>111</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Size Type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" >
+      <widget class="QComboBox" name="type" >
+       <property name="objectName" >
+        <string notr="true" >type</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>118</x>
+         <y>1</y>
+         <width>111</width>
+         <height>25</height>
+        </rect>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" >
+      <layout class="QHBoxLayout" >
+       <property name="objectName" >
+        <string notr="true" />
+       </property>
+       <property name="margin" >
+        <number>1</number>
+       </property>
+       <property name="spacing" >
+        <number>6</number>
+       </property>
+       <item>
+        <widget class="QSpinBox" name="widthEdit" >
+         <property name="objectName" >
+          <string notr="true" >widthEdit</string>
+         </property>
+         <property name="geometry" >
+          <rect>
+           <x>1</x>
+           <y>1</y>
+           <width>54</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="value" >
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="widthIndicator" >
+         <property name="objectName" >
+          <string notr="true" >widthIndicator</string>
+         </property>
+         <property name="geometry" >
+          <rect>
+           <x>61</x>
+           <y>1</y>
+           <width>49</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="text" >
+          <string>pixels</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <spacer>
+       <property name="objectName" >
+        <string notr="true" >horizontalSpacer</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>5</y>
+         <width>64</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2" >
+       <property name="objectName" >
+        <string notr="true" >pushButton_2</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>71</x>
+         <y>2</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton" >
+       <property name="objectName" >
+        <string notr="true" >pushButton</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>152</x>
+         <y>1</y>
+         <width>77</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>OK</string>
+       </property>
+       <property name="default" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>FloatingFrame</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>249</x>
+     <y>271</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>45</x>
+     <y>255</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>FloatingFrame</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>342</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>327</x>
+     <y>168</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

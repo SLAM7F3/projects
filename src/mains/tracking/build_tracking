@@ -1,0 +1,3 @@
+~/bin/MAKE program=abc
+~/bin/MAKE program=truth_velocities
+~/bin/MAKE program=vibe

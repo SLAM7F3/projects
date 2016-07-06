@@ -1,0 +1,4 @@
+--PostGIS_hostname localhost
+--PostGIS_database_name isds_gis
+--PostGIS_username cho
+--gispoints_tablename baghdad_poi

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<kernelgraph>
+
+  <kernels>
+    <kernel class="FilenameToRGBArray" id="VideoSource" args="ubyte" />
+    <kernel class="RGB2Texture" id="RGB2Tex" args="ubyte" />
+    <kernel class="PerPixelProcessor" id="rgb2lab" args="RGBA2LabAProcessor; 1 1 1 1" />
+    <!--<kernel class="Bilateral" id="bf" args="subsample" />-->
+    <kernel class="Bilateral" id="bf" />
+    <kernel class="PerPixelProcessor" id="lc" args="PassthroughProcessor; 1 0 0 0 0 1 1 1" />
+    <kernel class="PerPixelProcessor" id="lab2rgb" args="LabA2RGBAProcessor; 1 1 1 1" />
+    
+  </kernels>
+
+  <connections>
+    <connection sourceKernelId="VideoSource" outputPort="size" targetKernelId="RGB2Tex" inputPort="size" />
+    <connection sourceKernelId="VideoSource" outputPort="outputRGBArray" targetKernelId="RGB2Tex" inputPort="inputRGBArray" />
+    <connection sourceKernelId="RGB2Tex" outputPort="outputTexture" targetKernelId="rgb2lab" inputPort="inputTexture0" />
+    <connection sourceKernelId="rgb2lab" outputPort="outputTexture" targetKernelId="bf" inputPort="inputTexture" />
+        
+    <connection sourceKernelId="bf" outputPort="outputTexture" targetKernelId="lc" inputPort="inputTexture0" />
+    <connection sourceKernelId="rgb2lab" outputPort="outputTexture" targetKernelId="lc" inputPort="inputTexture1" />
+
+    <connection sourceKernelId="lc" outputPort="outputTexture" targetKernelId="lab2rgb" inputPort="inputTexture0" />
+  </connections>
+
+  <defaults>
+    <default kernelId="VideoSource" inputPort="filename" value="string data/fatalite_h264_720p_4096kbps.mp4" />
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/greece.png" />-->
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/veronica_mars.2x01.normal_is_the_watchword.ws_dvdrip_xvid-fov.avi" />-->
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/tulip.png" />-->
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/tulip_32mpx.png" />-->
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/tulip_16mpx.png" />-->
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/giraffe_gn3.3.png" />-->
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/tulip_7mpx.png" />-->
+
+    
+    <default kernelId="bf" inputPort="sigmaSpatial" value="float 16" />
+    <default kernelId="bf" inputPort="sigmaRange" value="float 10" />
+    <default kernelId="bf" inputPort="inputMin" value="float 0" />
+    <default kernelId="bf" inputPort="inputMax" value="float 100" />
+    <default kernelId="bf" inputPort="temporalDecayLambda" value="float 0" />
+    
+  </defaults> 
+
+  <views>
+    <view kernelId="RGB2Tex" outputPort="outputTexture" />
+    <!-- <view kernelId="lc" outputPort="outputTexture" />-->
+    <view kernelId="lab2rgb" outputPort="outputTexture" />
+  </views>
+
+  <autodirtykernels>
+    <autodirty kernelId="VideoSource" inputPort="filename" />
+  </autodirtykernels>
+
+  <mouselisteners>
+  </mouselisteners>
+
+</kernelgraph>

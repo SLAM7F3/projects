@@ -1,0 +1,13 @@
+/data/DTED/Florida/osga/z/*.osga
+--height_colormap 15	
+--prob_colormap 6 
+--height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0 --max_threshold_frac 0.9999
+--longitude_lo -95
+--longitude_hi -79
+--latitude_lo 25
+--latitude_hi 37
+--UTM_zonenumber 16
+--northern_hemisphere_flag T
+
+

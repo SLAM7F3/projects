@@ -1,0 +1,12 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/empire4_crop.jpg
+--frustum_color yellow
+--frustum_sidelength 3000
+# --frustum_sidelength 4000
+# --downrange_distance 75
+# --downrange_distance 150
+--downrange_distance 200
+--projection_matrix
+-2.833180507e-07        -2.577534925e-09        3.107676361e-08  0.1775359302
+-6.323457657e-08        -1.392004669e-07       -2.290458239e-07  0.6650905485
+-6.61209629e-08 	-1.522036719e-07        4.099247027e-08  0.7253520219
+

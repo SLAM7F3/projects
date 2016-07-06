@@ -1,0 +1,4 @@
+--PostGIS_hostname 155.34.162.244
+--PostGIS_database_name TOC
+--PostGIS_username postgres
+--gispoints_tablename world_annotations

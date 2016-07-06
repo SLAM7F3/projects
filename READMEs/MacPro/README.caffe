@@ -1,0 +1,339 @@
+=============================================================================
+Caffe notes
+=============================================================================
+Last updated on 1/20/16; 2/24/16; 2/29/16; 6/8/16
+=============================================================================
+
+*.  On 6/8/16, we compiled Tho's caffe_custom on our Thinkmate after making
+NO changes to his Makefile.config file.  Everything compiled and linked fine!
+
+	make -j all
+	make test or make -j test
+	make runtest
+
+*.  Caffe uses glog to perform macro-level logging.
+
+Unless otherwise specified, glog writes to the filename "/tmp/<program
+name>.<hostname>.<user name>.log.<severity level>.<date>.<time>.<pid>"
+(e.g.,
+"/tmp/hello_world.example.com.hamaji.log.INFO.20080709-222411.10474"). By
+default, glog copies the log messages of severity level ERROR or FATAL to
+standard error (stderr) in addition to log files.
+
+*.  On 9/29/15, Tho recommended that we check to see if caffe builds
+cleanly on Titan1.  So he told us to check out a copy of caffe onto titan1
+from git by chanting
+
+	git clone https://github.com/BVLC/caffe.git
+
+Within top level caffe folder created following git cloning, copy
+Makefile.config.example onto Makefile.config.  Then edit Makefile.config as
+follows 
+
+   *** As of 11/16/15, see README.caffe.Makefile_config.public/custom! ***
+
+Do NOT uncomment cuDNN acceleration switch within Makefile.config
+
+Uncomment the OPENCV_VERSION := 3 line (as of Nov 16, 2015, this line
+exists in the config file)
+
+Do uncomment the *_50 lines within CUDA_ARCH.
+
+Set MATLAB_DIR := /usr/local/MATLAB/R2013a/
+
+Set PYTHON_LIB := /usr/lib/x86_64-linux-gnu
+
+Set INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/local/cuda/include
+
+If we have installed OpenCV within /usr/local/OpenCV/lib/, then be sure to
+include this path within LIBRARY_DIRS.  Also need to add path to boost
+libraries:
+
+LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/local/OpenCV/lib /opt/geo/ext/boost/lib
+
+Within caffe's Makefile (not Makefile.config), need to add opencv_imgcodecs
+(for opencv3 - this issue seems to have gone away as of Nov 2015).
+(Note added on Feb 24, 2016:  We still need to manually add
+opencv_imgcodecs into caffe_custom's Makefile since Tho continues to use
+OpenCV-2.4.10 rather than OpenCV-3.1.0)
+
+
+ifeq ($(USE_OPENCV), 1)
+	LIBRARIES += opencv_core opencv_highgui opencv_imgproc opencv_imgcodecs
+endif
+
+*.  On 11/16/15, we had to remove libgflags.a (and libgflags_nothreads.a)
+from /usr/local/lib/ in order for caffe to successfully link against
+libgflags.a sitting in /usr/lib/x86_64-linux-gnu/libgflags.a . 
+
+*.  On 1/7/16, we learned the hard and painful way that we must remove any
+previously installed caffe library within /usr/local/lib before attempting
+to rebuild caffe from scratch!  Place any new libcaffe.so, libcaffe.a files
+into /usr/local/lib/caffe which is unlikely to be specified within
+Makefile.config...
+
+*.  After modifying Makefile.config and Makefile, chant
+
+	make -j all
+	make test or make -j test
+	make runtest
+
+There should be no errors when we run the test suite.  If not, cuda may be
+incorrectly installed.  Provided no other GPU jobs are running on the
+machine, make runtest should only take a few minutes to complete.
+
+*.  On 1/17/16, we tried multiple times to compile Tho's caffe_custom onto
+our Thinkmate machine under /home/pcho/software.  We ran into some nasty
+problems which required the following solutions:
+
+  a.  Manually added the following line into Makefile (not Makefile.config!)
+
+   # mex may invoke an older gcc that is too liberal with -Wuninitalized
+   MATLAB_CXXFLAGS := $(CXXFLAGS) -Wno-uninitialized
+   LINKFLAGS += -pthread -fPIC $(COMMON_FLAGS) $(WARNINGS)
+   LINKFLAGS += -Wl,-rpath,/usr/local/anaconda/lib                   <---- This is the line we manually added
+
+   b. We had to remove libgflags.a from Titan1 (and perhaps
+      libgflags_nothreads.a) from /usr/local/lib in order to successfully
+      compile, link and execute "make runtest".  Instead, we should have
+      libgflags-dev installed as an ubuntu package.
+
+*.  As of Nov 2015, we have to manually copy files within
+caffe/include/caffe to /usr/local/include/caffe/.  Also copy
+caffe_build_dir/build/src/caffe/proto/caffe.pb.h into
+/usr/local/include/caffe/proto/.  Manually copy libcaffe.a and libcaffe.so
+from caffe_build_dir/build/lib/ into /usr/local/lib/caffe/.
+
+*.  Make sure $ANACONDA_HOME/lib is added to LD_LIBRARY_PATH within .cshrc
+file.  Otherwise make runtest will fail.
+
+*.  See http://caffe.berkeleyvision.orig for documentation on caffe
+
+*.  See http://caffe.berkeleyvision.org/tutorial/ for a useful tutorial on
+caffe.
+
+*.  See http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html for 
+"Blobs, Layers and Nets: anatomy of a Caffe model".
+
+*.  In order to check out a clean copy of caffe onto our Thinkmate, Tho
+directed us to the primary caffe website (caffe.berkeleyvision.org).  Press
+on red "View on GitHub" button located on LHS.  Then copy HTTPS clone URL
+located on RHS into a git clone terminal command:
+
+	git clone https://github.com/BVLC/caffe.git
+
+*.  Tho has created a customized version of caffe which can be cloned from
+apple's github:
+
+	git clone git@github.geo.apple.com:geo-flyover/caffe_custom.git
+
+*.  Tho showed us an example of prototxt files which perform training and
+periodic testing on a validation set within
+/home/pcho/software/caffe/examples/cifar10/.  
+
+cifar10_full_solver_lr1.prototxt sets test_interval = 1000.  So testing on
+a validation set is performed after every 1000 training iterations.
+
+cifar10_full_train_test.prototxt contains both TRAIN and TEST phases.  See
+top of this prototxt file for their definitions:
+
+layer {
+  name: "cifar"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    mean_file: "examples/cifar10/mean.binaryproto"
+  }
+  data_param {
+    source: "examples/cifar10/cifar10_train_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+}
+
+layer {
+  name: "cifar"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mean_file: "examples/cifar10/mean.binaryproto"
+  }
+  data_param {
+    source: "examples/cifar10/cifar10_test_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+}
+
+At end of this prototxt file, we see that the TEST phase is run through an
+accuracy layer.  Both TRAIN and TEST phases are run through a loss layer.
+
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip1"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip1"
+  bottom: "label"
+  top: "loss"
+}
+
+*.  If we combine training and test network definitions within a single
+prototxt file, then we must define the train/test net protocol buffer
+definition via 
+
+	net: "${EXP}/config/${NET_ID}/train.prototxt"
+
+rather than 
+
+	train_net: "${EXP}/config/${NET_ID}/train.prototxt"
+
+within solver_base.prototxt.
+
+*.  Chant "watch nvidia-smi" in order to monitor GPU memory usage via a
+"top-like" utility.
+
+*.  For generic training of barriers_a model with batch size = 30, 
+Memory required for data: 9,160,488,016
+
+*.  For training & testing of barriers_a model with test batch size = 30, 
+Memory required for data: 9,158,067,372
+
+*.  For training & testing of barriers_a model with test batch size = 1, 
+Memory required for data: 305,268,924
+
+
+*.  In order to login to a particular node within the gpu cluster, chant
+
+ssh gpu0001  or
+ssh gpu0003  etc
+
+*.  On a GPU cluster machine other than gpu0001, cd to
+/home/pcho/software/caffe_custom/ and then chant ./cluster_build.sh in
+order to compile Tho's custom version of caffe.
+
+Alternatively on gpu0001, cd to /home/pcho/software/caffe_custom/ and chant
+make .
+
+*.  In order to pull out "feature descriptors" from a particular layer
+within a trained network, we can use the following pwin method inside
+dl_dnn.cpp written by Tho:
+
+/***** dl_dnn_extract_features
+************************************************* 
+* Description : Extract features using DNN
+*
+* Input  : dl_dnn  the deep neural net
+*          in_feature_vec  the input feature vector. It can be set to NULL if
+*                          assume that the forward pass has been done and just
+*                          want to extract features.
+*          layer_name  name of the layer to extract features
+*          out_feature_vec  the output feature vector extracted at the specified
+*                           layer. This needs to be pre-allocated.
+*          feature_dim  the dimension of the output feature (can be get using
+*                       dl_dnn_get_layer_feature_dim())
+*
+* Output : 0 if OK, non-zero otherwise
+*******************************************************************************/
+int dl_dnn_extract_features(dl_dnn_t *dl_dnn, float *in_feature_vec,
+    const char *layer_name, float *out_feature_vec, int feature_dim)
+
+
+On 10/29/15, Tho told us that his method is based upon the following core
+caffe method within caffe_custom/src/caffe/ net.cpp
+
+template <typename Dtype>
+Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
+  CHECK_GE(start, 0);
+  CHECK_LT(end, layers_.size());
+
+*.  On 11/19/15, we encountered problems with caffe.pb.h not being
+automatically built on our m6700 laptop running ubuntu 12.4.  We found the
+following instructions online which solved this protobuf problem:
+
+You need to generate caffe.pb.h manually using protoc as follows.
+
+# In the directory you installed Caffe to
+protoc src/caffe/proto/caffe.proto --cpp_out=.
+mkdir include/caffe/proto
+mv src/caffe/proto/caffe.pb.h include/caffe/proto
+
+*.  As of 11/23/15, here is our understanding of the output generated by
+Caffe's feature extraction and exported to either lmdb or leveldb 
+database tables:
+
+  - Dimension of feature vector = d.channels() where d = caffe Datum object
+
+  - 1 "gist-like" feature vector of d.channels (e.g. 4096 floats for fc7 
+    layer) floats exported per image
+
+  -  Total number of images processed by feature extraction binary = 
+     batch_size (e.g. 50 defined in imagenet_val.prototxt) * 
+     num_mini_batches (e.g. 10 passed as command line argument to feature
+     extraction binary) = 500
+
+  -  If batch_size * num_mini_batches > n_images, then feature vector
+     descriptors "wrap around" 
+
+  - Both lmdb and leveldb databases hold key-value pairs.  "Values" within
+    the database appear to be serialized caffe Datum classes.  The call
+
+          curr_datum.ParseFromString(value)
+
+    effectively "deserializes" the value byte string and reconstructs a 
+    caffe Datum object in memory.  See header file caffe/proto/caffe.pb.h
+    for caffe Datum object's public member functions.
+
+*.  On 1/6/16, Tho told us that we should chant "make clean" and "make
+clean_caffe" whenever he installs a new version of caffe for pwin.
+
+*.  On 1/7/16, Tho told us that he had added a "strict_dim:false" entry
+into train/test prototxt files for backwards compatability with older
+versions of caffe.  But so long as we work with newly trained caffe models,
+we should be able to comment out all "strict_dim:false" lines within
+train/test prototxt files.
+
+*.  Need to copy sub.sed into caffe_custom root dir in order to use John
+Wood's very nice template files for finetuning caffe networks.  Make sure
+sub.sed includes TEST_INTERVAL, TEST_ITER and MAX_ITER vars!
+
+Contents of sub.sed:
+
+
+'s,${DATA_ROOT},'"${DATA_ROOT}"',g;s,${DATA_ROOT1},'"${DATA_ROOT1}"',g;s,${EXP},'"${EXP}"',g;s,${EXP1},'"${EXP1}"',g;s,${TRAIN_SET},'"${TRAIN_SET}"',g;s,${TRAIN_SET1},'"${TRAIN_SET1}"',g;s,${TRAIN_SET1_WEAK},'"${TRAIN_SET1_WEAK}"',g;s,${TRAIN_SET1_STRONG},'"${TRAIN_SET1_STRONG}"',g;s,${TEST_SET},'"${TEST_SET}"',g;s,${NET_ID},'"${NET_ID}"',g;s,${FEATURE_DIR},'"${FEATURE_DIR}"',g;s,${NUM_LABELS},'"${NUM_LABELS}"',g;s,${NUM_LABELS1},'"${NUM_LABELS1}"',g;s,${NUM_LABELS_UNION},'"${NUM_LABELS_UNION}"',g;s,${BG_BIAS},'"${BG_BIAS}"',g;s,${FG_BIAS},'"${FG_BIAS}"',g;s,${TRAIN_SET_STRONG},'"${TRAIN_SET_STRONG}"',g;s,${TRAIN_SET_WEAK},'"${TRAIN_SET_WEAK}"',g;s,${BATCH_SIZE},'"${BATCH_SIZE}"',g;s,${TEST_SET_PREFIX},'"${TEST_SET_PREFIX}"',g;s,${TRAIN_STEP},'"${TRAIN_STEP}"',g;s,${TEST_INTERVAL},'"${TEST_INTERVAL}"',g;s,${TEST_ITER},'"${TEST_ITER}"',g;s,${MAX_ITER},'"${MAX_ITER}"',g'
+
+
+*.  John's caffe sessions for semantic segmentation and finetuning of HOV's
+are sitting in
+/startown-gpfs/sputnik03/supersize/devdata/dl/experiments/archive/
+
+*.  On 1/19/16, we intentionally removed all boost packages on M6700
+laptop.  We also installed boost-1.59.0 within /opt.  We then had to
+explicitly add /opt/boost/include to INCLUDE_DIRS in addition to
+/opt/boost/lit within LIBRARY_DIRS inside the Makefile.config of
+caffe_public.  The public version of caffe then compiled fine on M6700 and
+passed all tests with no problems.
+
+
+*.  Trained caffe models are sitting in subfolders of
+/startown-gpfs/ssdws03/devdata/pr_models/.  On 2/29/16, Weiyu pointed us
+towards the following fine-tuned AlexNet to use for traffic sign clustering
+based upon global fc7-layer descriptors:
+
+/startown-gpfs/ssdws03/devdata/pr_models/road_sign/20151023_caffenet/20151023_caffenet_c293_caffenet_iter_100000.caffemodel

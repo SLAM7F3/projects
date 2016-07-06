@@ -1,0 +1,35 @@
+#ifndef PAINT_H
+#define PAINT_H
+
+#include <QMainWindow>
+
+class QAction;
+class ScribbleArea;
+class QColor;
+
+class PaintWindow :public QMainWindow
+{
+  Q_OBJECT
+
+public:
+  explicit PaintWindow( QWidget* parent=0 );
+
+private:
+  void setupFileMenu();
+  void setupColorMenu();
+  void setupHelpMenu();
+
+private slots:
+  void slotChangeColor( QAction* action );
+  void slotAbout();
+  void slotAboutQt();
+
+signals:
+  void colorChange( const QColor& color );
+
+private:
+  ScribbleArea* _scribbleArea;
+};
+
+#endif /* PAINT_H */
+

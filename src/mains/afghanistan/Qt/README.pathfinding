@@ -1,0 +1,55 @@
+===========================================================================
+Keystrokes for running QTTO11C in order to discover red actor paths for TOC11
+===========================================================================
+Last updated on 7/2/11; 7/11/11; 7/16/11
+===========================================================================
+
+0.  Plug in 1 Terabyte FAT 32 orange drive #6
+
+1.  Choose AF/PAK for 3D map
+
+GENERATING RAYTRACING RESULTS FOR TARGET MOVING ALONG GROUND PATH
+-----------------------------------------------------------------
+
+2.  Press "L" twice to enter into Manipulate PolyLine Mode.  Then press "i"
+to import previously saved PolyLine path.  PolyLine is imported from 
+/home/cho/programs/c++/svn/projects/src/mains/afghanistan/Qt/polylines_3D.txt
+
+3.  Press "V" to enter into View Data mode.  Then press "t" to generate
+track from imported PolyLine.
+
+4.  Press Admin -> Session management in thin client.  Load "toc11c"
+session.
+
+5.  Press Flight path tab in thin client.  Zoom into loaded path.
+
+6.  Press "A" twice to enter into Manipulate Annotion mode.  Then press "h"
+to generate track for ground mover SignPost.
+
+7.  Press "J" twice to enter into Manipulate Model mode.  Then press "h" to
+perform raytracing for moving ground target.
+
+8.  After raytracing is finished, press "i" while in Manipulate Model mode
+to export moving target visibilities to output file.
+
+
+IMPORTING PREVIOUSLY CALCULATED RAYTRACING RESULTS FOR MOVING TARGET
+--------------------------------------------------------------------
+
+2b.  Press "L" twice to enter into Manipulate PolyLine Mode.  Then press "i"
+to import saved PolyLine path.
+
+3b.  Press "V" to enter into View Data mode.  Then press "t" to generate
+track from imported PolyLine.
+
+4.  Press Admin -> Session management in thin client.  Load "toc11c"
+session.
+
+5.  Press Flight path tab in thin client.  Zoom into loaded path.
+
+6.  Press "A" twice to enter into Manipulate Annotion mode.  Then press "h"
+to generate track for ground mover.
+
+7.  Press "J" twice to enter into Manipulate Model mode.  Then press "j" to
+import moving ground target visibility rays from
+"./moving_ground_target.visibilities".

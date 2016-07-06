@@ -1,0 +1,3 @@
+QTDIR=/packages/qt-x11-commercial-3.2.1-mt
+LD_LIBRARY_PATH=$QTDIR/lib:$LD_LIBRARY_PATH
+PATH=$QTDIR/bin:$PATH

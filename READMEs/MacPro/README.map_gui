@@ -1,0 +1,12 @@
+=============================================================================
+2D Map Gui notes
+=============================================================================
+Last updated on 3/30/15
+=============================================================================
+
+*.  On 3/30/15, Viktor taught us that (x,y) coordinates corresponding to
+instantaneous mouse position are handled within g_view2d_text() inside
+g_view2d.c  g_view2d_text() appears to only be called by gui2d_draw_all()
+within gui2d.c.
+
+*.

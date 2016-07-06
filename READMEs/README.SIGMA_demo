@@ -1,0 +1,28 @@
+===========================================================================
+Sigma demo notes
+===========================================================================
+Last updated on 7/15/10
+===========================================================================
+
+*.  In order to run Bluetracker_SIGMA on Peter's Ubuntu 10.4 laptop in the
+G104 conference room, make sure that /etc/resolv.conf reads as follows:
+
+search llan.ll.mit.edu
+nameserver 155.34.3.8
+nameserver 155.34.3.22
+
+
+We copied this information into /etc/resolv.conf.LL
+
+
+*.  As of 7/15/10, Peggy Chernoff let us use the following 2 IP addresses
+within the G104 conf room:
+
+155.34.135.80
+155.34.135.126
+
+
+*.  In order to get Peter's Ubuntu output to simultaneously appear on
+laptop's screen as well as left-hand side G104 conf room monitor, copy
+/etc/X11/xorg.conf_G104_SIGMA_demo onto /etc/X11/xorg.conf
+

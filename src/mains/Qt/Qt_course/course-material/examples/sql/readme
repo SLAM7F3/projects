@@ -1,0 +1,3 @@
+To start the mysql server execute:
+mysqld_safe
+/etc/rc.d/mysql start

@@ -1,0 +1,139 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>ReplaceProgress</class>
+ <widget class="QDialog" name="ReplaceProgress" >
+  <property name="objectName" >
+   <string notr="true" >ReplaceProgress</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>349</width>
+    <height>70</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Search and Replace</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="objectName" >
+    <string notr="true" />
+   </property>
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="replacementText" >
+     <property name="objectName" >
+      <string notr="true" >replacementText</string>
+     </property>
+     <property name="geometry" >
+      <rect>
+       <x>9</x>
+       <y>9</y>
+       <width>125</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text" >
+      <string>Replacement Text</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="yes" >
+       <property name="objectName" >
+        <string notr="true" >yes</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>1</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Yes</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="skip" >
+       <property name="objectName" >
+        <string notr="true" >skip</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>82</x>
+         <y>1</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Skip</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="all" >
+       <property name="objectName" >
+        <string notr="true" >all</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>163</x>
+         <y>1</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="close" >
+       <property name="objectName" >
+        <string notr="true" >close</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>244</x>
+         <y>1</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Close</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections/>
+</ui>

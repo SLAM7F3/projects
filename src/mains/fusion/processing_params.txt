@@ -1,0 +1,32 @@
+# =========================================================================
+# Input parameters file for VIEWPOINTS program
+#
+# =========================================================================
+# Last updated on 6/26/05
+# =========================================================================
+#
+# The order in which parameters are entered below is critical.
+#
+# Comment lines (such as this one) preceded by '#' marks are ignored.
+#
+# All blanks lines as well as white space are ignored.
+#
+# Only the leading 'f', 'F', 't' or 'T' characters for boolean parameters
+# are parsed.
+#
+# =========================================================================
+
+# Output root directory which will be dynamically created if it does not
+# already exist.  All output .xyzp files are written into subdirectories of
+# this root directory.
+
+# /data/ladar/jigsaw
+
+# =========================================================================
+# 3D colormap parameters
+# =========================================================================
+
+# Full path for directory containing 3D colormap text files
+
+/home/cho/programs/c++/svn/projects/data/3D_colormaps
+

@@ -1,0 +1,39 @@
+			Special Seminar (Unclassified)
+
+
+Title:  Line-of-Sight Tool (LOST) for Aerial Mission Planning
+
+Place:  S2-180
+
+Date: Friday, Feb 25 at 1 pm
+
+Speakers: Peter Cho (G106), Jennifer Drexler (G105), Luca Bertucelli (MIT)
+and Prof. Jonathan How (MIT)
+
+
+Abstract:
+
+Maintaining wide-area persistent surveillance within rugged terrain is
+challenging for non-nadir looking airborne sensors.  In particular,
+mountain occlusion can result in track loss for Ground Moving Target
+Indication (GMTI) systems.  To help plan flight routes through viewing
+obstacle courses that maximize sensor time on ground regions of interest,
+we have developed a line-of-sight software tool which runs in near
+real-time.  
+
+In this seminar, we demonstrate how user input to LOST occurs via a simple
+web interface, while a second window renders raytracing output in 3D.  LOST
+also generates visibility "sky maps" which can guide both manual and
+automated flight path planning.  Algorithmic strategies developed by MIT's
+Aerospace Controls Lab for rapidly estimating optimal elliptical and
+race-track orbits will be discussed.
+
+We close with recent spin-offs from LOST plus future work which include
+Thunderstorm exercise modeling, ALIRT imagery incorporation and multi-UAV
+mission planning.
+
+
+
+
+
+

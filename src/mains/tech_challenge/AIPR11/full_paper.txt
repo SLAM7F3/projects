@@ -1,0 +1,327 @@
+=============================================================================
+AIPR 2011 paper
+=============================================================================
+Last updated on 10/4/11; 10/5/11; 10/6/11
+=============================================================================
+
+3D Exploitation of 2D Ground-Level & Aerial Imagery
+
+Peter Cho (MIT Lincoln Laboratory) & Noah Snavely (Cornell University)
+
+1.  Introduction
+
+The invention of the digital camera is attributed to Eastman Kodak engineer
+Steven Sasson in 1975 [ref].  Sasson's device recorded 0.01 megapixel black
+and white pictures to cassette tapes.  The first digital photograph
+required 23 seconds to generate and needed a television set to be displayed
+[ref].  Today, digital cameras recording 10+ megapixel color photos to
+Secure Digital (SD) cards with multi-Gigabyte storage capacities are
+commonplace.  Though the total number of digital images in existence is not
+known, billions of photos and video clips are now readily accessible on the
+internet [ref needed].
+
+The current capability to collect and store digital images vastly outpaces
+the current capability to mine electronic pictures.  Existing archives of
+digital photos and videos are basically unstructured.  As anyone who has
+ever tried to find some particular view of interest on the internet knows,
+querying imagery websites is often a frustrating experience.  Text-based
+searches generally cannot handle salient metadata such as camera
+geolocation, scene identity or target characteristics.  So some basic
+organizing principle is needed to enable efficient navigation and
+exploitation of vast digital imagery repositories.
+
+Fortunately, three-dimensional geometry provides such an organizing
+principle for imagery collected at different times, places & perspectives.
+For example, suppose we have a set of digital photos of some ground target.
+Those pictures represent 2D projections of 3D world-space onto a variety of
+image planes.  If the target's geometry is captured in a 3D map, it can be
+used to mathematically relate different ground photos of the target to each
+other.  Moreover, the 3D map connects together data collected by completely
+different sensors at different times. So we can relate a photo of the
+target shot by a ground camera with a corresponding aerial picture or ladar
+image provided all these data products are georegistered with the 3D map.
+
+In this paper, we present a three-dimensional approach to exploiting
+two-dimensional imagery.  In particular, we demonstrate how difficult image
+processing problems such as scene geolocation, video stabilization and
+intelligence propagation become mathematically tractable when 3D geometry
+is taken into account.  We focus herein upon applying these geometrical
+techniques to ground and aerial pictures shot outdoors in urban and rural
+environments.  But the basic ideas discussed in this article could be
+extended to indoor and smaller-scale settings in the future.
+
+Our paper is organized as follows.  Working with photos shot around MIT, we
+first review 3D reconstruction of large photo collections in section 2.
+After georegistering thousands of ground photos to an aerial ladar map, a
+human can conduct a virtual tour through a field of images and gain an
+intuitive feel for what MIT's campus looks like.  In section 3, we exploit
+imagery gathered from a Unmanned Aerial Vehicle (UAV) flying over fields
+and forest.  Several tactically useful problems such as terrain mapping and
+geopoint marking become straightforward once a 3D framework for analyzing
+2D images is adopted.  Finally, we close in section 4 with a few words
+about future applications of this research.
+
+2.  Urban ground imagery exploitation
+
+In July 2009, a small team of Lincoln Laboratory volunteers set out to
+collect a large, urban photo set for three-dimensional exploitation
+purposes.  We selected MIT's main campus as a surrogate small city where we
+knew the natives would not be perturbed by unorthodox data gathering
+techniques.  So the volunteers ran around MIT shooting as many digital
+photos as possible with a variety of cameras.  For approximately the first
+5 minutes on the first photo shoot, pictures were selected with care and
+precision.  But as time went by, choosiness went down while data collection
+rate went way up.  Over the course of 5 field trips, more than 30,000
+stills were collected around MIT. Figure 1 illustrates 30 representative
+examples from the semi-cooperatively gathered photos.
+
+The variability among the thumbnails displayed in fig. 1 indicates the
+challenge of recovering structure from 30K+ pieces of a complex jigsaw
+puzzle.  Most of the pictures were shot outdoors.  But a few thousand
+photos inside some MIT buildings were intentionally taken with the hope of
+connecting together exterior & interior views.  All of the photos were
+collected within urban canyons where the scene changes significantly every
+few steps.  So more than two years after collecting these images, we are
+still developing algorithms and codes to analyze this rich data set.
+
+Building upon many years of computer vision research, Snavely and
+collaborators have discovered how to take large, quasi-random sets of
+photos as input and extract organized structure as output [refs].  Their
+approach takes advantage of redundancy and geometrical overlap among
+multiple views to solve a complex inverse problem.  It yields relative 3D
+locations for photos' cameras as well as 3D structure for target scenes.
+
+The first step in the reconstruction procedure is to extract features from
+each input image.  Lowe's Scale Invariant Feature Transform (SIFT) is
+employed to find keypoints within all 30K+ MIT photos [Lowe].  Because each
+feature has an associated 128-dimensional vector of integer labels, SIFT in
+combination with outlier rejection algorithms [RANSAC] can reasonably
+robustly identify the same feature appearing in multiple photos.  Example
+SIFT tiepoint pairs are illustrated in fig. 2 for two representative
+pictures.  After zooming in, one can verify that most, though not all, of
+the SIFT matches displayed in the figure are valid.
+
+SIFT matching imposes an initial topological ordering upon a set of
+quasi-random photos.  Each image may be regarded as a node in a graph whose
+edges indicate feature pairings.  Fig. 3 visualizes this abstract network
+for the 30K+ set of MIT photos.  The graph viewer appearing on the right of
+the figure was developed by Michael Yee.  It allows a user to navigate
+through large image collections and gain an overall understanding of their
+global content.  The web browser interface appearing on the left of fig. 3
+enables drill-down inspection of individual photos.  The netcentric design
+of these software tools permit multi-user collaborative analysis of
+multiple archived picture sets.
+
+Once SIFT features have been detected and matched between multiple views, a
+machine can recover geometry information via bundle adjustment [BA refs].
+Starting from a set of images with 2D feature tiepoints identified (see fig
+4), a computer solves for the progenitor points in three-dimensional space
+plus the rotation, location and focal length of each camera.  It
+iteratively perturbs all these coordinates in order to minimize the
+discrepancy between 3D point projections into the camera image plances and
+the measured 2D feature positions.
+
+Reconstruction results for 2.3K of the 30K+ MIT photos are displayed in
+fig. 5.  The colored point cloud appearing in fig. 5a depicts the
+three-dimensional shapes and sizes of several buildings located on MIT's
+east campus.  When we zoom in, reconstructed photos are displayed as frusta
+embedded within the point cloud (see fig. 5b).  The snapshots appearing in
+fig. 5 are two frames from a movie sequence where a virtual camera flies
+through the 3D scene.  By double clicking on a reconstructed frustum with a
+mouse, a user may command the virtual camera to assume the position and
+oriention of the real camera which shot the photo.  By viewing several such
+ground photos in rapid succession, one starts to gain an intuitive feel for
+MIT's urban environment.
+
+It is important to recall that conventional digital cameras capture only
+angle-angle projections of 3D worldspace onto 2D image planes.  In the
+absence of other metadata, photos contain no length scales.  So image
+reconstruction by itself cannot yield absolute distance or geoposition
+information.  In order to georegister reconstructed output, we must exploit
+other sensor data beyond outputs from Charged-Coupled Devices (CCDs).
+
+Aerial laser radar ("ladar") maps represent a rich source of detailed 3D
+geometry data into which 2D ground imagery reconstructions may be fused.
+Active illumination ladar systems can measure absolute geolocations for
+entire cities in a matter of hours with ground sampling distances of 1
+meter or less.  In 2004, an aerial ladar map was collected over greater
+Boston and ultimately delivered to the Army Geospatial Center (formerly
+Topographic Engineering Center).  We use these terrain data in order to
+georegister the 2.3K reconstructed MIT photos.
+
+Up to this point, our computer vision algorithms have all been fully
+automatic.  But for this research project, we did not attempt to automate
+matching of ground photo and aerial ladar imagery.  Instead, we manually
+selected 10 photos from the 2.3K reconstructed set which had wide angular
+diversity and whose reconstruction uncertainties were low.  We then
+established tiepoint correspondences between pixels in the 10 selected
+photos and counterpart voxels in the ladar map.  Using these tiepoint
+pairings, we set up and solved a system of equations for the global
+translation, rotation and scaling needed to geoalign all 2.3K reconstructed
+photos with the 3D Boston map.
+
+Figure 6 illustrates the reconstructed photos and point cloud after they
+have been registered with the ladar map.  [FN: The ladar points in fig. 6
+are colored according to height.  In contrast, the 3D points derived from
+bundle adjustment are colored according to photo RGB values.]  For
+clarity's sake, we display only O(10**2) of the O(10**3) georegistered
+frusta.  As aerial ladars are typically nadir-oriented, they generally
+capture just rooftop content in urban scenes.  On the other hand, passive
+ground-level photos usually contain building wall content.  It is
+reassuring that building rooftop points measured from aerial ladar match up
+with building side points reconstructed from ground photos in fig. 6.
+Similar agreement between 2004 ladar and 2009 digital camera imagery is
+illustrated in fig. 7.  When our 3D viewer's virtual camera assumes the
+geoposition and orientation of a real camera which shot some photo, we may
+fade away the image plane and observe its 3D correspondence with ladar
+points off in the distance.
+
+The 30K+ digital pictures shot around MIT were densely collected in many
+quasi-random pointing directions.  As a result, the georegistered photos
+form a complicated mess.  Trying to pick out a particular frustum within a
+3D viewer is not simple.  So we have combined our OpenGL display tool with
+a web browser interface in order to simplify human interaction with the
+rich data set.  Figure 8 displays a Google map of MIT's campus with the
+2317 reconstructed photos overlaid as colored dots.  When the user clicks
+on some particular dot, a message is sent from the web browser to the 3D
+viewer which commands its virtual camera to assume the position and
+pointing of the real camera that shot the selected photo.  The user may
+then view the reconstructed photo inside the ladar map.
+
+The sample picture selected and displayed in fig. 8 is noteworthy, for it
+was obviously taken indoors.  This particular photo's setting is MIT's
+health center which has large glass walls.  Consequently, some images shot
+inside the health center share SIFT feature overlap with others shot
+outside the building.  So the results displayed in fig. 8 represent at
+least one example where geocoordinates for cameras located in GPS-denied
+environments can be derived via computer vision techniques.
+
+Given a dense set of reconstructed images, it is possible to construct
+paths through them representing virtual tours in a 3D environment [Noah
+refs].  Using our Google Map interface, we can easily enter a desired route
+along which we would like to see MIT's urban environment (see fig. 9).
+After we press the initialize tour button, the machine searches through all
+reconstructed photos for those lying close to the desired path and
+generally pointing in the forward direction.  The photos' locations along
+the path are subsequently displayed on the Google Map.  When we next press
+the play button in the web browser, the virtual camera begins its tour.  As
+the 3D viewer transitions from one photo to the next, it cross-fades the
+pictures so that the user sees the virtual camera move within the
+reconstructed point cloud.  The camera's current geolocation during the
+tour is also updated in the Google Map.  By conducting a virtual tour using
+this synchronized "first person" and "third person" displays, a person
+develops an intuitive appreciation for the physical layout of MIT's eastern
+campus.
+
+Our focus so far has been upon exploiting ground photos shot in an urban
+environment.  But the same computer vision ideas can be fruitfully applied
+to qualitatively different sets of input imagery.  So we turn in the next
+section to consider aerial video gathered over a rural region.
+
+3.  Rural UAV imagery exploitation
+
+Robotic platforms are growing more common as their performance increases
+and price decreases.  To encourage rapid experimentation with robots and
+imaging sensors, Lincoln Laboratory held a Technology Challenge in
+September 2010 called Project Scout [AUVSI ref].  The Challenge involved
+remotely characterizing a one-square kilometer rural area and identifying
+anomalous activities within its boundary.
+
+One of many platforms fielded during the Technology Challenge was a
+hand-launched aerial glider.  The aerial system's hardware included a
+Radian sailplane (< $400), a Canon Powershot camera (< $300) and a Garmin
+GPS unit (< $100) (see fig. 10).  The camera and GPS clocks were
+synchronized by taking pictures of the latter with the former.  Both
+sensors were subsequently mounted to the glider's underside prior to the
+hand launching.  Over the course of a typical 15 minute flight, the
+lightweight digital camera collected a few thousand frames at roughly 3 Hz.
+When the glider returned from a sortie, its aerial pictures were offloaded
+from the camera's SD chip and later processed on the ground.  Two
+representative examples of video frames gathered by the aerial glider are
+displayed in fig. 11.
+
+Just as for the ground photos collected around MIT, the processing pipeline
+for the aerial glider's video frames began with SIFT feature matching and
+incremental bundle adjustment.  Of 3K aerial images passed into the video
+processing pipeline, approximately 1.5K were successfully reconstructed.
+We next applied multi-view stereo algorithms developed by Furukawa and
+Ponce in order to generate a dense representation for the ground scene
+[Furukawa ref].  The resulting 3D point cloud of the rural area over which
+the glider flew is much more dense than the sparse cloud generated by
+incremental bundle adjustment.
+
+Computer vision by itself cannot georegister the reconstructed cameras plus
+the point cloud mosaic of their pictures.  And unlike for our preceding MIT
+problem, we do not have access to a high-fidelity ladar map for the rural
+area over which the sailplane glider flew.  So we instead exploited
+measurements from the glider's onboard GPS unit.  By fitting the
+reconstructed flight path to the UAV's track, we derived the global
+translation, rotation and scaling needed to transform the relative camera
+frusta and dense point cloud to absolute world geocoordinates.  Figure 12
+displays 74 of the georegistered cameras a white frusta along with the
+dense terrain map on an absolute longitude-latitude grid.  The glider's GPS
+track is also exhibited in the figure as a continuous curve colored
+according to height.
+
+Several examples of aerial video exploitation using 3D geometry can now be
+demonstrated which are difficult to perform via 2D image processing.  For
+instance, our reconstruction plus georegistration algorithms yield detailed
+height maps with absolute altitudes above sea-level for ground, water and
+trees.  The approximate 1 meter ground sampling distance of the
+measurements displayed in fig. 13 begins to rival those from ladar systems.
+But the sub-$1000 cost of our passive imaging hardware for terrain mapping
+is orders of magnitude less than that for active ladar systems.
+
+Aerial video orthorectification and stabilization represent further
+applications of 3D imagery exploitation.  The sailplane glider experienced
+significant jostling during its flight over the rural scene, and its raw
+video footage looks erratic (see fig. 11 b).  But once the aerial camera's
+geolocation and geoorientation are known, it is straightforward to project
+the Canon Powershot's reconstructed views onto a ground Z-plane.  Figure 14
+compares two such orthorectified aerial frames with a Google Map on an
+absolute longitude-latitude grid.  We estimate a 2.5 meter discrepancy
+between the former and latter.  When an entire series of orthorectified
+aerial frames is played as a movie, the resulting time sequence is
+automatically stabilized.
+  
+As one more example of video exploitation, we propagate intelligence from
+one frame to another using 3D geometry.  Once a camera's position and
+orientation are known, any pixel within its image plane corresponds to a
+calculable ray in 3D world-space.  So after a user chooses some pixel in a
+reconstructed glider picture, we can trace a ray from the selected pixel
+down towards the dense point cloud.  The first voxel in the reconstructed
+terrain map intercepted by the ray has longitude, latitude, altitude and
+range coordinates which its progenitor pixel inherits.  Figure 15a
+illustrates three selected locations in aerial video frame #46 that have
+been annotated with their associated voxels' ranges and altitudes.
+
+One may next inquire which, if any, of the geolocations selected in video
+frame #46 reappear in other frames such as the one shown in fig. 15b.  It
+is not easy for a human eye to solve this puzzle just by comparing the two
+aerial views of the non-descript rural terrain.  But the solution may
+readily be deduced via geometry.  The voxels associated with the pixel
+locations in fig. 15a are reprojected into the image plane for the
+secondary reconstructed camera.  This procedure generates the tiepoint
+matches displayed in fig. 15b.  This final example illustrates how
+information can propagate from one 2D view into another when 3D geometry
+acts as a mathematical conduit.
+
+4.  Future applications
+
+In this paper, we have explored just a few of the many implications of 3D
+imagery exploitation.  Defense applications of this work include urban
+mission planning (e.g. rehearse movements within virtual city streets
+before actually running into harm's way), real-time UAV video annotation
+(e.g. mark non-nadir aerial imagery with GIS information) and dynamic
+target georegistration (e.g. determine a car's geocoordinates via image
+chip backprojection into 3D maps).  Equally important civilian applications
+such as robot operation, augmented reality and image search are currently
+being pursued.  So we look forward in the future to extending this
+preliminary work on 3D exploitation of 2D ground-level and aerial imagery.
+
+5.  References
+
+*.  For a history of cameras, see
+http://en.wikipedia.org/wiki/History_of_the_camera#Digital_cameras.  
+
+

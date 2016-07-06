@@ -1,0 +1,15 @@
+/bin/rm ./bbox_prec_recall
+/bin/rm ./consolidate_components
+/bin/rm ./consolidate_pyramid_segmentations
+/bin/rm ./downsize_images
+/bin/rm ./generate_deeplab_inputs
+/bin/rm ./generate_image_tiles
+/bin/rm ./pngtest
+/bin/rm ./prec_recall
+/bin/rm ./pyramid_testing_images
+/bin/rm ./recolor_deeplab_masks
+/bin/rm ./recombine_segmented_tiles
+/bin/rm ./reorder_bbox_images
+/bin/rm ./segment_images
+/bin/rm ./textdb_truth
+/bin/rm ./training_performance

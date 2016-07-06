@@ -1,0 +1,217 @@
+===========================================================================
+Tomcat installation notes
+===========================================================================
+Last updated on 4/9/11; 5/29/13; 11/11/15; 11/13/15
+===========================================================================
+
+*.  Download apache-tomcat-5.5.27.tar.gz (not src version!), unpack tarball
+and place into /usr/local.
+
+*.  Install Java 1.6 into /opt/java.  Download jdk-6u14-linux-i586.bin from
+following sun site:
+
+https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewFilteredProducts-SingleVariationTypeFilter
+
+
+*.  Copy contents of /etc/init.d/tomcat script from some already working
+machine onto new machine:
+
+
+#!/bin/sh -e
+#
+
+# Check the package is still installed
+[ -x /usr/local/apache-tomcat ] || exit 0
+
+# Get LSB functions
+. /lib/lsb/init-functions
+. /etc/default/rcS
+
+case "$1" in
+    start)
+
+        log_begin_msg "Starting tomcat..."
+    su --login root -c /usr/local/apache-tomcat/bin/startup.sh
+        ;;
+    stop)
+        log_begin_msg "Stopping tomcat..."
+    /usr/local/apache-tomcat/bin/shutdown.sh
+        ;;
+    restart|force-reload)
+        log_begin_msg "Stopping tomcat..."
+    /usr/local/apache-tomcat/bin/shutdown.sh
+        log_begin_msg "Starting tomcat..."
+    /usr/local/apache-tomcat/bin/startup.sh
+        ;;
+    *)
+        echo "Usage: /etc/init.d/loopback {start|stop|restart|force-reload}"
+        exit 1
+        ;;
+esac
+
+exit 0
+
+*.  Be sure to add export following line to /etc/profile
+
+JAVA_HOME=/opt/java/jdk
+
+and make sure /opt/java/jdk is a symbolic link to some specific version
+(e.g. jdk1.7.0_80/)
+
+Also add similar line to /root/.bashrc
+
+export JAVA_HOME=/opt/java/jdk1.6.0_14
+
+*.  In order to make tomcat autostart at boot time, need to chant
+
+		sudo update-rc.d tomcat defaults
+
+More generally, chant update-rc.d <name of init.d filename goes here> defaults
+
+*.  Once the tomcat server is running, open browser to
+http://127.0.0.1:8080 and verify that we see Apache Tomcat homepage.
+
+[Note added on 11/13/15:  This next comment doesn't appear to be relevant
+any more for ubuntu 14.4 (at least to get Image Search Tool to work)]
+
+*.  In Jun 2010, we ran into significant problems with the order in which
+tomcat starts relative to activemq at bootup time.  In particular, tomcat
+must begin AFTER activemq.  We first tried to change the start ordering
+using update-rc.d .  This Linux command alters the order in which various
+processes begin at boot time.  
+
+It appears that activemq must begin several seconds before tomcat in order
+to ensure that Michael Yee's Java polling code which uses activemq
+successfully loads.  So we were forced to adopt a cluge.
+
+We first removed tomcat altogether from /etc/rcn.d using update-rc.d.  We
+then added the following lines to /etc/rc.local (which runs after all other
+processes in /etc/rcn.d have been activated):
+
+/etc/init.d/tomcat stop
+sleep 10
+/etc/init.d/tomcat start
+
+After making this hack, thin and thick client communication for LOST
+appears to work OK on the ubuntu 10.4 laptop.
+
+*.  In Sep 2010, we realized that tomcat6 was auto-starting at boottime on
+the beast server along with some of the TOC netbooks.  Dave Ceddia told us
+that in order to eliminate calls to tomcat6 from appearing within
+/etc/rc1.d, /etc/rc2.d, /etc/rc3.d,  ... we need to chant
+
+		sudo update-rc.d -f tomcat6 remove
+
+*.  On 12/15/10, Jennifer Drexler told us how to make directories located
+outside of apache-tomcat/webapps readable by tomcat.  In
+/usr/local/apache-tomcat/conf/Catalina/localhost, we need to add an XML
+file such as foo.xml . That file needs to contain the following line
+
+<Context antiResourceLocking="false" privileged="true" docBase="/foo/" />
+
+This will effectively make tomcat treat /foo as if it were the webaddress
+127.0.0.1:8080/foo/ . Images in /foo/imagery/blah.jpg, etc located
+in /foo can then be accessed via 127.0.0.1:8080/foo/imagery/blah.jpg.
+
+*.  On 1/3/11, Jennifer Drexler taught us that we need to be sure there is
+a soft link in /usr/local/apache-tomcat/webapps/ROOT/WEB-INF/cgi/ to
+every cgi folder for each webapp project (e.g. photo needs to point to
+/usr/local/apache-tomcat/webapps/photo/cgi ).  
+
+Also, /usr/local/apache-tomcat/conf on BEAST got corrupted in early Jan
+2011.  So we ended up tarring up this subdirectory on our ROBOT laptop and
+copying it over to BEAST.  After doing so, Jennifer's PHOTO app works OK.
+We'll probably need to similarly copy over the contents of /conf to other
+new machines in the future.
+
+*.  On 3/16/11, Jennifer Drexler reminded us that we need to make the
+following changes in order to enable CGI under tomcat:
+
+  [Note added on 11/13/15:  This next note doesn't appear to be necessary
+   for ubuntu 14.4 (at least to get Image Search Tool to work)]
+
+- Uncomment CGI servlet definition in /usr/local/apache-tomcat/conf/web.xml
+and CGI context in /usr/local/apache-tomcat/conf/context.xml.
+Alternatively, copy the web.xml and context.xml files over from a working
+LOST laptop into the corresponding locations on a new physical or virtual
+machine.
+
+- For all webapps using CGI, make a link from webapps/ROOT/WEB-INF/cgi/ to
+cgi folder in webapp repository. For example,
+
+ln -s /usr/local/apache-tomcat/webapps/LOST/cgi/ /usr/local/apache-tomcat/webapps/ROOT/WEB-INF/cgi/LOST
+
+
+*.  When one of our servers is running (e.g. PhotoServer), we can perform
+web-browser queries to test it:
+
+e.g. 
+
+http://127.0.0.1:4046/Get_Graph/?ID=3
+
+{ 
+  graph: { 
+     id: 3, 
+     edgedefault: "undirected", 
+     node: [ 
+       { 
+         id: 0, 
+         data: {
+           type: "NODE", 
+           photoURL: "/data/ImageEngine/MIT2317/DCFC0917.rd.jpg", 
+           photo_Npx: 1600, 
+           photo_Npy: 1200, 
+           thumbnailURL: "/data/ImageEngine/MIT2317/thumbnails/thumbnail_DCFC0917.rd.jpg", 
+           thumbnail_Npx: 200, 
+           thumbnail_Npy: 150, 
+           parent_ID: 2329, 
+           gx: 0.32801, 
+           gy: 0.68570, 
+           relativeSize: 1, 
+           rgbColor: [0,1,0.33333 ]
+         }
+       },
+.
+.
+.
+}
+
+
+http://127.0.0.1:4046/Get_Graph_Hierarchy/
+
+returns
+
+{  
+   graphHierarchyIDs: [ 0, 1 ], 
+   graphHierarchyDescriptions: [ 'Kermit', 'MIT2317' ] 
+} 
+
+http://127.0.0.1:4046/Get_SIFT_Matches/?photo_id1=286404&photo_id2=286403
+
+returns
+
+{  
+ sift_matches: [ 
+{ 
+  sift_feature_ID1: 3, 
+  sift_feature_ID2: 2 
+},
+{ 
+  sift_feature_ID1: 21, 
+  sift_feature_ID2: 18 
+},
+.
+.
+.
+{ 
+  sift_feature_ID1: 705, 
+  sift_feature_ID2: 1227 
+},
+{ 
+  sift_feature_ID1: 963, 
+  sift_feature_ID2: 1249 
+}
+ ] 
+ } 
+
+*.  

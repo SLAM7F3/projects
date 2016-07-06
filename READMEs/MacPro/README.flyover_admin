@@ -1,0 +1,223 @@
+=============================================================================
+Flyover Admin notes
+=============================================================================
+Last updated on 7/27/15; 7/29/15; 4/15/16; 6/7/16
+=============================================================================
+
+*.  Adding shape files to Flyover admin resource and project lists
+
+1.  Select Project Database -> Resource webpage
+
+    If blue "List" button near top left is selected, can type in substring
+into search box to look for existing shape files already known to Flyover
+Admin  (e.g. "kitty")
+
+
+2.  In order to add an existing shape file to Flyover Admin's Resource
+List, press blue "Create" button 
+  
+  a.  In top "Name" field, enter string label such as "chicago_pr_kittyhawk_3"
+
+  b.  Under Groups field, choose "FlightOps"
+
+  c.  Press Add Shapes button.  Then under "Name" subfield, enter full path
+to existing shape file sitting in /startown-gpfs/ssdws03/conf/shapes/
+
+	e.g. /startown-gpfs/ssdws03/conf/shapes/chicago_kittyhawk_3.shape
+
+  d.  Under Category subfield, choose "User Shape"
+
+  e.  Press "Save and Add" (or blue "Submit") button towards
+lower left corner of "Create Resource" webpage.
+
+
+3.  Next need to add new resource(s) to existing projects.  So select
+Project Database-> Project webpage.
+
+   a.  Under Project List, search for "kitty" to find all Kitty Hawk projects
+       known to Flyover Admin
+
+   b.  On Edit Project webpage, add new resources to "Resources" field
+
+   c.  Type first few letters of resource to be added to project within the
+"Resources" field.
+
+   d.  Press blue Save button towards lower left of webpage.
+
+
+
+chicago_pr_kittyhawk_3
+chicago_pr_kittyhawk_all
+new_york_kittyhawk_pr_all
+
+
+
+"la_downtown_shape" within flyover admin --> 	  /startown-gpfs/ssdws03/conf/shapes/los_angeles_drive.shape
+"cupertino_1km_pr_shape" within flyover admin --> /startown-gpfs/ssdws03/conf/shapes/cupertino_1km_pr.shape
+
+
+*.  Adding projects into Flyover Admin
+
+1.  In order to create new resources within Flyover Admin which are
+analogous to those within
+/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml, select 
+
+	Project Database --> Resource
+
+and enter first few letters of "la_downtown" into search box on RHS.
+Create a copy of the first la_downtown_ground_small_dev_resource by editing
+it (press pen icon) and then press the "Clone" button at bottom of webpage.
+Rename cloned resource on flyover admin as "la_downtown_pr_test_resource".
+
+2.  Press some quasi-random permutation of upper-right "X", "Disabled",
+"Submit" and "Save and Continue" buttons in order to delete unwanted shapes
+associated with new resource.
+
+
+*.  Can view disk space available on ssdws01, ssdws02, etc by choosing
+Utils -> Show File Systems on flyover admin page
+
+
+*.  Creating a "thumbs up/down" project within Flyover Admin
+
+   a.  Press Markup->Detection Project submenu
+
+   b.  Clone an existing "thumbs up/down" project such as Gustaf's
+	"markup_road_sign"
+
+
+*.  On 2/19/15, Viktor taught us that we can use c3-view to find an http
+address corresponding to a project database (existing within c3-view) as
+well as the project name.  
+
+pcho-MacPro:pcho% run_c3view 
+INFO   : Loading pwin settings from /startown-gpfs/ssdws03/conf/flyover-eufori.dcfg
+INFO   : started 2015-02-19 12:01:27 on "pcho-MacPro"
+INFO   : branch: master, rev: e5f54c532219d1bdd26b7e6dc45593e690ff8f29
+VERBOSE: Display bits per pixel: 32
+VERBOSE: Using project database: http://flyover.geo.apple.com/prjdb/FlightOps
+final db is http://flyover.geo.apple.com/prjdb/FlightOps/project/san_francisco_downtown_mercury/xml
+INFO   : Loading project "san_francisco_downtown_mercury" from "http://flyover.geo.apple.com/prjdb/FlightOps/project/san_francisco_downtown_mercury/xml"
+
+INFO   : Loading project "san_francisco_ground_dev_pr" from "http://flyover.geo.apple.com/prjdb/FlightOps/project/san_francisco_ground_dev_pr/xml"
+
+
+
+Plug project database and project name into pwin line commands such as 
+ 
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv -nowin -do \
+'pr rig_rectify -oc1c6c3c4 -nochk \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/san_francisco_downtown_mercury/xml \
+-prj san_francisco_downtown_mercury'
+
+*.  When creating a new markup project for human annotation of objects
+within rectified images, be sure to check the "Wkt format" box so that
+humans can enter polygons rather than bounding boxes.
+
+*.  When creating a new markup project for human annotation of objects
+within rectified images, be sure to press the "Import markup" button
+located at the bottom of the "Edit Markup Project" page in order to get
+rectified images to be seen by both flyover admin server as well as tagger.
+
+*.  On 2/20/15, we learned that hard and painful way that Markup Paths
+should contain no extra white spaces.  Flyover admin server tries exactly
+match input Markup Paths with actual subdirectories and will not find the
+latter if the former contains extra white spaces.
+
+*.  As of summer 2014 - winter 2015, need to keep number of images within
+"Markup Path" to less than O(100K) to avoid flyover admin server from
+failing to import too many images within a 45 second timeout window.
+
+*.  On 7/27/15, we attempted to downsize the bay_area_5k project from 53
+resources to a smaller bay_area_5k_hwy_280 project containing just 4
+resources which holds a superset of all rigs along the 5K stretch of I280.
+Use Flyover Admin --> Project Database --> Resource to create clone of the
+bay_area_650_ground_dev_3 resource list (which has 53 resources) to new
+bay_area_hwy_I280_5k resource list, and then manually remove all but the 4
+resources of interest.  Then clone bay_area_5k project to new
+bay_area_5k_Hwy_280 project, and then assign new resource list with 4
+resources to new project.
+
+BUT Vinay taught us that the new project must still be told about the
+explicit subdirectory location for bundled resources.  So when we use the
+new, smaller project, we must include the following argument within pwin
+command lines:
+
+	-rtag bay_area_650_ground_dev_3 
+
+This tells pwin to look for bundled resources within actual subdirs holding
+bundled info.
+
+e.g. 
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "rdn rdn_on_map  \
+-rtag bay_area_650_ground_dev_3 \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 "
+
+
+*.  bay_area_650_ground_dev_3 resource list contains 53 resources
+
+*.  bay_area_hwy_I280_5k resource list contains 4 resources which form a
+superset of the 2.3K rigs that lie along the 5K stretch of I280.  It has a
+snug shape file created by Peter on 7/29/15 called
+/startown-gpfs/ssdws03/conf/shapes/hwy_280_5k.shape .
+
+    bay_area_hwy_I101 resource list contains 10 resources which form
+superset of rigs lying along stretch of I101.  It has a snug shape file
+created by Peter on 7/29/15 called
+/startown-gpfs/ssdws03/conf/shapes/hwy_101.shape .
+
+
+   bay_area_hwy_I87 resource lists contains 14 resources which form superset
+of rigs lying along stretch of I87 .  It has a snug shape file created by
+Peter on 7/29/15 called /startown-gpfs/ssdws03/conf/shapes/hwy_87.shape . 
+
+
+*.  bay_area_5k_Hwy_280  = project with 4 bay_area_hwy_I280_5k resources
+    bay_area_5k_Hwy_101  = project with 10 bay_area_hwy_I101 resources
+    bay_area_5k_Hwy_87   = project with 14 bay_area_hwy_I87 resources
+
+*.  On 4/14/16, Weiyu showed us that the latest run IDs for various large
+jobs run on the distrib cluster are tabulated within Flyover Admin --> PR
+--> Run .  Look for projects with state = finished.
+
+*.  On 6/7/16, Vinay showed us how to disable a resource which has lidar
+data within a subdirectory that no longer exists on startown:
+
+  a.  Use Project Database page on Flyover Admin to find names of resources
+belonging to a project of interest (e.g. mathilda_20151027 resource belongs
+to  mathilda_20151027 project)
+
+  b.  Use Resource List page on Flyover Admin to find resource which may
+contain part of a substring (e.g. 20150501_152459-H35)
+
+  c.  Click on "disabled" button for the resource corresponding to lidar
+data that no longer exists.
+
+
+*.  On 6/7/16, we learned from Brian James that full paths to resources
+must be specified within the Flyover Admin Resource page:
+
+It looks like you were using the Imdata to add a resource. If you use this
+option, you have to specify the full path to the resource
+(i.e. /startown-gpfs/sputnik03/supersize/resource/123456_123445/20160505_123456-H97-imdata/)
+This is what you had: Instead, the easier method is to use the 'Imdata
+Docs’ option. With the ‘imdata docs’ the mongo database will be queried for
+that specific resource and Flyover-Admin will have knowledge of the full
+path to the resource:
+
+*.  We further learned from Brian James on 6/7/16 that bundle folders
+generally must be renamed when we create small project clones:
+
+When you clone a collected resource that has been bundled with another
+resource name (i.e. kh_sacramento -> created new resource
+kh_sacramento_test) the bundle file gets written under that specific
+resource name. So in this instance pwin doesn’t see that the collected
+resource is bundled because its looking for the bundle file under the new
+resource name. To get around that, you could create a soft link between the
+bundle_kh_sacramento folder (under the imdata folder) to
+bundle_kh_sacramento_test or whatever you want.
+
+

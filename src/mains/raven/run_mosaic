@@ -1,0 +1,3 @@
+/home/cho/programs/c++/svn/projects/src/mains/raven/mosaic \
+--newpass ./images/mini_IMG_2950.jpg \
+--newpass ./images/mini_IMG_3000.jpg 

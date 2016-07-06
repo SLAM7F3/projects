@@ -1,0 +1,16 @@
+~/bin/MAKE program=align_contour_vertices
+~/bin/MAKE program=calibrate_camera
+~/bin/MAKE program=f_from_vanishing_points
+~/bin/MAKE program=fix_TEL_contours
+~/bin/MAKE program=imagelines
+~/bin/MAKE program=model_bldgs
+~/bin/MAKE program=orthobldgs
+~/bin/MAKE program=planarize_TEL_contours
+~/bin/MAKE program=rectify_ground_photo
+~/bin/MAKE program=relative_pose
+~/bin/MAKE program=rocket
+~/bin/MAKE program=triangulate_features
+~/bin/MAKE program=vanishing_point
+~/bin/MAKE program=view_tel
+~/bin/MAKE program=writepackages
+

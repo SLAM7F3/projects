@@ -1,0 +1,8 @@
+/bin/rm ./calib_flirtime
+/bin/rm ./dbsauron
+/bin/rm ./flirsim
+/bin/rm ./GPS2KML
+/bin/rm ./gridcomp
+/bin/rm ./sauron
+/bin/rm ./sauron_client
+/bin/rm ./store_FLIR_metadata

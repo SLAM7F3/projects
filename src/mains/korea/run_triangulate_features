@@ -1,0 +1,7 @@
+./triangulate_features \
+--region_filename ./bundler/Korea/korea/packages/photo_0000.pkg \
+--region_filename ./bundler/Korea/korea/packages/photo_0001.pkg \
+--image_list_filename ./bundler/Korea/korea/image_list.dat
+
+# --newpass ./bundler/Korea/korea/images/ground_photo1.jpg  \
+# --newpass ./bundler/Korea/korea/images/ground_photo2.jpg  \

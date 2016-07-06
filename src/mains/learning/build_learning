@@ -1,0 +1,10 @@
+~/bin/MAKE program=cannon_kalman
+~/bin/MAKE program=collab_filter
+~/bin/MAKE program=display_table
+~/bin/MAKE program=letters
+~/bin/MAKE program=newsgroups
+~/bin/MAKE program=spam
+~/bin/MAKE program=tennis
+~/bin/MAKE program=testkalman
+~/bin/MAKE program=tictac2
+~/bin/MAKE program=voltage_kalman

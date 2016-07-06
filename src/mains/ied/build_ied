@@ -1,0 +1,6 @@
+~/bin/MAKE program=danger
+~/bin/MAKE program=enhance_scale
+# ~/bin/MAKE program=flight_path_orientation
+~/bin/MAKE program=ied
+# ~/bin/MAKE program=refine_ground
+~/bin/MAKE program=rotate_raw_data

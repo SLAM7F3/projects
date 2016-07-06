@@ -1,0 +1,5 @@
+/bin/rm ./consolidate
+/bin/rm ./fov
+/bin/rm ./new_fov
+/bin/rm ./relrot
+/bin/rm ./rot

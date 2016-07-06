@@ -1,0 +1,27 @@
+===========================================================================
+QuickSynergy notes
+===========================================================================
+Last updated on 3/22/11; 5/22/13
+===========================================================================
+
+*.  When ROBOT laptop boots up in S3-314, open a terminal window.  Then
+chant
+
+quicksynergy &
+
+*.  On Touchy2, need to also run quicksynergy as server.
+
+*.  Notes for ROBOT laptop:
+
+Normally when talking to BEAST:
+
+Under USE tab:
+
+server hostname = 155.34.162.244
+Screen name = 477479-MITLL.local
+
+When talking to G105 clone 
+
+server hostname = 155.34.162.148
+screen name = 477479-MITLL.local
+

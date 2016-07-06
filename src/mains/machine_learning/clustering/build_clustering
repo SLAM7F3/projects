@@ -1,0 +1,4 @@
+~/bin/MAKE program=crop_single_tcd_chips
+~/bin/MAKE program=extract_features
+~/bin/MAKE program=generate_file_list
+~/bin/MAKE program=random_reduce

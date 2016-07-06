@@ -1,0 +1,8 @@
+# Time   SignPost_ID   Passnumber   X  Y  Z  Label
+
+ 0.000  0  0        -29.0165        -9.0703         2.30
+              Unknown Dell
+ 0.000  1  0        -19.46117020       -0.2479157299         2.300000000
+                ? MAC address
+ 0.000  2  0        -18.80551147         5.957674026         2.100000000
+                Illicit WIFI

@@ -1,0 +1,429 @@
+-- =======================================================================
+-- Tables within IMAGERY database
+-- =======================================================================
+-- Last updated on 5/15/12; 6/26/12; 6/29/12
+-- =======================================================================
+
+DROP TABLE world_regions;
+
+CREATE TABLE world_regions
+(
+  ID serial NOT NULL,
+  world_region_ID integer,
+  name text,
+  description text,
+  UTM_zonenumber integer,
+  northern_hemisphere_flag integer,
+  min_longitude double precision,
+  max_longitude double precision,
+  min_latitude double precision,
+  max_latitude double precision,
+  min_altitude double precision,
+  max_altitude double precision,
+  CONSTRAINT world_regions_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE world_regions OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE campaigns;
+
+CREATE TABLE campaigns
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  name text,
+  description text,
+  world_region_id integer,
+  start_UTC timestamp,
+  start_epoch double precision,
+  stop_UTC timestamp,
+  stop_epoch double precision,
+  CONSTRAINT campaigns_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE campaigns OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE platforms
+
+CREATE TABLE platforms
+(
+  ID serial NOT NULL,
+  platform_ID integer,
+  name text,
+  description text,
+  CONSTRAINT platforms_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE platforms OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE platform_metadata;
+
+CREATE TABLE platform_metadata
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  platform_ID integer,
+  metadata_ID integer,
+  image_ID integer,
+  data_ID integer,
+  image_prefix text,
+  UTC timestamp,
+  epoch double precision,
+  longitude double precision,
+  latitude double precision,
+  altitude double precision,
+  yaw double precision,
+  pitch double precision,
+  roll double precision,
+  CONSTRAINT platform_metadata_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE platform_metadata OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE sensors
+
+CREATE TABLE sensors
+(
+  ID serial NOT NULL,
+  sensor_ID integer,
+  name text,
+  description text,
+  CONSTRAINT sensors_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE sensors OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE sensor_metadata;
+
+CREATE TABLE sensor_metadata
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  sensor_ID integer,
+  metadata_ID integer,
+  image_ID integer,
+  data_ID integer,
+  status integer,
+  x_posn double precision,
+  y_posn double precision,
+  z_posn double precision,
+  az double precision,
+  el double precision,
+  roll double precision,
+  horiz_fov double precision,
+  vert_fov double precision,
+  focal_param double precision,
+  u0 double precision,
+  v0 double precision,
+  CONSTRAINT sensor_metadata_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE sensor_metadata OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE missions;
+
+CREATE TABLE missions
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  name text,
+  description text,
+  start_UTC timestamp,
+  start_epoch double precision,
+  stop_UTC timestamp,
+  stop_epoch double precision,
+  min_longitude double precision,
+  max_longitude double precision,
+  min_latitude double precision,
+  max_latitude double precision,
+  min_altitude double precision,
+  max_altitude double precision,
+  CONSTRAINT missions_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE missions OWNER TO postgres;
+
+
+
+
+-- =======================================================================
+DROP TABLE images;
+
+CREATE TABLE images
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  platform_metadata_ID integer,
+  sensor_metadata_ID integer,
+  image_ID integer,
+  importance integer,
+  timeslice_number integer,
+  UTC timestamp,
+  epoch double precision,
+  URL text,
+  npx integer,
+  npy integer,
+  thumbnail_URL text,
+  thumbnail_npx integer,
+  thumbnail_npy integer,
+  mask_URL text,
+  CONSTRAINT images_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE images OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE image_attributes;
+
+CREATE TABLE image_attributes
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  image_ID integer,
+  datum_ID integer,
+  key text,
+  value text,
+  CONSTRAINT image_attributes_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE image_attributes OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE image_attribute_metadata;
+
+CREATE TABLE image_attribute_metadata
+(
+  ID serial NOT NULL,
+  key text,
+  value text,
+  default_value text,
+  value_type text,
+  CONSTRAINT image_attribute_metadata_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE image_attribute_metadata OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE image_annotations;
+
+CREATE TABLE image_annotations
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  image_ID integer,
+  datum_ID integer,
+  U double precision,
+  V double precision,
+  label text,
+  color text,
+  importance integer,
+  creation_time timestamp,
+  creation_epoch double precision,
+  annotator_name text,
+  CONSTRAINT image_annotations_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE image_annotations OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE sift_matches;
+
+CREATE TABLE sift_matches
+(
+  ID serial NOT NULL,
+  campaign_ID1 integer,
+  mission_ID1 integer,
+  image_ID1 integer,
+  feature_ID1 integer,
+  campaign_ID2 integer,
+  mission_ID2 integer,
+  image_ID2 integer,
+  feature_ID2 integer,
+  CONSTRAINT sift_matches_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE sift_matches OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE graph_hierarchies;
+
+CREATE TABLE graph_hierarchies
+(
+  ID serial NOT NULL,
+  graph_hierarchy_ID integer,
+  name text,
+  description text,
+  n_graphs integer,
+  n_levels integer,
+  n_connected_components integer,
+  CONSTRAINT graph_hierarchies_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE graph_hierarchies OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE graphs;
+
+CREATE TABLE graphs
+(
+  ID serial NOT NULL,
+  graph_hierarchy_ID integer,
+  graph_ID integer,
+  level integer,
+  parent_graph_ID integer,
+  n_nodes integer,
+  n_links integer,
+  CONSTRAINT graphs_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE graphs OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE connected_components;
+
+CREATE TABLE connected_components
+(
+  ID serial NOT NULL,
+  graph_hierarchy_ID integer,
+  graph_ID integer,
+  level integer,
+  connected_component_ID integer,
+  n_nodes integer,
+  n_links integer,
+  CONSTRAINT connected_components_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE connected_components OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE nodes;
+
+CREATE TABLE nodes
+(
+  ID serial NOT NULL,
+  graph_hierarchy_ID integer,
+  graph_ID integer,
+  connected_component_ID integer,
+  node_ID integer,
+  parent_node_ID integer,
+  data_ID integer,
+  color text,
+  relative_size double precision,
+  gx double precision,
+  gy double precision,
+  gx2 double precision,
+  gy2 double precision,
+  gx3 double precision,
+  gy3 double precision,
+  label text,
+  CONSTRAINT nodes_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE nodes OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE links;
+
+CREATE TABLE links
+(
+  ID serial NOT NULL,
+  graph_hierarchy_ID integer,
+  graph_ID integer,
+  link_ID integer,
+  source_node_ID integer,
+  target_node_ID integer,
+  directed boolean,
+  weight double precision,
+  color text,
+  relative_size double precision,
+  CONSTRAINT links_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE links OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE graph_annotations;
+
+CREATE TABLE graph_annotations
+(
+  id serial NOT NULL,
+  graph_hierarchy_ID integer,
+  graph_ID integer,
+  level integer,
+  layout integer,
+  gx double precision,
+  gy double precision,
+  label text,
+  color text,
+  size double precision,
+  creation_time timestamp without time zone,
+  creation_epoch double precision,
+  annotator_name text,
+  CONSTRAINT graph_annotations_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE graph_annotations OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE image_color_histograms;
+
+CREATE TABLE image_color_histograms
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  image_ID integer,
+  datum_ID integer,
+  red_frac double precision,
+  orange_frac double precision,
+  yellow_frac double precision,
+  green_frac double precision,
+  blue_frac double precision,
+  purple_frac double precision,
+  black_frac double precision,
+  white_frac double precision,
+  grey_frac double precision,
+  brown_frac double precision,
+  primary_color text,
+  secondary_color text,
+  tertiary_color text,
+  CONSTRAINT image_color_histograms_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE image_color_histograms OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE image_faces;
+
+CREATE TABLE image_faces
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  mission_ID integer,
+  image_ID integer,
+  datum_ID integer,
+  center_U double precision,
+  center_V double precision,
+  radius double precision,
+  CONSTRAINT image_faces_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE image_faces OWNER TO postgres;

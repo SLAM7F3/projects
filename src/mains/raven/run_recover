@@ -1,0 +1,3 @@
+./recover_fundamental \
+--region_filename ./bundler/kermit/packages/photo_0000.pkg \
+--region_filename ./bundler/kermit/packages/photo_0002.pkg 

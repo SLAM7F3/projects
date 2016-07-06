@@ -1,0 +1,26 @@
+./threatmap.jpg
+--video_corner_vertex  226201.903611 3377156.69168 9922
+--video_corner_vertex 1226201.9      3377156.69168 9922
+--video_corner_vertex 1226201.9      4485422.28217  9922
+--video_corner_vertex  226201.903611 4485422.28217  9922
+
+
+# ./skymap.png
+
+# --longitude_lo 66
+# --longitude_hi 68
+# --latitude_lo 35
+# --latitude_hi 37
+
+
+# 226201.903611 
+# 401295.266515 
+
+# 3877156.69168 
+# 4085422.28217 
+
+
+# --video_corner_vertex 226279 3769952 9922
+# --video_corner_vertex 404955 3769952 9922
+# --video_corner_vertex 404955 3978266 9922
+# --video_corner_vertex 226279 3978266 9922

@@ -1,0 +1,25 @@
+~/bin/MAKE program=basement
+~/bin/MAKE program=earth
+~/bin/MAKE program=earthscene
+~/bin/MAKE program=filter_probs
+~/bin/MAKE program=generate_test_points
+~/bin/MAKE program=justearth
+~/bin/MAKE program=p2rgba
+~/bin/MAKE program=predator
+~/bin/MAKE program=quadpoints
+~/bin/MAKE program=racetrack
+~/bin/MAKE program=raytrace
+~/bin/MAKE program=rgba2array
+~/bin/MAKE program=satcities
+~/bin/MAKE program=scenegraph
+~/bin/MAKE program=testcities
+~/bin/MAKE program=testpyramids
+~/bin/MAKE program=testtexture
+~/bin/MAKE program=viewcities
+~/bin/MAKE program=viewpoints
+~/bin/MAKE program=viewpolyhedra
+~/bin/MAKE program=viewpyramids
+~/bin/MAKE program=viewrace
+~/bin/MAKE program=viewtexture
+~/bin/MAKE program=virtual_camera
+

@@ -1,0 +1,308 @@
+=============================================================================
+Road network notes
+=============================================================================
+Last updated on 9/11/15; 9/23/15; 10/11/15; 10/16/15
+=============================================================================
+
+*.  SNO data model road segment nomenclature:
+
+seg_id	--> Labels (generally) bi-directional traffic flows along
+	    roadways.  But if a major road is separated by a physical
+	    median barrier, both sides of the street may be assigned
+            independent seg_id's
+
+lane_info_idx  -->  Labels traffic flows along one side of a roadway.
+		    More than one lane_info_idx may exist for traffic flows
+ 		    along major streets
+
+lane_idx  -->  Labels individual lanes along one side of a street.
+
+
+*.  Flyover tile coordinate conventions as of May 2015:
+
+	tile_x, tile_y are integers labeling a particular tile
+	X = UTM northing and Y = UTM easting
+
+*.  Tile level	  Physical size in meters
+
+	16		31.875
+	15		63.75
+	14		127.5
+
+*.  New building project output exported to subdirs of 
+
+	/startown-gpfs/ssdws03/devdata/san_francisco/new_building_road_export
+
+
+*.  First "prep" step for Jeff Hultquist's road network generator:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-da c3 build_navgraph -prep -debug \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_27_add_jobs_150425_181437_36BA.xml \
+-iprj san_francisco_city3_fused_27 \
+-oprj city3_fused_27_export -subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/omni/export_20150425_20-45-19.shape
+
+Output exported to
+
+/startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/navgraph/navgraph.rigdata
+
+*.  Second "make" for Jeff's road network generator (repeat for as many
+tiles as desired):
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-da c3 build_navgraph -make \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_27_add_jobs_150425_181437_36BA.xml \
+-iprj san_francisco_city3_fused_27 \
+-oprj city3_fused_27_export -subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/omni/export_20150425_20-45-19.shape \
+-area2  13 2462 3511 2462 3511
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-da c3 build_navgraph -make \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_27_add_jobs_150425_181437_36BA.xml \
+-iprj san_francisco_city3_fused_27 \
+-oprj city3_fused_27_export -subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/omni/export_20150425_20-45-19.shape \
+-area2  13 2463 3511 2463 3511
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-da c3 build_navgraph -make \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_27_add_jobs_150425_181437_36BA.xml \
+-iprj san_francisco_city3_fused_27 \
+-oprj city3_fused_27_export -subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/omni/export_20150425_20-45-19.shape \
+-area2  13 2462 3512 2462 3512
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-da c3 build_navgraph -make \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_27_add_jobs_150425_181437_36BA.xml \
+-iprj san_francisco_city3_fused_27 \
+-oprj city3_fused_27_export -subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/omni/export_20150425_20-45-19.shape \
+-area2  13 2463 3512 2463 3512
+
+*.  Third "join" step for Jeff's road network generator
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-da c3 build_navgraph -join  \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_27_add_jobs_150425_181437_36BA.xml \
+-iprj san_francisco_city3_fused_27 \
+-oprj city3_fused_27_export -subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_27_export/omni/export_20150425_20-45-19.shape
+
+
+*.  Human-generated road lanes created via fixit/ArcGIS are accessible via
+flyover admin --> Fixit --> Binary Build
+
+Look at latest entries on C3 wiki page --> Road Network --> Build
+
+e.g. [06/03/15, morning]
+
+ESRI  : KH-With-Lanes-20150602-waypoints
+
+fixit : KH-With-Lanes-20150602-waypoints-edited 
+
+Click on edit (pen) icon.  Then click "Download avro c-compatible" button.
+
+
+*.  In order to generate an AVRO file containing road lane/traffic control
+device associations which the customer group can import (presumably into
+their ESRI GIS tools), we need to run the 3D RDN gui:
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'rdn_restore /data/peter_stuff/road_networks/lanes/scripts/dump_files/map_13_2283_3647.dump \
+-exdm /startown-gpfs/ssdws03/devdata/traffic_control_associations/Esri-201506081526_test21_new \
+-sign_assoc_file /startown-gpfs/ssdws03/devdata/traffic_control_associations/lane_roadsign_associations_friday.txt \
+-ver 5'
+
+After window appears, press "F1" in order to see road network graph.
+(Make sure F-lock button is toggled on our keyboard.)  Press "F8" in order
+to import road lane/tcd associations text file.  Then press "cntrl-d" to
+visualize detections and association line segments in 3D gui.  Finally,
+press "F9" to export final AVRO which will have an "_out" suffix.  
+
+*.  Jeff Hultquist's ortho image generation procedure:
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -v -nowin -do1 'c3 build_navgraph -make -ortho \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/jhultquist_san_francisco_city3_fused_31_add_jobs_150716_165332_15A6.xml \
+-iprj san_francisco_city3_fused_31 -oprj city3_fused_31_navmesh \
+-subst_out navgraph \
+-xshp /startown-gpfs/ssdws03/devdata/san_francisco/city3_fused_31_navmesh/omni/export_20150716_175340.shape \
+-lev 16 -area2  16 40212 10481 40212 10483 '
+
+
+If -iprj = -oprj, then both can be treated as -prj
+
+-oprj = output project name where tiles are in mercator rather than UTM
+-iprj = input project name where tiles are in UTM
+
+
+-subst_out  = name of output folder
+-xshp = can maybe be left off
+-lev = only used for join phase (can maybe be ignored)
+
+
+*.  After Jeff pushed some simplifications to his ortho imagery generation
+codes on his last day in the flyover group, the following two commands
+could be used to create ortho image tiles:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -v -nowin -do1 'c3 build_navgraph -prep \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/mathilda_0502-2018/xml \
+-prj mathilda_0502-2018 \
+-area2  14 4572 7296 4573 7296 '
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -v -nowin -do1 'c3 build_navgraph -make -ortho \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/mathilda_0502-2018/xml \
+-prj mathilda_0502-2018 \
+-area2  14 4572 7295 4573 7296 '
+
+
+Output ortho images exported to subdirs of
+/startown-gpfs/sputnik04/supersize/data/cupertino/mathilda_0502-2018/navgraph/img/
+
+*.  Various default parameters for ortho tile generation are hardwired into 
+rn_nav_set_version() within rn_nav_versions.c:
+
+In particular, we have reset 
+
+raster_x_size = raster_y_size = 4096
+
+raster_gutter = 128 (overlap between tiles)
+
+src_tile_level = 16 (finest level for src tiles)
+
+*, On 9/8/15, Abhishek told us that the SNOW data model specifications are
+encoded within the prototxt files sitting in /sputnik/pwin/lib/rdn/dm/ .  
+Road barrier info is mentioned wtihin 
+
+Enums.proto
+PeripheralLandmark.proto
+RoadSegmentEnd.proto
+RoadSegmentSide.proto
+
+ enum BarrierType {
+    UNKNOWN = 0; // don't know type, but there is a barrier
+    CURB = 1;
+    JERSEY_BARRIER = 2;  (Major concrete barrier separating different highway sides)
+    GUARD_RAIL = 3;	 (Relatively thin metal barriers along sides of highways)
+    WALL = 4;
+    FENCE = 5;
+    HEDGE = 6;
+    POSTS = 7; // a series of posts
+    PLANTERS = 8;
+  }
+
+
+*.  Markup projects for barriers:
+
+20150804_Hwy_280_5k_lane  (Weiyu)  [Human markups completed]
+
+20150812_Hwy_280_5k_ortho (John)
+
+Weiyu suggests working with the following TCD markup projects that contain
+O(200K) diverse images:
+
+   20150821_TCD_marking
+   20150826_TCD_marking
+
+   20150909_lanes_barriers_a
+
+*.  Tho recommends looking at output of deeplab model 40101 on Hwy 650K
+images to see how well they actually find barriers.
+
+    // Version 40101 (Deeplab network with VGG-16 trained on Flyover markup
+    // project 20150804_Hwy_280_5k_lane with large FOV and CRF)
+    case 40101:
+      strcpy(semseg->model_dir, "/startown-gpfs/ssdws03/devdata/pr_models/"
+          "lane_seg/20150814_deeplab");
+      semseg->poly_sim_thres = 2.0;
+      semseg->use_tiling = 1;
+      break;
+
+*.  Text files containing 4 stop/yield manually-identified associations and
+984 automatic peripheral landmark associations with lanes for 5K stretch of
+Hwy 280 sit in 
+/startown-gpfs/ssdws03/devdata/traffic_control_associations/20150911_M2_delivery
+
+
+*.  Project for (probably most of) 650K region surrounding San Francisco
+Bay:
+
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k-2/xml \
+-prj bay_area_5k-2 \
+
+*.  Smaller project for 5K region along Hwy 280:
+
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 \
+
+*.  As of 10/11/15, latest XDM files are downloadable from flyover admin.
+Click on Fixit -> Binary Build -> Download avro c-compatible.
+
+
+*.  In order to generate an RDN "map dump" (as opposed to a 'stage' dump),
+use pwin command such as
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-nowin -do 'dump_build -prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/5k_kmz_2-dev-gpu-test/xml \
+-prj 5k_kmz_2-dev-gpu-test -area 13 1 2274 3617 \
+--preset rdn_margin -o /data/peter_stuff/road_networks/dump/scripts/'
+
+*.  On 10/27/15, we ran into problems with generating an RDN "map dump" for
+a tile of interest to John Wood.  Ibrahim suggested that we add various
+"nochk" options in which case the following command did work:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-nowin -do 'dump_build \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/M5-old/xml \
+-prj M5-old \
+-area 13 1 2450 3581 \
+-o /data/peter_stuff/road_networks/dump/scripts/  -nochk -nodb --preset rdn_margin '
+
+
+*.  In order to run RDN gui using a previously generated "map dump", use
+pwin command such as
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'rdn_restore /data/peter_stuff/road_networks/dump/scripts/map_13_2274_3617.dump \
+-ver 2000'
+
+Once gui comes up, press "F1" to run initialization stage.  A point cloud
+should subsequently appear within pwin window.  (Can later press "cntrl p"
+to toggle point cloud on/off.)
+
+Press "F2" to run preprocessing stage.  After F2 stage completes
+processing, we should be able to press "cntrl o" and see orthoimages within
+pwin window.  Also should be able to press "esc s" to toggle on/off
+semantic segmentations superposed on ortho images.
+
+Press "esc x", then chant "dump stageN".  Output from stage N is then
+exported to subdirectory "stageN".  
+
+Later, we should be able to import dumped information via pwin command such
+as 
+
+ver 18 :  Doesn't have any dependence on semantic segmentation
+
+ver 2000:  As of 10/16/15, this is the latest version which should
+ incorporate semantic segmentation
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'rdn_restore stage1 \
+-ver 2000'
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'rdn_restore stage2 \
+-ver 2000'
+
+*.  On 10/16/15, Ibrahim told us that he believes mesh texture is NOT saved
+when a stage 1 dump is performed.  Therefore, importing a stage 1 dump and
+then next performing stage 2 preprocessing will NOT yield colored
+ortho-rectified images.

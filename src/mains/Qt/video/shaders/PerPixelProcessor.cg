@@ -1,0 +1,143 @@
+#include "ColorSpaceUtils.cgh"
+
+interface PerPixelProcessor
+{
+	float4 process( float4 input );
+};
+
+struct PassthroughProcessor : PerPixelProcessor
+{
+	float4 process( float4 input )
+	{
+		return input;
+	}
+};
+
+struct RGBA2LabAProcessor : PerPixelProcessor
+{
+	float4 process( float4 input )
+	{
+		return rgba2laba( input );
+	}
+};
+
+struct LabA2RGBAProcessor : PerPixelProcessor
+{i
+	float4 process( float4 input )
+	{
+		return laba2rgba( input );
+	}
+};
+
+// input is LabA
+// output.x is log( L ) channel, scaled to between 0 and 100 // TODO: not exactly, bottom isn't 0...
+// output.yzw = input.yzw
+struct LogLabAProcessor : PerPixelProcessor
+{
+	float4 process( float4 input )
+	{
+		float outputL = logL( input.x );
+		return float4( outputL, input.yzw );
+	}
+};
+
+// L only
+struct ExpLabAProcessor : PerPixelProcessor
+{
+	float4 process( float4 input )
+	{
+		float outputL = expL( input.x );
+		return float4( outputL, input.yzw );
+	}
+};
+
+// input is RGBA
+// output is llll, l = dot product luminance
+struct RGBA2LuminanceProcessor : PerPixelProcessor
+{
+	float4 process( float4 input )
+	{
+		return rgba2Luminance( input );
+	}
+};
+
+// TODO: move these to ColorSpaceUtils.cgh
+
+#define LOG_LUMINANCE_EPSILON 0.1
+#define LOG_LUMINANCE_MIN ( log( LOG_LUMINANCE_EPSILON ) )
+#define LOG_LUMINANCE_RANGE ( log( 1.0 + LOG_LUMINANCE_EPSILON ) - LOG_LUMINANCE_MIN )
+
+struct LogLuminanceProcessor : PerPixelProcessor
+{
+	float4 process( float4 input )
+	{		
+		float logLuminance = log( input.x + LOG_LUMINANCE_EPSILON ); // between log( eps ) and log( 1 + eps )
+		float scaledLogLuminance = ( logLuminance - LOG_LUMINANCE_MIN ) / LOG_LUMINANCE_RANGE;			
+		return scaledLogLuminance;
+	}
+};
+
+
+// Performs a composition of per pixel operations
+// over each sampler
+// and sums over the results
+// given functions f1, f2, ..., fn
+// scales a1, a2, ..., am
+// and inputs x1, x2, ..., xm
+// output y = sum( a_i * fn( fn-1( ... ( f2( f1( xi ) ) ) ) ), i from 1 to m )
+
+void process( uniform samplerRECT inputSamplers[],
+			 uniform float4 scales[],
+			 uniform PerPixelProcessor processors[],
+			 
+			 float2 xy : WPOS,
+			 
+			 out float4 colorOut : COLOR )
+{
+	float4 sum = 0;
+	
+	for( int i = 0; i < inputSamplers.length; ++i )
+	{
+		float4 output = texRECT( inputSamplers[ i ], xy );
+		
+		for( int j = 0; j < processors.length; ++j )
+		{
+			output = processors[ j ].process( output );
+		}
+		
+		sum += scales[ i ] * output;
+	}
+
+	colorOut = sum;
+}
+
+
+void combine( uniform samplerRECT basePrimeSampler,
+			 uniform samplerRECT detailSampler,
+			 uniform samplerRECT texturenessPrimeSampler,
+			 uniform samplerRECT texturenessBasePrimeSampler,
+			 uniform samplerRECT texturenessDetailSampler,
+			
+			 float2 xy : WPOS,
+			
+			 out float4 colorOut : COLOR )
+{
+	float basePrime = texRECT( basePrimeSampler, xy ).x;
+	float detail = texRECT( detailSampler, xy ).x;
+	float texturenessPrime = texRECT( texturenessPrimeSampler, xy ).x;
+	float texturenessBasePrime = texRECT( texturenessBasePrimeSampler, xy ).x;
+	float texturenessDetail = texRECT( texturenessDetailSampler, xy ).x;
+	
+	float rho = max( 0, ( texturenessPrime - texturenessBasePrime ) / texturenessDetail );
+	float logLOut = basePrime + rho * detail;	
+	float linearLOut = expL( logLOut );
+		
+	// colorOut = laba2rgba( float4( linearLOut, 0, 0, 1 ) );
+	colorOut = saturate( linearLOut / 100 );
+	
+	// works
+	// colorOut = texturenessDetail;
+	
+	// works
+	// colorOut = basePrime / 100;
+}

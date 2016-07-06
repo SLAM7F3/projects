@@ -1,0 +1,212 @@
+============================================================================
+Notes for running Baghdad demo
+============================================================================
+Last updated on 9/2/08; 9/8/08; 9/11/08; 9/29/08
+============================================================================
+
+TOUCHY2 NOTES:
+
+A0.  Use bottom left DVI connector.  When connecting to large Sharp
+monitors, need to set monitors to DVI mode.  
+
+A1.  Must restart X (e.g. by rebooting machine) in order for X to
+communicate with large monitor!
+
+A2.  Need to start Michael Yee's traveling salesman script by chanting
+run_startup_scrit within
+/home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS/KTSP_Sep8
+
+
+----------------------------------------------------------------------------
+FEELY NOTES
+
+B1.  As of late August, we needed to hold down the ALT key (on a windows
+keyboard) when Feely booted in order to see a disk selection menu.  We then
+needed to choose HDC to boot into the future classified disk.  
+
+As of early September, Feely boots by default into the future classified
+disk.
+
+B2.  In order to access networks on Feely, we need to chant 
+
+system preferences -> network.  Then choose whichever ethernet connection is
+active.  (Recall that Feely has 2 ethernet cards.)
+
+B3.  Pressing windows-space bar brings up a search utility.
+
+B4.  <---> in lower left (or virtual machine -> network -> host-only) ???
+
+B5.  Click on VMWARE icon (which looks like a set of interlocked squares)
+docked at bottom of screen to resume the virtual XP machine.
+
+B6.  Be sure to turn off McAffee firewall within virtual XP machine before
+attempting to run DiamondTouch on Feely.
+
+B7.  Windows key-H hides windows (e.g. Virtual Machine window)
+
+B8.  To bring up Ross' DiamondTouch portal client on Feely, chant
+finder->applications->dt-portal-client.
+
+----------------------------------------------------------------------------
+GOOGLE EARTH NOTES
+
+C1.  On Feely, Google Earth cache files dBcache.dat and dBcache.dat.index
+go into cho/Library/Caches/GoogleEarth/.  dbCache_baghdad.dat and
+dbCache_baghdad.dat.index sit in ~cho in case the files in
+/Library/Caches/GE get wiped out.
+
+C2.  Google Earth may need to be run at least once with internet
+connectivity before it will see cache files when working off-line.
+
+C3.  When running Ross' DiamondTouch client on Feely, we need to use
+Eyeglass rather than Google Earth mode in order to enable right clicking
+via a 2 finger touch on the DiamondTouch.  This is necessary for Tim
+Schreiner's GE query page.  Tilting and spinning of GE 3D map then has to
+be performed via built-in controls located on the upper RHS of GE display.
+
+C4.  Startup procedure for Tim Schreiner's Google Earth query tool
+
+bash
+su admin
+cd /Library/StartupItems/Tomcat
+./Tomcat stop
+./Tomcat start
+
+C5.  To check whether Tomcat is successfully running Tim Schreiner's
+warfile on Feely, open a browser window and navigate it to
+http://localhost:8080/RCOBaghdad.  Tomcat itself is located in
+/usr/local/apache-tomcat-6.0.18 on Feely.
+
+C6.  Click on GoogleEarth icon docked at bottom of screen in order to start
+GoogleEarth on Feely.
+
+----------------------------------------------------------------------------
+PRIVATE NETWORK NOTES
+
+D1.  Static IP assignment when 3 classified computers run on private
+network:
+
+	Feely: 192.168.1.100
+	Touchy2: 192.168.1.101
+	Windows XP laptop: 192.168.1.102
+
+When running Feely on private network, use its port #2.  Plug ethernet
+cable into the #2 jack located on the RHS of Feely's back plate.
+
+D2.  Firewall on Feely blocks pinging from touchy2.  But we can still ssh
+from touchy2 into feely, and feely should be able to see ActiveMQ server on
+touchy2.
+
+D3.  Be sure to comment out all entries in /etc/resolv.conf.  Copy
+/etc/network/interfaces_private onto interfaces.  When off private network,
+recopy interfaces_dhcp onto interfaces.
+
+D4.  On 9/11/08, we experienced inexplicable networking failues with
+touchy2 when connected to the private network.  Eth0 assignment to
+192.168.1.101 would spontaneously fail.  We rebooted touchy2 with its
+ethernet cable connected to the netgear ethernet switch.  We're crossing
+our fingers that this makes the bad problem go away...
+
+============================================================================
+
+BAGHDAD DEMO SCRIPT
+
+For the 9/24/08 RCO demo, we need to carefully start off our QTCITIES so
+that it does not crash during the middle of the demo!
+
+........................................................................
+Reactive UAV path planning part of demo
+........................................................................
+
+1.  Set ascii window output as a small screen above the firefox web browser
+button windows on the main G104 conference room screen.  Do NOT attempt to
+put the ascii screen on a second desktop and to toggle betwewen windows
+using cntlr-alt-(right or left) arrow.  Mouse control then freezes up
+within the OSG window!  Instead, just hide the ascii OSG output underneath
+the OSG window itself and refer to that window when necessary.
+
+2.  Make sure to press semicolon "l" a few times.  Make certain that
+"Toggling movie from on to off" message appears in QTICITES window.
+
+3.  Press "+" 2 times so that the Animation dely value equals 0.1.  The be
+sure to restart the movie player at frame 0.  Leave the animation delay
+value at 0.1 for entire demo.
+
+4.  After Tim broadcasts his ~20 ground targets, first manually instantiate
+one UAV path to make the point that picking a  UAV flight path among ~20
+ground targets is non-trivial.
+
+5.  Press COMPUTE_PATH button to show auto-generated flight path for first
+UAV.  
+
+6.  Instantiate 2nd and 3rd UAV and show their auto-generated flight paths
+BEFORE starting the game clock.
+
+7.  Before 100 frames have passed, instantiate the 4th UAV.
+
+8.  Zoom in towards some UAV and show how ROIs change color as they are
+"serviced".
+
+9.  Select 2nd UAV (dark blue path) and clear its path.  This models
+downing/withdrawal of a UAV from the battle space.  Recompute paths of
+remaining 3 UAVs.  This shows system reacting to a UAV withdrawal.  
+
+10.  After Tim manually enters 2 or 3 new ground targets and broadcasts
+them to our application, automatically recompute UAV paths.  This shows
+system reacting to pop-up targets which appear after mission is underway.
+
+[ 11.  For some UAV, press SELECT PATH button followed by ALTER PATH
+button.  Then press ENTER PATH button.  Enter a few new waypoints to edit
+an auto-generated flight path.  Double click to terminate editing of flight
+path.  This shows that a human operator can override or change an
+automatically generated flight path.]
+
+........................................................................
+Constant Hawk video part of demo
+........................................................................
+
+1.  Clear all UJAV paths as well as all ROIs.
+
+2.  Reset game clock to zero.
+
+3.  Make sure to press semicolon ";" a few times.  Make certain that
+"Toggling movie from off to on" message appears in QTCITIES window.
+
+4.  After Tim describes CH metadata, fade CH imagery in and out with up and
+down arrow keys.  Demonstrate how video has been georegistered with
+underlying map layer.
+
+5.  Press fast forward (double right arrow) button to jump to frame 2127
+(UTC=9:15:54.50) of CH video.
+
+6.  Point out event area and pay attention to traffic flow before and after
+event.
+
+7.  Stop CH movie and reset movie player to frame 0 BEFORE instantiating
+new UAV model!
+
+8.  Press ENTER PATH button and manually construct UAV path that follow
+major highways withn video.  Then press semicolon ";" twice to toggle movie
+off then on again.  Video chip at base of predator OBSFRUSTUM should
+appear, but rest of CH video should be transparent.
+
+9.  Main point to make for this part of demo is georegistering emulated UAV
+video with background map supplies useful context which makes video data
+much more interpretable.  Other static layers such as GIS can also transfer
+high-level knowledge into dynamic video output.
+
+
+----------------------------------------------------------------------------
+LUCA'S UAV TASK ASSIGNMENT NOTES
+
+E0.  When Windows laptop is running on private network, make sure all
+firewalls are disabled.  See note A0 above.
+
+E1.  Start Matlab by double clicking icon on desktop (or by simply chanting
+matlab on command line)
+
+E2.  Use Matlab menu form to change subdirectory to AVS/Version3_1_LL
+
+E3.  Chant "setup_initialization" in main matlab window to invoke
+setup_initialization.m file.  This initialization file sets up MatlabMQ.
+

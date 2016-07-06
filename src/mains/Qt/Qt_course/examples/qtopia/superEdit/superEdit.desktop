@@ -1,0 +1,9 @@
+[Desktop Entry]
+Comment=Our Super Editor
+Comment[no]=Skide go editor
+Exec=superEdit
+Icon=superEdit
+Type=Application
+Name[en]=Super Edit
+Name[no]=Fantasktisk
+MimeType=text/*

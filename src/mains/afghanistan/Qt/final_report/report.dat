@@ -1,0 +1,512 @@
+=============================================================================
+Final report outline
+=============================================================================
+Last updated on 2/22/11; 3/15/11; 3/16/11
+=============================================================================
+
+	Line-Of-Sight Tool (LOST) for Aerial Mission Planning
+
+Abstract:
+
+Maintaining wide-area persistent surveillance within rugged terrain is
+challenging for non-nadir looking airborne sensors.  In particular, Ground
+Moving Target Indication (GMTI) systems in the air can suffer track loss
+when their lines-of-sight to objects on the earth are occluded by
+mountains.  To help plan flight routes through viewing obstacle courses
+which maximize sensor time on ground regions of interest, we have developed
+a raytracing software tool that runs in near real-time.
+
+This report decribes how user input to LOST occurs via a simple web
+interface, while instantaneous and time-averaged shadowing information are
+displayed via 3D graphics.  LOST generates visibility "skymaps" which guide
+both manual and automated flight path planning.  Algorithmic strategies
+developed by MIT's Aerospace Controls Lab use such skymaps to rapidly
+estimate optimal elliptical and race-track orbits for airborne sensors
+surveilling mountainous terrain.
+
+We close with possible extensions to LOST which could be pursued in the
+future.  They include netcentric flight planning, computer hardware
+virtualization and ladar imagery incorporation.
+
+1.  Introduction
+
+Asymmetric conflicts around the world often take place in physically
+challenging environments.  Terrorists and insurgents take advantage of
+rugged terrains to hide from overhead surveillance platforms.
+Reconnaissance performance for low-flying, horizon-looking sensors such as
+Ground Moving Target Indicators (GMTI) and Synthetic Aperature Radar (SAR)
+imagers can significantly degrade in mountainous territory where ground
+target occlusion frequently occurs.  Mission planning for persistent aerial
+surveillance systems consequently must take 3D terrain into account.
+
+In this report, we present a software package which was designed to meet
+this tactical need.  In response to a request from the US Navy Advanced
+Sensor Technologies Office, Lincoln Laboratory developed the Line-Of-Sight
+Tool (LOST) in 2009-2010.  This tool combines 3D terrain data, ground and
+air situation controls, raytracing algorithms, and manual plus automated
+flight planning capabilities to assist with complex aerial mission
+preparations.
+
+LOST is based upon Digital Terrain Elevation Data (DTED) level-2 terrain
+maps (30 meter postings) which are bundled together with its software.
+LOST currently has 3D maps for six different regions of the world:
+
+   Afghanistan and Pakistan
+
+   Arizona, California, Nevada and Utah
+
+   Colorado, Kansas, New Mexico, Oklahoma and Texas
+
+   Horn of Africa
+
+   Iraq
+
+   North and South Korea.
+
+These data were collected by a specially modified radar system that flew
+onboard the Space Shuttle Endeavour during an 11-day mission in February of
+2000 [1].  Over the course of the Shuttle Radar Topography Mission,
+height maps for most of the earth's visible landmass were generated.  A
+representative example of LOST's 3D terrain data is pictured in figure 1.
+
+The 3D imagery in the figure are colored on a rainbow palette according to
+altitude above sea level measured in kilofeet.  Black gaps in the DTED map
+indicate missing shuttle radar data.  The terrain elevation data are fused
+with panchromatic satellite imagery.  LOST's 3D maps are consequently
+colored according to HSV rather than RGB coordinates.  Hue correlates with
+ground altitude, while saturation and value come from satellite
+eletro-optical images.
+
+A LOST user can manipulate the fused terrain data within a 3D viewer
+window.  The thick client software underlying the 3D viewer is based upon a
+set of C++ libraries written on top of OpenGL called OpenSceneGraph [2].
+OpenSceneGraph enables user navigation through large 3D maps via mouse
+controls which intentionally mimic translation, rotation and zooming
+movements familiar from the popular Google Earth application [3].  Custom
+LOST libraries build upon OpenSceneGraph and currently run only under the
+Linux operating system.  So as of the time of this report, LOST's thick
+client cannot be run on Windows computers.
+
+The 3D OpenSceneGraph window serves as a passive display.  It accepts no
+direct user inputs aside from navigation commands.  Instead, LOST users
+enter all numbers, text, and geometric objects within a Firefox webbrowser
+window.  As figure 2 illustrates, this web client contains several tabs in
+its top row corresponding to ground setup, platform settings, skymaps,
+flight path, line-of-sight analysis, data import/export, and
+administration.  The ordering of these tabs follows the work flow for a
+typical LOST session.  The 2D map appearing in the figure is based upon the
+OpenLayers API [4].  The map enables intuitive drawing of graphical
+primitives such as points and polylines.  Other familiar web widgets like
+buttons, drop-down menus and progress bars are incorporated throughout the
+browser interface.  The thin client software controlling the appearance and
+actions of these widgets is written in HTML and Javascript.
+
+The 2D map responds to user manipulations which are standard in most
+OpenLayers applications.  For example, it may be translated and zoomed via
+standard mouse movements.  The OpenLayers map also contains several
+backgrounds that toggle on or off to display contextual information: a
+longitude/latitude grid, country and province borders, road networks, river
+and lake markings, city locations and 3D DTED map spatial extents.  The
+current geoposition of the mouse cursor is continuously updated inside a
+lower right corner box in both latitude-longitude and Military Grid
+Reference System (MGRS) coordinates.  A ruler widget located on the left
+side of the map allows one to measure 2D distance between any two points.
+
+User commands are transmitted from the thin client's web browser to a thick
+client server via AJAX requests.  On the server side, a set of C++ Qt
+library functions parse input user requests and initiate thick client
+computations to generate appropriate responses [5].  Depending upon the web
+client's request, the thick client may display results in the 3D map once
+it is finished processing.  Alternatively, the thick client may need to
+return information to the thin client browser.  LOST then utilizes a
+communications scheme based upon ActiveMQ broadcasting messages from the
+thick client and polling in the thin client [6].  Two-way messaging is
+thereby enabled between the 2D web browser interface and the 3D DTED map
+display.  The block diagram in figure 3 illustrates LOST's internal
+communications architecture.
+
+After this basic overview, we proceed in the remainder of this report to
+present the Line of Sight Tool following the general workflow of a typical
+user.  In section 2, we describe how ground Regions of Interest along with
+point targets are specified.  Aircraft parameters and a flight path must
+also be set before any line-of-sight computation can be performed.  In
+section 3, we discuss how the computer traces rays from ground locations up
+to aircraft sky positions.  Instantaneous and time-averaged visibilities
+for Regions of Interest as well as point targets are rapidly determined.
+In section 4, we present LOST functions which assist with flight planning
+by suggesting paths that maximize ground target visibility.  Skymaps are
+introduced, and automated algorithms that recommend circular, elliptical
+and line-segment orbits are described.  In section 5, we detail how
+ancillary metadata may be imported into LOST via shapefiles.  LOST can also
+export some of its results to shape files and raster images.  In section 6,
+we close by indicating directions for future work.  Finally, a separate
+technical document on the algorithms underlying automated flight path
+planning written by MIT researchers Ken Lee, Luca Bertuccelli and Jon How
+is included as an appendix to this report.
+
+2.  Ground & air situation setup
+
+Aerial sensors performing persistent surface surveillance generally try to
+keep some region on the ground within their field-of-view for several
+hours.  The size of the region which can be continuously surveilled depends
+upon the sensing modality.  Multi-camera systems typically monitor O(10
+km**2) at O(1 m) resolution with O(1 Hz) update rate.  In contrast, radar
+systems can cover O(10,000 km**2) at O(10 m) resolution with O(0.01 Hz)
+update.  Though LOST may be applied to multiple types of aerial missions,
+we focus in this report upon GMTI sensing via radar platforms.  To
+illustrate LOST's utility, we base all our examples upon hypothetical
+missions conducted over Afghanistan from here on.
+
+We begin by specifying some Region of Interest (ROI) on the ground where
+terrain visibility information is sought.  Figure 4 illustrates a
+user-entered box within the 2D web browser interface.  The region may be
+specified either by entering its corner geocoordinates or simply by drawing
+on the 2D map.  Once the thin client's box is submitted to the server, the
+ROI appears in the OpenSceneGraph display as a 3D box.
+
+Point targets on the ground can also be specified in LOST.  Numerical
+geocoordinates for individual targets can be entered via HTML text boxes,
+and descriptive labels may be assigned (see figure 5).  Alternatively,
+target locations may be graphically selected by mouse clicks on the 2D map.
+After target longitude and latitudes are submitted to the server, the thick
+client computes corresponding altitudes using the DTED map.  The point
+targets are then displayed as 3D "Sign Posts" in the OpenSceneGraph window.
+LOST can handle up to 100 ground point targets.
+
+Basic parameters governing aircraft and sensor operation need to be
+specified next.  The airplane's altitude above sea-level and its speed must
+be known, and both values are assumed to remain fixed throughout a mission.
+The sensor is characterized by its minimum ground range, maximum ground
+range and azimuthal field-of-regard (see figure 6).  For active radar
+systems, returns from ground locations situated too close to the aircraft
+can blind the sensor.  On the other hand, radar returns from locations too
+far from the airplane exhibit low signal-to-noise.  In LOST, the sensor is
+assumed to be side-looking relative to the vehicle's velocity vector.  But
+the viewing direction can be set to either the right side, left side or
+both sides of the aircraft.
+
+Once the air vehicle, sensor and ground targets have been established,
+flight paths may be entered.  The simplest paths are circular, and their
+centers, radii and clockwise or counter-clockwise directions can be
+numerically specified via the web interface.  Alternatively, a user may
+simply draw a circular path on the 2D map.  After it is submitted to the
+thick client server, the flight path appears in the OpenSceneGraph window
+(see figure 7).  The path is colored cyan, while a translucent white wedge
+depicts the sensor's azimuthal field-of-regard.  (FN: Minimum and maximum
+sensor ground ranges are not displayed in the 3D viewer.)  When we zoom the
+3D viewer closer towards the aircraft's instantaneous location, we see it
+represented by a yellow model flying above the ground terrain (see figure
+8).
+
+LOST can work with flight paths more complicated than circles.  Arbitrarily
+shaped routes are entered via a series of waypoints.  The
+latitude-longitude coordinates for each waypoint may be manually input, or
+a general path may be more simply drawn on the 2D map.  Waypoint dragging
+plus new point insertion enable complex aerial routes to be readily
+manipulated within the OpenLayers interface (see figure 9).
+
+Once a flight path is submitted from the thin client to the thick client,
+its total distance and flight time are reported back to the web browser.
+The default simulation time step along the flight path equals 10 minutes.
+But a user may select finer or coarser temporal sampling.  Forward and
+backward arrow buttons appearing on the web interface allow a user to step
+the aircraft along its flight path.  As the yellow airplane model plus its
+translucent white sensor wedge fly along a selected route within the
+OpenSceneGraph window, a user begins to appreciate which parts of the
+ground terrain might be occluded to the sensor over the course of time.
+
+But in order to accurately predict terrain visiblity to the aerial sensor,
+raytracing must be performed from the former to the latter.  We therefore
+present our raytracing methods in the next section.
+
+3.  Raytracing
+
+Calculating shadows in 3D scenes by tracing rays back to an illumination
+source is a standard problem in computer graphics [7].  For example, many
+computer games employ specialized graphics card hardware to compute
+lines-of-sight to triangulated meshes representing world terrains.  LOST
+employs a less sophisticated approach which computes shadows on the CPU.
+This simpler method runs sufficiently fast and handles noisy terrain
+elevation data.
+
+LOST traces rays at each sample point along the aircraft's flight path (see
+figure 10).  Given the sensor's instantaneous viewing frustum, LOST first
+computes its triangular projection onto a ground Z-plane.  DTED heights are
+read into the triangle footprint from pre-calculated geotif files.  The
+triangular footprint is next binned into (250 m)**2 ground cells.  A ray is
+shot from each ground cell's center towards the aerial sensor located at
+the viewing frustum's apex.  [FN: Ray tracing does not start at the cell's
+exact center location.  Instead, it begins 3 meters along the ray in the
+air.]  The heights of line segment chunks along the ray are compared with
+corresponding DTED altitudes.  If the former is less than the latter
+anywhere between the ground cell and the aircraft position, we assume that
+the ray passes through some opaque surface.  The ground cell is
+consequently marked as occluded.  If the ray flies above all terrain points
+from the ground cell to the aircraft, the cell is marked as visible.
+Finally, if the ground cell lies outside the sensor's minimum or maximum
+ground ranges, it is marked as out-of-range.
+
+In order to speed up line-of-sight computation, LOST employs some standard
+raytracing tricks to minimize its workload.  For example, it first takes
+large 5.5 km steps along a ray and checks a coarsened, upper-limit version
+of the DTED map to see if the ray is occluded anywhere.  If not, LOST
+declares the ground cell to be visible to the sensor (see figure 11a).  But
+if the ground cell is occluded within the coarse DTED map, LOST performs
+more expensive raytracing with 500 m steps just in the vicinity of the
+preliminary blockage point.  A final visible or occluded verdict for the
+ground cell is rendered after the finer raytracing computation is performed
+(see figure 11b).  
+
+LOST also takes terrain spatial correlations into account in order to
+minimize computational effort.  If some ground cell is found to be
+occluded, there is a reasoanble likelihood that neighboring ground cells
+will also be occluded.  So LOST first checks rays from such ground cell
+neighbors nearby the original ray's blockage point.  If the terrain in the
+vicinity of the earlier ray's occlusion does not block a neighboring ray,
+LOST searches for potential occlusions everywhere else along the
+neighboring ray.
+
+The time needed to compute ground cell visiblity within a Region of
+Interest scales linearly with number of waypoints along the flight path and
+cells on the ground.  Running on a Dell M6400 Precision laptop, LOST
+typically takes many seconds to a few minutes to finish raytracing an O(100
+km x 100 km) Region of Interest.  Raytracing results for a representative
+ROI are displayed in figure 12.  The background coloring in the 3D viewer
+changes from its default rainbow heightscale to shades of grey.  Green
+[red] areas inside the the ROI indicate ground cells which are visible
+[invisible] to the sensor.  After the raytracing computation is finished, a
+user may manipulate the 3D map to more closely inspect the results (see
+figures 13a and 13b).  The ground occlusion pattern depends in detail upon
+the selected flight path and terrain.  But deep valleys are often
+instantaneously occluded to the airborne sensor.  In contrast, mountain
+tops are usually visible everywhere along the flight route.
+
+LOST can also display ROI visibility averaged over an entire flight path.
+As figure 14 illustrates, various shades of red, orange, yellow and green
+coloring indicate different probabilities of observing ground locations at
+some time during a flight.  LOST computes quartile visibility percentages
+which quantify a flight path's effectiveness for monitoring a Region of
+Interest.  Time-averaged visibility results can be exported as either
+Geotif or NTIF image files.  Such LOST raster output may subsequently
+become input into other analysis tools like Falcon View and Google Earth.
+
+Lines-of-sight to individual point targets represented by SignPosts in the
+3D viewer can be calculated independently of any Region of Interest.  LOST
+traces individual point targets with a 75 meter step along each ray.
+Though this spatial sampling is finer than for ROI raytracing, the number
+of individual point targets which need to be traced is usually much smaller
+than the number of ground cells in a ROI.  Consequently, individual point
+target raytracing is generally much faster in LOST than ROI raytracing.
+
+Figure 15 depicts the three possible air-to-ground ray colorings.  Green
+rays indicate a clear line of sight from the aerial sensor to a ground
+point target.  Red rays correspond to lines of sight which are blocked by
+intervening terrain.  And rays are colored black when the ground target
+either lies beyond the sensor's minimum or maximum ground ranges or fall
+outside the sensor's angular field-of-regard.  LOST reports an average
+ground target visibility percentage for all individual point targets over
+the entire flight path.  This averaged percentage serves as a numerical
+score for the flight path which quantifies its surveillance effectiveness.
+
+For instantaneously narrow-beam sensors such as GMTI radars operating over
+rugged terrain, it is useful to know not only where but also when
+individual dwells should be aimed at particular ground points.  LOST
+consequently allows one to choose any point target and see where it is
+visible over an entire flight (see figure 16).  Endpoints for occluded red
+rays in the 3D viewer clearly mark mountains which block the aerial
+sensor's view of a point target along the flight path.  A timeline widget
+in the web browser interface graphically summarizes when the sensor can see
+any individual ground point target during a mission.
+
+Conducting aerial reconnaissance of mountainous countryside requires
+negotiating a viewing obstacle course.  Given an input flight path, LOST
+numerically quantifies its utility by reporting instantaneous and
+time-averaged ground visibilities.  But it would be much more useful if a
+computer could help guide aerial mission planning by recommending flight
+paths optimized for persistent surveillance.  We therefore turn to discuss
+semi-automated and automated flight path planning in the following section.
+
+4.  Ground visibility skymaps & automated path planning
+
+When planning a trip through a complex obstacle course on the earth's
+surface, a ground voyager needs a map to guide his route selection.  When
+planning a trip through a complex visibility obstacle course above the
+earth's surface, an air traveller similarly needs a skymap to guide his
+route selection.  Skymap generation is implemented within LOST to help
+pilots find flight paths which maximize unobstructed viewing of ground
+point targets by a non-omnidirectional airborne sensor.
+
+A LOST user first picks a bounding box in which the skymap is to be
+generated via the 2D map in the web browser.  The machine then instantiates
+a 21x21 lattice in the sky positioned at the aircraft's altitude.  It also
+loads terrain height data from geotif tiles surrounding all ground point
+targets by at least 2 degrees in longitude and latitude.  At every lattice
+site, the computer loops over 8 aircraft headings separated by 45 degrees:
+north, north-east, east, south-east, south, south-west, west and
+north-west.  For each aircraft heading, the machine traces rays to the
+ground point targets and determines which are visible (see figure 17).
+Separate skymaps for each angular heading are stored in computer memory.  A
+single skymap averaged over the 8 angular headings at each lattice site is
+returned by the machine.  The averaged skymap is displayed as a vector
+field in both the 2D OpenLayers and 3D OpenSceneGraph maps (see figure 18).
+
+The vectors' altitudes in the 3D viewer is the same as the aircraft's.  The
+vectors' directions indicate optimal headings, while their magnitudes are
+proportional to the number of visible ground targets at sky lattice sites.
+In the example of figure 18, certain positions in the sky are occluded by
+tall mountains from seeing any of the 3 point targets on the ground.  The
+heading vector field consequently exhibits gaps at such blocked sky
+locations.  At other lattice site locations, the sensor could see one or
+more of the ground targets provided the aircraft flies in the specified
+direction.
+
+In complex visibility obstacle courses, it may be impossible to construct
+any flight path which can observe all ground targets everywhere along the
+orbit.  But LOST's heading skymap can at least help guide flight path
+planning.  A user generally wants to select a flight path whose local
+tangents align as closely as possible with the vector field's directions.
+And the user should try to make his flight path pass nearby heading vectors
+with large rather than small magnitudes (see figure 19).  Flight paths that
+follow the heading vector field generally have more visible sensor time on
+ground targets than randomly chosen routes.  For example, the customized
+path in figure 19 has a 43.7% average visibility score.  In contrast, the
+quasi-randomly chosen circular path in figure 7 has only a 33.3% average
+visibility.
+
+Skymap generation enables not only better manual flight path planning but
+also automated route recommendation.  Taking a skymap as its input, a
+machine can search for simple paths which fit its heading vector field
+subject to various constraints.  LOST implements automated path fitting
+algorithms developed by members of MIT's Aerospace Controls Laboratory
+which are described in detail in the appendix to this report.  Those
+algorithms can suggest clockwise circles and ellipses which match the
+heading vector field.  LOST can also recommend a longest line segment fit
+which serves as a racetrack orbit model.  LOST makes no attempt to take
+into account 180 degree aircraft turns in its racetrack orbit modeling.
+
+Automated path recommendation usually takes a few minutes to run on a Dell
+M6400 Precision laptop.  Figure 20 illustrates the elliptical flight path
+which the machine suggests in response to the skymap of figure 18.  This
+particular elliptical route has a 49.3% visiblity score which is better
+than the 43.7% rating from our previous custom flight path in figure 19.
+Average visibility percentages for machine-recommended flight paths are
+often, but not always, higher than percentages for manually selected
+routes.  But they do not currently take into account real-world flight path
+planning considerations such as locations of political borders or ground
+threats and Keep Out Zones.  So LOST's automatically determined orbits
+should be regarded as starting points for subsequent human refinement.
+
+5.  Data import & export 
+
+LOST is one of several software tools which assist with pre-mission
+planning and post-mission analysis.  From its inception, LOST was intended
+to supplement rather than replace other packages that are already commonly
+used by the ISR community.  In order to interact with other tools, LOST
+output needs to become their input and vice-versa.  The Line-of-Sight Tool
+consequently comes with both data import and export mechanisms.
+
+Several of LOST's key geometry components such as Regions of Interest,
+ground point targets and flight paths correspond to vector data.  Shape
+files are a standard format for archiving and sharing vector data among
+multiple Geographic Information System (GIS) programs.  LOST can read in
+and write out shape files.  Shape file input is handled via an import list.
+Once a shape file's contents have been added to the list, they can be
+displayed within the 2D web browser map.  For example, the locations of
+Afghanistan airfields imported into LOST from a shape file are pictured in
+figure 21.  Electronic lists of ground point targets may similarly be read
+into LOST rather than having to be manually entered.
+
+Regions of Interest, point targets and flight paths generated in LOST may
+be exported to shape files.  A user simply needs to select the appropriate
+layer for output and specify an output filename.  Shapefiles exported from
+LOST may subsequently be read into other analysis programs.  For instance,
+figure 22 illustrates a flight path and ground targets created in LOST
+appearing within Falcon View.
+
+Raster imagery may similarly be entered into LOST for background display in
+the 2D OpenLayers map.  LOST reads in raster data via geotif and NTIF image
+files which contain georegistration metadata headers.  Figure 23 exhibits
+an imported raster image overlaid onto the web browser map.  LOST can also
+export time-averaged ROI visibility results in Geotif and NTIF formats.
+The output file names are date and time stamped, and they may be brought
+into other GIS programs as background layers.  Figure 24 exhibits an
+example of time-averaged ROI raytracing results draped onto Google Earth
+DTED.
+
+LOST also allows users to simply store their work session settings for
+later retrieval within LOST itself.  Region of Interest, ground targets,
+aircraft and sensor parameters, and flight path information are saved after
+the user provides some name for his current session.  Raytracing and skymap
+results are not storable within LOST, for their memory footprints are too
+large.  But they may be easily regenerated in later LOST work sessions
+after previously saved ROI, ground target and flight path parameters are
+reloaded.
+
+Given its ubiquity and de facto archiving use, Microsoft's Powerpoint
+program is arguably the single most important piece of software with which
+all flight planning tools must interact.  LOST has 2D and 3D window screen
+capture functions that enable one to simply export pictures and movies for
+subsequent insertion into Powerpoint presentations.  Moreover, the Aviary
+plugin is installed into LOST's firefox web browser [8].  Aviary snaps the
+entire contents of any web page in the thin client interface.  Users may
+also take screen shots of the 3D viewer by pressing the "Capture current
+viewer screen" button under LOST's Administration tab.  The captured screen
+shots are stored as PNG files inside the "movies_and_screen_shots" folder
+on the Desktop.
+
+Finally, LOST enables simple generation of AVI movies depicting flythroughs
+of the 3D map.  A user presses the "Start recording" button on the Screen
+Capture/Movie menu of the Administration tab.  He then moves around the
+mouse to steer the recording camera's path.  Once the user has finished
+capturing all the frames he wants for an AVI movie, he presses the "Stop
+recording" button.  LOST then concatenates the recorded frames into AVI
+movies with Mpeg-1, Mpeg-2 and Mpeg-4 video compression.  The output movies
+are automatically placed into the "movies_and_screen_shots" folder on the
+Desktop.  User-generated movies based upon the Mpeg-4 CODEC are recommended
+for display within Powerpoint.  But AVI movies based upon the older Mpeg-1
+and Mpeg-2 codecs are also generated for older computers and/or networks
+which may not support Mpeg-4 compression.
+
+6.  Future work
+
+LOST currently runs on stand-alone linux laptops which are self-contained
+and portable.  It does not need to be connected to any computer network in
+order to run as its 3D maps, web clients and data servers are all installed
+onto each LOST laptop.  But we note that LOST's current communications
+scheme was designed to allow for future netcentric dissemination of aerial
+mission results among multiple machines.  The thick client and its server
+would still likely need to operate on a central linux computer.  But it
+should be possible to generalize existing codes so that it could support
+several users simultaneously interacting with LOST via Firefox web browser
+on multiple computers.
+
+Future versions of LOST may also be distributed on "virtual" machines
+rather than physical laptops.  Preliminary porting of LOST codes to virtual
+platforms running under VMWARE on computers not operating under Linux has
+been encouraging.  If it can be virtualized, LOST could be used on any
+machine running under any operating system provided the computer has
+sufficient CPU power, memory and disk storage space.
+
+Many algorithmic and software extensions to LOST would also be interesting
+to pursue.  For example, figure 25 displays an occlusion map for a
+panoramic video camera based upon laser radar rather than shuttle radar
+height data.  Current ladar systems such as Lincoln Laboratory's ALIRT
+system can map ground terrain at 30 cm ground sampling distance.  While
+significant code modifications would need to be implemented before LOST
+could simultaneously handle both DTED-2 (30 m postings) and DTED-6 (30 cm
+postings), future incorporation of wide-area ladar maps would clearly
+extend LOST's range of applications.
+
+7.  Acknowledgements
+
+We thank several people who have contributed to the Line-of-Sight Tool over
+the past two years.  They include present and former Lincoln Laboratory
+members Kristin Healy (G105), Allison Hoch (G105), Melissa Meyers (G101),
+Steven Pohlig (G105), Albert Reuther (G102) and Tim Schreiner (G104).  We
+also acknowledge Kenneth King Ho Lee, Luca Bertuccelli and Prof. Jon How of
+MIT's Aerospace Controls Laboratory who developed LOST's automated path
+planning algorithms.  Finally, we wish to especially thank Michael Yee
+(G104) who made major contributions to LOST's thin client development
+during early stages of this project.
+
+8.  Luca's appendix

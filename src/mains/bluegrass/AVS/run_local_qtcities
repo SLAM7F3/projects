@@ -1,0 +1,24 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS
+
+http_proxy=""
+
+/home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS/qtcities \
+--region_filename ./packages/lubbock_fused.pkg \
+--surface_texture ./packages/ar1_texture_frames_all_orig.pkg \
+--sensor_metadata ./packages/ar1_sensor_metadata.pkg \
+--dataserver ./packages/ar1_dataserver.pkg \
+--GIS_layer ./packages/lubbock_GIS.pkg \
+--LogicServer_URL 127.0.0.1:4040 \
+--OSGButtonServer_URL 127.0.0.1:4041 \
+--VideoServer_URL 127.0.0.1:4042 \
+--SKSDataServer_URL 127.0.0.1:8080 \
+--SKSDataServer_query_type vehicle \
+--ActiveMQ_hostname tcp://127.0.0.1:61616 \
+--world_start_UTC 2007,9,27,16,8,54 \
+--world_stop_UTC 2007,9,27,16,59,0 \
+--world_time_step 0.5 \
+--classification 1 \
+--initial_mode Run_Movie_Mode 
+
+
+

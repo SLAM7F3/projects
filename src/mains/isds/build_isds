@@ -1,0 +1,13 @@
+~/bin/MAKE program=consolidate
+~/bin/MAKE program=flightpath_sender
+~/bin/MAKE program=homo
+~/bin/MAKE program=hummerheight
+~/bin/MAKE program=LiMIT_orbit
+~/bin/MAKE program=ll2utm
+~/bin/MAKE program=message_receiver
+~/bin/MAKE program=message_sender
+~/bin/MAKE program=people
+~/bin/MAKE program=satcomm
+~/bin/MAKE program=transform_coords
+~/bin/MAKE program=transform_points
+~/bin/MAKE program=utm2ll

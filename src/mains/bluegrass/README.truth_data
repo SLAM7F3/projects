@@ -1,0 +1,26 @@
+===========================================================================
+Ground truth README file
+===========================================================================
+Last updated on 12/20/07
+===========================================================================
+
+On 12/20/07, Delsey showed us how to use her KML tool to search for
+interesting intervals in time when activities took place within the truth
+database.  
+
+For Activity Region #1, we believe that 10:04:38 - 10:06:38 represents an
+interesting snippet in time with 3 truth cars moving around.  Karen shows
+us that the corresponding Matlab file indicates the following connection
+between image frame number and time:
+
+Frame number		Time
+
+6821			15:04:00
+
+6940			15:05:07
+
+7060			15:06:14
+
+7180			15:07:22
+
+

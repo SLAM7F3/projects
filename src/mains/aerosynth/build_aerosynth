@@ -1,0 +1,20 @@
+~/bin/MAKE program=aeroprop
+~/bin/MAKE program=bundler_posns
+~/bin/MAKE program=earthbundler
+~/bin/MAKE program=FLIR_metadata
+~/bin/MAKE program=FLIR_select
+~/bin/MAKE program=generate_list
+~/bin/MAKE program=gpsfit
+~/bin/MAKE program=gpsregister
+~/bin/MAKE program=ladarsynth
+~/bin/MAKE program=LH_metadata
+~/bin/MAKE program=parse_FLIR_metadata
+~/bin/MAKE program=ply2tdp
+~/bin/MAKE program=sailplanebundler
+~/bin/MAKE program=terrain_heights
+~/bin/MAKE program=tourcities
+~/bin/MAKE program=virtualbundler
+~/bin/MAKE program=visualize_FLIR_metadata
+~/bin/MAKE program=warp_pmvs
+
+

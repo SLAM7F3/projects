@@ -1,0 +1,42 @@
+~/bin/MAKE program=BoW_image_comparisons
+~/bin/MAKE program=classify_images
+
+~/bin/MAKE program=compute_color_histograms
+~/bin/MAKE program=compare_color_histograms
+
+~/bin/MAKE program=compute_ellipse_histograms
+~/bin/MAKE program=compare_ellipse_histograms
+
+~/bin/MAKE program=compute_gist_histograms
+~/bin/MAKE program=compare_gist_histograms
+
+~/bin/MAKE program=compute_SURF_histograms
+~/bin/MAKE program=compare_SURF_histograms
+
+~/bin/MAKE program=compute_texture_histograms
+~/bin/MAKE program=compare_texture_histograms
+
+~/bin/MAKE program=compress_gist
+~/bin/MAKE program=compress_nongist
+~/bin/MAKE program=compute_segment_histograms
+
+~/bin/MAKE program=earth_mover_distances
+~/bin/MAKE program=generate_BoW_scores
+~/bin/MAKE program=generate_BoW_color_scores
+~/bin/MAKE program=generate_edgelist
+~/bin/MAKE program=generate_match_scores
+~/bin/MAKE program=generate_matching_filenames
+~/bin/MAKE program=generate_nonmatching_filenames
+~/bin/MAKE program=gist_color_graph
+~/bin/MAKE program=gist_recog
+~/bin/MAKE program=labeled_image_montager
+~/bin/MAKE program=near_duplicates
+~/bin/MAKE program=plot_labeled_points
+~/bin/MAKE program=remove_dangling_gist_files
+~/bin/MAKE program=replace_whitespaces_w_underscores
+~/bin/MAKE program=svm_gist
+~/bin/MAKE program=svm_global_descrips
+~/bin/MAKE program=test_image_comparisons
+~/bin/MAKE program=train_image_comparisons
+~/bin/MAKE program=view_imagepair_features
+

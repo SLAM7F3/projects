@@ -1,0 +1,6 @@
+~/bin/MAKE program=coasting
+~/bin/MAKE program=parallax
+~/bin/MAKE program=register
+~/bin/MAKE program=reject
+~/bin/MAKE program=spurious
+~/bin/MAKE program=track

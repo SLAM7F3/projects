@@ -1,0 +1,35 @@
+=============================================================================
+Lidar notes
+=============================================================================
+Last updated on 12/8/14; 12/12/14; 12/15/14; 12/16/14
+=============================================================================
+
+In pwin/lib/lidar/lidar.h, 
+
+lidar_raw_t structure stores XYZ points relative to sensor position in 3
+floats.
+
+lidar_data_t structure stores XYZ points in ECF geocoords.  Target
+g_pos3f_t structure is always allocated.  But other fields in lidar_data_t
+can be NOT allocated by setting input parameter alloc = 0 within following
+method in pwin/lib/lidar/lidar.c:
+
+int lidar_raw_to_lidar_data(lidar_raw_t *raw, lidar_data_t *ldata, g_pos6_t *boresight, int alloc);
+
+default value for alloc = LIDAR_ALLOC_DEFAULT
+
+%.  g_pos6_t boresight can be obtained from project for each rig (?)
+via call to prj_get_lidar_boresight()
+
+*.  See trk_lidar_gui_reinitialize() in pwin/app/gui/trk_gui.c for the
+only example of call to lidar_raw_list_to_lidar_data().
+
+*.  SBET = Smoothed Best Estimate of Trajectory
+
+*.  On 12/16/14, Viktor suggested that we look at "remove" and "keep"
+methods in map_cam.h in order to cut down a rig list so that it contains
+just rigs within some geographic area of interest.  
+
+e.g. map_rig_list_keep_rig_overlap_bbox() or
+map_rig_list_remove_rig_outside_radius()
+

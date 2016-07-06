@@ -1,0 +1,648 @@
+=============================================================================
+GPU box setup 
+=============================================================================
+Last updated on 2/11/16; 2/14/16; 4/4/16; 5/21/16
+=============================================================================
+
+IPs good as of 2/11/16:
+
+Thinkmate:  17.228.154.239  (good as of 5/21/16)
+Titan 1:    17.228.154.84   (good as of 5/21/16)
+Titan 3:    17.228.154.250  (good as of 5/21/16)
+Titan 7:    17.228.154.162
+
+All used IPs as of 5/21/16:
+
+# ssh -Y pcho@17.228.154.254
+# ssh -Y pcho@17.228.154.239  (Thinkmate)
+# ssh -Y pcho@17.228.154.210
+# ssh -Y pcho@17.228.154.207
+# ssh -Y pcho@17.228.154.198
+# ssh -Y pcho@17.228.154.179
+# ssh -Y pcho@17.228.154.173
+# ssh -Y pcho@17.228.154.161
+# ssh -Y pcho@17.228.154.128
+# ssh -Y pcho@17.228.154.84  (Titan 1)
+# ssh -Y pcho@17.228.154.80
+# ssh -Y pcho@17.228.154.62
+# ssh -Y pcho@17.228.154.58
+# ssh -Y pcho@17.228.154.55
+# ssh -Y pcho@17.228.154.44
+
+*.  When first setting up GPU box "Titan 1", we needed to plug the HDMI
+cord from the Sharp monitor into the HDMI port on the GPU box back located
+next to a graphics card.  On 2/8/16, we empirically found that we need to
+plug into the left-most HDMI slot on the back of Titan1's Geforce GTX GPU
+card.
+
+  - For Titan 7, we need to plug a cable into the 2nd-to-left HDMI slot on
+the back of Titan7's Geforce GTX GPU card.
+
+  - 6" displayport to mini displayport video cable adapter does actually
+work with our Mac monitor. 
+
+*.  In order to turn on power to Titan 1, make sure the "0/1" switch on its
+lower backside is set to "1".  Then press button near top/center of
+frontside to turn on GPU box.
+
+*.  Press "F2" key in order to boot Titan 1 into BIOS screen.  Put USB
+stick containing ubuntu 14.4 installation binaries into backside of GPU box
+in top-left USB port (next to USB antenna for wireless keyboard and mouse).
+After several minutes, ubuntu install screen finally appeared.  (USB
+antenna should be returned to battery compartment on underside of wireless
+mouse.)
+
+*.  In order to install ubuntu 14.4 onto GPU box, it needs to be connected
+to the internet via an ethernet cable plugged into an internet switch
+located underneath desks.  As of 4/4/16, Titan 1, Titan 3 and Titan 7 all
+have ethernet cables attached into UPPER rather than LOWER ethernet output
+on backside of these GPU boxes.
+
+*.  In order to avoid grub difficulties, we needed to reinstall ubuntu 14.4
+from the USB stick onto Titan 1's /dev/sda after the ENTIRE disk had been
+wiped clean.  Only then did grub successfully install into /dev/sda/ .
+Titan 1 appears to have two physical disks /dev/sda and /dev/sdb .  As of
+9/2/15, we have not touched /dev/sdb.
+
+*.  At an early stage in the ubuntu 14.4 installation process, we were told
+that the name for the "Titan 1" GPU box was "flylab08".
+
+*.  Cntrl-alt-t generally opens a new terminal within ubuntu.
+
+*.  When Titan 1 was physically located between desks of Weiyu and Tho, its
+IP address was 17.228.154.95.  After Titan 1 was moved near Florence
+conference room, its IP is 17.228.154.84 .  IP address for our MacPro is
+pcho@17.228.153.244.
+
+---------------------------------------------------
+User account creation
+---------------------------------------------------
+
+*.  On 8/28/15, we wiped /dev/sda clean on GPU box "Titan 1".  As of
+8/31/15, it has 3 accounts:
+
+username 	password
+
+local 		local
+
+cho (local)	@Beebop12
+
+pcho (LDAP)	@Beebop12
+
+
+Add LDAP account info into /etc/passwd.  Make sure to include "LDAP"
+somewhere within full username that appears at login screen to distinguish
+LDAP account from local "cho" account on GPU box.
+
+We should generally login to our pcho (LDAP) account and not into our local
+"cho" account on TITAN 1.
+
+*.  On 5/21/16, network connectivity to Titan 3 was lost during the early
+morning.  We learned from Tho that only "old" Mac displays with a square
+"mini-display" symbol on their white connectors can be used with the Titan
+boxes.  Newer Mac displays with a thunderbolt symbol on their white
+connectors do not work when plugged into Titan 3's backside via a HDMI
+connector.
+
+When we rebooted Titan 3 with an old monitor connected into its GPU card,
+we had to login locally using the following info:
+
+username = local   password = local
+
+Note:  Make sure ethernet cable is live, active and blinking if we lose
+network connectivity to a Titan machine in the future!
+
+*.  In order to inform Apple's github of the existence of the TITAN 1 GPU
+box, we need to enter new SSH key informaton into github.  So we generated
+a new public SSH key on TITAN 1 GPU box.  In a terminal, chant
+"ssh-keygen".  Enter returns to all questions.  In particular, do NOT enter
+any passphrase when queried.  Generated public key is exported to
+~/.ssh/id_rsa.pub.
+
+*.  In order to access github, open a browser to 
+
+	https://github.geo.apple.com
+
+First click on colored "avatar" pcho button located near upper right and
+select "Your profile" within dropdown menu.  Then click "Edit profile"
+button near top right.  select "SSH Keys" in menu on LHS.  Finally, press
+"Add SSH Key" button on RHS.  Copy contents of ~/.ssh/id_rsa.pub into the
+"Key" box within https://github.geo.apple.com/settings/ssh/ .  Be careful
+to not include any extra white space when cutting and pasting.
+
+*.  Once a new SSH key has been entered into github, we can then clone a
+copy of the pwin git repository onto TITAN 1.  Within /home/pcho/ subdir,
+chant
+
+git clone git@github.geo.apple.com:geo_flyover/sputnik.git
+
+A clone of sputnik folder and all its subdirs is created within
+/home/pcho/sputnik on the local GPU machine.
+
+*.  At this point, John recommends following "Set-up in GPU machine" within
+PR_Deep_Learning wiki page.
+
+---------------------------------------------------
+Cuda installation
+---------------------------------------------------
+
+*.  Download Cuda Toolkit 7.5 (as of 8/31/2015).  John and Tho recommend
+downloading "Runfile Installer" rather than Local Package Installer.
+Downloaded cuda_7.0.28_linux.run .  Be sure to make this run file
+executable.
+ 
+*.  Added "nomodeset" as final argument to GRUB_CMDLINE_LINUX_DEFAULT
+within /etc/default/grub.
+
+*.  Restart machine and wait for login screen to come up.  Then chant
+"cntrl alt f1" in order to switch to terminal 1.  Login to this terminal.
+Then chant "sudo service gdm stop".  Press "cntrl alt f1" to return to
+terminal 1.
+
+*.  Install nvidia driver and toolkit by chanting 
+
+	sudo sh cuda_7.0.28_linux.run
+
+within directory holding .run file.  Weiyu suggests downloading latest,
+greatest CUDA driver, installing it (with GDM shut off), and then
+installing CUDA SDK (and explicitly telling SDK installer to NOT install
+its embedded driver which is generally older than latest, greatest NVIDIA
+CUDA driver).  But Tho says that this is overkill.  
+
+On 9/1/15, we realized that our NVIDIA CUDA driver was badly messed up.  So
+Tho found a webpage which instructed how to purge ALL installed nvidia
+packages:
+
+	sudo apt-get remove --purge nvidia-*
+
+Then 
+
+	sudo apt-get install ubuntu-desktop 
+
+Also
+
+	sudo rm /etc/X11/xorg.conf
+
+Then restart gpu box, press "cntrl alt f1" to bring up a terminal, 
+chant "sudo service gdm stop" and then 
+
+	sudo sh cuda_7.0.28_linux.run
+
+*.  Check if NVIDA CUDA driver has been successfully installed by building
+~/NVIDIA_CUDA-7.0_Samples/1_Utilities/deviceQuery.  This program should
+show sensible info about the Nvida graphics cards installed inside the GPU
+box.  Note in particular the total amount of memory on the GPU card(s).
+
+local-All-Series:deviceQuery% ./deviceQuery   (performed on 9/4/15 after
+removing two original 6 GB GPU cards and replacing them with one 12 GB GPU
+card)
+
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: "Graphics Device"
+  CUDA Driver Version / Runtime Version          7.0 / 7.0
+  CUDA Capability Major/Minor version number:    5.2
+  Total amount of global memory:                 12288 MBytes (12884574208 bytes)
+  (24) Multiprocessors, (128) CUDA Cores/MP:     3072 CUDA Cores
+  GPU Max Clock rate:                            1088 MHz (1.09 GHz)
+  Memory Clock rate:                             3505 Mhz
+  Memory Bus Width:                              384-bit
+  L2 Cache Size:                                 3145728 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(65536), 2D=(65536, 65536), 3D=(4096, 4096, 4096)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(16384), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(16384, 16384), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 2 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 3 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 7.0, CUDA Runtime Version = 7.0, NumDevs = 1, Device0 = Graphics Device
+Result = PASS
+
+
+
+
+local-All-Series:deviceQuery% ./deviceQuery   (performed when Titan 1 had
+two original 6 GB GPU cards)
+
+
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 2 CUDA Capable device(s)
+
+Device 0: "GeForce GTX TITAN Black"
+  CUDA Driver Version / Runtime Version          7.0 / 7.0
+  CUDA Capability Major/Minor version number:    3.5
+  Total amount of global memory:                 6144 MBytes (6442254336 bytes)
+  (15) Multiprocessors, (192) CUDA Cores/MP:     2880 CUDA Cores
+  GPU Max Clock rate:                            1072 MHz (1.07 GHz)
+  Memory Clock rate:                             3500 Mhz
+  Memory Bus Width:                              384-bit
+  L2 Cache Size:                                 1572864 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(65536), 2D=(65536, 65536), 3D=(4096, 4096, 4096)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(16384), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(16384, 16384), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+  Run time limit on kernels:                     No
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 4 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+
+Device 1: "GeForce GTX TITAN Black"
+  CUDA Driver Version / Runtime Version          7.0 / 7.0
+  CUDA Capability Major/Minor version number:    3.5
+  Total amount of global memory:                 6144 MBytes (6442123264 bytes)
+  (15) Multiprocessors, (192) CUDA Cores/MP:     2880 CUDA Cores
+  GPU Max Clock rate:                            1072 MHz (1.07 GHz)
+  Memory Clock rate:                             3500 Mhz
+  Memory Bus Width:                              384-bit
+  L2 Cache Size:                                 1572864 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(65536), 2D=(65536, 65536), 3D=(4096, 4096, 4096)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(16384), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(16384, 16384), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+  Run time limit on kernels:                     Yes
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Disabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 3 / 0
+  Compute Mode:
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+> Peer access from GeForce GTX TITAN Black (GPU0) -> GeForce GTX TITAN Black (GPU1) : Yes
+> Peer access from GeForce GTX TITAN Black (GPU1) -> GeForce GTX TITAN Black (GPU0) : Yes
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 7.0, CUDA Runtime Version = 7.0, NumDevs = 2, Device0 = GeForce GTX TITAN Black, Device1 = GeForce GTX TITAN Black
+Result = PASS
+
+Note: Chanting "nvidia-smi -q" also displays general GPU card information.
+
+*.  Create soft link
+
+ln -s /usr/local/cuda/ /opt/geo/ext/cuda
+
+Then create 2nd soft link
+
+ln -s /opt/geo/ext/cuda to /opt/geo/ext/cuda-7.0
+
+---------------------------------------------------
+BOOST installation
+---------------------------------------------------
+
+*.  Download and install boost_1.59.0 library.  Make sure to run bootstrap
+command as well as sudo ./b2 install !
+
+Then create the following soft links:
+
+ sudo mkdir /opt/geo/ext/boost-1.48.0/
+ sudo ln -sf /usr/local/include/boost /opt/geo/ext/boost-1.48.0/include
+ sudo ln -sf /usr/local/lib /opt/geo/ext/boost-1.48.0/lib
+ sudo ln -s /opt/geo/ext/boost-1.48.0/lib/libboost_thread.so /opt/geo/ext/boost-1.48.0/lib/libboost_thread-mt.so
+ sudo chmod a+rx /opt/geo/ext/boost-1.48.0/
+
+   Alireza: Make sure files in libboost have the right permission
+            sudo chmod 755 /opt/geo/ext/boost-1.48.0/lib/*
+
+   John: Even if you install a newer version of boost you want to use
+1.48.0 in /opt/geo/ext to maintain compatibility with the makefile.
+
+---------------------------------------------------
+CUDNN installation
+---------------------------------------------------
+
+*.  Download Nvidia cuDNN library from https://developer.nvidia.com/cudnn
+
+nvidia developer username = pcho@apple.com
+
+                 password = kermitdQT1
+
+*.  Get copy of CUDA DNN libraries cudnn-6.5-linux-x64-v2 from either
+Nvidia (may take a few days) or from another pwiner.  Unpack this
+subdirectory's contents.  Then manually copy cudnn.h to
+/usr/local/cuda/include/ and all libcudnn* to /usr/local/cuda/lib64/
+
+According to John Wood, we do NOT want to install a later version of the
+CUDA DNN libraries than v6.5 for backwards compatability reasons with
+specialized pwin code.
+
+---------------------------------------------------
+ATLAS installation
+---------------------------------------------------
+
+*.  sudo apt-get install libatlas-dev
+
+Then ln -sf /usr/lib/atlas-base /usr/lib64/atlas
+
+---------------------------------------------------
+Mongo installation
+---------------------------------------------------
+
+*.  Install mongo database client and server
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+
+echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
+
+sudo apt-get update
+
+sudo apt-get install mongodb
+
+sudo update-rc.d mongodb defaults (in order to get mongo server to start at
+boottime)
+
+---------------------------------------------------
+Mounting startown
+---------------------------------------------------
+
+*.  In order to mount startown on the GPU box, we use the following script
+from Weiyu rather than Viktor's script:
+
+#!/bin/bash
+
+ports=(`seq 20241 1 20259`)
+clients=(`seq 241 1 259`)
+host="rd17d01ls-geo0838.rd.geo.apple.com"
+
+ports_len=${#ports[@]}
+
+if [ -z "$1" ]
+then
+  echo -e "\nA path to mount have to be specified"
+  echo -e "Usage: $0 <path>"
+  echo -e "\nExample: $0 /startown-gpfs\n"
+  exit 1
+fi
+
+path="$1"
+
+if [ "$(ls -A $path)" ]; then
+   echo "The directory $path is not empty"
+   exit 1
+fi
+
+for i in `seq 0 1 2`
+do
+  echo -e "\n"
+
+  i_rand=$((`cat /dev/urandom|od -N1 -An -i` % ${ports_len}))
+  port=${ports[$i_rand]}
+  echo -e "Trying to connect to port $port"
+  `sshfs -oStrictHostKeyChecking=no -o ConnectTimeout=5 -p $port $host:$path/ $path/` && { echo -e "\nSuccesfully connected to port $port\n$path is now mounted\n"; exit 0; }
+  
+  # Try to set up tunnel, (First kill previuos non working tunnel)
+  client=${clients[$i_rand]}
+  command="pgrep -f \"^ssh.*cn0$client.*$port:.*\" || ssh -oStrictHostKeyChecking=no -o ConnectTimeout=5 -f -N $USER@st21f02ls-cn0${client}.st.geo.apple.com -L $port:*:22 -g"
+  echo -e "Setting up tunnel for port $port"
+  eval "ssh -t $host '$command'" || { echo -e "Failed to setup tunnel for port $port\n"; continue; }
+
+  echo -e "Retrying to connect to port $port"
+  `sshfs -oStrictHostKeyChecking=no -o ConnectTimeout=5 -p $port $host:$path/ $path/` && { echo -e "\nSuccesfully connected to port $port\n$path is now mounted\n"; exit 0; }
+done
+
+echo -e "\nFailed to create a connection, please retry later\n"
+exit 1;
+
+*.  Add following line into /etc/mtab in order to automatically mount
+startown at boottime:
+
+rd17d01ls-geo0838.rd.geo.apple.com:/startown-gpfs/ /startown-gpfs fuse.sshfs rw,nosuid,nodev,user=pcho 0 0
+
+---------------------------------------------------
+OpenCL installation
+---------------------------------------------------
+
+*.  To be able to read DNG files you must copy the OpenCL library:
+
+cp -R /startown-gpfs/sputnik01/supersize/tools/AMDAPP /tmp/
+sudo mkdir -p /opt/geo/ext
+sudo mv /tmp/AMDAPP /opt/geo/ext/libopencl-amd
+sudo chmod -R a+rx /opt/geo/
+
+*.  Need to install following libraries:
+
+sudo apt-get install libssl-dev
+
+*.  On 2/8/16, Tho told us to look at the "install.sh" script after
+performing the following git clone:
+
+   git clone git@github.geo.apple.com:geo-flyover/installation-scripts.git
+
+*.  Follow Tho's instructions for installing and compiling protobuf and
+protobuf-c listed on wiki subpage Road Network --> Installation and Compiling:
+
+sudo apt-get install libprotobuf-dev
+sudo apt-get install libprotobuf-c0-dev
+sudo apt-get install libprotoc-dev
+sudo apt-get install protobuf-compiler
+sudo apt-get install protobuf-c-compiler
+
+  -. Create subdirectories /opt/geo/shared/include/google/ and
+     /opt/geo/shared/lib/ .  Within include subdir, create following soft links:
+
+lrwxrwxrwx 1 pcho root   28 Jun 26 15:51 protobuf -> /usr/include/google/protobuf/
+lrwxrwxrwx 1 pcho root   30 Jun 26 15:51 protobuf-c -> /usr/include/google/protobuf-c/
+
+Within lib subdir, create soft link
+
+lrwxrwxrwx 1 pcho root   37 Jun 26 15:52 libprotoc.a -> /usr/lib/x86_64-linux-gnu/libprotoc.a
+
+*.  On 2/8/16, we had bad problems with a new version of protobuf which we
+had installed into /usr/local/include/google clashing with the old, stable
+version of protobuf installed in /usr/include/google/.  Tho told us to
+"chant sudo updatedb" and followed by "locate descriptor.proto" to find out
+where/if this proto file was installed.  After many rounds of trial and
+error, we eventually were able to wipe out the old, stable version of
+protobuf and reinstall the old, stable version of protobuf.  We empirically
+believe that we must have no terminals open to prompts sitting in any
+subdirs which are to be removed and reinstalled.  So make sure to close
+down all terminals, chant the following remove commands and then the
+corresponding add commands.  Hopefully then, protobuf will be cleanly
+reinstalled into /usr/include/google/protobuf.
+
+
+sudo apt-get remove --purge libprotobuf-dev
+sudo apt-get remove --purge libprotobuf-c0-dev
+sudo apt-get remove --purge libprotoc-dev
+sudo apt-get remove --purge protobuf-compiler
+sudo apt-get remove --purge protobuf-c-compiler
+
+
+*.  As of Feb 2016, the install script for pwin appears contains the
+following section which supposedly should install all necessary protobuf
+components needed for RDN:
+
+
+# Install RDN dependencies
+sudo apt-get -yqq install libprotoc-dev protobuf-compiler protobuf-c-compiler libgoogle-glog-dev libgflags-dev
+if [ -e /opt/geo/shared/include/google ]; then
+  echo " - Protobuf symlinks already created, continuing"
+else
+  echo "Creating protobufs symlinks"
+  sudo mkdir -pv /opt/geo/shared/include/google
+  sudo mkdir -pv /opt/geo/shared/lib
+  sudo ln -sv /usr/include/google/protobuf /opt/geo/shared/include/google/
+  sudo ln -sv /usr/include/google/protobuf-c /opt/geo/shared/include/google/
+  sudo ln -sv /usr/lib/x86_64-linux-gnu/libprotoc.a /opt/geo/shared/lib/
+  sudo ln -sv /usr/lib/x86_64-linux-gnu/libprotobuf.so /opt/geo/shared/lib/
+  sudo chown -R $USER /opt/geo/shared/
+fi
+
+if [ -f /opt/geo/shared/bin/protoc ]; then
+  echo " - Protobuf compiler already created, continuing"
+else
+  echo "Creating protobuf compiler symlink"
+  sudo mkdir -pv /opt/geo/shared/bin
+  sudo ln -sv /usr/bin/protoc /opt/geo/shared/bin/
+fi
+
+if [ -e /opt/geo/ext/glog-0.3.3/include ]; then
+  echo " - Glog already installed, continuing"
+else
+  sudo mkdir -pv /opt/geo/ext/glog-0.3.3/include
+  sudo ln -sv /usr/include/glog /opt/geo/ext/glog-0.3.3/include
+  sudo mkdir -pv /opt/geo/ext/glog-0.3.3/lib
+  sudo ln -sv /usr/lib/x86_64-linux-gnu/libglog.so /opt/geo/ext/glog-0.3.3/lib
+fi
+
+if [ -f /usr/lib64/libgflags.so ]; then
+  echo " - gflags already created, continuing"
+else
+  sudo ln -sv /usr/lib/x86_64-linux-gnu/libgflags.so /usr/lib64/libgflags.so
+fi
+
+
+---------------------------------------------------
+Matlab installation
+---------------------------------------------------
+
+*.  Install matlab on GPU box
+
+Following instructions on matlab wiki subpage at
+https://rd17d01ls-geo0838.rd.geo.apple.com/wiki/index.php/Matlab
+
+We copied the matlab-download files from John Wood's GPU machine.  John
+also gave us the matlab license text file which is called
+"matlab_license.dat".  File installation key = 13927-49193-40635-34781
+
+---------------------------------------------------
+Additional packages needed by caffe
+---------------------------------------------------
+
+- Install gflags
+
+Within a bash shell, chant the following lines:
+ 
+wget https://github.com/schuhschuh/gflags/archive/master.zip
+unzip master.zip
+cd gflags-master
+mkdir build && cd build
+export CXXFLAGS="-fPIC" && cmake .. && make VERBOSE=1
+make 
+sudo make install
+
+- sudo apt-get install exfat-fuse exfat-utils
+
+- sudo apt-get install libgoogle-glog-dev
+
+- sudo apt-get install libhdf5-dev
+
+- sudo apt-get install libleveldb-dev
+
+- sudo apt-get install liblmdb-dev
+
+- sudo apt-get install libsnappy-dev
+
+---------------------------------------------------
+Accessing Titan 1 from our MacPro
+---------------------------------------------------
+
+*.  In order to allow emacs windows on Titan 1 to quickly pop open while
+we're sshed in from local MacPro, we needed to change the owner and group
+for ~/.dbus within /home/pcho on Titan 1:
+
+	sudo chown -R pcho:apple_ga ~/.dbus
+
+Also use the following command from local MacPro to ssh into Titan 1:
+
+	ssh -Y pcho@17.228.154.84
+
+Note that -Y is a safer version is -X.
+
+
+*.  According to https://docs.oseems.com/general/application/ssh/disable-timeout
+
+an ssh client can be forced to send a null packet to the ssh server over a
+set period of time to force its connection to remain alive.  In
+/etc/ssh/ssh_config, add the line
+
+ServerAliveInterval 600
+
+Alternatively on the server machine (i.e. gpu box), add the following lines
+within /etc/ssh/sshd_config:
+
+ClientAliveInterval 30
+TCPKeepAlive yes
+ClientAliveCountMax 99999
+
+According to http://z9.io/2008/12/10/how-to-fix-ssh-timeout-problems/, the
+client-side approach is preferred.
+
+*.  On 2/14/16, Weiyu reminded us that we must be sure to have the router
+for any titan machine plugged into a grey and not black power socket.
+Otherwise, we will lose network connectivity to a titan machine whenever
+room power to the black power socket automatically shuts off!
+
+*.  On 4/4/16, Tho replaced the GPU card within Titan 3.  After making this
+hardware change, we have tried to remotely reinstall the cuda driver by
+downloading cuda_7.0.28_linux.run to Titan 3 and running this executable
+script.
+
+

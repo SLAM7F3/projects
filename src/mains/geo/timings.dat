@@ -1,0 +1,286 @@
+DEBUGGING NOTES:
+
+3/16/13 1:03 pm: restricted_asift_May7g yields good features for
+20120105_1402 !!
+
+3/16/13 3:07 pm: May_7g version of restricted_asift and triangulate
+yields good 3D reconstruction
+
+3/16/13 3:59 pm: May_13b version of restricted_asift and triangulate
+yields good 3D reconstruction
+
+3/16/13 5:14 pm: May_14j version of restricted_asift and triangulate
+yields good 3D reconstruction
+
+3/17/13: 10:15 am: May 14j version of restricted_asift and triangulate
+yields good 3D reconstruction
+
+3/17/13: 11:17 am: May 15c version of restricted_asift and triangulate
+yields reasonable 3D reconstruction
+
+3/17/13: 11:59 am:  Latest version of restricted_asift and triangulate
+yields reasonable 3D reconstruction
+
+
+============================================================================
+BEAST Processing times 
+============================================================================
+Last updated on 5/15/13; 5/16/13; 5/17/13
+============================================================================
+
+64 20120105_1054 circular orbit video frames
+
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 1591.8 secs =   26.53 minutes =   0.442 hours 
+	n_feature_tracks = 160815 (includes feature extraction)
+
+	Elapsed time = 1271.1 secs =   21.19 minutes =   0.353 hours 
+	n_feature_tracks = 162645 (ASIFT features already extracted)
+
+	Elapsed time = 1620.5 secs =   27.01 minutes =   0.450 hours 
+	n_feature_tracks = 162730 (includes feature extraction)  5/17/13
+
+TRIANGULATE:
+
+	Elapsed time = 93.5 secs =   1.56 minutes =   0.026 hours 
+	n_cameras = 64 n_reconstructed_3D_pnts = 23143
+
+	3D reconstruction is seriously f____d up!
+
+	Elapsed time = 80.1 secs =   1.34 minutes =   0.022 hours 
+	n_cameras = 64 n_reconstructed_3D_pnts = 23278	5/17/13
+
+	Mediocre 3D reconstruction
+	FMV geolocation error > 100 meter !
+
+After restricting number of extracted features to not exceed 10K:
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 733.1 secs =   12.22 minutes =   0.204 hours 
+	n_feature_tracks = 76812 (ASIFT feature extraction included)
+
+TRIANGULATE:
+
+	Elapsed time = 27.6 secs =   0.46 minutes =   0.008 hours
+	n_cameras = 64 n_reconstructed_3D_pnts = 8592
+
+	Acceptable (but not great) 3D reconstruction
+	FMV geolocation error = O(45 meter)
+
+............................................................................
+108 20120105_1130 circular orbit video frames
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 2663.4 secs =   44.39 minutes =   0.740 hours 
+	n_feature_tracks = 464721 (ASIFT feature extraction partly performed)
+
+
+
+
+
+TRIANGULATE:
+	Elapsed time = 897.8 secs =   14.96 minutes =   0.249 hours 
+	n_cameras = 108 n_reconstructed_3D_pnts = 61845
+
+	Acceptable (but not great) 3D reconstruction
+
+After restricting number of extracted features to not exceed 10K:
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 1103.9 secs =   18.40 minutes =   0.307 hours 
+	n_feature_tracks = 223789 (ASIFT feature extraction already performed)
+
+	Elapsed time = 1145.5 secs =   19.09 minutes =   0.318 hours 
+	n_feature_tracks = 223789
+
+TRIANGULATE:
+
+	Elapsed time = 140.2 secs =   2.34 minutes =   0.039 hours 
+	n_cameras = 108 n_reconstructed_3D_pnts = 32378
+
+	Acceptable (but not great) 3D reconstruction
+
+	Elapsed time = 139.1 secs =   2.32 minutes =   0.039 hours 
+	n_cameras = 108 n_reconstructed_3D_pnts = 32378
+
+............................................................................
+69 20120105_1130 circular orbit video frames
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 1251.0 secs =   20.85 minutes =   0.347 hours 
+	n_feature_tracks = 84457 (SIFT/ASIFT feature extraction performed)
+
+	Elapsed time = 1252.4 secs =   20.87 minutes =   0.348 hours 	
+	n_feature_tracks = 87791 (feature extraction included; 5/17/13 at 2 pm)
+
+TRIANGULATE:
+
+	Elapsed time = 55.8 secs =   0.93 minutes =   0.016 hours 
+	n_cameras = 69 n_reconstructed_3D_pnts = 13048
+
+	Poor 3D reconstruction!
+
+
+	Elapsed time = 35.6 secs =   0.59 minutes =   0.010 hours 
+	n_cameras = 69 n_reconstructed_3D_pnts = 9625 (5/17/13 at 2:26 pm)
+
+	Seemingly good 3D reconstruction which is probably flawed!
+	FMV error = O(40 meters!)
+
+After restricting number of extracted features to not exceed 10K:
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 746.3 secs =   12.44 minutes =   0.207 hours 
+	(includes SIFT/ASIFT feature extraction)
+
+TRIANGULATE:
+
+	Elapsed time = 34.0 secs =   0.57 minutes =   0.009 hours 
+	n_cameras = 69 n_reconstructed_3D_pnts = 5952
+
+	Poor 3D reconstruction!
+
+............................................................................
+70 20120105_1402 circular orbit video frames
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 1797.6 secs =   29.96 minutes =   0.499 hours 
+
+	Elapsed time = 1711.0 secs =   28.52 minutes =   0.475 hours 
+	n_feature_tracks = 198445  (includes ASIFT feature extraction)
+	Run around 10 am on Thurs 5/16/13
+
+	Elapsed time = 1719.4 secs =   28.66 minutes =   0.478 hours  
+	n_feature_tracks = 193050 (includes ASIFT feature extraction)
+	Run around 11 am on Thurs 5/16/13
+
+TRIANGULATE:
+
+	For single round of bundle adjustment with focal lengths held fixed:
+
+	Elapsed time = 232.6 secs =   3.88 minutes =   0.065 hours 
+	n_cameras = 70 n_reconstructed_3D_pnts = 26224
+
+
+	Elapsed time = 123.9 secs =   2.06 minutes =   0.034 hours 
+	n_cameras = 70 n_reconstructed_3D_pnts = 26651
+	Run at 10:30 am on Thurs 5/16/13
+
+
+
+	Elapsed time = 102.6 secs =   1.71 minutes =   0.028 hours 
+	n_cameras = 70 n_reconstructed_3D_pnts = 25895
+	Run at 11:30 am on Thurs 5/16/13
+
+	As of Fri, 5/17/13 at 12:20 pm, GEO procedure yielded ~10 meter
+	FMV error compared to GE for Flight Facility rooftop substructure
+	geolocation.
+
+
+After restricting number of extracted features to not exceed 10K:
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 527.5 secs =   8.79 minutes =   0.147 hours 
+
+TRIANGULATE:
+
+	Elapsed time = 89.4 secs =   1.49 minutes =   0.025 hours 
+	n_cameras = 70 n_reconstructed_3D_pnts = 12121
+
+	Georegistered 3D reconstruction looks reasonable!
+
+............................................................................
+58 20120105_1427 racetrack video frames
+
+RESTRICTED_ASIFT:
+
+	Elapsed time = 1407.9 secs =   23.46 minutes =   0.391 hours 
+
+TRIANGULATE:
+
+	For single round of bundle adjustment with focal lengths held fixed:
+
+	Elapsed time = 146.7 secs =   2.45 minutes =   0.041 hours 
+
+	n_cameras = 58 n_reconstructed_3D_pnts = 22041
+
+
+............................................................................
+63 20110730_1303 kidney bean video frames
+
+RESTRICTED ASIFT:
+
+	Elapsed time = 1673.6 secs =   27.89 minutes =   0.465 hours 
+	Elapsed time = 1681.0 secs =   28.02 minutes =   0.467 hours 
+
+TRIANGULATE:
+
+	Elapsed time = 301.6 secs =   5.03 minutes =   0.084 hours 
+
+............................................................................
+103 20110730_1303 kidney bean video frames
+
+RESTRICTED ASIFT:
+
+	Elapsed time = 3996.4 secs =   66.61 minutes =   1.110 hours 
+
+	
+............................................................................
+27 20120105_1456 semicircle video frames  (5 degs)
+44 20120105_1456 semicircle video frames  (3 degs)
+66 20120105_1456 semicircle video frames  (2 degs)
+
+RESTRICTED ASIFT:
+
+	Elapsed time = 295.5 secs =   4.93 minutes =   0.082 hours  (27)
+	Elapsed time = 606.1 secs =   10.10 minutes =   0.168 hours (44)
+	Elapsed time = 1118.3 secs =   18.64 minutes =   0.311 hours  (66)
+
+TRIANGULATE:
+
+	Elapsed time = 8.4 secs =   0.14 minutes =   0.002 hours (27)
+	Elapsed time = 15.2 secs =   0.25 minutes =   0.004 hours (44)
+		n_cameras = 44 n_reconstructed_3D_pnts = 2559
+
+	
+............................................................................
+55 20120105_1438 partial ellipse video frames  (5 degs)  [CRAPPY IMAGES!!!]
+
+RESTRICTED ASIFT:
+
+	Elapsed time = 673.2 secs =   11.22 minutes =   0.187 hours 
+
+
+TRIANGULATE:
+
+............................................................................
+60 20110728_0905  asym orbit video frames  (5 degs)  
+49 20110728_0905  asym orbit video frames  (5 degs)  
+
+RESTRICTED ASIFT:
+
+	Elapsed time = 1681.9 secs =   28.03 minutes =   0.467 hours   (60)
+	Elapsed time = 1226.7 secs =   20.45 minutes =   0.341 hours   (49)
+
+
+TRIANGULATE:
+
+	Elapsed time = 595.3 secs =   9.92 minutes =   0.165 hours 
+	n_cameras = 60 n_reconstructed_3D_pnts = 27738
+
+
+	Elapsed time = 43.4 secs =   0.72 minutes =   0.012 hours 
+	n_cameras = 49 n_reconstructed_3D_pnts = 6929
+
+
+
+

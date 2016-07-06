@@ -1,0 +1,79 @@
+=============================================================================
+Notes for mounting old 1 TB ubuntu 13.4 disk under new 4 TB ubuntu 14.4 disk
+=============================================================================
+Last updated on 4/13/15; 10/5/15; 6/10/16
+=============================================================================
+
+*.  Physically place 4 TB ubuntu14.4 disk in primary slot (leftmost
+position inside MacPro) and 1 TB ubuntu 13.4 disk in secondary slot (2nd
+leftmost position inside MacPro)
+
+pvs utility reports information about physical volumes
+
+cho-MacPro:READMEs% sudo pvs
+  PV         VG        Fmt  Attr PSize   PFree 
+  /dev/sda3  ubuntu-vg lvm2 a--    3.64t     0 
+  /dev/sdb3  ubuntu-vg lvm2 a--  931.27g 44.00m
+
+Note that both disks have the same logical volume name "ubuntu-vg" which is
+BAD!  So we need to change at least one of their names to avoid a name
+clash
+
+*.  Physically take out 1 TB ubuntu13.4 disk
+
+Then sudo pvs yields
+
+cho-MacPro:READMEs% sudo pvs
+  PV         VG        Fmt  Attr PSize PFree
+  /dev/sda3  ubuntu-vg lvm2 a--  3.64t    0 
+
+Rename logical volume name for this disk:
+
+cho-MacPro:dev% sudo vgrename /dev/ubuntu-vg /dev/my_ubuntu-vg
+  Volume group "ubuntu-vg" successfully renamed to "my_ubuntu-vg"
+
+*.  Physically reinsert 1 TB ubuntu 13.4 disk into secondary slot:
+
+cho-MacPro:dev% sudo pvs
+  PV         VG           Fmt  Attr PSize   PFree 
+  /dev/sda3  my_ubuntu-vg lvm2 a--    3.64t     0 
+  /dev/sdb3  ubuntu-vg    lvm2 a--  931.27g 44.00m
+
+Now there is no more name clash between logical volume names!
+
+cho-MacPro:dev% sudo lvscan
+  ACTIVE            '/dev/ubuntu-vg/root' [907.24 GiB] inherit
+  ACTIVE            '/dev/ubuntu-vg/swap_1' [23.98 GiB] inherit
+  ACTIVE            '/dev/my_ubuntu-vg/root' [3.58 TiB] inherit
+  ACTIVE            '/dev/my_ubuntu-vg/swap_1' [63.99 GiB] inherit
+
+*.  Mount root partition of 1 TB ubuntu 13.4 disk to /mnt/sdb1:
+
+sudo mkdir /mnt/sdb1
+sudo mount /dev/ubuntu-vg/root /mnt/sdb1
+
+-------------------------------------------
+*.  As of 5:30 pm on Monday, Apr 13, 2015, 
+
+
+cho-MacPro:scripts% sudo pvs
+[sudo] password for pcho: 
+  PV         VG             Fmt  Attr PSize   PFree 
+  /dev/sda3  ubuntu-vg      lvm2 a--    3.64t     0 
+  /dev/sdb3  ubuntu-vg-13.4 lvm2 a--  931.27g 44.00m
+
+
+If we boot into the 4 TB ubuntu 14.4 drive, we *hope* that the contents
+from the 1 TB ubuntu13.4 disk will always be associated with logical volume
+name "ubuntu-vg-13.4" in the future while the 4 TB ubuntu14.4 disk will
+always be associated with the different logical volume name "ubuntu-vg".
+
+	sudo mount /dev/ubuntu-vg-13.4/root /mnt/sdb1
+
+-------------------------------------------
+*.  As of Fri Jun 10, 2016 on Thinkmate machine:
+
+ubuntu:pcho% sudo pvs
+  PV         VG             Fmt  Attr PSize   PFree 
+  /dev/sdb3  ubuntu-vg-13.4 lvm2 a--  931.27g 44.00m
+  /dev/sdc3  ubuntu-vg      lvm2 a--    3.64t     0 

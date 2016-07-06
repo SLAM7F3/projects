@@ -1,0 +1,161 @@
+===========================================================================
+MapServer installation notes
+===========================================================================
+Last updated on 5/15/12; 9/13/13; 12/2/13; 11/12/15
+===========================================================================
+
+*.  We learned via lots of trial and error that Firefox 3.0.10 should be
+set to "File -> Work Offline = unchecked" (i.e. work online = true) even when a
+machine is physically off the network.  Mapserver then seems to find .map
+files within /usr/lib/cgi-bin provided hostnames within these files =
+127.0.0.1.
+
+*.  On Ubuntu 10.4 machines, we need to chant
+
+sudo apt-get install cgi-mapserver
+
+in order for mapserv executable to be installed into /usr/lib/cgi-bin
+
+*.  Ensure /data/fontset.txt exists
+
+*.  Ensure /usr/share/fonts/truetype/msttcorefonts/ and its contents exist
+
+*.  Make sure mapserv database exists and all its tables 
+are populated (e.g. afghanpak15meter, country_borders,
+vmap0_cities, etc)
+
+*.  Test if mapserver is working by running executable via 
+ /usr/lib/cgi-bin/mapserv -v
+
+*.  On the G104 Virtual Machine running redhat 5, analog of
+/usr/lib/cgi-bin is /var/www/cgi-bin
+
+*.  Make sure /usr/share/proj contains an epsg text file.  Last line of
+this epsg file should read
+
+<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs
+
+
+===========================================================================
+In autumn 2013, we attempted to get LOST to work on the new "big" laptop
+operating under ubuntu 12.4/postgis 2/ and mapserv 6.0.1.  After getting
+lots of help from Michael Yee and implementing the modifications below,
+LOST is able to display background maps on the ubuntu 12.4 machine as it
+formerly did on older ubuntu 10.4 laptops:
+
+1.  In /usr/lib/cgi-bin, chant mapserv -v in order to see the version of
+mapserver which we're running on a machine:
+
+  BEAST desktop running ubuntu 10.4: mapserv = 5.6.1
+ 
+  BIG laptop running ubuntu 12.4: mapserv = 6.0.1
+
+  Thinkmate running ubuntu 14.4: mapserv = 6.4.1
+
+On the ubuntu 12.4 big laptop, mapserv -v yields
+
+MapServer version 6.0.1 OUTPUT=GIF OUTPUT=PNG OUTPUT=JPEG SUPPORTS=PROJ SUPPORTS=AGG SUPPORTS=CAIRO SUPPORTS=FREETYPE SUPPORTS=ICONV SUPPORTS=FRIBIDI SUPPORTS=WMS_SERVER SUPPORTS=WMS_CLIENT SUPPORTS=WFS_SERVER SUPPORTS=WFS_CLIENT SUPPORTS=WCS_SERVER SUPPORTS=SOS_SERVER SUPPORTS=FASTCGI SUPPORTS=THREADS SUPPORTS=GEOS INPUT=POSTGIS INPUT=OGR INPUT=GDAL INPUT=SHAPEFILE
+
+On ubuntu 14.4 Thinkmate, mapserv -v yields
+
+MapServer version 6.4.1 OUTPUT=GIF OUTPUT=PNG OUTPUT=JPEG OUTPUT=KML SUPPORTS=PROJ SUPPORTS=GD SUPPORTS=AGG SUPPORTS=FREETYPE SUPPORTS=CAIRO SUPPORTS=SVG_SYMBOLS SUPPORTS=RSVG SUPPORTS=ICONV SUPPORTS=FRIBIDI SUPPORTS=WMS_SERVER SUPPORTS=WMS_CLIENT SUPPORTS=WFS_SERVER SUPPORTS=WFS_CLIENT SUPPORTS=WCS_SERVER SUPPORTS=SOS_SERVER SUPPORTS=FASTCGI SUPPORTS=THREADS SUPPORTS=GEOS INPUT=JPEG INPUT=POSTGIS INPUT=OGR INPUT=GDAL INPUT=SHAPEFILE
+
+
+2.  In order to migrate mapserv from version 5 to version 6, we must
+add the line "ows_enable_request "*"" to /usr/lib/cgi-bin/MapFileHeader.map
+in the WEB --> METADATA subsection:
+
+WEB
+  TEMPLATE demo.html
+  METADATA
+
+    ows_enable_request "*"
+
+    "wms_title"			"LOS-UBUNTU MapServer"
+    "wms_onlineresource"	"http://127.0.0.1/cgi-bin/mapserv?map=AfghanPak.map&"
+    "wfs_onlineresource"	"http://127.0.0.1/cgi-bin/mapserv?map=AfghanPak.map&"
+    "wms_srs"			"epsg:4326"
+    "wfs_srs"           "EPSG:4326" 
+    "wfs_title"			"LOS-UBUNTU MapServer"
+  END  
+END
+
+3.  In /usr/lib/cgi-bin/MapFileHeader.map, need to change outputformat for
+both png and jpg images:
+
+
+# you may need to change this to match your MapServer build
+#IMAGETYPE PNG
+
+OUTPUTFORMAT
+  NAME "png"
+  DRIVER AGG/PNG
+  MIMETYPE "image/png"
+  IMAGEMODE RGB
+  EXTENSION "png"
+  FORMATOPTION "GAMMA=0.75"
+END
+
+# Flash 6 doesn't support progressive JPEGs
+
+OUTPUTFORMAT
+  NAME "jpeg"
+  DRIVER AGG/JPEG
+  MIMETYPE "image/jpeg"
+  IMAGEMODE RGB
+  EXTENSION "jpg"
+  FORMATOPTION "GAMMA=0.75"
+END
+
+4.  In /usr/lib/cgi-bin/WorldVectorLayers.map, change symbol for
+VMAP0_CITIES from 6 to 1.  Michael Yee noticed that only 5 and not 6
+symbols are defined at the end of /usr/lib/cgi-bin/MapFileHeader.map:
+
+LAYER
+  NAME VMAP0_CITIES
+  TYPE POINT
+  STATUS ON
+  PROJECTION
+    "init=epsg:4326"
+  END
+  CONNECTIONTYPE postgis
+# CONNECTION "user=@mapserver.dbuser@ password=@mapserver.dbpassword@ dbname=@mapserver.dbname@ host=@mapserver.dbhost@"
+  CONNECTION "user=postgres password=postgres dbname=mapserv host=localhost"
+  #CONNECTION "user=tschreiner password=schreiner@G106 dbname=mapserv host=127.0.0.1"
+  DATA "the_geom from vmap0_cities using unique gid"
+  DUMP TRUE
+  CLASS
+    MINSCALE 1
+    MAXSCALE 2000000
+    SYMBOL 1			<-----  Changed from 6 to 1 !!!
+    COLOR 50 80 80
+    NAME "vmap0 Cities"
+  END
+  METADATA
+    "wms_title"  "vmap0 cities"
+    "wfs_title"  "vmap0 cities"
+    "wms_srs"   "EPSG:4326"
+    "wfs_srs"   "EPSG:4326"
+    "wms_extent" "-180 -90 180 90"
+    "wfs_extent" "-180 -90 180 90"
+    "gml_include_items" "all"
+  END
+END
+
+5.  In order to have backwards compatibility between mapserver version 5*
+and postgis version 2*, we need to add some "legacy" commands into the
+mapserv database (see postgis.net/docs/postgis_installation.html).  This
+enables PostGIS2.0 to support old function names (which don't begin with
+"ST").
+
+Specifically chant
+
+		psql -d mapserv -f legacy_minimal.sql
+
+Note that legacy_minimal.sql is sitting in
+/usr/share/postgresql/9.1/contrib/postgis-2.0/
+
+According to postgist.net/docs/postgis_installation.html, we may be able to
+later run uninstall_legacy.sql to get rid of deprecated functions
+(presumably ones not beginning with "ST") at some point in the future.
+

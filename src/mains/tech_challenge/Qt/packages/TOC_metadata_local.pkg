@@ -1,0 +1,4 @@
+--PostGIS_hostname localhost
+--PostGIS_database_name TOC
+--PostGIS_username postgres
+--gispoints_tablename world_annotations

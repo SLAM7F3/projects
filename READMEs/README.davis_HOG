@@ -1,0 +1,186 @@
+==========================================================================
+Notes about how to run Davis King's HOG object detector
+==========================================================================
+Last updated on 1/9/16; 1/22/16; 5/6/16; 5/8/16
+==========================================================================
+
+Contents of dlib-18.18/tools/imglab/README.txt:
+
+imglab is a simple graphical tool for annotating images with object bounding
+boxes and optionally their part locations.  Generally, you use it when you want
+to train an object detector (e.g. a face detector) since it allows you to
+easily create the needed training dataset.   
+
+You can compile imglab with the following commands:
+    cd dclib/tools/imglab
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build . --config Release
+Note that you may need to install CMake (www.cmake.org) for this to work.  On a
+unix system you can also install imglab into /usr/local/bin by running 
+    sudo make install  
+This will make running it more convenient.
+
+Next, to use it, lets assume you have a folder of images called /tmp/images.
+These images should contain examples of the objects you want to learn to
+detect.  You will use the imglab tool to label these objects.  Do this by
+typing the following command:
+
+    imglab -c mydataset.xml /tmp/images
+
+This will create a file called mydataset.xml which simply lists the images in
+/tmp/images.  To add bounding boxes to the objects you run:
+    imglab mydataset.xml
+and a window will appear showing all the images.  
+
+MAKE SURE TO ENTER LABEL TAG (E.G. FACE) WITHIN "NEXT LABEL" TEXT BOX!
+
+
+You can use the up and down arrow keys to cycle though the images and the
+mouse to label objects.  In particular, holding the shift key, left
+clicking, and dragging the mouse will allow you to draw boxes around the
+objects you wish to detect.
+
+Note:  We learned from Davis on 1/9/16 that holding cntrl down while
+scrolling the mouse wheel zooms the current image within IMGLAB.
+
+Once you finish labeling objects go to the file menu, click save, and then
+close the program. This will save the object boxes back to mydataset.xml.  You
+can verify this by opening the tool again with:
+    ./imglab mydataset.xml
+and observing that the boxes are present.
+
+
+imglab can do a few additional things.  To see these run:
+    imglab -h 
+and also read the instructions in the About->Help menu.
+
+*.  Consolidate together results from two separate XML files:
+
+imglab --add gimages1-17.xml gimages_18.xml
+mv merged.xml gimages1-18.xml
+
+*.  Report statistics for images and labels encoded in XML files:
+
+ubuntu:pcho% imglab --stats gimages1-20_nofaces1-9_wider2.3K_nontiny_faces_hands.xml 
+Number of images: 11032
+Number of different labels: 2
+Number of non-ignored boxes: 61338
+
+Label: face
+   number of images:      8212
+   number of occurrences: 34463
+   min box area:    1
+   max box area:    2.95653e+06
+   mean box area:   11553.8
+   stddev box area: 52926.5
+   mean width/height ratio:   0.786136
+   stddev width/height ratio: 0.245518
+
+Label: hand
+   number of images:      6913
+   number of occurrences: 26875
+   min box area:    1
+   max box area:    3.42514e+06
+   mean box area:   7093.97
+   stddev box area: 47373.2
+   mean width/height ratio:   1.06503
+   stddev width/height ratio: 0.51526
+
+ubuntu:images% imglab --stats gimages1-20_nofaces1-2.xml
+Number of images: 6569
+Number of different labels: 1
+Number of non-ignored boxes: 25455
+
+Label: face
+   number of images:      5858
+   number of occurrences: 25455
+   min box area:    1
+   max box area:    2.95653e+06
+   mean box area:   10471.3
+   stddev box area: 54457.3
+   mean width/height ratio:   0.776342
+   stddev width/height ratio: 0.240996
+
+------------------------------
+
+*.  Davis' latest greatest version of dlib which has the hog stuff is
+sitting in /home/cho/programs/c++/svn/projects/src/mains/JAV/dlib/dclib
+
+*.  imglab executable was copied into /usr/local/bin (on BEAST) via some
+sudo make install step
+
+*.  Generate an xml file corresponding to an input set of images using
+imglab (="imglabel") utility:
+
+		imglab -c people_wtrancripts.xml *.jpg
+
+*.  In order to manually label examples, chant from within directory
+holding jpg images
+
+			imglab people_wtrancripts.xml 
+
+Add label descriptor in the "Next Label:" text box at upper left of GUI.
+Do NOT include space within the label descriptor.
+
+*.  Shift-drag a bounding box around an image object to be templated.  Try
+to make sure bounding boxes have constant aspect ratios.  In order to
+delete a bounding box, double click anywhere on its perimeter and then
+press backspace key.  Must label ALL instances of objects within a
+particular frame.
+
+Press up/down arrows to move to next/previous images to be labeled.
+
+*.  In 11/22/13 version of imglab, select a bbox by doubleclicking and then
+press "i" in order to ignore the box.  When there's ambiguity about whether
+some object should be detected or not, it's probably best to ignore it.
+
+*. Make sure to frequently save manual bboxes via file->save
+
+*.  In order to isolate labeled from non-labeled images within an XML file
+output by imglab, we can use imglab's "split" option:
+
+	imglab faces_earlySep.xml --split "frontal_face"
+
+This results in two new XML files called
+
+faces_earlySep_with_frontal_face.xml and 
+faces_earlySep_without_front_face.xml
+
+
+
+*. Can look at bboxes with firefox via 
+
+		firefox people_wtranscripts.xml
+
+
+*.  In examples folder, object_detector_ex.cpp is Davis' source example for
+using his HOG object detector.
+
+
+*. This folder contains object_detector_ex executable:
+
+/home/cho/programs/c++/svn/projects/src/mains/JAV/dlib/dclib/examples/build
+
+
+object_detector_ex --train /data_third_disk/video/JAV/NewsWraps/w_transcripts/jpg_frames/upper_torso_with_PersonUpperTorso.xml
+
+
+*.  object_detector_ex --test /data_third_disk/video/JAV/NewsWraps/w_transcripts/jpg_frames/test_people_wtranscripts.xml
+
+
+
+-------------------
+
+To make a macro in VI:
+
+1.  q followed by name of macro = some letter (e.g. a)
+
+2.  /image
+
+3.  q to terminate recording
+
+4.  To play macro, chant @ name of macro (e.g. @a)
+
+5.  gg = go to top ; G = goto to bottom

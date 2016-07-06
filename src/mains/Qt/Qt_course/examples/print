@@ -1,0 +1,42 @@
+#!/bin/sh
+enscript -o printout.ps -C1 -U2 --fancy-header=emacs \
+helloWorld/helloWorld.cpp \
+showhide/showhide.cpp \
+widgetGrouping/widgetGrouping.cpp \
+helloWorldWithQuit/helloWorldWithQuit.cpp \
+slowSlot/main.cpp \
+signalSlots/.moc/{moc_mysignal.cpp,moc_myslot.cpp} \
+qbuttongroup/main.cpp \
+paintProgram/step1/{scribbleArea.h,scribbleArea.cpp,main.cpp} \
+paintProgram/step2/{scribbleArea.h,scribbleArea.cpp,main.cpp,paint.h,paint.cpp} \
+widgetPrinting/{main.cpp,printing.h,printing.cpp} \
+paintProgram/step3/{scribbleArea.h,scribbleArea.cpp,main.cpp,paint.h,paint.cpp} \
+qt-designer/{README-qt-designer-example,qt-designer.pro,pizzaImpl.cpp,pizzaImpl.h} \
+setViewport/main.cpp \
+zoombox/{main.cpp,zoombox.cpp,zoombox.h} \
+qwmatrix/main.cpp \
+enhancedToolTip/enhancedToolTip.cpp \
+dynamicToolTip/dynamicToolTip.cpp \
+stopwatch/{stopwatch.h,main.cpp} \
+syntheticEvents/main.cpp \
+delayedInit/main.cpp \
+eventFilter/eventFilter.cpp \
+qembed/main.cpp \
+fileChooser/widget/filechooser.h \
+fileChooser/plugin/{plugin.pro,plugin.h,plugin.cpp} \
+sockets/{main.cpp,listener.h,listener.cpp} \
+udpClient/main.cpp \
+udpServer/{main.cpp,server.h,server.cpp} \
+findTool/{main.cpp,findDialog.h,findDialog.cpp} \
+qdom/{main.cpp,tagreader.h,tagreader.cpp} \
+qdom-write/main.cpp \
+customEvents/main.cpp \
+qt-embedded/qcop/{client,server}/main.cpp \
+qt-embedded/{winmanager,keyboard}/main.cpp \
+backgroundimage/main.cpp \
+scrollview/{oneChild,manyChildren,drawing,margins,dynamicSize}/main.cpp \
+kdab/{main.cpp,person.h,person.cpp,kdtext.h,kdtext.cpp,kdab.h,kdab.cpp} \
+paintProgram/step-scrollview/{scribbleArea.h,scribbleArea.cpp,main.cpp,paint.h,paint.cpp} \
+qlistview/{basicUse,iterator}/main.cpp \
+table/main.cpp \
+sql/{qsqlquery,qsqlcursor,primefunctions,qdatatable,qsqlform,qdatabrowser}/main.cpp

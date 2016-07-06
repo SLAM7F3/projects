@@ -1,0 +1,5 @@
+
+cd ~/programs/c++/svn/projects/src/mains/photosynth/Qt 
+
+~/programs/c++/svn/projects/src/mains/photosynth/Qt/qtviewbundler \
+--initial_mode Manipulate_Fused_Data_Mode

@@ -1,0 +1,81 @@
+===========================================================================================
+Mongo database notes 
+===========================================================================================
+Last updated on 9/24/15; 9/25/15
+===========================================================================================
+
+As of summer 2015, we no longer use mongo database "prjdb" but rather
+"pr".  So to start mongo, we now chant 
+
+	mongo pr
+
+------------------------------------------------------------------------------
+*.  "run" collection
+
+
+> db.run.find().toArray()
+
+Full la_downtown_pr test run on Thurs afternoon, 9/24/15:
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"
+
+
+Weiyu's micro-ladowntown roadsign run:
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu_micro_la_downtown_pr_150925_161943.xml"
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu_micro_la_downtown_pr_150925_161943.xml"}).count()
+2509
+
+
+------------------------------------------------------------------------------
+*.  "detection" collection
+
+> db.detection.find({project_name:"la_downtown_pr"}).count()
+522938
+
+
+- In order to dump contents of "detection" collection within "pr" database on
+fly14 to our local MacPro, chant something like
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{project_name:"la_downtown_pr"}'
+
+
+After restoring the mongo dump file to our local MacPro's "detection"
+collection within our "prjdb" database, we can execute the following mongo
+calls on both fly14 as well as our local machine:
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"}).count()
+54892
+
+> db.detection.find({gnd:{$exists:true}, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"}).count()
+39853
+
+> db.detection.find({duplicate:0, gnd:{$exists:true}, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"}).count()
+33461
+
+> db.detection.find({sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_145316.xml"}).count()
+19492
+
+
+
+Mini la_downtown_pr test run on Thurs morning, 9/24/15:
+
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_132445.xml"}).count()
+4942
+
+> db.detection.find({gnd:{$exists:true}, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_132445.xml"}).count()
+3613
+
+
+> db.detection.find({"duplicate":0, gnd:{$exists:true}, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_132445.xml"}).count()
+2889
+
+> db.detection.find({sub_type:"house_number", "duplicate":0, gnd:{$exists:true}, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_la_downtown_pr_150924_132445.xml"}).count()
+1671
+
+
+
+
+

@@ -1,0 +1,47 @@
+========================================================================
+Mounting Div10 server onto Ubuntu machines
+========================================================================
+Last updated on 1/18/12; 1/31/12; 8/1/12
+========================================================================
+
+On 1/18/12, Alex King taught us that the following commands working for
+mounting Div 10 subdirs onto at least touchy2.  On other linux boxes, we
+may need to sudo apt-get install smbfs:
+
+
+sudo mount -t smbfs //division10/Projects/SHAPE /division10/Projects/SHAPE/ -o username=pe16649
+
+sudo mount -t smbfs //division10/Projects/SHAPE /mnt/shape/ -o username=pe16649
+
+
+
+sudo mount -t smbfs //division10/Projects/Geo_Study /mnt/GEO/ -o username=pe16649
+
+sudo mount -t smbfs //division10/group104 /mnt/group104/ -o username=pe16649
+
+sudo mount -t smbfs //division10/group106 /mnt/group106/ -o username=pe16649
+
+
+*.  Chant 	
+
+sudo mount -t cifs -o username=pe16649 //Division10/group106 /mnt/group106
+
+
+Supply standard LL password when queried.
+
+
+*.  In order to run Myra Nam's SHAPE MATLAB GUI program, we first need to
+mount the Div10 shape folder onto our local linux machine as follows:
+
+sudo mount -t smbfs //division10/Projects/SHAPE /home/cho/division10/Projects/SHAPE/ -o username=pe16649
+
+
+In order to work with the remote Div10 server SHAPE folder with read, write
+and execute permissions and yet NOT being super-user, chant
+
+sudo mount -t smbfs //division10/Projects/SHAPE /home/cho/division10/Projects/SHAPE/ -o username=pe16649,filemode=0666,dir_mode=0777
+
+
+
+We then need to invoke matlab as a superuser in order to write matlab
+output files back onto the Div10 server.

@@ -1,0 +1,6 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/uavs
+/home/cho/programs/c++/svn/projects/src/mains/uavs/qtlogic \
+--WebServer_URL 155.34.162.160:4040 \
+--SKSDataServer_URL 155.34.162.160:8080 \
+--HTMLServer_URL 155.34.162.160:8080
+

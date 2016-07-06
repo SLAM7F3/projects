@@ -1,0 +1,137 @@
+ ==========================================================================
+Integrated demo script
+==========================================================================
+Last updated on 4/23/07; 5/29/07; 6/19/07
+==========================================================================
+
+Preliminaries checklist:
+
+0.  On 1st desktop, open vertically short window on RHS for conducting demo.
+
+1.  On 2nd desktop, display full-sized version of copley.jpg:
+
+      view /home/cho/programs/c++/svn/projects/src/mains/OSG/copley.jpg
+
+2.  On 3rd desktop, display 1/2-sized versions of copley.jpg and
+    copley_north.jpg:
+
+   view /home/cho/programs/c++/svn/projects/src/mains/OSG/copley.jpg
+   view /home/cho/programs/c++/svn/projects/src/mains/OSG/copley_north.jpg
+
+3.  On 4th desktop, display alpha-blended images
+
+  view /data/video/Boston/web_photos/copley_proj_intersection.png
+  view /data/video/Boston/web_photos/copley_north_proj_intersection.png
+
+4. Make sure all Cambridge signposts from SKS database have been erased
+(none on Draper and none near Kresge)
+
+Single urban environment:
+-------------------------
+
+ cd /home/cho/programs/c++/svn/projects/src/mains/OSG
+ viewcities --region_filename boston.pkg
+
+
+Horizontally resize window so that it fills entire laptop screen (and
+projector screen)
+
+  Refer to Cambridge EO image which should be up on side monitors
+
+  Press "A" to insert signposts into ISDS_DEV database.  Transfer
+	signpost information (nominations) from 3D <--> 2D.  
+
+	Place signpost on top of Draper lab
+	Delsey should place signpost on top of Kresge auditorium
+
+  Press "A" to enter into MANIPULATE_ANNOTATION mode followed by "r"
+	to read info from MassGIS databases.
+
+*.  Switch to 2nd desktop to view copley.jpg.  Then switch back to 1st
+desktop.
+
+   - Press "U" twice to enter MANIPULATE FUSED DATA mode
+   - Press "c" once to display Copley image ObsFrustum
+   - Press "f" to fly camera from current location to first ObsFrustum's 
+     vertex
+   - Press up and down arrows to change alpha blending of Copley image
+
+*.  Switch to 3rd desktop to view both copley.jpg & copley_north.jpg.  Ask how
+much overlap exists between two photos.  
+   
+   - Press "c" again to display two Copley image ObsFrusta
+   - Click mouse near 2nd ObsFrustum's vertex to select it and deselect
+     first one
+   - Press "f" to fly camera to 2nd ObsFrustum's vertex
+   - Zoom out from 2nd ObsFrustum.  Double click away from both ObsFrusta
+     vertices in order to display both ObsFrusta simultaneously .
+   - Press "i" to display intersection sub-volume between both ObsFrusta.
+
+   - Next explain we're really interested in intersection region's overlap
+     with world-scene point cloud.  But as a simplifying approximation,
+     we'll look at just the red sub-volume's overlap with the ground plane.
+     Press "d" to look at ground-plane intersection region.
+
+*.  Switch to 4th desktop to view ground plane triangle region's projection
+    into both image planes.  Note correspondence between Boston Public
+    library as well as buildings along street corner & park across from
+    buildings.
+
+
+Global situational awareness:
+----------------------------
+
+ cd /home/cho/programs/c++/svn/projects/src/mains/OSG
+ earth --region_filename boston.pkg --region_filename /home/cho/programs/c++/svn/projects/src/mains/newyork/nyc_rtv.pkg --region_filename baghdad.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid --region_filename sanclemente_EO.pkg
+
+
+
+ earth --region_filename /home/cho/programs/c++/svn/projects/src/mains/newyork/nyc_rtv.pkg --region_filename baghdad.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid --region_filename sanclemente_EO.pkg
+
+ earth --region_filename boston.pkg --region_filename baghdad.pkg --region_filename sanclemente_EO.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid 
+
+
+*.  Mention that we're not using Google Earth.  Mention 3 good reasons why
+we're not using Google Earth.
+
+*.  Press "f", enter "boston".  Translate over to Massachusetts state house
+area.  Google Earth cannot display true 3D ladar imagery.  Discuss paging
+in of tiles and real-time interaction with data.
+
+*.  Press "f", enter "san clemente".
+
+  - Press "A" twice to enter into "MANIPULATE ANNOTATION" mode followed by
+   "r" to read in signposts.  Then press ">" multiple times in order to see
+   nominations on San Clemente entered earlier in the demo.
+
+  - Press "J" twice followed by "m" twice to display LiMIT model, its
+    field-of-regard ObsFrustum and its instantaneous field-of-view ObsFrustum.
+    Explain that GMTI dwells are constrained to target nomination sites when
+    they're in view of the sensor.
+
+  - Press "R" to enter into "RUN MOVIE MODE" followed by "p" to begin
+    animation of LiMIT circling around San Clemente in racetrack orbit. 
+
+  - Press "J" twice followed by "m" once to display Predator model flying
+    over island.
+
+
+*.  Press "E" to return to MANIPULATE EARTH MODE.  Then press "f" followed
+    by "baghdad" to fly camera to baghdad.  ( Can toggle between forced
+    display/ non-forced display of lat/long grid lines by pressing 'd'.
+    Can toggle off sun lighting by pressing "s" within MANIPULATE EARTH MODE.)
+
+  - Press "B" to enter INSERT BOX MODE.  Pick some location in Baghdad map
+    with mouse.  Enter "1" for Army symbol identifier.  Press "B" to
+    enter MANIPULATE BOX MODE.  Move symbol around with mouse.  Insert
+    another red army symbol.
+  - Press "H" to insert IED bomb blast nearby some big building
+  - Manually move camera over to airport area and view HAFB video.
+
+*.  Zoom out from Baghdad.  Indicate that 0D points, 1D curves and 2D
+    nadir photos are handled very well by Google Earth.  But in order to 
+    store and manipulate 3D static ladar data and 4D videos, we need a more
+    powerful system such as the one we're developing.
+
+
+

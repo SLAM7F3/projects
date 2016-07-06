@@ -1,0 +1,286 @@
+========================================================================
+Contents of orange LACIE "backpack" drives
+========================================================================
+Last updated on 12/11/15; 1/2/16; 1/7/16; 1/17/16
+========================================================================
+
+500 GByte VFAT Drive #1: (last updated on 12/11/12)
+Automounts on ROBOT laptop as /media/490D-C93A
+168 Gbytes available on 466 Gbyte disk
+
+Afghanistan/        clewiston/           NGA/           Ricoh/
+Baghdad/            HAFB/                Noah/          tech_challenge/
+Bluegrass/          HMI/                 photosynth/    text_recognition/
+bluetracker/        IAP/                 Plume/         TOC12/
+bluetracker_sigma/  image_search/        RASR/          Visualization/
+Boston/             MIT2317_subset_out/  RCO/
+China/              new_york/            $RECYCLE.BIN/
+
+On 3/7/14, we could not successfully mount Drive #1 on out Dell precision
+M6700!  So we copied its entire contents to Drive #9 as a backup.  On
+3/8/14, drive #1 did automount OK.
+
+--------------------------------------------------------------------------
+500 Gig VFAT #2 (last updated on 2/10/12)
+Automounts on ROBOT laptop as /media/490D-D38C
+127 Gbytes available on 466 Gbyte disk
+
+ACL_collab/            LISI/                 SIGMA/
+aerialEO/              LOST/                 System Volume Information/
+AIPR11/                mars-rhel5.zip*       tech_challenge/
+AVI_movies/            Milwaukee-WI/         Tech Challenge/
+Boston/                netbook/              touchy2_binaries/
+CODECS/                NYC/                  touchy2_data/
+dbcache.dat sudbury/   Photos/               touchy2_projects/
+EvalFYY10/             pmvs-2.tar.gz*        touchy2_Ubuntu7/
+FalconI/               PuertoRico/           touchy2_usr_local_src/
+gps/                   realtime_Jigsaw.pdf*  VGA2Ethernet/
+Haiti_Imagery/         $RECYCLE.BIN/         WISP/
+invivo_pigheart_3DUS/  Recycled/
+LibraryGISData/        SAFIRE/
+
+32K MIT photos from summer 2009 are in camera-labeled subdirs of
+Photos/Files/MIT_field_trip/26_June_2009/Zach1
+
+Photos contains Dec 1, 2009 wintertime photos shot around MIT.
+
+Non-ALIRT fused Boston ladar data used for MIT2317 demo sits inside 
+/touchy2_Ubuntu7/mapping/boston/fused_osga_tiles on this disk
+
+--------------------------------------------------------------------------
+1 TB Lacie VFAT #3 (last updated on 2/10/12)
+Automounts on ROBOT laptop as /media/10EB-267A/
+888 Gbytes available on 932 Gbyte disk
+
+Left home as of 3/23/2012
+
+div_seminar/  lighthawk/   MassGISTiled/  RASR/			   TOC11/
+geowebcache/  LOST_ladar/  Plume/         TexasTech_consolidated/        
+
+--------------------------------------------------------------------------
+500 GByte FAT32 Drive #4: (last updated on 1/15/13)
+Automounts on ROBOT laptop as /media/D05043B050439C5A 
+142 Gbytes available on 466 Gbyte disk
+
+ACL/                            NavyWisp/
+Afghanistan/                    noah_talks/
+all_z_geotif_tiles/             photos_20101010.csv*
+autonomy/                       plume/
+AUVSI/                          $RECYCLE.BIN/
+bundler/                        System Volume Information/
+D7180_S3-314/                   tech_challenge/
+export_data_subset_to_csv.sql*  Thunderstorm/
+ffmpeg_include.tgz*             TOC10/
+ffmpeg.tgz*                     TOC_20101010.backup*
+fingerprints/                   TOC_20101010_data.sql*
+game_day_backups/               TOC_20101010_schema.sql*
+hmi/                            track_points_20101010.csv*
+LOST/                           viewpoints/
+
+Moved all TOC10 data (photos, GPS tracks) which were sitting in ROBOT
+laptop's /data/ subdir into TOC10/ subdir on 2/7/12.  
+
+--------------------------------------------------------------------------
+1 TByte VFAT Drive #6 (last updated on 3/24/13; 11/27/13)
+Automounts on ROBOT laptop as /media/66368D22368CF3F9
+47 Gbytes available on 932 Gbyte disk
+
+Aerial_photos/     FLIR/              $RECYCLE.BIN/
+AIPR11/            GPS_tracks/        System Volume Information/
+AIPR12/            GrandCanyon/       tarballs/
+ALIRT/             IAP/               text_recognition/
+Baghdad/           LLGrid/            TOC11/
+bundler/           LLJournal/         TOC12/
+databases/         OSG/               visualization/
+DIME/              papers/            Wisp/
+div_seminar_2011/  projfile_backups/
+
+Contents of ./bundler/ :
+
+devens/       kermit7.tgz*        MITJulDec09/      rasr_aud_dset2/
+FLIR/         lighthawk/          MITJulDec09.tgz*  raven/
+fundamental/  MIT2317_old/        NewsWrap/         sailplane_flight3/
+GEO/          MIT2317_orig/       NYC1012/          Thunderstorm/
+GrandCanyon/  MIT2317.tgz*        NYC1012.tgz*      wisp/
+HAFB/         MIT2328.tgz*        plume/            wispnew/
+kermit2/      MIT32K_and_aerial/  Pushcart/
+
+On 11/16/15, we backed up all papers within Dropbox as well as those moved
+out of Dropbox into /data1/Papers/RemovedfromDropbox on our M6700 Dell
+laptop within two .tgz files inside the papers/ folder on Drive #6.
+
+--------------------------------------------------------------------------
+300 Gig VFAT drive (last updated on 2/10/12)
+Automounts on ROBOT laptop as /media/4893-1333
+59 Gbytes available on 298 Gbyte disk 
+
+Left home as of 3/23/2012
+
+Baghdad/                         FortJefferson ground/  Plume/
+Boston-S128/                     ft jefferson lynx/     $RECYCLE.BIN/
+D7180/                           geowebcache/           sigma/
+datastuff/                       GrandCanyon/           System Vol Info/
+DDL_Raven_Data/                  LOST/                  tech_challenge/
+DSCF1002.JPG*                    lubbock_lidar/         TOC10/
+DSCF1005.JPG*                    mapcp-gotiffs-5/       usrlocalsrc/
+Eyeglass.app/                    mapserver/
+ffmpeg_checkout_May23_2010.tgz*  MassGIS/
+
+--------------------------------------------------------------------------
+1 TByte VFAT Drive #7 labeled "Twin Otter FLIR imagery Spring 2011"
+(last updated on 2/10/12):
+Automounts on ROBOT laptop as /media/SIGMA-TH-S
+759 Gbytes available on 932 Gbyte disk
+
+Left home as of 3/23/2012
+
+SIGMA-TH-S/
+
+20110525_flight1_jpeg/  intruder1.png*          SIGMA_NewEngland_flights/
+Aerial_photos/          $RECYCLE.BIN/           System Volume Information/
+Brownbag_data/          Recycled/               Thunderstorm/
+GEO/                    screenshots_WedsMay11/  Thunderstorm_spiral4/
+grand_canyon/           SIGMA ascii Meta Data/
+
+--------------------------------------------------------------------------
+1 TByte VFAT Drive #8 
+(last updated on 9/30/11):
+
+Automounts on ROBOT laptop as /media/TS_Spiral4
+
+GEO/
+
+--------------------------------------------------------------------------
+1 TByte VFAT Drive #9
+(last updated 5/30/13; 11/27/13; 12/8/13; 12/17/13; 1/6/14; 3/8/14)
+124 Gbytes available on 932 Gbyte drive
+
+Automounts on ROBOT laptop as /media/LACIE SHARE
+
+acc_nti.txt          FalconLaptop/  LOST/          ScalableGraphVisualization/
+Bluegrass/           fiji.tar.gz    MacPro/        sift/
+BostonBombing/       FLIR/          mail/          sigint/
+Boston_July15_2008/  GEO/           MIT/           soonmin/
+ChinaLake/           gist/          movie_frames/  tech_challenge/
+DivSeminar_2011/     HMI/           new_laptop/    thunderstorm/
+dlib/                ImageEngine/   photon_dumps/  wisp/
+DocSearch/           isds/          random/
+Drive1/              LaCie Setup/   rco/
+DTED/                LL_Demo/       $RECYCLE.BIN/
+
+Contents of Drive1 subdirectory:
+
+Afghanistan/        clewiston/           NGA/         Ricoh/
+Baghdad/            HAFB/                Noah/        tech_challenge/
+Bluegrass/          HMI/                 photosynth/  text_recognition/
+bluetracker/        IAP/                 Plume/       TOC12/
+bluetracker_sigma/  image_search/        RASR/        video/
+Boston/             MIT2317_subset_out/  RCO/         Visualization/
+China/              new_york/            Resume/
+
+--------------------------------------------------------------------------
+1 TByte VFAT Drive #10
+(last updated on 5/30/13; 12/17/13; 12/22/13)
+763 Gbytes available on 932 Gbyte drive
+As of 12/22/13, we can no longer write any additional files to Disk #10.
+For reasons we don't understand, this disk thinks it's out of space...
+
+Automounts on ROBOT laptop as /media/LACIE SHARE
+
+DIME/         kermie/            LaCie Setup/  Puma/
+gist_images/  kermie_corrupted/  new_laptop/   $RECYCLE.BIN/
+
+--------------------------------------------------------------------------
+1 TByte KERMIE Drive
+(last updated on 5/30/13):
+373 Gbytes available on 932 Gbyte drive
+
+Automounts on ROBOT laptop as /media/Kermie
+
+Data/  $RECYCLE.BIN/  windows/
+
+--------------------------------------------------------------------------
+1 TByte VFAT Drive #11
+(last updated on 4/24/13):
+326 Gbytes available on 932 Gbyte drive
+
+Automounts on ROBOT laptop as /media/LACIE SHARE
+
+LaCie Setup/  touchy2/
+
+Copied entire contents of touchy2's /data directory onto Disk #11 before
+touchy2 was wiped in late April 2013.
+
+--------------------------------------------------------------------------
+Thin 1 TByte EXT4 Drive #12
+(last updated on 12/30/13; 1/5/14; 1/9/14; 11/21/15; 1/2/16)
+136 Gbytes available on 917 Gbyte drive
+
+Automounts on Big laptop as /media/DataTransfer/
+
+Beast/                  falcon_laptop/                   lost+found/
+CoarseImageMatchPairs/  fingerprints/                    puget_l1.osga
+DTED/                   HAFB_overlap_corrected_grey.vid  ReutersCorpus/
+earth_bright60.osga     HOG_faces/                       Thinkmate/
+faces/                  ImageEngine/                     VOC/
+
+--------------------------------------------------------------------------
+Thin 1 TByte EXT4 Drive #13
+(last updated on 1/9/14; 12/3/15; 1/7/16; 1/17/16)
+389 Gbytes available on 917 Gbyte drive
+
+Automounts on Big laptop as /media/MoreData/
+
+bundler/  deeplab/        learning/    MacPro/      screen_shots/
+caffe/    falcon_laptop/  lost+found/  new_laptop/  TrainingImagery/
+
+--------------------------------------------------------------------------
+Big 1 TByte VFAT Drive
+(last updated 2/13/12)
+Automounts on ROBOT laptop as /media/TS_Spiral4
+
+Listing of /media/ThunderUnder /media/TS_Spiral4/Thunderstorm/
+
+Analog_Data/         Clips_of_interest/  HD_Data/
+August_Data_Review/  Flight_Path_KML/    lowdef/
+BRownbag/            Grand_Canyon/       Screenshots/
+
+==========================================================================
+BAD DISKS
+==========================================================================
+
+--------------------------------------------------------------------------
+As of July 2011, we believe this disk is on the verge of failing!  So we
+transfered nearly all of its contents to Drive #6 in mid July....
+
+300 Gig Ext3 drive (last updated on 6/17/11):
+Automounts on ROBOT as /media/5f11a671-48d4-4fe7-9997-b6e2d7070af0 
+
+ALIRT/  backups/  Baghdad/  div_seminar/  lost+found/  MIT7K/
+
+
+
+
+--------------------------------------------------------------------------
+The connector for Drive #5 mechanically failed in winter 2013.  So we
+copied all of its contents over to Drive #9.  Disk #5 is stting at home as
+of March 2013.
+
+
+500 GByte VFAT Drive #5 (last updated on 2/10/12):
+Automounts on ROBOT laptop as /media/10E8-0ED2
+197 Gbytes available on 466 Gbyte disk
+
+acc_nti.txt*         DTED/      isds/     MIT/           sigint/          wisp/
+Bluegrass/           fiji.tar*  LL_Demo/  movie_frames/  soonmin/
+Boston_July15_2008/  FLIR/      LOST/     rco/           tech_challenge/
+DivSeminar_2011/     HMI/       mail/     $RECYCLE.BIN/  thunderstorm/
+
+DTED contains Afghanistan, Korea and Iraq geotif and OSGA files needed to
+run QTLOS on touchy2.
+
+
+
+
+
+

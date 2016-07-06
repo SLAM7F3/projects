@@ -1,0 +1,10 @@
+==========================================================================
+ISAR and optical 3D imagery fusion procedure
+==========================================================================
+Last updated on 3/16/06
+==========================================================================
+
+*.  Convert composite 3D ISAR and optical XYZP files into corresponding
+XYZRGBA files by pressing the 'f' key in View Data mode of VIEWSATELLITE.
+
+*.  Run program mains/spase/isar_opt_fusion.cc on the two XYZRGBA files.

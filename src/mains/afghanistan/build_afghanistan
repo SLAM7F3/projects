@@ -1,0 +1,6 @@
+~/bin/MAKE program=crossentropy
+~/bin/MAKE program=fuse_dted_truearth
+~/bin/MAKE program=generate_fuse_script
+~/bin/MAKE program=generate_lodtree_script
+~/bin/MAKE program=ll2utm
+~/bin/MAKE program=los

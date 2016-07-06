@@ -1,0 +1,9 @@
+~/bin/MAKE program=airground_match
+~/bin/MAKE program=fix_ladarmap
+~/bin/MAKE program=generate_panels
+~/bin/MAKE program=georegpano
+~/bin/MAKE program=match_masks
+~/bin/MAKE program=panelpkgs
+~/bin/MAKE program=panovsladar
+~/bin/MAKE program=wispmask
+~/bin/MAKE program=wispprop

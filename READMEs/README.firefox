@@ -1,0 +1,36 @@
+============================================================================
+Notes for configuring firefox
+============================================================================
+Last updated on 10/30/07; 3/16/08; 3/11/09
+============================================================================
+
+1.  Enter about:config to bring up list of firefox settings
+
+2.  Enter "window" in filter line to limit number of returned items
+
+3.  Note integer values for browser.link.open_newwindow,
+open_newwindow.restriction and LoadOnNewWindow.
+
+-------------------------------------
+
+4.  tools -> addons -> get extensions (lower right)
+
+Then type URLparams within search box on mozilla page
+
+Click on URLParams link. Then click on install now green bar.  Click on
+install now.  Then restart firefox.
+
+To open side bar with get boxes, type alt-u for shortcut.  Or click on view
+-> sidebar -> altpararms within firefox broswer.
+
+
+-------------------------------------
+
+On 3/11/09, Dave Ceddia taught us that we need to alter a firefox
+configuration setting in order to force firefox to reuse tabs rather than
+opening new ones when Michael Yee's ProcessLauncher java program brings up
+a wiki page in response to an ActiveMQ message.  In the firefox entry line,
+chant about:config.  Then in the filter tab, chant external.  Finally reset
+the browser.link.open_external value to 1.
+
+

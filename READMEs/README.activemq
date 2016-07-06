@@ -1,0 +1,123 @@
+===========================================================================
+ActiveMQ installation notes
+===========================================================================
+Last updated on 9/14/09; 9/18/09; 12/23/13
+===========================================================================
+
+*.  Download  apache-activemq-5.2.0-bin.tar.gz, unpack tarball and place
+into /usr/local.
+
+*.  Install Java 1.6 into /opt/java.  Download jdk-6u14-linux-i586.bin from
+following sun site:
+
+https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/ViewFilteredProducts-SingleVariationTypeFilter
+
+*.  Copy contents of /etc/init.d/activemq script from some already working
+machine onto new machine.  
+
+#! /bin/sh
+
+# Script to start and stop ActiveMQ
+
+case "$1" in 
+   start)
+      echo -n "Starting ActiveMQ..."
+      /usr/local/bin/activemq >/var/log/activemq.log 2>&1 &
+      ;;
+   stop)
+      echo -n "Stopping ActiveMQ..."
+      kill `ps ax | grep active | grep -v grep | cut -f2 -d' '`
+      ;;
+   *)
+      echo "Usage: $0 {start|stop}"
+      exit 1
+      ;;
+esac
+exit 0
+
+
+*.  Create soft link /opt/jdk to /opt/jdk1.6.0_20 (or whatever latest
+version number of java is these days)
+
+*.  Be sure to add export following line to /etc/profile
+
+# JAVA_HOME=/opt/java/jdk1.6.0_14
+
+JAVA_HOME=/opt/java/jdk
+
+Also add similar line to /root/.bashrc
+
+JAVA_HOME=/opt/java/jdk
+
+# export JAVA_HOME=/opt/java/jdk1.6.0_14
+
+And add to /etc/bash.bashrc
+
+export http_proxy=http://llproxy:8080 
+export JAVA_HOME=/opt/java/jdk
+
+# export JAVA_HOME=/opt/java/jdk1.6.0_14
+
+and in /etc/csh.cshrc (this next change is probably unimportant)
+
+setenv JAVA_HOME /opt/java/jdk1.6.0_14
+
+# setenv JAVA_HOME /opt/java/jdk
+
+*.  In order to make activemq autostart at boot time, need to chant
+
+sudo update-rc.d activemq defaults
+
+More generally, chant update-rc.d <name of init.d filename goes here>
+defaults
+
+
+*.  If activemq fails to activate at boot time correctly, the following
+cluge may help:
+
+In /etc/rc.local, put
+
+sleep 5
+/etc/init.d/activemq start
+
+Then be sure to remove all startup calls to activemq in /etc/rc3.d, etc via
+command
+
+update-rc.d -f activemq remove
+
+
+*.  In July 2009, we experienced very bad problems with ActiveMQ failing to
+start at boot time on the LOS ubuntu laptop.  After much trial and error,
+Dave Ceddia found that it was necessary to comment out all references to
+multicast within /usr/local/apache-activemq/conf/activemq.xml.  
+
+Comment out following line:
+
+<networkConnector name="default-nc" uri="multicast://default"/>
+
+Replace following line
+
+<transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
+
+with non-multicast version:
+
+<transportConnector name="openwire" uri="tcp://localhost:61616"  />
+
+Then ActiveMQ appears to start OK at boot time.
+
+*.  In Sep 2009, Activemq 5.2 did not automatically listen correctly to
+port 61616.  So Dave Ceddia told us to add the first of the following lines
+to /usr/local/apache-activemq-5.2.0/conf/activemq.xml:
+
+  <transportConnector name="openwire" uri="tcp://localhost:61616"/>
+  <transportConnector name="ssl" uri="ssl://localhost:61617"/>
+  <transportConnector name="stomp" uri="stomp://localhost:61613"/>
+  <transportConnector name="xmpp" uri="xmpp://localhost:61222"/>
+
+After making this change, activeMQ seems to work fine on the ubuntu 8.04
+disk on touchy2.
+
+*.  Whenever setting up a new linux box, we need to create a soft link such
+as /usr/local/include/activemq-cpp-2.0.1/ to
+/usr/local/include/activemq-cpp
+

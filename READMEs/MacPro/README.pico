@@ -1,0 +1,207 @@
+=============================================================================
+PICO notes
+=============================================================================
+Last updated on 9/15/15; 9/16/15; 9/22/15; 10/15/15
+=============================================================================
+
+*.  On 9/10/15, Jasmine suggested that we checkout
+pico_feature_2d_object_score_overlap_v3() within pico_features_2d.c for an
+example of backprojecting 2D bboxes into 3D world-space.
+
+In particular, check out
+
+ pico_project_detections_to_segments(pico, &dets_to_segs);
+
+*.  Example pwin command which Jasmine gave us to run to learn about pico.
+The "-int 1" should display intermediate results within the pwin window.
+Jasmine warned us that running the following pico command on a single tile
+could take upwards of an hour on our local Macpro...
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_build \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_650_ground_pico_elsa/xml \ 
+-prj bay_area_650_ground_pico_elsa  -area 14 1 4583 7295  -int 1 -picov 303"
+
+*.  On 9/10/15, Alireza told us to check out pico_init() within
+pico_init.c.  He also suggested that we check out pico_gui.c which lives in
+pwin/app/gui/ .  After running various "F1", "F2", etc steps (see
+pico_gui_add_to_app()), we can generate a dump file via esc-x save_pcl.
+
+*.  Alireza command for running pico_build:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_extract_build \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 \
+-area 14 1 4541 7242 -int -nochk -picov 106 -nochk"
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_extract_build \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_localJW-MacPro_bay_area_5k_Hwy_280_pico_303_150825_091845.xml \
+-prj bay_area_5k_Hwy_280_pico_303 \
+-area 14 1 4543 7236 -int -nochk -picov 106 -nochk"
+
+After ladar data has been loaded, we should see pwin graphics window pop
+open to large size displaying primarily greyscale point cloud.  
+
+Press "f1" in order to first run initialization methods which convert raw
+ladar point cloud into pico point cloud.  [Pico point cloud is O(5) times
+more sparse than raw ladar point cloud.]  Then we can export a dump file
+containing the point cloud (but not raw lidar points) by chanting
+
+esc-x
+save_pcl <dump_file_name>
+
+Once the dump file has been created, we can rapidly reload the dump file's
+contents by chanting something like
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_gui \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_localJW-MacPro_bay_area_5k_Hwy_280_pico_303_150825_091845.xml \
+-prj bay_area_5k_Hwy_280_pico_303 \
+-picov 106 -dump tile_4541_7242.dump"
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_gui \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_localJW-MacPro_bay_area_5k_Hwy_280_pico_303_150825_091845.xml \
+-prj bay_area_5k_Hwy_280_pico_303 \
+-picov 106 -dump pico_4543_7236.dump"
+
+*.  When dump files are generated, NONE of the following pico data
+structures are exported:
+
+  g_lidar_ray_list_t *lidar_rays;
+  map_rig_list_t *rigs;
+  map_resource_list_t *prj_resources;
+  pr_ebbox_list_t *detections;
+
+*.  Look at pico_init() within pico_init.c for example of transferring RGB
+info from 2D image planes to 3D point cloud.
+
+Alireza suggests using semantic labels for points to transfer 2D
+classifications to 3D point cloud.
+
+*.  On 9/14/15, Jasmine and Alireza told us that they have tried very hard
+to make sure all pico files in pwin/lib do NOT have any dependence upon
+prj_project_t.  So they do not want to include any project pointer within
+the main pico structure.
+
+*.  On 9/15/15, we learned that pico dump "cache" files saved 3D points in
+a "local" coordinate system and NOT in ecf geocentric coords.
+
+
+*.  In order to create an absolutely georegistered dump file, we must first
+run pico_extract_build on some tile. After raw lidar data is loaded, we
+should see a greyscale point cloud (with some points colored blue)
+appearing within the pwin graphics window.  We then need to press "f1" in
+order to generate a point cloud from raw lidar data.  If we press 2, we
+should be able to see the sparsified point cloud in major mode #2.  We next
+need to press "esc-x" followed by "pre_dump" which calls pico_pre_dump().
+This method consolidates all point clouds residing within pcls array of
+pico structure into pcl_io field within pico structure.  Finally, press
+"esc-x" followed by "dump_pcl tile_ecf.dump" in order to export binary dump
+file.
+
+*.  Following pwin command imports *global* binary dump file:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_gui \
+-rtag bay_area_650_ground_dev_3 \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 \
+-area 14 1 4541 7242 \
+-picov 106 -gdump /data/peter_stuff/road_networks/pico/scripts/14/4541/map_14_4541_7242.pico"
+
+This command calls pico_restore() inside pico_io.c
+
+*.  As of 9/16/15, PICO_PCL_COUNT = 7
+PICO_PCL = 0
+Both are defined within pico_pcl_type_t inside pico.h
+
+*.  When we import "full global" pico dump file, we find it contains
+1,054,251 points, labels, ids and colors.
+
+When we import "individual" pico dump files from "cached dump", we find
+pcl 0 contains 1,997,248 points, srcs, time, labels, colors, ids 
+pcl 1 contains 1,656,348 points, (39K) normals,  srcs, time, labels, colors, ids
+pcl 5 contains 7118 points, srcs, time, labels, colors, ids
+pcl 6 contains 99,700 points, srcs, time, labels, colors, ids
+
+*.  Jasmine says that we MUST specify some (potentially bogus) label for
+every point which is exported via the "full global" dump command.  She also
+told us to move the full dump file into a relative path such as
+./14/4541/map_14_4541_7242.pico .  We should then be able to see the full
+point cloud by chanting 
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pico_io_view \
+-dir /data/peter_stuff/road_networks/pico/scripts/14/4541/map_14_4541_7242.pico \
+-blev 14 "
+
+*.  Semantic labels are defined within lib/base/semantics.h
+
+*.  John Wood explained how Martin's following tricky preprocessor
+definition
+
+typedef enum {
+#define X(a,b,c) SEMANTIC_LABEL_##a,
+  SEMANTICS
+  SEMANTIC_LABEL_SIZE
+#undef X
+} semantic_label_t;
+
+expands into code which the compiler actually sees using token
+concatenation (see https://gcc.gnu.org/onlinedocs/cpp/Concatenation.html):
+
+typedef enum {
+  SEMANTIC_LABEL_NONE,
+  SEMANTIC_LABEL_GROUND,
+  .
+  .
+  .
+  SEMANTIC_LABEL_SIZE
+} semantic_label_t;
+
+*.  pico_subtree_build_cmd() in pico_build.c is entry point for generating
+LOD tree for ladar tiles in global geocoords.
+
+*.  Within pico_gui viewer, press 'esc x' followed by '8' (for
+PICO_GUI_SHOW_LABELS) in order to see different colors for point cloud
+points with different labels.
+
+*.  On 10/15/15, Jasmine showed us that we can find the actual directory
+on startown where project files are written within flyover admin:
+
+Click Project Database --> Enter (partial) name of project within search
+box.  The "Path" listed by flyover admin (but without any final "omni"
+subdirectory) shows where project files generated via bundle adjustment
+build jobs are located.  
+
+For example, project "5k_kmz_2-dev-gpu-test" is associated with startown
+directory
+
+  /startown-gpfs/sputnik04/supersize/data/cupertino/5k_kmz_2-dev-gpu-test/
+
+   -.  If no "pico/" subdir is found within the startown directory, then we must
+run the pico pipeline in order to build it.  
+
+Jasmine told us to deploy a new pwin binary on distrib
+(e.g. pwin_7ac69e_pr).  Then start c3viewer with this binary:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "view \
+-pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_7ac69e_pr"
+
+   -.  Select "scratch" under shape button in c3viewer and then draw a new
+shape.
+
+   -.  Under Settings submenu, toggle on only "Semantic PCL" and toggle off
+all other "Jobs" choices.
+
+   -.  Set Priority to 80.  Then click "Run".
+
+   -.  Tile subdirs should be populated within a new pico/ subdir of the
+startown directory
+

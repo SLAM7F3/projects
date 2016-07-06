@@ -1,0 +1,87 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/aerosynth
+../photosynth/viewbundler \
+./bundler/sailplane_flight3/sailplane.osga \
+./bundler/sailplane_flight3/gps_track.osga \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0000.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0020.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0040.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0060.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0080.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0100.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0120.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0140.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0160.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0180.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0200.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0220.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0240.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0260.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0280.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0300.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0320.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0340.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0360.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0380.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0400.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0420.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0440.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0460.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0480.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0500.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0520.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0540.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0560.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0580.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0600.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0620.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0640.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0660.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0680.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0700.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0720.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0740.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0760.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0780.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0800.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0820.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0840.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0860.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0880.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0900.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0920.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0940.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0960.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_0980.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1000.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1020.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1040.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1060.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1080.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1100.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1120.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1140.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1160.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1180.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1200.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1220.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1240.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1260.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1280.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1300.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1320.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1340.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1360.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1380.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1400.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1420.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1440.pkg \
+--region_filename ./bundler/sailplane_flight3/packages/photo_1460.pkg \
+--image_list_filename ./bundler/sailplane_flight3/image_list.dat \
+--image_sizes_filename ./bundler/sailplane_flight3/image_sizes.dat \
+--xyz_pnts_filename ./bundler/sailplane_flight3/thresholded_xyz_points.dat \
+--camera_views_filename ./bundler/sailplane_flight3/sorted_camera_views.dat \
+--initial_mode Manipulate_Fused_Data_Mode
+
+
+
+

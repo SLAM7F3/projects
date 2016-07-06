@@ -1,0 +1,14 @@
+==========================================================================
+Mobile monitors notes
+==========================================================================
+Last updated on 9/16/13
+==========================================================================
+
+On 9/16/13, Bill Warnock showed us that we need to make sure our SHARP
+monitors are set to DVI input (rather than COMPUTER1, etc).  Press
+"Input" button on side of monitors in order to switch from COMPUTER1 to
+DVI.  Then press "enter" button to confirm selection.
+
+After making this change, output from 2012 Falcon laptop automatically came
+up in high-defintion (1920x1080) on Sharp monitor without us even having to
+invoke nvidia-settings.

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<kernelgraph>
+
+  <kernels>
+    <kernel class="FilenameToRGBArray" id="VideoSource" args="ubyte" />
+    <kernel class="RGB2Texture" id="RGB2Tex" args="ubyte" />
+  </kernels>
+
+  <connections>
+    <connection sourceKernelId="VideoSource" outputPort="size" targetKernelId="RGB2Tex" inputPort="size" />
+    <connection sourceKernelId="VideoSource" outputPort="outputRGBArray" targetKernelId="RGB2Tex" inputPort="inputRGBArray" />
+  </connections>
+
+  <defaults>
+    <default kernelId="VideoSource" inputPort="filename" value="string data/benchmark+1700px.mp4" />
+  </defaults> 
+
+  <views>
+    <view kernelId="RGB2Tex" outputPort="outputTexture" />
+  </views>
+
+  <autodirtykernels>
+    <autodirty kernelId="VideoSource" inputPort="filename" />
+  </autodirtykernels>
+
+  <mouselisteners>
+  </mouselisteners>
+
+</kernelgraph>

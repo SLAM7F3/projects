@@ -1,0 +1,72 @@
+===========================================================================================
+XCode notes 
+===========================================================================================
+Last updated on 2/2/16; 2/3/16; 2/5/16; 2/19/16
+===========================================================================================
+
+*.  Press "command key" "s" in order to save a text file (e.g. dot-m or dot-h
+files) after it's been edited.
+
+*.  Press "command key" "r" in order to compile and run an Xcode project.
+
+*.  Press "command b" in order to compile but not run an Xcode project.
+
+*.  Click on "?" near top of right-hand menu in order to get
+context-dependent help about keywords as we mouse over them.
+
+*.  "Product --> Clean" is the Xcode analog to make clean.
+
+*.  In order to jump into a method, use "command-click" on the method name.
+
+*.  On 1/29/16, Ross Anderson showed us that we can perform a search within
+an entire Xcode project for some particular string.  In the navigator
+window appearing on the LHS of Xcode, click on the "magnifying glass"
+located near the center top of the navigator window. Then type some string
+of interest (e.g. "127.0.0.1").  Xcode will then respond with any files
+which contain the search string.  
+
+*.  On 1/29/16, Ross said that Tagger almost certainly requests the
+username and password for OpenDirectory and not AppleConnect when it starts
+up.  This is to allow access to the tagger server on flyover admin.
+
+*.  In order to disable Code Signing on our local copy of Carlos' OpenCV
+version of Tagger, click on the blue Tagger project icon located at the top
+of the navigation window on the LHS.  Then look for "Code Signing" in the
+center window under "Build Settings".  We believe Ross set most of the
+entries to "Don't Code Sign" so that various security measures are disabled
+on our local MacBook.  When we performed this operation on Carlos' OpenCV
+version of Tagger, we appear to be able to build Tagger.
+
+*.  Can toggle on/off navigator pane on LHS of Xcode by pressing button
+located near upper extreme RHS.  
+
+*.  Can simultaneously view .h and .m files for a new class by pressing on
+"assistant navigator" button which looks like two intersecting circles.
+
+*.  In order to reindent Objective-C/C++ code lines, select the lines to be
+reindented with mouse.  Or press command-a in order to select entire file's
+text lines.  Then click Editor -> Structure -> Reindent.  
+
+*.  In order to access an Objective C template within Xcode, click File ->
+New -> File. Then select Objective-C file under Sources. Then under File
+Type:, choose Category.  
+
+*.  On 2/5/16, Carlos Folgar showed us that we need to create an ".xib"
+file in order to manipulate GUI objects for tagger.  In particular, he
+suggested creating an "AlertWindow.xib" along with a WindowController.  We
+should then be able to alter the window's label and button message from
+within Objective-C code.
+
+*.  On 2/19/16, we must have accidentally deleted TGMainWindow.xib from the
+Xcode project list.  Gustaf Lindquist showed us that the current Xcode's
+project project list is shown inside the left window pane inside of the
+Xcode viewer.  If we mouse click on some file and then press the delete
+key, that file will be deleted from the Xcode project.  But it still
+generally exists on disk.
+
+In order to restore a file to the Xcode project list, we can drag its icon
+directly into the left window pane into the project list location where it
+should go.  Gustaf instead restored the Xcode project list file from git.
+After doing so, the openCV version of Tagger runs again on our Macbook :)
+
+

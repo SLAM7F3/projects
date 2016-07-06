@@ -1,0 +1,28 @@
+<response>
+   <success>true</success>
+   <message><![CDATA[Found 1 object(s)]]></message>
+   <content>
+      <entityList>
+        <entity id="5d8f1366-f968-4287-88a9-3b1f56a58e76" type="sam">
+        <attribute name="name" value="SA-6" fullname="name"/>
+        <attribute name="range.max.km" value="24" fullname="range.max.km"/>
+        <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (36.17066 51.08982)" fullname="site"/>
+       	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (35.87239 50.50901)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (30.232504 50.845695)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (30.718786 50.05521)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (56.28171 37.89395)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (55.920017 39.611565)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (49.339867 44.300686)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (49.10344 42.928192)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (49.339867 44.300686)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (49.10344 42.928192)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (54.765957 62.28677)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (54.947807 63.862843)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (53.72146 82.84468)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (53.530293 90)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (51.23779 90)" fullname="site"/>
+    	<coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (54.33903 90)" fullname="site"/>
+     </entity>
+   </entityList>
+  </content>
+</response>

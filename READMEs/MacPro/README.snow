@@ -1,0 +1,211 @@
+=============================================================================
+SNOW project notes
+=============================================================================
+Last updated on 7/24/15; 7/27/15; 7/30/15
+=============================================================================
+
+*.  5K section of Highway 280 passes through Los Altos.
+between Foothill expressway and El-Monte exits.
+
+Upper left bbox corner:
+
+   UTM: Easting = 577853.88  Northing = 4135383.99  Zone = 10 
+   WGS84: Longitude = -122.120827  Latitude = 37.361910 
+   Tile: level = 14  x = 4547  y = 7233 
+   Tile: level = 15  x = 9095  y = 14467 
+   Tile: level = 16  x = 18191  y = 28935 
+
+Lower right bbox corner:
+
+   UTM: Easting = 582649.81  Northing = 4132214.68  Zone = 10 
+   WGS84: Longitude = -122.067028  Latitude = 37.332931 
+   Tile: level = 14  x = 4523  y = 7271 
+   Tile: level = 15  x = 9046  y = 14543 
+   Tile: level = 16  x = 18092  y = 29086 
+
+
+*.  Waypoints manually selected along 5K section of I280:
+
+  # Polyline ID, active, type, RGB565, n_vertices, UTM_zone 
+#    ith vertex: ID_i, E_i, N_i, Z_i 
+
+0  1  0  63488  82  10  
+     0  577898.747940  4135333.976988  0.000000 
+     1  577952.036040  4135217.409271  0.000000 
+     2  577995.332621  4135140.807628  0.000000 
+     3  578031.968189  4135067.536492  0.000000 
+     4  578068.603757  4135004.256874  0.000000 
+     5  578105.239325  4134944.307762  0.000000 
+     6  578148.535906  4134901.011181  0.000000 
+     7  578201.824005  4134857.714601  0.000000 
+     8  578241.790080  4134801.095995  0.000000 
+     9  578321.722229  4134757.799414  0.000000 
+     10  578375.010328  4134704.511315  0.000000 
+     11  578508.230577  4134667.875747  0.000000 
+     12  578608.145763  4134631.240178  0.000000 
+     13  578671.425381  4134607.926635  0.000000 
+     14  578738.035505  4134581.282585  0.000000 
+     15  578821.298160  4134557.969042  0.000000 
+     16  578884.577778  4134534.655498  0.000000 
+     17  578954.518408  4134501.350436  0.000000 
+     18  578997.814989  4134461.384362  0.000000 
+     19  579031.120051  4134431.409806  0.000000 
+     20  579084.408151  4134398.104744  0.000000 
+     21  579107.721694  4134358.138669  0.000000 
+     22  579161.009793  4134311.511582  0.000000 
+     23  579194.314855  4134254.892977  0.000000 
+     24  579214.297893  4134204.935384  0.000000 
+     25  579244.272449  4134164.969309  0.000000 
+     26  579270.916498  4134118.342222  0.000000 
+     27  579294.230042  4134085.037160  0.000000 
+     28  579324.204598  4134038.410073  0.000000 
+     29  579364.170672  4133981.791468  0.000000 
+     30  579397.475734  4133948.486406  0.000000 
+     31  579440.772315  4133898.528813  0.000000 
+     32  579484.068896  4133855.232232  0.000000 
+     33  579550.679020  4133828.588182  0.000000 
+     34  579600.636613  4133791.952614  0.000000 
+     35  579660.585725  4133755.317046  0.000000 
+     36  579720.534836  4133725.342490  0.000000 
+     37  579790.475467  4133695.367934  0.000000 
+     38  579860.416097  4133662.062872  0.000000 
+     39  579923.695715  4133625.427304  0.000000 
+     40  579983.644827  4133588.791735  0.000000 
+     41  580050.254951  4133555.486673  0.000000 
+     42  580110.204063  4133518.851105  0.000000 
+     43  580163.492162  4133465.563006  0.000000 
+     44  580223.441274  4133428.927437  0.000000 
+     45  580260.076842  4133378.969844  0.000000 
+     46  580310.034435  4133322.351239  0.000000 
+     47  580366.653041  4133265.732633  0.000000 
+     48  580413.280128  4133205.783521  0.000000 
+     49  580473.229239  4133165.817447  0.000000 
+     50  580549.830882  4133109.198841  0.000000 
+     51  580619.771513  4133075.893779  0.000000 
+     52  580673.059612  4133039.258211  0.000000 
+     53  580749.661255  4132992.631124  0.000000 
+     54  580816.271379  4132946.004037  0.000000 
+     55  580879.550997  4132912.698975  0.000000 
+     56  580942.830615  4132859.410876  0.000000 
+     57  581006.110233  4132819.444801  0.000000 
+     58  581059.398332  4132782.809233  0.000000 
+     59  581122.677950  4132739.512652  0.000000 
+     60  581185.957568  4132696.216071  0.000000 
+     61  581252.567692  4132646.258478  0.000000 
+     62  581302.525285  4132586.309367  0.000000 
+     63  581379.126928  4132543.012786  0.000000 
+     64  581429.084521  4132473.072156  0.000000 
+     65  581509.016670  4132439.767093  0.000000 
+     66  581555.643757  4132379.817982  0.000000 
+     67  581635.575906  4132333.190895  0.000000 
+     68  581718.838561  4132289.894314  0.000000 
+     69  581792.109698  4132283.233302  0.000000 
+     70  581902.016403  4132269.911277  0.000000 
+     71  581981.948552  4132273.241783  0.000000 
+     72  582051.889182  4132276.572289  0.000000 
+     73  582148.473862  4132289.894314  0.000000 
+     74  582235.067024  4132316.538364  0.000000 
+     75  582305.007654  4132346.512920  0.000000 
+     76  582374.948284  4132346.512920  0.000000 
+     77  582468.202458  4132369.826463  0.000000 
+     78  582531.482076  4132366.495957  0.000000 
+     79  582611.414225  4132369.826463  0.000000 
+     80  582674.693843  4132349.843426  0.000000 
+     81  582741.303967  4132349.843426  0.000000 
+
+*.  As of 7/24/15, best bundled project for 5K section of highway running
+along I280 is called bay_area_5k.  
+
+This project has resources for all of the 650K highways.  But it only
+contains bundled results for the 5K segment of I280.  It also has a shape
+file surrounding the 5K highway section called bay_area_5k.shape.  This
+shape may be so tight as to have very little sign content along the side of
+the highway.
+
+
+project database: http://flyover.geo.apple.com/prjdb/FlightOps
+final db is http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k/xml
+INFO   : Loading project "bay_area_5k" from "http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k/xml"
+
+
+Bay_area_5K project contains 1,076,131 rigs within 53 resources.
+VERBOSE: UTM zone = 10 
+VERBOSE: min_easting = 558704.426653  max_easting = 602791.119932 
+VERBOSE: min_northing = 4118879.799192  max_northing = 4197696.845214 
+VERBOSE: grid Z = -30.921358 
+VERBOSE: Total number of resources within project = 53 
+
+*.  2320 rigs lie close to the manually selected waypoints within the 5K
+stretch of I280.
+
+*.  Rectified versions of 2320 rigs * 6 images/rig = 13920 images are
+sitting in following 4 subdirs of
+/startown-gpfs/sputnik03/supersize/labeling_resources/ :
+
+drwxrwxr-x 1 pcho         apple_ga    128K Jul 27 10:46 20150616_151427-H43-imdata/
+drwxrwxr-x 1 fdistrib     apple_ga    128K Jul 27 11:07 20150617_150859-H43-imdata/
+drwxrwxr-x 1 fdistrib     apple_ga    128K Jul 27 11:08 bay_area-v11-20141214_190719-q7-imdata/
+drwxrwxr-x 1 fdistrib     apple_ga    128K Jul 27 11:08 20150520_151417-H44-imdata/
+
+*.  14K images along 5K stretch of I280 reside within 4 resources all with 
+resource_tag = bay_area_650_ground_dev_3 
+
+r = 99971  resource_id = 2 
+basepath = /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150616_151427/20150616_151427-H43-imdata/ 
+
+
+r = 135571  resource_id = 3 
+basepath = /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150617_150859/20150617_150859-H43-imdata/ 
+resource_tag = bay_area_650_ground_dev_3 
+
+r = 227696  resource_id = 10 
+basepath = /startown-gpfs/sputnik01/supersize/copyprocess/resource/bay_area/bay_area-v11-20141214_190719-q7-imdata/ 
+resource_tag = bay_area_650_ground_dev_3 
+
+r = 709659  resource_id = 39 
+basepath = /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150520_151417/20150520_151417-H44-imdata/ 
+resource_tag = bay_area_650_ground_dev_3 
+
+
+*.  /startown-gpfs/ssdws03/conf/shapes/bay_area_5k.shape = Vinay's shape
+file for 5K section of Hwy I280.  This shape file does not precisely
+overlap section of I280 specified within Fredrik's slides for delivery in
+Aug 2015.
+
+*.  bay_area_650_ground_dev_3 resource list contains 53 resources
+
+*.  bay_area_hwy_I280_5k resource list contains 4 resources which form a
+superset of the 2.3K rigs that lie along the 5K stretch of I280.  It has a
+snug shape file created by Peter on 7/29/15 called
+/startown-gpfs/ssdws03/conf/shapes/hwy_280_5k.shape .
+
+    bay_area_hwy_I101 resource list contains 10 resources which form
+superset of rigs lying along stretch of I101.  It has a snug shape file
+created by Peter on 7/29/15 called
+/startown-gpfs/ssdws03/conf/shapes/hwy_101.shape .
+
+   bay_area_hwy_I87 resource list contains 14 resources which form superset
+of rigs lying along stretch of I87 .  It has a snug shape file created by
+Peter on 7/29/15 called /startown-gpfs/ssdws03/conf/shapes/hwy_87.shape . 
+
+
+*.  bay_area_5k_Hwy_280  = project with 4 bay_area_hwy_I280_5k resources
+    bay_area_5k_Hwy_101  = project with 10 bay_area_hwy_I101 resources
+    bay_area_5k_Hwy_87   = project with 14 bay_area_hwy_I87 resources
+
+
+*.  Number of panoramas created on startown and transferred to subdirs of
+/cc2-gpfs/storage/dev/users/pcho/panos/:
+
+Hwy I280:  2564 panos
+Hwy I101:  7552 panos    
+Hwy I87:  13651 panos
+
+Use ls -l | wc -l to quickly count number of files within a subdirectory.
+
+*.  Markup projects:
+
+Name = Hwy_5k_20150727_1
+
+MNarkup type = traffic_sign_mask
+

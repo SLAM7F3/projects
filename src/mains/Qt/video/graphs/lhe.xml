@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<kernelgraph>
+
+  <kernels>
+    <kernel class="FilenameToRGBArray" id="VideoSource" args="float" />
+    <kernel class="RGB2Texture" id="RGB2Tex" args="float" />
+    <kernel class="LocalHistogramEqualization" id="lhe" args="luminance" />
+  </kernels>
+
+  <connections>
+    <connection sourceKernelId="VideoSource" outputPort="size" targetKernelId="RGB2Tex" inputPort="size" />
+    <connection sourceKernelId="VideoSource" outputPort="outputRGBArray" targetKernelId="RGB2Tex" inputPort="inputRGBArray" />
+
+    <connection sourceKernelId="RGB2Tex" outputPort="outputTexture" targetKernelId="lhe" inputPort="inputTexture" />
+  </connections>
+
+  <defaults>
+    <default kernelId="VideoSource" inputPort="filename" value="string data/xray_im_2_ZO.pfm" />
+
+    <default kernelId="lhe" inputPort="sigmaSpatial" value="float 243.75" />
+    <default kernelId="lhe" inputPort="sigmaRange" value="float 0.0039" />
+    <default kernelId="lhe" inputPort="inputMin" value="float 0" />
+    <default kernelId="lhe" inputPort="inputMax" value="float 1" />
+  </defaults>
+
+  <views>
+    <view kernelId="RGB2Tex" outputPort="outputTexture" />
+    <view kernelId="lhe" outputPort="outputTexture" />
+  </views>
+
+  <autodirtykernels>
+    <!-- <autodirty kernelId="VideoSource" inputPort="filename" /> -->
+    <autodirty kernelId="VideoSource" inputPort="filename" />
+  </autodirtykernels>
+
+  <mouselisteners>
+  </mouselisteners>
+
+</kernelgraph>

@@ -1,0 +1,69 @@
+============================================================================
+Nick Armstrong-Crews' procedure for mounting G47 fs1 on ROBOT laptop
+============================================================================
+Last updated on 10/28/11; 11/2/11; 12/13/11
+============================================================================
+
+Hey, the magic words are almost the same as before$(B!D(B
+
+
+sudo mkdir /mnt/cardassia_fieldtest
+
+sudo smbmount //cardassia/fieldtest /mnt/cardassia_fieldtest -o user=pe16649,dom=MITLL,uid=peter,gid=adm
+
+Enter sudo password when/if "[sudo] password for cho:" shows up
+
+Enter standard LL password when "Password:" shows up
+
+
+In general, you can use this formula to get to any windows share,
+substituting //machine_name/share_name
+ 
+
+PS In your copious spare time, you may want to $(B!H(Bsudo apt-get install
+virtualbox$(B!I(B so you can run a virtual windows inside your ubuntu; it makes
+many co-existence tasks much easier, and VirtualBox is easy as hell to set
+up.
+
+===================================================================
+
+
+sudo smbmount //fs1/share /mnt/fs1 -o user=pe16649,dom=MITLL,uid=cho,gid=adm
+
+Need to first supply Ubuntu 10.04 password.  Then need to supply LL e-mail
+password.
+
+
+Notes from Nick Armstrong-Crews about this smbmount command:
+
+"fs1" is the DNS name of the server
+
+"share" is the folder on that server
+
+"/mnt/fs1" is a directory on your local machine where the remote stuff will
+now appear (this dir must exist already, or be created)
+
+"user=pe16649" is your Lincoln common ID, or more generally, your username
+on the remote machine
+
+"dom=MITLL" is the windows domain
+
+"uid=cho" is the account on your local machine that will get mapped to
+(and have the same permissions as) the username on the remote machine
+
+"gid=adm" is the group on your local machine, where N!NHadmN!NI typically has
+sudo permissions (this step is probably unnecessary, if your uid already
+has sudo permissions)
+
+ 
+
+..........................
+
+
+1.  sudo smbmount //fs1/share /mnt/fs1 -o user=pe16649,dom=mitll
+
+2.  sudo su
+
+3.  cd /mnt/fs1
+
+

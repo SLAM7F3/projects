@@ -1,0 +1,1230 @@
+# ===================================================================== #
+# P. Cho's Makefile for building libraries and compiling C++ programs   #
+# with optimization level set to O3 and large file size	( > 2 Gbyte)	#
+# enabled.								#
+# ===================================================================== #
+# Last modified on 7/15/08; 7/23/08; 9/2/08; 9/6/08			#
+# ===================================================================== #
+#									#
+# NOTES:								#
+#									#
+# 1.  This makefile must be used with the GNU version of make.  It will #
+#     not work with SGI's or Sun's version of make!			#
+# 2.  Be sure to appropriately modify the "PREFIX=$(HOME).." line below.#
+#     This should be the only modification which needs to be made to 	#
+#     this file.							#
+# 3.  Chant "gmake program=foo" to build all libraries, compile foo.cc	#
+#     and link foo.o with any necessary object files within the 	#
+#     libraries to create executable "foo".				#
+# 4.  Whenever any significant changes to basic classes or parameters	#
+#     are made, it is a good idea to chant "gmake bigclean" to delete   #
+#     all object and library files.  Then rebuild all the libraries	#
+#     via "gmake program=foonew".					#
+# 5.  Executable performance is optimized as much as is reasonably 	#
+#     possible within this Makefile. 					#
+# ===================================================================== #
+
+# Be sure to modify the PREFIX line below as appropriate:
+# ===================================================================== #
+PREFIX=	$(shell pwd | awk -F"/" '{l=NF; while (($$l!~"src") && ($$l!~"include") && ($$l !"lib")) l--; for (n=1;n<l;n++) printf("%s/",$$n);}' )
+# ===================================================================== #
+
+# If DEBUGFLAG is defined, perform various sanity checks on tensor element
+# index values.  By default, we define DEBUGFLAG.  But we turn this flag
+# off in order to speed up final production prototype code.
+
+INCLUDEDIR=$(PREFIX)include
+LIBDIR=$(PREFIX)lib
+SRC_DIR=$(PREFIX)src
+
+ASTROGEO_DIR=$(SRC_DIR)/astro_geo
+AXIS_DIR=$(SRC_DIR)/axis
+BAYES_DIR=$(SRC_DIR)/bayes
+COLOR_DIR=$(SRC_DIR)/color
+DATASTRUCTURES_DIR=$(SRC_DIR)/datastructures
+DELAUNAY_DIR=$(SRC_DIR)/delaunay
+
+EYEGLASS_DIR=$(SRC_DIR)/eyeglass
+EYEGLASSIO_DIR=$(EYEGLASS_DIR)/io
+EYEGLASSLODTREE_DIR=$(EYEGLASS_DIR)/lodtree
+EYEGLASSMODEL_DIR=$(EYEGLASS_DIR)/model
+EYEGLASSUTIL_DIR=$(EYEGLASS_DIR)/util
+EYEGLASSVIEWER_DIR=$(EYEGLASS_DIR)/viewer
+FFMPEG_DIR=$(SRC_DIR)/ffmpeg
+FILTER_DIR=$(SRC_DIR)/filter
+FUSION_DIR=$(SRC_DIR)/fusion
+GEARTH_DIR=$(SRC_DIR)/gearth
+GENERAL_DIR=$(SRC_DIR)/general
+GEOMETRY_DIR=$(SRC_DIR)/geometry
+GRAPH_DIR=$(SRC_DIR)/graphs
+IMAGE_DIR=$(SRC_DIR)/image
+ISDS_DIR=$(SRC_DIR)/isds
+KAKADU_DIR=$(SRC_DIR)/kakadu
+KDTREE_DIR=$(SRC_DIR)/kdtree
+KLT_DIR=$(SRC_DIR)/KLT
+LADAR_DIR=$(SRC_DIR)/ladar
+MATH_DIR=$(SRC_DIR)/math
+MAINS_DIR=$(SRC_DIR)/mains
+MESSENGER_DIR=$(SRC_DIR)/messenger
+NETWORK_DIR=$(SRC_DIR)/network
+NEWMAT_DIR=$(SRC_DIR)/newmat
+NUMERICAL_DIR=$(SRC_DIR)/numerical
+NUMREC_DIR=$(SRC_DIR)/numrec
+OSG_DIR=$(SRC_DIR)/osg
+OSG2D_DIR=$(OSG_DIR)/osg2D
+OSG3D_DIR=$(OSG_DIR)/osg3D
+OSGANNOTATORS_DIR=$(OSG_DIR)/osgAnnotators
+OSGEARTH_DIR=$(OSG_DIR)/osgEarth
+OSGFEATURES_DIR=$(OSG_DIR)/osgFeatures
+OSGFUSION_DIR=$(OSG_DIR)/osgFusion
+OSGGEOMETRY_DIR=$(OSG_DIR)/osgGeometry
+OSGGIS_DIR=$(OSG_DIR)/osgGIS
+OSGGRAPHICALS_DIR=$(OSG_DIR)/osgGraphicals
+OSGGRID_DIR=$(OSG_DIR)/osgGrid
+OSGMODELS_DIR=$(OSG_DIR)/osgModels
+OSGORGANIZATION_DIR=$(OSG_DIR)/osgOrganization
+OSGPICKER_DIR=$(OSG_DIR)/osgPicker
+OSGSCENEGRAPH_DIR=$(OSG_DIR)/osgSceneGraph
+OSGSPACE_DIR=$(OSG_DIR)/osgSpace
+PLOT_DIR=$(SRC_DIR)/plot
+POSTGRES_DIR=$(SRC_DIR)/postgres
+QUANTUM_DIR=$(SRC_DIR)/quantum
+ROBOT_DIR=$(SRC_DIR)/robots
+SOCKET_DIR=$(SRC_DIR)/socket
+SPACE_DIR=$(SRC_DIR)/space
+STRUCTMOTION_DIR=$(SRC_DIR)/structmotion
+THREEDGRAPHICS_DIR=$(SRC_DIR)/threeDgraphics
+TIME_DIR=$(SRC_DIR)/time
+TRACK_DIR=$(SRC_DIR)/track
+URBAN_DIR=$(SRC_DIR)/urban
+VIDEO_DIR=$(SRC_DIR)/video
+WAVEFORM_DIR=$(SRC_DIR)/waveform
+WEB_DIR=$(SRC_DIR)/web
+WEBSERVICES_DIR=$(SRC_DIR)/webservices
+
+MAIN_ALIRT_DIR=$(MAINS_DIR)/alirt_acc
+MAIN_BAGHDAD_DIR=$(MAINS_DIR)/baghdad
+MAIN_BLUEGRASS_DIR=$(MAINS_DIR)/bluegrass
+MAIN_BLUEGRASS_AVS_DIR=$(MAINS_DIR)/bluegrass/AVS
+MAIN_CHINA_DIR=$(MAINS_DIR)/china
+MAIN_EXIF_DIR=$(MAINS_DIR)/exif
+MAIN_FUSION_DIR=$(MAINS_DIR)/fusion
+MAIN_IED_DIR=$(MAINS_DIR)/ied
+MAIN_IPC_DIR=$(MAINS_DIR)/inter_process_comm
+MAIN_ISDS_DIR=$(MAINS_DIR)/isds
+MAIN_MIT_DIR=$(MAINS_DIR)/mit
+MAIN_NEWYORK_DIR=$(MAINS_DIR)/newyork
+MAIN_NTI_DIR=$(MAINS_DIR)/nti
+MAIN_OSG_DIR=$(MAINS_DIR)/OSG
+MAIN_QUANTUM_DIR=$(MAINS_DIR)/quantum
+MAIN_SATELLITE_DIR=$(MAINS_DIR)/satellite
+MAIN_SPASE_DIR=$(MAINS_DIR)/spase
+MAIN_TRACKING_DIR=$(MAINS_DIR)/tracking
+MAIN_UAVS_DIR=$(MAINS_DIR)/uavs
+MAIN_UTILITY_DIR=$(MAINS_DIR)/utility
+MAIN_VIDEO_DIR=$(MAINS_DIR)/video
+MAIN_WEBSERIVCES_DIR=$(MAINS_DIR)/webservices
+
+OBJ = $(program).o 
+# LIBS = -lpng -lz -ljpeg -L/usr/X11R6/lib -lXpm \
+#        -lX11 -ldl -lfftw -lrfftw -lnetcdf -lm -lgd 
+LIBS =  -lefence -lpng -lz -ljpeg -L/usr/X11R6/lib \
+        -ldl -lfftw -lrfftw -lnetcdf -lm -lcurses -lgdal \
+	-L/usr/local/pgsql/lib -lpq -lgeos_c \
+        -L$(OSG_OP_OT_PATH)/lib \
+        -losgUtil -losgText -losg  \
+        -losgSim -losgProducer -losgParticle -losgGA -losgFX -losgDB \
+	-lProducer -lOpenThreads \
+	-L/opt/intel/ipp/5.3.3.075/sharedlib \
+	-L/opt/intel/ipp41/ia32_itanium/sharedlib \
+	-L/opt/intel/ipp41/ia32_itanium/sharedlib/linux32 \
+	-lcurl -ljaula -lidn -lssl -lcrypto \
+	-lavformat -lavcodec -lavutil \
+	-lcurl -lidn -lssl -lcrypto \
+	-lgssapi_krb5 -lkrb5 -lcom_err -lk5crypto -lresolv \
+	-lglib-2.0 -pthread -luuid -lgthread-2.0 -lexiv2 \
+	-Wl,--export-dynamic -lgmodule-2.0 -ldl \
+	-L/usr/local/kakadu/lib \
+ 	-lkdu_v52R -lkdu_jni -lkdu_a52R \
+	/usr/local/lib/libactivemq-cpp.a \
+	/usr/local/lib/libtdp.a
+
+MYLIBS = $(LIBDIR)/libspace.a \
+	 $(LIBDIR)/librobots.a \
+	 $(LIBDIR)/libosgOrganization.a \
+	 $(LIBDIR)/libosgFusion.a \
+	 $(LIBDIR)/libosgFeatures.a \
+	 $(LIBDIR)/libosgModels.a \
+	 $(LIBDIR)/libosgAnnotators.a \
+	 $(LIBDIR)/libosgEarth.a \
+	 $(LIBDIR)/libosgSpace.a \
+	 $(LIBDIR)/libosg3D.a \
+	 $(LIBDIR)/libosg2D.a \
+	 $(LIBDIR)/libosgGrid.a \
+	 $(LIBDIR)/libosgGIS.a \
+	 $(LIBDIR)/libosgGeometry.a \
+	 $(LIBDIR)/liburban.a \
+	 $(LIBDIR)/libladar.a \
+	 $(LIBDIR)/libthreeDgraphics.a \
+	 $(LIBDIR)/libvideo.a \
+	 $(LIBDIR)/libimage.a \
+	 $(LIBDIR)/libosgGraphicals.a \
+	 $(LIBDIR)/libosgSceneGraph.a \
+	 $(LIBDIR)/libisds.a \
+	 $(LIBDIR)/libfusion.a \
+	 $(LIBDIR)/libtrack.a \
+	 $(LIBDIR)/libstructmotion.a \
+	 $(LIBDIR)/libeyeglasslodtree.a \
+	 $(LIBDIR)/libeyeglassio.a \
+	 $(LIBDIR)/libeyeglassviewer.a \
+	 $(LIBDIR)/libeyeglassutil.a \
+	 $(LIBDIR)/libeyeglassmodel.a \
+	 $(LIBDIR)/libgearth.a \
+	 $(LIBDIR)/libosg.a \
+	 $(LIBDIR)/libastrogeo.a \
+	 $(LIBDIR)/libgeometry.a \
+	 $(LIBDIR)/libdelaunay.a \
+	 $(LIBDIR)/libnetwork.a \
+	 $(LIBDIR)/libplot.a \
+	 $(LIBDIR)/libwaveform.a \
+	 $(LIBDIR)/libsocket.a \
+	 $(LIBDIR)/libfilter.a \
+	 $(LIBDIR)/libnumerical.a \
+	 $(LIBDIR)/libpostgres.a \
+	 $(LIBDIR)/libkdtree.a \
+	 $(LIBDIR)/libmath.a \
+	 $(LIBDIR)/libcolor.a \
+	 $(LIBDIR)/libweb.a \
+	 $(LIBDIR)/libgen.a \
+	 $(LIBDIR)/libdatastructures.a \
+	 $(LIBDIR)/libgraph.a \
+	 $(LIBDIR)/libnewmat.a \
+	 $(LIBDIR)/libnumrec.a \
+	 $(LIBDIR)/libbayes.a \
+	 $(LIBDIR)/libklt.a \
+	 $(LIBDIR)/libkakadu.a \
+	 $(LIBDIR)/libffmpeg.a \
+	 $(LIBDIR)/libwebservices.a \
+	 $(LIBDIR)/libmessenger.a \
+	 $(LIBDIR)/libtime.a 
+
+# Note: The order in which the libraries are listed above is important.
+# The libnumrec_namespace.a, libbayes_namespace.a and libgd.a libraries
+# which do not depend upon any of the routines within the other libraries
+# should be listed last.  We also strive to make sure that libgen.a does
+# not depend in any way upon method in any other libraries.
+
+# =====================================================================	#
+# Compile program							#
+# =====================================================================	#
+
+# $< = the name of the first dependency.  If the target got its commands from 
+#      an implicit rule, this will be the first dependency added by the 
+#      implicit rule.
+
+# $@ = the file name of the target of the rule.
+#      In a pattern rule, $@ is the name of whichever target caused
+#      the rule's commands to be run.
+
+# See page 110 of the make.dvi file in /usr/local/doc/dvi for further info
+# on these funny "automatic variables".
+
+# Recall CC is the symbol representing a C compiler while CXX is the symbol
+# representing a C++ compiler:
+
+CC = gcc
+CFLAGS= -g -Wall  -I. -I$(INCLUDEDIR)
+
+CXX = g++
+# CXX = g++32
+# CXXFLAGS= -pg -Wall -g -I. -I$(INCLUDEDIR)
+# CXXFLAGS = -O3 -Wall -I. -I$(INCLUDEDIR) 
+# CXXFLAGS = -m32 -O3 -Wall -I. -I$(INCLUDEDIR) \
+# 	   -D__USE_LARGEFILE64 -D__USE_FILE_OFFSET64 -D_FILE_OFFSET_BITS=64
+#  CXXFLAGS = -g -fno-inline -Wall -I. -I/usr/local/include -I$(INCLUDEDIR) \
+#    	-I$(INCLUDEDIR)/eyeglass/ -I/usr/local/pgsql/include \
+#     	-I/opt/intel/ipp41/ia32_itanium/include/ \
+#     	-D__USE_LARGEFILE64 -D__USE_FILE_OFFSET64 -D_FILE_OFFSET_BITS=64 \
+#     	-DHAS_STDINT
+CXXFLAGS = -g -fno-inline -Wall -I. \
+        -I/usr/local/axiscpp_deploy/include \
+        -I$(OSG_OP_OT_PATH)/include \
+        -I/usr/local/include -I/usr/local/pgsql/include \
+	-I/usr/include/gdal \
+	-I/usr/include/postgresql \
+	-I$(INCLUDEDIR) \
+	-I$(INCLUDEDIR)/eyeglass/ \
+   	-I/opt/intel/ipp41/ia32_itanium/include/ \
+   	-I/usr/local/kakadu/include \
+   	-I/usr/local/include/exiv2 \
+   	-I/usr/include/exiv2 \
+	-I/usr/local/include/activemq-cpp-2.0.1 \
+	-I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -pthread \
+	-D_REENTRANT \
+  	-D__USE_LARGEFILE64 -D__USE_FILE_OFFSET64 -D_FILE_OFFSET_BITS=64 \
+    	-DHAS_STDINT
+
+# CXXFLAGS = -O3 -w -I. -I$(INCLUDEDIR) 
+# CXXFLAGS = -Wall -I. -I$(INCLUDEDIR) 
+
+# Compiler flags:
+#	-O3	-- Maximally optimize
+#	-Wall	-- Turn on all warnings
+# 	-w	-- Turn off all warnings
+#	-g	-- Enable debugging
+#	-c	-- Compile or assemble the source files, but do not
+#		   link.  The complier output is an object file corresponding 
+#		   to each source file.
+#	-MM	-- Tell the preprocessor to output a rule suitable for
+#                   make  describing  the  dependencies  of each object
+#              	   file on user defined header files only .  For each
+#		   source file, the preprocessor out-
+#              	   puts  one make-rule whose target is the object file
+#              	   name for that source file  and  whose  dependencies
+#              	   are all the files `#include'd in it.  
+#	 -pg    -- Generate extra code to write profile information
+#	           suitable for the analysis program gprof.  If this flag
+# 		   is set, we must turn off the -O optimization flag!
+#	 	   The -pg flag must be enabled in both the compile line
+#		   as well as the link line above in order for a gmon.out
+#		   profile to be created when the program is run.
+#	 -j 2	-- Compile two jobs simultaneously.  Speeds up compilation
+#		   on dual processor machines
+#	 -v	-- (verbose) Generates where header files are coming from
+
+# $(program.o) : $(program.c) 
+# 	$(CC) -c $(CFLAGS) $< -o $@
+
+$(program.o) : $(program.cc) 
+	$(CXX) -c $(CXXFLAGS) $< -o $@
+
+# =====================================================================	#
+# Link program								#
+# =====================================================================	#
+
+# LD = gcc
+LD = g++ 
+# LD = g++32
+
+$(program): $(OBJ) $(MYLIBS) 
+	$(LD) -pg  $^ $(LIBS) -o $(program)
+#	$(LD) -O3 $^ $(LIBS) -o $(program)
+# 	$(LD) $^ $(LIBS) -o $(program)
+
+# $^ = the names of all the dependencies, with spaces between them.  
+
+# ===================================================================== #
+# Build libraries
+# ===================================================================== #
+# Note: After speaking with Iva on 11/20/98, we realized that we must
+# somehow include the dependence of many of our source files upon header
+# files.  The Unix utility makedepend supposedly tracks down how various
+# source files depend upon various header files and appends its results at
+# the end of this Makefile.  Our understanding of how makedepend works is
+# limited at best.  But the code below seems to be at least partially
+# successful...
+# ===================================================================== #
+
+# =====================================================================	#
+ASTROGEO_SRC=astrofuncs.cc geofuncs.cc geopoint.cc sensor.cc moon.cc \
+	     latlong2utmfuncs.cc Ellipsoid_model.cc Clock.cc \
+	     geocalibfuncs.cc geomagnet.cc
+ASTROGEO_OBJS=$(ASTROGEO_SRC:.cc=.o)
+ASTROGEO_OBJECTS= ${ASTROGEO_OBJS:%=$(ASTROGEO_DIR)/%}
+$(LIBDIR)/libastrogeo.a: $(ASTROGEO_OBJECTS) 
+	ar rsuv $(ASTROGEO_DIR)/libastrogeo.a $(ASTROGEO_OBJECTS)
+
+# =====================================================================	#
+BAYES_SRC=bbnupdate.cc bayesfuncs.cc
+BAYES_OBJS=$(BAYES_SRC:.cc=.o)
+BAYES_OBJECTS= ${BAYES_OBJS:%=$(BAYES_DIR)/%}
+$(LIBDIR)/libbayes.a: $(BAYES_OBJECTS) 
+	ar rsuv $(BAYES_DIR)/libbayes.a $(BAYES_OBJECTS)
+
+# =====================================================================	#
+COLOR_SRC=colorfuncs.cc colormapfuncs.cc
+COLOR_OBJS=$(COLOR_SRC:.cc=.o)
+COLOR_OBJECTS= ${COLOR_OBJS:%=$(COLOR_DIR)/%}
+$(LIBDIR)/libcolor.a: $(COLOR_OBJECTS) 
+	ar rsuv $(COLOR_DIR)/libcolor.a $(COLOR_OBJECTS)
+
+# =====================================================================	#
+DATASTRUCTURES_SRC=containerfuncs.cc dataarray.cc datapoint.cc 
+DATASTRUCTURES_OBJS=$(DATASTRUCTURES_SRC:.cc=.o)
+DATASTRUCTURES_OBJECTS= ${DATASTRUCTURES_OBJS:%=$(DATASTRUCTURES_DIR)/%}
+$(LIBDIR)/libdatastructures.a: $(DATASTRUCTURES_OBJECTS) 
+	ar rsuv $(DATASTRUCTURES_DIR)/libdatastructures.a $(DATASTRUCTURES_OBJECTS)
+
+# =====================================================================	#
+DELAUNAY_SRC=DT_flag.cc DT_list.cc Delaunay_point.cc DT_node.cc \
+	     Delaunay_tree.cc delaunay.cc
+DELAUNAY_OBJS=$(DELAUNAY_SRC:.cc=.o)
+DELAUNAY_OBJECTS= ${DELAUNAY_OBJS:%=$(DELAUNAY_DIR)/%}
+$(LIBDIR)/libdelaunay.a: $(DELAUNAY_OBJECTS) 
+	ar rsuv $(DELAUNAY_DIR)/libdelaunay.a $(DELAUNAY_OBJECTS)
+
+# =====================================================================	#
+EYEGLASSMODEL_SRC=CoordinateSpaceConverter.cpp \
+	  HyperBoundingBox.cpp HyperExtentsVisitor.cpp HyperFilter.cpp \
+	  Metadata.cpp NodeInfo.cpp
+EYEGLASSMODEL_OBJS=$(EYEGLASSMODEL_SRC:.cpp=.o)
+EYEGLASSMODEL_OBJECTS= ${EYEGLASSMODEL_OBJS:%=$(EYEGLASSMODEL_DIR)/%}
+$(LIBDIR)/libeyeglassmodel.a: $(EYEGLASSMODEL_OBJECTS) 
+	ar rsuv $(EYEGLASSMODEL_DIR)/libeyeglassmodel.a $(EYEGLASSMODEL_OBJECTS)
+
+# =====================================================================	#
+EYEGLASSIO_SRC=DataSetFile.cpp DataSetFileFXYZ.cpp DataSetFileTDP.cpp \
+	       ReaderWriterDataSetFile.cpp
+EYEGLASSIO_OBJS=$(EYEGLASSIO_SRC:.cpp=.o)
+EYEGLASSIO_OBJECTS= ${EYEGLASSIO_OBJS:%=$(EYEGLASSIO_DIR)/%}
+$(LIBDIR)/libeyeglassio.a: $(EYEGLASSIO_OBJECTS) 
+	ar rsuv $(EYEGLASSIO_DIR)/libeyeglassio.a $(EYEGLASSIO_OBJECTS)
+
+# =====================================================================	#
+EYEGLASSLODTREE_SRC=DataSet_InCore.cpp DataSet_OutOfCore.cpp Decimator.cpp \
+	  PageAssembler.cpp 
+EYEGLASSLODTREE_OBJS=$(EYEGLASSLODTREE_SRC:.cpp=.o)
+EYEGLASSLODTREE_OBJECTS= ${EYEGLASSLODTREE_OBJS:%=$(EYEGLASSLODTREE_DIR)/%}
+$(LIBDIR)/libeyeglasslodtree.a: $(EYEGLASSLODTREE_OBJECTS) 
+	ar rsuv $(EYEGLASSLODTREE_DIR)/libeyeglasslodtree.a $(EYEGLASSLODTREE_OBJECTS)
+
+# =====================================================================	#
+EYEGLASSUTIL_SRC=tdp_utils.cpp
+EYEGLASSUTIL_OBJS=$(EYEGLASSUTIL_SRC:.cpp=.o)
+EYEGLASSUTIL_OBJECTS= ${EYEGLASSUTIL_OBJS:%=$(EYEGLASSUTIL_DIR)/%}
+$(LIBDIR)/libeyeglassutil.a: $(EYEGLASSUTIL_OBJECTS) 
+	ar rsuv $(EYEGLASSUTIL_DIR)/libeyeglassutil.a $(EYEGLASSUTIL_OBJECTS)
+
+# =====================================================================	#
+EYEGLASSVIEWER_SRC=Application.cpp Backdrop.cpp Colormap.cpp \
+	  CustomDatabasePager.cpp DataViewerScene.cpp DrawablePicker.cpp \
+	  DummyManipulator.cpp GlobalState.cpp HeadsUpDisplay.cpp  \
+	  MeasureTool.cpp ProjectionTool.cpp ToolManipulator.cpp ViewOptions.cpp
+EYEGLASSVIEWER_OBJS=$(EYEGLASSVIEWER_SRC:.cpp=.o)
+EYEGLASSVIEWER_OBJECTS= ${EYEGLASSVIEWER_OBJS:%=$(EYEGLASSVIEWER_DIR)/%}
+$(LIBDIR)/libeyeglassviewer.a: $(EYEGLASSVIEWER_OBJECTS) 
+	ar rsuv $(EYEGLASSVIEWER_DIR)/libeyeglassviewer.a $(EYEGLASSVIEWER_OBJECTS)
+
+# ===================================================================== #
+
+FFMPEG_SRC=InputFile.cc PacketDumper.cc ParseThread.cc PacketQueue.cc \
+	   CodecContext.cc FFmpegStream.cc FFMPEGVideo.cc 
+FFMPEG_OBJS=$(FFMPEG_SRC:.cc=.o)
+FFMPEG_OBJECTS= ${FFMPEG_OBJS:%=$(FFMPEG_DIR)/%}
+
+FFMPEG_C_SRC=setget.c 
+FFMPEG_C_OBJS=$(FFMPEG_C_SRC:.c=.o)
+FFMPEG_C_OBJECTS= ${FFMPEG_C_OBJS:%=$(FFMPEG_DIR)/%}
+
+$(LIBDIR)/libffmpeg.a: $(FFMPEG_OBJECTS) $(FFMPEG_C_OBJECTS)
+	ar rsuv $(FFMPEG_DIR)/libffmpeg.a $(FFMPEG_OBJECTS) $(FFMPEG_C_OBJECTS)
+
+# =====================================================================	#
+FILTER_SRC=filterfuncs.cc piecewise_linear.cc piecewise_linear_vector.cc
+FILTER_OBJS=$(FILTER_SRC:.cc=.o)
+FILTER_OBJECTS= ${FILTER_OBJS:%=$(FILTER_DIR)/%}
+$(LIBDIR)/libfilter.a: $(FILTER_OBJECTS) 
+	ar rsuv $(FILTER_DIR)/libfilter.a $(FILTER_OBJECTS)
+
+# =====================================================================	#
+FUSION_SRC=TextDialogBox.cc Pass.cc PassesGroup.cc PassInfo.cc
+FUSION_OBJS=$(FUSION_SRC:.cc=.o)
+FUSION_OBJECTS= ${FUSION_OBJS:%=$(FUSION_DIR)/%}
+$(LIBDIR)/libfusion.a: $(FUSION_OBJECTS) 
+	ar rsuv $(FUSION_DIR)/libfusion.a $(FUSION_OBJECTS)
+
+# =====================================================================	#
+GEARTH_SRC=kml_parser.cc
+GEARTH_OBJS=$(GEARTH_SRC:.cc=.o)
+GEARTH_OBJECTS= ${GEARTH_OBJS:%=$(GEARTH_DIR)/%}
+$(LIBDIR)/libgearth.a: $(GEARTH_OBJECTS) 
+	ar rsuv $(GEARTH_DIR)/libgearth.a $(GEARTH_OBJECTS)
+
+# =====================================================================	#
+GEN_SRC=filefuncs.cc inputfuncs.cc outputfuncs.cc \
+	stringfuncs.cc sysfuncs.cc
+GEN_OBJS=$(GEN_SRC:.cc=.o)
+GEN_OBJECTS= ${GEN_OBJS:%=$(GENERAL_DIR)/%}
+$(LIBDIR)/libgen.a: $(GEN_OBJECTS) 
+	ar rsuv $(GENERAL_DIR)/libgen.a $(GEN_OBJECTS)
+
+# =====================================================================	#
+# GEN_COMPLEX_SRC=genfuncs_complex.cc 
+# GEN_COMPLEX_OBJS=$(GEN_COMPLEX_SRC:.cc=.o)
+# GEN_COMPLEX_OBJECTS= ${GEN_COMPLEX_OBJS:%=$(GENERAL_DIR)/%}
+# $(LIBDIR)/libgen_complex.a: $(GEN_COMPLEX_OBJECTS) 
+# 	ar rsuv $(GENERAL_DIR)/libgen_complex.a $(GEN_COMPLEX_OBJECTS)
+
+# =====================================================================	#
+GEOMETRY_SRC=contour.cc frustum.cc linesegment.cc mybox.cc mypoint.cc \
+	     parallelepiped.cc parallelogram.cc polygon.cc polyline.cc \
+	     regular_polygon.cc convexhull.cc \
+             voronoifuncs.cc triangulate_funcs.cc \
+	     geometry_funcs.cc homography.cc plane.cc projective.cc \
+	     vertex.cc edge.cc face.cc \
+	     vertices_handler.cc \
+	     bounding_box.cc \
+	     contour_element.cc ellipse.cc polyhedron.cc pyramid.cc
+GEOMETRY_OBJS=$(GEOMETRY_SRC:.cc=.o)
+GEOMETRY_OBJECTS= ${GEOMETRY_OBJS:%=$(GEOMETRY_DIR)/%}
+$(LIBDIR)/libgeometry.a: $(GEOMETRY_OBJECTS) 
+	ar rsuv $(GEOMETRY_DIR)/libgeometry.a $(GEOMETRY_OBJECTS)
+
+# =====================================================================	#
+GRAPH_SRC=graphfuncs.cc
+GRAPH_OBJS=$(GRAPH_SRC:.cc=.o)
+GRAPH_OBJECTS= ${GRAPH_OBJS:%=$(GRAPH_DIR)/%}
+$(LIBDIR)/libgraph.a: $(GRAPH_OBJECTS) 
+	ar rsuv $(GRAPH_DIR)/libgraph.a $(GRAPH_OBJECTS)
+
+# =====================================================================	#
+IMAGE_SRC=camerafuncs.cc compositefuncs.cc connectfuncs.cc \
+	  drawfuncs.cc imagefuncs.cc \
+          recursivefuncs.cc myimage.cc graphicsfuncs.cc \
+          binaryimagefuncs.cc displayfuncs.cc photograph.cc
+IMAGE_OBJS=$(IMAGE_SRC:.cc=.o)
+IMAGE_OBJECTS= ${IMAGE_OBJS:%=$(IMAGE_DIR)/%}
+$(LIBDIR)/libimage.a: $(IMAGE_OBJECTS) 
+	ar rsuv $(IMAGE_DIR)/libimage.a $(IMAGE_OBJECTS)
+
+# ===================================================================== #
+ISDS_SRC=ImageGeometry.cc 
+ISDS_OBJS=$(ISDS_SRC:.cc=.o)
+ISDS_OBJECTS= ${ISDS_OBJS:%=$(ISDS_DIR)/%}
+$(LIBDIR)/libisds.a: $(ISDS_OBJECTS) 
+	ar rsuv $(ISDS_DIR)/libisds.a $(ISDS_OBJECTS)
+
+# ===================================================================== #
+KAKADU_SRC=kakadufuncs.cc 
+KAKADU_OBJS=$(KAKADU_SRC:.cc=.o)
+KAKADU_OBJECTS= ${KAKADU_OBJS:%=$(KAKADU_DIR)/%}
+
+# KAKADU_C_SRC=bye.c
+# KAKADU_C_OBJS=$(KAKADU_C_SRC:.c=.o)
+# KAKADU_C_OBJECTS= ${KAKADU_C_OBJS:%=$(KAKADU_DIR)/%}
+
+$(LIBDIR)/libkakadu.a: $(KAKADU_OBJECTS) 
+	ar rsuv $(KAKADU_DIR)/libkakadu.a $(KAKADU_OBJECTS) 
+
+# $(LIBDIR)/libkakadu.a: $(KAKADU_OBJECTS) $(KAKADU_C_OBJECTS)
+# 	ar rsuv $(KAKADU_DIR)/libkakadu.a $(KAKADU_OBJECTS) $(KAKADU_C_OBJECTS)
+
+# =====================================================================	#
+KDTREE_SRC=kdtreefuncs.cc 
+KDTREE_OBJS=$(KDTREE_SRC:.cc=.o)
+KDTREE_OBJECTS= ${KDTREE_OBJS:%=$(KDTREE_DIR)/%}
+$(LIBDIR)/libkdtree.a: $(KDTREE_OBJECTS) 
+	ar rsuv $(KDTREE_DIR)/libkdtree.a $(KDTREE_OBJECTS)
+
+# =====================================================================	#
+KLT_SRC=convolve.cc error.cc pnmio.cc pyramid.cc selectGoodFeatures.cc \
+	storeFeatures.cc trackFeatures.cc klt.cc klt_util.cc writeFeatures.cc
+KLT_OBJS=$(KLT_SRC:.cc=.o)
+KLT_OBJECTS= ${KLT_OBJS:%=$(KLT_DIR)/%}
+$(LIBDIR)/libklt.a: $(KLT_OBJECTS) 
+	ar rsuv $(KLT_DIR)/libklt.a $(KLT_OBJECTS)
+
+# =====================================================================	#
+LADAR_SRC=featurefuncs.cc groundfuncs.cc ladarimage.cc ladarfuncs.cc
+LADAR_OBJS=$(LADAR_SRC:.cc=.o)
+LADAR_OBJECTS= ${LADAR_OBJS:%=$(LADAR_DIR)/%}
+$(LIBDIR)/libladar.a: $(LADAR_OBJECTS) 
+	ar rsuv $(LADAR_DIR)/libladar.a $(LADAR_OBJECTS)
+
+# ===================================================================== #
+MATH_SRC=mathfuncs.cc complex.cc fourier.cc mymatrix.cc genmatrix.cc \
+	 genvector.cc rpy.cc twovector.cc threevector.cc \
+         adv_mathfuncs.cc mypolynomial.cc prob_distribution.cc \
+         rubbersheet.cc \
+	 fourvector.cc permutation.cc statevector.cc 
+MATH_OBJS=$(MATH_SRC:.cc=.o)
+MATH_OBJECTS= ${MATH_OBJS:%=$(MATH_DIR)/%}
+$(LIBDIR)/libmath.a: $(MATH_OBJECTS) 
+	ar rsuv $(MATH_DIR)/libmath.a $(MATH_OBJECTS)
+
+# =====================================================================	#
+MESSENGER_SRC=Messenger.cc message.cc
+MESSENGER_OBJS=$(MESSENGER_SRC:.cc=.o)
+MESSENGER_OBJECTS= ${MESSENGER_OBJS:%=$(MESSENGER_DIR)/%}
+$(LIBDIR)/libmessenger.a: $(MESSENGER_OBJECTS) 
+	ar rsuv $(MESSENGER_DIR)/libmessenger.a $(MESSENGER_OBJECTS)
+
+# =====================================================================	#
+NETWORK_SRC=netlink.cc network_element.cc 
+NETWORK_OBJS=$(NETWORK_SRC:.cc=.o)
+NETWORK_OBJECTS= ${NETWORK_OBJS:%=$(NETWORK_DIR)/%}
+$(LIBDIR)/libnetwork.a: $(NETWORK_OBJECTS) 
+	ar rsuv $(NETWORK_DIR)/libnetwork.a $(NETWORK_OBJECTS)
+
+# =====================================================================	#
+NEWMAT_SRC=newmat1.cc newmat2.cc newmat3.cc newmat4.cc newmat5.cc \
+	   newmat6.cc newmat7.cc newmat8.cc newmatex.cc bandmat.cc \
+	   submat.cc myexcept.cc cholesky.cc evalue.cc fft.cc hholder.cc \
+	   jacobi.cc newfft.cc sort.cc svd.cc nm_misc.cc newmatrm.cc \
+	   newmat9.cc
+NEWMAT_OBJS=$(NEWMAT_SRC:.cc=.o)
+NEWMAT_OBJECTS= ${NEWMAT_OBJS:%=$(NEWMAT_DIR)/%}
+$(LIBDIR)/libnewmat.a: $(NEWMAT_OBJECTS) 
+	ar rsuv $(NEWMAT_DIR)/libnewmat.a $(NEWMAT_OBJECTS)
+
+# =====================================================================	#
+NUMERICAL_SRC=param_range.cc newton.cc euler.cc
+NUMERICAL_OBJS=$(NUMERICAL_SRC:.cc=.o)
+NUMERICAL_OBJECTS= ${NUMERICAL_OBJS:%=$(NUMERICAL_DIR)/%}
+$(LIBDIR)/libnumerical.a: $(NUMERICAL_OBJECTS) 
+	ar rsuv $(NUMERICAL_DIR)/libnumerical.a $(NUMERICAL_OBJECTS)
+
+# =====================================================================	#
+NUMREC_SRC = nrfuncs.cc amoeba.cc banbks.cc bandec.cc banmul.cc \
+brent.cc convlv.cc correl.cc covsrt.cc expdev.cc four1.cc fourn.cc gammln.cc \
+gasdev.cc gauleg.cc gaussj.cc incompletegamma.cc lfit.cc linmin.cc \
+lubksb.cc ludcmp.cc mnbrak.cc mrqcof.cc mrqmin.cc \
+nrutil.cc odeint.cc polint.cc powell.cc pythag.cc \
+ran1.cc ran2.cc realft.cc rkck.cc rkqs.cc rk4.cc savgol.cc select.cc \
+spline.cc svbksb.cc svdcmp.cc svdfit.cc svdvar.cc \
+tridag.cc twofft.cc zbrent.cc
+NUMREC_OBJS=$(NUMREC_SRC:.cc=.o)
+
+# The following line appends the prefix directory pathname to the above
+# object files and returns the filenames with the full pathnames in 
+# NUMREC_OBJECTS:
+
+NUMREC_OBJECTS= ${NUMREC_OBJS:%=$(NUMREC_DIR)/%}
+$(LIBDIR)/libnumrec.a: $(NUMREC_OBJECTS) 
+	ar rsuv $(NUMREC_DIR)/libnumrec.a $(NUMREC_OBJECTS)
+
+# =====================================================================	#
+OSG_SRC=CustomManipulator.cc Custom2DManipulator.cc Custom3DManipulator.cc \
+	CustomAnimationPathManipulator.cc  \
+        PickHandler.cc PickHandlerCallbacks.cc \
+	MyViewerEventHandler.cc osgfuncs.cc GenericHUD.cc \
+	ModeController.cc ModeHUD.cc ModeKeyHandler.cc \
+	AnimationPathCreator.cc MyApplicationUsage.cc \
+	Transformer.cc \
+	ViewFrustum.cc ViewerManager.cc WindowManager.cc
+OSG_OBJS=$(OSG_SRC:.cc=.o)
+OSG_OBJECTS= ${OSG_OBJS:%=$(OSG_DIR)/%}
+$(LIBDIR)/libosg.a: $(OSG_OBJECTS) 
+	ar rsuv $(OSG_DIR)/libosg.a $(OSG_OBJECTS)
+
+# =====================================================================	#
+OSG2D_SRC=ImageNumberHUD.cc MovieKeyHandler.cc Moviefuncs.cc \
+	  TextureQuad.cc TextureQuadsGroup.cc \
+          Movie.cc MoviesGroup.cc MoviePickHandler.cc \
+	  FOUOHUD.cc
+OSG2D_OBJS=$(OSG2D_SRC:.cc=.o)
+OSG2D_OBJECTS= ${OSG2D_OBJS:%=$(OSG2D_DIR)/%}
+$(LIBDIR)/libosg2D.a: $(OSG2D_OBJECTS) 
+	ar rsuv $(OSG2D_DIR)/libosg2D.a $(OSG2D_OBJECTS)
+
+# =====================================================================	#
+OSG3D_SRC=PointCloud.cc Terrain_Manipulator.cc \
+	  PointCloudsGroup.cc ColorGeodeVisitor.cc SetupGeomVisitor.cc \
+	  PointCloudKeyHandler.cc tdpfuncs.cc \
+	  CreateShadowedScene.cc RayTracer.cc RayTraceKeyHandler.cc
+OSG3D_OBJS=$(OSG3D_SRC:.cc=.o)
+OSG3D_OBJECTS= ${OSG3D_OBJS:%=$(OSG3D_DIR)/%}
+$(LIBDIR)/libosg3D.a: $(OSG3D_OBJECTS) 
+	ar rsuv $(OSG3D_DIR)/libosg3D.a $(OSG3D_OBJECTS)
+
+# =====================================================================	#
+OSGANNOTATORS_SRC=Annotator.cc AnnotatorsGroup.cc \
+		  SphereSegment.cc SphereSegmentsGroup.cc \
+		  SphereSegmentPickHandler.cc SphereSegmentsKeyHandler.cc \
+		  ImageFrame.cc ImageFramesGroup.cc \
+		  GraphNode.cc GraphNodesGroup.cc GraphNodesKeyHandler.cc \
+		  SignPost.cc SignPostsGroup.cc SignPostPickHandler.cc \
+		  SignPostsKeyHandler.cc \
+		  PowerPoint.cc PowerPointsGroup.cc PowerPointPickHandler.cc \
+		  PowerPointsKeyHandler.cc \
+		  ArmySymbol.cc ArmySymbolsGroup.cc ArmySymbolPickHandler.cc \
+		  ArmySymbolsKeyHandler.cc 
+OSGANNOTATORS_OBJS=$(OSGANNOTATORS_SRC:.cc=.o)
+OSGANNOTATORS_OBJECTS= ${OSGANNOTATORS_OBJS:%=$(OSGANNOTATORS_DIR)/%}
+$(LIBDIR)/libosgAnnotators.a: $(OSGANNOTATORS_OBJECTS) 
+	ar rsuv $(OSGANNOTATORS_DIR)/libosgAnnotators.a $(OSGANNOTATORS_OBJECTS)
+
+# =====================================================================	#
+OSGEARTH_SRC=Earth.cc EarthsGroup.cc \
+	     EarthKeyHandler.cc EarthRegion.cc EarthRegionsGroup.cc \
+	     EarthRegionsKeyHandler.cc \
+	     EarthManipulator.cc TextureSector.cc TextureSectorsGroup.cc
+OSGEARTH_OBJS=$(OSGEARTH_SRC:.cc=.o)
+OSGEARTH_OBJECTS= ${OSGEARTH_OBJS:%=$(OSGEARTH_DIR)/%}
+$(LIBDIR)/libosgEarth.a: $(OSGEARTH_OBJECTS) 
+	ar rsuv $(OSGEARTH_DIR)/libosgEarth.a $(OSGEARTH_OBJECTS)
+
+# =====================================================================	#
+OSGFEATURES_SRC=Feature.cc FeaturesGroup.cc FeaturePickHandler.cc \
+	        instantaneous_coords.cc  \
+		FeaturesKeyHandler.cc
+OSGFEATURES_OBJS=$(OSGFEATURES_SRC:.cc=.o)
+OSGFEATURES_OBJECTS= ${OSGFEATURES_OBJS:%=$(OSGFEATURES_DIR)/%}
+$(LIBDIR)/libosgFeatures.a: $(OSGFEATURES_OBJECTS) 
+	ar rsuv $(OSGFEATURES_DIR)/libosgFeatures.a $(OSGFEATURES_OBJECTS)
+
+# =====================================================================	#
+OSGFUSION_SRC=FusionGroup.cc FusionKeyHandler.cc 
+OSGFUSION_OBJS=$(OSGFUSION_SRC:.cc=.o)
+OSGFUSION_OBJECTS= ${OSGFUSION_OBJS:%=$(OSGFUSION_DIR)/%}
+$(LIBDIR)/libosgFusion.a: $(OSGFUSION_OBJECTS) 
+	ar rsuv $(OSGFUSION_DIR)/libosgFusion.a $(OSGFUSION_OBJECTS)
+
+# =====================================================================	#
+OSGGEOMETRY_SRC=Geometrical.cc GeometricalPickHandler.cc \
+		GeometricalsGroup.cc LineSegment.cc LineSegmentsGroup.cc \
+		LineSegmentsKeyHandler.cc \
+	 	Triangle.cc TrianglesGroup.cc TrianglesKeyHandler.cc \
+		Rectangle.cc RectanglesGroup.cc RectanglePickHandler.cc \
+		RectanglesKeyHandler.cc \
+		Box.cc BoxesGroup.cc BoxPickHandler.cc BoxesKeyHandler.cc \
+		PolyLine.cc PolyLinesGroup.cc PolyLinesKeyHandler.cc \
+		PolyLinePickHandler.cc \
+	        Point.cc PointsGroup.cc PointsKeyHandler.cc \
+		PointPickHandler.cc \
+		Cone.cc ConesGroup.cc ConePickHandler.cc ConesKeyHandler.cc\
+		Cylinder.cc CylindersGroup.cc CylinderPickHandler.cc \
+		CylindersKeyHandler.cc \
+		Plane.cc PlanesGroup.cc PlanesKeyHandler.cc \
+		Polyhedron.cc PolyhedraGroup.cc PolyhedraKeyHandler.cc \
+		Pyramid.cc PyramidsGroup.cc \
+		Polygon.cc PolygonsGroup.cc PolygonsKeyHandler.cc \
+		PolygonPickHandler.cc
+OSGGEOMETRY_OBJS=$(OSGGEOMETRY_SRC:.cc=.o)
+OSGGEOMETRY_OBJECTS= ${OSGGEOMETRY_OBJS:%=$(OSGGEOMETRY_DIR)/%}
+$(LIBDIR)/libosgGeometry.a: $(OSGGEOMETRY_OBJECTS) 
+	ar rsuv $(OSGGEOMETRY_DIR)/libosgGeometry.a $(OSGGEOMETRY_OBJECTS)
+
+# =====================================================================	#
+OSGGIS_SRC=postgis_database.cc raster_parser.cc
+OSGGIS_OBJS=$(OSGGIS_SRC:.cc=.o)
+OSGGIS_OBJECTS= ${OSGGIS_OBJS:%=$(OSGGIS_DIR)/%}
+$(LIBDIR)/libosgGIS.a: $(OSGGIS_OBJECTS) 
+	ar rsuv $(OSGGIS_DIR)/libosgGIS.a $(OSGGIS_OBJECTS)
+
+# =====================================================================	#
+OSGGRID_SRC=Grid.cc GridsGroup.cc AlirtGrid.cc AlirtGridsGroup.cc \
+	    LatLongGrid.cc LatLongGridsGroup.cc \
+	    GridKeyHandler.cc EarthGrid.cc
+OSGGRID_OBJS=$(OSGGRID_SRC:.cc=.o)
+OSGGRID_OBJECTS= ${OSGGRID_OBJS:%=$(OSGGRID_DIR)/%}
+$(LIBDIR)/libosgGrid.a: $(OSGGRID_OBJECTS) 
+	ar rsuv $(OSGGRID_DIR)/libosgGrid.a $(OSGGRID_OBJECTS)
+
+# =====================================================================	#
+OSGGRAPHICALS_SRC=Graphical.cc GraphicalPickHandler.cc \
+	          AnimationController.cc AnimationKeyHandler.cc \
+	    	  Center.cc CentersGroup.cc CenterPickHandler.cc \
+	    	  CentersKeyHandler.cc \
+	          instantaneous_obs.cc GraphicalsGroup.cc \
+	          GraphicalsKeyHandler.cc \
+		  PointFinder.cc
+OSGGRAPHICALS_OBJS=$(OSGGRAPHICALS_SRC:.cc=.o)
+OSGGRAPHICALS_OBJECTS= ${OSGGRAPHICALS_OBJS:%=$(OSGGRAPHICALS_DIR)/%}
+$(LIBDIR)/libosgGraphicals.a: $(OSGGRAPHICALS_OBJECTS) 
+	ar rsuv $(OSGGRAPHICALS_DIR)/libosgGraphicals.a $(OSGGRAPHICALS_OBJECTS)
+
+# =====================================================================	#
+OSGMODELS_SRC=Model.cc ModelsGroup.cc MODEL.cc MODELSGROUP.cc \
+	      ModelPickHandler.cc ModelsKeyHandler.cc \
+	      MODELPickHandler.cc MODELSKeyHandler.cc \
+	      ObsFrustum.cc ObsFrustaGroup.cc ObsFrustaKeyHandler.cc \
+	      OBSFRUSTUM.cc OBSFRUSTAGROUP.cc OBSFRUSTAKeyHandler.cc \
+	      OBSFRUSTUMPickHandler.cc ObsFrustumPickHandler.cc 
+OSGMODELS_OBJS=$(OSGMODELS_SRC:.cc=.o)
+OSGMODELS_OBJECTS= ${OSGMODELS_OBJS:%=$(OSGMODELS_DIR)/%}
+$(LIBDIR)/libosgModels.a: $(OSGMODELS_OBJECTS) 
+	ar rsuv $(OSGMODELS_DIR)/libosgModels.a $(OSGMODELS_OBJECTS)
+
+# =====================================================================	#
+OSGORGANIZATION_SRC=Decorations.cc DecorationsKeyHandler.cc Operations.cc
+OSGORGANIZATION_OBJS=$(OSGORGANIZATION_SRC:.cc=.o)
+OSGORGANIZATION_OBJECTS= ${OSGORGANIZATION_OBJS:%=$(OSGORGANIZATION_DIR)/%}
+$(LIBDIR)/libosgOrganization.a: $(OSGORGANIZATION_OBJECTS) 
+	ar rsuv $(OSGORGANIZATION_DIR)/libosgOrganization.a $(OSGORGANIZATION_OBJECTS)
+
+# =====================================================================	#
+OSGPICKER_SRC=osg_lineseg_picker.cc osg_polytope_picker.cc isectfuncs.cc 
+OSGPICKER_OBJS=$(OSGPICKER_SRC:.cc=.o)
+OSGPICKER_OBJECTS= ${OSGPICKER_OBJS:%=$(OSGPICKER_DIR)/%}
+$(LIBDIR)/libosgPicker.a: $(OSGPICKER_OBJECTS) 
+	ar rsuv $(OSGPICKER_DIR)/libosgPicker.a $(OSGPICKER_OBJECTS)
+
+# =====================================================================	#
+OSGSCENEGRAPH_SRC=LeafNodeVisitor.cc TreeVisitor.cc \
+		  DataGraph.cc DataGraphsGroup.cc \
+		  MyNodeVisitor.cc IntersectionVisitor.cc \
+		  MyDatabasePager.cc MyNodeInfo.cc MyIntersectVisitor.cc \
+		  LineOfSight.cc HeightAboveTerrain.cc \
+		  ColorMap.cc ColormapPtrs.cc ParentVisitor.cc \
+		  HiresDataVisitor.cc scenegraphfuncs.cc \
+		  DepthPartitionNode.cc DistanceAccumulator.cc \
+		  CullCallback.cc CustomIntersectVisitor.cc
+OSGSCENEGRAPH_OBJS=$(OSGSCENEGRAPH_SRC:.cc=.o)
+OSGSCENEGRAPH_OBJECTS= ${OSGSCENEGRAPH_OBJS:%=$(OSGSCENEGRAPH_DIR)/%}
+$(LIBDIR)/libosgSceneGraph.a: $(OSGSCENEGRAPH_OBJECTS) 
+	ar rsuv $(OSGSCENEGRAPH_DIR)/libosgSceneGraph.a $(OSGSCENEGRAPH_OBJECTS)
+
+# =====================================================================	#
+OSGSPACE_SRC=Planet.cc PlanetsGroup.cc PlanetKeyHandler.cc
+OSGSPACE_OBJS=$(OSGSPACE_SRC:.cc=.o)
+OSGSPACE_OBJECTS= ${OSGSPACE_OBJS:%=$(OSGSPACE_DIR)/%}
+$(LIBDIR)/libosgSpace.a: $(OSGSPACE_OBJECTS) 
+	ar rsuv $(OSGSPACE_DIR)/libosgSpace.a $(OSGSPACE_OBJECTS)
+
+# =====================================================================	#
+PLOT_SRC=plotfuncs.cc metafile.cc 
+PLOT_OBJS=$(PLOT_SRC:.cc=.o)
+PLOT_OBJECTS= ${PLOT_OBJS:%=$(PLOT_DIR)/%}
+$(LIBDIR)/libplot.a: $(PLOT_OBJECTS) 
+	ar rsuv $(PLOT_DIR)/libplot.a $(PLOT_OBJECTS)
+
+# =====================================================================	#
+POSTGRES_SRC=database.cc
+POSTGRES_OBJS=$(POSTGRES_SRC:.cc=.o)
+POSTGRES_OBJECTS= ${POSTGRES_OBJS:%=$(POSTGRES_DIR)/%}
+$(LIBDIR)/libpostgres.a: $(POSTGRES_OBJECTS) 
+	ar rsuv $(POSTGRES_DIR)/libpostgres.a $(POSTGRES_OBJECTS)
+
+# =====================================================================	#
+QUANTUM_SRC=quantumarray.cc quantum_wavefunction.cc \
+	    quantum_1Dwavefunction.cc quantumimage.cc \
+	    quantum_2Dwavefunction.cc potentialfuncs.cc quantum_types.cc \
+            quantumfuncs.cc
+QUANTUM_OBJS=$(QUANTUM_SRC:.cc=.o)
+QUANTUM_OBJECTS= ${QUANTUM_OBJS:%=$(QUANTUM_DIR)/%}
+$(LIBDIR)/libquantum.a: $(QUANTUM_OBJECTS) 
+	ar rsuv $(QUANTUM_DIR)/libquantum.a $(QUANTUM_OBJECTS)
+
+# =====================================================================	#
+ROBOT_SRC=robot.cc robots_group.cc groundspace.cc SAM.cc SAMs_group.cc
+ROBOT_OBJS=$(ROBOT_SRC:.cc=.o)
+ROBOT_OBJECTS= ${ROBOT_OBJS:%=$(ROBOT_DIR)/%}
+$(LIBDIR)/librobots.a: $(ROBOT_OBJECTS) 
+	ar rsuv $(ROBOT_DIR)/librobots.a $(ROBOT_OBJECTS)
+
+# =====================================================================	#
+SOCKET_SRC=Socket.cc ClientSocket.cc ServerSocket.cc socketfuncs.cc
+SOCKET_OBJS=$(SOCKET_SRC:.cc=.o)
+SOCKET_OBJECTS= ${SOCKET_OBJS:%=$(SOCKET_DIR)/%}
+$(LIBDIR)/libsocket.a: $(SOCKET_OBJECTS) 
+	ar rsuv $(SOCKET_DIR)/libsocket.a $(SOCKET_OBJECTS)
+
+# =====================================================================	#
+SPACE_SRC=imagecdf.cc spasefuncs.cc satelliteimage.cc satellitepass.cc \
+	  satellite.cc satellitefuncs.cc satelliteorbit.cc \
+	  motionfuncs.cc
+SPACE_OBJS=$(SPACE_SRC:.cc=.o)
+SPACE_OBJECTS= ${SPACE_OBJS:%=$(SPACE_DIR)/%}
+$(LIBDIR)/libspace.a: $(SPACE_OBJECTS) 
+	ar rsuv $(SPACE_DIR)/libspace.a $(SPACE_OBJECTS)
+
+# =====================================================================	#
+STRUCTMOTION_SRC=fundamental.cc reconstruction.cc
+STRUCTMOTION_OBJS=$(STRUCTMOTION_SRC:.cc=.o)
+STRUCTMOTION_OBJECTS= ${STRUCTMOTION_OBJS:%=$(STRUCTMOTION_DIR)/%}
+$(LIBDIR)/libstructmotion.a: $(STRUCTMOTION_OBJECTS) 
+	ar rsuv $(STRUCTMOTION_DIR)/libstructmotion.a $(STRUCTMOTION_OBJECTS)
+
+# =====================================================================	#
+THREEDGRAPHICS_SRC=character.cc characterfuncs.cc draw3Dfuncs.cc \
+		   threeDstring.cc xyzpfuncs.cc voxel_lattice.cc \
+		   voxel_coords.cc 
+THREEDGRAPHICS_OBJS=$(THREEDGRAPHICS_SRC:.cc=.o)
+THREEDGRAPHICS_OBJECTS= ${THREEDGRAPHICS_OBJS:%=$(THREEDGRAPHICS_DIR)/%}
+$(LIBDIR)/libthreeDgraphics.a: $(THREEDGRAPHICS_OBJECTS) 
+	ar rsuv $(THREEDGRAPHICS_DIR)/libthreeDgraphics.a $(THREEDGRAPHICS_OBJECTS)
+
+# =====================================================================	#
+TIME_SRC=timefuncs.cc 
+TIME_OBJS=$(TIME_SRC:.cc=.o)
+TIME_OBJECTS= ${TIME_OBJS:%=$(TIME_DIR)/%}
+$(LIBDIR)/libtime.a: $(TIME_OBJECTS) 
+	ar rsuv $(TIME_DIR)/libtime.a $(TIME_OBJECTS)
+
+# =====================================================================	#
+TRACK_SRC=kalman.cc observation.cc trackitem.cc tracklist.cc \
+	  graphquery.cc track.cc tracks_group.cc mover.cc \
+	  movers_group.cc mover_funcs.cc
+TRACK_OBJS=$(TRACK_SRC:.cc=.o)
+TRACK_OBJECTS= ${TRACK_OBJS:%=$(TRACK_DIR)/%}
+$(LIBDIR)/libtrack.a: $(TRACK_OBJECTS) 
+	ar rsuv $(TRACK_DIR)/libtrack.a $(TRACK_OBJECTS)
+
+# =====================================================================	#
+URBAN_SRC=bldgstrandfuncs.cc building.cc building_info.cc cityblock.cc \
+	  cityblockfuncs.cc oriented_box.cc \
+          roadfuncs.cc roadpoint.cc roadsegment.cc \
+	  rooftop.cc tree_cluster.cc treefuncs.cc \
+	  urbanfuncs.cc urbanimage.cc  
+URBAN_OBJS=$(URBAN_SRC:.cc=.o)
+URBAN_OBJECTS= ${URBAN_OBJS:%=$(URBAN_DIR)/%}
+$(LIBDIR)/liburban.a: $(URBAN_OBJECTS) 
+	ar rsuv $(URBAN_DIR)/liburban.a $(URBAN_OBJECTS)
+
+# =====================================================================	#
+VIDEO_SRC=G99_raw.cc VidFile.cc videofuncs.cc G99VideoDisplay.cc \
+	  pa_struct.cc scb.cc camera.cc texture_rectangle.cc
+VIDEO_OBJS=$(VIDEO_SRC:.cc=.o)
+VIDEO_OBJECTS= ${VIDEO_OBJS:%=$(VIDEO_DIR)/%}
+$(LIBDIR)/libvideo.a: $(VIDEO_OBJECTS) 
+	ar rsuv $(VIDEO_DIR)/libvideo.a $(VIDEO_OBJECTS)
+
+# =====================================================================	#
+WAVEFORM_SRC=waveform.cc 
+WAVEFORM_OBJS=$(WAVEFORM_SRC:.cc=.o)
+WAVEFORM_OBJECTS= ${WAVEFORM_OBJS:%=$(WAVEFORM_DIR)/%}
+$(LIBDIR)/libwaveform.a: $(WAVEFORM_OBJECTS) 
+	ar rsuv $(WAVEFORM_DIR)/libwaveform.a $(WAVEFORM_OBJECTS)
+
+# =====================================================================	#
+WEB_SRC=curl.cc
+WEB_OBJS=$(WEB_SRC:.cc=.o)
+WEB_OBJECTS= ${WEB_OBJS:%=$(WEB_DIR)/%}
+$(LIBDIR)/libweb.a: $(WEB_OBJECTS) 
+	ar rsuv $(WEB_DIR)/libweb.a $(WEB_OBJECTS)
+
+# =====================================================================	#
+WEBSERVICES_SRC=soapC.cpp soapClient.cpp stdsoap2.cpp
+WEBSERVICES_OBJS=$(WEBSERVICES_SRC:.cpp=.o)
+WEBSERVICES_OBJECTS= ${WEBSERVICES_OBJS:%=$(WEBSERVICES_DIR)/%}
+$(LIBDIR)/libwebservices.a: $(WEBSERVICES_OBJECTS) 
+	ar rsuv $(WEBSERVICES_DIR)/libwebservices.a $(WEBSERVICES_OBJECTS)
+
+# =====================================================================	#
+AXIS_SRC=anyType.cpp _anyType2anyTypeMap_entry.cpp \
+	 _anyType2anyTypeMap_entry_Array.cpp anyType2anyTypeMap.cpp \
+	 ArrayOfCommentVO.cpp ArrayOfContainerVO.cpp ArrayOfDateTime.cpp \
+	 ArrayOfDBColumn.cpp ArrayOfDictionaryVO.cpp ArrayOfEActivityVO.cpp \
+	 ArrayOfEntityVO.cpp ArrayOfERelationVO.cpp ArrayOfESignatureVO.cpp \
+	 ArrayOfFeedbackVO.cpp ArrayOfImageVO.cpp ArrayOfLong.cpp \
+	 ArrayOfOrderColumn.cpp ArrayOfPPTSlideVO.cpp ArrayOfPPTVO.cpp \
+	 ArrayOfQueryColumn.cpp ArrayOfReturnColumn.cpp \
+	 ArrayOfSKSObject.cpp ArrayOfString.cpp ArrayOfUserVO.cpp \
+	 ColumnOperatorIntf.cpp CommentVO_Array.cpp CommentVO.cpp \
+	 ContainerVO_Array.cpp ContainerVO.cpp DBColumn_Array.cpp \
+	 DBColumn.cpp DictionaryVO_Array.cpp DictionaryVO.cpp \
+	 EActivityVO_Array.cpp EActivityVO.cpp EntityVO_Array.cpp \
+	 EntityVO.cpp ERelationVO_Array.cpp ERelationVO.cpp \
+	 ESignatureVO_Array.cpp ESignatureVO.cpp FeedbackVO_Array.cpp \
+	 FeedbackVO.cpp ImageVO_Array.cpp ImageVO.cpp LimitOffset.cpp \
+	 OperatorIntf.cpp OrderColumn_Array.cpp OrderColumn.cpp Order.cpp \
+	 PPTSlideVO_Array.cpp PPTSlideVO.cpp PPTVO_Array.cpp PPTVO.cpp \
+	 QueryColumn_Array.cpp QueryColumn.cpp ReturnColumn_Array.cpp \
+	 ReturnColumn.cpp ScalarIntf.cpp SKSObject_Array.cpp SKSObject.cpp \
+	 SKSQuery.cpp SKSWebServicePortType.cpp SKSWSException.cpp \
+	 SKSQuery.cpp SKSWebServicePortType.cpp SKSWSException.cpp \
+	 UserVO_Array.cpp UserVO.cpp \
+	 ArrayOfSIGACTNominationVO.cpp  SIGACTNominationVO.cpp \
+	 ArrayOfSIGACTNominationVO.hpp  SIGACTNominationVO.hpp \
+	 ArrayOfTargetNominationVO.cpp  TargetNominationVO_Array.cpp \
+	 ArrayOfTargetNominationVO.hpp  TargetNominationVO_Array.hpp \
+	 SIGACTNominationVO_Array.cpp   TargetNominationVO.cpp \
+	 SIGACTNominationVO_Array.hpp   TargetNominationVO.hpp 
+
+AXIS_OBJS=$(AXIS_SRC:.cpp=.o)
+AXIS_OBJECTS= ${AXIS_OBJS:%=$(AXIS_DIR)/%}
+$(LIBDIR)/libaxis.a: $(AXIS_OBJECTS) 
+	ar rsuv $(AXIS_DIR)/libaxis.a $(AXIS_OBJECTS)
+
+clean:
+	rm -f *.a *.o 
+
+alirtclean:
+
+	cd $(MAIN_ALIRT_DIR) ; \
+	rm -f *.a *.o
+
+	cd $(ASTROGEO_DIR) ; \
+	rm -f *.a *.o
+	cd $(COLOR_DIR) ; \
+	rm -f *.a *.o
+	cd $(DATASTRUCTURES_DIR) ; \
+	rm -f *.a *.o fftw.*
+	cd $(FILTER_DIR) ; \
+	rm -f *.a *.o
+	cd $(GEOMETRY_DIR) ; \
+	rm -f *.a *.o
+	cd $(IMAGE_DIR) ; \
+	rm -f *.a *.o
+	cd $(KDTREE_DIR) ; \
+	rm -f *.a *.o
+	cd $(LADAR_DIR) ; \
+	rm -f *.a *.o
+	cd $(MATH_DIR) ; \
+	rm -f *.a *.o
+	cd $(NETWORK_DIR) ; \
+	rm -f *.a *.o
+	cd $(PLOT_DIR) ; \
+	rm -f *.a *.o
+	cd $(THREEDGRAPHICS_DIR) ; \
+	rm -f *.a *.o
+	cd $(URBAN_DIR) ; \
+	rm -f *.a *.o
+
+fusionclean:
+
+	cd $(MAIN_BAGHDAD_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_BLUEGRASS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_BLUEGRASS_AVS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_CHINA_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_EXIF_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_FUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_MIT_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_NEWYORK_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_NTI_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_OSG_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_SPASE_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_UAVS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_VIDEO_DIR) ; \
+	rm -f *.a *.o
+
+	cd $(FFMPEG_DIR) ; \
+	rm -f *.a *.o
+	cd $(FUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(GEARTH_DIR) ; \
+	rm -f *.a *.o
+	cd $(GEOMETRY_DIR) ; \
+	rm -f *.a *.o
+	cd $(MESSENGER_DIR) ; \
+	rm -f *.a *.o
+	cd $(NUMERICAL_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSG2D_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSG3D_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSG_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGANNOTATORS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGEARTH_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGFEATURES_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGFUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGEOMETRY_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGIS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGRID_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGRAPHICALS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGMODELS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGORGANIZATION_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGSCENEGRAPH_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGSPACE_DIR) ; \
+	rm -f *.a *.o
+	cd $(POSTGRES_DIR) ; \
+	rm -f *.a *.o
+	cd $(ROBOT_DIR) ; \
+	rm -f *.a *.o
+	cd $(TRACK_DIR) ; \
+	rm -f *.a *.o
+	cd $(VIDEO_DIR) ; \
+	rm -f *.a *.o
+
+satclean:
+
+	cd $(MAIN_SATELLITE_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_SPASE_DIR) ; \
+	rm -f *.a *.o
+
+	cd $(SPACE_DIR) ; \
+	rm -f *.a *.o
+
+eyeglassclean:
+
+	cd $(EYEGLASS_DIR) ; \
+	rm -f *.a *.o
+	cd $(EYEGLASSIO_DIR) ; \
+	rm -f *.a *.o
+	cd $(EYEGLASSLODTREE_DIR) ; \
+	rm -f *.a *.o
+	cd $(EYEGLASSMODEL_DIR) ; \
+	rm -f *.a *.o
+	cd $(EYEGLASSUTIL_DIR) ; \
+	rm -f *.a *.o
+	cd $(EYEGLASSVIEWER_DIR) ; \
+	rm -f *.a *.o
+
+webservicesclean:
+
+	cd $(WEBSERVICES_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_WEBSERVICES_DIR) ; \
+	rm -f *.a *.o
+
+bigclean:
+
+	cd $(MAINS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_ALIRT_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_BAGHDAD_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_BLUEGRASS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_BLUEGRASS_AVS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_CHINA_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_EXIF_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_FUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_IED_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_IPC_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_ISDS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_FUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_MIT_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_NEWYORK_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_NTI_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_OSG_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_QUANTUM_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_SATELLITE_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_SPASE_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_TRACKING_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_UAVS_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_UTILITY_DIR) ; \
+	rm -f *.a *.o
+	cd $(MAIN_VIDEO_DIR) ; \
+	rm -f *.a *.o
+
+	cd $(ASTROGEO_DIR) ; \
+	rm -f *.a *.o
+	cd $(BAYES_DIR) ; \
+	rm -f *.a *.o
+	cd $(COLOR_DIR) ; \
+	rm -f *.a *.o
+	cd $(DATASTRUCTURES_DIR) ; \
+	rm -f *.a *.o fftw.*
+	cd $(DELAUNAY_DIR) ; \
+	rm -f *.a *.o
+	cd $(FILTER_DIR) ; \
+	rm -f *.a *.o
+	cd $(FFMPEG_DIR) ; \
+	rm -f *.a *.o
+	cd $(FUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(GEARTH_DIR) ; \
+	rm -f *.a *.o
+	cd $(GENERAL_DIR) ; \
+	rm -f *.a *.o
+	cd $(GEOMETRY_DIR) ; \
+	rm -f *.a *.o
+	cd $(GRAPH_DIR) ; \
+	rm -f *.a *.o
+	cd $(IMAGE_DIR) ; \
+	rm -f *.a *.o
+	cd $(ISDS_DIR) ; \
+	rm -f *.a *.o
+	cd $(KAKADU_DIR) ; \
+	rm -f *.a *.o
+	cd $(KDTREE_DIR) ; \
+	rm -f *.a *.o
+	cd $(LADAR_DIR) ; \
+	rm -f *.a *.o
+	cd $(MATH_DIR) ; \
+	rm -f *.a *.o
+	cd $(MESSENGER_DIR) ; \
+	rm -f *.a *.o
+	cd $(NETWORK_DIR) ; \
+	rm -f *.a *.o
+	cd $(NUMERICAL_DIR) ; \
+	rm -f *.a *.o
+	cd $(NUMREC_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSG_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSG2D_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSG3D_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGANNOTATORS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGEARTH_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGFEATURES_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGFUSION_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGEOMETRY_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGIS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGRID_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGGRAPHICALS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGMODELS_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGORGANIZATION_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGSCENEGRAPH_DIR) ; \
+	rm -f *.a *.o
+	cd $(OSGSPACE_DIR) ; \
+	rm -f *.a *.o
+	cd $(PLOT_DIR) ; \
+	rm -f *.a *.o
+	cd $(POSTGRES_DIR) ; \
+	rm -f *.a *.o
+	cd $(QUANTUM_DIR) ; \
+	rm -f *.a *.o
+	cd $(ROBOT_DIR) ; \
+	rm -f *.a *.o
+	cd $(SOCKET_DIR) ; \
+	rm -f *.a *.o
+	cd $(SPACE_DIR) ; \
+	rm -f *.a *.o
+	cd $(STRUCTMOTION_DIR) ; \
+	rm -f *.a *.o
+	cd $(THREEDGRAPHICS_DIR) ; \
+	rm -f *.a *.o
+	cd $(TIME_DIR) ; \
+	rm -f *.a *.o
+	cd $(TRACK_DIR) ; \
+	rm -f *.a *.o
+	cd $(VIDEO_DIR) ; \
+	rm -f *.a *.o
+	cd $(URBAN_DIR) ; \
+	rm -f *.a *.o
+	cd $(WAVEFORM_DIR) ; \
+	rm -f *.a *.o
+	cd $(WEB_DIR) ; \
+	rm -f *.a *.o
+
+
+

@@ -1,0 +1,8 @@
+./RUN_generate_peter_inputs
+./run_photo_sizes
+./run_thumbnails
+./run_mini_convert
+./run_bundler_photos
+# ./run_write_viewbundler_script
+# ./run_viewbundler
+

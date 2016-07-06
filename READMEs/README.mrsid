@@ -1,0 +1,20 @@
+========================================================================
+MRSID notes
+========================================================================
+Last updated on 5/3/11
+========================================================================
+
+MrSID decode commands for BEAST:
+
+export LD_LIBRARY_PATH=/usr/local/lib32;mrsidgeodecode -i /data/massGIS-raw/extracted/10078645.sid -o /data/massGIS-raw/convert_jpeg/10078645.jpg
+export LD_LIBRARY_PATH=/usr/local/lib32;mrsidgeodecode -i /data/massGIS-raw/extracted/10078660.sid -o /data/massGIS-raw/convert_jpeg/10078660.jpg
+
+MrSID decode commands for touchy2:
+
+mrsidgeodecode -i Konar_F19_10cm_8bit.sid -o Konar_F19_10cm_8bit.tif -of tifg
+mrsidgeodecode -i Konar_F20_10cm_8bit.sid -o Konar_F20_10cm_8bit.tif -of tifg
+mrsidgeodecode -i Konar_F22_10cm_8bit.sid -o Konar_F22_10cm_8bit.tif -of tifg
+
+*.  To decode an image at scale 2 (i.e. 1/4 resolution):
+
+mrsidgeodecode -i konarF02F08F11F13032009_10cm_8bit.sid -o konarF02F08F11F13032009_10cm_8bit.jpg  -s 2

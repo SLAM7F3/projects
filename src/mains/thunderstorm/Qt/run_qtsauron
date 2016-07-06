@@ -1,0 +1,5 @@
+cd ~/programs/c++/svn/projects/src/mains/thunderstorm/Qt
+~/programs/c++/svn/projects/src/mains/thunderstorm/Qt/qtsauron \
+--region_filename ../packages/fused_afghanistan.pkg \
+--GIS_layer ../packages/world_GIS.pkg \
+--initial_mode Manipulate_Fused_Data_Mode 

@@ -1,0 +1,7 @@
+// Method call possible due to a slot in QTable.
+table.setNumRows( 10 )
+table.setNumCols( 5 )
+
+// Method call made possible with the wrapper class
+table.setText( 1,1, "hello" )
+

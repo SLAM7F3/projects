@@ -1,0 +1,233 @@
+#include "ColorSpaceUtils.cgh"
+#include "GridUtils.cgh"
+
+// assumes input does NOT have the OpenGL 0.5 added
+float3 clampToEdge( float3 xyz, float3 gridSize )
+{	
+	float3 clampedXYZ;
+	
+	clampedXYZ.x = clamp( xyz.x, 0, gridSize.x - 1 );
+	clampedXYZ.y = clamp( xyz.y, 0, gridSize.y - 1 );
+	clampedXYZ.z = clamp( xyz.z, 0, gridSize.z - 1 );
+	
+	return clampedXYZ;
+}
+
+void restrictMask( uniform samplerRECT fullMaskLinearSampler,
+				  
+				  uniform float3 restrictedGridSize,
+				  uniform float3 fullGridSize,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	const float3 halfdxdydz = float3( 0.5, 0.5, 0.5 );
+
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize );
+	float3 fullXYZ = 2 * restrictedXYZ + halfdxdydz;
+	
+	float mask = texTiledLinear( fullMaskLinearSampler, fullGridSize, fullXYZ ).x;
+	
+	colorOut = ( mask > 0 ) ? 1 : 0;
+}
+
+
+void restrictConstraints( uniform samplerRECT fullConstraintsSampler,
+						 
+						 uniform float3 restrictedGridSize,
+						 uniform float3 fullGridSize,
+						 
+						 float2 xy : WPOS,
+				  
+						 out float4 colorOut : COLOR )
+{
+	const float3 dx = float3( 1, 0, 0 );
+	const float3 dy = float3( 0, 1, 0 );
+	const float3 dz = float3( 0, 0, 1 );
+	
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize );
+	float3 full000 = 2 * restrictedXYZ;
+
+	float2 constraints[8];
+	constraints[0] = texTiled( fullConstraintsSampler, fullGridSize, full000 ).xy;
+	constraints[1] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dx ).xy;
+	constraints[2] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dy ).xy;
+	constraints[3] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dz ).xy;
+	constraints[4] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dx + dy ).xy;
+	constraints[5] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dx + dz ).xy;
+	constraints[6] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dy + dz ).xy;
+	constraints[7] = texTiled( fullConstraintsSampler, fullGridSize, full000 + dx + dy + dz ).xy;
+	
+	float numConstraints = 0;
+	float constraintSum = 0;
+	for( int i = 0; i < 8; ++i )
+	{
+		if( constraints[i].y > 0 )
+		{
+			numConstraints += 1;
+			constraintSum += constraints[i].x;
+		}
+	}
+	
+	// constraint
+	colorOut.x = ( numConstraints > 0 ) ? ( constraintSum / numConstraints ) : 0;
+	
+	// mask
+	colorOut.y = ( numConstraints > 0 ) ? 1 : 0;
+}
+
+void smoothGrid( uniform samplerRECT gridSampler,
+				uniform samplerRECT rhsSampler,
+				
+				uniform float3 gridSize,
+				
+				float2 xy : WPOS,
+				
+				out float colorOut : COLOR )
+{
+	float3 dx = float3( 1, 0, 0 );
+	float3 dy = float3( 0, 1, 0 );
+	float3 dz = float3( 0, 0, 1 );
+		
+	float3 xyz = getGridXYZ( xy, gridSize );
+
+	float2 rhs = texTiledNearest( rhsSampler, gridSize, xyz ).xy;
+	
+	float mask = rhs.y;	
+	if( mask > 0 )
+	{
+		colorOut = rhs.x;
+	}	
+	else // plain jacobi
+	{
+		float source = rhs.x;
+	
+		float left = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz - dx, gridSize ) ).x;
+		float right = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz + dx, gridSize ) ).x;
+		float down = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz - dy, gridSize ) ).x;
+		float up = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz + dy, gridSize ) ).x;
+		float back = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz - dz, gridSize ) ).x;
+		float front = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz + dz, gridSize ) ).x;
+		
+		float sumNeighbors = ( left + right + down + up + back + front );
+		colorOut = ( sumNeighbors - source ) / 6;
+	}
+}
+
+void prolongEstimate( uniform samplerRECT restrictedGridLinearSampler,
+
+					 uniform float3 fullGridSize,
+					 uniform float3 restrictedGridSize,
+				  
+					 float2 xy : WPOS,
+				  
+					 out float colorOut : COLOR )
+{
+	float3 fullXYZ = getGridXYZ( xy, fullGridSize ); // full-integer, i.e. ( 3, 4, 5 )
+	float3 restrictedGridXYZ = fullXYZ / 2; // half-integer, i.e. ( 1.5, 2, 2.5 )
+	
+	colorOut = texTiledLinear( restrictedGridLinearSampler, restrictedGridXYZ, restrictedGridSize );
+}
+
+void convergenceTest( uniform samplerRECT gridSampler,
+					 uniform samplerRECT rhsSampler,
+					 
+					 uniform float3 gridSize,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	float3 dx = float3( 1, 0, 0 );
+	float3 dy = float3( 0, 1, 0 );
+	float3 dz = float3( 0, 0, 1 );
+	
+	float3 xyz = getGridXYZ( xy, gridSize );
+	
+	float2 rhs = texTiledNearest( rhsSampler, gridSize, xyz ).xy;
+	
+	float mask = rhs.y;
+	if( mask > 0 )
+	{
+		discard;
+	}	
+	else
+	{
+		float source = rhs.x;
+		
+		float center = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz, gridSize ) ).x;
+		float left = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz - dx, gridSize ) ).x;
+		float right = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz + dx, gridSize ) ).x;
+		float down = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz - dy, gridSize ) ).x;
+		float up = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz + dy, gridSize ) ).x;
+		float back = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz - dz, gridSize ) ).x;
+		float front = texTiledNearest( gridSampler, gridSize, clampToEdge( xyz + dz, gridSize ) ).x;
+		
+		float residual = source - ( left + right + down + up + back + front - 6 * center );
+		float absResidual = abs( residual );
+		
+		if( absResidual < 0.001 )
+		{
+			discard;
+		}
+		else
+		{
+			colorOut = absResidual;
+		}
+	}
+}
+
+void slice( uniform samplerRECT inputRGBASampler,
+		   uniform samplerRECT gridSampler,
+		   
+		   uniform float3 rcpSigma,
+		   uniform float3 gridSize,
+		   uniform float3 paddingXYZ,
+		   
+		   float2 xy : WPOS,
+		   
+		   out float colorOut : COLOR )
+{
+	float4 inputRGBA = texRECT( inputRGBASampler, xy );
+	float inputLuminance = rgba2Luminance( inputRGBA );
+	
+	float3 xyzIn = float3( floor( xy ), inputLuminance );
+	float3 gridXYZ = gridDownsampleFloat( xyzIn, rcpSigma, paddingXYZ );
+	float gridValue = texTiledLinear( gridSampler, gridSize, gridXYZ );
+
+	// apply sigmoid		
+	colorOut = saturate( 3 * gridValue * gridValue - 2 * gridValue * gridValue * gridValue );
+}
+
+void composite( uniform samplerRECT inputRGBASampler,
+			   uniform samplerRECT maskSampler,
+			   uniform samplerRECT valueSampler,
+			   
+			   float2 xy : WPOS,
+			   
+			   out float4 colorOut : COLOR )
+{
+	float mask = texRECT( maskSampler, xy ).x;
+	if( mask > 0 )
+	{
+		colorOut = texRECT( valueSampler, xy );
+	}
+	else
+	{
+		colorOut = texRECT( inputRGBASampler, xy );
+	}
+}
+
+void colorChange( uniform samplerRECT inputRGBASampler,
+				 uniform samplerRECT influenceSampler,
+				 
+				 float2 xy : WPOS,
+				 
+				 out float4 colorOut : COLOR )
+{
+	float4 inputRGBA = texRECT( inputRGBASampler, xy );
+	float influence = texRECT( influenceSampler, xy ).x;
+	
+	colorOut = lerp( inputRGBA, inputRGBA.bgra, influence );
+}

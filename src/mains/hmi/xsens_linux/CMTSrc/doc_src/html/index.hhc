@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML><HEAD></HEAD><BODY>
+<OBJECT type="text/site properties">
+<param name="FrameName" value="right">
+</OBJECT>
+<UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Xsens Communication Motion Tracker Library"><param name="Local" value="index.html"><param name="ImageNumber" value="11"></OBJECT>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Class List"><param name="Local" value="annotated.html"><param name="ImageNumber" value="1"></OBJECT>
+  <UL>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Cmt1f"><param name="Local" value="classxsens_1_1_cmt1f.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Cmt1s"><param name="Local" value="classxsens_1_1_cmt1s.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Cmt2f"><param name="Local" value="classxsens_1_1_cmt2f.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Cmt2s"><param name="Local" value="classxsens_1_1_cmt2s.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Cmt3"><param name="Local" value="classxsens_1_1_cmt3.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtAnalogInData"><param name="Local" value="struct_cmt_analog_in_data.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtBinaryData"><param name="Local" value="struct_cmt_binary_data.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtCalData"><param name="Local" value="struct_cmt_cal_data.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtDataFormat"><param name="Local" value="struct_cmt_data_format.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtDeviceConfiguration"><param name="Local" value="struct_cmt_device_configuration.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtDeviceConfiguration::_devInfo"><param name="Local" value="struct_cmt_device_configuration_1_1__dev_info.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtDeviceMode"><param name="Local" value="struct_cmt_device_mode.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtDeviceMode2"><param name="Local" value="struct_cmt_device_mode2.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtEuler"><param name="Local" value="struct_cmt_euler.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtGpsSatelliteInfo"><param name="Local" value="struct_cmt_gps_satellite_info.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtGpsStatus"><param name="Local" value="struct_cmt_gps_status.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtMatrix"><param name="Local" value="struct_cmt_matrix.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtPortInfo"><param name="Local" value="struct_cmt_port_info.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtQuat"><param name="Local" value="struct_cmt_quat.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtRawData"><param name="Local" value="struct_cmt_raw_data.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtRawGpsData"><param name="Local" value="struct_cmt_raw_gps_data.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtRawPressureData"><param name="Local" value="struct_cmt_raw_pressure_data.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtScenario"><param name="Local" value="struct_cmt_scenario.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtShortVector"><param name="Local" value="struct_cmt_short_vector.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtSyncInSettings"><param name="Local" value="struct_cmt_sync_in_settings.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtSyncOutSettings"><param name="Local" value="struct_cmt_sync_out_settings.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtUtcTime"><param name="Local" value="struct_cmt_utc_time.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtVector"><param name="Local" value="struct_cmt_vector.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CmtVersion"><param name="Local" value="struct_cmt_version.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::FifoQueue< T, E >"><param name="Local" value="classxsens_1_1_fifo_queue.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::FifoQueueBasic< T >"><param name="Local" value="classxsens_1_1_fifo_queue_basic.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Itypes"><param name="Local" value="unionxsens_1_1_itypes.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorClassFunc< T, R >"><param name="Local" value="classxsens_1_1_janitor_class_func.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorDelete< T >"><param name="Local" value="classxsens_1_1_janitor_delete.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorDeleteArray< T >"><param name="Local" value="classxsens_1_1_janitor_delete_array.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorFree< T >"><param name="Local" value="classxsens_1_1_janitor_free.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorFunc0< ResultType >"><param name="Local" value="classxsens_1_1_janitor_func0.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorFunc1< ParamType, ResultType >"><param name="Local" value="classxsens_1_1_janitor_func1.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorFunc2< Param1Type, Param2Type, ResultType >"><param name="Local" value="classxsens_1_1_janitor_func2.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorFuncStdCall< ParamType, ResultType >"><param name="Local" value="classxsens_1_1_janitor_func_std_call.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorLogFunc< T, C, R >"><param name="Local" value="classxsens_1_1_janitor_log_func.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorRestore< T >"><param name="Local" value="classxsens_1_1_janitor_restore.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::JanitorSet< T >"><param name="Local" value="classxsens_1_1_janitor_set.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Message"><param name="Local" value="classxsens_1_1_message.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::MessageHeader"><param name="Local" value="structxsens_1_1_message_header.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::MessageHeader::_mdl"><param name="Local" value="unionxsens_1_1_message_header_1_1__mdl.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::MessageHeader::_mdl::_mextd"><param name="Local" value="structxsens_1_1_message_header_1_1__mdl_1_1__mextd.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::MessageHeader::_mdl::_mextd::_mlen"><param name="Local" value="structxsens_1_1_message_header_1_1__mdl_1_1__mextd_1_1__mlen.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Packet"><param name="Local" value="classxsens_1_1_packet.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::Packet::PacketInfo"><param name="Local" value="structxsens_1_1_packet_1_1_packet_info.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens::TimeSync"><param name="Local" value="classxsens_1_1_time_sync.html"><param name="ImageNumber" value="11"></OBJECT>
+  </UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Class Members"><param name="Local" value="functions.html"><param name="ImageNumber" value="11"></OBJECT>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Namespace List"><param name="Local" value="namespaces.html"><param name="ImageNumber" value="1"></OBJECT>
+  <UL>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens"><param name="Local" value="namespacexsens.html"><param name="ImageNumber" value="11"></OBJECT>
+  </UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="Namespace Members"><param name="Local" value="namespacemembers.html"><param name="ImageNumber" value="11"></OBJECT>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="File List"><param name="Local" value="files.html"><param name="ImageNumber" value="1"></OBJECT>
+  <UL>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMT1.cpp"><param name="Local" value="_c_m_t1_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMT1.h"><param name="Local" value="_c_m_t1_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMT2.cpp"><param name="Local" value="_c_m_t2_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMT2.h"><param name="Local" value="_c_m_t2_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMT3.cpp"><param name="Local" value="_c_m_t3_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMT3.h"><param name="Local" value="_c_m_t3_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMTdef.h"><param name="Local" value="_c_m_tdef_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMTf.h"><param name="Local" value="_c_m_tf_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMTmessage.cpp"><param name="Local" value="_c_m_tmessage_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMTmessage.h"><param name="Local" value="_c_m_tmessage_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMTpacket.cpp"><param name="Local" value="_c_m_tpacket_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="CMTpacket.h"><param name="Local" value="_c_m_tpacket_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens_fifoqueue.h"><param name="Local" value="xsens__fifoqueue_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens_janitors.h"><param name="Local" value="xsens__janitors_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens_std.cpp"><param name="Local" value="xsens__std_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens_std.h"><param name="Local" value="xsens__std_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens_time.cpp"><param name="Local" value="xsens__time_8cpp.html"><param name="ImageNumber" value="11"></OBJECT>
+  <LI><OBJECT type="text/sitemap"><param name="Name" value="xsens_time.h"><param name="Local" value="xsens__time_8h.html"><param name="ImageNumber" value="11"></OBJECT>
+  </UL>
+<LI><OBJECT type="text/sitemap"><param name="Name" value="File Members"><param name="Local" value="globals.html"><param name="ImageNumber" value="11"></OBJECT>
+</UL>

@@ -1,0 +1,35 @@
+=========================================================================
+Satellite model refinement notes
+=========================================================================
+Last updated on 12/24/07
+=========================================================================
+
+1.  Save satellite XYZP as a TDP file by pressing 'y' within VIEW DATA MODE
+followed by entering 'tdp' when prompted.  TDP file will be saved into
+./TDP/output.tdp.  
+
+	e.g	viewsat --region_filename spase.pkg
+
+Rename TDP file as something relevant to satellite of interest
+(e.g. spase.tdp).
+
+2.  Run Ross' LODTREE program to convert tdp file into osga archive.
+
+	e.g.  	lodtree spase.tdp
+
+3.  Run VIEWSAT again on spase.osga as a model builder program.  Press "X"
+to insert/manipulate cylinders.  When cylinder refinement is finished,
+press "V" to enter VIEW DATA MODE.  Toggle off purple satellite grid by
+pressing "l".  Then press "o" to output cylinder decorations into an IVE
+file.  Rename output.ive as cyls.ive.
+
+4.  Convert cyls.ive into an OSG archive using the OSG utility osgarchive:
+
+	e.g. 	osgarchive  --insert cyls.ive --archive cyls.osga
+
+Copy cyls.osga into same subdirectory as satellite osga file.
+
+5.  Create a package file which displays data and decorations osga file on
+a common coordinate system.  Then run viewsat to simultaneously view both:
+
+	e.g 	viewsat --region_filename ./packages/refined_model.pkg

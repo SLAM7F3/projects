@@ -1,0 +1,11 @@
+/bin/rm ./analyze_SAR
+/bin/rm ./cjsontest
+/bin/rm ./clean_L1
+/bin/rm ./crop_L1
+/bin/rm ./density_L1
+/bin/rm ./fishing
+/bin/rm ./flatten
+/bin/rm ./flip_cloud
+/bin/rm ./generate_SAR
+/bin/rm ./SAR_propagator
+/bin/rm ./viewground

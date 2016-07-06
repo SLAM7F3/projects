@@ -1,0 +1,25 @@
+void passthroughVertex( uniform float4x4 mvp,
+					   
+					   float4 positionIn : POSITION,
+					   float2 texcoordIn : TEXCOORD0,
+					   
+					   out float4 clipspaceOut : POSITION,
+					   out float2 texcoordOut : TEXCOORD0 )
+{
+	clipspaceOut = mul( mvp, positionIn );
+	texcoordOut = texcoordIn;
+}
+
+void passthroughFragment( uniform samplerRECT inputSampler,
+
+						 float2 texcoordIn : TEXCOORD0,
+						 
+						 out float4 colorOut : COLOR )
+{
+	colorOut = texRECT( inputSampler, texcoordIn );
+	
+	// colorOut = float4( saturate( texcoordIn / 720 ), 0, 1 );
+	
+	// works
+	// colorOut = float4( 0.4, 0.7, 0.3, 1.0 );
+}

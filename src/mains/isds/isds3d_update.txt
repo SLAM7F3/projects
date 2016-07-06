@@ -1,0 +1,260 @@
+==========================================================================
+Standard set of ISDS/ladar data visualization test programs
+==========================================================================
+Last updated on 5/19/13; 1/7/14; 3/8/14; 4/5/14; 4/26/14
+==========================================================================
+
+1.  Demonstration of corrected georegistered Boston map plus current ladar
+imagery visualization/manipulation capabilities:
+
+ cd /home/cho/programs/c++/svn/projects/src/mains/OSG
+ viewcities --region_filename ./packages/boston.pkg --GIS_layer ./packages/boston_GIS.pkg --region_filename ./packages/copley.pkg --region_filename ./packages/copley_north.pkg --GIS_layer ./packages/SKS_GIS.pkg
+
+Point out lat/long grid.  Also manually cleaned up significant dark count
+noise (e.g. over Fenway Park) and designed colormaps to maximally amplify
+height content.  Scene graph improvements made by Ross this past summer
+enable real-time viewing of entire urban data set on a laptop.
+
+Do NOT perform flythrough on laptop
+
+Check alignment of ladar image onto absolute lat/long grid by comparing
+with completely independent GPS information obtained by members of
+satellite communication Group 63.  GPS dropout application is also
+interesting in its own right:
+
+
+cd /data/alirt2/Boston_2005/boston_30cm_tiles/boston_osga
+~/programs/c++/svn/projects/src/mains/OSG/satcities --region_filename ~/programs/c++/svn/projects/src/mains/OSG/packages/boston.pkg
+
+
+Point out angular location of communication satellite represented by cessna
+model.  Look at building near 93 where track goes underneath it.  Go to
+north end where track passes through multiple houses and hummer's GPS is
+known to be wrong.  
+
+Pan over to towers on Longfellow Bridge and point out their shadows
+in satcomm data.  
+
+ view longfellow_towers.jpg
+
+
+Pan over to Storrow drive and point out path nearby river which does not
+obviously go along a roadway.
+
+----------------------------------------------------------------------------
+2.  Aerial EO imagery fusion with 3D geometry:
+
+View example of aerial imagery coming from Mass GIS which is used by Google
+Earth:
+
+ cd /data/video/Boston/aerial
+ video cambridge_x2_y2.vid 
+
+MANUALLY performed one-time registration of 2D image onto 3D point cloud 
+
+ cd /data/alirt2/Boston_2005/boston_30cm_tiles/fusion_osga
+ viewcities --region_filename boston.pkg
+
+Exploit multi-dimensional color space to convey both height and
+reflectivity information.  Correlate heights with hues, but let saturation
+and intensities within fused product correlate with EO photo's.  This
+fusion approach yields better results than simply draping all RGB info from
+the photo onto the point cloud.
+
+Proto-butcher block capabilities (near-term deliverable opportunity)
+-------------------------------------------------------------------
+
+Press "A" to insert signposts. around MIT.  Press "A" followed by "e" to
+assign text label to signpost
+
+Press "H" to insert bomb blast near Harvard bridge
+
+Press "B" to insert army symbols.
+
+
+Need map server to endow dumb point clouds with high level street, address,
+building, etc knowledge
+
+----------------------------------------------------------------------------
+3.  "Ground" EO imagery fusion with 3D geometry (long term research
+objective; ambitious with potential high payoff)
+
+Huge repositories of ground level urban imagery are being amassed on WWW.
+Nadir oriented ALIRT imagery provides (only) a basis for constructing
+*complete* 3D model for cities.  To enable future algorithm development on
+ground EO/aerial ladar imagery fusion and knowledge space mining, we
+conducted 2 field trips into Boston in early September (while leaves were
+still on trees as they were during ALIRT flyover in July 2005!)
+
+ cd /data/video/Boston/Sept7_2006/Kodak_DX3500_2.2megapixel/PRU_skywalk
+ eog *.JPG
+
+Flip through first few images showing Hancock tower until arriving at
+DCP_2012.jpg.  We apriori do not know where this photo was shot.  Nor do we
+a priori have any knowledge (e.g. text labels, georegistration information)
+for this image.  But we can use computer vision techniques to MANUALLY
+embed it into 3D worldspace with the help of the ALIRT height map:
+
+
+cd /data/alirt2/Boston_2005/boston_30cm_tiles/boston_osga
+/home/cho/programs/c++/svn/projects/src/mains/fusion/fusion \
+--region_filename /home/cho/programs/c++/svn/projects/src/mains/OSG/packages/boston.pkg \
+/home/cho/programs/c++/svn/projects/src/mains/OSG/images/copley.jpg
+
+
+Press "I" twice and then "r" to enter into Manipulate Feature Mode within
+video window.  Then enter 'd' to input default set of 2D features.
+
+Press "I" twice and then "r" to enter into Manipulate Feature Mode within
+ladar window.  Then enter "features_3D_copley.txt" to input 3D features
+
+Press "L" twice to enter into Manipulate PolyLine Mode within
+video window.  Then press "r" to read in polylines_2D.txt to input 2D
+polyline information.
+
+Press "L" twice to enter into Manipulate PolyLine Mode within
+ladar window.  Then press "r" to read in polylines_3D.txt to input 3D
+polyline information.
+
+In video window, Press "U" to enter into Fuse Data Mode.  Then press "c" to
+consolidate 2D/3D feature infomration followed by "i" to insert 2D ground
+image of Copley into 3D point cloud.
+
+Press "V" to enter into View Data mode.  Then press "l" to get rid of
+purple world grid.  Press "Z" to play prerecorded animation movie which
+zooms in from far away and circles in towards ground camera's view.
+
+Comments:
+
+  This type of 2D image embedding within a 3D world geometry opens many new
+capabilities:
+
+  a.  Text label propagation among multiple 2D image planes
+
+  b.  Nadir map displays within ground-level imagery (e.g. robot
+      navigation)
+
+  c.  Geometry based image similarity scoring
+
+  d.  3D navigation through large repositories of 2D imagery
+  
+  e.  IMAGE based searching and image "grepping"
+
+Currently working on connecting SKS web interface to 3D data
+viewer/manipulator
+
+----------------------------------------------------------------------------
+4.  Model animation, DTED surface maps and shadowing computation:
+
+
+cd /home/cho/programs/c++/svn/projects/src/mains/OSG
+raytrace --region_filename ./packages/dted.pkg
+
+//  ~cho/programs/c++/svn/projects/src/mains/OSG/raytrace puget_Height.osga
+
+ Press "A" to enter into INSERT ANNOTATION mode.  Then place the
+ ground receiver (represented as a signpost) at the desired location
+ on the DTED map
+
+ Press "L" to enter into INSERT POLYLINE mode.  Enter waypoints and
+ terminate with double click.  A light cyan line should then mark the
+ Cessna's flight path above the DTED surface.
+
+ Press "R" to enter into RUN MOVIE mode.  Press'p' to begin
+ animating the Cessna and computing the lines-of-sight.  Press
+ right/left arrows to step through individual frames in the animation.
+
+----------------------------------------------------------------------------
+5.  Blue marble display
+
+a.  Time dependent 2D movie insertion into global 3D space
+
+ cd /home/cho/programs/c++/svn/projects/src/mains/spase
+ spase_imageplanes --region_filename ./packages/spase.pkg
+
+
+Hit "R" to enter run movie mode.  Hit "p" to play movie.  Slow movie speed
+down to 0.5 sec per frame.  Then press "Z" to begin flythrough.
+
+Reasonably close to developing Google Earth capability for displaying and
+manipulating sensor products in a truly global context.
+
+b.  Global situational visualization
+
+ cd /home/cho/programs/c++/svn/projects/src/mains/OSG
+ earth --region_filename ./packages/boston.pkg --region_filename ./packages/baghdad.pkg --region_filename ../newyork/packages/nyc_rtv.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid --surface_texture sanclemente_EO.pkg
+
+
+Hit "l" to turn off ALIRT grid.  Then press "Z" to begin flythrough.
+
+----------------------------------------------------------------------------
+6.  New York City road network
+
+cd /home/cho/programs/c++/svn/projects/src/mains/newyork
+nyroads --region_filename ./packages/nyc_rtv_EO_isds3D.pkg --region_filename ./packages/empire.pkg --GIS_layer ./packages/nyc_streets.pkg
+
+----------------------------------------------------------------------------
+7.  3D mosaics of 2D photos
+
+cd /home/cho/programs/c++/svn/projects/src/mains/china
+new_fov --region_filename ./packages/shanghai_04.pkg \
+--region_filename ./packages/shanghai_05.pkg  \
+--region_filename ./packages/shanghai_06.pkg \
+--initial_mode Manipulate_Fused_Data_Mode
+
+----------------------------------------------------------------------------
+8.  Photosynth demos
+
+cd /home/cho/programs/c++/svn/projects/src/mains/newyork
+run_1kdemo
+
+----------------------------------------------------------------------------
+9.  LOST
+
+Double click on LOST icon
+
+----------------------------------------------------------------------------
+10.  Image search with Tstorm dataset.  
+
+*.  Start photo server
+
+cd /home/cho/programs/c++/svn/projects/src/mains/photosynth/Qt
+
+run_photoserver
+
+*.  Double click on IMAGESEARCH desktop icon to start image search thin and
+thick clients
+
+*.  Select Tstorm graph hierarchy
+
+*.  Start sauron client
+
+cd /home/cho/programs/c++/svn/projects/src/mains/thunderstorm
+
+run_sauron_client
+
+----------------------------------------------------------------------------
+11.  Video frame annotator 
+
+cd /home/cho/programs/c++/svn/projects/src/mains/video
+
+./vplayer \
+--newpass /home/cho/programs/c++/svn/projects/src/mains/video/videos/homogenized_video_filenames/clip_0001/clip_0001_frame-00001.jpg   \
+--world_start_UTC 2013,9,27,16,8,54  \
+--world_stop_UTC 2013,9,27,16,59,0   \
+--world_time_step 0.10000 \
+--initial_mode Run_Movie_Mode 
+
+Follow printed notes for keyboard and mouse control.
+
+----------------------------------------------------------------------------
+12.  GEO demo
+
+Make sure orange Disk #13 is mounted.
+
+cd /home/cho/programs/c++/svn/projects/src/mains/geo
+
+./geo_pass_scripts 
+
+run_GEO_demo
+

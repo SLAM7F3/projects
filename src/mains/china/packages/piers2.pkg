@@ -1,0 +1,48 @@
+piers2.jpg 
+# --focal_length -1.99379
+
+
+# Compromise parameters which yields coarse alignment with NYC point cloud
+
+# Minimum score = 0.255968016108
+# 1st photo orientation relative to 2nd: 
+
+# --Uaxis_focal_length  -1.79636363215
+# --Vaxis_focal_length  -1.72363636785
+# --U0  0.610321226453 --V0  0.534545448221
+# --pixel_skew_angle 90.9045454018
+# --relative_az 10.1590261384
+# --relative_el 0.14317099336
+# --relative_roll 0.436963450428
+
+
+# Nearly ideal alignment to between piers2.jpg and piers3.jpg
+# Minimum score = 0.118250698088
+# 1st photo orientation relative to 2nd: 
+
+# --Uaxis_focal_length  -1.96879774102
+# --Vaxis_focal_length  -1.53636367853
+# --U0  0.631734128323 --V0  0.435204270819
+# --pixel_skew_angle 89.010901726
+# --relative_az 9.34808860549
+# --relative_el 0.166202580446
+# --relative_roll 0.390914562921
+
+
+
+# Parameters derived on 10/7/07 using closed-form homography approach:
+
+# --Uaxis_focal_length -2.0037
+# --Vaxis_focal_length -2.00479
+# --U0 0.646563
+# --V0 0.479113
+# --relative_az  9.28446
+# --relative_el  0.137539
+# --relative_roll -0.518771
+
+--Uaxis_focal_length  -1.98326830503
+--Vaxis_focal_length  -1.98326830503
+--U0  0.629019799034 --V0  0.476118375527
+--relative_az 9.27129271188
+--relative_el 0.141180746238
+--relative_roll 0.486995943015

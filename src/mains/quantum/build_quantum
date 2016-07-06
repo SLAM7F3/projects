@@ -1,0 +1,8 @@
+make program=oneD
+make program=potential_1D
+make program=potential_1D_phi
+make program=potential_2D
+make program=potential_2D_phiE
+make program=singlespectrum
+make program=spectrum
+make program=twoD

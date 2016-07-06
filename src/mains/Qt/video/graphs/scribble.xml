@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<kernelgraph>
+
+  <kernels>
+    <kernel class="FilenameToRGBArray" id="VideoSource" args="ubyte" />
+    <kernel class="RGB2Texture" id="RGB2Tex" args="ubyte" />
+    <kernel class="Scribble" id="Scribble" />
+  </kernels>
+
+  <connections>
+
+    <connection sourceKernelId="VideoSource" outputPort="size" targetKernelId="RGB2Tex" inputPort="size" />
+    <connection sourceKernelId="VideoSource" outputPort="outputRGBArray" targetKernelId="RGB2Tex" inputPort="inputRGBArray" />
+    
+    <connection sourceKernelId="VideoSource" outputPort="outputRGBArray" targetKernelId="Scribble" inputPort="inputRGBArray" />
+    <connection sourceKernelId="RGB2Tex" outputPort="outputTexture" targetKernelId="Scribble" inputPort="inputTexture" />
+
+  </connections>
+
+  <defaults>
+    
+    <default kernelId="VideoSource" inputPort="filename" value="string data/mice.png" />
+    <default kernelId="Scribble" inputPort="sigmaSpatial" value="float 256" />
+    <default kernelId="Scribble" inputPort="sigmaRange" value="float 0.05" />
+
+    <!--<default kernelId="Scribble" inputPort="sigmaSpatial" value="float 64" />
+    <default kernelId="Scribble" inputPort="sigmaRange" value="float 0.05" />-->
+    
+    <!--<default kernelId="Scribble" inputPort="sigmaSpatial" value="float 16" />
+    <default kernelId="Scribble" inputPort="sigmaRange" value="float 0.05" />-->
+
+    <!--<default kernelId="VideoSource" inputPort="filename" value="string d:/greece_dome.jpg" />
+    <default kernelId="Scribble" inputPort="sigmaSpatial" value="float 20" />
+    <default kernelId="Scribble" inputPort="sigmaRange" value="float 0.01" />-->
+
+
+  </defaults>
+
+  <views>
+    <view kernelId="Scribble" outputPort="colorChangeTexture" />
+    <view kernelId="Scribble" outputPort="outputTexture" />
+    <view kernelId="Scribble" outputPort="scribbledTexture" />
+    <view kernelId="Scribble" outputPort="outputTexture" />    
+  </views>
+
+  <autodirtykernels>
+    <autodirty kernelId="VideoSource" inputPort="filename" />  
+  </autodirtykernels>
+
+  <mouselisteners>
+    <mouselistener kernelId="Scribble" />
+  </mouselisteners>
+  
+</kernelgraph>

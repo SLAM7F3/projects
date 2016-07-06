@@ -1,0 +1,41 @@
+=========================================================================
+Manually thresholding above-ground dark count noise
+=========================================================================
+Last updated on 7/14/06
+=========================================================================
+
+*.  Within quadratic_warp/qfit/boston.ive subdir, run program VIEWPOINTS on
+each noise tile (e.g. viewpoints boston_30cm.x6.y2_qfit.ive )
+
+*.  Select features at corners of each tile.  Move them radially outward so
+that the Delaunay network will be sure to cover every legitimate XY point
+in the tile.  Also move them vertically upwards by several meters.  Once at
+least the 4 tile corner features have been emplaced, enter into
+TRACK_FEATURES mode by pressing "F" and then Delaunay triangulate those
+features by pressing "d".  Continue to add features on the tops of tall
+structures which are not covered by the triangle network.  
+
+*.  Save all features into their default text files
+(e.g. features_3D_boston_30cm.x6.y2_qfit.txt) by entering into
+MANIPULATE_FEATURE mode (via the "I" key) followed by pressing "s".  Save
+all triangles into their default text files
+(e.g. triangles_boston_30cm.x6.y2_qfit.txt) by entering into
+MANIPULATE_TRIANGLE model (via the "T" key) followed by pressing "s".
+
+*.  Move the feature and triangle text files into a subdir where main
+program TRANSFORM_POINTS can be run (e.g.  transform_points
+boston_30cm.x6.y2_qfit.tdp) It takes the noisy TDP file as a direct input,
+and it expects to find the feature and triangle files corresponding to the
+TDP file in the same subdirectory.  TRANSFORM_POINTS produces a cleaned TDP
+file (e.g. boston_30cm.x6.y2_qfit_thresh.tdp).
+
+*.  Run Ross' LODTREE program on the cleaned TDP file to convert it into a
+set of .ive files:
+
+./lodtree --separate --pages -o thresh_nosnow/boston.ive
+boston_30cm.x6.y2_qfit_thresh.tdp
+
+*.  Move the feature and triangle files for each tile into a subdirectory
+for long time storage and possible retrieval 
+( e.g. mv *.txt ./features_and_triangles/ )
+

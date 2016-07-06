@@ -1,0 +1,68 @@
+#!/bin/bash
+
+./flowdiags & 
+
+# Get time as a UNIX timestamp (seconds elapsed since Jan 1, 1970 0:00 UTC)
+Time0="$(date +%s)"
+
+echo "*****************************************************************"
+echo "INITIALIZING INPUTS"
+./RUN_generate_peter_inputs
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "VISUALIZING FLIR METADATA"
+./RUN_visualize_FLIR_metadata
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "SEPARATING PACKAGES"
+./run_separated_packages
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "CROPPING ANALOG FRAMES"
+./RUN_crop_analog_frames
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "MATCHING FEATURES"
+./run_restricted_asift
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "TRIANGULATING"
+./run_triangulate
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+./view_init_reconstruction
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "GEOREGISTERING RECONSTRUCTION"
+./run_gpsfit
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+./view_geoaligned_reconstruction
+
+echo "*****************************************************************"
+echo "COMPUTATION FINISHED!"
+
+Time="$(($(date +%s)-Time0))"
+
+echo "======================================================================="
+echo " "
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+echo " "
+echo "======================================================================="
+
+./RUN_video_propagator

@@ -1,0 +1,63 @@
+Frustum.o: Frustum.cpp Frustum.h arch_dependent_headers.h
+base_file.o: base_file.cpp base_file.h swapbyte.h
+colormaps_opengl.o: colormaps_opengl.cpp colormaps_opengl.h
+dataviewer.o: dataviewer.cpp arch_dependent_headers.h dataviewer.h \
+  dvDataSequence.h dvDataCollection.h dvData.h dvColormap.h \
+  colormaps_opengl.h dvTracker.h dvDataConstraint.h Frustum.h \
+  /usr/local/include/boost/config/platform/linux.hpp dvDataTreeNode.h \
+  dvDataPointsViewProperties.h base_file.h dvCameraAuto.h dvCamera.h
+dataviewermain.o: dataviewermain.cpp dataviewer.h \
+  arch_dependent_headers.h dvDataSequence.h dvDataCollection.h dvData.h \
+  dvColormap.h colormaps_opengl.h dvTracker.h dvDataConstraint.h \
+  Frustum.h /usr/local/include/boost/config/platform/linux.hpp \
+  dvDataTreeNode.h dvDataPointsViewProperties.h dvDataPoints.h fif_file.h \
+  base_file.h harris_file.h SYSTEMTIME.h xyzp_file.h
+dvCamera.o: dvCamera.cpp dvCamera.h arch_dependent_headers.h \
+  /usr/local/include/boost/config/platform/linux.hpp
+dvCameraAuto.o: dvCameraAuto.cpp dvCameraAuto.h dvCamera.h \
+  arch_dependent_headers.h \
+  /usr/local/include/boost/config/platform/linux.hpp
+dvCollection.o: dvCollection.cpp dvCollection.h dvData.h dvColormap.h \
+  colormaps_opengl.h dvTracker.h dvDataConstraint.h Frustum.h \
+  arch_dependent_headers.h
+dvColormap.o: dvColormap.cpp dvColormap.h colormaps_opengl.h dvTracker.h \
+  /usr/include/g++-3/string
+dvData.o: dvData.cpp dvData.h dvColormap.h colormaps_opengl.h dvTracker.h \
+  dvDataConstraint.h Frustum.h arch_dependent_headers.h
+dvDataCollection.o: dvDataCollection.cpp dvDataCollection.h dvData.h \
+  dvColormap.h colormaps_opengl.h dvTracker.h dvDataConstraint.h \
+  Frustum.h arch_dependent_headers.h \
+  /usr/local/include/boost/config/platform/linux.hpp dvDataTreeNode.h \
+  dvDataPointsViewProperties.h
+dvDataConstraint.o: dvDataConstraint.cpp dvDataConstraint.h dvTracker.h
+dvDataPointCollection.o: dvDataPointCollection.cpp \
+  dvDataPointCollection.h dvDataCollection.h dvData.h dvColormap.h \
+  colormaps_opengl.h dvTracker.h dvDataConstraint.h Frustum.h \
+  arch_dependent_headers.h \
+  /usr/local/include/boost/config/platform/linux.hpp dvDataPoints.h \
+  dvDataPointsViewProperties.h base_file.h
+dvDataPoints.o: dvDataPoints.cpp dvDataPoints.h dvData.h dvColormap.h \
+  colormaps_opengl.h dvTracker.h dvDataConstraint.h Frustum.h \
+  arch_dependent_headers.h dvDataPointsViewProperties.h
+dvDataPointsViewProperties.o: dvDataPointsViewProperties.cpp \
+  dvDataPointsViewProperties.h dvTracker.h
+dvDataSequence.o: dvDataSequence.cpp dvDataSequence.h dvDataCollection.h \
+  dvData.h dvColormap.h colormaps_opengl.h dvTracker.h dvDataConstraint.h \
+  Frustum.h arch_dependent_headers.h \
+  /usr/local/include/boost/config/platform/linux.hpp base_file.h
+dvDataTreeLeaf.o: dvDataTreeLeaf.cpp dvDataTreeLeaf.h dvDataTreeNode.h \
+  Frustum.h arch_dependent_headers.h dvColormap.h colormaps_opengl.h \
+  dvTracker.h dvDataCollection.h dvData.h dvDataConstraint.h \
+  /usr/local/include/boost/config/platform/linux.hpp \
+  dvDataPointsViewProperties.h dvDataPoints.h
+dvDataTreeNode.o: dvDataTreeNode.cpp dvDataTreeNode.h Frustum.h \
+  arch_dependent_headers.h dvColormap.h colormaps_opengl.h dvTracker.h \
+  dvDataCollection.h dvData.h dvDataConstraint.h \
+  /usr/local/include/boost/config/platform/linux.hpp \
+  dvDataPointsViewProperties.h dvDataTreeLeaf.h dvDataPoints.h \
+  base_file.h
+fif_file.o: fif_file.cpp fif_file.h base_file.h
+harris_file.o: harris_file.cpp harris_file.h SYSTEMTIME.h xyzp_file.h \
+  base_file.h
+swapbyte.o: swapbyte.cpp swapbyte.h
+xyzp_file.o: xyzp_file.cpp xyzp_file.h base_file.h

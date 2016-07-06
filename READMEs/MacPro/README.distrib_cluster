@@ -1,0 +1,501 @@
+=============================================================================
+Running/monitoring jobs on distrib server cluster notes
+=============================================================================
+Last updated on 1/12/16; 3/28/16; 4/12/16; 6/9/16
+=============================================================================
+
+*.  Instructions from Sam Friedman on how to generate pwin binary on
+startown cluster (see also Rahul's lab)
+
+Chant "build_distrib_binary" to run script which performs following command:
+
+
+	Navigate to ~/sputnik/scripts/ folder
+
+	then run command:
+
+	./deploy.sh ~/sputnik/ -pwin
+ 
+Script complains if you have not committed your local changes.  
+Need to just commit (but not push) all pwin codes changes
+made locally.
+
+You also cannot be running pwin on your local machine while you deploy.
+Deploy.sh script prompts you for password 4 times.
+
+
+*.  Instructions from Fredrik Larsson on how to run a PR job on the cluster
+farm and evaluate its performance:
+
+1. Run a detector version on the server cluster:
+
+./pwin -vv -do1 'c3 distrib pr -pr_cmd "classify -dver DETECTOR_VERSION  -nochk" -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml  -prj pilot_knob -nochk -priv PRIORITY_LEVEL -sno NUMBER_OF_NODES -pwcmd FULL_PATH_TO_DEPLOYED_PWIN_BINARY' -nowin
+
+
+Suggested numbers:
+DETECTOR_VERSION = 1000+ (that version you created)
+PRIORITY_LEVEL = 75
+NUMBER_OF_NODES = 25
+FULL_PATH_TO_DEPLOYED_PWIN_BINARY = whatever you get from the deploy.sh script
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -do1 'c3 distrib pr -pr_cmd "classify -dver 1002 -nochk" -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml  -prj pilot_knob -nochk -priv 75 -sno 25 -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2' -nowin
+
+
+2.  After batch job is submitted to cluster, check out log file to ensure
+jobs get started on various nodes:
+
+
+Added job 24, group 1 to batch: umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 23'
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 24' 
+Added job 25, group 1 to batch: umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 24'
+
+Successfully sent batch file: /startown-gpfs/sputnik01/distrib_batch_jobs/pcho@pcho-MacPro_pilot_knob_add_batch_140428_083453.txt to distrib 
+
+VERBOSE:         memory_quota: avg: -1.00, sum: -1.00, cnt: 1, min: -1.00, max: -1.00
+VERBOSE:         job_duration: avg: 7.29, sum: 7.29, cnt: 1, min: 7.29, max: 7.29
+
+more /startown-gpfs/sputnik01/distrib_batch_jobs/pcho@pcho-MacPro_pilot_knob_add_batch_140428_083453.txt
+VERSION 2
+pcho@pcho-MacPro at 2014-04-28 08:34:53      : pilot_knob
+1  B6   G1 IDLE  50 8 DISK:6  pcho@pcho-MacPro umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 0'
+2  B6   G1 IDLE  50 8 DISK:6  pcho@pcho-MacPro umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 1'
+3  B6   G1 IDLE  50 8 DISK:6  pcho@pcho-MacPro umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 2'
+4  B6   G1 IDLE  50 8 DISK:6  pcho@pcho-MacPro umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 3'
+5  B6   G1 IDLE  50 8 DISK:6  pcho@pcho-MacPro umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_8f7be2 -nowin -do1 'pr classify -dver 1002 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 4'
+.
+.
+.
+
+
+*.  According to Rahul's lab, we need to chant the following in order to
+login to distrib:
+
+/startown-gpfs/sputnik01/supersize/bin/distrib -client st21f01ls-fly0001.st.geo.apple.com
+
+We have created an executable script called ~/bin/ssh_distrib which
+contains this long, ugly command!
+
+
+Press "3" to enable only local output.  Then press "j" to enter job
+management mode.  Press "h" while in jobs mode to see of commands that can
+be used to view, pause, debug or kill running jobs:
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) h
+Usage:
+q  Quit to main menu
+r  Remove job
+k  Kill running job
+m  Move batch
+l  List batches
+L  List single job
+n  Rename batch
+G  List groups
+o  List client jobs
+O  List simple
+R  List running
+D  Download stdout/stderr log
+E  List error jobs
+e  Remove error flag
+M  Replace part of command
+S  Search job
+v  Set cond group
+V  Clear cond group
++  More options
+1  Echo off
+2  Echo on
+3  Echo local
+4  Echo color
+
+
+.  Note:  Our client name on distrib is "pcho@pcho-MacPro" .  
+It is set in c3_common::get_user_and_host() to be "user@hostname".
+
+
+.  Press "O" to see simplified list of jobs.
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) O
+
+Enter client (blank if current, ALL for all): pcho@pcho-MacPro
+Batch      Group     Job range         RUNN IDLE COND FAIL   MEM   THR   CAPS        COMMAND
+B5187:75   G66537  13143022 13143046  (   0    0    0   25)  50    8     DISK:6      OTHER - pilot_knob             (pcho@pcho-MacPro)
+25 jobs
+
+.  Fix problem with deployed binary and redeploy a new, corrected version.  
+Could delete binary executable on startown corresponding to buggy version.
+But Viktor said on 4/29/2014 that old binaries (even buggy ones) are rarely
+deleted.
+
+. To change hashtag from an old, buggy deployed binary to a new, corrected
+deployed binary within the command to be run on the cluster, chant "M":
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) M
+
+Enter range of job id to replace (N M): 13143022 13143046
+Enter string to be replaced: pwin_8f7be2
+Enter string to replace with: pwin_e2d640
+Confirm replacing "pwin_8f7be2" with "pwin_e2d640" in jobs 13143022 to 13143046 (y/n) y
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) 
+
+
+.  To remove error flag from previously failed jobs, chant "e":
+
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) e
+Enable job (j = job, g = group, b = batch): b
+
+Enter batch id for enabling jobs: 5187
+
+.  Resurrected jobs should now appear as idle when we chant "O":
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) O
+
+Enter client (blank if current, ALL for all): pcho@pcho-MacPro
+Batch      Group     Job range         RUNN IDLE COND FAIL   MEM   THR   CAPS        COMMAND
+B5187:75   G66537  13143022 13143046  (   0   25    0    0)  50    8     DISK:6      OTHER - pilot_knob             (pcho@pcho-MacPro)
+25 jobs
+
+Depending upon their priority level, the idle jobs will eventually start
+running:
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) O
+
+Enter client (blank if current, ALL for all): pcho@pcho-MacPro
+Batch      Group     Job range         RUNN IDLE COND FAIL   MEM   THR   CAPS        COMMAND
+B5187:75   G66537  13143022 13143046  (  15   10    0    0)  50    8     DISK:6      OTHER - pilot_knob             (pcho@pcho-MacPro)
+25 jobs
+
+
+*.  Output from jobs running on the cluster is directed to subdirectory
+specified within pr_prjdb.xml corresponding to the specified project name:
+
+
+  <project name="pilot_knob">
+   <title>pilot_knob</title>
+   <resource>pilot_knob</resource>
+   <model>
+     <path>/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob/omni</path>
+
+For example, listing of
+/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob yields
+
+bbox@  omni@  perf_log.xml  pr/  treegeom@
+
+In this example, only the "pr/" subdirectory actually contains any
+nontrivial output.
+
+
+*.  On 5/15/14, Viktor taught us that the actual, full commands which are
+executed on the cluster are written to text batch files called "jobfiles".
+The full paths to these jobfiles are explicitly listed shortly after we 
+submit a "c3 distrib" command.  The full commands within these jobfiles are
+echoed after the jobfiles paths.  
+
+For example:
+
+INFO   : /startown-gpfs/sputnik01/supersize/resource/mercury/old-2-camera-van/pilot_knob//calibration.array - calibration array seems to be consistent
+Opened jobfile: /startown-gpfs/sputnik01/distrib_batch_jobs/pcho@pcho-MacPro_pilot_knob_add_batch_140515_145422.txt
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_08cabd -nowin -do1 'pr classify -dver 1004 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 0' 
+Added job 1, group 1 to batch: umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_08cabd -nowin -do1 'pr classify -dver 1004 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 0'
+.
+.
+.
+
+Alternatively, we could look in the jobfiles themselves.  But in order to
+edit or list a jobfile such as 
+
+		pcho@pcho-MacPro_pilot_knob_add_batch_140515_145422.txt , 
+
+we need to escape the "@" sign appearing in our "username@host" :
+
+e /startown-gpfs/sputnik01/distrib_batch_jobs/pcho\@pcho-MacPro_pilot_knob_add_batch_140515_145422.txt
+
+In order to test our distributed binary along with all its commands on our
+local machine before attempting to run it on the cluster, we can chant
+
+
+
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_08cabd -nowin -do1 'pr classify -dver 1004 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 25 -sst 0'
+
+
+If this runs successfully locally, we will be much more confident that
+it'll run successfully on the cluster.
+
+
+*.  When trying to track down errors on the cluster and/or identify
+particular jobs which died while running, chant "E" [to list error jobs],
+then "1" [to list jobs for a particular user] and finally
+"pcho@pcho-MacPro" to see all error messages for dead jobs.  The resulting
+output then shows the IDs and name of the nodes on which our job(s) died
+(e.g. cn0031):
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) E
+
+Filter on:  1) user   2) batch tag   (ENTER if no filter): 1
+
+Enter user: (ENTER if all): pcho@pcho-MacPro
+727619 B122:80    G11512 ERROR      50  8 DISK:6  [cn0031(unknown failure) 13:23 30:44] umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_4cd95d -nowin -do1 'pr classify -dver 1004 -stop_st 1 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 5 -sst 0' (pcho@pcho-MacPro)
+727620 B122:80    G11512 ERROR      50  8 DISK:6  [cn0308(unknown failure) 13:23 30:44] umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_4cd95d -nowin -do1 'pr classify -dver 1004 -stop_st 1 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 5 -sst 1' (pcho@pcho-MacPro)
+727621 B122:80    G11512 ERROR      50  8 DISK:6  [cn1229(unknown failure) 13:23 30:43] umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_4cd95d -nowin -do1 'pr classify -dver 1004 -stop_st 1 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 5 -sst 2' (pcho@pcho-MacPro)
+727622 B122:80    G11512 ERROR      50  8 DISK:6  [cn1420(unknown failure) 13:23 30:37] umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_4cd95d -nowin -do1 'pr classify -dver 1004 -stop_st 1 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 5 -sst 3' (pcho@pcho-MacPro)
+727623 B122:80    G11512 ERROR      50  8 DISK:6  [cn0138(unknown failure) 13:23 30:11] umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_4cd95d -nowin -do1 'pr classify -dver 1004 -stop_st 1 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 5 -sst 4' (pcho@pcho-MacPro)
+5 jobs
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) 
+
+*.  We've created a script /home/bin/ssh_launchpad which logs us into the
+head node on the cluster.  Once logged in, we should see a picture of the
+starship Enterprise!  From the head node, it's possible to ssh into any
+other node via a command such as 
+
+			ssh cn0031
+
+After sshing into a particular node, we could chant "top" to see how much
+RAM our job(s) are taking on one work node.
+
+*.  If no obvious error messages are contained within stdout or stderr
+logs, then job(s) could have died as a result of running out of memory!
+Try to avoid this situation by first running job(s) on our local machine
+and making sure (via top) that they do not contain a memory leak.
+
+
+*.  
+
+[Jobs@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) Batch      Group     Job range       RUNN IDLE COND FAIL   MEM   THR   CAPS        COMMAND
+B1307:80   G20515  1404513 1404535  (   0    0    0    5)  50    8     DISK:6      OTHER - pilot_knob             (pcho@pcho-MacPro)
+12 jobs
+
+
+Batch ID = 1306
+Batch priority = 80
+Batch RAM = 50 Gbytes
+Batch n_threads = 8
+
+
+*.  Make sure to chant "umask 2" in order to properly set permissions for
+output subdirectories on startown.  For example, files sitting in
+/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob/pr/results/detector_ver_1004_stage_5/pilot_knob/1/
+all have permissions
+
+	-rw-rw-r--
+
+These permission should NOT be
+
+	-rw-r--r--
+
+Otherwise, fdistrib cannot overwrite such files and we can end up with
+cluster failures such as
+
+ERROR  : pr_annotation_write_file: Not able to create file "/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob//pr/results/detector_ver_1004_stage_5//pilot_knob/1/000283-000280-19800112-013808-4580-Cam2_anno.txt"
+ERROR  : pr_save_detection_results: Failed to write "/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob//pr/results/detector_ver_1004_stage_5//pilot_knob/1/000283-000280-19800112-013808-4580-Cam2_anno.txt"
+
+*.  On 7/2/14, we learned from Viktor that there is a cloned copy of all
+the San Francisco van imagery and ladar data sitting on startown which we
+should point towards when running jobs on the cluster.  Use the following
+startown project file in scripts intended for running on the cluster:
+
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml \
+-prj 20140305_v4_lidar_v2 \
+
+*.  On 7/2/14, Abhishek told us that any -mongodb flag should go within the
+innermost quotes in a cluster script since it is a PR command.
+
+
+*.  On 7/8/14, Jasmine taught us that we can enable compilation with OPENCV
+on the distrib cluster if we modify our build_distrib_binary script to read
+as follows:
+
+	/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -pwin -par OPENCV=1
+
+
+*.  On 7/8/14, we learned the hard and painful way that umask 2 must ALWAYS
+be included at the start of any script which launches jobs on the distrib
+cluster.  Any output subdirectories/files generated by the distrib cluster
+will then have permissions which are nearly completely open (except for
+writing by world):
+
+drwxrwxr-x 1 pcho       apple_ga    128K Jul  8  2014 20140305_v4_lidar_medium/
+
+*.  On 7/22/14, Erik Soderval told us that it's generally a good idea to
+run jobs on distrib nodes as user "fdistrib" rather than user "pcho".  This
+ensures that all files are read and written with the correct permissions.
+Moreover, the flyover-eufori.cfg file is automatically loaded for user
+"fdistrib" and not for user "pcho".  So Erik recommended that we first
+chant
+
+	sudo -u fdistrib
+
+before running individual node jobs such as 
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_80229a -vv -nowin -do1 'pr classify -dver 100 \
+-oc1c6c3c4 -rect -mongodb -nochk \
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project_LA.xml \
+-prj los_angeles_drive'
+
+
+*.  On 8/5/14, we learned the hard & painful way that we generally need to
+add an entry within pwin/app/unsorted/c3_distrib.c in order for a new "pwin
+command" to run successfully on distrib.
+
+For example, in order for pwin to parse the following command
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do1 'c3 distrib pr -pr_cmd "rig_rectify -nochk" \
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project_LA.xml \
+-prj los_angeles_drive \
+-nochk -priv 80 -sno 100 -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_b38d4e' -nowin
+
+we need to add the following lines within c3_distrib_pr() in app/unsorted/c3_distrib.c :
+
+ else if(strstr(pr_cmd, "rig_rectify")){
+    int i;
+    for(i = 0; i < sno; i++){
+      sprintf(cmdline, "umask 2 ; %s -nowin -do1 'pr %s -prjdb %s -prj %s -sno %d -sst %d'",
+              params->pwcmd, pr_cmd, params->prjdb, prj->name, sno, i);
+      printf("%s \n", cmdline);
+
+      distrib_addjob2(params->distrib_batch, distrib_handle,
+                      NULL, cmdline, pr_mem, pr_thread,
+                      cap, params->priv, gid, 0, gcond,
+                      params->originator);
+    }
+  }
+
+
+*.  Distrib job priorities
+
+90-100 = Bundles / Maya Re-texture jobs
+85-89 = Important builds/Exports (rarely used)
+80-84 = Small builds for testing (less than 75 build jobs)
+76-79 = Production (Ninja jobs and Exports)
+70-75 = Dev jobs
+60-69 = Ops jobs for upcoming releases
+59-0 = Non urgent jobs
+
+*.  We can reset the priority of an entire batch of distrib jobs
+by pressing "m" after ssh'ing into distrib
+
+
+*.  Batched distrib jobs are exported to text files like
+
+/startown-gpfs/sputnik01/distrib_batch_jobs/pcho@pcho-MacPro_pilot_knob_add_batch_140428_083453.txt
+
+*.  Enter "R" at distrib cluster's general prompt in order to list of top
+jobs running on cluster.
+
+*.  Enter "M" to replace one substring within a distrib command line (for
+jobs with priorities set to 0) with some other substring.  
+
+
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_168b7d -nowin -mq 85 -do 'pr build  -build_ver 21156   -comp2D_3D -run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150331_154332.xml -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150331_154332.xml -prj kittyhawk_1b -nochk -area 14 1 8244 8333'
+
+
+-run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150331_154332.xml -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150331_154332.xml
+
+---->
+
+-run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150325_102822.xml -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150325_102822.xml
+
+
+*.  As of Mar 2015, image chips exported by 2D stage of house number
+pipeline within pr_build are written to subdir of weiyu's "root cache
+directory = cacher = /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/
+
+*.  On 3/27/15, one of 38K+ Kitty Hawk 1B 2D house number jobs failed on
+distrib.  The subsequent 38K+ 3D jobs were conditioned on the 2D jobs, and
+they could not start while there was a failed job in the queue.  Rahul
+taught us that we could simply remove the failed job.  Then the condition
+on the subsequent 3D jobs was satisfied, and they could start processing on
+distrib.
+
+*.  On 5/20/15, Viktor taught us that we can force output to be sent to a
+dummy file (e.g. called tmpjunk) via the -dhost argument:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "view \
+-dhost tmpjunk \
+-pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_"
+
+If we then run the command which is sent to the batch tmpjunk file, we'll
+then see all the distrib commands which would have been sent to the
+cluster.  This is very useful for debugging group conditional dependencies.
+
+*.  In order to build a "production" binary which has RDN support, we need
+to first manually delete the entire contents of the dynamically generated
+subdirectory /home/pcho/sputnik/pwin/lib/rdn/dm_gen/.  Also chant
+make clean_rdn from within /home/pcho/sputnik/pwin/build/linux64/
+
+Then chant
+
+make -C /home/pcho/sputnik/pwin/build/linux64 clean
+make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -latest -pr -pwin -par RDN=1
+
+*.  On 10/13/15, Fredrik Larsson told us that we should remotely login to a
+distrib node in order to check out error log files.  Otherwise, we may not
+see the entire file due to communication delays with startown.
+
+So ssh_launchpad.  Then ssh cn0099 (or some other node).  Then chant
+
+/startown-gpfs/sputnik01/supersize/bin/distrib -client st21f01ls-fly0001.st.geo.apple.com
+
+Press "3", "j" and perhaps "O" as usual.  
+Then press "E" to see a list of job numbers for those that died with errors
+and then "D" to see the error job log file.
+
+*.  As of Oct 2015, our distrib username is "pcho" and no longer
+"pcho@pcho-MacPro"
+
+*.  As of Mar 2016, our distrib username is "pcho@ubuntu".
+
+*.  On 1/12/16, we realized the slightly painful way that binaries for
+distrib compiled under git branches other than master have full paths which
+include the git branch name! 
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_rdn_detect_logos/pwin_475b32_gpu in startown
+
+So we must be careful to not blindly copy just the basename from one
+distrib binary path to a new one compiled under a different git branch!
+
+*.  On 3/28/16, Weiyu taught us the following command in order to run
+c3view with the latest master binary:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin \
+ -vv -do "view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest"
+
+*.  On 4/12/16, we ran into bad problems with trying to run our standard
+script for building and deploying a binary on distrib 
+
+   make -C /home/pcho/sputnik/pwin/build/linux64 clean
+   make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+   /home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -dnn_cpu -pwin -par LAPACK=1 
+
+So Tho told us that some caffe directory was dirty.  In order to be
+absolutely certain that it got cleaned out, Tho chanted on our Thinkmate
+machine
+
+cd sputnik/scripts/
+./deploy.sh ~/sputnik/ -clean -latest
+
+This fixed the caffe building problem.
+
+*.  On 6/9/16, Abhishek Sharma taught us that we can force the scheduler to
+search for "idle" jobs waiting to be start on the cluster by pressing "c"
+from the main menu (not in the jobs menu where we usually enter by pressing
+"j").  Then we need to press "@" in order to perform a full scheduler
+check.  Abhishek indicated that this action will trump the typical 15
+minute wait for a cron job to perform a scheduler update.
+
+*.  On 6/9/16, Petter Torle showed us that chanting "l" within the jobs
+menu provides a more compact and useful summary of jobs running or idled on
+distrib.  
+
+*.  On 6/9/16, Petter Torle also taught us that the "CAPS" entry within our
+jobs listings must NOT contain garbage characters.  Instead, it should
+generally look as follows:
+
+Enter client (blank if current, ALL for all): pcho@ubuntu
+Batch      Group      Job range         RUNN IDLE COND FAIL   MEM   THR   CAPS        COMMAND
+B41500:85  G107834  53750526 53750824  ( 297    0    0    0)  10    8     _NONE_      OTHER - kh_sacramento          [0%] (pcho@ubuntu)
+
+So we generally need to include the line cap[0] = 0 within c3_distrib
+methods such as c3_distrib_imgdata().

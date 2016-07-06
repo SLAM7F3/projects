@@ -1,0 +1,10 @@
+Files: bin/superEdit apps/Applications/superEdit.desktop pics/superEdit.png help/html/superEdit.html
+Priority: optional
+Section: qpe/applications
+Maintainer: Jesper Pedersen <blackie@klaralvdalens-datakonsult.se>
+Architecture: arm
+Version: 1.0.0
+Depends: qpe-base ($QPE_VERSION)
+License: GPL
+Description: Super Edit
+ The most impressive editor ever to be made

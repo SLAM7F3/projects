@@ -1,0 +1,24 @@
+/bin/rm ./clean_input_text
+/bin/rm ./company_names
+/bin/rm ./composite_string_tiles
+/bin/rm ./create_char_images
+/bin/rm ./create_numbers
+/bin/rm ./decimal_numbers
+/bin/rm ./entropy_dists
+/bin/rm ./extend_imagechips
+/bin/rm ./generate_string_images
+/bin/rm ./long_words
+/bin/rm ./magick
+/bin/rm ./perspec_rot
+/bin/rm ./phrases
+/bin/rm ./prepare_deeplab_inputs
+/bin/rm ./prepare_finetuning_inputs
+/bin/rm ./rename_background_images
+/bin/rm ./resize_backgrounds
+/bin/rm ./single_chars
+/bin/rm ./svhn_chips
+/bin/rm ./svhn_color_dists
+/bin/rm ./svhn_pixel_sizes
+/bin/rm ./telephone_numbers
+/bin/rm ./vertical_string_images
+

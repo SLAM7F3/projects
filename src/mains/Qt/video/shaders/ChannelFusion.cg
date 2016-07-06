@@ -1,0 +1,381 @@
+#include "GridUtils.cgh"
+
+float getNumNeighbors( float2 xy, float2 gridWidthHeight )
+{
+	float x = xy.x;
+	float y = xy.y;
+	float width = gridWidthHeight.x;
+	float height = gridWidthHeight.y;
+	
+	if( x == 0 || x == width - 1 )
+	{
+		if( y == 0 || y == height - 1 )
+		{
+			return 2;
+		}
+		else
+		{
+			return 3;
+		}
+	}
+	else if( y == 0 || y == height - 1 )
+	{
+		return 3;
+	}
+	else
+	{
+		return 4;
+	}
+}
+
+// takes in half integer coordinates
+bool isInsideTexture( float2 xy, float2 gridWidthHeight )
+{
+	float x = xy.x;
+	float y = xy.y;
+	float width = gridWidthHeight.x;
+	float height = gridWidthHeight.y;
+	
+	return( ( x > 0 ) && ( x < width ) && ( y > 0 ) && ( y < height ) );
+}
+
+void dimensionalityReducedGradient( uniform samplerRECT inputLabASampler,
+								   
+								   float2 xy : WPOS,
+								   
+								   out float4 colorOut : COLOR )
+{
+	const float2 dx = float2( 1, 0 );
+	const float2 dy = float2( 0, 1 );
+	
+	float4 centerLabA = texRECT( inputLabASampler, xy );
+	float4 eastLabA = texRECT( inputLabASampler, xy + dx );
+	float4 northLabA = texRECT( inputLabASampler, xy + dy );
+	
+	float4 diffLabAX = eastLabA - centerLabA;
+	float4 diffLabAY = northLabA - centerLabA;
+	
+	float signDiffLX = sign( diffLabAX.x );
+	float signDiffLY = sign( diffLabAY.x );
+	
+	float gx = signDiffLX * length( diffLabAX.xyz );
+	float gy = signDiffLY * length( diffLabAY.xyz );
+	
+	colorOut = float4( gx, gy, 0, 0 );
+}
+
+void divergence( uniform samplerRECT drGradientSampler,
+				
+				float2 xy : WPOS,
+				
+				out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1, 0 );
+	const float2 dy = float2( 0, 1 );
+
+	float2 centerGXGY = texRECT( drGradientSampler, xy ).xy;
+	float2 eastGXGY = texRECT( drGradientSampler, xy + dx ).xy;
+	float2 northGXGY = texRECT( drGradientSampler, xy + dy ).xy;
+	
+	float dgx_dx = eastGXGY.x - centerGXGY.x;
+	float dgy_dy = northGXGY.y - centerGXGY.y;
+	
+	colorOut = dgx_dx + dgy_dy;
+}
+
+void restrictMask( uniform samplerRECT fullMaskLinearSampler,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	const float2 dxdy = float2( 1.0, 1.0 );
+	
+	float2 restrictedXY = floor( xy );	
+	
+	float2 fullXY00 = 2 * restrictedXY;
+	float2 fullXY10 = 2 * restrictedXY + dx;
+	float2 fullXY01 = 2 * restrictedXY + dy;
+	float2 fullXY11 = 2 * restrictedXY + dxdy;
+
+	float fullXY00Mask = texRECT( fullMaskLinearSampler, fullXY00 ).x;
+	float fullXY10Mask = texRECT( fullMaskLinearSampler, fullXY10 ).x;
+	float fullXY01Mask = texRECT( fullMaskLinearSampler, fullXY01 ).x;
+	float fullXY11Mask = texRECT( fullMaskLinearSampler, fullXY11 ).x;
+
+	float maskSum = fullXY00Mask + fullXY10Mask + fullXY01Mask + fullXY11Mask;
+	
+	colorOut = ( maskSum > 0 ) ? 1 : 0;
+}
+
+void smoothGrid( uniform samplerRECT gridSampler,
+				uniform samplerRECT maskSampler,
+				uniform samplerRECT sourceSampler,
+				
+				uniform float2 scaleFactorReciprocalScaleFactor,
+				uniform float redBlack,
+
+				uniform float2 gridWidthHeight,
+				
+				float2 xy : WPOS,
+				
+				out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	
+	float scaleFactor = scaleFactorReciprocalScaleFactor.x;
+	float reciprocalScaleFactor = scaleFactorReciprocalScaleFactor.y;
+	
+	float2 xyInt = floor( xy );
+	float xPlusY = xyInt.x + xyInt.y;
+
+	// red-black gauss seidel
+	float2 center = xy;
+	float2 north = xy + dy;
+	float2 east = xy + dx;
+	float2 south = xy - dy;
+	float2 west = xy - dx;
+	float mask = texRECT( maskSampler, center ).x;
+	float source = texRECT( sourceSampler, center ).x;
+
+	if( mask > 0 )
+	{
+		colorOut.x = source;
+	}
+	/*
+	else if( remainder( xPlusY, 2 ) == redBlack )
+	{
+		colorOut.x = texRECT( gridSampler, center ).x;
+	}	
+	// red-black gauss seidel with SOR
+	else
+	{
+		// float w = 0.5;
+		float normalization = getNumNeighbors( floor( xy ), gridWidthHeight );
+		
+		float northValue = isInsideTexture( north, gridWidthHeight ) ? texRECT( gridSampler, north ).x : 0;
+		float eastValue = isInsideTexture( east, gridWidthHeight ) ? texRECT( gridSampler, east ).x : 0;
+		float southValue = isInsideTexture( south, gridWidthHeight ) ? texRECT( gridSampler, south ).x : 0;
+		float westValue = isInsideTexture( west, gridWidthHeight ) ? texRECT( gridSampler, west ).x : 0;
+		
+		float sumNeighbors = northValue + eastValue + southValue + westValue;
+		float scaledSumNeighbors = scaleFactor * sumNeighbors;
+		float numerator = scaledSumNeighbors - source;
+				
+		float newValue = reciprocalScaleFactor * numerator / normalization;
+		float oldValue = texRECT( gridSampler, center ).x;
+		
+		// colorOut = lerp( oldValue, newValue, w );
+		colorOut = newValue;
+	}
+	*/
+	
+	// plain jacobi
+	else
+	{
+		float normalization = getNumNeighbors( floor( xy ), gridWidthHeight );
+				
+		float northValue = isInsideTexture( north, gridWidthHeight ) ? texRECT( gridSampler, north ).x : 0;
+		float eastValue = isInsideTexture( east, gridWidthHeight ) ? texRECT( gridSampler, east ).x : 0;
+		float southValue = isInsideTexture( south, gridWidthHeight ) ? texRECT( gridSampler, south ).x : 0;
+		float westValue = isInsideTexture( west, gridWidthHeight ) ? texRECT( gridSampler, west ).x : 0;
+		
+		float sumNeighbors = northValue + eastValue + southValue + westValue;
+		float scaledSumNeighbors = scaleFactor * sumNeighbors;
+		float numerator = scaledSumNeighbors - source;
+		
+		colorOut = reciprocalScaleFactor * numerator / normalization;
+	}
+	
+	// jacobi SOR
+	/*
+	else
+	{
+		float w = 0.5;
+		float normalization = getNumNeighbors( floor( xy ), gridWidthHeight );
+				
+		float northValue = isInsideTexture( north, gridWidthHeight ) ? texRECT( gridSampler, north ).x : 0;
+		float eastValue = isInsideTexture( east, gridWidthHeight ) ? texRECT( gridSampler, east ).x : 0;
+		float southValue = isInsideTexture( south, gridWidthHeight ) ? texRECT( gridSampler, south ).x : 0;
+		float westValue = isInsideTexture( west, gridWidthHeight ) ? texRECT( gridSampler, west ).x : 0;
+		
+		float sumNeighbors = northValue + eastValue + southValue + westValue;
+		float scaledSumNeighbors = scaleFactor * sumNeighbors;
+		float numerator = scaledSumNeighbors - source;
+
+		float newValue = reciprocalScaleFactor * numerator / normalization;
+		float oldValue = texRECT( gridSampler, center ).x;
+		
+		colorOut = lerp( oldValue, newValue, w );
+	}
+	*/
+}
+
+void computeResidual( uniform samplerRECT gridSampler,
+					 uniform samplerRECT maskSampler,
+					 uniform samplerRECT sourceSampler,
+					 
+					 uniform float scaleFactor,
+					 uniform float2 gridWidthHeight,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	
+	float2 center = xy;
+	float2 north = xy + dy;
+	float2 east = xy + dx;
+	float2 south = xy - dy;
+	float2 west = xy - dx;
+	
+	float mask = texRECT( maskSampler, center ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}
+	else
+	{
+		float normalization = getNumNeighbors( floor( xy ), gridWidthHeight );
+		float source = texRECT( sourceSampler, center ).x;
+		
+		float centerValue = texRECT( gridSampler, center ).x;
+		float northValue = isInsideTexture( north, gridWidthHeight ) ? texRECT( gridSampler, north ).x : 0;
+		float eastValue = isInsideTexture( east, gridWidthHeight ) ? texRECT( gridSampler, east ).x : 0;
+		float southValue = isInsideTexture( south, gridWidthHeight ) ? texRECT( gridSampler, south ).x : 0;
+		float westValue = isInsideTexture( west, gridWidthHeight ) ? texRECT( gridSampler, west ).x : 0;
+		
+		colorOut = source - scaleFactor *
+		(
+			northValue + eastValue + southValue + westValue -
+			normalization * centerValue			
+		);
+	}
+}
+
+void restrictResidual( uniform samplerRECT residualSampler,
+					  
+					  uniform float2 fullGridWidthHeight,
+					  uniform float2 restrictedGridWidthHeight,
+					  
+					  float2 xy : WPOS,
+					  
+					  out float colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	xy = floor( xy );
+	
+	float2 fullXY;
+	
+	if( xy.x == 0 )
+	{
+		fullXY.x = 0;
+	}
+	else if( xy.x == restrictedGridWidthHeight.x - 1 )
+	{
+		fullXY.x = fullGridWidthHeight.x - 1;
+	}
+	else
+	{
+		fullXY.x = 2 * xy.x;
+	}
+	
+	if( xy.y == 0 )
+	{
+		fullXY.y = 0;
+	}
+	else if( xy.y == restrictedGridWidthHeight.y - 1 )
+	{
+		fullXY.y = fullGridWidthHeight.y - 1;
+	}
+	else
+	{
+		fullXY.y = 2 * xy.y;
+	}
+	
+	float2 fullXYCenter = fullXY + halfdxdy;
+	colorOut = texRECT( residualSampler, fullXYCenter ).x;
+}
+
+void prolongError( uniform samplerRECT restrictedGridLinearSampler,
+				  uniform samplerRECT fullEstimateNearestSampler,
+				  
+				  uniform float2 restrictedGridWidthHeight,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	// get full estimate
+	float estimate = texRECT( fullEstimateNearestSampler, xy ).x;
+	
+	xy = floor( xy );
+	float2 restrictedXY = xy / 2 + halfdxdy; // add 1/2 for OpenGL
+	float error = texRECT( restrictedGridLinearSampler, restrictedXY ).x;
+	
+	colorOut = estimate + error;
+	// colorOut = error;
+	// colorOut = estimate;	
+}
+
+void convergenceTest( uniform samplerRECT gridSampler,
+					 uniform samplerRECT maskSampler,
+					 uniform samplerRECT sourceSampler,
+					 
+					 uniform float2 gridWidthHeight,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+
+	float2 center = xy;
+	float mask = texRECT( maskSampler, center ).x;
+	if( mask > 0 )
+	{
+		discard;
+	}
+	
+	float source = texRECT( sourceSampler, center ).x;
+	float normalization = getNumNeighbors( floor( xy ), gridWidthHeight );
+	
+	float2 north = xy + dy;
+	float2 east = xy + dx;
+	float2 south = xy - dy;
+	float2 west = xy - dx;
+	
+	float residual;	
+	
+	float centerValue = texRECT( gridSampler, center ).x;
+	float northValue = isInsideTexture( north, gridWidthHeight ) ? texRECT( gridSampler, north ).x : 0;
+	float eastValue = isInsideTexture( east, gridWidthHeight ) ? texRECT( gridSampler, east ).x : 0;
+	float southValue = isInsideTexture( south, gridWidthHeight ) ? texRECT( gridSampler, south ).x : 0;
+	float westValue = isInsideTexture( west, gridWidthHeight ) ? texRECT( gridSampler, west ).x : 0;
+
+	residual = source -
+	(
+		northValue + eastValue + southValue + westValue -
+		normalization * centerValue
+	);
+	
+	float absResidual = abs( residual );
+	
+	if( absResidual < 0.001 )
+	{
+		discard;
+	}
+	else
+	{
+		colorOut = absResidual;
+	}
+}

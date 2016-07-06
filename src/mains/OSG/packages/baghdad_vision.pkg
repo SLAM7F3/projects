@@ -1,0 +1,4 @@
+/data_second_disk/ladar/RTV/Baghdad/surface/*.osga
+--height_colormap 12 --prob_colormap 6 --height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.001 --max_threshold_frac 0.999
+# --min_threshold_frac 0.0 --max_threshold_frac 1.0

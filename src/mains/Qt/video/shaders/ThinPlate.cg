@@ -1,0 +1,431 @@
+#include "GridUtils.cgh"
+
+void generateFullMask( uniform float2 gridWidthHeight,
+									
+					  float2 xy : WPOS,
+									
+					  out float colorOut : COLOR )
+{
+	xy = floor( xy );
+	
+	// test single pixel
+	/*
+	if( xy.x == 2 && xy.y == 2 )
+	{
+		colorOut = 1;
+	}
+	else
+	{
+		colorOut = 0;
+	}
+	*/
+	
+	// test borders
+	if( xy.x < 2 )
+	{
+		colorOut = 1;
+	}
+	else if( xy.y < 2 )
+	{
+		colorOut = 1;
+	}
+	else if( xy.x >= gridWidthHeight.x - 2 )
+	{
+		colorOut = 1;
+	}
+	else if( xy.y >= gridWidthHeight.y - 2 )
+	{
+		colorOut = 1;
+	}
+	else if( xy.x > 24 && xy.x < 51 && xy.y > 24 && xy.y < 51 )
+	{
+		colorOut = 1;
+	}
+	else
+	{
+		colorOut = 0;
+	}
+}
+
+void generateFullSource( uniform float2 gridWidthHeight,
+						
+						float2 xy : WPOS,
+						
+						out float colorOut : COLOR )
+{
+	xy = floor( xy );
+	
+	/*
+	if( xy.x > 240 && xy.x < 250 && xy.y > 150 && xy.y < 166 )
+	{
+		colorOut = -0.5;
+	}
+	*/
+	
+	/*
+	if( xy.x == 5 && xy.y == 6 )
+	{
+		colorOut = 1;
+	}
+	*/
+	
+	// test single pixel
+	/*
+	if( xy.x == 2 && xy.y == 2 )
+	{
+		colorOut = 1;
+	}
+	else
+	{
+		colorOut = 0;
+	}
+	*/
+	
+	// test borders
+	if( xy.x < 2 )
+	{
+		colorOut = 1;
+	}
+	else if( xy.y < 2 )
+	{
+		colorOut = 1;
+	}
+	else if( xy.x >= gridWidthHeight.x - 2 )
+	{
+		colorOut = 0;
+	}
+	else if( xy.y >= gridWidthHeight.y - 2 )
+	{
+		colorOut = 0;
+	}
+	else if( xy.x > 24 && xy.x < 51 && xy.y > 24 && xy.y < 51 )
+	{
+		colorOut = 1;
+	}
+	else
+	{
+		colorOut = 0;
+	}
+}
+
+void restrictMask( uniform samplerRECT fullMaskLinearSampler,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	const float2 dxdy = float2( 1.0, 1.0 );
+	
+	float2 restrictedXY = floor( xy );	
+	
+	float2 fullXY00 = 2 * restrictedXY;
+	float2 fullXY10 = 2 * restrictedXY + dx;
+	float2 fullXY01 = 2 * restrictedXY + dy;
+	float2 fullXY11 = 2 * restrictedXY + dxdy;
+
+	float fullXY00Mask = texRECT( fullMaskLinearSampler, fullXY00 ).x;
+	float fullXY10Mask = texRECT( fullMaskLinearSampler, fullXY10 ).x;
+	float fullXY01Mask = texRECT( fullMaskLinearSampler, fullXY01 ).x;
+	float fullXY11Mask = texRECT( fullMaskLinearSampler, fullXY11 ).x;
+
+	float maskSum = fullXY00Mask + fullXY10Mask + fullXY01Mask + fullXY11Mask;
+	
+	colorOut = ( maskSum > 0 ) ? 1 : 0;
+}
+
+void smoothGrid( uniform samplerRECT gridSampler,
+				uniform samplerRECT maskSampler,
+				uniform samplerRECT sourceSampler,
+				
+				uniform float2 scaleFactorReciprocalScaleFactor,
+
+				uniform float2 gridWidthHeight,
+				
+				float2 xy : WPOS,
+				
+				out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	
+	float scaleFactor = scaleFactorReciprocalScaleFactor.x;
+	float reciprocalScaleFactor = scaleFactorReciprocalScaleFactor.y;
+	
+	float2 xyInt = floor( xy );
+	float xPlusY = xyInt.x + xyInt.y;
+
+	float2 center = xy;
+	
+	float2 north = xy + dy;
+	float2 twoNorth = xy + 2 * dy;
+	
+	float2 east = xy + dx;
+	float2 twoEast = xy + 2 * dx;
+	
+	float2 south = xy - dy;
+	float2 twoSouth = xy - 2 * dy;
+	
+	float2 west = xy - dx;
+	float2 twoWest = xy - 2 * dx;
+	
+	float2 northEast = xy + dx + dy;
+	float2 southEast = xy + dx - dy;
+	float2 southWest = xy - dx - dy;
+	float2 northWest = xy - dx + dy;
+	
+	float mask = texRECT( maskSampler, center ).x;
+	float source = texRECT( sourceSampler, center ).x;
+
+	if( mask > 0 )
+	{
+		colorOut.x = source;
+	}	
+	else
+	{
+		scaleFactor = 1;
+	
+		// float stencil[13] = { 1, 2, -8, 2, 1, -8, -12, -8, 1, 2, -8, 2, 1 };
+		float stencil[13] = { 1, 2, -8, 2, 1, -8, -12, -8, 1, 2, -8, 2, 1 };
+		
+		float values[13];
+		
+		values[0] = texRECT( gridSampler, twoNorth ).x;
+		values[1] = texRECT( gridSampler, northWest ).x;
+		values[2] = texRECT( gridSampler, north ).x;
+		values[3] = texRECT( gridSampler, northEast ).x;
+		values[4] = texRECT( gridSampler, twoWest ).x;
+		values[5] = texRECT( gridSampler, west ).x;
+		values[6] = texRECT( gridSampler, center ).x;
+		values[7] = texRECT( gridSampler, east ).x;
+		values[8] = texRECT( gridSampler, twoEast ).x;
+		values[9] = texRECT( gridSampler, southWest ).x;
+		values[10] = texRECT( gridSampler, south ).x;
+		values[11] = texRECT( gridSampler, southEast ).x;
+		values[12] = texRECT( gridSampler, twoSouth ).x;
+	
+		float output = 0;
+		for( int i = 0; i < 13; ++i )
+		{
+			output += stencil[i] * values[i];
+		}
+		colorOut = -scaleFactor * output / 32;
+	}
+}
+
+void computeResidual( uniform samplerRECT gridSampler,
+					 uniform samplerRECT maskSampler,
+					 uniform samplerRECT sourceSampler,
+					 
+					 uniform float scaleFactor,
+					 uniform float2 gridWidthHeight,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+	
+	float2 center = xy;
+	
+	float2 north = xy + dy;
+	float2 twoNorth = xy + 2 * dy;
+	
+	float2 east = xy + dx;
+	float2 twoEast = xy + 2 * dx;
+	
+	float2 south = xy - dy;
+	float2 twoSouth = xy - 2 * dy;
+	
+	float2 west = xy - dx;
+	float2 twoWest = xy - 2 * dx;
+	
+	float2 northEast = xy + dx + dy;
+	float2 southEast = xy + dx - dy;
+	float2 southWest = xy - dx - dy;
+	float2 northWest = xy - dx + dy;
+	
+	float mask = texRECT( maskSampler, center ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}
+	else
+	{
+		float source = texRECT( sourceSampler, center ).x;		
+		float centerValue = texRECT( gridSampler, center ).x;
+		
+		float northValue = texRECT( gridSampler, north ).x;
+		float twoNorthValue = texRECT( gridSampler, twoNorth ).x;
+		
+		float eastValue = texRECT( gridSampler, east ).x;
+		float twoEastValue = texRECT( gridSampler, twoEast ).x;
+		
+		float southValue = texRECT( gridSampler, south ).x;
+		float twoSouthValue = texRECT( gridSampler, twoSouth ).x;
+		
+		float westValue = texRECT( gridSampler, west ).x;
+		float twoWestValue = texRECT( gridSampler, twoWest ).x;
+		
+		float northEastValue = texRECT( gridSampler, northEast ).x;
+		float southEastValue = texRECT( gridSampler, southEast ).x;
+		float southWestValue = texRECT( gridSampler, southWest ).x;
+		float northWestValue = texRECT( gridSampler, northWest ).x;
+		
+		colorOut = source - scaleFactor *
+		(
+			( twoNorthValue + twoEastValue + twoSouthValue + twoWestValue )
+			+ 2 * ( northEastValue + southEastValue + southWestValue + northWestValue )
+			- 8 * ( northValue + eastValue + southValue + westValue )		
+			+ 20 * centerValue
+		);
+	}
+}
+
+void restrictResidual( uniform samplerRECT residualSampler,
+					  
+					  uniform float2 fullGridWidthHeight,
+					  uniform float2 restrictedGridWidthHeight,
+					  
+					  float2 xy : WPOS,
+					  
+					  out float colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	xy = floor( xy );
+	
+	float2 fullXY;
+	
+	if( xy.x == 0 )
+	{
+		fullXY.x = 0;
+	}
+	else if( xy.x == restrictedGridWidthHeight.x - 1 )
+	{
+		fullXY.x = fullGridWidthHeight.x - 1;
+	}
+	else
+	{
+		fullXY.x = 2 * xy.x;
+	}
+	
+	if( xy.y == 0 )
+	{
+		fullXY.y = 0;
+	}
+	else if( xy.y == restrictedGridWidthHeight.y - 1 )
+	{
+		fullXY.y = fullGridWidthHeight.y - 1;
+	}
+	else
+	{
+		fullXY.y = 2 * xy.y;
+	}
+	
+	float2 fullXYCenter = fullXY + halfdxdy;
+	colorOut = texRECT( residualSampler, fullXYCenter ).x;
+}
+
+void prolongError( uniform samplerRECT restrictedGridLinearSampler,
+				  uniform samplerRECT fullEstimateNearestSampler,
+				  
+				  uniform float2 restrictedGridWidthHeight,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	// get full estimate
+	float estimate = texRECT( fullEstimateNearestSampler, xy ).x;
+	
+	xy = floor( xy );
+	float2 restrictedXY = xy / 2 + halfdxdy; // add 1/2 for OpenGL
+	float error = texRECT( restrictedGridLinearSampler, restrictedXY ).x;
+	
+	colorOut = estimate + error;
+	// colorOut = error;
+	// colorOut = estimate;	
+}
+
+void convergenceTest( uniform samplerRECT gridSampler,
+					 uniform samplerRECT maskSampler,
+					 uniform samplerRECT sourceSampler,
+					 
+					 uniform float2 gridWidthHeight,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	const float2 dx = float2( 1.0, 0.0 );
+	const float2 dy = float2( 0.0, 1.0 );
+
+	float2 center = xy;
+	
+	float2 north = xy + dy;
+	float2 twoNorth = xy + 2 * dy;
+	
+	float2 east = xy + dx;
+	float2 twoEast = xy + 2 * dx;
+	
+	float2 south = xy - dy;
+	float2 twoSouth = xy - 2 * dy;
+	
+	float2 west = xy - dx;
+	float2 twoWest = xy - 2 * dx;
+	
+	float2 northEast = xy + dx + dy;
+	float2 southEast = xy + dx - dy;
+	float2 southWest = xy - dx - dy;
+	float2 northWest = xy - dx + dy;
+	
+	float mask = texRECT( maskSampler, center ).x;
+	if( mask > 0 )
+	{
+		discard;
+	}
+	
+	float source = texRECT( sourceSampler, center ).x;
+	float centerValue = texRECT( gridSampler, center ).x;
+	
+	float northValue = texRECT( gridSampler, north ).x;
+	float twoNorthValue = texRECT( gridSampler, twoNorth ).x;
+	
+	float eastValue = texRECT( gridSampler, east ).x;
+	float twoEastValue = texRECT( gridSampler, twoEast ).x;
+	
+	float southValue = texRECT( gridSampler, south ).x;
+	float twoSouthValue = texRECT( gridSampler, twoSouth ).x;
+	
+	float westValue = texRECT( gridSampler, west ).x;
+	float twoWestValue = texRECT( gridSampler, twoWest ).x;
+	
+	float northEastValue = texRECT( gridSampler, northEast ).x;
+	float southEastValue = texRECT( gridSampler, southEast ).x;
+	float southWestValue = texRECT( gridSampler, southWest ).x;
+	float northWestValue = texRECT( gridSampler, northWest ).x;
+	
+	float residual = source -
+	(
+		( twoNorthValue + twoEastValue + twoSouthValue + twoWestValue )
+		+ 2 * ( northEastValue + southEastValue + southWestValue + northWestValue )
+		- 8 * ( northValue + eastValue + southValue + westValue )		
+		+ 20 * centerValue
+	);
+	
+	float absResidual = abs( residual );
+	
+	if( absResidual < 0.001 )
+	{
+		discard;
+	}
+	else
+	{
+		colorOut = absResidual;
+	}
+}

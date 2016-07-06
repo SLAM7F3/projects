@@ -1,0 +1,27 @@
+kmeans -v -v -K 10000 -I 12 -T 0.001 -D 128 -b 84M -w 3 \
+/data/sift_keyfiles/clusters_10M_descriptors_BostonBombing.bin \
+/data/sift_keyfiles/concatenated_keys_10M_descriptors.bin 
+
+# kmeans -v -v -K 15000 -I 15 -T 0.001 -D 128 -b 55M -w 3 \
+# /data/sift_keyfiles/clusters_32M_descriptors.bin \
+# /data/sift_keyfiles/concatenated_keys_32M_descriptors.bin 
+
+# kmeans -v -v -K 10000 -I 10 -T 0.001 -D 128 -b 75M -w 3 \
+# /data/sift_keyfiles/clusters_10M_descriptors.bin \
+# /data/sift_keyfiles/concatenated_keys_10M_descriptors.bin 
+
+# kmeans -v -v -K 50000 -I 6 -T 0.001 -D 128 -b 15M -w 3 \
+# /data/sift_keyfiles/clusters_100M_descriptors.bin \
+# /data/sift_keyfiles/concatenated_keys_100M_descriptors.bin 
+
+
+# kmeans -v -v -K 30000 -I 5 -T 0.001 -D 128 -b 25M -w 3 \
+# /data/sift_keyfiles/clusters_32M_descriptors.bin \
+# /data/sift_keyfiles/concatenated_keys_32M_descriptors.bin 
+
+# kmeans -v -v -K 10000 -I 4 -T 0.001 -D 128 -b 25M -w 3 \
+# clusters_10M_descriptors.bin \
+# /data/sift_keyfiles/concatenated_keys_10M_descriptors.bin 
+
+
+# kmeans -v -K 30000 -I 5 -T 0.001 -D 128 -b 20M  -w 3 clusters.bin /data/sift_keyfiles/concatenated_keys_32M_descriptors.bin

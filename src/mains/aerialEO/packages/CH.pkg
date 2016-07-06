@@ -1,0 +1,46 @@
+/home/cho/programs/c++/svn/projects/src/mains/aerialEO/Qt/lower_left_corner_1000.jpg 
+--longitude_lo -102.07
+--latitude_lo 33.41
+--longitude_hi -101.77
+--latitude_hi 33.69
+--video_corner_vertex 224947.8 3708423.3 10
+--video_corner_vertex 228666.0 3708317.9 10
+--video_corner_vertex 228790.9 3712754.9 10
+--video_corner_vertex 225074.5 3712860.4 10
+--initial_mode Run_Movie_Mode 
+
+
+
+# --video_corner_vertex 224850.6743 3709063.364 10
+# --video_corner_vertex 229077.4406 3709053.427 10
+# --video_corner_vertex 229068.8468 3713283.141 10
+# --video_corner_vertex 224842.0804 3713293.078 10
+
+
+# longitude = -101.961247798 degs = -101 degs -57' -40.4920737605" 
+# latitude = 33.4857369837 degs = 33 degs 29' 8.65314118622" 
+
+# longitude = -101.915804277 degs = -101 degs -54' -56.8953958913" 
+# latitude = 33.4867252893 degs = 33 degs 29' 12.2110413944" 
+
+# longitude = -101.917180226 degs = -101 degs -55' -1.84881327974" 
+# latitude = 33.524826523 degs = 33 degs 31' 29.3754826314" 
+
+# longitude = -101.962632858 degs = -101 degs -57' -45.4782881635" 
+# latitude = 33.5238368884 degs = 33 degs 31' 25.8127981911" 
+
+
+# --longitude_lo -101.97
+# --latitude_lo 33.48
+# --longitude_hi -101.91
+# --latitude_hi 33.53
+
+# --longitude_lo -101.9781
+# --longitude_hi -101.9108
+# --latitude_lo 33.45148
+# --latitude_hi 33.52877
+
+# --video_corner_vertex 226850.6743 3710063.364 1014
+# --video_corner_vertex 227077.4406 3710053.427 1014
+# --video_corner_vertex 227068.8468 3712283.141 1014
+# --video_corner_vertex 226842.0804 3712293.078 1014

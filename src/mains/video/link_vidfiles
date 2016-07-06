@@ -1,0 +1,11 @@
+ln -s /data/video/05068150715_1180_10_1880_rgb.vid ./yuma.vid
+ln -s /data/video/HAFB_10.vid ./HAFB_10.vid
+ln -s /data/video/HAFB_400.vid ./HAFB_400.vid
+ln -s ./HAFB_10.vid ./HAFB.vid
+ln -s /data3/video/HAFB_100.vid ./HAFB_100.vid
+ln -s /data3/video/HAFB_greyscale.vid ./HAFB_greyscale.vid
+
+
+
+
+

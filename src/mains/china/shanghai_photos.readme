@@ -1,0 +1,37 @@
+==========================================================================
+Shanghai photo metadata
+==========================================================================
+Last updated on 5/29/07
+==========================================================================
+
+Shanghai_04.png:
+
+
+Number of images in video file = 1
+Number of color channels = 3
+Number of bytes in header = 40
+Image height in pixels = 1524
+Image width in pixels = 2032
+Bytes per pixel = 1
+
+VidWidth = 2032 VidHeight = 1524
+Width*Height = 3096768
+min_U = 0 max_U = 1.33333 dU = 0.000656168
+min_V = 0 max_V = 1 dV = 0.000656168
+
+==========================================================================
+
+Shanghai_05.png:
+
+Number of images in video file = 1
+Number of color channels = 3
+Number of bytes in header = 40
+Image height in pixels = 1524
+Image width in pixels = 2032
+Bytes per pixel = 1
+
+VidWidth = 2032 VidHeight = 1524
+Width*Height = 3096768
+min_U = 0 max_U = 1.33333 dU = 0.000656168
+min_V = 0 max_V = 1 dV = 0.000656168
+

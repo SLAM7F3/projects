@@ -1,0 +1,3 @@
+/bin/rm ./logic_layer
+/bin/rm ./multiuavs
+/bin/rm ./myspwa

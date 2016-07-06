@@ -1,0 +1,122 @@
+======================================================================
+Icons and markup types for ortho-logos
+======================================================================
+Last updated on 11/9/15; 11/10/15; 11/11/15
+======================================================================
+
+Markup types:  road_ortho_markings_v3 defined on 11/9/2015
+
+-prjdb http://flyover.geo.apple.com/prjdb/regression/project/dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote/xml \
+-prj dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote \
+
+Detector versions:  1307 (w crf) and 1308 (wo crf)
+type = "rdn_seg"
+sub_type = "logo"
+
+Verification project:  20151110_logos_w_crf
+
+
+Icons are sitting in
+   /startown-gpfs/sputnik03/supersize/labeling_resources/icons/ortho_logos/ .
+
+Another copy of these same icons are sitting in 
+   /startown-gpfs/sputnik03/supersize/labeling_resources/icons/pr_refine_road_signs/rdn_seg/ .
+
+Icons available:
+
+*.  Left turn arrow  (turn_left.jpg)
+
+*.  Right turn arrow  (turn_right.jpg)
+
+*.  Straight ahead arrow  (straight_arrow.jpg)
+
+*.  Left turn and straight ahead arrow  (turn_left_and_thru.jpg)
+
+*.  Right turn and straight ahead arrow  (turn_right_and_thru.jpg)
+
+*.  Right and left turn arrows (turn_right_left.jpg)
+
+*.  Left turn, straight ahead and right turn arrow (left_right_straight.jpg)  
+
+*.  U turn arrow (u_turn.jpg)
+
+*.  Lane merge arrow  (merge_arrow.jpg)
+
+*.  no parking (no_parking.jpg)
+
+*.  HOV diamond  (HOV_diamond.jpg)
+
+*.  MERGE (MERGE.jpg)
+
+*.  STOP   (STOP.jpg)
+
+*.  YIELD  (YIELD.jpg)
+
+*.  AHEAD  (AHEAD.jpg)
+
+*.  SCHOOL  (SCHOOL.jpg)
+
+*.  PED  (PED.jpg)
+
+*.  XING  (XING.jpg)
+
+*.  SLOW  (SLOW.jpg)
+
+*.  CURVE  (CURVE.jpg)
+
+*.  BIKE  (BIKE_PED_XING_AHEAD.jpg)
+
+*.  BUS  (bus.png)
+
+*.  KEEP (KEEP.jpg)
+
+*.  CLEAR (CLEAR.jpg)
+
+*.  EXPY (EXPY.jpg)
+
+*.  ONLY (ONLY.jpg)
+
+*.  LANE  (LANE.jpg)
+
+*.  MPH  (MPH.jpg)
+
+*.  BUMPS (BUMPS.jpg)
+
+*.  SIGNAL (SIGNAL.jpg)
+
+*.  Speed values (e.g. "25", "30", "35", etc)  (twentyfive.jpg)
+
+*.  Railroad crossing  (railroad.jpg)
+
+*.  Bike lane symbol  (bike_symbol.jpg)
+
+*.  Pedestrian symbol  (pedestrian_symbol.jpg)
+
+*.  Handicap symbol  (handicap.jpg)
+
+*.  X-spot symbol (X_spot.jpg)
+
+
+JSON file which Jasmine can locally install on her machine and which Erik
+subsequently needs to deploy on Flyover Admin server:
+
+  {"AHEAD": "AHEAD.jpg", "BIKE": "BIKE_PED_XING_AHEAD.jpg",
+   "bike_symbol": "bike_symbol.jpg", "BUMPS": "BUMPS.jpg", "BUS": "BUS.jpg",
+   "CURVE": "CURVE.jpg", "EXPWY": "EXPWY.jpg", "handicap": "handicap.jpg",
+   "HOV_diamond": "HOV_diamond.jpg", "KEEP": "KEEP.jpg", "CLEAR": "CLEAR.jpg",
+   "LANE": "LANE.jpg", "left_right_straight": "left_right_straight.jpg", 
+   "logo": "general_logo.jpg",
+   "merge_arrow": "merge_arrow.jpg",
+   "MERGE": "MERGE.jpg", "MPH": "MPH.jpg", 
+   "no_parking": "no_parking.jpg", "ONLY": "ONLY.jpg",
+   "pedestrian_symbol": "pedestrian_symbol.jpg", "PED": "PED.jpg",
+   "railroad": "railroad.jpg", "SCHOOL": "SCHOOL.jpg",
+   "SIGNAL": "SIGNAL.jpg", "SLOW": "SLOW.jpg", 
+   "speed_limit": "twentyfive.jpg", "STOP": "STOP.jpg",
+   "straight_arrow": "straight_arrow.jpg", "turn_left": "turn_left.jpg",
+   "turn_right": "turn_right.jpg", "turn_right_left":
+   "turn_right_left.jpg", 
+   "u_turn": "u_turn.jpg", "XING": "XING.jpg",
+   "X_spot": "X_spot.jpg", "YIELD": "YIELD.jpg"}
+
+

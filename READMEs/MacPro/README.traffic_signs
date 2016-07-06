@@ -1,0 +1,235 @@
+=============================================================================
+Traffic signs recognition notes
+=============================================================================
+Last updated on 1/20/15; 1/21/15; 2/5/15; 2/6/15; 4/14/15
+=============================================================================
+
+
+*.  Roadsign image chips for KittyHawk 1B remaining 2 are sitting in 
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/delivery_20150331/kittyhawk_1b_remaining2/bv_75400/
+
+
+Color histogram for each of these image chips are sitting in the same
+subdirectories on startown.
+
+
+
+
+
+As of 2/5/15:
+
+> db.markup_unrect_object.find().count()
+371965
+
+> db.markup_unrect_object.find({"type": { $regex:"traffic"}  }).count()
+159583
+
+> db.markup_unrect_object.find({"type": { $regex:"traffic_sign"}  }).count()
+61856
+
+> db.markup_unrect_object.find({"type": { $regex:"traffic_light"}  }).count()
+97727
+
+> db.markup_unrect_object.find({"type": { $regex:"street"}  }).count()
+71350
+
+
+--> 141032 entries in markup_unrect_object which are NOT traffic signs,
+traffic lights or street names.
+
+
+> db.markup_unrect_object.find({"type": "traffic_sign_stopyield(r1)"  }).count()
+17850
+
+   > db.markup_unrect_object.find({"type": "traffic_sign_stopyield(r1)", sub_type:"stop"  }).count()
+     16879
+   > db.markup_unrect_object.find({"type": "traffic_sign_stopyield(r1)", sub_type:"yield"  }).count()
+     665
+   > db.markup_unrect_object.find({"type": "traffic_sign_stopyield(r1)", sub_type:"all way"  }).count()
+     300
+   > db.markup_unrect_object.find({"type": "traffic_sign_stopyield(r1)", sub_type: {$nin:["stop","yield","all way"]}  }).count()
+     6
+
+> db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)"  }).count()
+12228
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "5"  }).count()
+     86
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "10"  }).count()
+     138
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "15"  }).count()
+     366
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "20"  }).count()
+     1538
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "25"  }).count()
+     4332
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "30"  }).count()
+     951
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "35"  }).count()
+     1779
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "40"  }).count()
+     1036
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "45"  }).count()
+     558
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "50"  }).count()
+     139
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "55"  }).count()
+     17
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "60"  }).count()
+     2
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "65"  }).count()
+     21
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: "70"  }).count()
+     0
+   > db.markup_unrect_object.find({"type": "traffic_sign_speedlimit(r2)",description: {$nin:["5","10","15","20","25","30","35","40","45","50","55","60","65","70"]}  }).count()
+     1265
+
+> db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)"  }).count()
+7271
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"no straight through" }).count()
+     184
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"no right turn" }).count()
+     1118
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"no left turn" }).count()
+     2240
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"no turns" }).count()
+     69
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"no u turn" }).count()
+     1235
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"no left or u turn" }).count()
+     233
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"bike lane" }).count()
+     1563
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", "sub_type":"car pool" }).count()
+     627
+   > db.markup_unrect_object.find({"type": "traffic_sign_laneusage(r3)", sub_type: {$nin:["no straight through","no right turn","no left turn","no turns","no u turn","no left or u turn","bike lane","car pool"]}  }).count()
+     2
+
+> db.markup_unrect_object.find({"type": "traffic_sign_exclusionary(r5)"  }).count()
+3448
+    > db.markup_unrect_object.find({"type": "traffic_sign_exclusionary(r5)","sub_type":"do not enter"  }).count()
+      2210
+    > db.markup_unrect_object.find({"type":"traffic_sign_exclusionary(r5)","sub_type":"wrong way"  }).count()
+      434
+    > db.markup_unrect_object.find({"type":"traffic_sign_exclusionary(r5)","sub_type":"bike wrong way"  }).count()
+      802
+    > db.markup_unrect_object.find({"type":"traffic_sign_exclusionary(r5)", "sub_type":{$nin:["do not enter","wrong way","bike wrong way"]}  }).count()
+      2
+
+> db.markup_unrect_object.find({"type": "traffic_sign_oneway(r6)"  }).count()
+5110
+    > db.markup_unrect_object.find({"type":"traffic_sign_oneway(r6)","sub_type":"one way left"  }).count()
+      2613
+    > db.markup_unrect_object.find({"type":"traffic_sign_oneway(r6)","sub_type":"one way right"  }).count()
+      2494
+    > db.markup_unrect_object.find({"type":"traffic_sign_oneway(r6)","sub_type":{$nin:["one way left","one way right"]}  }).count()
+      3
+
+> db.markup_unrect_object.find({"type": "traffic_sign_parking(r7)"}).count()
+15949
+    > db.markup_unrect_object.find({"type":"traffic_sign_parking(r7)","sub_type":"parking with time restrictions"}).count()
+      5036
+    > db.markup_unrect_object.find({"type":"traffic_sign_parking(r7)","sub_type":"no parking"}).count()
+      9960
+    > db.markup_unrect_object.find({"type":"traffic_sign_parking(r7)", "sub_type":"tow away zone"}).count()
+      951
+
+    > db.markup_unrect_object.find({"type":"traffic_sign_parking(r7)","sub_type":{$nin:["parking with time restrictions","no parking","tow away zone"]} }).count()
+      2
+
+
+
+
+
+*.  Define $icons_dir = /startown-gpfs/sputnik03/supersize/labeling_resources/icons/
+	   $traffic_signs_dir = $icons_dir/traffic_signs/
+
+
+*.  In flyover admin, traffic sign types can be found under submenu
+Markup -> Markup Types
+
+Markup class			Class ID	Icon file name
+------------			--------	--------------
+
+traffic_sign_stopyield(r1)
+
+stop				1  		$traffic_signs_dir/R1/stop.png
+yield				2  		$traffic_signs_dir/R1/yield.png
+all way 			3  		$traffic_signs_dir/R1/all_way.png
+
+
+traffic_sign_speedlimit(r2)
+
+speed limit xx  		1		$traffic_signs_dir/R2/speed_limit_xx.png
+
+
+traffic_sign_laneusage(r3)
+
+no straight through 		2		$traffic_signs_dir/R3/no_straigth.png
+no right turn			3		$traffic_signs_dir/R3/no_right.png
+no left turn			4		$traffic_signs_dir/R3/no_left.png
+no turns			6		$traffic_signs_dir/R3/no_turns.png
+no u turn			7		$traffic_signs_dir/R3/no_u.png
+no left or u turn		8		$traffic_signs_dir/R3/no_left_or_u.png
+bike lane			9		$traffic_signs_dir/R3_bike_lane.png
+car pool			10		$traffic_signs_dir/R3_carpool.png
+
+
+traffic_sign_exclusionary(r5)
+
+do not enter			1		$traffic_signs_dir/R5/do_not_enter.png
+wrong way			3		$traffic_signs_dir/R5/wrong_way.png
+bike wrong way			4		$traffic_signs_dir/R3_bikewrong.png
+
+
+traffic_sign_oneway(r6)
+
+one way left			1		$traffic_signs_dir/R6/one_way_left.png
+one way right			11		$traffic_signs_dir/R6/one_way_rigth.png
+
+
+traffic_sign_parking(r7)
+
+parking with time restrictions	1		$traffic_signs_dir/R7/parking_with_restrictions.png
+no parking			10		$traffic_signs_dir/R7/no_parking.png
+tow away zone 			18		$traffic_signs_dir/R7/tow_away_zone.png
+
+
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"house-numbers"}} } ).count()
+> 70691 on fly3 as of 1/20/15
+
+db.markup_object.find( {"state.timestamp": {"$gte": ISODate("2014-11-01T00:00:00.000Z")} }).count()
+> 365002 on fly3 as of 1/20/15
+
+db.markup_object.find( {"state.timestamp": {"$gte": ISODate("2014-12-01T00:00:00.000Z")} }).count()
+> 253948 on fly3 as of 1/20/15
+
+db.markup_object.find( {"state.timestamp": {"$gte": ISODate("2015-01-01T00:00:00.000Z")} }).count()
+> 62722 on fly3 as of 1/20/15
+
+
+
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"traffic_sign_stopyield(r1)"}} } ).count()
+> 9226 on fly3 as of 1/20/15
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"traffic_sign_speedlimit(r2)"}} } ).count()
+> 6136 on fly3 as of 1/20/15
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"traffic_sign_laneusage(r3)"}} } ).count()
+> 4832 on fly3 as of 1/20/15
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"traffic_sign_exclusionary(r5)"}} } ).count()
+> 1809 on fly3 as of 1/20/15
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"traffic_sign_oneway(r6)"}} } ).count()
+> 3154 on fly3 as of 1/20/15
+
+db.markup_object.find( {"markups" :{$elemMatch:{"markup_type":"traffic_sign_parking(r7)"}} } ).count()
+> 9654 on fly3 as of 1/20/15
+
+
+
+*.  sputnik/pr_scripts/pr_anno_stats.py looks through local mongo database
+and counts all entries corresponding to all PR classes

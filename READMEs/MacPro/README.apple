@@ -1,0 +1,131 @@
+=============================================================================
+Apple notes
+=============================================================================
+Last updated on 8/12/15; 9/28/15; 12/10/15; 4/6/16
+=============================================================================
+
+*.  In order to find Apple employee contact info (e.g. Apple email
+addresses), click on "Contacts book" icon (with an @ symbol on the icon)
+Alternatively, click on the Apple Directory icon (with an apple logo on the
+icon).
+
+
+*.  On 11/13/14, Rahul taught us again that we can send spam mail
+(e.g. from Blacktail, Okemo) etc to junk mail folders:
+
+1.  Open safari browser to istweb.apple.com
+
+2.  In search box in upper right, enter "server side rules".
+
+3.  Click on links which should eventually take us to 
+
+	istweb.apple.com/mac/mail/tools/rule
+
+4.  Click on "+" sign next to "My Rules" button.  Should then see
+an "Add Rule" menu pop up.
+
+
+5.  Add description for new rule (e.g. "Blacktail")
+
+6.  Can then add rule such as "Subject" "Contains" "Blacktail" Click on menu
+after "Move Message" button.  Last option in this menu is to move mail into
+a New Folder which we can name something such as "Blacktail".
+
+Press "Save" button in order to make new mail rule go into effect.
+
+*.  On 1/13/15, Ross taught us that in order to install the latest OS X
+operating system on our mac laptop, we need to go to the mac app store and
+type "yosemite" into the search bar.  Then download Yosemite and click
+through all its queries.  
+
+*.  On 2/12/15, Sam Friedman showed us that we can bring up the Apple
+directory by simply typing "directory" into the search box in the upper
+left corner of our mac laptop.  The directory can be used to search for
+Apple buildings, conference rooms and employees
+
+On 9/28/15, Fredrik Larsson showed us that we can bring up open/filled time
+slots on an employee's calendar by clicking on the Apple directory (with
+the apple logon on the icon), entering the employee's name into the search
+bar, and then pressing the "calendar" icon within the "View" menu in the
+lower left corner.  
+
+*.  For instant messaging app on phone, ipad and mac laptop, we must use
+the account corresponding to our phone number = 978 930 9301 and NOT use
+any account corresponding to our gmail address = peter.leslie.cho@gmail.com
+
+On laptop, click gear icon --> Internet Accounts --> im.apple.com -->
+Configure in Messages -> peter.leslie.cho@gmail.com iMessage.  Then under
+You can be reached for messages at, make sure only 1 (978) 930 9301 is
+selected and NOT peter.leslie.cho@gmail.com
+
+On iphone, click gear icon --> Messages .  Make sure iMessage button is
+enabled.  Then click Send & Receive button.  Makes sure 1 (978) 930-9301 is
+selected and NOT peter.leslie.cho@gmail.com.
+
+
+*.  LDAP passphrase
+
+pcho-MacPro:random% ssh-keygen -t rsa -C "pcho@apple.com"
+
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/pcho/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase):     @George12
+Enter same passphrase again:   			@George12
+Your identification has been saved in /home/pcho/.ssh/id_rsa.
+Your public key has been saved in /home/pcho/.ssh/id_rsa.pub.
+The key fingerprint is:
+50:50:7f:1d:61:fb:91:ee:5c:8e:23:13:e9:13:19:1b pcho@apple.com
+The key's randomart image is:
++--[ RSA 2048]----+
+|      .oo     +. |
+|       . .   o o.|
+|      .   . E oo |
+|       .   . *...|
+|        S   *  .o|
+|           . ooo.|
+|            = oo.|
+|             + . |
+|                 |
++-----------------+
+
+*.  Add new public key to ssh-agent:
+
+  1.  bash
+  2.  eval "$(ssh-agent -s)"
+  3.  ssh-add ~/.ssh/id_rsa
+
+
+*.  On 8/12/15, we lost power to our MacPro and internet switch.  When we
+restored power to the MacPro but not to the switch, we couldn't login to
+our "pcho" account using our conventional (LDAP) account password.  We
+ended up manually changing the password for LOCAL user "pcho" on our
+MacPro.  John Wood then pointed out that we probably should have just
+logged into our LDAP account after power was restored to our internet
+switch.
+
+Viktor told us that we can chant "id" to check whether we're accessing our
+pcho LDAP or LOCAL account.  If we see a long, ugly response to "id" on our
+MacPro, then that indicates that we're logged into our LDAP account.
+
+*.  On 12/10/15, Petter Torle showed us that there is a webpage where we
+can check our OpenDomain password
+
+istweb.apple.com --> Support --> Account Lookup
+
+Type "Peter Cho" into User Account Lookup box in order to search employees
+by Name.  Find our employee account within returned list.  Then press blue
+"Show detail" button
+
+*.  On 4/6/16, Fredrik Larsson showed us that Attache can be invoked from
+our linux box via a web browser.  
+
+Enter https://attache.apple.com/ as the URL into a browser.  Then drag/drop
+files (e.g. tarballs containing image chips) into the window on the RHS.
+Enter a name for the attache message in the small box above the RHS
+window.  Then press the blue "Save" button near the bottom right corner.
+
+We can find out the attache URL by pressing the 3rd of 5 icons located near
+the bottom of the window on the LHS which has a down arrow in it.  Email
+the Attache URL to the receiver(s) of the files which we're trying to send.
+
+

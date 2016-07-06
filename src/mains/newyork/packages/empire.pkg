@@ -1,0 +1,9 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/empire_254.jpg
+--frustum_color green
+--frustum_sidelength 3000
+# --frustum_sidelength 4000
+--downrange_distance 150
+--projection_matrix
+      -2.660083416e-07  1.112162651e-08  -4.083139703e-08  0.105743772
+      -7.754931491e-08 -1.436978845e-07   2.027500162e-07  0.6938378619
+      -7.387335296e-08 -1.482568879e-07  -5.681225594e-08  0.71232526

@@ -1,0 +1,15 @@
+~/bin/MAKE program=coarse2filled
+~/bin/MAKE program=color_dists
+~/bin/MAKE program=deeplab_accuracy
+~/bin/MAKE program=extremal_numbers
+~/bin/MAKE program=extremal_regions
+~/bin/MAKE program=floodfill
+~/bin/MAKE program=generate_ers
+~/bin/MAKE program=random_image_subset
+~/bin/MAKE program=recolor_deeplab_masks
+~/bin/MAKE program=rename_thumbnails
+~/bin/MAKE program=resize_images
+~/bin/MAKE program=roadsign_thumbnails
+~/bin/MAKE program=rotate_pngs
+~/bin/MAKE program=shape2polylines
+~/bin/MAKE program=truth_vs_c3view

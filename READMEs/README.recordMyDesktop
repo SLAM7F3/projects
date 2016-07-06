@@ -1,0 +1,36 @@
+============================================================================
+RecordMyDesktop notes
+============================================================================
+Last updated on 9/25/12; 12/5/15
+============================================================================
+
+In Sep 2012, we used Ubuntu's RecordMyDesktop in order to generate several
+movies for the Image Search talk.  
+
+1.  Start utility by clicking Applications -> Sound & Video ->
+gtk-recordMyDesktop.  A red circle should appear in lower right system bar.
+
+2.  Right click on red dot.  Then choose Select Area on Screen.  Use mouse
+to specify bounding box which will be recorded.  
+
+3.  Press red circle to start recording.  Red circle turns into grey box.
+Press grey box when recording is to be finished.
+
+4.  RecordMyDesktop generates an "out.ogv" file which can be viewed with
+xine.  We've placed an "ogv2avi" script into /usr/local/bin which can be
+used to convert the .ogv file into .avi format.  The resulting AVI movie
+runs fine inside of ppt.
+
+
+
+*.  After lots of trial and error on 12/5/15, we empirically found that the
+following avconv command running on our Thinkmate machine appears to yield
+decent mp4 output:
+
+avconv -i test.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+   test.mp4
+
+avconv -i tidmarsh_2.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+   tidmarsh_2.mp4

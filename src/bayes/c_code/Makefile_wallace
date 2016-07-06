@@ -1,0 +1,22 @@
+
+SSRCS = satbbn.c bbnupdate.c
+SOBJS = $(SSRCS:.c=.o)
+TSRCS = tstbbn.c bbnupdate.c
+TOBJS = $(TSRCS:.c=.o)
+
+#CFLAGS = -g -DDEBUG -DTESTING -I /us/ray/tw/include
+# CFLAGS = -ggdb -DDEBUG -DTESTING -I /home/cho/programs/c++/bayes_work
+CFLAGS = -O2 -DDEBUG -I /home/cho/programs/c++/bayes_work
+#CFLAGS = -O2 -DDEBUG -DTESTING -I /us/ray/tw/include
+#CFLAGS = -O2 -DTESTING -I /us/ray/tw/include
+LIBS = -lm
+
+satbbn: $(SOBJS)
+	cc $(SOBJS) -o satbbn $(LIBS)
+
+osatbbn: $(OSOBJS)
+	cc $(OSOBJS) -o osatbbn $(LIBS)
+
+tstbbn: $(TOBJS)
+	cc $(TOBJS) -o tstbbn
+	

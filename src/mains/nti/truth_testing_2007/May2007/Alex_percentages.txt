@@ -1,0 +1,7 @@
+# Alex: % time vehicle in track
+
+90.9
+98.5
+95.7
+85.1
+

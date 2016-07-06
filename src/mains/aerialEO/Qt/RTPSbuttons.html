@@ -1,0 +1,192 @@
+<!--
+
+==========================================================================
+HTML file for Real Time Persistent Surveillance demo buttons
+==========================================================================
+Last updated on 5/1/09; 5/2/09; 5/3/09
+==========================================================================
+
+Notes : 
+
+- http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=2326407&SiteID=1
+  - can change location of object or iframe by just changing innerHTML of parent div!
+
+- http://www.webmasterworld.com/forum21/6539.htm
+  - can get at iframes/objects through window.frames[]
+  - pretty sneaky...
+
+-->
+
+<html>
+
+<head>
+
+<title>RTPS Demo Button Controls</title>
+
+<style type="text/css">
+.fs
+{
+   font-size: 11pt;
+}
+</style>
+
+
+<!-- ..................................................................... -->
+
+<script type="text/javascript">
+
+function makeRequest(url)
+{
+   var divID = "DummyOutputDiv";
+   var e = document.getElementById(divID);
+   e.innerHTML = "<object name='object1' type='text/html' data='" + url + "'></object>";
+}
+
+var isTallCyl = true;
+function toggleBigSmall()
+{
+   var button = document.getElementById("BigSmallButton");
+
+   if (isTallCyl)
+   {
+      makeRequest('http://127.0.0.1:4041/TALL_CYL/');
+      isTallCyl = false;
+      button.value = "SHORT CYLS";
+   }
+   else
+   {
+      makeRequest('http://127.0.0.1:4041/SHORT_CYL/');
+      isTallCyl = true;
+      button.value = "TALL CYLS";
+   }
+}
+
+var isEnterROI = true;
+function toggleEnterMonitor()
+{
+   var button = document.getElementById("EnterMonitorButton");
+
+   if (isEnterROI)
+   {
+      makeRequest('http://127.0.0.1:4041/ENTER_SIA/');
+      isEnterROI = false;
+      button.value = "MONITOR SIA";
+   }
+   else
+   {
+      makeRequest('http://127.0.0.1:4041/MONITOR_SIA/');
+      isEnterROI = true;
+      button.value = "ENTER SIA";
+   }
+}
+
+var isShowSpeeds = true;
+function toggleShowSpeeds()
+{
+   var button = document.getElementById("ShowSpeedsButton");
+
+   if (isShowSpeeds)
+   {
+      makeRequest('http://127.0.0.1:4041/SHOW_SPEEDS/');
+      isShowSpeeds = false;
+      button.value = "HIDE SPEEDS";
+   }
+   else
+   {
+      makeRequest('http://127.0.0.1:4041/HIDE_SPEEDS/');
+      isShowSpeeds = true;
+      button.value = "SHOW SPEEDS";
+   }
+}
+
+function changeMenu()
+{
+   var menu = document.getElementById("menuSelect");
+   
+   var divList = ["ROI Controls", "Sensor Controls", "Track Controls",
+     		  "SIA Controls"];
+   
+   // hide all menus
+   
+   for (var i = 0; i < divList.length; i++)
+   {
+      document.getElementById(divList[i]).style.display = "none";
+   }
+   
+   // show selected menu
+   
+   document.getElementById(menu.options[menu.selectedIndex].value).style.display = "block";
+}
+
+</script>
+
+<!-- ..................................................................... -->
+
+</head>
+
+<body>
+
+<!-- NOTE : option values must match ids of the following divs! -->
+
+<div style="float: left; padding-right: 8px; height: 100px;">
+  <select id="menuSelect" class="fs" onchange="changeMenu();">
+    <option value="ROI Controls">ROI Controls</option>
+    <option value="Sensor Controls">Sensor Controls</option>
+    <option value="Track Controls">Track Controls</option>
+    <option value="SIA Controls">SIA Controls</option>
+  </select>
+</div>
+
+<div id="ROI Controls" style="display: block;">
+  <input type="button" class="fs" value="ENTER ROI" onclick="makeRequest(
+    'http://127.0.0.1:4041/ENTER_ROI/')"></input>
+  <input type="button" class="fs" value="MOVE ROI" onclick="makeRequest(
+    'http://127.0.0.1:4041/MOVE_ROI/')"></input>
+  <input type="button" class="fs" value="TOGGLE ROIs" onclick="makeRequest(
+    'http://127.0.0.1:4041/TOGGLE_ROIS/')"></input>
+  <input type="button" class="fs" value="CLEAR ROIs" onclick="makeRequest(
+    'http://127.0.0.1:4041/CLEAR_ROIS/')"></input>
+
+</div>
+
+<!-- ..................................................................... -->
+
+<div id="Sensor Controls" style="display: none;">
+
+  <input type="button" class="fs" value="TOGGLE WFOV" onclick="makeRequest(
+    'http://127.0.0.1:4041/TOGGLE_WFOV/')"></input>
+  <input type="button" class="fs" value="ENTER NFOV AIMPT" 
+    onclick="makeRequest('http://127.0.0.1:4041/ENTER_NFOV_AIMPT/')"></input>
+  <input type="button" class="fs" value="CLEAR AIMPTS" 
+    onclick="makeRequest('http://127.0.0.1:4041/CLEAR_AIMPTS/')"></input>
+</div>
+
+<!--..................................................................... -->
+
+
+<div id="Track Controls" style="display: none;">
+
+  <input id="BigSmallButton" type="button" class="fs" value="TALL CYLS" onclick="toggleBigSmall();"></input>
+
+</div>
+
+<!--..................................................................... -->
+
+
+<div id="SIA Controls" style="display: none;">
+
+  <input type="button" class="fs" value="ENTER SIA" onclick="makeRequest(
+    'http://127.0.0.1:4041/ENTER_SIA/')"></input>
+  <input type="button" class="fs" value="CLEAR SIAs" onclick="makeRequest(
+    'http://127.0.0.1:4041/CLEAR_SIAS/')"></input>
+
+</div>
+
+<!-- ..................................................................... -->
+
+<div id="DummyOutputDiv" name="DummyOutputDiv" style="width: 0px; height: 0px; overflow: hidden;">test1</div>
+
+
+</body>
+
+</html>

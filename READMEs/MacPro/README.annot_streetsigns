@@ -1,0 +1,469 @@
+===========================================================================================
+Notes for human annotation of street signs in ground imagery
+===========================================================================================
+Last updated on 3/3/15; 3/12/15; 3/13/15; 3/18/15; 7/31/15
+===========================================================================================
+
+*.  Note: As of 7/31/15, the notes in this README are obsolete!  See
+README.tagger instead.
+
+*.  Rectify an entire c3-viewer project's worth of raw images using call to
+rig_rectify.  Rectified images are written to subdirs of
+/startown-gpfs/sputnik03/supersize/labeling_resources/ .  As of Mar 2015,
+we should generally rectify all 6 cameras:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'c3 distrib pr -pr_cmd "rig_rectify -nochk" \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/kittyhawk_1a-complete/xml \
+-prj kittyhawk_1a-complete \
+-nochk -priv 80 -sno 75 -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_114fad' -nowin
+
+*.  Convert raw ninjas annotations from markup_object table to
+markup_unrect_object table via call to derect_human_bboxes().  Need to
+hardwire paths to subdirectories containing rectified image filenames
+within pr_annotation_derectify_human_bboxes() inside pr_annotation.c.  Also
+need to alter hardwired ebbox type within pr_mongo_write_annotations()
+inside pr_annotation.c.
+
+Test on local macpro to make sure codes work OK.  But run on distrib in
+order to finish this task in just a few minutes.
+
+
+*.  Remember to generate image chips after ninjas have created entries
+within raw markup_object mongo collection!  Call pr_extract_traffic_stuff()
+within pr_image_chips.c with generate_traffic_chip_flag = 1.  Need to alter
+cities_path, road signs subtypes and rectified image paths inside
+pr_extract_traffic_stuff().  Image chips are exported to subdirs of 
+/startown-gpfs/sputnik03/supersize/labeling_resources/image_chips/
+
+*.  Set up "Verification project" within flyover admin.
+
+*.  After Ninjas have finished verifying unrectified image chips, we need
+to call pr_extract_traffic_stuff() with
+append_annotation_metadata_text_file_flag set to 1.  Annotation metadata
+text files are exported to a single subdir of $cities_path which resides
+inside /startown-gpfs/sputnik03/supersize/labeling_resources/image_chips/ .
+
+Make sure that NEW annotation metadata is NOT appended to OLD annotation
+metadata text files in the subdir of $cities_path!
+
+
+*.  Image chips for DNN training eventually need to be copied over to
+appropriate subdirs within
+/cc2-gpfs/storage/dev/pr_databases/labeling_resource/
+
+
+
+Cupertino_1km_pr:
+
+"No U Turn" sign within one rectified Cupertino image shot by camera #4:
+
+
+
+[pcho@st21f02ls-cn0100 meta]$ more 025391-007887-20141011_213013_433-Cam02_2645D_07385.txt
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-r
+ainbow_west-20141011_155507-q6/unplanned-20141011_194607/02-2645D-07385/25k/0253
+91-007887-20141011_213013_433-Cam02_2645D_07385.dng
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/san_jose-rainbow_west-2014
+1011_155507-q6-imdata-lidar/cam4//images/025391-007887-20141011_213013_433-Cam02
+_2645D_07385_rect.jpg
+
+3    # Unrectified Projection type 
+1.627910    # Unrectified fov_s 
+1.342413    # Unrectified fov_h 
+-0.027210    # Unrectified k2 
+0.000000    # Unrectified k3 
+-0.004040    # Unrectified k4 
+0.018230    # Unrectified cx 
+0.006490    # Unrectified cy 
+0.001450    # Unrectified lx 
+0.000010    # Unrectified ly 
+
+4130749.032977    # Unrectified x 
+585753.393133    # Unrectified y 
+-74.877868    # Unrectified z 
+-2.639152    # Unrectified yaw 
+0.422724    # Unrectified pitch 
+-1.165074    # Unrectified roll 
+
+4130749.032977    # Rectified x 
+585753.393133    # Rectified y 
+-74.877868    # Rectified z 
+-2.639152    # Rectified yaw 
+0.000000    # Rectified pitch 
+0.000000    # Rectified roll 
+
+
+5120    # Unrectified xsize 
+3840    # Unrectified ysize 
+5120    # Rectified xsize 
+3840    # Rectified ysize 
+0    # Rectified projection type 
+1.900000    # Rectified fov_s 
+1.570000    # Rectified fov_h 
+0.000000    # Rectified k2 
+0.000000    # Rectified k3 
+0.000000    # Rectified k4 
+0.000000    # Rectified cx 
+0.000000    # Rectified cy 
+0.000000    # Rectified lx 
+0.000000    # Rectified ly 
+
+
+
+In original, unrectified image, "no U turn sign" is located at
+
+VERBOSE: output unrectified quadlat =  
+VERBOSE: top_left.x = 2010.180202  top_left.y = 2971.440724 
+VERBOSE: top_right.x = 2028.391517  top_right.y = 3012.994934 
+VERBOSE: bottom_left.x = 1970.410312  bottom_left.y = 2993.813389 
+VERBOSE: bottom_right.x = 1988.761793  bottom_right.y = 3035.636741 
+
+
+{
+		"_id" : ObjectId("54d402967747d2432349777d"),
+		"bounding_box" : {
+			"xmin" : 3067.5506591796875,
+			"xmax" : 3099.9038696289062,
+			"ymin" : 1836.3148498535156,
+			"ymax" : 1867.818260192871
+		},
+		"camera_position" : {
+			"x" : 4130749.032977,
+			"y" : 585753.393133,
+			"z" : -74.877868,
+			"yaw" : -2.639152,
+			"pitch" : 0.422724,
+			"roll" : -1.165074
+		},
+		"camera_projection" : {
+			"type" : 3,
+			"fov_s" : 1.62791,
+			"fov_h" : 1.342413,
+			"k2" : -0.02721,
+			"k3" : 0,
+			"k4" : -0.00404,
+			"cx" : 0.01823,
+			"cy" : 0.00649,
+			"lx" : 0.00145,
+			"ly" : 0.00001
+		},
+		"class" : 1,
+		"created" : ISODate("2015-02-05T23:53:58Z"),
+		"gnd" : {
+			"x" : -2693670.250163126,
+			"y" : -4305397.658639146,
+			"z" : 3845668.6350316834,
+			"yaw" : -2.1298796376411584,
+			"pitch" : -0.6513453164211868,
+			"roll" : 3.077064919781643,
+			"w" : 0,
+			"h" : 0
+		},
+		"image_fn" : "025391-007887-20141011_213013_433-Cam02_2645D_07385.dng",
+		"image_xsize" : 5120,
+		"image_ysize" : 3840,
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				-122.03213916611935,
+				37.3194136119364,
+				-2313.087592012003
+			]
+		},
+		"original_image_path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6/unplanned-20141011_194607/02-2645D-07385/25k/025391-007887-20141011_213013_433-Cam02_2645D_07385.dng",
+		"rectified_image_path" : "/startown-gpfs/sputnik03/supersize/labeling_resources/san_jose-rainbow_west-20141011_155507-q6-imdata-lidar/cam4//images/025391-007887-20141011_213013_433-Cam02_2645D_07385_rect.jpg",
+		"sub_type" : "no u turn",
+		"type" : "road sign",
+		"type_id" : 6,
+		"upside_down_img" : 0
+	},
+
+
+
+================================================================== 
+Downtown NYC resources which have been rectified but not yet been annotated
+
+
+Markup project: road_signs_part_1346A_Mar13
+
+new_york-b05-20140917_132625-q15-imdata/
+new_york-b07-20140929_134307-q9-imdata/
+new_york-c03-20140826_123744-q7-imdata/
+new_york-c04-20140823_191043-q7-imdata/
+new_york-c04-20140826_123744-q7-imdata/
+new_york-c04-20140826_220701-q15-imdata/
+
+Markup project: road_signs_part_1346B_Mar13
+
+new_york-c04-20140914_132250-q15-imdata/
+new_york-c05-20140826_131023-q8-imdata/
+new_york-c05-20140901_163610-q15-imdata/
+new_york-c05-20140902_131552-q15-imdata/
+new_york-c05-20140903_131028-q15-imdata/
+new_york-c05-20140904_163856-q15-imdata/
+
+Markup project: road_signs_part_1346C_Mar13
+
+new_york-c05-20140905_131623-q15-imdata/
+new_york-c05-20140907_130804-q15-imdata/
+new_york-c05-20140912_165222-q15-imdata/
+new_york-c05-20140914_132250-q15-imdata/
+new_york-c05-20140915_132417-q15-imdata/
+new_york-c05-20140917_132625-q15-imdata/
+
+---------------------------------------------------------
+
+new_york-c05-20140918_133224-q15-imdata/
+new_york-c05-20140920_133309-q15-imdata/
+new_york-c06-20140912_130731-q9-imdata/
+new_york-c06-20140914_124840-q9-imdata/
+new_york-c06-20140918_180544-q15-imdata/
+new_york-c06-20140919_182828-q15-imdata/
+new_york-c06-20140920_133309-q15-imdata/
+new_york-c06-20140922_133323-q15-imdata/
+new_york-c06-20140927_134035-q9-imdata/
+new_york-c06-20140928_134312-q9-imdata/
+new_york-c06-20140929_134307-q9-imdata/
+new_york-c06-20141005_174447-q15-imdata/
+new_york-c06-20141006_135517-q15-imdata/
+new_york-c06-20141007_135714-q15-imdata/
+new_york-c06-20141008_135500-q15-imdata/
+new_york-c06-20141009_135930-q15-imdata/
+new_york-c06-20141009_140055-q9-imdata/
+new_york-c06-20141010_133255-q9-imdata/
+new_york-c06-20141010_140022-q15-imdata/
+new_york-c07-20140929_134307-q9-imdata/
+new_york-d03-20140823_191043-q7-imdata/
+new_york-d03-20140826_123744-q7-imdata/
+new_york-d03-20140910_130414-q7-imdata/
+new_york-d04-20140823_191043-q7-imdata/
+new_york-d04-20140824_130239-q7-imdata/
+new_york-d04-20140824_140752-q15-imdata/
+new_york-d04-20140824_180439-q7-imdata/
+new_york-d04-20140825_133741-q7-imdata/
+new_york-d04-20140825_172916-q7-imdata/
+new_york-d04-20140826_123744-q7-imdata/
+new_york-d04-20140826_131023-q8-imdata/
+new_york-d04-20140829_135834-q7-imdata/
+new_york-d04-20140901_124321-q9-imdata/
+new_york-d04-20140903_140951-q9-imdata/
+new_york-d04-20140904_135310-q9-imdata/
+new_york-d05-20140823_191043-q7-imdata/
+new_york-d05-20140824_130239-q7-imdata/
+new_york-d05-20140825_133741-q7-imdata/
+new_york-d05-20140826_131023-q8-imdata/
+new_york-d05-20140829_135834-q7-imdata/
+new_york-d05-20140830_135427-q9-imdata/
+new_york-d05-20140903_144349-q9-imdata/
+new_york-d05-20140904_135310-q9-imdata/
+new_york-d05-20140905_131623-q15-imdata/
+new_york-d05-20140909_160356-q9-imdata/
+new_york-d05-20140910_132312-q9-imdata/
+new_york-d05-20140914_124840-q9-imdata/
+new_york-d05-20140917_132625-q15-imdata/
+new_york-d06-20140909_160356-q9-imdata/
+new_york-d06-20140912_130731-q9-imdata/
+new_york-d06-20140914_123011-q11-imdata/
+new_york-d06-20140914_124840-q9-imdata/
+new_york-d06-20140915_134126-q9-imdata/
+new_york-d06-20140917_132556-q9-imdata/
+new_york-d06-20140917_135024-q9-imdata/
+new_york-d06-20140918_132724-q9-imdata/
+new_york-d06-20140919_132833-q9-imdata/
+new_york-d06-20140920_133516-q9-imdata/
+new_york-d06-20140922_133241-q9-imdata/
+new_york-d06-20140923_133404-q9-imdata/
+new_york-d06-20140924_133605-q9-imdata/
+new_york-d06-20140926_133940-q9-imdata/
+new_york-d06-20140928_134312-q9-imdata/
+new_york-d06-20141012_132522-q9-imdata/
+new_york-d07-20140928_134312-q9-imdata/
+new_york-e02-20140909_174004-q7-imdata/
+new_york-e03-20140908_171107-q7-imdata/
+new_york-e03-20140909_130320-q7-imdata/
+new_york-e03-20140909_174004-q7-imdata/
+new_york-e03-20140910_130414-q7-imdata/
+new_york-e03-20140910_135631-q7-imdata/
+new_york-e04-20140821_173342-q15-imdata/
+new_york-e04-20140823_191043-q7-imdata/
+new_york-e04-20140823_191952-q15-imdata/
+new_york-e04-20140824_124409-q15-imdata/
+new_york-e04-20140824_140752-q15-imdata/
+new_york-e04-20140827_125859-q15-imdata/
+new_york-e04-20140828_132335-q15-imdata/
+new_york-e04-20140829_125041-q11-imdata/
+new_york-e04-20140829_135834-q7-imdata/
+new_york-e04-20140903_131800-q8-imdata/
+new_york-e04-20140904_125518-q11-imdata/
+new_york-e04-20140904_131052-q8-imdata/
+new_york-e04-20140905_123220-q8-imdata/
+new_york-e04-20140909_125142-q11-imdata/
+new_york-e04-20140910_135631-q7-imdata/
+new_york-e04-20140914_135950-q7-imdata/
+new_york-e05-20140821_173342-q15-imdata/
+new_york-e05-20140824_140752-q15-imdata/
+new_york-e05-20140907_125011-q11-imdata/
+new_york-e05-20140907_130732-q11-imdata/
+new_york-e05-20140908_125027-q11-imdata/
+new_york-e05-20140924_133620-q8-imdata/
+new_york-e05-20141012_140722-q11-imdata/
+new_york-e06-20140830_122332-q11-imdata/
+new_york-e06-20140910_132312-q9-imdata/
+new_york-e06-20140912_130731-q9-imdata/
+new_york-e06-20140914_123011-q11-imdata/
+new_york-e06-20140924_165824-q11-imdata/
+new_york-e06-20140926_133940-q9-imdata/
+new_york-e06-20140926_140401-q11-imdata/
+new_york-e06-20140928_134123-q11-imdata/
+new_york-e06-20140929_134405-q11-imdata/
+new_york-e06-20141003_134943-q11-imdata/
+new_york-e06-20141005_135456-q11-imdata/
+new_york-e06-20141007_135637-q11-imdata/
+new_york-e06-20141008_135921-q11-imdata/
+new_york-e06-20141009_140051-q11-imdata/
+new_york-f03-20140903_131800-q8-imdata/
+new_york-f03-20140904_131052-q8-imdata/
+new_york-f03-20140905_123220-q8-imdata/
+new_york-f03-20140910_130414-q7-imdata/
+new_york-f03-20140910_135631-q7-imdata/
+new_york-f03-20140912_124509-q7-imdata/
+new_york-f03-20140912_174104-q7-imdata/
+new_york-f03-20140914_135950-q7-imdata/
+new_york-f03-20140914_174549-q7-imdata/
+new_york-f03-20140915_162301-q7-imdata/
+new_york-f03-20140918_160643-q7-imdata/
+new_york-f03-20140919_132836-q7-imdata/
+new_york-f03-20140919_195928-q7-imdata/
+new_york-f03-20140920_133217-q7-imdata/
+new_york-f04-20140826_194144-q8-imdata/
+new_york-f04-20140827_132540-q8-imdata/
+new_york-f04-20140828_141939-q8-imdata/
+new_york-f04-20140903_131800-q8-imdata/
+new_york-f04-20140904_131052-q8-imdata/
+new_york-f04-20140905_123220-q8-imdata/
+new_york-f04-20140910_130205-q8-imdata/
+new_york-f04-20140915_162301-q7-imdata/
+new_york-f05-20140905_123220-q8-imdata/
+new_york-f05-20140908_131105-q8-imdata/
+new_york-f05-20140908_161034-q8-imdata/
+new_york-f05-20140909_132504-q8-imdata/
+new_york-f05-20140910_130205-q8-imdata/
+new_york-f05-20140912_131525-q8-imdata/
+new_york-f05-20140914_135229-q8-imdata/
+new_york-f05-20140914_181049-q8-imdata/
+new_york-f05-20140915_130728-q8-imdata/
+new_york-f05-20140918_132158-q8-imdata/
+new_york-f05-20140919_132858-q8-imdata/
+new_york-f05-20140922_133901-q8-imdata/
+new_york-f05-20140923_132722-q8-imdata/
+new_york-f05-20140924_171322-q8-imdata/
+new_york-f06-20140927_134022-q11-imdata/
+new_york-f06-20141010_140323-q11-imdata/
+new_york-f06-20141010_161713-q9-imdata/
+new_york-f06-20141012_162621-q9-imdata/
+new_york-f06-20141012_172117-q11-imdata/
+new_york-g03-20140918_130855-q7-imdata/
+new_york-g03-20140918_160643-q7-imdata/
+new_york-g03-20140920_170038-q7-imdata/
+new_york-g03-20140924_182657-q7-imdata/
+new_york-g03-20140926_135809-q7-imdata/
+new_york-g03-20140927_134042-q7-imdata/
+new_york-g03-20140928_134122-q7-imdata/
+new_york-g03-20140929_134320-q7-imdata/
+new_york-g04-20140920_170038-q7-imdata/
+new_york-g04-20140922_133319-q7-imdata/
+new_york-g04-20140924_133614-q7-imdata/
+new_york-g05-20140910_130205-q8-imdata/
+new_york-g05-20140919_132858-q8-imdata/
+
+
+none-ground-20140804_220935-none-imdata/
+none-ground-20140805_175030-none-imdata/
+none-ground-20140815_185506-none-imdata/
+none-ground-20140815_185506-q11-imdata/
+none-ground-20140815_185526-none-imdata/
+none-ground-20140816_140451-q13-imdata/
+none-ground-20140817_145347-q13-imdata/
+none-ground-20140818_124006-q11-imdata/
+none-ground-20140818_124109-q9-imdata/
+none-ground-20140821_155038-q9-imdata/
+none-ground-20140823_185854-q9-imdata/
+none-ground-20140827_125159-q11-imdata/
+none-ground-20140827_183514-q11-imdata/
+none-ground-20140828_130250-q11-imdata/
+none-ground-20140828_184918-q11-imdata/
+
+
+================================================================== 
+Kitty_Hawk_1A_complete resources which have been rectified but not yet been annotated
+
+Markup project: road_signs_part_123456A_Mar16_KH1A
+
+bay_area-u11-20141223_184710-h9-imdata
+bay_area-u11-20141228_160642-h9-imdata
+bay_area-u11-20141229_155156-h9-imdata
+bay_area-u12-20141218_232827-h9-imdata
+bay_area-u12-20141220_174914-h9-imdata
+bay_area-u12-20141221_162748-h9-imdata
+
+Markup project: road_signs_part_123456B_Mar16_KH1A
+
+bay_area-v11-20141028_161521-q11-imdata   ** Flover Admin markup page could not successfully import 
+bay_area-v11-20141220_173917-h17-imdata
+bay_area-v11-20141220_174914-h9-imdata
+bay_area-v11-20141222_164920-h9-imdata
+bay_area-v12-20141218_232827-h9-imdata
+bay_area-v12-20141219_185554-h9-imdata
+
+Markup project: road_signs_part_123456C_Mar16_KH1A
+
+bay_area-v12-20141221_162748-h9-imdata
+bay_area-w11-20141220_173917-h17-imdata
+bay_area-w11-20141221_162224-h17-imdata
+bay_area-w12-20141219_182057-h1-imdata
+bay_area-w12-20141220_173456-h1-imdata
+bay_area-w12-20141221_162748-h9-imdata
+
+
+---------------------------------------------------------
+
+bay_area-w12-20150211_215447-h17-imdata
+bay_area-w12-20150213_163314-h21-imdata
+bay_area-w12-20150213_234157-h21-imdata
+bay_area-v11-20150211_235811-h20-imdata
+bay_area-v11-20150212_213934-h21-imdata
+bay_area-u12-20150222_163650-q7-imdata
+bay_area-v11-20141023_153806-q7-imdata
+bay_area-v11-20141024_152920-q7-imdata
+bay_area-v11-20141023_180616-q9-imdata
+bay_area-v12-20141023_153806-q7-imdata
+bay_area-v12-20150211_180305-q12-imdata
+bay_area-v12-20150213_215229-h21-imdata
+bay_area-w11-20141023_180616-q9-imdata
+bay_area-w12-20141024_153250-q9-imdata
+bay_area-t9-20141101_214823-q11-imdata
+bay_area-t12-20141227_161129-h9-imdata
+san_jose_test_drive-a01-20141009_154610-q6-imdata
+san_jose_test_drive-a01-20141011_155507-q6-imdata
+sunnyvale-lawrence-20141012_153451-q6-imdata
+bay_area-v10-20141222_164920-h9-imdata
+bay_area-v11-20150221_170327-q7-imdata
+bay_area-u10-20141222_164920-h9-imdata
+bay_area-u10-20141223_162816-h9-imdata
+bay_area-u10-20141223_184710-h9-imdata
+bay_area-x12-20150122_173910-h10-imdata
+bay_area-x13-20150124_161554-h10-imdata
+bay_area-v11-20150212_164546-h21-imdata
+bay_area-u12-20150217_204627-h21-imdata
+bay_area-u12-20150215_155116-h21-imdata
+bay_area-v12-20150215_155116-h21-imdata
+bay_area-u10-20150214_172455-q12-imdata
+bay_area-u10-20150214_210916-q12-imdata
+bay_area-u10-20150215_164300-q12-imdata
+bay_area-u10-20150215_213918-q12-imdata
+bay_area-u10-20150216_165723-q12-imdata
+bay_area-u10-20150216_234134-q12-imdata
+bay_area-u10-20150216_212016-q12-imdata
+bay_area-u10-20150217_195600-q12-imdata

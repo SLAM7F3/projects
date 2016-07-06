@@ -1,0 +1,7 @@
+./load_image_metadata \
+--region_filename ./bundler/kermit_replacements/rocks/packages/peter_inputs.pkg \
+--GIS_layer ./packages/imagery_metadata.pkg 
+
+
+# --region_filename ./bundler/south_India/packages/peter_inputs.pkg \
+# --region_filename ./bundler/GrandCanyon/Mar2012/packages/peter_inputs.pkg \

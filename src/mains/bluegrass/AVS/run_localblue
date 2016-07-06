@@ -1,0 +1,5 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS
+/home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS/bluelogic \
+--LogicServer_URL 127.0.0.1:4040 \
+--SKSDataServer_URL 127.0.0.1:8080 \
+--HTMLServer_URL 155.34.162.126:8080

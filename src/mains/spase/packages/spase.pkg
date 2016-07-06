@@ -1,0 +1,5 @@
+/home/cho/programs/c++/svn/projects/src/mains/spase/spase_model.xyzp 
+--height_colormap 2 --prob_colormap 1 --prob_cyclic_frac_offset 0.0 
+--independent_var 3
+--min_threshold_frac 0.0 --max_threshold_frac 1.0
+--newpass /home/cho/programs/c++/svn/projects/src/mains/spase/reordered_sar.vid

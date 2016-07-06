@@ -1,0 +1,29 @@
+============================================================================
+PHOTON code changes made on Fri, Sep 4, 2009:
+
+*.  Consolidated all TDP header files within /usr/local/include/libtdp.
+Made minor tdp change to Makefile.
+
+
+============================================================================
+PHOTON code changes made on Thurs, Sep 3, 2009:
+
+*.  Need to create new method inside Geometrical class which initializes
+text_refptr vector members to NULL:
+
+   n_text_messages=1;
+   for (int m=0; m<get_n_text_messages(); m++)
+   {
+      text_refptr.push_back(static_cast<osgText::Text*>(NULL));
+   }
+
+*.  Made several modifications throughout our entire code tree so that it
+now builds under gcc 4.3.2 on photon!  
+
+............................
+
+*.  Added README.gcc.4.3.2 to repository
+
+............................
+
+*.  Altered Makefile s.t. -std=c++0x comes at end of CXXFLAGS

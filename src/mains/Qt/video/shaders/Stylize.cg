@@ -1,0 +1,63 @@
+#include "ColorSpaceUtils.cgh"
+
+void decomposeBaseDetailAndApplyCurve( uniform samplerRECT inputRGBASampler,
+									  uniform samplerRECT bfDenoisedLabASampler,
+									  uniform samplerRECT bfBaseLabASampler,
+									  
+									  uniform samplerRECT remappingCurveSampler,
+									  uniform float remappingCurveWidth,
+									  
+									  uniform float lambdaDetail,
+									  uniform float detailMax,
+									  
+									  float2 xy : WPOS,
+									  
+									  out float4 colorOut : COLOR )
+{
+	// input is RGB	
+	float4 inputRGBA = texRECT( inputRGBASampler, xy );
+	float4 inputLabA = rgba2laba( inputRGBA ); // L in [0, 100]
+	
+	// denoised is Lab
+	float4 denoisedLabA = texRECT( bfDenoisedLabASampler, xy );
+	float denoisedLZeroOne = saturate( 0.01 * denoisedLabA.x ); // [0,1]
+	
+	// get noise
+	float4 noiseLabA = inputLabA - denoisedLabA; // [0, 100]
+	
+	// base layer is from the bilateral filter
+	float4 baseLabA = texRECT( bfBaseLabASampler, xy ); // L in [0,100]
+	float baseLZeroOne = saturate( 0.01 * baseLabA.x ); // [0,1]
+	
+	// detail = denoised - base
+	float detailLMinusOneToOne = denoisedLZeroOne - baseLZeroOne;
+		
+	// adjust the base
+	// float adjustedBaseLZeroOne = tex2D( remappingCurveSampler, float2( baseLZeroOne, 0.25 ) ).x;
+	float adjustedBaseLZeroOne = texRECT( remappingCurveSampler, float2( baseLZeroOne * remappingCurveWidth, 0.5 ) ).x;
+	float adjustedBaseL = 100 * adjustedBaseLZeroOne;
+	
+	// adjust the detail
+	
+	// get sign and absolute value of detail
+	float absDetail = abs( detailLMinusOneToOne ); // [0, 1]
+	float signDetail = sign( detailLMinusOneToOne ); // {-1, 1}
+
+	// remap absolute value of detail
+	// float2 absDetailTexCoord = float2( absDetail / detailMax, 0.75 ); // scale absDetail to between 0 and 1 for texture lookup
+	// float adjustedAbsDetailZeroOne = detailMax * tex2D( remappingCurveSampler, float2( absDetail, 0.75 ) ).x;
+	float adjustedAbsDetailZeroOne = texRECT( remappingCurveSampler, float2( absDetail * remappingCurveWidth, 1.5 ) ).x;
+	
+	float adjustedDetailLZeroOne = lambdaDetail * adjustedAbsDetailZeroOne * signDetail;
+	float adjustedDetailL = 100 * adjustedDetailLZeroOne;
+	
+	float outputL = clamp( adjustedBaseL + adjustedDetailL + noiseLabA, 0, 100 );
+	
+	// color
+	// float4 outputLabA = float4( outputL, inputLabA.yzw );
+	
+	// b&w
+	float4 outputLabA = float4( outputL, 0, 0, 1 );
+	
+	colorOut = laba2rgba( outputLabA );
+}

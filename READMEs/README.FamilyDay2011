@@ -1,0 +1,105 @@
+========================================================================
+Notes for Family Day 2011 demos
+========================================================================
+Last updated on 9/5/11; 9/6/11; 9/19/11
+========================================================================
+
+0.  Screen Saver
+
+  *.  Reset screen saver time to 2 hours for all LOST laptops.
+
+  *.  Under Power Management Preferences, reset display so that it never
+      becomes inactive.
+
+1.  Sailplane raw video imagery
+
+  *.  Ran AVI movie of Jan Kansky throwing sailplane and Ft Devens terrain
+      captured by Canon Powershot on Dave Schue's OSTF windows 7 computer.
+      Dan Dumanis installed the windows media patch into powerpoint on this
+      computer.  So the AVI movie looped continuously during the entire
+      Family Day even.t
+
+  *.  Powerpoint display appeared on large, mounted LHS monitor within OSTF
+      control room.  Raw sailplane imagery appearing on left acted as "input".
+
+2.  Sailplane automatic flyin/flyout demo
+
+  *.  Ran on Allie's laptop which has all Fort Devens sailplane #3 imagery
+      and reconstructed point cloud stored locally.  On other LOST laptops,
+      may need to plug in 500 Gig FAT 32 #4 orange disk.  
+
+  *.  On Allie's laptop, /usr/local/bin/run_sailplane1 is symbolically 
+      linked to
+      /home/cho/programs/c++/svn/projects/src/mains/aerosynth/run_sailplane1.
+      So can run sailplane demo when logged into Allie's laptop as user los
+      as well as user cho.  For formal demos, run sailplane demo as user
+      los.
+
+  *.  Connected DVI output from Allie's laptop to large mounted RHS monitor
+      in OSTF control room.  Dave Schue ran a cable from this
+      RHS mounted monitor to the black work bench located next to the 
+      DiamondTouch table.  Reconstructed point cloud and OBSFRUSTA
+      appearing on RHS OSTF monitor acted as "output".  
+
+  *.  "3D Exploitation of 2D Video from a Hand-Launched Aerial Glider"
+      poster created for SIGGRAPH sat between "input" and "output" OSTF
+      monitors.
+
+  *.  Use nvidia-settings to reset Allie's LOST laptop resolution from
+      1920x1280 to 1920x1080.
+
+  *.  Increase point size by 1
+
+  *.  Press "V" twice to eliminate mode display
+
+  *.  Program should run unattended in infinite loop
+
+3.  NYC 1K demo with Wii control
+
+  *.  Ran on Jennifer's laptop which has all NYC ladar and 1K photos stored
+      locally .  On other LOST laptops, may need to plug in 500 Gig VFAT #1
+      orange disk to access NYC ladar imagery data.
+
+  *.  On Jennifer's laptop, /usr/local/bin/run_wiidemo is symbolically
+      linked to 
+      /home/cho/programs/c++/svn/projects/src/mains/newyork/run_wiidemo
+      So can run wiidemo when logged into Jennifer's laptop as user los
+      as well as user cho.  For formal demos, run wii demo as user los.
+
+  *.  Place bluetooth dongle into USB port on LHS of Jennifer's laptop.
+      After running script, need to simultaneously press Wii's lower 1 + 2 
+      buttons in order to synchronize wiimote with laptop.
+
+  *.  Left/right/up/down translation controlled by top cross Wii buttons
+
+  *.  Zoom in/out controlled by +/- Wii buttons
+
+  *.  Home reset controlled by home Wii button
+
+  *.  Azimuthal spin controlled by 1 * 2 Wii buttons
+
+  *.  Selection of OBSFRUSTUM closest to screen center controlled by "A"
+      Wii button
+
+  *.  Deselection of OBSFRUSTUM controlled by "B" trigger button on back of
+      Wii
+
+  *.  When zoomed into a ground OBSFRUSTUM, press "down/up" Wii buttons to
+      alpha blend photo.
+
+  *.  When pink left and right arrows appear within a selected ground
+      photo, press "left/right" arrow keys on Wii in order to move to
+      OBSFRUSTUM located to user's immediate left or right.  Circular
+      movement is most easily seen with Statue of Liberty photos where 
+      Statue's face slowly turns after several left or right arrow keys
+      are pressed.
+ 
+4.  NYC 1K demo running in infinite loop
+
+  *.  Ran on G106 LOST laptop which has all NYC ladar and 1K photos
+      stored locally.
+
+  *.  /usr/local/bin/run_550 demo is symbolically linked to 
+      /home/cho/programs/c++/svn/projects/src/mains/newyork/run_550
+
+

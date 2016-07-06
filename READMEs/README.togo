@@ -1,0 +1,11 @@
+============================================================================
+Procedure for mounting togo
+============================================================================
+Last updated on 11/3/11
+============================================================================
+
+sudo smbmount //togo/Data /mnt/togo_Data/ -o user=cho,domain=WORKGROUP,uid=cho,gid=adm
+
+Need to first supply Ubuntu 10.04 password.  Then need to supply LL e-mail
+password.
+

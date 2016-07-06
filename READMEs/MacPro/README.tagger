@@ -1,0 +1,454 @@
+===========================================================================================
+Notes for processing human annotations generated via tagger
+===========================================================================================
+Last updated on 2/23/16; 2/24/16; 3/1/16; 3/7/16
+===========================================================================================
+
+*.  Git commands to checkout opencv version of tagger:
+
+mkdir tagger-opencv_N
+cd  tagger-opencv_N
+git clone git@github.geo.apple.com:geo-flyover/tagger.git
+cd tagger
+git status
+git branch
+git fetch origin
+git checkout opencv
+git log --oneline | head
+
+*.  Carlos Folgar's OpenCV version of tagger is sitting (as of 2/1/16)
+inside $opencv_tagger = Desktop/tagger-opencv/tagger/ on our MacBook
+laptop.  This subdirectory belongs to a local git repository which mirrors
+that on the Apple flyover server.  From within $opencv_tagger, we can chant
+git pull --rebase in order to sync our local copy with the server version.
+
+*.  Most important .h, .m, .mm and .xib files for opencv version of tagger
+are sitting (as of 2/19/16) within $opencv_tagger/cocoa/Tagger/Tagger
+
+*.  Instructions for how to set up Xcode to work with OpenCV3 libraries:
+http://blogs.wcode.org/2014/11/howto-setup-xcode-6-1-to-work-with-opencv-libraries/
+
+*.  When building OpenCV on our Macbook laptop, be sure that
+BUILD_SHARED_LIBS is CHECKED when we're building the Shared Libaries
+and UNCHECKED when we're building Static Libraries!
+
+As of 12 pm on Monday, Feb 22, Library Search Paths in Xcode project for
+OpenCV Tagger has both /usr/local/lib and $(PROJECT_DIR) in it.  According
+to instructions for how to set up Xcode to work with OpenCV3 libraries, we
+should only need the former and not the latter.  So we experiment with
+deleting $(PROJECT_DIR):
+
+*.  Polygon shrinkwrapping appears to work OK with just the libopencv_core and
+libopencv_imgproc libraries linked against Xcode project and with library
+search path limited to /usr/local/lib !
+
+*.  As of 2/23/16, dynamic openCV libraries are located on our MacBook in
+/usr/local/lib/.  We moved static openCV libraries (ending with .a) into
+/usr/local/lib/static_libs.
+
+*.  Polygon shrinkwrapping codes only need to be linked with the core and
+imgproc opencv libraries.
+
+*.   Useful info for deploying external libraries within OS X is documented
+in the following blogs:
+
+http://stackoverflow.com/questions/6856029/deploy-and-distribute-opencv-applications-with-xcode4-on-mac-osx
+
+http://doc.qt.io/qt-5/osx-deployment.html
+
+*.  Latest version of tagger is available from 
+
+https://flyover-admin.geo.apple.com/application/tagger
+
+After downloading onto Mac laptop, be sure to right-click in order to open
+tagger rather than double clicking.  
+
+
+*.  Some online documentation for tagger is available under 
+
+	Help --> Application help
+
+In the online help documentation, 
+
+	fat up arrow = "Shift" key
+
+	Sloping down character with - superscript = "option" key
+
+*.  Basic controls to translate and zoom central image in main window:
+
+	Shift command key + left mouse button can be used to translate
+image in central panel
+
+	Shift command key and TWO fingers on mousepad zooms in/out within 
+	primary tagger window
+
+	Shift command key and "+" zooms in to primary window
+	Shift command key and "-" zooms out from primary window
+
+Central window's FOV relative to entire image is displayed within
+"thumbnail" located in bottom right corner.
+
+*.  Polygon entry and deletion:
+
+    Press command-E in order to start entering a polygon.
+    Press escape key in order to terminate polygon drawing/entry.
+    Press command-delete to delete a selected polygon
+
+ Upper left corner of main window: px = 0, py = 0
+ Lower left corner of main window: px = 0, py = 1
+ Lower right corner of main window: px = 1, py = 1
+ Upper right corner of main window: px = 1, py = 0
+
+*.  For already existing polygons, press "shift-mouse click" in order to
+select a polygon.  More than one polygon can be selected at a time.  If we
+mouse click at a random location with shift not pressed, all polygons are
+deselected.
+
+*.  Sample small images for tagger development are sitting in 
+/startown-gpfs/sputnik02/supersize/devtest/pcho/tagger2/
+
+ortho_chip_0_0.jpg:  	352 x 352
+map_13_2260_3635_7.jpg: 720 x 960
+small_cars.jpg:	        1280 x 960
+small_greenbox.jpg:     960 x 1280
+small_lamppost.jpg:     960 x 1280
+
+Copied these few jpg images locally into /data/peter_stuff/grabcut/tagger/
+
+*.  Larger sample images for tagger testing are sitting in 
+/startown-gpfs/sputnik02/supersize/devtest/pcho/tagger3/:
+
+map_13_2285_3649_0.jpg  
+map_13_2290_3646_0.jpg  
+map_13_2286_3648_0.jpg  
+map_13_2286_3650_0.jpg  
+street_building_1.jpg
+street_building_2.jpg
+street_building_3.jpg
+
+*.  On 2/2/16, Carlos Folgar told us to check out the Objective-C category
+NSImage+OpenCV.mm for details as to how an opencv matrix is passed back
+into an NSImage .  
+
+*.  Tagger's executable binary generated by Xcode project sits inside
+Desktop/tagger-opencv/tagger/cocoa/Tagger/build/Debug/Tagger.app/Contents/MacOS/tagger
+
+Chanting  
+
+	otool -L ./Tagger 
+
+from inside this subdir shows the binary executable's dependence upon
+dynamic OpenCV and other dynamic libraries as defined within Xcode build
+settings.  otool does not show dependence upon static libraries.
+
+*.  In order to Build Tagger App inside of Xcode, we can press
+"command-B".    We should also be certain to "make clean" by chanting
+Product --> Clean before rebuilding Tagger App.
+
+*.  On 2/22/16, Keren Pinkas initially thought that the 16 OpenCV libraries
+should be added into "Link Binary Withi Libraries" rather than to "Copy
+Files" under Build Phases.  But later she wasn't sure this was the right
+location for our tagger/opencv deployment.
+
+*.  In order to generate an archived version of Xcode for eventual ninja
+use, select from top menu bar Product -> Archive.  After archive file is
+built, press "Export" button located within RHS column.  Try "Export as a
+Mac Application" button.  Exported tagger files are deposted into a
+timestamped folder on the desktop.  Right click on timestamped folder and
+select "Compress "Tagger 2016-02-XXX".  This generates a zip file that is
+also deposited onto the Desktop.  Can email zipped Tagger files to Carlos
+or others for testing.
+
+*.  Tagger's online help information comes from 
+Tagger->Supporting Files -> help.html.
+
+*.  Shortcut keys appear to be refered to by NSString "shortKey" inside
+tagger objective-C code.
+
+*.  On 2/23/16, Gustaf Lindquist showed us how to create a shortcut key
+for polygon shrink wrapping.
+
+  i.  Add a new method inside TGAppDelegate.m which will be bound to the
+new menu item/shortcut key:
+
+- (IBAction) polygonShrinkwrap:(id) sender
+{
+   [self.mainWindowController shrinkwrapPolygon];
+}
+
+  ii.  Open Tagger->MainMenu.xib in order to add a new entry to the
+"Markup" menu along with its corresponding shortcut key (e.g. command P).
+Click on the encircled arrow (-->) icon = Show the connections inspector
+button located at top of RHS column.  
+
+On the LHS, look for "Objects->Main Menu->Markup->Menu".  Drag "Menu Item"
+from lower RHS of MainMenu.xib display over to LHS column.  Add a new
+"Shrinkwrap polygon" entry into this submenu.  Can enter a shortcut key
+(e.g. command P).
+
+  iii.  Graphically bind new markup menu entry + shortcut key to
+polygonShrinkwrap() method within TGAppDelegate.m
+
+  iv.  Place the nontrivial contents of the callback function
+"shrinkwrapPolygon" inside TGMainWindowController.m and put its declaration
+into TGMainWindowController.h.  Gustaf said that methods inside of
+TGMainWindowController.m should NOT have any IBAction return types nor
+take in any (id)sender inputs.
+
+*.  In late February 2016, we spent several days struggling to export a
+release version of Tagger which bundles a copy of OpenCV so that OpenCV
+does not need to be preinstalled on ninja machines.  After getting lots of
+help from Ross, Gustaf, Keren and Carlos, we finally found a way to do
+this:
+
+1.  Created a new folder on our MacBook Desktop called
+
+	/Users/cho/Desktop/opencv_frameworks
+
+Following URL docs.opencv.org/2.4/doc/tutorials/introduction/ios_install/ios_install.html, 
+we chant from inside this new subdir
+
+	git clone https://github.com/Itseez/opencv.git
+
+The URL points towards a python script which theoretically builds an OpenCV
+framework.  The script itself failed to run on my MacBook.  But we created
+/Users/cho/Desktop/opencv_frameworks/opencv/build/.  From this build
+subdir, we chanted 
+
+/Applications/Cmake.app/Contents/bin/cmake -GXcode -DAPPLE_FRAMEWORK=ON -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release ..
+
+which was basically the command the python script tried to run.  We
+empirically found that we had to run this line with no "\" continuation
+characters on our MacBook.  But then the cmake command line ran OK on the
+MacBook.  It generated an Xcode project which we were able to successfully
+build inside Xcode.  
+
+2.  We also successfully built the “install” target from inside Xcode.  It
+generated a 110 Mbyte static library file inside
+/Users/cho/Desktop/opencv_frameworks/opencv/build/install/lib/
+libopencv_world.a .  We manually copied libopencv_world.a into
+/Users/cho/Desktop/tagger-opencv/tagger/cocoa/Tagger/ .  We also moved
+previous dynamic opencv libraries into a new, dummy
+/Users/cho/Desktop/tagger-opencv/tagger/cocoa/Tagger/dylibs/ folder.
+
+3.  Steps to follow inside Xcode in order to export a "release" version of
+Tagger (which runs outside of Xcode) that includes a static copy of all
+openCV libraries which should run on any Mac that doesn't already have
+OpenCV pre-installed.
+
+  -.  In tagger's build settings, make sure following fields are set:
+
+Linking:
+
+Other Linker Flags: -lopencv_world -lIlmImf -lippicv -llibjasper -llibjpeg
+		    -llibpng -llibtiff -llibwebp -lzlib
+
+
+Search Paths:
+
+Framework Search Paths: /Users/cho/Desktop/tagger-opencv/tagger/cocoa/Tagger/External/Sparkle-1.8.0
+Header Search Paths: /Users/cho/Desktop/opencv_frameworks/opencv/build/install/include
+Library Search Paths: /Users/cho/Desktop/tagger-opencv/cocoa/Tagger 
+		      /Users/cho/Desktop/opencv_frameworks/opencv/build/install/share/OpenCV/3rdparty/lib
+
+  -.  In tagger's build phases, make sure OpenCL.framework is included
+along with Webkit, QuartzCore, Sparkle, Quartz and Cocoa frameworks inside
+"Link Binary With Libraries".
+
+  -.  We do NOT need to add any extra entries under "Copy Files" beyond
+Sparkle.framework
+
+4.  Make clean by selecting Xcode submenu Product -> Clean.  Then build via
+Product->Build or Command-B.  Then export built Xcode tagger project (which
+should now contain a static copy of OpenCV's libraries) via selecting 
+Product->Archive followed by pressing "Export" button located on RHS.  As
+of 2/24/16, we subsequently chose to "Export as a Mac Application" the
+archived release version.
+
+5.  Zip up archived tagger folder by right clicking on it with mouse and
+selecting "Compress Tagger 2016-02-24 blah blah".  Can email zip file to
+another Mac, but that Mac must have VPN in order to access flyover admin
+(Note: Ross' "Interview" Mac laptop does not have VPN).  
+
+
+*.  On 3/1/16, Ross Anderson showed us how to add an alert box to inform so
+that the user will be notified when the grabcut algorithm fails to produce
+reasonable output.  
+
+  - GUI aspects of error notifications should generally be handled within
+TGMainWindowController.m.  So inside the -(void)shrinkWrapPolygon method,
+Ross now checks the boolean succeeded return flag from call to
+processMarkups():
+
+if(!succeeded){
+  NSError *error = (NSError errorWithDomain:@"Tagger" code:0 userInfo:@{
+  NSLocalizedDescriptionKey: @"Failed to snap polygon.",
+  NSLocalizedRecoverySuggestionErrorKey: @"Try snapping the points closer
+    to the shape."  }];
+
+  [self presentError:error];
+}
+
+*.  On 3/1/16, Ross further showed us that the left and right sidebars on
+appearing off the main window can have their widths constrained.  Open
+TGMainWindow.xib.  Then click on Window --> View --> Split View --> Left
+Sidebar.  Add Constraint which says width >= 225 in order to prevent user
+from making left side bar too narrow.  Should then see a ">=" icon appear
+over measuring tool bar under lower part of LHS sidebar.  
+
+*.  On 3/7/16, Carlos Folgar showed us how to upload a zipfile containing a
+new version of tagger for distribution to Ninjas via flyover admin.  First
+mouse click Flyover Admin --> Utils --> Application.  Then add a new tagger
+version at bottom of this webpage.  Save the information.  Then "Upload new
+version" of tagger corresponding to a zip file named something like
+Tagger-2.1.4.zip.  
+
+Once the zipfile is uploaded, ninjas et al should be able to see the new
+tagger version is available for download at 
+
+    https://flyover-admin.geo.apple.com/application/tagger
+
+--------------------
+
+*.  Rectify an entire c3-viewer project's worth of raw images using call to
+rig_rectify.  Rectified images are written to subdirs of
+/startown-gpfs/sputnik03/supersize/labeling_resources/ .  As of Mar 2015,
+we should generally rectify all 6 cameras:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'c3 distrib pr -pr_cmd "rig_rectify -nochk" \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/kittyhawk_1a-complete/xml \
+-prj kittyhawk_1a-complete \
+-nochk -priv 80 -sno 75 -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_114fad' -nowin
+
+*.  Use Weiyu's approach (as of May 2015) to convert raw ninjas annotations
+from markup_object table to detections table WITHOUT having to go through
+markup_unrect_object table.  Following command also generates image chips
+for detected objects.  We need to specify markup project name, a "fake
+human" detector version (e.g. 9901 for type = us_roadsign with sub_type =
+unclassified), a "root" directory for the image chips, project information
+and potentially a "resource tag" if project was cloned from some parent
+project whose bundled data was NOT explicitly copied/linked to child
+project:
+
+Login to some distrib node and chant command(s) similar to the following
+examples:
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_664074 -nowin \
+-vv -do "pr seden_dump_annotation_detection \
+-markup_project Hwy_5k_20150728_2 \
+-crop_root /startown-gpfs/sputnik03/supersize/labeling_resources/20150731_hwy280_5k_trafficsign/ \
+-dver 9901 -prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 -rtag bay_area_650_ground_dev_3"
+
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_664074 -nowin \
+-vv -do "pr seden_dump_annotation_detection \
+-markup_project Hwy_5k_20150728_3 \
+-crop_root /startown-gpfs/sputnik03/supersize/labeling_resources/20150731_hwy280_5k_trafficsign/ \
+-dver 9901 -prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 -rtag bay_area_650_ground_dev_3"
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_664074 -nowin \
+-vv -do "pr seden_dump_annotation_detection \
+-markup_project Hwy_5k_20150728_4 \
+-crop_root /startown-gpfs/sputnik03/supersize/labeling_resources/20150731_hwy280_5k_trafficsign/ \
+-dver 9901 -prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 -rtag bay_area_650_ground_dev_3"
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_664074 -nowin \
+-vv -do "pr seden_dump_annotation_detection \
+-markup_project Hwy_5k_20150728_5 \
+-crop_root /startown-gpfs/sputnik03/supersize/labeling_resources/20150731_hwy280_5k_trafficsign/ \
+-dver 9901 -prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 -rtag bay_area_650_ground_dev_3"
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_664074 -nowin \
+-vv -do "pr seden_dump_annotation_detection \
+-markup_project Hwy_5k_20150728_6 \
+-crop_root /startown-gpfs/sputnik03/supersize/labeling_resources/20150731_hwy280_5k_trafficsign/ \
+-dver 9901 -prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_280/xml \
+-prj bay_area_5k_Hwy_280 -rtag bay_area_650_ground_dev_3"
+
+
+*.  Refine project
+
+Name:  20150731_Hwy_280_5k_refine_tagger
+Priority: 0
+Groups: FlightOps, QA, QA-Ninja
+
+Project Name: Flyover project, NOT markup project
+Detector version: 9901
+Continue Until: 2
+
+Refine attribute: sub_type
+Type: us_road_sign (legacy)
+Sub types: unclassified (us_road_sign)
+Sub type choices:  Everything up to misc (not including unclassified)
+
+
+In order to make any new roadsign icons visible to refine project viewer,
+we must first login to some distrib node (e.g. ssh_launchpad --> ssh
+cn0099) and then chant something like
+
+cd /startown-gpfs/sputnik03/supersize/labeling_resources/icons/traffic_signs/highway
+
+sudo -u fdistrib cp *.jpg
+/startown-gpfs/sputnik03/supersize/labeling_resources/icons/pr_refine_road_signs/us_road_sign
+
+
+
+*.  On 10/1/15, we rectified imagery within 53 resources for the Hwy 650
+project.  But we added some new logic near the start of rig_rectify() which
+ignores rigs whose speeds were less than 45 mph.  So this should bias the
+rectified imagery to images which were shot on highways rather than city streets.
+
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/ 
+
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 16:10 20150616_151502-H44-imdata/  IMAGERY OK; HIGHWAY 85
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 16:26 20150615_141901-H44-imdata/   IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:04 20150615_142014-H43-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:07 m131317-a11-20150424_163259-h43-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:09 m131317-a14-20150423_194711-h47-imdata/   BLURRY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:11 m131317-a02-20150423_194711-h47-imdata/   BLURRY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:14 bay_area-o6-20141027_172408-q8-imdata/  OK IMAGERY; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:15 bay_area-p6-20141027_172408-q8-imdata/	 BLURRY 
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:19 m132317-a18-20150509_154013-h69-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:27 bay_area-v15-20141221_162634-h10-imdata/  IMAGERY OK; HIGHWAY
+
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:29 bay_area-u14-20141221_162634-h10-imdata/  OK IMAGERY; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:30 bay_area-u14-20141227_180900-h10-imdata/  OK IMAGERY; HWY 101
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:34 bay_area-t10-20150306_160912-q15-imdata/  BLURRY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:39 bay_area-o11-20150410_162428-h83-imdata/  OK IMAGERY; HWY & SOME CITY STREETS
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:39 bay_area-m10-20150409_162034-h44-imdata/ SLIGHTLY BLURRY; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:42 bay_area-l9-20150123_203731-q7-imdata/ NIGHTTIME 
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:45 m131316-a79-20150409_164659-h42-imdata/ IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:49 bay_area-i8-20150108_162120-q7-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:49 bay_area-j9-20150108_162120-q7-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:51 bay_area-j8-20150108_162120-q7-imdata/  IMAGERY OK; HIGHWAY
+
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:52 m130316-a84-20150417_165419-h35-imdata/  IMAGERY OK; OAKLAND BRIDGE
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:55 m131316-a44-20150417_165419-h35-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:55 m131316-a15-20150417_165419-h35-imdata/ IMAGERY OK; HWY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:56 bay_area-k12-20150223_214853-q11-imdata/ IMAGERY OK; HWY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 17:59 m132317-a19-20150515_155934-h35-imdata/ IMAGERY OK; HWY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:01 bay_area-x14-20150125_160020-h10-imdata/ IMAGERY OK; HWY 85
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:01 m132317-a29-20150509_204219-h69-imdata/  BLURRY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:02 bay_area-t14-20150312_153039-q16-imdata/   IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:11 m132318-a51-20150524_154527-h69-imdata/ IMAGERY OK; HWY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:22 bay_area-r8-20141024_153250-q9-imdata/ IMAGERY OK; HWY
+
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:23 bay_area-s7-20141022_152814-q7-imdata/  IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:25 bay_area-q7-20141024_153114-q11-imdata/ IMAGERY OK; CITY STREETS
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:25 bay_area-i6-20150103_162840-h10-imdata/ IMAGERY OK; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:32 bay_area-i8-20150107_162954-q7-imdata/ IMAGERY OK; HWY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:33 bay_area-i8-20150103_162115-q6-imdata/ IMAGERY OK; CITY STREETS
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:34 bay_area-g6-20150104_171047-q6-imdata/ SLIGHTLY BLURRY; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:36 bay_area-t13-20141104_153015-q9-imdata/ SLIGHTLY BLURRY; CITY STREETS
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:38 bay_area-u13-20141228_153926-q7-imdata/ BLURRY; HIGHWAY
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 18:40 bay_area-r7-20141024_153250-q9-imdata/ IMAGERY OK; HWY
+
+drwxrwxr-x 1 fdistrib     apple_ga    128K Oct  1 18:41 20150602_152905-H44-imdata/  BLURRY; HIGHWAY; contains rotated images and rectified images
+
+drwxrwxr-x 1 fdistrib     geo-flyover 128K Oct  1 19:19 20150429_150102-H44-imdata/ IMAGERY OK; CITY STREETS

@@ -1,0 +1,35 @@
+#include "ColorSpaceUtils.cgh"
+#include "GridUtils.cgh"
+
+const float3 g_f3PaddingXYZ = float3( 1, 1, 1 );
+
+void sliceGridAndRotateColors( uniform samplerRECT inputSampler,
+							  uniform samplerRECT gridSampler,
+							  
+							  uniform float3 rcpSigma,
+							  uniform float3 gridSize,
+							  
+							  float2 xy : WPOS,
+							  
+							  out float4 colorOut : COLOR )
+{
+	float4 inputRGBA = texRECT( inputSampler, xy );
+	float luminance = rgba2Luminance( inputRGBA );
+		
+	float3 xyzIn = float3( floor( xy ), luminance );
+	float3 gridXYZ = gridDownsampleFloat( xyzIn, rcpSigma, g_f3PaddingXYZ );
+	float gridValue = texTiledLinear( gridSampler, gridSize, gridXYZ );
+		
+	// alternative: lerp results
+	if( gridValue > 0 )
+	{
+		colorOut = lerp( inputRGBA, inputRGBA.bgra, gridValue );
+	}
+	else
+	{
+		colorOut = inputRGBA;
+	}
+
+	// works
+	// colorOut = ( gridValue > 0 ) ? inputRGBA.bgra : inputRGBA;
+}

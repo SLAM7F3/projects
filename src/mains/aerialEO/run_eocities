@@ -1,0 +1,9 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/aerialEO
+/home/cho/programs/c++/svn/projects/src/mains/aerialEO/eocities \
+--region_filename ./packages/Lowell.pkg \
+--surface_texture ./packages/Lowell_ROI_chip.pkg \
+--initial_mode Manipulate_Fused_Data_Mode 
+
+
+# --region_filename ./packages/Milwaukee.pkg \
+# --surface_texture ./packages/Milwaukee_ROI_chip.pkg \

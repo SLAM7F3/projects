@@ -1,0 +1,8 @@
+/bin/rm ./fit_ifsar_model
+/bin/rm ./fit_ladar_model
+/bin/rm ./register
+/bin/rm ./satdrape
+/bin/rm ./spase_imageplanes
+/bin/rm ./spase_model
+/bin/rm ./spase_rgba2array
+/bin/rm ./table

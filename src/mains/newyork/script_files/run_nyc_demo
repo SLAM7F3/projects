@@ -1,0 +1,15 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/newyork
+/home/cho/programs/c++/svn/projects/src/mains/OSG/testcities \
+--region_filename ./packages/nyc_rtv_EO_isds3D.pkg \
+--region_filename ./packages/empire.pkg \
+--region_filename ./packages/rockefeller_east_crop.pkg \
+--region_filename ./packages/empire4_crop.pkg \
+--region_filename ./packages/night_empire.pkg \
+--region_filename ./packages/piers1.pkg \
+--region_filename ./packages/piers2.pkg \
+--region_filename ./packages/piers3.pkg \
+--region_filename ./packages/piers4.pkg \
+--region_filename ./packages/empire_cars.pkg \
+--GIS_layer ./packages/nyc_landmarks.pkg \
+--ActiveMQ_hostname tcp://155.34.125.216:61616 \
+--initial_mode Manipulate_Fused_Data_Mode 

@@ -1,0 +1,192 @@
+UTM zone = 51 S
+
+
+gdal_translate kim_square_cropped.png kim_square_cropped.tif \
+-gcp 646 255 7.3825400950e+05 4.3226785029e+06 \
+-gcp 674 359 7.3826468859e+05 4.3226382645e+06 \
+-gcp 940 436 7.3836915961e+05 4.3226098393e+06 \
+-gcp 840 783 7.3832965852e+05 4.3224907643e+06 \
+-gcp 571 705 7.3822473061e+05 4.3225159262e+06 \
+-gcp 1033 532 7.3840650520e+05 4.3225752199e+06 \
+-gcp 1277 839 7.3850473678e+05 4.3224728103e+06 \
+-gcp 968 752 7.3838060290e+05 4.3225006530e+06 \
+-gcp 411 394 7.3816324530e+05 4.3226252343e+06 \
+-gcp 501 425 7.3819766769e+05 4.3226139278e+06 \
+-gcp 458 575 7.3818121567e+05 4.3225602663e+06 \
+-gcp 360 550 7.3814399624e+05 4.3225689008e+06 \
+-gcp 1454 906 7.3857710190e+05 4.3224522535e+06 \
+-gcp 1310 868 7.3851816039e+05 4.3224639562e+06 \
+-gcp 1545 745 7.3861460805e+05 4.3225030085e+06 \
+-gcp 1517 843 7.3860302923e+05 4.3224715189e+06 \
+-gcp 277 377 7.3811230654e+05 4.3226315376e+06 \
+-gcp 243 478 7.3809974075e+05 4.3225944401e+06 \
+-gcp 569 750 7.3822385100e+05 4.3225011464e+06 \
+-gcp 836 827 7.3832815939e+05 4.3224767231e+06 \
+-gcp 1254 873 7.3849520099e+05 4.3224623958e+06 \
+-gcp 1246 991 7.3849191514e+05 4.3224268102e+06
+
+
+gdalwarp -t_srs '+proj=utm +zone=51 +dataum=WGS84' kim_square_cropped.tif kim_square_UTM.tif 
+
+gdalinfo kim_square_UTM.tif
+
+Size is 1746, 927
+Coordinate System is:
+PROJCS["UTM Zone 51, Northern Hemisphere",
+    GEOGCS["WGS 84",
+        DATUM["unknown",
+            SPHEROID["WGS84",6378137,298.257223563]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",123],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (738008.459741598344408,4322782.521168042905629)
+Pixel Size = (0.385541699032427,-0.385541699032427)
+
+
+Corner Coordinates:
+Upper Left  (  738008.460, 4322782.521) (125d44'57.29"E, 39d 1'18.16"N)
+Lower Left  (  738008.460, 4322425.124) (125d44'56.84"E, 39d 1' 6.57"N)
+Upper Right (  738681.616, 4322782.521) (125d45'25.25"E, 39d 1'17.49"N)
+Lower Right (  738681.616, 4322425.124) (125d45'24.80"E, 39d 1' 5.91"N)
+Center      (  738345.038, 4322603.823) (125d45'11.05"E, 39d 1'12.03"N)
+
+
+==========================================================
+
+kim_square_cropped_2.png
+
+upper left corner:
+
+   738042 	4322749
+
+lower left corner:
+
+   738066       4322421
+
+lower right corner:
+
+   738621  	4322459
+
+upper right corner:
+
+   738590	4322797
+
+
+width=1440
+height=883
+
+gdal_translate kim_square_cropped_2.png kim_square_cropped_2.tif \
+-gcp 0    0   738038.5 4322749 \
+-gcp 0    883 738062.5 4322421 \
+-gcp 1440 883 738617.5 4322459 \
+-gcp 1440 0   738586.5 4322797
+
+gdalwarp -t_srs EPSG:4326 kim_square_cropped_2.tif kim_square_lonlat_2.tif 
+
+
+
+LOST-ubuntu:NK% gdalinfo kim_square_lonlat_2.tif
+Driver: GTiff/GeoTIFF
+Files: kim_square_lonlat_2.tif
+Size is 1510, 981
+Coordinate System is:
+GEOGCS["WGS 84",
+    DATUM["WGS_1984",
+        SPHEROID["WGS 84",6378137,298.2572235630016,
+            AUTHORITY["EPSG","7030"]],
+        AUTHORITY["EPSG","6326"]],
+    PRIMEM["Greenwich",0],
+    UNIT["degree",0.0174532925199433],
+    AUTHORITY["EPSG","4326"]]
+Origin = (738040.250000000000000,4322794.500000000000000)
+Pixel Size = (0.383363518387215,-0.383363518387215)
+Metadata:
+  AREA_OR_POINT=Area
+Image Structure Metadata:
+  INTERLEAVE=PIXEL
+Corner Coordinates:
+Upper Left  (  738040.250, 4322794.500) (738040d15'4294967296.00"E,4322794d30'17179869184.00"N)
+Lower Left  (  738040.250, 4322418.420) (738040d15'4294967296.00"E,4322418d25'17179869197.40"N)
+Upper Right (  738619.129, 4322794.500) (738619d 7'4294967340.09"E,4322794d30'17179869184.00"N)
+Lower Right (  738619.129, 4322418.420) (738619d 7'4294967340.09"E,4322418d25'17179869197.40"N)
+Center      (  738329.689, 4322606.460) (738329d41'4294967318.04"E,4322606d27'17179869220.70"N)
+
+
+
+
+************************************
+
+
+
+
+
+
+
+
+gdal_translate kim_square_cropped_2.png kim_square_cropped_2.tif \
+-gcp 592 257 7.3825441141e+05 4.3226818608e+06 \
+-gcp 620 376 7.3826407753e+05 4.3226385475e+06 \
+-gcp 920 463 7.3836821664e+05 4.3226084733e+06 \
+-gcp 809 854 7.3832959721e+05 4.3224910636e+06 \
+-gcp 501 766 7.3822336810e+05 4.3225148458e+06 \
+-gcp 1025 571 7.3840522113e+05 4.3225732152e+06 \
+-gcp 1301 917 7.3850373047e+05 4.3224749598e+06 \
+-gcp 956 820 7.3838101679e+05 4.3225001026e+06 \
+-gcp 322 414 7.3816287092e+05 4.3226250929e+06 \
+-gcp 426 448 7.3819788047e+05 4.3226135444e+06 \
+-gcp 375 618 7.3818058987e+05 4.3225584651e+06 \
+-gcp 269 589 7.3814505541e+05 4.3225673856e+06 \
+-gcp 1500 993 7.3857602739e+05 4.3224565317e+06 \
+-gcp 1339 949 7.3851756245e+05 4.3224671517e+06 \
+-gcp 1604 811 7.3861411113e+05 4.3225025616e+06 \
+-gcp 1572 922 7.3860228866e+05 4.3224737574e+06 \
+-gcp 172 396 7.3811250003e+05 4.3226314639e+06 \
+-gcp 135 510 7.3810035828e+05 4.3225927345e+06 \
+-gcp 502 817 7.3822365506e+05 4.3225009599e+06 \
+-gcp 804 903 7.3832787786e+05 4.3224786525e+06 \
+-gcp 1276 954 7.3849497319e+05 4.3224660301e+06
+
+
+
+gdalwarp -t_srs '+proj=utm +zone=51 +dataum=WGS84' kim_square_cropped_2.tif kim_square_UTM_2.tif 
+
+497736-MITLL:NK% gdalinfo kim_square_UTM_2.tif 
+
+Files: kim_square_UTM_2.tif
+Size is 1446, 875
+Coordinate System is:
+PROJCS["UTM Zone 51, Northern Hemisphere",
+    GEOGCS["WGS 84",
+        DATUM["unknown",
+            SPHEROID["WGS84",6378137,298.257223563]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",123],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (738055.604643234517425,4322784.991612989455462)
+Pixel Size = (0.344815977532301,-0.344815977532301)
+Metadata:
+  AREA_OR_POINT=Area
+Image Structure Metadata:
+  INTERLEAVE=PIXEL
+Corner Coordinates:
+Upper Left  (  738055.605, 4322784.992) (125d44'59.25"E, 39d 1'18.19"N)
+Lower Left  (  738055.605, 4322483.278) (125d44'58.87"E, 39d 1' 8.41"N)
+Upper Right (  738554.209, 4322784.992) (125d45'19.96"E, 39d 1'17.70"N)
+Lower Right (  738554.209, 4322483.278) (125d45'19.58"E, 39d 1' 7.92"N)
+Center      (  738304.907, 4322634.135) (125d45' 9.42"E, 39d 1'13.06"N)
+
+

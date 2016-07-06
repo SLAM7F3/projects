@@ -1,0 +1,11 @@
+/bin/rm ./color_nodes_by_classes
+/bin/rm ./extract_OGDF_layout
+/bin/rm ./generate_mcl_scripts
+/bin/rm ./generate_singleton_clusters
+/bin/rm ./graphjson
+/bin/rm ./kmeans_clusters
+/bin/rm ./mcl_clusters
+/bin/rm ./mcl_hierarchy
+/bin/rm ./OGDF_layout
+/bin/rm ./plot_layout
+/bin/rm ./select_nodes

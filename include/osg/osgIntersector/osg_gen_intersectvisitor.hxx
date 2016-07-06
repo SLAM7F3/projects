@@ -1,0 +1,1 @@
+../../../src/osg/osgIntersector/osg_gen_intersectvisitor.hxx

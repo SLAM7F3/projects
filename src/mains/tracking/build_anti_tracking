@@ -1,0 +1,3 @@
+/bin/rm ./abc
+/bin/rm ./truth_velocities
+/bin/rm ./vibe

@@ -1,0 +1,322 @@
+<ui version="4.0" >
+ <author></author>
+ <comment></comment>
+ <exportmacro></exportmacro>
+ <class>FindDialog</class>
+ <widget class="QDialog" name="FindDialog" >
+  <property name="objectName" >
+   <string notr="true" >FindDialog</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>774</width>
+    <height>553</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Find</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="objectName" >
+    <string notr="true" />
+   </property>
+   <property name="margin" >
+    <number>9</number>
+   </property>
+   <property name="spacing" >
+    <number>6</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="TextLabel2" >
+       <property name="objectName" >
+        <string notr="true" >TextLabel2</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>1</y>
+         <width>131</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>File Name Pattern:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="filePattern" >
+       <property name="objectName" >
+        <string notr="true" >filePattern</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>138</x>
+         <y>1</y>
+         <width>617</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="TextLabel3" >
+       <property name="objectName" >
+        <string notr="true" >TextLabel3</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>1</y>
+         <width>182</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Root Directory for Search:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="rootDir" >
+       <property name="objectName" >
+        <string notr="true" >rootDir</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>189</x>
+         <y>3</y>
+         <width>540</width>
+         <height>23</height>
+        </rect>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="editButton" >
+       <property name="objectName" >
+        <string notr="true" >editButton</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>735</x>
+         <y>1</y>
+         <width>20</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="maximumSize" >
+        <size>
+         <width>20</width>
+         <height>32767</height>
+        </size>
+       </property>
+       <property name="text" >
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="TextLabel1" >
+       <property name="objectName" >
+        <string notr="true" >TextLabel1</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>1</y>
+         <width>58</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Results:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="objectName" >
+        <string notr="true" />
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>65</x>
+         <y>1</y>
+         <width>690</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType" >
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>385</width>
+         <height>5</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="results" >
+     <property name="objectName" >
+      <string notr="true" >results</string>
+     </property>
+     <property name="geometry" >
+      <rect>
+       <x>9</x>
+       <y>100</y>
+       <width>756</width>
+       <height>390</height>
+      </rect>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" >
+     <property name="objectName" >
+      <string notr="true" />
+     </property>
+     <property name="margin" >
+      <number>1</number>
+     </property>
+     <property name="spacing" >
+      <number>6</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="goButton" >
+       <property name="objectName" >
+        <string notr="true" >goButton</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>1</x>
+         <y>9</y>
+         <width>77</width>
+         <height>29</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Go</string>
+       </property>
+       <property name="default" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="abortButton" >
+       <property name="objectName" >
+        <string notr="true" >abortButton</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>84</x>
+         <y>10</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Abort</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="objectName" >
+        <string notr="true" />
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>165</x>
+         <y>1</y>
+         <width>509</width>
+         <height>46</height>
+        </rect>
+       </property>
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType" >
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" >
+        <size>
+         <width>368</width>
+         <height>46</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="quitButton" >
+       <property name="objectName" >
+        <string notr="true" >quitButton</string>
+       </property>
+       <property name="geometry" >
+        <rect>
+         <x>680</x>
+         <y>10</y>
+         <width>75</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text" >
+        <string>Quit</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <pixmapfunction></pixmapfunction>
+ <resources/>
+ <connections/>
+</ui>

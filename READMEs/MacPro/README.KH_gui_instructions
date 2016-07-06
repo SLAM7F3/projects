@@ -1,0 +1,60 @@
+==================================================================
+Instructions for "spot-checking" house number/roadsign results
+generated from very large Kitty Hawk production data sets
+==================================================================
+Last updated on 10/22/15
+==================================================================
+
+A specialized gui has been written which can be used to "spot-check"
+machine detection results stored within mongo collections.  It does not
+load any projects, rigs, cameras or images.  It also performs mongo queries
+only when a user indicates some geolocation of interest via a mouse click.
+House number labels or road sign icons are then displayed within a 10
+square kilometer region around the mouse click location.  Adopting this
+incremental approach to machine detection display is necessary when the
+number of mongo detections becomes very large (i.e. > 10**5).
+
+
+In order to "spot-verify" house number results, use a pwin command similar
+to 
+
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.2/latest -vv \
+-do "production_gui production_map_gui_cmd  -dver 21156 \
+-run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml "
+
+
+In order to "spot-verify" roadsign results, use a pwin command similar to
+
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_KH_v1.0.2/latest -vv \
+-do "production_gui production_map_gui_cmd  \
+-run_id /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu_micro_bay_area_650_ground_dev_3_150929_233204.xml" 
+
+
+Some general gui manipulation and information:
+
+   Translate map by moving mouse while holding down left mouse button.
+
+   Zoom map by holding down "control" button on keyboard while spinning mouse wheel.
+
+   Cyan box is calculated when gui first starts.  It shows the approximate 
+   region which contains house number and/or roadsign results.
+
+   Mouse click on some geolocation of interest.  Then press "l" on keyboard
+   to load house number or roadsign results from Mongo.  Loading mongo
+   results may take many seconds.
+
+   Double click on an individual house number label or roadsign icon in
+   order to select it.  Then press "w" on keyboard in order to pop open
+   an image chip near the upper left corner of the pwin window which
+   corresponds to the detected house number or road sign.  Hopefully,
+   the image chip will in fact coincide with the information automatically
+   detected by the machine.  Delete the image chip by pressing the right 
+   mouse button.
+
+
+
+   
+   
+

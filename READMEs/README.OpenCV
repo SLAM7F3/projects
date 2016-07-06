@@ -1,0 +1,104 @@
+========================================================================
+OpenCV installation notes
+========================================================================
+Last updated on 1/12/16; 1/13/16; 1/20/16; 2/14/16
+========================================================================
+
+Create ./build subdir within original OpenCV directory.  From within this
+build subdir, chant
+
+cmake -D BUILD_EXAMPLES=ON -D CMAKE_BUILD_TYPE=RELEASE \
+-D CMAKE_INSTALL_PREFIX=/usr/local/OpenCV_latest \
+-D BUILD_PYTHON_SUPPORT=ON -D BUILD_NEW_PYTHON_SUPPORT=ON \
+-D WITH_1394=OFF \
+-D WITH_IPP=ON -D WITH_TBB=ON -D WITH_V4L=OFF \
+-D INSTALL_PYTHON_EXAMPLES=ON \
+-D BUILD_TIFF=ON \
+-D WITH_FFMPEG=OFF \
+-D WITH_CUDA=OFF \
+-D CMAKE_C_COMPILER=/usr/bin/gcc \
+-D CMAKE_CXX_COMPILER=/usr/bin/g++ ../
+
+In order to build a minimal version of OpenCV-2.4.10 on Thinkmate for
+compatability with Tho's custom version of Caffe, we used the following
+cmake command:
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+-D CMAKE_INSTALL_PREFIX=/usr/local/OpenCV-2.4.10 \
+-D BUILD_PYTHON_SUPPORT=ON -D BUILD_NEW_PYTHON_SUPPORT=ON \
+-D WITH_1394=OFF \
+-D WITH_IPP=ON -D WITH_TBB=ON -D WITH_V4L=OFF \
+-D BUILD_TIFF=ON \
+-D WITH_FFMPEG=OFF \
+-D WITH_CUDA=OFF \
+-D CMAKE_C_COMPILER=/usr/bin/gcc \
+-D CMAKE_CXX_COMPILER=/usr/bin/g++ ../
+
+We also had to manually edge rgbdodometry.cpp as follows:
+
+#  include </usr/local/include/eigen3/unsupported/Eigen/MatrixFunctions>
+// #  include <unsupported/Eigen/MatrixFunctions>
+#  include <Eigen/Dense>
+#endif
+
+[ Note added on 1/12/16: Under OpenCV 3.1.0, it looks like
+BUILD_PYTHON_SUPPORT variable may no longer need to specified on the cmake
+command line.]
+
+[  Note added on 1/13/16:  Don't need to perform following hack if we add
+WITH_FFMPEG=OFF in CMAKE command
+
+Then edit cvconfig.h and comment out all FFMPEG #define statements. ]
+
+Next chant "make -j" to build OpenCV distribution.
+
+After the distribution builds, chant "sudo make -j install".
+
+In /usr/local/include, make following soft links
+
+	sudo ln -s ../OpenCV/include/opencv .
+
+	sudo ln -s ../OpenCV/include/opencv2 .
+
+	sudo ln -s ./opencv ./OpenCV
+
+*.  Under OpenCV 3.0.0, it looks like the following libraries no longer
+exist:
+
+libopencv_contrib
+libopencv_legacy
+libopencv_nonfree
+
+*.  On 1/13/16, we spent many hours trying to get OpenCV's python module to
+install.  We never got this to work.  But after lots of googling, we found
+
+a.  /usr/local/anaconda/bin/conda = CONDA
+
+b.  Within /usr/local/anaconda/bin/, chant
+
+	sudo ./conda install opencv
+
+
+*.  On 2/14/16, we found the following instructions on how to install
+opencv packages for anaconda python at URL
+http://stackoverflow.com/questions/23119413/how-to-install-python-opencv-through-conda:
+
+
+This worked for me (on Ubuntu and conda 3.18.3):
+
+   conda install --channel https://conda.anaconda.org/menpo opencv3
+
+The command above was what was shown to me when I ran the following:
+
+   anaconda show menpo/opencv3
+
+This was the output:
+
+To install this package with conda run:
+     conda install --channel https://conda.anaconda.org/menpo opencv3
+
+I tested the following in python without errors:
+
+>>> import cv2
+>>>
+

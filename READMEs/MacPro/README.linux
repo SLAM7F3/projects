@@ -1,0 +1,31 @@
+=============================================================================
+General linux notes
+=============================================================================
+Last updated on 9/30/15; 5/4/16
+=============================================================================
+
+*.  The following rsync commands "pull" large numbers of files from local
+MacPro to GPU box titan 1:
+
+ rsync -avzh pcho@17.228.153.244:/data/peter_stuff/text_in_wild/scripts/Chicago/hn_segmentation/ /data/imagery
+
+ rsync -avzh pcho@17.228.153.244:/data/peter_stuff/road_networks/barriers/scripts/barriers_a/ /data/imagery/barriers
+
+*.  Tollowing rsync command "pulls" large numbers of png files from GPU box
+titan1 to our local MacPro:
+
+ rsync -avzh pcho@17.228.154.84://data/imagery/john_wood/20150924_Hwy_650_ortho/SegmentationClass .
+
+*.  md5sum is a computer program that calculates and verifies 128-bit MD5
+hashes, as described in RFC 1321. The MD5 hash (or checksum) functions as a
+compact digital fingerprint of a file.
+
+For example:
+
+pcho-MacPro:vgg128_large_fov% md5sum ./init.caffemodel 
+1f60cde9169ce600caac8bef6d53eba0  ./init.caffemodel
+
+*.  Use "wget -r" in order to automatically download large numbers of files
+from ftp servers
+
+e.g.   wget -r ftp://ftp2.census.gov/geo/tiger/TIGER2015/ADDRFEAT/

@@ -1,0 +1,7 @@
+~/bin/MAKE program=binary_dictionary
+~/bin/MAKE program=chars2regions
+~/bin/MAKE program=detect_text
+~/bin/MAKE program=ER_param_bounds
+~/bin/MAKE program=eulertest
+~/bin/MAKE program=initial_descriptors
+~/bin/MAKE program=reasonable_chips

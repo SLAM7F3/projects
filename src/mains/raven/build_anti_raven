@@ -1,0 +1,5 @@
+/bin/rm ./estimate_f
+/bin/rm ./fundamental
+/bin/rm ./generate_list
+/bin/rm ./parse_raven_csv
+/bin/rm ./recover_fundamental

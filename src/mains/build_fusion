@@ -1,0 +1,34 @@
+cd ./aerialEO
+build_aerialEO
+cd ../afghanistan
+build_afghanistan
+cd ../OSG
+build_OSG
+cd ../bluegrass
+build_bluegrass
+cd ../bundle
+build_bundle
+cd ../china
+build_china
+cd ../exif
+build_exif
+cd ../fusion
+build_fusion
+cd ../graphs
+build_graphs
+cd ../mapping
+build_mapping
+cd ../mit
+build_mit
+cd ../photosynth
+build_photosynth
+cd ../rasr
+build_rasr
+cd ../sift
+build_sift
+cd ../spase
+build_spase
+cd ../uavs
+build_uavs
+cd ../video
+build_video

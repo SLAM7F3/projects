@@ -1,0 +1,23 @@
+
+image_legend
+   min -1.585
+   max 1.585
+   height 4.0
+   width 0.15
+#    label 'Direction
+   legloc 4.2 1.75
+   reverse_colors
+
+colortable
+# index	red	green 	blue	interpolations  label
+
+0 	180	0	180	20  '0'
+0.3927	0	0	250	20  
+0.7854	0	158	200	20  '45'
+1.1781	0	180	180	20
+1.5708       0	250	0	20  '90'
+1.9635  180	180	0	20
+2.3562	200	158	0	20  '135'
+2.7489	255	0	0	20
+3.1415	180 	0	180	20  '180'
+3.18	255 	255	255	2

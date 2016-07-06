@@ -1,0 +1,7 @@
+/home/cho/programs/c++/svn/projects/src/mains/satellite/TDP/*.osga
+--height_colormap 2 --prob_colormap 1 --prob_cyclic_frac_offset 0.0 
+--independent_var 3
+--min_x_threshold -0.217923966798 --max_x_threshold 0.771887806806
+--min_y_threshold -0.192107210804 --max_y_threshold 0.871000732232
+--min_z_threshold -0.0890841099581 --max_z_threshold 0.752084082659
+--min_p_threshold 0 --max_p_threshold 1

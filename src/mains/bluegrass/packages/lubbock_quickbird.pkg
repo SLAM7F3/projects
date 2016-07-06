@@ -1,0 +1,7 @@
+# /data/Bluegrass/eo/Quickbird/big_tiles/osga_files/tile_7_l8.osga
+/data/Bluegrass/eo/Quickbird/big_tiles/osga_files/*.osga
+--min_z_threshold -0.001 --max_z_threshold 0.001
+# --height_offset 0.01
+--height_offset 3
+# --height_offset 113.15
+--pick_points_on_Zplane_flag true

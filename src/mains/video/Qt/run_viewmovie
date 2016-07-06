@@ -1,0 +1,4 @@
+cd ~/programs/c++/svn/projects/src/mains/video/Qt
+
+./qtviewmovie \
+--GIS_layer ./packages/TOC_metadata.pkg

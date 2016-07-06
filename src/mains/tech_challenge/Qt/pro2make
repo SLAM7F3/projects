@@ -1,0 +1,7 @@
+qmake -o anotserv_makefile anotserv.pro
+qmake -o D7frames_makefile D7frames.pro
+qmake -o dataloader_makefile dataloader.pro
+qmake -o flipframes_makefile flipframes.pro
+qmake -o panopix_makefile panopix.pro
+qmake -o tocserv_makefile tocserv.pro
+

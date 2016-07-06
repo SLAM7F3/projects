@@ -1,0 +1,145 @@
+=========================================================================
+Allie Hoch's MassGIS notes
+=========================================================================
+Last updated on 6/15/10
+=========================================================================
+
+Here are all the steps for getting the MassGIS stuff working:
+
+
+1.  Copy all the MassGIS data onto the machine.
+
+2.  If necessary, change the file /bluetracker/mapFiles/mass30cm.map so
+that each path points to the files that you just copied.
+
+3.  Add the robotMaps database to the machine with the following commands
+
+a.  createdb -U postgres -h localhost robotMaps
+
+b.  For each of the shape files in the robotMaps_shapefiles directory (on
+orange disk) execute the command:
+
+shp2pgsql -D -s 4326 <-W latin1> -c <shapefile> <table> | psql -d robotMaps
+-h localhost -U postgres
+
+The name of the table should be the same as the name of the shapefile
+without the .shp extension. If there is an error try the -W latin1 option.
+
+The owner for all the tables should be postgres.
+
+4.  Edit /usr/share/proj/epsg and /usr/local/share/proj/epsg. Add to the
+bottom of these files the following line:
+
+<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs
+
+5.  Copy from a working machine the /data/fonset.txt file. In this file is
+also a list of paths for fonts - copy the files corresponding to these
+paths too.
+
+6.  The shapefile tile_index.shp that is with the other MassGIS data is
+basically a table referencing .tif files with absolute paths. These paths
+could have changed, so this files should be recreated with the following
+commands:
+
+a.  sudo rm tile_index.*
+
+b.  sudo gdaltindex tile_index.shp /data_second_disk/MassGIS/coq08_30cm_*.tif
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+
+Steps for converting SID to TIF. Original MassGIS data is in SID format:
+
+ 
+1. First download all the MassGIS data from the following zip files:
+
+   a) http://gis/MiscMaps/MassGISColorOrthophoto30cm2008Disk1.zip
+
+   b) http://gis/MiscMaps/MassGISColorOrthophoto30cm2008Disk2.zip
+
+   c) http://gis/MiscMaps/MassGISColorOrthophoto30cm2008Disk3.zip
+
+2. Since the Mass GIS SID files are quite large one SID file cannot be 
+converted into 1 TIF file (there is a limit on the size of GeoTiff files). 
+First run the command “mrsidgeodecode –i <sid file> -o test.tif”. This should
+produce an error because the sid file is too large. But it should also output 
+the width and height of the sid file. Delete test.tif.
+
+3. Using the outputted width and height divide the sid file into a 
+grid – 4 rows and 5 columns worked well a lot of the time. Each cell in the 
+grid will eventually be a new tif file so the cells need to be small enough to 
+be legal tif files. As an example say the sid file is 145000 wide and 60000 
+high. So the cells in the grid could be 29,000 by 15,000.
+
+4. Next execute a series of commands that will create the tif file for each 
+cell. In this case there will be 20 commands. They might look something like 
+this:
+
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_1.tif -ulxy 0 0 -wh 29000 15000
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_2.tif -ulxy 29000 0 -wh 29000 15000
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_3.tif -ulxy 58000 0 -wh 29000 15000
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_4.tif -ulxy 87000 0 -wh 29000 15000
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_5.tif -ulxy 116000 0 -wh 29000 15000 mrsidgeodecode -i coq08_30cm_9.sid -o tile9_6.tif -ulxy  0 15000 -wh 29000 15000
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_7.tif -ulxy 29000 15000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_8.tif -ulxy 58000 15000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_9.tif -ulxy 87000 150000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_10.tif -ulxy 116000 15000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_11.tif -ulxy 0 30000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_12.tif -ulxy 29000 30000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_13.tif -ulxy 58000 30000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_14.tif -ulxy 87000 30000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_15.tif -ulxy 116000 30000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_16.tif -ulxy 0 45000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_17.tif -ulxy 29000 45000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_18.tif -ulxy 58000 45000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_19.tif -ulxy 87000 45000 -wh 29000 15000 
+mrsidgeodecode -i coq08_30cm_9.sid -o tile9_20.tif -ulxy 116000 45000 -wh 29000 15000
+
+The “ulxy” option indicates the coordinates of the upper left hand corner of 
+the cell being processed and the “wh” option indicates the width and height 
+of the cell.
+
+5. I also did further processing in hopes of improving speed. Further 
+explanation of the steps I took here can be found at 
+http://mapserver.org/input/raster.html. First I create “external overviews” 
+which basically create a pyramid of tif files that are viewed at different 
+zoom levels. For example to create a 250m x 250m overview use this command: 
+gdalwarp -rc -tr 250 250 *.tif overview.tif. Where all the tif files in the 
+current directory are all the tif files created in step 4. I created a 
+250m x 250m and a 100m x 100m overview.
+
+6. Next I converted from 24 bit color to 8 bit color. This provided a 
+significant speed improvement but also looks strange if you zoom way in: 
+rgb2pct.py <all tif’s except overview.tif> <new tif name>
+
+7.       Next I created internal overviews which creates a “pyramid” 
+structure inside the tif file: gdaladdo <all the tif files created in 
+step 6> 2 4 8 16 32 64 128 256
+
+8.       Finally I created internal tiling for the tif files: gdal_translate 
+–co TILED=YES <all tif files from step 7> <new tiled tif file name>
+
+All these steps were what I did before trying GeoWebCache.
+
+-------------------------------------------------------------------------
+--------------------------------------------------------------------------
+
+How to add more maps to the map of Massachusetts:
+
+1. Create GeoTiff tiles for the new area using the instructions above and store
+them in /data_second_disk/MassGIS.
+2. Recreate the tile_index.shp (see above for instructions) so that all the 
+tiles (both new and old) are represented.
+3. Make sure that the mass30cm_geowebcache.map file (location dependent on 
+application) has the correct "extent". Near the top of this file there should
+be a line that looks something like "EXTENT <left> <bottom> <right> <top>" 
+Where all these values are in longitude latitude. Make sure the bounding box 
+created by this extent includes the new tiles.
+4. Finally you will need to regenerate the tiles using the web interface at 
+http://locahost:8080/geowebcache/demo. This probably means that you need to 
+first remove all the previously created tiles becuase there are probably blank
+tiles in the spaces where you have added data. You can do this using the 
+interface or by deleting files in 
+/data_second_disk/geowebcache/blobstore/MASSGIS. For the bluetracker all the 
+files will be in folders that start with "EPSG_900913"
+

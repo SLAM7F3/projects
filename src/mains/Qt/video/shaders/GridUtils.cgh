@@ -1,0 +1,92 @@
+#ifndef GRID_UTILS_CGH
+#define GRID_UTILS_CGH
+
+#include "Arithmetic.cgh"
+
+// given a 2d texture coordinate (either full or half integer, it will be floor()-ed
+// returns a 3d grid xyz FULL-INTEGER coordinate
+float3 getGridXYZ( float2 xy, float3 gridSize )
+{
+	float gx;
+	float gz;
+	
+	xy = floor( xy );
+	
+	divide( xy.x, gridSize.x, gz, gx );
+	
+	return float3( gx, xy.y, gz );
+}
+
+// given a 3d grid xyz FULL-INTEGER coordinate
+// returns a 2d texture coordinate HALF-INTEGER
+float2 getTextureXY( float3 gridXYZ, float3 gridSize )
+{
+	return float2( gridXYZ.z * gridSize.x + gridXYZ.x + 0.5, gridXYZ.y + 0.5 );
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+float3 gridDownsampleFloat( float3 xyzIn, float3 rcpSigma, float3 padding )
+{
+	return( xyzIn * rcpSigma + padding );
+}
+
+float3 gridDownsampleRound( float3 xyzIn, float3 rcpSigma, float3 padding )
+{
+	return round( xyzIn * rcpSigma ) + padding;
+}
+
+float4 gridToClip( float3 gridXYZ, float3 gridSize, float4x4 mvp )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	float2 tiledXY = gridXYZ.xy + float2( gridSize.x * gridXYZ.z, 0 ) + halfdxdy;
+	return mul( mvp, float4( tiledXY, 0.5, 1 ) );
+}
+
+// sample tiled grid at exactly gridXYZ
+// inputs are assumed to NOT have the OpenGL 0.5 added
+float4 texTiled( uniform samplerRECT gridSampler,
+				float3 gridSize,
+				float3 xyz )			    
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+
+	float2 tiledXYZ = xyz.xy + float2( gridSize.x * xyz.z, 0 ) + halfdxdy;
+	return texRECT( gridSampler, tiledXYZ );
+}
+
+// sample tiled grid at gridXYZ
+// inputs are assumed to NOT have the OpenGL 0.5 added
+float4 texTiledNearest( uniform samplerRECT gridSampler,
+					   float3 gridSize,
+					   float3 xyz )			    
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+
+	xyz = round( xyz );
+	float2 xy = xyz.xy + float2( gridSize.x * xyz.z, 0 ) + halfdxdy;
+	return texRECT( gridSampler, xy );
+}
+
+// sample tiled grid at gridXYZ
+// inputs are assumed to NOT have the OpenGL 0.5 added
+float4 texTiledLinear( uniform samplerRECT gridSampler,
+					  float3 gridSize,
+					  float3 xyz )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+
+	// compute fraction
+	float3 grid000 = floor( xyz );
+	float alphaZ = frac( xyz.z );
+	
+	float2 xyz0 = xyz.xy + float2( gridSize.x * grid000.z, 0 ) + halfdxdy;
+	float2 xyz1 = xyz0 + float2( gridSize.x, 0 ); // next z is just one tile over
+	
+	float4 valueZ0 = texRECT( gridSampler, xyz0 );
+	float4 valueZ1 = texRECT( gridSampler, xyz1 );
+	
+	return lerp( valueZ0, valueZ1, alphaZ );
+}
+
+#endif // GRID_UTILS_CGH

@@ -1,0 +1,15 @@
+~/bin/MAKE program=chop_words
+~/bin/MAKE program=compute_shape_descriptors
+~/bin/MAKE program=descriptors
+~/bin/MAKE program=dictionary
+~/bin/MAKE program=extract_nontext
+~/bin/MAKE program=generate_extremal_regions
+~/bin/MAKE program=locate_chars
+~/bin/MAKE program=normalize_chars
+~/bin/MAKE program=normalize_words
+~/bin/MAKE program=parse_words
+~/bin/MAKE program=pool_features
+~/bin/MAKE program=svm_shape
+~/bin/MAKE program=svm_stats
+~/bin/MAKE program=svm_text
+~/bin/MAKE program=whiten_descriptors

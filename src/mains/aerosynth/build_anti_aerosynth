@@ -1,0 +1,20 @@
+/bin/rm ./aeroprop
+/bin/rm ./bundler_posns
+/bin/rm ./earthbundler
+/bin/rm ./FLIR_metadata
+/bin/rm ./FLIR_select
+/bin/rm ./generate_list
+/bin/rm ./gpsfit
+/bin/rm ./gpsregister
+/bin/rm ./ladarsynth
+/bin/rm ./LH_metadata
+/bin/rm ./parse_FLIR_metadata
+/bin/rm ./ply2tdp
+/bin/rm ./sailplanebundler
+/bin/rm ./terrain_heights
+/bin/rm ./tourcities
+/bin/rm ./virtualbundler
+/bin/rm ./visualize_FLIR_metadata
+/bin/rm ./warp_pmvs
+
+

@@ -1,0 +1,5 @@
+view_tel \
+--region_filename ./bundler/Korea/korea/packages/photo_0000.pkg \
+--region_filename ./bundler/Korea/korea/packages/photo_0001.pkg \
+--image_list_filename ./bundler/Korea/korea/image_list.dat \
+--initial_mode Manipulate_Fused_Data_Mode

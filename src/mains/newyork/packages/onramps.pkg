@@ -1,0 +1,32 @@
+/media/usbdisk/new_york/eo/NYC_Sep2007/video/onramps.vid
+# /home/cho/programs/c++/svn/projects/src/mains/newyork/onramps.png
+--frustum_sidelength 2000
+# --downrange_distance 25
+--downrange_distance 100
+# --downrange_distance 150
+--projection_matrix
+
+# 3D/2D projecton matrix fit
+
+-4.906383795e-08        -2.097848462e-07        -3.921423695e-09        0.9741749498
+1.205580675e-08 -2.035557444e-08        -2.018948342e-07        0.0847036184
+7.713129078e-08 -5.643977593e-08        -1.362322776e-08        0.2093047162
+
+# ===============================================
+# RMS residual between measured and calculated UV points = 0.006114866056
+# RMS U pixel offset = 3.444916261 out of 1280 = 0.2691340829 %
+# RMS V pixel offset = 2.741596358 out of 720 = 0.380777272 %
+# ===============================================
+
+
+# Normalization factor rho = 10358231.1423
+# fu = -2.05539352973 fv = -2.04078659063
+# u0 = 0.870068057485 v0 = 0.518139480309
+# theta = 90.3938758615 degs
+# Camera world X = 584340.506799
+# Camera world Y = 4507021.72316
+# Camera world Z = 26.2436673978
+# Camera azimuth = 143.805706037 degs
+# Camera elevation = 8.11222936267 degs
+# Camera roll = 2.70783451411 degs
+

@@ -1,0 +1,10 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/east_crop.jpg
+--frustum_color blue
+--frustum_sidelength 1000
+# --frustum_sidelength 2500
+# --downrange_distance 75
+--downrange_distance 150
+--projection_matrix
+-5.726131778e-08 -1.974473955e-07   -2.038836352e-08        0.9245489739
+7.321570253e-08  -6.545595819e-08    1.691684794e-07        0.2524062141
+8.301827439e-08  -7.404787578e-08   -2.436505116e-08        0.2854825702

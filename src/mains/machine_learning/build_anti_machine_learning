@@ -1,0 +1,7 @@
+/bin/rm ./fanntest
+/bin/rm ./fanntrain
+/bin/rm ./generate_tsne_input
+/bin/rm ./generate_tsne_output
+/bin/rm ./parse_mnist
+/bin/rm ./tsne_2_output
+

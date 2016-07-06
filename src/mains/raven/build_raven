@@ -1,0 +1,5 @@
+~/bin/MAKE program=estimate_f
+~/bin/MAKE program=fundamental
+~/bin/MAKE program=generate_list
+~/bin/MAKE program=parse_raven_csv
+~/bin/MAKE program=recover_fundamental

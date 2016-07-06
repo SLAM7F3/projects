@@ -1,0 +1,10 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/afghanistan
+/home/cho/programs/c++/svn/projects/src/mains/afghanistan/los \
+--region_filename ./packages/afghanistan.pkg \
+--GIS_layer ./packages/world_GIS.pkg \
+--initial_mode Manipulate_Fused_Data_Mode 
+
+
+# --region_filename ./packages/test_afghanistan.pkg \
+# --surface_texture ./packages/skymap.pkg \
+--region_filename ./packages/fused_afghanistan.pkg \

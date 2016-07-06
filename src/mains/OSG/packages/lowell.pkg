@@ -1,0 +1,5 @@
+lowell.osga
+# lowell.tdp 
+# --initial_mode Manipulate_Annotation_Mode
+--height_colormap 2 --prob_colormap 2 --height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0001 --max_threshold_frac 0.9999

@@ -1,0 +1,286 @@
+===========================================================================
+GIS notes
+===========================================================================
+Last updated on 4/18/16; 4/27/16; 5/5/16; 6/1/16
+===========================================================================
+
+*.  TIGER Products at https://www.census.gov/geo/maps-data/data/tiger.html
+
+TIGER = Topologically Integrated Geographic Encoding and Referencing
+
+TIGER products are spatial extracts from the Census Bureau's MAF/TIGER
+database, containing features such as roads, railroads, rivers, as well as
+legal and statistical geographic areas. The Census Bureau offers several
+file types and an online mapping application. 
+
+*.  Listing of MAF/TIGER FEature class code definitions:
+
+	https://www.census.gov/geo/reference/mtfcc.html
+
+	http://www.scribekey.com/AttributeDomains/FEATNAMES.MTFCC.html
+
+*.  Chant "ogrinfo -al esri.shp" in order to see metadata about all
+features within an ESRI shapefile.
+
+e.g. ogrinfo -al tl_2015_06067_addrfeat.shp -->
+
+Layer name: tl_2015_06067_addrfeat
+Geometry: Line String
+Feature Count: 60604
+Extent: (-121.786400, 38.029787) - (-121.027246, 38.736402)
+Layer SRS WKT:
+GEOGCS["GCS_North_American_1983",
+    DATUM["North_American_Datum_1983",
+        SPHEROID["GRS_1980",6378137,298.257222101]],
+    PRIMEM["Greenwich",0],
+    UNIT["Degree",0.017453292519943295]]
+
+OGRFeature(tl_2015_06067_addrfeat):558
+  TLID (Integer) = 133348941
+  TFIDL (Integer) = 262269181
+  TFIDR (Integer) = 219403560
+  ARIDL (String) = 400753662007
+  ARIDR (String) = 400753714332
+  LINEARID (String) = 110873945839
+  FULLNAME (String) = Olson Dr
+  LFROMHN (String) = 10579
+  LTOHN (String) = 10599
+  RFROMHN (String) = 10576
+  RTOHN (String) = 10598
+  ZIPL (String) = 95670
+  ZIPR (String) = 95670
+  EDGE_MTFCC (String) = S1400
+  ROAD_MTFCC (String) = S1400
+  PARITYL (String) = O
+  PARITYR (String) = E
+  PLUS4L (String) = (null)
+  PLUS4R (String) = (null)
+  LFROMTYP (String) = (null)
+  LTOTYP (String) = (null)
+  RFROMTYP (String) = (null)
+  RTOTYP (String) = (null)
+  OFFSETL (String) = N
+  OFFSETR (String) = N
+  LINESTRING (-121.29471 38.592231,-121.294012 38.59258)
+
+
+
+*.  Loading Tiger street network within Quantum gis:
+
+  -  qgis
+
+  -  Layer --> Add Layer --> Add Vector Layer
+
+  -  Import tl_2015_06067_roads.shp
+
+
+*.  On 4/18/16, we downloaded tl_2015_06067_addrfeat.zip from the US Tiger
+website.  It appears to contain house number ranges along street segments.
+
+
+*. FIPS state codes
+
+The following table enumerates the FIPS state alpha and numeric codes for
+the states, the District of Columbia, the outlying areas of the United
+States, the freely associated states, and trust territory, and FIPS state
+numeric codes for the individual minor outlying island territories.
+
+Only actual U.S. states and the District of Columbia had FIPS state numeric
+codes in the range 01 through 56.
+
+FIPS PUB 5-1 (published on June 15, 1970 and superseded by FIPS PUB 5-2 on
+May 28, 1987) stated that certain numeric codes "are reserved for possible
+future use in identifying American Samoa (03), Canal Zone (07), Guam (14),
+Puerto Rico (43), and Virgin Islands (52)", but these codes were omitted
+from FIPS PUB 5-2 without comment. These areas are marked with a * and
+highlighted in red in the table below.[3]
+
+For states, the "Status" column in the table below includes a link to a
+list of the counties (boroughs and census areas in Alaska; parishes in
+Louisiana) for that state including the county codes as defined in FIPS PUB
+6-4. The listings of counties for other areas are set out at the end of
+this article.
+
+Name 	Alpha code 	Numeric code 	Status
+Alabama 	AL 	01 	State; counties
+Alaska 		AK 	02 	State; boroughs
+American Samoa 	AS 	60 	Outlying area under U.S. sovereignty
+American Samoa * 	03 	(FIPS 5-1 reserved code)
+Arizona 	AZ 	04 	State; counties
+Arkansas 	AR 	05 	State; counties
+Baker Island 		81 	Minor outlying island territory
+California 	CA 	06 	State; counties
+Canal Zone * 		07 	(FIPS 5-1 reserved code)
+Colorado 	CO 	08 	State; counties
+Connecticut 	CT 	09 	State; counties
+Delaware 	DE 	10 	State; counties
+District of Columbia 	DC 	11 	Federal district[4]
+Florida 	FL 	12 	State; counties
+Federated States of Micronesia 	FM 	64 	Freely Associated State
+Georgia 	GA 	13 	State; counties
+Guam * 			14 	(FIPS 5-1 reserved code)
+Guam 		GU 	66 	Outlying area under U.S. sovereignty
+Hawaii 		HI 	15 	State; counties
+Howland Island 		84 	Minor outlying island territory
+Idaho 		ID 	16 	State; counties
+Illinois 	IL 	17 	State; counties
+Indiana 	IN 	18 	State; counties
+Iowa 		IA 	19 	State; counties
+Jarvis Island 		86 	Minor outlying island territory
+Johnston Atoll 		67 	Minor outlying island territory
+Kansas 		KS 	20 	State; counties
+Kentucky 	KY 	21 	State; counties
+Kingman Reef 		89 	Minor outlying island territory
+Louisiana 	LA 	22 	State; parishes
+Maine 		ME 	23 	State; counties
+Marshall Islands MH 	68 	Freely Associated State
+Maryland 	MD 	24 	State; counties
+
+Massachusetts 	MA 	25 	State; counties
+
+Michigan 	MI 	26 	State; counties
+Midway Islands 		71 	Minor outlying island territory
+Minnesota 	MN 	27 	State; counties
+Mississippi 	MS 	28 	State; counties
+Missouri 	MO 	29 	State; counties
+Montana 	MT 	30 	State; counties
+Navassa Island 		76 	Minor outlying island territory
+Nebraska 	NE 	31 	State; counties
+Nevada 		NV 	32 	State; counties
+New Hampshire 	NH 	33 	State; counties
+New Jersey 	NJ 	34 	State; counties
+New Mexico 	NM 	35 	State; counties
+New York 	NY 	36 	State; counties
+North Carolina 	NC 	37 	State; counties
+North Dakota 	ND 	38 	State; counties
+Northern Mariana Islands 	MP 	69 	Outlying area under U.S. sovereignty
+Ohio 		OH 	39 	State; counties
+Oklahoma 	OK 	40 	State; counties
+Oregon 		OR 	41 	State; counties
+Palau 		PW 	70 	Freely Associated State
+Palmyra Atoll 		95 	Minor outlying island territory
+Pennsylvania 	PA 	42 	State; counties
+Puerto Rico * 		43 	(FIPS 5-1 reserved code)
+Puerto Rico 	PR 	72 	Outlying area under U.S. sovereignty
+Rhode Island 	RI 	44 	State; counties
+South Carolina 	SC 	45 	State; counties
+South Dakota 	SD 	46 	State; counties
+Tennessee 	TN 	47 	State; counties
+Texas 		TX 	48 	State; counties
+U.S. Minor Outlying Islands 	UM 	74 	Minor outlying island territories (aggregated)
+Utah 		UT 	49 	State; counties
+Vermont 	VT 	50 	State; counties
+Virginia 	VA 	51 	State; counties
+Virgin Islands of the U.S. * 		52 	(FIPS 5-1 reserved code)
+Virgin Islands of the U.S. 	VI 	78 	Outlying area under U.S. sovereignty
+Wake Island 		79 	Minor outlying island territory
+Washington 	WA 	53 	State; counties
+West Virginia 	WV 	54 	State; counties
+Wisconsin 	WI 	55 	State; counties
+Wyoming 	WY 	56 	State; counties
+
+
+
+California County FIPS codes
+
+CA,06,001,Alameda County,H1
+CA,06,003,Alpine County,H1
+CA,06,005,Amador County,H1
+CA,06,007,Butte County,H1
+CA,06,009,Calaveras County,H1
+CA,06,011,Colusa County,H1
+CA,06,013,Contra Costa County,H1
+CA,06,015,Del Norte County,H1
+CA,06,017,El Dorado County,H1
+CA,06,019,Fresno County,H1
+CA,06,021,Glenn County,H1
+CA,06,023,Humboldt County,H1
+CA,06,025,Imperial County,H1
+CA,06,027,Inyo County,H1
+CA,06,029,Kern County,H1
+CA,06,031,Kings County,H1
+CA,06,033,Lake County,H1
+CA,06,035,Lassen County,H1
+CA,06,037,Los Angeles County,H1
+CA,06,039,Madera County,H1
+CA,06,041,Marin County,H1
+CA,06,043,Mariposa County,H1
+CA,06,045,Mendocino County,H1
+CA,06,047,Merced County,H1
+CA,06,049,Modoc County,H1
+CA,06,051,Mono County,H1
+CA,06,053,Monterey County,H1
+CA,06,055,Napa County,H1
+CA,06,057,Nevada County,H1
+CA,06,059,Orange County,H1
+CA,06,061,Placer County,H1
+CA,06,063,Plumas County,H1
+CA,06,065,Riverside County,H1
+
+CA,06,067,Sacramento County,H1
+
+CA,06,069,San Benito County,H1
+CA,06,071,San Bernardino County,H1
+CA,06,073,San Diego County,H1
+CA,06,075,San Francisco County,H6
+CA,06,077,San Joaquin County,H1
+CA,06,079,San Luis Obispo County,H1
+CA,06,081,San Mateo County,H1
+CA,06,083,Santa Barbara County,H1
+CA,06,085,Santa Clara County,H1
+CA,06,087,Santa Cruz County,H1
+CA,06,089,Shasta County,H1
+CA,06,091,Sierra County,H1
+CA,06,093,Siskiyou County,H1
+CA,06,095,Solano County,H1
+CA,06,097,Sonoma County,H1
+CA,06,099,Stanislaus County,H1
+CA,06,101,Sutter County,H1
+CA,06,103,Tehama County,H1
+CA,06,105,Trinity County,H1
+CA,06,107,Tulare County,H1
+CA,06,109,Tuolumne County,H1
+CA,06,111,Ventura County,H1
+CA,06,113,Yolo County,H1
+CA,06,115,Yuba County,H1
+
+
+Massachusetts (25) County FIPS codes
+
+MA County Name 	FIPS Code
+BARNSTABLE 	001
+BERKSHIRE 	003
+BRISTOL 	005
+DUKES 		007
+ESSEX 		009
+FRANKLIN 	011
+HAMPDEN 	013
+HAMPSHIRE 	015
+MIDDLESEX 	017
+NANTUCKET 	019
+NORFOLK 	021
+PLYMOUTH 	023
+SUFFOLK 	025
+WORCESTER 	027
+
+Illinois (17) County FIPS codes
+
+
+Sunnyvale, CA is located in Santa Clara County
+	06085
+
+Boston, MA is located in Suffolk County (doublechecked on 6/17/16)
+        25025
+
+Chicago, IL is located in Cook County
+        17031
+
+El Paso, TX is located in El Paso County
+	48141
+
+*.  Downloaded (using wget -r) all of the ADDRFEAT and ROADS zipfiles for
+the entire US on 5/3/16.  Copied these files into
+/startown-gpfs/ssdws03/devdata/tiger_shapefiles/ on startown cluster and
+into /gpfs/mercury12/tiger_shapefiles/ on PV40 cluster.
+
+

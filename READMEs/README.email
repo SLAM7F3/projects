@@ -1,0 +1,37 @@
+========================================================================
+Notes about e-mail
+========================================================================
+Last updated on 1/10/11
+========================================================================
+
+Copying address books from one machine to another:
+
+-Go to "Tools" > "Address Book" or use the "Ctrl+2" keyboard shortcut to
+access your address book. This will open a separate Thunderbird window. In
+the left-hand pane of the window, there should be two files. One is named
+"Personal Address Book," and the other is called "Collected Addresses."
+Both of these files are important.
+
+-Select one of the files and go to "Tools" > "Export." Give your file a
+name---preferably something easy to remember and quickly identifiable---and
+click "Save." This will save your address book as an LDIF file that can be
+transferred to Thunderbird on your new computer.
+
+-Repeat the previous step with the second address book file, making sure to
+name it something different from the first file.
+
+-Transfer the copied files to the hard drive of your new computer
+
+-Launch Thunderbird and navigate to the profile to which you want to add
+your address book.
+
+-Go to "Tools" > "Address Book," and in the window that appears, go to
+"Tools" > "Import."
+
+-Select "Address Books" as the type of file and hit "Next." Choose "Text
+File" from the list and hit "Next" again.
+
+-Choose "LDIF" from the drop-down menu in the next window, and Thunderbird
+will automatically search your computer for any LDIF files. Select your
+address book files (one at a time) from the list and hit "Open." The
+program will transfer the addresses to your new profile.

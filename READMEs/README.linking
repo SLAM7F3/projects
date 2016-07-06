@@ -1,0 +1,54 @@
+===========================================================================
+Linking notes
+===========================================================================
+Last updated on 12/16/11; 6/5/12; 1/4/14
+===========================================================================
+
+*.  In Dec 2011, Dave Ceddia helped us resolve several annoying linking
+problems.  Along the way, he taught us the following trick for finding
+symbols which are defined within a set of libraries:
+
+bash
+
+/usr/lib$ for i in * ; do echo "--- $i" ; strings $i | grep ATL_cmoveConj ; done | less 
+
+strings libavcodec.a | grep avcodec_decode_video
+
+
+*.  In src/ffmpeg/FFMpegVideo.cc, Dave also noticed that we must not trump
+the extern C include statements within FFMpegVideo.h by incorrectly
+#including ffmpeg/avcodec.h before including FFMpegVideo.h!
+
+
+extern "C" {
+#include <ffmpeg/avcodec.h>
+#include <ffmpeg/avformat.h>
+#include <ffmpeg/swscale.h>
+           }
+
+*.  In June 2012, Dave Ceddia helped us again with compiling our code tree
+under g++ 4.6.3 (OS = Linux MINT 13 ).  He taught us that chanting "strings
+libraryname" will show various symbols contained within the library.  
+
+For example:
+
+490080-MITLL:x86_64-linux-gnu% strings libpng.a | grep png_process_data
+png_process_data
+png_process_data
+
+*.  We ran into bad linking order problems when we tried to build PNGWRITER
+on the new G47 laptop which has Linux MINT 13 installed.  After trial and
+error (and some googling), we learned that the more basic libraries should
+be listed at the END of link commands and not the beginning:
+
+This is the correct ordering in order to build pngtest.cc for PNGWRITER:
+
+g++ -O3 -Wall -Wno-deprecated `freetype-config --cflags`  -I../src/ -I/usr/local/include/ pngtest.cc -o pngtest -L../src -L/usr/local/lib/ -L/usr/lib/x86_64-linux-gnu -lpngwriter -lpng -lz `freetype-config --libs`
+
+*.  We similarly encountered linking order problems for LMFIT.  In
+particular, we need to put -lm at the end of various link commands:
+
+gcc -I./../lib -g -O2 -o .libs/surface1 surface1.o  -lm \
+-L/home/cho/software/lmfit-3.2/lib \
+/home/cho/software/lmfit-3.2/lib/.libs/liblmmin.so -lm
+

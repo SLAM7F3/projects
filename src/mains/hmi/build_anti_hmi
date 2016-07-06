@@ -1,0 +1,20 @@
+/bin/rm ./convert_lla_to_utm
+/bin/rm ./fixpanos
+/bin/rm ./generate_D7_panels
+/bin/rm ./generate_thumbnails
+/bin/rm ./generate_wagonwheels
+/bin/rm ./indoorgstreets
+/bin/rm ./inspoints
+/bin/rm ./rf_dirfinder
+/bin/rm ./us2tdp
+/bin/rm ./UV2EN
+/bin/rm ./viewpanos
+/bin/rm ./viewrf
+/bin/rm ./wagonwheels
+/bin/rm ./wiipoints
+/bin/rm ./wiitets
+/bin/rm ./xgwpanos
+/bin/rm ./xsens
+/bin/rm ./xsenspanos
+
+

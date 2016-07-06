@@ -1,0 +1,3 @@
+~/bin/MAKE program=logic_layer
+~/bin/MAKE program=multiuavs
+~/bin/MAKE program=myspwa

@@ -1,0 +1,41 @@
+/bin/rm ./BoW_image_comparisons
+/bin/rm ./classify_images
+
+/bin/rm ./compute_color_histograms
+/bin/rm ./compare_color_histograms
+
+/bin/rm ./compute_ellipse_histograms
+/bin/rm ./compare_ellipse_histograms
+
+/bin/rm ./compute_gist_histograms
+/bin/rm ./compare_gist_histograms
+
+/bin/rm ./compute_SURF_histograms
+/bin/rm ./compare_SURF_histograms
+
+/bin/rm ./compute_texture_histograms
+/bin/rm ./compare_texture_histograms
+
+/bin/rm ./compress_gist
+/bin/rm ./compress_nongist
+/bin/rm ./compute_segment_histograms
+
+/bin/rm ./earth_mover_distances
+/bin/rm ./generate_BoW_scores
+/bin/rm ./generate_BoW_color_scores
+/bin/rm ./generate_edgelist
+/bin/rm ./generate_match_scores
+/bin/rm ./generate_matching_filenames
+/bin/rm ./generate_nonmatching_filenames
+/bin/rm ./gist_color_graph
+/bin/rm ./gist_recog
+/bin/rm ./labeled_image_montager
+/bin/rm ./near_duplicates
+/bin/rm ./plot_labeled_points
+/bin/rm ./remove_dangling_gist_files
+/bin/rm ./replace_whitespaces_w_underscores
+/bin/rm ./svm_gist
+/bin/rm ./svm_global_descrips
+/bin/rm ./test_image_comparisons
+/bin/rm ./train_image_comparisons
+/bin/rm ./view_imagepair_features

@@ -1,0 +1,52 @@
+============================================================================
+References for AIPR12 paper
+============================================================================
+Last updated on 8/26/12; 8/27/12
+============================================================================
+
+
+1.  D.G. Lowe, "Distinctive image features from scale-invariant keypoints,"
+International Journal of Computer vision (2004), 91-110.
+
+2.  R. Hartley and A. Zisserman, "Multiple view geometry in computer
+vision, 2nd edition," Cambridge University Press (2003).
+
+3.  N. Snavely, "Bundler: Structure from Motion (SfM) for unordered image
+collections," http://phototour.cs.washington.edu/bundler/ .
+
+4.  P. Cho and N. Snavely, "3D exploitation of 2D ground-level and aerial
+imagery", Applied Imagery Pattern Recognition Workshop (2011), 8.
+
+5. N. Snavely, S.M. Seitz and R. Szeliski, "Photo Tourism: Exploring image
+collections in 3D," ACM SIGGRAPH (2006) 835-846.
+
+6.  S. Agarwal, N. Snavely, I. Simon, S.M. Seitz and R. Szeliski, "Building
+Rome in a day," 12th International Conference on Computer Vision (2009),
+72-79.
+
+7.  M. Chimani, C. .Gutwenger, M. Junger, K. Klein, P. Mutzel and
+M. Schulz, "The Open Graph Drawing Framework," 15th International Symposium
+on Graph Drawing (2007).
+
+8.  See FLIR surveillance products website at 
+http://gs.flir.com/surveillance-products/star-safire/star-safire-III/ . 
+
+9.  See flickr photo sharing website at www.flickr.com.
+
+10.  See PBS Newshour website at www.pbs.org/newhour/ . 
+
+
+11.  Z. Kalal, K. Mikolajcyzk and J. Matas, "Face-TLD: Tracking-Learning
+Detection applied to faces," 17th International Conference on Image
+Processing (2010), 3789-3792.
+
+12.  A. Coates, B. Carpenter, C. Case, S. Satheesh, B. Suresh, T. Wang,
+D.J. Wu and A.Y. Ng, "Text detection and character recognition in scene
+images with unsupervised feature learning," International Conference on
+Document Analysis and Recognition (2011), 440-445.
+
+13. L. Neumann and J. Matas, "Real-time scene text localization and
+recognition," Conference on Computer Vision and Pattern Recognition (2012),
+3538-3545.
+
+

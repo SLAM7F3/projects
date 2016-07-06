@@ -1,0 +1,69 @@
+============================================================================
+Procedure for rebuilding Anye's OSG ffmpeg plugin
+============================================================================
+Last updated on 1/9/08; 1/11/08; 1/17/08; 1/21/08
+============================================================================
+
+1. Recompile code within src/ffmpeg using our standard Makefile (e.g. make
+program=viewpoints)
+
+2. Link together .o files within src/ffmpeg along with installed ffmpeg
+libraries into a shared object file:
+
+
+g++ -shared -fPIC -o osgdb_ffmpeg.so *.o \
+-lavformat -lavcodec -lz -lm -ldl -lavutil
+
+
+---------------------------------------------------------------------------
+Comilation & linking commands for building Xine plugin:
+
+
+cc -DCOMPILE_ASSEMBLY -c -o video_out_rgb.o ./video_out_rgb.c
+
+g++  -O2 -W -Wall -fPIC -pipe  \
+-I/home/cho/osg_stuff/OSG_OP_OT-1.2/OpenSceneGraph/include \
+-I/usr/local/include  -c XineImageStream.cc
+
+
+g++  -O2 -W -Wall -fPIC -pipe  \
+-I/home/cho/osg_stuff/OSG_OP_OT-1.2/OpenSceneGraph/include \
+-I/usr/local/include  -c osgdb_xine.cc
+
+
+g++  -O2 -L/usr/X11R6/lib  \
+-L/home/cho/osg_stuff/OSG_OP_OT-1.2/OpenSceneGraph/lib/Linux32 -shared  \
+video_out_rgb.o osgdb_xine.o XineImageStream.o \
+-lstdc++ -losgGA -losgDB -losgUtil -losg -lxine -lz -lnsl -lpthread \
+-lrt -lOpenThreads -o osgdb_xine.so
+
+---------------------------------------------------------------------------
+
+
+3.  As of 11/16/08, we have created a soft link between
+/usr/local/lib/osgPlugins/osgdb_ffmpeg.so and
+~cho/programs/c++/svn/projects/src/ffmpeg/osgdb_ffmpeg.so.  So this next
+step no longer needs to be explicitly performed...
+
+
+
+Copy osgdb_ffmpeg.so into /usr/local/lib/osgPlugins.  From within this
+subdir, chant
+
+
+sudo cp /home/cho/programs/c++/svn/projects/src/ffmpeg/osgdb_ffmpeg.so /usr/local/lib/osgPlugins/
+
+
+
+4. In order to diagnose errors with plugin, turn on OSG_NOTIFY debug
+notices via command such as
+
+  env OSG_NOTIFY_LEVEL=DEBUG osgmovie -e ffmpeg subtiles-h264-4096.mp4
+
+  env OSG_NOTIFY_LEVEL=DEBUG osgmovie -e ffmpeg clip-20.mp4
+
+ env OSG_NOTIFY_LEVEL=DEBUG movieplayer piers38.mp4
+
+ env OSG_NOTIFY_LEVEL=DEBUG movieplayer benchmark.mp4
+
+ env OSG_NOTIFY_LEVEL=DEBUG movieplayer benchmark+1700px.mp4

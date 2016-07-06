@@ -1,0 +1,290 @@
+=============================================================================
+G3D ("Ground 3D") notes
+=============================================================================
+Last updated on 7/3/14; 7/14/14; 8/1/14; 8/5/14; 12/5/14
+=============================================================================
+
+*.  New "G3D" section of C3 wiki contains information about directories and
+their contents
+
+*.  On 6/30/14, Martin Byrod told us that we need to add the following line
+into our local copy of /etc/fstab in order to access Los Angeles van data
+on /cc2-gpfs:
+
+flyover-cnfs.geo.apple.com:/gpfs/sputnik00/storage	/cc2-gpfs/storage	nfs	rw,nosuid,nodev,users,exec,noatime,vers=3,rsize=1048576,wsize=1048576,hard,sec=sys,acl	0	0
+
+
+*.  San Francisco van lidar and photos are contained within project
+20140305_v4_lidar_v2
+
+
+*.  As of early July 2014, color balanced San Francisco images are sitting
+in
+
+/hypersonic2/j125/collection/20140305/capture/none-ground-20140305_190114-poc1/
+unplanned-20140305_XXXXXXX
+
+and also in
+
+/startown-gpfs/sputnik03/supersize/resource/j125/j125-testdrive-20140305_000000-q2/capture/none-ground-20140305_190114-poc1/unplanned-20140305_XXXXXXX
+
+where XXXXX = 190119/ and 202158/
+
+*.  Camera names vs camera orientations for March 2014 San Francisco data collection:
+
+
+    <resource name="20140305_medium">
+      <hint name="hints/bay_area"/>
+      <imdata cathegory="ground" name="imdata/j125/j125-testdrive-20140305_000000-q2_part_medium1/"/>
+    </resource>
+
+
+    Camera 1: Forward right		--> 02-2645D-07060
+    Camera 2: Side left			--> 02-2645D-07046
+    Camera 3: Backward right		--> 02-2645D-07042
+    Camera 4: Backward left		--> 02-2645D-07051
+    Camera 5: Side right		--> 02-2645D-07041
+    Camera 6: Forward left		--> 02-2645D-07044
+
+Note: These camera IDs (e.g. 1 - 6) are NOT the same as those returns by
+Fredrik's find_rig command within the G3D gui.  Instead, 07046 --> 
+rig cam 1, 07042 --> rig cam 2, 07044 -> rig cam 5
+
+*.  June 2014 Los Angeles data collection project information sits in 
+/startown-gpfs/sputnik02/supersize/devtest/g3d/project_LA.xml
+
+*.  Camera names vs camera orientations for June 2014 Los Angeles data collection:
+
+See XML file
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg-imdata/calibration.array
+
+    Camera 1: Forward right		--> 02-2645D-07447
+    Camera 2: Side right		--> 02-2645D-07392
+    Camera 3: Backward right		--> 02-2645D-07456
+    Camera 4: Backward left		--> 02-2645D-07362
+    Camera 5: Side left			--> 02-2645D-07487
+    Camera 6: Forward left		--> 02-2645D-07406
+
+
+
+
+
+*.  Interesting image containing  two "Speed limit 25" signs:
+
+/hypersonic2/j125/collection/20140305/capture/none-ground-20140305_190114-poc1/unplanned-20140305_190119/
+02-2645D-07060/000254-000250-20140305_190328_649-Cam02_2645D_07060.jpg
+
+
+*.  Downtown San Francisco images are sitting in subdirectories of 
+/hypersonic2/j125/collection/20140305/capture/none-ground-20140305_190114-poc1/unplanned-20140305_202158/02-2645D-07046/
+
+*.  Traffic sign/logo detection from within PR GUI:
+
+   -  /home/pcho/sputnik/pwin/build/linux64/pwin -v -cfg /home/pcho/sputnik/pwin/build/stripped.dcfg -nogpfs \
+-do1 "pr gui \
+-prjdb /cc2-gpfs/storage/dev/g3d/project.xml \
+-prj 20140305_v4_lidar_v2  \
+-imstep 25 -dver 100"
+
+   - Press "r" to enable automatic image shrinking + rectification
+
+   - Press "l" to load detector engine 100 which looks for various signs
+(e.g. speed limits, stop signs, business logos, etc)
+
+   - Advance to some gross set of ground images of interest.  Then change
+image step from starting 25 down to 1 via esc-x followed by im_step 1.
+Select some particular image of interest.
+
+   - Press "cntrl-r" to rectify van image so that it looks as if camera had
+a horizontal U axis and a vertical V axis.
+
+   - Press "m" to run engine 100 on current, rectified image.  Detected
+signs are indicated by red bounding boxes.
+
+   - Press "cntrl-t" to unrectify current image back to camera's original
+angular orientation.  Any sign detection bounding boxes are also
+unrectified into purple quadrilaterals.
+
+
+	"image_path" : "/startown-gpfs/sputnik02/supersize/devtest/g3d/imdata/j125/j125-testdrive-20140305_000000-q2//../../../images/j125/j125-testdrive-20140305_000000-q2/capture/none-ground-20140305_190114-poc1//unplanned-20140305_202158/02-2645D-07046/4k/005121-004272-20140305_220454_665-Cam02_2645D_07046.jpg",
+
+*.  XML project file for Mar 5, 2014 data collection conducted in San
+Francisco is sitting in
+
+	/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"
+
+   Listing of imdata subdirectory
+/startown-gpfs/sputnik02/supersize/devtest/g3d/imdata/j125/j125-testdrive-20140305_000000-q2_part_medium1:
+
+bundle_c3_1.02-2645D-07041  exif.02-2645D-07046     imdata.02-2645D-07042
+bundle_c3_1.02-2645D-07042  exif.02-2645D-07051     imdata.02-2645D-07044
+bundle_c3_1.02-2645D-07044  exif.02-2645D-07060     imdata.02-2645D-07046
+bundle_c3_1.02-2645D-07046  expinfo.02-2645D-07041  imdata.02-2645D-07051
+bundle_c3_1.02-2645D-07051  expinfo.02-2645D-07042  imdata.02-2645D-07060
+bundle_c3_1.02-2645D-07060  expinfo.02-2645D-07044  imdata_bak/
+calibration.array           expinfo.02-2645D-07046  imdata_bundle1.v3-zip
+exif.02-2645D-07041         expinfo.02-2645D-07051  imdata_bundle1.xml
+exif.02-2645D-07042         expinfo.02-2645D-07060  imdata_nsq.xml
+exif.02-2645D-07044         imdata.02-2645D-07041
+
+
+*.  XML project file for Jun 11, 2014 data collection conducted in Los
+Angeles (which involves JPG imagery) is sitting in
+
+	/startown-gpfs/sputnik02/supersize/devtest/g3d/project_LA_jpg.xml"
+
+Listing of imdata subdirectory
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg-imdata
+
+calibration.array    exif.02-2645D-07487    imdata.02-2645D-07487
+exif.02-2645D-07362  imdata.02-2645D-07362  imdata_generation_140702_112956.log
+exif.02-2645D-07392  imdata.02-2645D-07392  imdata_nsq.xml
+exif.02-2645D-07406  imdata.02-2645D-07406  imdata_nsq.xml~
+exif.02-2645D-07447  imdata.02-2645D-07447
+exif.02-2645D-07456  imdata.02-2645D-07456
+
+
+*.  Jun 11, 2014 jpg images are sitting in subdirs of 
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/
+
+
+
+*.  G3D GUI notes 
+
+   - Start Viktor's G3D GUI via 
+
+	/home/pcho/sputnik/pwin/build/linux64/pwin -v -do "g3d_gui"
+
+   - No translation within 3D PWIN viewers 
+
+   - Press "s" and then double click on some frustum to select it.  If a
+frustum is selected 3D viewer recenters selected frustum in middle of 3D
+window.
+
+*.  G3D help notes
+
+MODES
+1	Rig 3d mode
+2	Rig image mode
+
+HOTKEYS
+'A'        Animate camera motion on/off
+'a'        Toggle lidar animation on/off
+'c'        Step through different color-modes
+'C'        Step through different ray classification color-modes
+'d'        Dump images to disk
+'H'        Print the value of all parameters and toggles
+'h'        Print this help message.
+'i'        Toggle drawing of image on/off
+'L'        Load lidar points from disk
+'l'        Toggle drawing of lidar point on/off
+'p'        Toggle drawing of PR detections 2d view on/off
+'q'        Quit.
+'r'        Toggle drawing of rigs on/off
+'R'        Toggle drawing of selected rigs on/off
+'s'        Select rigs with in the selection radius
+'w'        Toggle drawing of world on/off
+ctrl-a     Add new camera animation pos
+ctrl-d     Toggle drawing of duplicated PR detections 2D view on/off
+ctrl-l     Load all data for all selected rigs
+ctrl-p     Print all kinds of info
+ctrl-r     Toggle drawing of original rigs on/off
+ctrl-s     Align view with the selected camera
+ctrl-v     Toggle drawing of only valid PR detections 2D view on/off
+
+'S'        (Parameter) Rig selection radius
+
+COMMANDS
+help            Print this help message.
+quit            Quit.
+ds              Screendump.
+dispmode        Change displaymode. (0 - RGB565, 1 - XRGB)
+settings        Print the value of all parameters and toggles
+rctrl           Resets controls so that navigation is relative to current position.
+rzoom           Resets zoom.
+loadl           Load lidar points from disk
+loadi           Load rig images from disk
+load            Load all data for all selected rigs
+colormode       Step through different color-modes
+select          Select rigs with in the selection radius
+aligncam        Align view with the selected camera
+info            Print all kinds of info
+find_rig        Find rig given file name
+isect_int_th    Modify the intensity threshold for lidar isect struct
+ani             Camera animation commands
+pr_valid        Toggle drawing of only valid PR detections 2D view on/off
+pr_dedup        Toggle drawing of duplicated PR detections 2D view on/off
+pr_ray          Toggle drawing of ray from cam to 3D pos view on/off
+pr_label        Toggle drawing of detection labels 
+rayc            Classify lidar rays
+rayc_color      Step through different ray classification color-modes
+
+PARAMETERS
+srad            (Parameter) Rig selection radius
+rig             (Parameter) Set the selected rig
+cam             (Parameter) Set the selected cam
+l_time          (Parameter) Time around rig for drawing lidar in 2d image
+w_level         (Parameter) Level for loading worlds
+w_radius        (Parameter) Radius around rigs for loading worlds
+pr_dver         (Parameter) If >-1 only show detections from this dver
+objcol          (Parameter) Change Color for objects Format: rrrgggbbb Eg: 255000128
+
+
+*.  On 8/1/14, Andreas told us that in order to intersect rays from ground
+van cameras with a tiled mesh generated from ground ladar data, we first
+need to load the mesh by calling
+
+1.  	prj_tile_io_find_frustum() in prj_tile_io.c
+
+Want the number of tiles to be loaded to be as small as possible in order
+to not be slowed down a lot.  This method returns a list of tile IDs.  Then
+convert tile IDs into "world tiles" by calling
+
+2.  prj_load_status_t prj_tile_io_world_read_list(prj_project_t* prj, prj_tile_id_list_t* tile_ids, char* search_path, m3d_world_list_t* result_worlds, prj_load_behavior_t load_behavior);
+
+In general, the querying frustum (out to some specified range) will
+intersect more than one "world tile".  It's convenient to combine all
+"world tiles" together into a single "world tile" by calling
+
+3.  void m3d_join_worlds(m3d_world_t *dst_world, m3d_world_t *src_world) in m3d_join.c
+
+Once world tiles are merged, instantiate an m3d_occl structure by calling 
+
+4.   m3d_occl_t *m3d_occl_create(m3d_world_t *occl_tile) in m3d_occl.c
+
+Finally, perform raytracing of frustum rays into mesh triangles by calling 
+
+5.  int m3d_occl_line(m3d_occl_t *occl, g_pos3_t *pos1, g_pos3_t *pos2,
+g_pos3_t *ipos) in m3d_occl.c
+
+
+*.  In order to visualize backtraced rays in 3D, chant
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pr g3d_gui -prjdb /startown-gpfs/sputnik03/supersize/devdata/flarsson/chicago_mini.xml -prj chicago_kitty_hawk" -vv
+
+- Press "g" to enable google-earth style terrain manipulation
+
+- Press "s" to select some set of rigs
+
+- Press "cntrl-h" to load in detections for tile in which selected rigs
+reside
+
+- Press "cntrl-l" to load in all ladar and images within some radius of a
+particular selected set of rigs
+
+- Press "l" to toggle on ladar data
+
+- Press "esc-x  pr_ray" to toggle on drawing of backtraced 3D camera rays
+
+- After pressing "2" to see selected image, can press "l" to toggle ladar
+on/off
+
+- Press "esc-x cam" to activate camera variable.  Can then press "+" or "-"
+on number pad in order to toggle through cameras within the currently
+selected rig.
+
+- Press "esc-x rig" to activate rig variable.  Then press "+" or "-" on
+number pad in order to move through rigs near currently selected rig.
+
+

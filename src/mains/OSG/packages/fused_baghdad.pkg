@@ -1,0 +1,13 @@
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad36_lfit.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad37_lfit.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad38_lfit.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad39_cropped.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad46_lfit.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad47_lfit.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/lfit/baghdad48_cropped.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/fused_sat_EO/tile*.c2*.osga
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/osga_files/fused_sat_EO/tile*.c3*.osga
+--height_colormap 10 --prob_colormap 6 --height_cyclic_frac_offset 0.100 
+--min_z_threshold 30  --max_z_threshold 80
+--min_threshold_frac 0.001 --max_threshold_frac 0.999
+--height_offset 25

@@ -1,0 +1,54 @@
+/media/LACIE/Bluegrass/ladar/osga_files/height/*.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_110_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_350_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_300_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_400_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_500_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_600_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_700_filled.osga
+# /media/LACIE/Bluegrass/ladar/osga_files/height/tile_800_filled.osga
+# --initial_mode Manipulate_Annotation_Mode
+--height_colormap 10
+--prob_colormap 2 --height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0001 --max_threshold_frac 0.9999
+--bbox_top_left_corner -101.9681 33.52877 5000
+--bbox_top_left_corner -102.0251 33.52878 5000
+--bbox_top_left_corner -102.0202 33.48624 5000
+--bbox_top_left_corner -101.9884 33.60254 5000
+--bbox_top_left_corner -101.9262 33.6383  5000
+--bbox_top_left_corner -101.9079 33.52082 5000
+--bbox_top_left_corner -101.8624 33.53658 5000
+--bbox_top_left_corner -101.7309 33.55607 5000
+--bbox_top_left_corner -101.6719 33.46075 5000
+--bbox_top_left_corner -101.9565 33.56516 5000
+--bbox_top_left_corner -101.9014 33.56502 5000
+--bbox_top_left_corner -101.9104 33.61111 5000
+--bbox_top_left_corner -101.8436 33.67719 5000
+--bbox_bottom_right_corner -101.9108 33.48148 0
+--bbox_bottom_right_corner -101.9678 33.48147 0
+--bbox_bottom_right_corner -101.963  33.43893 0
+--bbox_bottom_right_corner -101.9311 33.55525 0
+--bbox_bottom_right_corner -101.8689 33.59103 0
+--bbox_bottom_right_corner -101.8507 33.47356 0
+--bbox_bottom_right_corner -101.8053 33.48934 0
+--bbox_bottom_right_corner -101.6738 33.50889 0
+--bbox_bottom_right_corner -101.6149 33.41359 0
+--bbox_bottom_right_corner -101.8993 33.51788 0
+--bbox_bottom_right_corner -101.8442 33.51776 0
+--bbox_bottom_right_corner -101.8532 33.56386 0
+--bbox_bottom_right_corner -101.7863 33.62996 0
+--bbox_color white --bbox_label Activity_Region_1 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_2 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_3 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_4 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_5 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_6 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_7 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_8 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_9 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_10 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_11 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_12 --bbox_label_color red
+--bbox_color white --bbox_label Activity_Region_0 --bbox_label_color red
+
+

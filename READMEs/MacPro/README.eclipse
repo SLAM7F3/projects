@@ -1,0 +1,163 @@
+==========================================================================
+Eclipse editing & debugging notes
+==========================================================================
+Last updated on 5/18/15; 12/1/15; 12/3/15; 7/5/16
+==========================================================================
+
+*.  Lowest window in eclipse display actually can toggle through multiple
+views (e.g. CDT Global build console, CDT build console [pwin], etc.).  
+Click on little "TV" icon in order to see and select which view to display
+within lowest eclipse window.
+
+*.  In order to rebuild project after making some change, click 
+Project -> Build All.
+
+*.  In order to see the values for variables, debugger must be paused.  
+Then hover mouse over variable of interest.
+
+*.  In order to add a new debug "script" into eclipse, click Run -> Debug
+Configurations
+
+  -  Add name for new debug "script" within Name menu on right of "Debug
+configurations" window.
+
+  - Make sure to include "build/linux64/pwin" within C/C++ Application
+field under Main tab
+ 
+
+*.  Double click on some existing Debug configuration in order to begin
+eclipse execution 
+
+*.  Press "F-lock" button located near upper left of keyboard in order to 
+enable "function" keys.  Useful for "F3" key.
+
+	F5 key : step into a method
+	F6 key : step after a break point has been encountered
+	F7 key : finish executing current method and then stop execution
+
+*.  cntrl-shift r : search for a file  (e.g. use this command to force 
+    middle eclipse window to display contents from a file such as "map_cam.h")
+
+    cntrl-shift t: search for a methods, structs, defines, and other
+		   C-stuff (but not general strings)
+		   Must have some file already opened before cntrl-shift t
+		   appears to work
+
+*.  click on flashlight button in order to perform general text string
+search.  
+
+  - Choose "file search" submenu and then limit file name patterns to 
+    *.c, *.h, *.cc and *.cpp . 
+
+*.  To rebuild top-level pwin index, goto project explorer (folder icon
+near top left of eclipse window), move to top level directory, right click,
+look for index and then press "rebuild"
+
+*.  In order to search within local file, press "Cntrl-f"
+
+*.  On 8/4/14, Rahul showed us that we can hunt for a priori unknown
+methods if we at least have a reasonable guess for which pwin "namespace"
+they may exist within.  For example, to look for a function which links rig
+IDs to image filenames that may exist within the "prj" namespace, click on
+"Search -> C/C++" submenu tab.  Then within "Search string" box, type
+something like "prj*image*" and press "Search" button at lower left.  
+
+Eclipse will respond with a list of occurrences of 'prj*image*' in
+workspace.  Manually look for files within pwin/prj/ .  In this case, 5
+files (prj_image_io.c,h, prj_project.c,.h and prj.xml.c) were found by
+Eclipse which match our input query.  If we visually inspect the contents
+of the .h files, we find the following method in prj_project.h:
+
+
+int prj_get_image_filename(prj_project_t *project, map_rig_t *rig, int
+camno, char* filename);
+
+
+*.  On 8/13/14, Viktor taught us that we can change build parameters by
+clicking Project-> Properties-> C/C++ Build -> Behavior .  The current
+build parameters are displayed within the "Build" field in the "Properties
+for pwin" window:
+
+	e.g.		pwin OPT=0 -j -s DNN=1
+			pwin OPT=0 -j -s OPENCV=1
+
+On 12/1/15, John Wood told us to supply the following compiler flags within
+the Project-> Properties -> C/C++ Build -> Builder Settings tab:  
+
+	Build command: make pwin OPT=0 DEBUG=1 RDN=1 DNN=1 WITH_GPU=1 -j 
+	Build command: make pwin OPT=0 DEBUG=1 -j 
+
+*.  In order to find the calling hierarchy for a method (e.g. which methods
+call some method of interest), enter "cntrl-shift-t followed by name of
+method).  Then right click on the method of interest and select open call
+hierarchy to see which methods call it.  
+
+Can also see methods which the current method calls by clicking on buttons
+that look like 
+
+   -o		o-
+o-|		  |-o
+   -o		o-
+
+appearing to the right of "Call Hierarchy" tab in bottom window display.
+
+*.  On 8/14/14, Sam Friedman taught us that we should NOT use \ to indicate
+line continuations within the arguments window.  Instead, Sam said that he
+just lets eclipse break lines where it wants and adds white spaces as
+necessary.  We empirically found that the debugger mode fails if \
+characters are present in the arguments while the run mode executes OK.
+
+*.  Sam also recommended turning off automatic stop at main entry point by
+unchecking the "Stop on startup at: main" box under Run -> Debug configurations -> Debugger 
+tab
+
+*.  In order to force eclipse to rescan entire sputnik file tree and
+rebuild its file index, click on project explorer button (located on
+extreme LHS when eclipse is running in Debug mode as opposed to C/C++ mode)
+-> right click on pwin -> index -> rebuild.
+
+*.  May need to kill some debug processes before attempting to rerun a new
+debug session.  Alternatively, may need to deliberately select which debug
+process to rerun.  Can in principle debug more than one program under
+eclipse.  But this case is fairly rare and probably should be avoided for
+simplicity's sake.
+
+*.  All break points can be seen within Debug mode under Breakpoints tab.
+
+Note: Tabs appear in upper right of eclipse window as 
+Out, Vari, BRE, Reg Mod, Deb, Sea.  
+
+Right click on a break point -> Remove in order to permanently get rid of a
+breakpoint.
+
+Can also globally purge all break points within the Breakpoints tab
+
+*.  Abhishek Sharma showed us on 8/19/14 that we can get eclipse to suggest
+automatic completions to any string if we press "cntrl-spacebar".
+
+e.g. Type bson_append and then press "cntrl-spacebar" when this string is
+highlighted.  Eclipse will response with a window showing multiple possible
+completions.  For example, bson_append_bool(), bson_append_bson(),
+bson_append_code(), etc
+
+*.  When eclipse stops at some error, it will in general exhibit multiple
+threads within the "debug" window located on the upper RHS.  Be sure to
+search for one or more threads which have explicit errors messages
+associated with them (e.g. Suspended:Signal:SIGSEGV:Segmentation fault)
+
+
+*.  In order to alter the default make arguments
+
+make pwin OPT=0 -j
+
+
+right-click on pwin entry within Project Explorer window located on far
+RHS.  Then selected Properties at the bottom of the first menu.  Click on
+C/C++ Build entry in next menu on RHS.  We should then see a "Build
+command" field near the center of the C/C++ Build window.  Can add
+arguments such as "RDN=1" to the make command in this field.
+
+*.  In order to see the stack trace which exists at a break point, 
+make sure viewer is in "Debug perspective" by pressing "Debug" tab located
+near top RHS.  Then press little "bug" button located on extreme LHS in
+order to see stack trace view appear in upper left sub-window.

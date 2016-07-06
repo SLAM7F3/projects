@@ -1,0 +1,305 @@
+=============================================================================
+Last updated on 3/23/08
+=============================================================================
+Updated by Delsey Sherrill on 12 March 2008
+=============================================================================
+
+
+
+------------------------------
+Notes on testing & development
+------------------------------
+
+The response format for all services (query, update, track, and graph) is as follows:
+
+<response>
+	<success>true</success>
+	<message>SOME HELPFUL HUMAN READABLE MESSAGE</message>
+	<content>
+		ACTUAL CONTENT THAT WAS REQUESTED
+	</content>
+</response>
+
+
+- Client applications should check 'success' in the response prior to processing the response contents.  If success is false, then the message field will indicate what went wrong.
+
+- GET and POST requests are supported for all services.  POST is recommended if the request is long (e.g. if you're querying on a very large geometry) because GET has a hard limit on character length and will truncate accordingly without warning.  Also POST is convenient if you're designing a web form to submit the request.
+
+- Test GET requests by copying them to the URL field in your web browser
+
+- Test POST requests using the Firefox add-on "UrlParams" https://addons.mozilla.org/en-US/firefox/addon/1290 (this is also a very handy utility for testing GET requests)
+
+
+
+--------------------
+SAM dataset examples
+--------------------
+
+Note:  to get results in JSON format instead of XML, append '&format=json' to any of the requests below.
+
+Also, make sure the dataserver is pointing to the SAM database with the following request:
+
+http://dsherrill:8080/SKSDataServer/admin?command=openConnection&adapter.type=jdbc&database.url=jdbc:postgresql://dsherrill:5433/sam_test&database.username=postgres&database.password=postgrespass
+
+(if you chop off the query string, i.e. everything from ? to the end, then it will show the current database connection without changing it)
+
+See "SAM_sample_geometries.jpg" for a map of the test entities.
+"SAM_sample_data.sql" contains the original test data set. 
+
+
+
+RETRIEVING DATA:
+
+
+View all the types of objects created so far and all their properties:
+
+http://dsherrill:8080/SKSDataServer/query?type=sam,country,zone.green,zone.red,uav&attrib=*/*
+
+
+Get just the sam objects and some of their properties:
+
+http://dsherrill:8080/SKSDataServer/query?type=sam&attrib=sam/system,sam/ioc.year,sam/site
+
+
+Get the sam objects sited in North Korea:
+
+http://dsherrill:8080/SKSDataServer/query?type=sam&attrib=sam/system,sam/ioc.year,sam/site&filter=sam/site@'SRID=4326;POLYGON((4 5,5 4,5 2,4 2,4 5))'
+
+
+Get the sam objects owned by North Korea (the stuff in curly brackets is a special syntax to represent attributes that are inherited through a relationship):
+
+http://dsherrill:8080/SKSDataServer/query?type=sam&attrib=sam/{country|country:owns(this)}/name,*/system,*/range.max.km,*/ioc.year&filter=sam/{country|country:owns(this)}/name='North Korea'
+
+
+Get the sams with max range greater than 40:
+
+http://dsherrill:8080/SKSDataServer/query?type=sam&attrib=sam/system,sam/range.max.km&filter=sam/range.max.km::int>40
+
+
+Get active zones intersecting a polygon that are still active on <ISO Date> (the @ symbol is a shorthand for 'intersects'):
+
+http://dsherrill:8080/SKSDataServer/query?type=zone.green,zone.red&attrib=*/active&filter=*/active@'SRID=4326;POLYGON((2 1,4 1,4 3,2 3,2 1))',*/active@'2008-02-10T22:45:00.000+0000'
+
+
+If testing the previous request by typing the URL directly into your browser, be sure to replace + with %2B or it will cause a date parsing error:
+
+http://dsherrill:8080/SKSDataServer/query?type=zone.green,zone.red&attrib=*/active&filter=*/active@'SRID=4326;POLYGON((2 1,4 1,4 3,2 3,2 1))',*/active@'2008-02-10T22:45:00.000%2B0000'
+
+
+
+RETRIEVING TRACKS:
+
+
+Get all tracks for uav entities:  (should return all 6 track points)
+
+http://dsherrill:8080/SKSDataServer/track?mode=all&type=uav&labelfield=model
+
+
+Get uav tracks intersecting bounding box:  (should return all 6 track points)
+
+http://dsherrill:8080/SKSDataServer/track?mode=all&type=uav&bbox=1,1,4,4
+
+
+Get uav tracks intersecting Russia:  (should return all 6 track points)
+
+http://dsherrill:8080/SKSDataServer/track?mode=all&type=uav&ewkt=SRID=4326;POLYGON((2 1,1 2,1 4,3 4,3 1,2 1))
+
+
+Get uav tracks intersecting Russia during unix time interval 1200017000 to 1200017800:  (should return 3 points, one of which is outside Russia)
+
+http://dsherrill:8080/SKSDataServer/track?mode=all&type=uav&ewkt=SRID=4326;POLYGON((2 1,1 2,1 4,3 4,3 1,2 1))&t0=1200017100&t1=1200017700
+
+
+Get uav tracks intersecting Russia after time 1200017500:  (should return no points)
+
+http://dsherrill:8080/SKSDataServer/track?mode=all&type=uav&ewkt=SRID=4326;POLYGON((2 1,1 2,1 4,3 4,3 1,2 1))&t0=1200017500
+
+
+
+ENTERING NEW DATA:
+
+
+Make 3 new entities of type 'sam':
+
+http://dsherrill:8080/SKSDataServer/update?mode=newEntity&type=sam&count=3
+
+
+Add an attribute to one of the sams:
+
+http://dsherrill:8080/SKSDataServer/update?mode=newAttribute&id=e9beb868-aa1e-46c9-8d09-342432d885c7&name=system&value=SA-2
+
+
+Add a missing speed entry for the FT-2000 SAM type: (name = speed.max.mps,
+value = -1):
+
+
+http://localhost:8080/SKSDataServer/update?mode=newAttribute&id=9213df42-fc83-4a43-93e5-f14db653b4a6&name=speed.max.mps&value=-1
+
+Add the relationship 'Russia owns sam SA-4':
+
+http://dsherrill:8080/SKSDataServer/update?mode=newRelation&name=owns&srcId=db562ac2-10e5-4915-97a9-ae0b573569a9&tgtId=6eefc760-4bfe-45b5-aa88-b43adda9df34
+
+
+Make one new entity of type 'zone.red'
+
+http://dsherrill:8080/SKSDataServer/update?mode=newEntity&type=zone.red
+
+
+Add a polygon w/ time range to this entity:
+
+http://dsherrill:8080/SKSDataServer/update?mode=newCoverage&name=active&id=a0ca2b72-1486-47ba-9abf-bf1c166c1a0a&ewkt=SRID=4326;POLYGON((1.5 3.5,2.5 3.5,2.5 2.5,1.5 2.5,1.5 3.5))&startTime=2008-02-15T19:00:00.000-0000&stopTime=2008-03-15T22:00:00-0000
+
+
+Add a new point to a uav entity's flight path:
+
+http://dsherrill:8080/SKSDataServer/update?mode=newObservation&id=29da5126-b73f-4fb2-8773-0a2268842c47&lat=5&lon=1&time=1200019000&name=path
+
+
+
+CREATING GRAPHS: (a.k.a. social networks)
+
+
+Get a mixed graph of sams and the countries who own them:
+
+http://dsherrill:8080/SKSDataServer/graph?nodetype=country,sam&edgetype={(country,sam)|country:owns(sam)}&nodeattrib=country/name,sam/system
+
+
+Get the subgraph of sams owned by Russia:
+
+http://dsherrill:8080/SKSDataServer/graph?nodetype=sam,country&edgetype={(country,sam)|country:owns(sam)}&nodeattrib=country/name,sam/system&nodefilter=country/name='Russia'
+
+
+Get a graph of sams linked by the countries who own them:
+
+http://dsherrill:8080/SKSDataServer/graph?nodetype=sam&edgetype={(sam as s1,sam as s2)|country:owns(s1),country:owns(s2)} as e1&nodeattrib=sam/system&edgeattrib=e1/name
+
+
+
+------------------------------------------
+Detailed description of request parameters
+------------------------------------------
+
+
+QUERY SERVICE
+
+http://dsherrill:8080/SKSDataServer/query OR http://dsherrill:8080/SKSDataServer/getObjects
+
+- types (required) --> one or more types of entities to return
+
+- attribs --> one or more properties (attributes or coverages) to appear in the list of results
+  format : <entityType>/<propertyName>,<entityType2>/<propertyName2>,... 
+  e.g. sam/system, sam/site
+  */* returns all attributes for all types; */system returns system attribute for all types, sam/* returns all attributes for type sam
+
+  Further, properties may be inherited from related entities using a special syntax.  
+  For instance, 'sam/{country|country:owns(this)}/name' indicates that the sam should inherit the attribute 'name' from the country that owns it.
+  
+- ids = 67248603-b384-416b-b52e-e9ceb7426a9d,... --> primary key from the database to specify a 
+  particular entity or list of entities
+
+- filters --> one or more criteria that the returned results must match (implicit "and" for list of criteria)
+  format : <entityType>/<propertyName><OP><literal>,...
+  e.g. sam/system!='SA-2',sam/range.max.km::int>40
+  
+  Supported operators for attributes include the usual comparisons: <, >, <=, >=, =, !=
+  By default, the operands are compared as strings.  For numerical comparisons, cast the left hand 
+  side as one of the following numerical types:  int, double, float (e.g. sam/range.max.km::int>40).  
+  
+  Since coverages include multiple subfields (geometry and time interval), the comparisons behave a bit differently, and there is an additional operator, @, which represents intersection.  If the right hand side is a single-quoted geometry string in EWKT format, then the match will be detected based on a geospatial intersection.  If the RHS is a date-time string (see formats below) then @ represents a temporal intersection, which matches if the RHS falls between the LHS coverage's start and stop times.  Also, for date-time literals, the >, <, etc operators above are supported as temporal comparisons.
+  
+  Supported date-time string formats include: "yyyy-MM-dd'T'HH:mm:ss.SSSZ" (ISO8601, e.g. 1976-11-18T23:45:55.123-0500), "yyyy-mm-dd","yyyy-mm", "yyyy" (if month|day|time|timezone not specified, default is Jan|01|00:00:00|UTC)
+ 
+  For specification of the EWKT geometry format, see http://postgis.refractions.net/docs/ch04.html#id2656781
+
+
+
+TRACK SERVICE
+
+http://dsherrill:8080/SKSDataServer/track OR http://dsherrill:8080/SKSDataServer/getObservations
+
+- mode = all|next|test
+  all  : returns track points for all tracks that intersect spacetime volume
+  next : like all, except returns just the first track point for each track
+  test : returns canned test data (note that this is not a "live" query against the database, and 
+         that all params except format will be ignored)
+  
+- bbox = minx,miny,maxx,maxy (where x is longitude, y is latitude, same as the wms standard)
+
+- t0 = unix time --> start of time interval (seconds since 1-1-1970)
+
+- t1 = unix time --> end of time interval
+
+- t0_open = true|false (default false) --> don't include t0, i.e., (t0,t1  instead of [t0,t1
+
+- t1_open = true|false (default false) --> don't include t1, i.e.,  t0,t1) instead of  t0,t1]
+
+- types = specify one or more entity types using comma-separated list
+
+- labelfield = [various, depending on types] --> a simple way of attaching a human-readable label to each track (shown as the 'label' attribute in the returned data)
+
+- ids = 67248603-b384-416b-b52e-e9ceb7426a9d,... --> primary key from the database to specify a particular entity (corresponds to the id attribute of each track in the result set)
+
+
+
+UPDATE SERVICE
+
+http://dsherrill:8080/SKSDataServer/update
+
+mode = newEntity | newEntities | newAttribute | newObservation | newRelation
+
+newEntity / newEntities (both modes are equivalent)
+- type = type of entity to create (required, can be any string)
+- count = integer indicating how many to create (optional, default 1)
+	Note: the response contains a comma separated list of ids for the newly created entities
+  
+newAttribute (all params required)
+- id = identifier of an existing entity
+- name = name of the attribute
+- value = value of the attribute
+
+newObservation (all params required)
+- id = identifier of an existing entity
+- name = text label for the observation
+- lat = latitude in decimal degrees N
+- lon = longitude in decimal degrees E
+- time = one of the following formats:  
+	"yyyy-MM-dd'T'HH:mm:ss.SSSZ" (ISO8601, e.g. 1976-11-18T23:45:55.123-0500), 
+	"yyyy-MM-dd HH:mm:ss", "yyyy-mm-dd","yyyy-mm", "yyyy", 	or unix time (seconds since 1-1-1970)
+	Note: if month|day|time|timezone not specified, default is Jan|01|00:00:00|UTC
+
+newCoverage (at least one of the following params required: ewkt, startTime, stopTime)
+- id = identifier of an existing entity
+- name = text label for the coverage
+- ewkt = any valid well-known text geometry string 
+- startTime = one of the following formats:  
+	"yyyy-MM-dd'T'HH:mm:ss.SSSZ" (ISO8601, e.g. 1976-11-18T23:45:55.123-0500), 
+	"yyyy-MM-dd HH:mm:ss", "yyyy-mm-dd","yyyy-mm", "yyyy", 	or unix time (seconds since 1-1-1970)
+	Note: if month|day|time|timezone not specified, default is Jan|01|00:00:00|UTC
+- stopTime = same as startTime
+
+
+newRelation (all params required)
+- srcId = identifier of the "source" or "parent" in the relationship
+- tgtId = identifier of the "target" or "child" in the relationship
+- name = text label for the relationship
+
+
+
+GRAPH SERVICE
+
+http://dsherrill:8080/SKSDataServer/query OR http://dsherrill:8080/SKSDataServer/getObjects
+
+- nodetype (required) --> one or more types of entities comprising graph nodes
+
+- edgetype (required) --> direct or indirect linkages between nodes comprising the edges of the graph
+
+  The syntax for specifying direct linkages is similar to that for inherited properties described above, e.g. '{country,sam|country:owns(sam)}'.  It reads like a set notation: "the set of all links between countries and sams such that the country owns the sam"
+
+  The syntax for collapsing indirect linkages into a single edge (such as sams with the same owner) is as follows:
+  '{(sam as s1,sam as s2)|country:owns(s1),country:owns(s2)} as e1'  (where 'e1' is a reference to the edge that can be used to specify its properties to be returned)
+
+- nodeattrib/edgeattrib --> one or more properties to be returned for the nodes/edges (useful for labeling the graph), using the same syntax as the query service 'attribs'
+
+- nodefilter/edgefilter --> one or more criteria that the returned nodes/edges must match, using the same syntax as the query service 'filters'
+
+- rootnodes = 67248603-b384-416b-b52e-e9ceb7426a9d,... --> primary key from the database to specify an entity id or list of entity ids to 'seed' the graph

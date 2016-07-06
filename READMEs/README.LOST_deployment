@@ -1,0 +1,231 @@
+===========================================================================
+Final alterations to make to LOS laptops prior to shipping out of LL
+===========================================================================
+Last updated on 11/25/09; 2/18/10; 1/3/11
+===========================================================================
+
+*.  Disable firebug before deployment
+
+*.  Reset /etc/resolv.conf to empty before deployment
+
+*.  On 9/14/09, Dave Ceddia recommended that we add a few lines at the
+start of /etc/init.d/networking in order to force the laptop to delete any
+existing copy of /etc/resolv.conf at boottime:
+
+.
+.
+.
+
+PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+
+[ -x /sbin/ifup ] || exit 0
+
+rm -f /etc/resolv.conf
+touch /etc/resolv.conf
+
+. 
+.
+.
+
+If the machine is booted up not on any network, then no resolv.conf file
+will be present to potentially stall thin client commands.  If the machine
+is booted up on the LLAN, then /etc/resolv.conf will be regenerated after
+the above deletion command is run.
+
+If/when the laptop ever is deployed to a network with static IPs, we'd need
+to remove the above lines from /etc/init.d/networking.
+
+*.  Change hardwired /home/cho/Desktop/movies_and_screen_shots/ to 
+/home/LOS/Desktop/movies_and_screen_shots in LOSServer.cc !!!
+
+*.  Change permissions on /usr/local/apache-tomcat/webapps/pathplanning and
+/usr/local/apache-tomcat/webapps/pathplanning/movies to all write so that
+los account on laptops can write movie.flv to these directories.
+
+  chmod --recursive a+w /usr/local/apache-tomcat/webapps/pathplanning/movies/
+
+*.  Turn off navigation & bookmarks toolbars in firefox for LOS account.
+
+*.  Purge any movies or screen shots in both the movies_and_screen_shots
+folder as well as the trash can.
+
+*.  On 7/30/09, we experienced a near heart attack when we discovered that
+thin-to-thick client communication on the newly cloned laptop failed for
+the los user account.  On the other hand, QTLOS worked fine for the cho
+user on the laptop.  After lots of help from Delsey, we remembered that
+firefox on the laptops must always believe it's online even when it's
+really offline.  So the Work Offline box must be unchecked!  In order to
+force firefox to keep this box unchecked, chant about:config in the main
+firefox menu.  Then search for toolkit.networkmanager.disable and toggle
+this boolean to true.
+
+QTLOS seems to work fine after for the LOS account user on the laptop after
+we made this critical change.
+
+*.  On 9/18/09, Dave Ceddia created a copy of /usr/local/bin/check-activemq
+in /usr/local/bin/check-postgres on laptop #7.  He then added a line into
+/etc/crontab to run this band-aid when laptop #7 and all future laptops are
+deployed.  As of 9/18/09, Dave commented out the /etc/crontab line for
+running the postgres checking script so that we can continue to try to
+discover the root cause of postgres startup/disk fillup failures.  But
+before we deploy the laptop, we should probably uncomment this line in
+/etc/crontab to be sure postgres will always be running in the background.
+
+*.  In late Sep 2009, we learned the hard and painful way that activemq5.1
+occasionally generates a 45 Gbyte activemq.log file in /var/log.  This is
+the cause of the occasional GDM failure which prohibits us from logging in.
+As a total hack, Dave Ceddia added another line to his
+/usr/local/bin/check-activemq which simply delete /var/log/activemq.log.
+
+*.  Contents of /etc/init.d/activemq as of 9/28/09:
+
+#!/bin/sh
+
+# Script to start and stop ActiveMQ
+
+case "$1" in 
+   start)
+      num=`ps ax | grep apache-activemq | grep -v grep | wc -l`
+      if [ $num -eq 0 ]; then
+        echo "Starting ActiveMQ..."
+        /usr/local/bin/activemq >/var/log/activemq.log 2>&1 &
+      else
+        echo "ActiveMQ is already running."
+      fi
+      ;;
+   stop)
+      echo "Stopping ActiveMQ..."
+      kill `ps ax | grep apache-activemq | grep -v grep | cut -f2 -d' '`
+      ;;
+   *)
+      echo "Usage: $0 {start|stop}"
+      exit 1
+      ;;
+esac
+exit 0
+
+*.  Contents of /usr/local/bin/check-activemq as of 9/28/09:
+
+#!/bin/bash
+
+rm /var/log/activemq.log
+num=`ps ax | grep apache-activemq | grep -v grep | wc -l`
+if [ $num -eq 0 ]; then
+  /etc/init.d/activemq start
+fi
+
+*.  Contents of /usr/local/bin/check-postgres as of 9/28/09:
+
+#!/bin/bash
+
+num=`ps ax | grep postgresql | grep -v grep | wc -l`
+if [ $num -eq 0 ]; then
+  /etc/init.d/postgresql-8.3 start
+fi
+
+
+*.  Contents of /etc/crontab as of 9/28/09:
+
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user	command
+* * * * * root /usr/local/bin/check-activemq
+#* * * * * root /usr/local/bin/check-postgres
+17 *	* * *	root    cd / && run-parts --report /etc/cron.hourly
+25 6	* * *	root	test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6	* * 7	root	test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6	1 * *	root	test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+#
+
+*.  As of Nov 2009, gdal1.4.0 must be installed in order for OGR C calls
+within our thick client to not generate a segmentation fault.  gdal1.6
+is currently not backward compatible with our thick client.
+
+*.  In Nov 2009, we followed Tim Wells' recipe for incorporating additional
+Afghanistan/Pakistan EO satellite imagery onto the G105/G106 laptops:
+
+1.  cd /data/AfghanPak15meter and delete tile_index.*
+
+2.  Chant gdaltindex tile_index.shp /data/AfghanPak15Meter/*.tif . Perform
+this command as tschreiner user so that mapserver has permissions to access
+new EO imagery.
+
+3.  Enter into mapserv database via psql -d mapserv.  Then inside of
+postgres, chant
+
+			drop table afghanpak15meter; 
+
+in order to delete earlier version table.
+
+4.  Insert new table into mapserv database by chanting
+
+shp2pgsql -s 4326 tile_index.shp afghanpak15meter | psql -d mapserv -U
+tschreiner
+
+
+
+===========================================================================
+
+Final cleanup steps before 512 Gbyte LOST 2.0 hard drive deployment:
+
+1.  cd /usr/local/apache-tomcat/webapps/LOST
+
+    svn update  (to get Jennifer's latest thin-client updates)
+
+2.  cd /usr/local/apache-tomcat/webapps/LOST/data
+
+    sudo /bin/rm -r -f ./20*
+
+3.  sudo mv ~los/Desktop/shapefiles/db-derby*.tgz /usr/local/src
+
+4.  Pull out ethernet cord from laptop
+    Then sudo emacs /etc/resolv.conf.  Delete all non-commented lines from
+    /etc/resolv.conf.  But don't delete the file itself.
+
+
+===================
+
+In Dec 2010, Dan Dumanis taught us how to force only the los user account
+from appearing within the login prompt:
+
+1.  Edit /etc/passwd
+
+Initial values for UUIDs:
+
+cho=1000
+sigma=1001
+los = 1002
+bots = 1003
+
+Change these to
+
+cho=999
+sigma=998
+bots=997
+los=1000
+
+e.g. 
+
+los:x:1002:1002:los,,,,:/home/los:/usr/bin/tcsh   -->
+los:x:1000:1000:los,,,,:/home/los:/usr/bin/tcsh   -->
+
+2.  After making these changes to /etc/passwd, need to change ownerships
+for all files within /home/cho , /home/sigma, /home/los and /home/bots as
+well as for these directories themselves:
+
+cd /home
+sudo chown -R cho cho
+sudo chown -R los los
+sudo chown -R sigma sigma
+sudo chown -R bots bots
+
+
+
+

@@ -1,0 +1,14 @@
+# /media/usbdisk/new_york/rtv/osga/height/*.osga 
+/data/new_york/rtv/filled_walls/osga_files/*.osga 
+# --height_colormap 2 # small hue value
+# --height_colormap 3 # large hue value
+# --height_colormap 4 # large hue value sans white
+# --height_colormap 6  # grey scale
+--height_colormap 9 # wrap 2
+--prob_colormap 6 
+# --height_cyclic_frac_offset 0.0 
+# --height_cyclic_frac_offset 0.20
+#  --height_cyclic_frac_offset 0.21
+# --height_cyclic_frac_offset 0.22
+--height_cyclic_frac_offset 0.40
+--min_threshold_frac 0.0 --max_threshold_frac 1.0

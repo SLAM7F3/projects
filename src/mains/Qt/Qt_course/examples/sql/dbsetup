@@ -1,0 +1,53 @@
+#! /bin/sh
+# Script for setting up the example MySQL database.
+
+# Drop database if it exists
+echo y | mysqladmin drop bookstore
+
+# create the database
+mysqladmin create bookstore
+
+# create the tables
+mysql bookstore << EOF
+
+# create the tables
+CREATE TABLE author 
+( 
+   id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   firstname varchar(40) NOT NULL,
+   surname varchar(40) NOT NULL
+);
+
+CREATE TABLE book 
+( 
+  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  title varchar(40),
+  price numeric(10,2),
+  authorid integer,
+  notes varchar(255), 
+  FOREIGN KEY (authorid) REFERENCES author(id)
+);
+
+# Insert some data
+insert into author( id, firstname, surname ) values 
+   ( 1, "Jesper", "Pedersen" ), 
+   ( 2, "Kalle Mathias", "Dalheimer" ),
+   ( 3, "Bjarne", "Stroustrup"), 
+   ( 4, "Scott", "Meyers" );
+
+insert into book( id, title, price, authorid, notes) values
+   ( 1, "Sams Teach Yourself Emacs in 24 Hours", 24.99, 1, "Good book" ),
+   ( 2, "Practical Qt", 45.00, 1, "Learn Amazing Qt Techniques" ),
+   ( 3, "Running Linux", 31.96, 2, "" ),
+   ( 4, "Programming with Qt (1. ed)", 26.36, 2, "" ),
+   ( 5, "Programming with Qt (2. ed)", 39.95, 2, "" ),
+   ( 6, "The C++ Programming Language SE.", 59.95, 3, "Special Edition" ),
+   ( 7, "The C++ Programming Language", 47.66, 3, "" ),
+   ( 8, "The Annotated C++ Reference Manual", 55.95, 3, "" ),
+   ( 9, "The Design and Evolution of C++", 34.95, 3, "" ),
+   ( 10, "Effective C++", 37.95, 4, "" ),
+   ( 11, "More Effective C++", 39.95, 4, "" ),
+   ( 12, "Effective C++ Cd", 29.95, 4, "" ),
+   ( 13, "Effective C++ (50 ways)", 39.95, 4, "" ),
+   ( 14, "Effective STL", 39.99, 4, "" );
+EOF

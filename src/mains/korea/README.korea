@@ -1,0 +1,123 @@
+============================================================================
+Korea missile reconstruction notes
+============================================================================
+Last updated on 9/16/13; 9/18/13; 9/26/13
+============================================================================
+
+ROCKET MODELING PROGRAMS
+
+*.  mains/korea/ORTHOBLDGS imports a 2D building rectangular footprint
+corners manually derived from Google Earth.  It computes the
+lengths of the rectangle's short and long sides.
+
+*.  mains/korea/MODEL_BLDGS reads in easting, northing, altitude
+geocoordinates for "skyline" corners on Korean buildings in UTM zone 51.
+It generates and exports simple polyhedra models for these buildings.
+
+*.  mains/korea/CALIBRATE_CAMERA imports a set of 2D features that lie
+along line segments within an open source ground photo.  It generates and
+exports homogeneous coefficients for each image plane line.
+CALIBRATE_CAMERA next works with pairs of 3D points that lie along the
+corresponding world-space lines.  The relationships between the 2D line
+segments and 3D points are stored within STL vectors.
+
+CALIBRATE_CAMERA takes reasonable initial ranges for 7 camera calibration
+parameters.  It minimizes the sum l^T P X where l = homogeneous 3-vector
+for a line segment, P = 3x4 camera calibration matrix and X = homogeneous
+4-vector for a world-space point.
+
+Best-fit values for the 7 camera calibration parameters are reported by
+this program.
+
+*.  mains/korea/SoR imports camera calibration parameters for some internet
+photo of a Korean rocket.  It further imports manually-selected point along
+the rocket's hull.  Assuming the rocket's symmetry axis lies within a
+constant z-plane, we model the rocket as a surface of revolution.  SoR
+exports a pairs of radius,z coordinates for the rocket's hull.  The r,z
+pairs are hardwired within 3D visualization program ROCKET.
+
+*.  mains/korea/ROCKET is a testing lab for instantiating and manipulating
+surfaces of revolution.  It displays a Google Earth aerial image as a
+background surface texture.  Building models based upon Google Earth
+information are also imported and displayed within the 3D map.  Calibrated
+ground photos can be inserted and displayed as OBSFRUSTA.
+
+*.  mains/korea/RECTIFY_GROUND_PHOTO is a playground for orthorectifying
+photos based upon Google Earth UTM geocoords for observed street
+lines.  We identify 2D lines in a ground photo with their
+counterparts in an overhead Google Earth view.  
+
+We deduce a homography for the particular case of a Korean rocket internet
+photo.  Though the derived homography looks valid, the orthorectified
+internet image does not look especially useful.
+
+-------------
+
+TEL MODELING PROGRAMS
+
+*.  mains/korea/IMAGELINES imports a set of manually selected points along
+lines which are parallel in world-space.  It exports the parallel segment
+information in polyline format which can be visualized via program VIDEO.
+
+*.  mains/korea/VANISHING_POINT imports polylines from text files generated
+by program IMAGELINES.  These polylines are assumed to correspond to
+parallel lines in 3D world-space.  It computes the 2D imageplane
+intersection point of the parallel lines.  VANISHING_POINT then exports a
+new set of polylines which replace the initial input set.  The vanishing
+points may be visualized via program VIDEO.
+
+*.  mains/korea/F_FROM_VANISHING_POINTS follows the discussion in example
+8.28 "Determining the focal length when the other internal parameters are
+known" in Hartley and Zisserman, 2nd edition (pg 228).  Given UV
+coordinates for the vanishing points of two sets of orthogonal parallel 3D
+world-lines, we can simply compute a single camera's focal parameter.
+
+*.  mains/korea/RELATIVE_POSE imports manually selected tiepoint image
+plane coordinates for 2 images.  We also hardwire the images' focal
+parameters derived via program F_FROM_VANISHING_POINTS.  The first camera
+is assumed to have a canonical world position and pose.  The second camera
+is assumed to reside at a conventional unit distance from the first.  But
+we search over two angles phi and theta which describe the second camera's
+position relative to the first.  We also search of the second camera's
+relative az, el and roll compared to the first.  A score function
+consisting of the median distance between closest points of approach for
+corresponding backprojected rays is evaluated to find the best 5-parameter
+solution for the second camera's relative position and pose.
+
+*. mains/korea/WRITEPACKAGES has 7 hardwired camera parameters for each of
+2 internet ground photos derived via program RELATIVE_POSE.  It also
+incorporates globaly rotation parameters needed to align ground camera #1
+with its pose as determined via comparison with Google Earth imagery.
+WRITEPACKAGES exports package files for the two ground cameras.
+
+*.  mains/korea/TRIANGULATE_FEATURES imports a set of manually selected
+tiepoint pairs between 2 internet ground photos.  It also imports 7
+parameters for each ground camera from their package files generated via
+program WRITEPACKAGES.  Tiepoint pairs are backprojected into 3D
+worldspace.  White contours [or red/green rays] are exported to output text
+files which can be visualized via program VIEW_TEL.
+
+*.  mains/korea/ALIGN_CONTOUR_VERTICES imports a set of TEL vertices
+generated via triangulating tiepoint pairs from 2 internet ground photos.
+We initially work in a "TEL" coordinate system defined by n_hat, a_hat and
+z_hat direction vectors.  a_hat points in the TEL's forward direction.
+z_hat points upwards.  n_hat = a_hat x z_hat points away from the TEL along
+its broadside direction.
+
+In this program, We first hardwire sets of 3D TEL vertices which should
+share n, a and/or z coordinates.  3D vertices n,a,z coordinates are
+replaced by median values.  We also allow for manual tweaking of TEL
+contours in the n,a,z coordinate system.  Corrected TEL 3D vertices are
+exported to bundler_IO_subdir/corrected_rel_TEL_vertices.dat Corrected TEL
+contours are also exported as polylines in XYZ world coordinates and
+flipped about the a_hat - z_hat symmetry plane.
+
+*.  mains/korea/VIEW_TEL imports a set of TEL contours generated via
+program ALIGN_CONTOUR_VERTICES.  The TEL contours are represents via OSG
+PolyLines.  TEL tires are instead represented via OSG Cylinders.  We
+hardwire TEL tire locations relative to the TEL's front "star" symbol
+within this program.
+
+VIEW_TEL displays the 3D TEL model on an XY grid.  It also displays the two
+internet ground photos as 3D frusta.  A user can doubleclick on the frusta
+in order to compare the 3D TEL's model projection with the ground photos.

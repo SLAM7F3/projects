@@ -1,0 +1,4 @@
+/bin/rm ./create
+/bin/rm ./landmarks
+/bin/rm ./pqtest
+/bin/rm ./shp2polylines

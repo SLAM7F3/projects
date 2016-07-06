@@ -1,0 +1,10 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/aerialEO/Qt
+/home/cho/programs/c++/svn/projects/src/mains/aerialEO/Qt/qteocities \
+--region_filename ./packages/Lowell.pkg \
+--LogicServer_URL 127.0.0.1:4045 \
+--world_time_step 1.0 \
+--initial_mode Run_Movie_Mode
+
+# --region_filename ./packages/Lowell.pkg \
+# --region_filename ./packages/Milwaukee.pkg \
+

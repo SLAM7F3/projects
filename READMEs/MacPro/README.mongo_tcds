@@ -1,0 +1,708 @@
+===========================================================================================
+Mongo database notes for traffic control devices
+===========================================================================================
+Last updated on 7/8/15; 7/10/15; 7/12/15; 7/13/15
+===========================================================================================
+
+*.  Speed limits
+
+> db.detection.find({"detector_version" : 75563,"project_name" : "mathilda_0502-2018"}).count()
+77
+
+
+*.  Weiyu's stop & yield results from Sunday, July 12 after eliminating 4
+false positives and fixing several normal direction vectors:
+
+41 non-duplicate true positive stop signs around SNOW road model
+
+11 non-duplicate true positive yield signs around SNOW road model
+
+
+> db.detection.find({"detector_version" : 79903,"project_name" : "mathilda_0502-2018"}).count()
+96
+
+> db.detection.find({duplicate: 0, "detector_version" : 79903,"project_name" : "mathilda_0502-2018"}).count()
+77
+
+> db.detection.find({sub_type:"stop", duplicate: 0, "detector_version" : 79903,"project_name" : "mathilda_0502-2018"}).count()
+61
+
+> db.detection.find({sub_type:"yield", duplicate: 0, "detector_version" :
+79903,"project_name" : "mathilda_0502-2018"}).count()
+16  -->   15 
+
+
+ yield duplicate found at E = 586136.637981  N = 4140103.653104 
+
+db.detection.find({"_id":ObjectId("55a34dac0bee851861321bb2")}).toArray()
+
+db.detection.find({"_id":ObjectId("55a34db7ac886a2a4f6fb6a4")}).toArray()
+db.detection.remove({"_id":ObjectId("55a34db7ac886a2a4f6fb6a4")})
+
+
+db.detection.update(
+  {"_id":ObjectId("55a34dac0bee851861321bb2")},
+  {$set: {duplicate:0}}
+)
+
+db.detection.update(
+  {"_id":ObjectId("55a34db7ac886a2a4f6fb6a4")},
+  {$set: {duplicate:1}}
+)
+
+
+Stop signs with flipped normal:
+
+db.detection.find({"_id":ObjectId("55a34df346e2621bfb5d04d5")}).toArray()
+
+db.detection.find({"_id":ObjectId("55a34df346e2621bfb5d04d2")}).toArray()
+
+db.detection.find({"_id":ObjectId("55a34d9f9902bb28514998b3")}).toArray()
+
+db.detection.find({"_id":ObjectId("55a34d9f9902bb28514998b4")}).toArray()
+
+
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:79903}'
+
+*.  Bad stop sign detections
+
+db.detection.find({"_id":ObjectId("5592f4c5ee66d27c8a04b474")}).toArray()
+db.detection.remove({"_id":ObjectId("5592f4c5ee66d27c8a04b474")})
+
+db.detection.update(
+  {"_id":ObjectId("5592f4c5ee66d27c8a04b474")},
+  {$set: {state:3}}
+)
+
+db.detection.find({state:{$exists:true}, "_id":ObjectId("5592f4c5ee66d27c8a04b474")}).toArray()
+
+typeof db.detection.findOne().state
+typeof db.detection.findOne().sub_type
+typeof db.detection.findOne().utm_zone
+typeof db.detection.findOne().image_size
+
+
+
+
+*.  Traffic light direction vectors
+
+
+db.detection.count({"detector_version" : 53250, "project_name" : "mathilda_0502-2018"})
+db.detection.remove({"detector_version" : 53250, "project_name" : "mathilda_0502-2018"})
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018",detector_version:53250}'
+
+mongorestore --db prjdb --collection detection ./
+
+Mongo OID str = 558908eb2eb9b674aa697d33 
+
+db.detection.find({"_id":ObjectId("558908eb2eb9b674aa697d33")}).toArray()
+
+
+
+
+
+		"detector_version" : 53250,
+		"gnd" : {
+			"x" : -2691237.3920254637,
+			"y" : -4301178.725234667,
+			"z" : 3851958.3101688502,
+			"yaw" : 0.9948376619050374,
+			"pitch" : -0.9181387241796107,
+			"roll" : -3.1281923497510236,
+			"w" : 0,
+			"h" : 0
+		},
+		"image_path" : "/startown-gpfs/sputnik04/supersize/copyprocess/resource/m131317/m
+
+
+VERBOSE: sub_type = traffic_light 
+VERBOSE: subimage filename = /startown-gpfs/sputnik03/supersize/labeling_resources/20150622_trafficlight//mathilda_0502-2018/bv_53250/14_4573_7294/blob4_001439-001437-20150502_161546_840-Cam05_1095A_07591_1536_1654_1580_1758_traffic_light_2582.jpg 
+VERBOSE: Direction az = -103.716633 
+VERBOSE: curr_detection.gnd: X = 585499.311446  Y = 4138694.024042  Z = -12.041913 
+VERBOSE: yaw_utm = 193.716633 
+VERBOSE: pitch_utm = 90.000000 
+VERBOSE: roll_utm = 0.000000 
+VERBOSE: ECF: X = -2691237.392022 
+VERBOSE: ECF: Y = -4301178.725228 
+VERBOSE: ECF: Z = 3851958.310178 
+
+VERBOSE: ECF: yaw = -122.034118 
+VERBOSE: ECF: pitch = -37.391069 
+VERBOSE: ECF: roll = 165.696797 
+
+VERBOSE: ECF: yaw = -2.129897 
+VERBOSE: ECF: pitch = -0.652597 
+VERBOSE: ECF: roll = 2.891955 
+
+
+*.  Adding missing stop/yield signs to peripheral road signs:
+
+9 stop/yield signs which had no peripheral roadsign counterparts were added
+via pr_mongo.c calls to the detection collection with detector_version =
+755620 and state = 2.  After making these changes on 7/12/15:
+
+> db.detection.find({"detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+5348
+
+> db.detection.find({state:2, "detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+50
+
+*.  Peripheral road signs
+
+db.detection.count({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_mathilda_0502-2018_150629_180215.xml"})
+5339
+
+
+db.detection.find({"detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+5339
+
+db.detection.find({verification_value:"correct","detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+2685
+
+db.detection.find({verification_value:"incorrect","detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+2529
+
+> db.detection.find({state:3, "detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+93
+
+> db.detection.find({state:2, "detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+41
+
+> db.detection.find({ state:{$exists:true}, "project_name" : "mathilda_0502-2018", "detector_version" : 755620}).count()
+134
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:755620}'
+
+mongorestore --db prjdb --collection detection ./
+
+
+*.  Traffic light detection statistics:
+
+
+db.detection.find({"_id":ObjectId("558908bc0860ad6e11002dd4")}).toArray()
+
+db.detection.update(
+  {"_id":ObjectId("558908bc0860ad6e11002dd4")},
+  {$set: {state:3}}
+)
+
+
+
+n_genuine_detections = 18+13+20+8+17+19+19+12+13+19+11+5+9 + 7 + 2 + 2
+= 169 + 14 +11 = 194 (true positives)
+n_true_traffic_lights = 19+13+22+10+18+21+19+13+14+20+11+8+12 + 8 + 2 + 2
+= 180 + 20 + 12 = 212
+n_false_negatives = 18
+
+Total recall = 194/212 = 92%
+
+db.detection.find({"detector_version" : 53250}).count()
+468
+
+db.detection.find({sub_type:"traffic_light", "detector_version" : 53250}).count()
+468
+
+db.detection.find({state:2, sub_type:"traffic_light", "detector_version" : 53250}).count()
+196
+
+db.detection.find({state:3, "detector_version" : 53250}).count()
+68
+
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:53250}'
+
+
+Machine precision = 194 / (194 + 50) = 80%
+Manually corrected precision = 194 / 194 = 100%
+Machine recall = 194 / (194 + 18) = 92%
+
+677 associations manually established between traffic lights and road lanes
+within XDM model
+
+
+* Stop sign statistics:
+
+db.detection.find({"detector_version" : 79901,"project_name" : "mathilda_0502-2018"}).count()
+82
+
+db.detection.find({sub_type:"stop", "detector_version" : 79901,"project_name" : "mathilda_0502-2018"}).count()
+63
+
+N_non-duplicates = 60
+
+db.detection.find({state:2, sub_type:"stop", "detector_version" : 79901,"project_name" : "mathilda_0502-2018"}).count()
+38
+
+
+
+
+Number of detected true 3D physical instances = 38	(true positives)
+Number of missed true 3D physical instances = 2 + 3 + 1   (false negatives)
+Number of false 3D physical instances = 2 + 1 + 1   (false positives)
+
+Machine precision = TP / (TP + FP) = 38 / (38 + 4) = 90%
+Manually corrected precision = 38/38 = 100%
+Machine recall = TP / (TP + FN) = 38 / (38 + 6) = 86%
+
+
+*  Yield sign statistics:
+
+db.detection.find({sub_type:"yield", "detector_version" : 79901, "project_name" : "mathilda_0502-2018"}).count()
+19
+
+N_non-duplicates = 14
+
+db.detection.find({state:2. sub_type:"yield", "detector_version" : 79901,"project_name" : "mathilda_0502-2018"}).count()
+9
+
+Number of detected true 3D physical instances = 9   (true positives)
+Number missed true 3D physical instances = 2   (false negatives)
+Number of false 3D physical instances = 0   (false positives)
+
+Machine precision = TP / (TP + FP) = 9 / (9 + 0) = 100%
+Machine recall = TP / (TP + FN) = 9 / (9 + 2) = 82%
+
+49 associations manually established between stop/yield signs and road
+lanes within XDM model
+
+
+==================================================
+
+
+
+*.  
+db.detection.update(
+  {detector_version: 53250}, 
+  {$set: {project_name:"mathilda_0502-2018" }},
+  {multi: true}
+)
+
+
+
+Intersection #12:  Moffet - 101 N onramp
+
+db.detection.remove({"_id":ObjectId("55890885925da55db6450e02")})
+db.detection.remove({"_id":ObjectId("55890885925da55db6450e03")})
+
+Mongo OID str = 55890885925da55db6450e02 
+Mongo OID str = 55890885925da55db6450e03 
+
+Intersection #13:  Manilla Dr - Enterprise
+
+558908a72a350c5abc391154 
+558908a72a350c5abc391152 
+558908a72a350c5abc391153 
+558908a72a350c5abc391155 
+558908a72a350c5abc391156 
+558908a72a350c5abc391157 
+
+db.detection.remove({"_id":ObjectId("558908a72a350c5abc391154")})
+db.detection.remove({"_id":ObjectId("558908a72a350c5abc391152")})
+db.detection.remove({"_id":ObjectId("558908a72a350c5abc391153")})
+db.detection.remove({"_id":ObjectId("558908a72a350c5abc391155")})
+db.detection.remove({"_id":ObjectId("558908a72a350c5abc391156")})
+db.detection.remove({"_id":ObjectId("558908a72a350c5abc391157")})
+
+
+mongodump -d prjdb -c detection -q '{"_id" : ObjectId("558908eb2eb9b674aa697d34")}'
+
+
+db.detection.find({"_id":ObjectId("558908eb2eb9b674aa697d34")}).toArray()
+
+db.detection.update(
+   {"_id" : ObjectId("558908eb2eb9b674aa697d34")},
+   {$set: {state:3} }
+)
+
+
+mongorestore --db prjdb --collection detection ./dump_traffic_lights_no_false
+
+
+
+*.  Export manually corrected traffic light DNN detection results:
+
+mongodump -d prjdb -c detection -q '{detector_version:53250}'
+
+
+db.detection.find({"_id":ObjectId("558908805db4e859b647eae2")}).toArray()
+
+ mongo_oid_str = 558908a46679822d3558f932 
+ mongo_oid_str = 5589086ce86eed4723395e32 
+ mongo_oid_str = 558908ae80150b4a5606c062 
+
+
+*.  Retrieve thumbs up/down results for all road signs extracted for
+peripheral roadside objects for S4 project:
+
+mongodump -ssl -h flyover0/10.182.138.60,10.182.138.61,10.182.138.62 -u pwin -p IP9haDYzeZyE -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:755620}'
+
+db.detection.find({"detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+5339
+
+db.detection.find({verification_value:"correct","detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+2685
+
+db.detection.find({verification_value:"incorrect","detector_version" : 755620, "project_name" : "mathilda_0502-2018"}).count()
+2529
+
+
+*.  Manually remove 4 false positive stop sign physical instances from
+detector 79901 mongo collection:
+
+db.detection.find({"_id":ObjectId("5592f535ee66d27da06886e9")}).toArray()
+
+db.detection.find({"_id":ObjectId("5592f4c5ee66d27c8a04b150")}).toArray()
+
+db.detection.find({"_id":ObjectId("5592f4c5ee66d27c8a04b126")}).toArray()
+
+db.detection.find({"_id":ObjectId("5592f535ee66d27da068861a")}).toArray()
+
+
+db.detection.remove({"_id":ObjectId("5592f535ee66d27da06886e9")})
+
+db.detection.remove({"_id":ObjectId("5592f4c5ee66d27c8a04b150")})
+
+db.detection.remove({"_id":ObjectId("5592f4c5ee66d27c8a04b126")})
+
+db.detection.remove({"_id":ObjectId("5592f535ee66d27da068861a")})
+
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:79901}'
+
+
+
+*.  As of 7/1/15, latest stop-yield sign detection results are contained in 
+
+mongorestore --db prjdb --collection detection ./2015
+
+db.detection.remove({"detector_version" : 79901, "project_name" : "mathilda_0502-2018"})
+
+db.detection.count({"detector_version" : 79901, "project_name" : "mathilda_0502-2018"})
+> 86
+
+db.roadsigns_verify.update(
+  {detector_version: 755620}, 
+  {$set: {sub_type:"unclassified" }},
+  {multi: true}
+)
+
+*.  As of 6/30/15, latest, greatest road signs for S4 project are sitting
+on fly3 and our machine:
+
+db.detection.count({"detector_version" : 755620, "project_name" : "mathilda_0502-2018"})
+> 5339
+
+db.detection.count({duplicate: 0, "detector_version" : 755620, "project_name" : "mathilda_0502-2018"})
+> 4609
+
+db.detection.count({sub_type: "stop", "detector_version" : 755620, "project_name" : "mathilda_0502-2018"})
+62
+
+db.detection.count({sub_type: "yield", "detector_version" : 755620, "project_name" : "mathilda_0502-2018"})
+19
+
+
+All the detections have  "type" : "us_road_sign"
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:755620}'
+
+mongorestore --db prjdb --collection roadsigns_verify ./dump_
+
+
+db.detection.count({"detector_version" : 75542, "project_name" : "mathilda_0502-2018"})
+2042
+
+db.detection.count({sub_type:"stop", "detector_version" : 75542, "project_name" : "mathilda_0502-2018"})
+50
+
+db.detection.count({sub_type:"yield", "detector_version" : 75542, "project_name" : "mathilda_0502-2018"})
+8
+
+
+*.  
+
+db.detection.find({"_id":ObjectId("5591ebda8626d103921b14a5")}).toArray()
+
+
+db.detection.find({"_id":ObjectId("558908bc0860ad6e11002dd2")}).toArray()
+
+db.detection.update(
+   {"_id" : ObjectId("5591ebda8626d103921b14a5")},
+   {$set: {duplicate:1} }
+)
+
+
+
+*.  mongodump --db prjdb --collection detection --query '{"detector_version" : 53250}' -out /startown-gpfs/ssdws03/devdata/weiyu_zhang/mongo_dump/20150623_traffic_light
+
+mongorestore --db prjdb --collection detection ./dump_
+
+*.  Traffic light detections on fly3 and local databases as of 6/23/15:
+
+db.detection.find({detector_version:53250}).count() 
+460
+
+
+*.  Roadsign detections on fly3 and local databases as of 6/16/15, 6/24/15:
+
+db.detection.find({ sub_type:"no_parking", "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+73
+
+db.detection.find({ state:3, sub_type:"no_parking", "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+30
+
+
+db.detection.find({ sub_type:"parking_with_time_restrictions", "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+18
+
+db.detection.find({ state: 3, sub_type:"parking_with_time_restrictions", "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+15
+
+
+db.detection.find({ sub_type:"reserved_parking", "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+89
+
+db.detection.find({ state:3, sub_type:"reserved_parking", "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+19
+
+
+
+db.detection.find({ state:{$exists:true}, "project_name" : "mathilda_0502-2018", "detector_version" : 75542}).count()
+
+
+db.detection.update(
+   {"_id" : ObjectId("557fbfd93c6c3f5e01247230")},
+   {$set: {state:0} }
+)
+
+db.detection.count({ state:{$exists:true}, "project_name" : "mathilda_0502-2018", "detector_version" : 75542})
+1
+
+
+db.detection.count({"project_name" : "mathilda_0502-2018", "detector_version" : 75542})
+2042
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_0502-2018", detector_version:75542}'
+
+
+
+
+On local mongo database as of 6/12/15:
+
+*.  db.detection.find({project_name:"mathilda_pr_fused", detector_version:75520}).count()
+269
+
+*.  db.detection.find({project_name:"mathilda_pr_fused", detector_version:75529}).count()
+161
+
+mongodump -d prjdb -c detection -q '{project_name:"mathilda_pr_fused", detector_version:75529}'
+
+mongorestore -ssl -h flyover0/10.182.138.60,10.182.138.61,10.182.138.62 -u pwin -p IP9haDYzeZyE -d prjdb -c detection ./dump_
+
+
+On fly6 as of 6/10/15:
+
+*.  db.detection.find({project_name:"mathilda_pr_fused", detector_version:75520}).count()
+8297
+
+*.  db.detection.find({sub_type:"stop", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+260
+
+*.  db.detection.find({sub_type:"yield", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+69
+
+
+
+*.  db.detection.find({verification_value:"correct", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+269
+
+*.  db.detection.find({verification_value:"correct", sub_type:"stop", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+224
+
+*.  db.detection.find({verification_value:"correct", sub_type:"yield", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+45
+
+mongodump -ssl -h flyover0/10.182.138.60,10.182.138.61,10.182.138.62 -u pwin -p IP9haDYzeZyE -d prjdb -c detection -q '{verification_value:"correct", project_name:"mathilda_pr_fused", detector_version:75520}'
+
+
+mongorestore --db prjdb --collection detection ./dump_
+
+
+
+
+On local mongo database as of 6/9/15:
+
+*.  db.detection.find({verification_value:"correct", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+205
+
+*.  db.detection.find({verification_value:"correct", sub_type:"stop", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+170
+
+*.  db.detection.find({verification_value:"correct", sub_type:"yield", project_name:"mathilda_pr_fused", detector_version:75520}).count()
+35
+
+
+
+
+
+
+
+
+
+
+	{
+		"_id" : ObjectId("555f9b0708d4c4546b070236"),
+		"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_mathilda_pr_fused_150522_133006.xml",
+		"imdata_id" : NumberLong("-4704095256823322805"),
+		"image_path" : "/startown-gpfs/sputnik01/supersize/copyprocess/resource/bay_area/bay_area-u11-20141107_174714-q6/unplanned-20141107_174716/02-2645D-07455/2k/002027-002013-20141107_180914_572-Cam02_2645D_07455.dng",
+		"patch_path" : "/startown-gpfs/sputnik03/supersize/labeling_resources/delivery_20150530//mathilda_pr_fused/bv_75520/14_4569_7295/blob13_002027-002013-20141107_180914_572-Cam02_2645D_07455_1927_1688_2185_1921_yield_999.jpg",
+		"image_size" : {
+			"xsize" : 5120,
+			"ysize" : 3840
+		},
+		"gnd" : {
+			"x" : -2691196.64266458,
+			"y" : -4301604.884687342,
+			"z" : 3851514.9445666857,
+			"yaw" : -1.3839033109975658,
+			"pitch" : 0.8239772841687625,
+			"roll" : -1.0284809208698138,
+			"w" : 0.7692525722295187,
+			"h" : 0.8930099774623774
+		},
+		"tile_id" : {
+			"lev" : 14,
+			"x" : 4569,
+			"y" : 7295
+		},
+		"utm_zone" : 10,
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				-122.03117558077942,
+				37.38603673931321
+			]
+		},
+		"loc_z" : 11.387884703464806,
+		"type" : "us_road_sign",
+		"sub_type" : "yield",
+		"confidence" : 0.9999310970306396,
+		"description" : "",
+		"detection_polygon" : {
+			"type" : "Polygon",
+			"coordinates" : [
+				[
+					[
+						1683.663898214315,
+						1492.0190490005805
+					],
+					[
+						1692.6809686609154,
+						1492.3956089154844
+					],
+					[
+						1700.4502901013702,
+						1499.5713928890407
+					],
+					[
+						1720.582997627795,
+						1549.3612813700734
+					],
+					[
+						1741.4089596387164,
+						1610.229562985404
+					],
+					[
+						1788.2486048213914,
+						1778.3745146448896
+					],
+					[
+						1736.3897360022095,
+						1813.3153882921126
+					],
+					[
+						1679.3001599693305,
+						1802.2079027983295
+					],
+					[
+						1580.4667942125313,
+						1776.919328933713
+					],
+					[
+						1545.9131035178605,
+						1761.1298917307768
+					],
+					[
+						1484.4047763004255,
+						1720.1629420585086
+					],
+					[
+						1483.823444466737,
+						1704.2588443838565
+					],
+					[
+						1487.7320354651683,
+						1697.2768156330226
+					],
+					[
+						1495.6935074130656,
+						1687.3005737174171
+					],
+					[
+						1627.9471898793668,
+						1533.6831840066889
+					],
+					[
+						1653.6054252331687,
+						1513.5991827589744
+					],
+					[
+						1683.663898214315,
+						1492.0190490005805
+					]
+				]
+			]
+		},
+		"detector_version" : 75520,
+		"cam_id" : 0,
+		"project_name" : "mathilda_pr_fused",
+		"verification_state" : {
+			"state" : 2,
+			"created" : ISODate("2015-05-26T11:04:18.100Z")
+		},
+		"verification_states" : [
+			{
+				"state" : 1,
+				"user" : ObjectId("537d7dba961654dffae00d8b"),
+				"created" : ISODate("2015-05-26T09:58:39.246Z")
+			},
+			{
+				"state" : 0,
+				"created" : ISODate("2015-05-26T09:58:45.814Z")
+			},
+			{
+				"state" : 1,
+				"user" : ObjectId("52f94d1096165453b2319107"),
+				"created" : ISODate("2015-05-26T11:04:03.370Z")
+			}
+		],
+		"verification_count" : 2,
+		"verification_values" : [
+			{
+				"user" : ObjectId("537d7dba961654dffae00d8b"),
+				"created" : ISODate("2015-05-26T09:58:45.814Z"),
+				"value" : "correct"
+			},
+			{
+				"user" : ObjectId("52f94d1096165453b2319107"),
+				"created" : ISODate("2015-05-26T11:04:18.100Z"),
+				"value" : "correct"
+			}
+		],
+		"verification_value" : "correct",
+		"publish" : 1
+	},
+
+

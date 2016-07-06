@@ -1,0 +1,8 @@
+/data/ladar/RTV/new_york/filled_fused_EO_RTV/osga_files/*.osga
+# /media/usbdisk/new_york/rtv/filled_fused_EO_RTV/osga_files/*.osga 
+--height_colormap 10 # wrap 3
+# --height_colormap 6  # grey scale
+--prob_colormap 6 --height_cyclic_frac_offset 0.0 
+# --min_threshold_frac 0.0 
+--min_threshold_frac 0.05
+--max_threshold_frac 1.0

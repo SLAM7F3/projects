@@ -1,0 +1,2 @@
+~/bin/MAKE program=affine
+~/bin/MAKE program=fivepoint

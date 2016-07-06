@@ -1,0 +1,16 @@
+/bin/rm ./densecloud
+/bin/rm ./generate_peter_inputs
+/bin/rm ./gpsfit
+/bin/rm ./gps_waypoints
+/bin/rm ./mosaic
+/bin/rm ./orthorectify
+/bin/rm ./parse_puma_metadata
+/bin/rm ./puma_pass_scripts
+/bin/rm ./restricted_asift
+/bin/rm ./separated_packages
+/bin/rm ./timings
+/bin/rm ./triangulate
+/bin/rm ./video_propagator
+/bin/rm ./visualize_puma_metadata
+/bin/rm ./vsfm_vs_orig_images
+/bin/rm ./write_viewbundler_script

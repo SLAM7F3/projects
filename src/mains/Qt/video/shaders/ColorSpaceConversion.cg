@@ -1,0 +1,57 @@
+#include "ColorSpaceUtils.cgh"
+
+void convertRGBAToLabA( uniform samplerRECT RGBAInputSampler,
+
+					   float2 xy : WPOS,
+					   
+					   out float4 colorOut : COLOR )
+{
+	float4 inputRGBA = texRECT( RGBAInputSampler, xy );
+	colorOut = rgba2laba( inputRGBA );
+}
+
+void convertLabAToRGBA( uniform samplerRECT LabAInputSampler,
+
+					   float2 xy : WPOS,
+					   
+					   out float4 colorOut : COLOR )
+{
+	float4 inputLabA = texRECT( LabAInputSampler, xy );
+	colorOut = saturate( laba2rgba( inputLabA ) );
+}
+
+interface Converter
+{
+	float4 convert( float4 input );
+};
+
+struct RGBA2LabAConverter : Converter
+{
+	float4 convert( float4 input )
+	{
+		return rgba2laba( input );
+	}
+};
+
+struct RGBA2LuminanceConverter : Converter
+{
+	float4 convert( float4 input )
+	{
+		return rgba2Luminance( input );
+	}
+};
+
+// applies converters in order
+void convertColorSpace( uniform samplerRECT inputSampler,
+					   uniform Converter converters[],
+					   
+					   float2 xy : WPOS,
+					   
+					   out float4 colorOut : COLOR )
+{
+	colorOut = texRECT( inputSampler, xy );
+	for( int i = 0; i < converters.length; ++i )
+	{
+		colorOut = converters[ i ].convert( colorOut );
+	}
+}

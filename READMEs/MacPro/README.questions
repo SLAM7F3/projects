@@ -1,0 +1,270 @@
+=============================================================================
+Lab/demo questions
+=============================================================================
+Last updated on 2/12/14; 2/22/14; 3/11/14
+=============================================================================
+
+Tues, Mar 11, 2014:
+
+*.  base/g_camera.h depends upon misc/da.h.  
+
+
+	da_declare(g_pos2_list_t, g_pos2_lists_t);      // List of g_pos2_list_t.
+
+Actually, several files in base/ depend upon misc/da.h
+
+So can I move basic image processing and math methods which require dynamic
+arrays into base/
+
+*.  
+
+In file included from ../../lib/misc/im_flood_filling.c:15:0:
+../../lib/base/g_camera.h:17:16: fatal error: da.h: No such file or directory
+
+
+*.  Can a typedef structure be forward declared?
+
+*.  What does the first label in the following "typedef struct" do?
+
+typedef struct g_bbox_t{
+ blah 
+ blah
+} g_bbox_t
+
+
+-------------------------------------------------
+Sat, 2/22:
+
+*.  Does pwin have a function which can downsize an input image of
+arbitrary size to a smaller image of specified size?
+
+-------------------------------------------------
+Thurs, 2/13:
+
+*.  In SFM lab, what is a "local ground" for a rig?
+
+-------------------------------------------------
+Weds, 2/12:
+
+*.  Any way to get satellite imagery to appear in 2D SFM gui background?
+
+*.  What is the "glossary" refered to in the SFM lab?
+
+*.  Don't know how to display point cloud (for small halfmoon bay patch) or
+how to inspect epipolar lines.  
+
+*.  Cannot switch between bundled & original points in detection view.
+Instead, just see 
+WARNING: Cropped bundle, cannot switch to unbundled cameras
+
+"The resf is split into primary and secondary resources, a concept you
+should look up in the glossary"
+
+*.  Hotkeys which cause SFM gui crashes after chanting
+
+p -do "sfm_build gui -prjdb /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm_lab_prjdb.xml -prj san_francisco_half_moon_bay -resf /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm_resources.txt --tag_in test" -v
+
+
+A: load all detections and descriptors
+
+WARNING: Could not load file /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/keypoints/san_francisco_20120806_half_moon_bay_k5_815211711/im00000_cam00.kpt, trying without hash_tag
+ERROR  : file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/keypoints/san_francisco_20120806_half_moon_bay_k5/im00000_cam00.kpt
+ERROR  : Failed to open file "/startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/keypoints/san_francisco_20120806_half_moon_bay_k5/im00000_cam00.kpt"
+ERROR  : Failed to read header for file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/keypoints/san_francisco_20120806_half_moon_bay_k5/im00000_cam00.kpt.
+
+C:  open GUI to compare bundled and unbundled data
+
+VERBOSE: No bboxes found.
+ERROR  : file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/sfm_resources_in.txt
+ERROR  : Invalid file handle.
+ERROR  : Failed to read resource_file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/sfm_resources_in.txt
+
+T: toggle between unbundled and bundled data
+
+ERROR  : file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/sfm_resources_in.txt
+ERROR  : Invalid file handle.
+ERROR  : Failed to read resource_file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/sfm_resources_in.txt
+Abort (core dumped)
+
+F8: load SFM match graph
+
+WARNING: no camera selected, not loading keypoints
+ERROR  : file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/graph.sfm
+ERROR  : Failed to open file "/startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/graph.sfm"
+ERROR  : Failed to read header for file: /startown-gpfs/sputnik02/supersize/devtest/pwin_labs/lab_5_sfm/sfm/test/graph.sfm.
+
+-------------------------------------------------
+Tues, 2/11:
+
+*.  How can we bind command callbacks to arrow (up,down,right,left) keys?
+
+*.  Getting UTM coordinate system to work in lab 4
+
+-------------------------------------------------
+Monday, 2/10
+
+
+*.  Is there a "depth" ordering to shapes?
+
+-------------------------------------------------
+
+2/6
+
+*.  Would like to define a UTM geocoordinate system.  Tried the following
+which does NOT work:
+
+   geo_cshv_t geo_cshv_utm = {GEO_CSH_UTM, GEO_CSV_ELLIPSOID, 0};
+   gui2d_set_cs(gui_group.curr_view, &geo_cshv_utm);
+   gui2d_zoom_to_no_aspect(
+      gui_group.curr_view, easting, northing, delta_easting, delta_northing);
+
+This is (naively) the UTM analog of the WGS84 lines below which DO work:
+
+   gui2d_set_cs(gui_group.curr_view, &geo_cshv_wgs84);
+   gui2d_zoom_to_no_aspect(
+      gui_group.curr_view, lat, lon, delta_lat, delta_lon);
+
+*.  What is the connection (if any) between spherical mercator (smerc) and
+UTM geocoord systems?
+
+*.  WGS84 coordinate system appears to have x --> lat and y --> lon.  Map
+appears in window with east increasing downward and north increasing to the
+right.  How can we flip the map so that x --> lon and y --> lat?
+
+*.  Cannot visualize aircraft GPS positions as gui2d shape points....
+
+-------------------------------------------------
+2/5
+
+In g_view2d.c, 
+
+smerc ?= mercator distance
+mpp = meters per pixel
+
+*.  What do lat/lon geocoord inputs into g_view2d_latlong() represent?
+Doesn't appear to be center of displayed satellite image.  As we vary mpp,
+displayed satellite image exhibits no obvious constant invariants.
+
+*.  Why does displayed satellite image fetched via lat/lon for MIT dome (as
+determined from GE) end up around Symphony Hall instead?
+
+-------------------------------------------------
+2/3
+
+log_error, log_warning and log_info print messages to stdout.  But
+log_verbose, log_spam and log_progress do not report any information to
+stdout?  Where do these last 3 log messages get logged?
+
+   log_error("HelloWorld \n");
+   log_warning("HelloWorld \n");
+   log_info("HelloWorld \n");
+   log_verbose("HelloWorld \n");
+   log_spam("HelloWorld \n");
+   log_progress();
+
+
+>c3 lab_pcho    
+ERROR  : HelloWorld 
+WARNING: HelloWorld 
+INFO   : HelloWorld 
+
+-------------------------------------------------
+1/31
+
+*.  Are there any 2D affine transformation functions?  
+
+e.g. translate/scale display window coords to ground plane coords
+
+*.  What is the normal for a canonical ground plane (+zhat or - zhat)?
+
+*. What is the difference between a ground image and ground plane?
+
+In g_camera.c:
+
+/***** g_imgnd_to_xyz ********************************************************
+* Description : imgnd to xyz
+*
+* Input  : gnd        Ground plane
+*          xs, ys     Size of ground image
+*          xi, yi     Pos in ground image
+*          xg, yg, zg Ground coordinates
+* Output : None
+*
+*****/
+void g_imgnd_to_xyz(const g_gnd_t *gnd, int xs, int ys,
+		    double xi, double yi,
+		    double *xg, double *yg, double *zg)
+{
+-------------------------------------------------
+1/30
+
+*.  What is the difference between p_read_imf() and p_read_scale_imf()?
+
+*.  In g_camera.h, multiple projection types are defined.  Familiar with
+Pinhole and fisheye projections.  But what are lens, cylinder and sphere
+projections?
+
+
+-------------------------------------------------
+1/29
+
+*.  Is there a maximum width/height which can be accomodated by
+p_read_scaled_imf?  Seems to work OK on KDF2.jpg (300x400).  But seg faults
+for KDF1.jpg (1498x1981).  Any even/odd restrictions on pixel
+widths/heights?
+
+*.  Why does display of many jpg images fail using pwin approach described
+at end of lab #1?
+
+*.  In pwin/lib/base/p_image.h, following typedef is declared:
+
+	typedef p_image p_image_yv12[3];
+
+When is p_image_yuv12 type used?
+
+
+*.  Echoing C char array input in conjunction with scanf.
+
+-------------------------------------------------
+1/28
+
+*.  Are there different makefiles for different pwin projects?  Or is there
+just the one uber-makefile in ~/sputnik/pwin/build/pwin.mak?
+
+*.  Any way to overload functions in C as in C++?
+
+e.g. foo(int i)
+     foo(int j,int i);
+     foo(int k,char c,int i);
+
+-------------------------------------------------
+1/27
+
+*.  Can 3D viewer's button actions be altered/customized?  No (at least not
+in most basic viewer)
+
+Q:  Is there any smooth translate operation? 
+A:  Hold down control key.  Then right-click with mouse on some screen
+location.  Underlying 3D map will translate in direction of selected mouse
+pixel.  Magnitude of translation is proportional to distance between select
+mouse pixel and screen center.
+
+*.  "b" is supposed show/hide bounding boxes.  But no bounding boxes
+appear unless "l" = label button is first pressed.  What is significance of
+labels appearing in black/white?
+
+Q.  Is there any "home" button which orients virtual camera in nadir
+direction?
+
+A:  Yes, type "c"
+
+
+
+Type "boston" within 3D window in order to limit maps list to just boston.
+Then select boston and press "go" button.
+
+Q.  Why is there significant green coloring within the los angeles map?
+
+A.  Green color indicates texturing problem.
+
+

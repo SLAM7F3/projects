@@ -1,0 +1,7 @@
+# Brian: % time vehicle in track
+
+85.2
+79.1
+78.0
+34.8
+

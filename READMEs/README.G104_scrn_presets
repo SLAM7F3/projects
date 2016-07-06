@@ -1,0 +1,51 @@
+============================================================================
+Notes on multiple G104 screen presets for Nov 2007 RCO demo
+============================================================================
+Last updated on 11/20/07; 6/13/08
+============================================================================
+
+Procedure for presetting the G104 conference room's multi-screen video
+switch:
+
+1.  Arrange computer outputs on right, middle and left screens as desired.
+
+2.  Hold Preset button down until the preset LED blinks.
+
+3.  Press the number on the video switch which labels the current screen
+configuration's desired preset value.
+
+4.  To later activate a preset screen configuration, press Preset button
+followed by the preset number.
+
+
+=========================================================================
+
+
+Machine			Input
+
+G104 conf2 (for ppts)	2
+
+Lisa Basile's laptop	4
+
+Touchy linux box	5
+
+Peter's old laptop	7
+
+(Note: We used Peter's ISDS3D laptop as the server for Michelle Hurt's ERSA
+planes)
+
+
+Preset		Left LCD scrn		Center projector	Right LCD scrn
+
+9 ("1")		blank			input 2 		blank
+					(G104 conf2)
+
+10 ("2")	input 4 		input 5 		input 4 
+		(Lisa's laptop)		(touchy)		(mirror)
+
+11 ("3")	input 7 		input 5 		input 7
+		(Peter's old laptop)	(touchy)		(mirror)
+
+12 ("4")	input 2 		input 5 (touchy)	input 2
+		(G104 conf2)		(touchy)		(mirror)
+

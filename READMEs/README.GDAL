@@ -1,0 +1,165 @@
+===========================================================================
+GDAL nodes
+===========================================================================
+Last updated on 1/7/11; 2/5/11; 7/27/11; 11/25/13
+===========================================================================
+
+On 3/28/07, Ross Anderson taught us that the Baghdad Geotiff files have
+grey scale height values stored as floats rather than as integers.  Gimp,
+XV and ImageMagick's Display utilities are expecting output as the latter
+rather than the former.  So we need to perform the following conversion
+before we can easily see the Baghdad Geotiff's using standard 2D viewer
+tools:
+
+gdal_translate -ot Uint16 -scale 27 42 0 65535 ~ross/iraq_tiles/part1/dem_1m_a1_baghdad_tile37.tif test.tiff
+
+
+The scale command maps (min_z,max_z) onto (0,2**16-1).  GDAL can report the
+min and max grey scale values within the single banded Baghdad tiles.
+
+--------------------------------------------------------------------------
+Use GDALWARP to convert a geotif file from UTM to lat-lon geocoords:
+
+ 	gdalwarp -t_srs WGS84 input_UTM.tif output_LL.tif
+
+--------------------------------------------------------------------------
+In Aug 2009, we started to create a new Lowell pointcloud based upon 2008
+MassGIS EO imagery.  All the 2008 image data distributed by MassGIS are
+referenced to the Mass. State Plane Mainland NAD83 Meters coordinate
+system.  So we need to execute the following command to convert individual
+raster datatiles to WGS84 zone 19:
+
+gdalwarp -t_srs '+proj=utm +zone=19 +dataum=WGS84' 21029290.sid.tif 21029290.tif
+
+The coordinate transformation introduces null data along the periphery of
+each tile which comes out as obvious bad black gaps when we generate an
+OSGA point cloud.  So we decided to generate a brute-force mosaic of all 30
+tiles covering Lowell via the following command which had to run overnight:
+
+
+gdalwarp -t_srs '+proj=utm +zone=19 +dataum=WGS84' \
+21029290.sid.tif  21179335.sid.tif  21479305.sid.tif  21629350.sid.tif \
+21029305.sid.tif  21179350.sid.tif  21479320.sid.tif  21779290.sid.tif \
+21029320.sid.tif  21329290.sid.tif  21479335.sid.tif  21779305.sid.tif \
+21029335.sid.tif  21329305.sid.tif  21479350.sid.tif  21779320.sid.tif \
+21029350.sid.tif  21329320.sid.tif  21629290.sid.tif  21779335.sid.tif \
+21179290.sid.tif  21329335.sid.tif  21629305.sid.tif  21779350.sid.tif \
+21179305.sid.tif  21329350.sid.tif  21629320.sid.tif \
+21179320.sid.tif  21479290.sid.tif  21629335.sid.tif \
+merged_30.tif
+
+
+The output mosaic's size is 30726, 25876, and it contains no seams between
+tiles.  
+
+We next break apart the huge mosaic into 5000x5000 tiles via commands of
+the form
+
+gdal_translate -srcwin 0 0 5000 5000 merged_30.tif tile0_0.tif
+gdal_translate -srcwin 5000 0 5000 5000 merged_30.tif tile0_1.tif
+gdal_translate -srcwin 10000 0 5000 5000 merged_30.tif tile0_2.tif
+gdal_translate -srcwin 15000 0 5000 5000 merged_30.tif tile0_3.tif
+gdal_translate -srcwin 20000 0 5000 5000 merged_30.tif tile0_4.tif
+gdal_translate -srcwin 25000 0 5000 5000 merged_30.tif tile0_5.tif
+
+------------------------------------
+touchy2ubuntu:boston% warp_tiles 
+Creating output file that is 30722P x 25871L.
+Processing input file 22978975.sid.tif.
+
+
+
+*.  In order to warp directly from MA stateplane to lon-lat geocoordinates
+for MassGIS tif imagery of Fort Devens, chant
+
+	gdalwarp -t_srs WGS84 18629170.tif 18629170_lonlat.tif
+
+gdalwarp -t_srs WGS84 \
+18479155.tif  18629155.tif  18779155.tif  \
+18479170.tif  18629170.tif  18779170.tif  \
+18479185.tif  18629185.tif  18779185.tif \
+devens_lonlat.tif
+
+
+gdal_translate -srcwin 0 0 5000 5000 devens_lonlat.tif tile0_0.tif
+gdal_translate -srcwin 5000 0 5000 5000 devens_lonlat.tif tile0_1.tif
+gdal_translate -srcwin 10000 0 5000 5000 devens_lonlat.tif tile0_2.tif
+
+gdal_translate -srcwin 0 5000 5000 5000 devens_lonlat.tif tile1_0.tif
+gdal_translate -srcwin 5000 5000 5000 5000 devens_lonlat.tif tile1_1.tif
+gdal_translate -srcwin 10000 5000 5000 5000 devens_lonlat.tif tile1_2.tif
+
+gdal_translate -srcwin 0 10000 5000 5000 devens_lonlat.tif tile2_0.tif
+gdal_translate -srcwin 5000 10000 5000 5000 devens_lonlat.tif tile2_1.tif
+gdal_translate -srcwin 10000 10000 5000 5000 devens_lonlat.tif tile2_2.tif
+
+gdal_translate -srcwin 8000 5000 4000 4000 devens_lonlat.tif game.tif
+
+------------------------------------
+
+On 2/5/11, we culled a subset of ALIRT HAFB minimap tiles within an
+approximate 1 km radius of the flight facility.  We then mosaiced them
+together into a single geotif file as follows:
+
+gdal_merge.py -init -1 -n -9999 -o m4.tif 0SFE*.tif
+gdal_merge.py -init -1 -n -9999 -o m3.tif 0SFD*.tif
+gdal_merge.py -init -1 -n -9999 -o m2.tif 0SFC*.tif
+gdal_merge.py -init -1 -n -9999 -o m1.tif 0SFB*.tif
+gdal_merge.py -init -1 -n -1 -o mosaic.tif m1.tif m2.tif m3.tif m4.tif
+
+"-init -1" initially fills all output tif file pixels with a -1 value.  
+
+"-n -9999" ignores any -9999 valued pixels within the input geotif files
+
+"-o mosaic.tif" generates an output file named mosaic.tif
+
+------------------------------------
+
+Use mains/mapping/GCP.cc to convert UV coordinates selected via program
+VIDEO into pixel offsets px and py.
+
+On 7/27/11, we figured out how to add ground control points into an image.
+These tiepoints take the form px py Easting Northing where px = U/Umax*Nx =
+U*Ny and py=(1-V)*Ny with Nx and Ny representing the total number of pixels
+in the width and height directions of the image.
+
+First incorporate ground control tiepoints into an image via
+gdal_translate:
+
+gdal_translate vball_GE_cropped.png vball_GE_cropped.tif \
+-gcp 416 1234 313576.50 4702930.00 \
+-gcp 536 1081 313590.31 4702943.50 \
+-gcp 403 493 313576.18 4702996.50 \
+-gcp 774 682 313610.87 4702978.84 \
+-gcp 873 763 313619.40 4702970.00 \
+-gcp 424 461 313578.90 4702999.50 \
+-gcp 1077 1025 313639.18 4702946.00 \
+-gcp 942 1221 313625.68 4702929.00
+
+Next warp intermediate geotif file so that it maps onto UTM geocoordinate
+system:
+
+gdalwarp -t_srs '+proj=utm +zone=19 +dataum=WGS84' vball_GE_cropped.tif UTM_warped.tif 
+
+
+gdal_translate horseshoe.png horseshoe.tif \
+-gcp 618 639 281126.68014071 4709339.8142817 \
+-gcp 330 347 281052.10376835 4709418.0983435 \
+-gcp 319 860 281046.27135515 4709283.1059903 \
+-gcp 882 1300 281192.64695015 4709164.3363302 \
+-gcp 965 1085 281215.8079952 4709220.6394637 \
+-gcp 1116 436 281259.73476762 4709390.7839523 \
+-gcp 64 1246 280976.33578454 4709182.7342864 \
+-gcp 906 224 281205.51447381 4709447.7721448 \
+-gcp 534 1152 281101.46990713 4709205.0868553 \
+-gcp 164 179 281009.17933115 4709463.1604965
+
+gdalwarp -t_srs '+proj=utm +zone=19 +dataum=WGS84' horseshoe.tif horseshoe_warped.tif 
+
+--------------------------------------------------------------------------
+
+In order to install GDAL into /opt/gdal, chant
+
+	./configure --prefix=/opt/gdal/
+
+when building GDAL from source.

@@ -1,0 +1,219 @@
+===========================================================================================
+Mongo database notes for streetnames
+===========================================================================================
+Last updated on 4/18/16; 4/19/16; 5/2/16; 5/5/16
+===========================================================================================
+
+Regular expression to query mongo for any entries containing "streetname"
+as part of sub_type key:
+
+> db.detection.find({"sub_type" : /streetname/i, "project_name" : "sacramento_benchmark_rdn").count()
+
+
+> db.detection.find({"sub_type" : "D_streetname"}).count()
+411410
+
+> db.detection.find({"sub_type" : "D_streetname_small"}).count()
+1188847
+
+
+> db.detection.find({"sub_type" : "D_streetname", "project_name":"sacramento_benchmark_rdn"}).count()
+16443
+
+> db.detection.find({"sub_type" : "D_streetname_small", "project_name":"sacramento_benchmark_rdn"}).count()
+91687
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu_micro_sacramento_benchmark_rdn_160324_092518.xml",
+
+
+> db.detection.count({"project_name" : "sacramento_benchmark_rdn"})
+2979920
+
+> db.detection.count({"sub_type" : /streetname/i, "project_name" : "sacramento_benchmark_rdn"})
+108119
+
+
+
+
+# D_streetname         16443
+# D_streetname_small   91676
+# D_destination         5162
+# E_interchange        11131
+                       -----
+                      124,412
+
+> db.detection.count({"project_name" : "sacramento_benchmark_rdn_streetnames"})
+124412  (contains D_streetname, D_streetname_small, D_destination, E_interchange)
+
+> db.detection.count({"project_name" : "sacramento_benchmark_rdn_candidate_streetnames2"})
+229593
+
+> db.detection.count({"run_id" : "sacramento_streetnames_test2"})
+229593
+
+
+
+-------------------
+Fri Apr 15, 2016
+
+> db.detection.count({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160324_212419.xml"})
+328008
+
+> db.detection.count({"run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"})
+4781333
+
+> db.detection.count({"sub_type": "D_streetname", "run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"})
+17198
+
+> db.detection.count({"sub_type": "D_streetname_small", "run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"})
+99452
+
+> db.detection.count({"sub_type": "D_destination", "run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"})
+5716
+
+> db.detection.count({"sub_type": "E_interchange", "run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"})
+12457
+
+
+
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"sub_type" : /streetname/i, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"}'
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"sub_type" : "D_destination", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"}'
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"sub_type" : "E_interchange", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"}'
+
+
+After locally cloning 4 streetname subtypes:
+
+> db.detection.count({"run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758_streetnames.xml"})
+134823
+
+> db.detection.count({"run_id": "sacramento_streetnames_gt_45degs"})
+108384
+
+
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758_streetnames.xml"}'
+
+-------------------
+
+
+
+
+
+
+> db.detection.count({"project_name" : "sacramento_benchmark_rdn_streetnames2"})
+108119  
+
+> db.detection.count({"project_name" : "sacramento_benchmark_rdn_candidate_streetnames"})
+197945
+
+> db.detection.count({"run_id" : "sacramento_streetnames_test"})
+197945
+
+db.detection.find({"project_name":"sacramento_benchmark_rdn_streetnames", "patch_path" : "/startown-gpfs/sputnik03/supersize/labeling_resources/20160324_bayarea//sacramento_benchmark_rdn/bv_761192_detchip/14_5682_7937/D_streetname_small_008437-003574-20150920_181657_632-Cam05_1095A_07865_blob7_1324_296_1363_320_-2147483648_warpgnd.jpg"}).count()
+
+
+> db.detection.distinct("patch_path",{"project_name" : "sacramento_benchmark_rdn_streetnames"})
+
+
+
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"sub_type" : /streetname/i, "project_name" : "sacramento_benchmark_rdn"}'
+
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"project_name" : "sacramento_benchmark_rdn_streetnames"}'
+
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"sub_type" : /streetname/i, "project_name" : "sacramento_benchmark_rdn_streetnames2"}'
+
+
+mongorestore -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection ./dump/pr/detection.bson
+
+=================================================================================
+Sacramento streetnames (April 18, 2016); 5/2/16; 5/5/16
+=================================================================================
+
+On 5/5/16 at 1:20 pm, we made a backup of O(500K) entries within fly14's
+mongo "detection" collection corresponding to run_id =
+/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml.
+This mongo dump is sitting on our Thinkmate in
+/macpro_4GB_disk/data/peter_stuff/mongo_db/2016/May/prjdb_ubuntu_kh_sacramento_160401_161758_runid
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"}'
+
+> db.detection.count({"run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml"})
+478133
+
+> db.detection.find({"run_id":"sacramento_streetnames_gt_45degs_May5"}).count()
+184646
+
+
+Verification project 20160325_sacramento_benchmark_rdn
+
+project = kh_sacramento
+prjdb = "http://flyover.geo.apple.com/prjdb/FlightOps/project/kh_sacramento/xml"
+
+> db.detection.count({"run_id": "sacramento_streetnames_gt_45degs"})
+107447
+
+
+> db.detection.find({"verification_value":{$exists:true}, "run_id": "sacramento_streetnames_gt_45degs"}).count()
+107447
+
+> db.detection.find({"verification_value.sub_type":{$exists:true}, "run_id": "sacramento_streetnames_gt_45degs"}).count()
+107447
+
+> db.detection.find({"verification_value.description":{$exists:true}, "run_id": "sacramento_streetnames_gt_45degs"}).count()
+41382
+
+> db.detection.find({"description":"Natoma St", "run_id": "sacramento_streetnames_gt_45degs"}).count()
+55
+
+> db.detection.find({"description":"Crestwater Ln", "run_id": "sacramento_streetnames_gt_45degs"}).count()
+2
+
+> db.detection.find({"verification_value.description":"correct", "run_id": "sacramento_streetnames_gt_45degs"}).count()
+0
+
+> db.detection.find({"verification_value.description":"incorrect", "run_id": "sacramento_streetnames_gt_45degs"}).count()
+0
+
+> db.detection.find({"verification_value.description":"undetermined", "run_id": "sacramento_streetnames_gt_45degs"}).count()
+0
+
+
+mongorestore --db pr --collection sacramento ./sacramento_benchmark_rdn_streetnames2_108K/dump/pr/detection.bson
+
+--------------------
+
+On 5/5/16, we restored a set of O(135K) streetnames given to us within a
+mongo dump by Weiyu onto our local Thinkmate's mongo within collection = sacramento:
+
+
+mongorestore --db pr --collection detection ./kh_sacramento_sn/pr/detection.bson
+mongorestore --db pr --collection sacramento ./kh_sacramento_sn/pr/detection.bson
+
+   "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160401_161758.xml",
+
+db.detection.find({"run_id":"sacramento_streetnames_gt_45degs_May5"}).count()
+184646
+
+
+
+> db.sacramento.find().count()
+134823
+
+> db.sacramento.find({"sub_type": "D_streetname"}).count()
+17198
+
+> db.sacramento.find({"sub_type": "D_streetname_small"}).count()
+99452
+
+> db.sacramento.find({"sub_type": "D_destination"}).count()
+5716
+
+> db.sacramento.find({"sub_type": "E_interchange"}).count()
+12457
+

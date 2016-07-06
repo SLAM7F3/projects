@@ -1,0 +1,7 @@
+--PostGIS_hostname localhost
+# --PostGIS_hostname 155.34.162.148
+--PostGIS_database_name isds_gis
+# --PostGIS_database_name babygis
+# --PostGIS_username cho
+--PostGIS_username postgres
+--gispoints_tablename boston_libraries

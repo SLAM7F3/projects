@@ -1,0 +1,98 @@
+=============================================================================
+Water segmentation notes
+=============================================================================
+Last updated on 3/25/14; 3/26/14; 3/31/14
+=============================================================================
+
+*.  Within C3 viewer menu, multiple projects can be selected.  Once first
+project is loaded, press ">" to load next project and "<" to load previous
+project.  Useful for comparing different builds with different parameter
+settings.
+
+
+*.  To view within c3-viewer a fast downtown Boston example recommended by
+Hamid for water classification development, chant
+
+p -do "view -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml"
+
+After bringing up dual 3D/2D windows, move virtual 3D camera to some local
+water region.  Then press "update" button (or press u key) in order to 
+refresh 2D images which correspond to the 3D region of interest.
+
+*.  To view original flyover aerial images next to reconstructed 3D map, 
+first fire up c3-viewer by chanting 
+
+		p -do "view"
+
+Then select some water city of interest (e.g. boston_water_test).
+
+Within "Main" tab button, select "orig" in order to pop open secondary
+window which displays original aerial images.  Loading of original
+aerial images can take many minutes.  Eventually, the secondary
+window should appear to the right of the 3D map.  
+
+   - Original images backprojected onto a ground plane can then be viewed
+by pressing the frame-forward (">>") or frame-backward ("<<") buttons at
+the bottom of the RHS window
+
+  - The n = 0, 1, 2 and 3 buttons appearing in the lower part of the RHS window
+indicate that the aerial images are downsampled by 2**n.  
+
+  - Enter classifier ID "208" into the small box to the upper right of the
+"classify" button.  Then press the "classify" button.  Once the feature
+extraction and classification is done, a new, single window should pop open
+which shows original aerial images.  
+
+  - Press 'n' in order to cycle through original aerial image and and its
+water classification mask.  Press 'q' to return to the dual-window display.
+
+  - Pwin code which controls toggling between original aerial image and
+water classification mask resides in pr_classifier.c within
+pr_classify_gui_debug() method.
+
+
+*.  Sam Friedman's recipe for generating coarse geometry water contours for 
+different cities : 
+
+1.  /home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do1 'c3 view -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml' 
+
+Select a project (e.g. stockholm, boston, from the drop down.  Then
+navigate to the area where we want to snap water-region pictures.  Then
+press ctrl-p to generate output within the terminal that looks like
+
+
+INFO   : TILE: 15 6640 18819
+VERBOSE: lidar_preproc: p -v -do 'lidar_preproc inspect -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -int -area 15 1 6640 18819 -nochk -nodb'
+VERBOSE: build_command: p -v -do 'f3d_build -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -int -subst_out testing -mws 1 -area 15 1 6640 18819 -nochk -nodb'
+VERBOSE: build_mopt_command: p -v -do 'build_mopt -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -int -nodb -subst_in geom -subst_out testing -areacode 15 1 6640 18819'
+VERBOSE: texture_command: p -v  -do1 'c3 build_texture -noc -tex 16 -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -subst_in treegeom -subst_out testing -areacode 15 1 6640 18819 -int 1 -p 0'
+
+INFO   : TILE: 16 13280 37639
+VERBOSE: lidar_preproc: p -v -do 'lidar_preproc inspect -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -int -area 16 1 13280 37639 -nochk -nodb'
+VERBOSE: build_command: p -v -do 'f3d_build -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -int -subst_out testing -mws 1 -area 16 1 13280 37639 -nochk -nodb'
+VERBOSE: build_mopt_command: p -v -do 'build_mopt -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -int -nodb -subst_in geom -subst_out testing -areacode 16 1 13280 37639'
+VERBOSE: texture_command: p -v  -do1 'c3 build_texture -noc -tex 16 -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml -prj stockholm -subst_in treegeom -subst_out testing -areacode 16 1 13280 37639 -int 1 -p 0'
+
+INFO   : TILE: 17 26560 75278
+VERBOSE: lidar_preproc: p -v -do 'lidar_preproc inspect -prjdb /startown-gpfs/sputni
+
+2.  Copy the "f3d_build" command for tile 16 (reasonable scaling) into a
+new terminal window
+
+3.  After the f3d interactive prompt eventually appears, chant "esc-x"
+followed by "build 2000":
+.
+.
+.
+INFO   : Starting F3D GUI
+VERBOSE: Point cloud adjustments, new origo set to: 0.0 0.0 0.0
+F3D GUI - Main Interactive
+Command:build 2000
+INFO   : F3D version 2000
+INFO   : Initializing f3d...
+
+
+4.  After a "Created mesh." message is output, chant "esc-x" followed by 
+
+	     savemst name_of_local_subdir_where_mst_dump_will_go  1

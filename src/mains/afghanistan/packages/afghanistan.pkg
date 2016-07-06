@@ -1,0 +1,18 @@
+/data/DTED/Afghanistan/osga/z_and_p/*.osga
+# /media/disk-1/Afghanistan/osga/*.osga 
+# /data/DTED/Afghanistan/osga/*.osga
+--height_colormap 14 --prob_colormap 6 
+--height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0 --max_threshold_frac 0.9999
+--longitude_lo 60
+--longitude_hi 78
+--latitude_lo 24
+--latitude_hi 42
+--UTM_zonenumber 42
+--northern_hemisphere_flag T
+
+
+# --longitude_lo 54
+# --longitude_hi 76
+# --latitude_lo 29
+# --latitude_hi 42

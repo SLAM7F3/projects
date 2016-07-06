@@ -1,0 +1,30 @@
+Best fu value = -1.96882
+Best fv value = -1.53636
+Best u0 value = 0.631731
+Best v0 value = 0.435206
+Best theta value = 89.0072
+Best azimuth angle = 9.34798
+Best elevation angle = 0.16624
+Best roll angle = 0.39093
+min_score = 0.118251
+iter = 19 of 20
+Best fu value = -1.96882
+Best fv value = -1.53636
+Best u0 value = 0.631731
+Best v0 value = 0.435206
+Best theta value = 89.0072
+Best azimuth angle = 9.34798
+Best elevation angle = 0.16624
+Best roll angle = 0.39093
+min_score = 0.118251
+Minimum score = 0.118250665572
+1st photo orientation relative to 2nd: 
+
+--Uaxis_focal_length  -1.96882007586
+--Vaxis_focal_length  -1.53636367853
+--U0  0.631731233977 --V0  0.435206453574
+--theta 89.0071720198
+--relative_az 9.34797680021
+--relative_el 0.166239543395
+--relative_roll 0.390930224208
+isds3d:china% e pier2_theta.pkg

@@ -1,0 +1,24 @@
+~/bin/MAKE program=asiftvid
+~/bin/MAKE program=camgeoreg
+~/bin/MAKE program=crop_analog_frames
+~/bin/MAKE program=epoch2gpstime
+~/bin/MAKE program=flowdiags
+~/bin/MAKE program=geo_pass_scripts
+~/bin/MAKE program=gpsfit
+~/bin/MAKE program=gpstime2epoch
+~/bin/MAKE program=groundplane
+~/bin/MAKE program=homorect
+~/bin/MAKE program=interpolate_novatel_metadata
+~/bin/MAKE program=list_hardware_packages
+~/bin/MAKE program=matcher
+~/bin/MAKE program=orthorectify
+~/bin/MAKE program=parse_novatel
+~/bin/MAKE program=parse_ssba
+~/bin/MAKE program=propagator
+~/bin/MAKE program=reconstruct
+~/bin/MAKE program=restricted_asift
+~/bin/MAKE program=separated_packages
+~/bin/MAKE program=triangulate
+~/bin/MAKE program=video_propagator
+~/bin/MAKE program=write_bundleout
+

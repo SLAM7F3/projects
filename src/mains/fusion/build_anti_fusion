@@ -1,0 +1,12 @@
+/bin/rm ./backproject
+/bin/rm ./bundle
+/bin/rm ./camera_params
+/bin/rm ./drape
+/bin/rm ./filter_params
+/bin/rm ./fusion
+/bin/rm ./generate_color_arrays
+/bin/rm ./internals
+/bin/rm ./test3d
+/bin/rm ./video3d
+/bin/rm ./viewdrape
+/bin/rm ./wander

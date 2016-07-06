@@ -1,0 +1,38 @@
+============================================================================
+Redhat VM system administration notes
+============================================================================
+Last updated on 8/16/11; 9/1/11
+============================================================================
+
+*.  In order to change permissions on directories and subdirectories but
+not files, chant
+
+find folder_name -type d -exec chmod a+x '{}' \;
+
+-----------------------------------------------
+
+In Red Hat it actually goes in /var/lib/pgsql/data...and I don't think they
+document that anywhere.  I copied your pg_hba.conf there and restarted
+postgres.  I think you probably want to run your restore as user postgres
+rather than user cho as well.
+
+---
+Thomas M. Smith, Ph.D. <tsmith@ll.mit.edu>
+Technical Staff
+Intelligence & Decision Technologies Group
+MIT Lincoln Laboratory
+
+
+-----Original Message-----
+From: Peter Cho [mailto:cho@ll.mit.edu] 
+Sent: Thursday, September 01, 2011 1:19 PM
+To: Smith, Thomas - 1004 - MITLL
+Subject: Re: OpenSceneGraph Update
+
+Hi Tom.
+
+I've made some progress on installing database tables onto your VM 
+today.  Unfortunately, the setup for postgres (e.g. full path locations 
+for various configuration files) under Redhat is different than under 
+ubuntu.  So I didn't locate some postgres files which I had expected to 
+be present.

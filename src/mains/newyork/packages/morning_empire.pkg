@@ -1,0 +1,8 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/empire_morning.jpg
+--downrange_distance 150
+# --downrange_distance 75
+--projection_matrix
+
+1.50525059e-07  1.25744905e-07  -4.493313117e-08        -0.6554166175
+-1.866279811e-08        1.193669122e-07 1.486707608e-07 -0.5276247681
+-3.637928086e-08        1.245148428e-07 -4.508941342e-08        -0.5404083286

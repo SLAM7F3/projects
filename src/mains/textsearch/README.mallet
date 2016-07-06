@@ -1,0 +1,178 @@
+=========================================================================
+Notes for running Machine Learning for Language Toolkit (MALLET)
+=========================================================================
+Last updated on 5/26/13; 5/29/13; 5/30/13
+=========================================================================
+
+Reuters 50K:
+
+// Importing text documents corpus into MALLET:
+
+./bin/mallet import-dir \
+--input /data_third_disk/text_docs/reuters/export/text/50K_docs \
+--output reuters_50K.mallet \
+--keep-sequence --remove-stopwords \
+--extra-stopwords /home/cho/programs/c++/svn/projects/src/mains/textsearch/stop_list.txt 
+
+// Generating topics from initial training set and exporting an inferencer
+// output file for subsequent text document topic determination:
+
+
+ ./bin/mallet train-topics  --input reuters_50K.mallet \
+--num-topics 300 --num-top-words 100 \
+--inferencer-filename inferencer_300topics_50K.mallet \
+--optimize-interval 10 \
+--output-state reuters_50K_300topics_state.gz \
+--output-topic-keys reuters_50K_300topics_words.txt \
+--output-doc-topics reuters_50K_doc_300topics.txt
+
+
+ ./bin/mallet train-topics  --input reuters_50K.mallet \
+--num-topics 40 --num-top-words 100 \
+--inferencer-filename inferencer_40topics_50K.mallet \
+--optimize-interval 10 \
+--output-state reuters_50K_40topics_state.gz \
+--output-topic-keys reuters_50K_40topics_words.txt \
+--output-doc-topics reuters_50K_doc_40topics.txt
+
+// Importing new test document into MALLET:
+
+./bin/mallet import-dir \
+--input /data_third_disk/BostonBombing/YouTube/TranscriptedVideos/transcripts \
+--keep-sequence --remove-stopwords --output YouTube.mallet  \
+--use-pipe-from reuters_50K.mallet
+
+// Infering topics for new test document:
+
+./bin/mallet infer-topics --input YouTube.mallet \
+--inferencer ./inferencer_300topics_50K.mallet \
+--output-doc-topics YouTube_transcripts_300topics.txt --num-iterations 100
+
+
+-------------------------------------------------------
+Reuters 43K:
+
+
+./bin/mallet import-dir --input \
+/media/66368D22368CF3F9/visualization/arXiv/reuters/export/text/mallet_43K \
+--output reuters_43K.mallet \
+--keep-sequence --remove-stopwords \
+--extra-stopwords /home/cho/programs/c++/svn/projects/src/mains/textsearch/stop_list_reuters.txt 
+
+
+./bin/mallet train-topics  --input reuters_43K.mallet \
+--num-topics 20 --num-top-words 100 \
+--optimize-interval 10 \
+--output-state reuters_43K_20topics_state.gz \
+--output-topic-keys reuters_43K_20topics_words.txt \
+--output-doc-topics reuters_43K_doc_20topics.txt
+
+Total time: 45 minutes 31 seconds
+
+
+./bin/mallet train-topics  --input reuters_43K.mallet \
+--num-topics 25 --num-top-words 100 \
+--optimize-interval 10 \
+--output-state reuters_43K_25topics_state.gz \
+--output-topic-keys reuters_43K_25topics_words.txt \
+--output-doc-topics reuters_43K_doc_25topics.txt
+
+Total time: 39 minutes 28 seconds
+
+./bin/mallet train-topics  --input reuters_43K.mallet \
+--num-topics 35 --num-top-words 100 \
+--optimize-interval 10 \
+--output-state reuters_43K_35topics_state.gz \
+--output-topic-keys reuters_43K_35topics_words.txt \
+--output-doc-topics reuters_43K_doc_35topics.txt
+
+Total time: 47 minutes 7 seconds	5/26/13
+Total time: 40 minutes 31 seconds
+
+
+./bin/mallet train-topics  --input reuters_43K.mallet \
+--num-topics 100 --num-top-words 100 \
+--optimize-interval 10 \
+--output-state reuters_43K_100topics_stategz \
+--output-topic-keys reuters_43K_100topics_words.txt \
+--output-doc-topics reuters_43K_doc_100topics.txt
+
+Total time: 47 minutes 29 seconds
+
+./bin/mallet train-topics  --input reuters_43K.mallet \
+--num-topics 200 --num-top-words 100 \
+--optimize-interval 10 \
+--output-state reuters_43K-200topics_state.gz \
+--output-topic-keys reuters_43K_200topics_words.txt \
+--output-doc-topics reuters_43K_doc_200topics.txt
+
+Total time: 52 minutes 32 seconds
+
+./bin/mallet train-topics  --input reuters_43K.mallet \
+--num-topics 250 --num-top-words 100 \
+--optimize-interval 10 \
+--output-state reuters_43K_250topics_state.gz \
+--output-topic-keys reuters_43K_250topics_words.txt \
+--output-doc-topics reuters_43K_doc_250topics.txt
+
+Total time: 54 minutes 21 seconds	5/26/13
+Total time: 55 minutes 52 seconds
+Total time: 53 minutes 3 seconds
+Total time: 53 minutes 33 seconds
+Total time: 46 minutes 29 seconds
+
+
+
+-------------------------------------------------------
+
+./bin/mallet import-dir --input \
+/media/66368D22368CF3F9/visualization/arXiv/reuters/export/text/mallet_7K \
+--output reuters_7K.mallet \
+--keep-sequence --remove-stopwords \
+--extra-stopwords /home/cho/programs/c++/svn/projects/src/mains/textsearch/stop_list.txt 
+
+
+./bin/mallet train-topics  --input reuters_7K.mallet \
+--num-topics 100 --num-top-words 100 \
+--optimize-interval 20 \
+--output-state reuters_7K_state.gz \
+--output-topic-keys reuters_7K_topic_words.txt \
+--output-doc-topics reuters_7K_doc_topics.txt
+
+Total time: 8 minutes 37 seconds
+
+-------------------------------------------------------
+
+
+
+./bin/mallet import-dir --input \
+/media/66368D22368CF3F9/visualization/arXiv/reuters/export/text/mallet_200 \
+--output reuters_200.mallet \
+--keep-sequence --remove-stopwords \
+--extra-stopwords /home/cho/programs/c++/svn/projects/src/mains/textsearch/stop_list.txt 
+
+
+
+
+./bin/mallet train-topics  --input reuters_200.mallet \
+--num-topics 20 --num-top-words 50 \
+--optimize-interval 20 \
+--output-state reuters_200_state.gz \
+--output-topic-keys reuters_200_topic_words.txt \
+--output-doc-topics reuters_200_doc_topics.txt
+
+
+Total time: 16 seconds
+
+./bin/mallet import-dir --input \
+/media/66368D22368CF3F9/visualization/arXiv/reuters/export/text/mallet_43K/topic_docs \
+--output reuters_synthesized_100.mallet \
+--keep-sequence 
+
+
+./bin/mallet train-topics  --input reuters_synthesized_100.mallet \
+--num-topics 25 --num-top-words 10 \
+--optimize-interval 10 \
+--output-state reuters_synthesized_100_state.gz \
+--output-topic-keys reuters_synthesized_100_topic_words.txt \
+--output-doc-topics reuters_synthesized_100_doc_topics.txt

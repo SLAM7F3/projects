@@ -1,0 +1,80 @@
+// TODO: optimize using bilinear lookups to get half the number of lookups
+void gaussianBlur( uniform samplerRECT inputLabASampler,
+				  uniform float2 delta,
+				  uniform float2 sigmaTwoSigmaSquared,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	float sigma = sigmaTwoSigmaSquared.x;	
+	float twoSigmaSquared = sigmaTwoSigmaSquared.y;
+
+	float centerL = texRECT( inputLabASampler, xy ).x;
+	float sum = centerL;
+	float normalization = 1;
+
+	float halfWidth = float( 2 * sigma );
+
+	for( float d = 1; d <= halfWidth; ++d )
+	{
+		float dSquared = d * d;
+		float kernel = exp( -dSquared / twoSigmaSquared );
+		normalization += 2 * kernel;
+		
+		float L0 = texRECT( inputLabASampler, xy - d * delta ).x;
+		float L1 = texRECT( inputLabASampler, xy + d * delta ).x;
+		sum += kernel * ( L0 + L1 );
+	}
+	
+	colorOut = sum / normalization;
+}
+
+void gaussianBlurSubtractAndSmoothStep( uniform samplerRECT largeXBlurredLabASampler,
+									   uniform samplerRECT smallBlurredLabASampler,
+									   
+									   uniform float2 delta,
+									   uniform float2 sigmaTwoSigmaSquared,
+									   uniform float2 tauPhi,
+									   
+									   float2 xy : WPOS,
+									   
+									   out float colorOut : COLOR )
+{	
+	float sigma = sigmaTwoSigmaSquared.x;	
+	float twoSigmaSquared = sigmaTwoSigmaSquared.y;
+	float tau = tauPhi.x;
+	float phi = tauPhi.y;
+
+	float4 centerL = texRECT( largeXBlurredLabASampler, xy ).x;
+	float sum = centerL;
+	float normalization = 1;
+
+	float halfWidth = float( 2 * sigma );
+
+	for( float d = 1; d <= halfWidth; ++d )
+	{
+		float dSquared = d * d;
+		float kernel = exp( -dSquared / twoSigmaSquared );
+		normalization += 2 * kernel;
+		
+		float L0 = texRECT( largeXBlurredLabASampler, xy - d * delta ).x;
+		float L1 = texRECT( largeXBlurredLabASampler, xy + d * delta ).x;
+		sum += kernel * ( L0 + L1 );
+	}
+	
+	float largeBlurredCenterL = sum / normalization;
+	float smallBlurredCenterL = texRECT( smallBlurredLabASampler, xy ).x;
+	
+	// in original paper
+	// float difference = smallBlurredCenterL - tau * largeBlurredCenterL;
+	
+	// ours
+	float difference = ( smallBlurredCenterL - largeBlurredCenterL ) + tau;
+	
+	float edge = ( difference > 0 ) ?
+		1 :
+		1 + tanh( phi * difference );	
+	
+	colorOut = edge;
+}

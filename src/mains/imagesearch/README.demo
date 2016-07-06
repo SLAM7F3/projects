@@ -1,0 +1,155 @@
+===========================================================================
+Image Search Demo script
+===========================================================================
+Last updated on 5/23/12; 5/24/12; 1/8/13
+===========================================================================
+
+0.  Load in all hierarchies in order to store graphs within cache
+
+   -  Load edges for MIT2317, GC and NewsWrap
+
+D.  Current demo represents snapshot of a work in progress.  Much work remains
+to be done...
+
+
+I.  Start with kermit in thin and thick client viewers.  Display thumbnails
+and all edges in graph viewer for kermit before demo begins.
+
+  -  Nodes correspond to images.  Clicking on thumbnails selects nodes and
+vice versa
+
+  - Netcentric architecture underlying entire image search system enables
+    thin and thick client views to remain synchronized.  Database persists
+    pre-calculated as well as dynamically updated information as time rolls
+    along
+
+  - Edge coloring indicates SIFT content overlap
+
+II.  Load MIT2317 in thick and thin clients.
+
+  - Graph display provides overview of image archive's global structure.
+    Browser display enables drill down into individual photos and also shows
+    similar sibling thumbnails.
+ 
+  - Coloring and clustering have been performed in order to clump
+similar-lookiing photos together.  Click on some image and then view
+siblings within carousel.  Don't necessarily need to look at many similar
+images.  Instead, may want to have higher-level overview of entire image
+set.
+
+  - Zoom out so that all level-0 nodes are visible.  Turn off thumbnails.
+Then switch to level 1 within graph viewer.  Thick clients now displays
+O(200) rather than O(2000) nodes.  Pick parental siblings within carousel.
+Then press children radio button.  Move around vertically within graph
+pyramid within thin client.
+
+  - High-level overview of all O(2K) nodes provided by highest level in
+pyramid.
+
+III.  Load MIT32K+aerial in thick and thin clients
+
+  - Multiple connected components within graph.  Largest number down to
+smallest number of nodes.  Do NOT attempt to display all edges within
+level-zero graph!
+
+  - Add captions to 2 nodes within upper part of largest O(20K+) connected
+component.  Choose photos which have a dominant single object worthy of
+attention.  (MIT Dome = kermie green nodes; Green Building = Deep blue
+nodes) Eventually want to automatically propagate intelligence between
+marked and unmarked nodes.
+
+  -  Choose Node 10114 = dark purple node connecting upper branch to lower
+main part of largest connected component.  Switch to annotations tab.
+
+  - Add a new "stoplight" annotation in addition to existing "Prudential"
+and "truck" annotations.  Do NOT press submit.
+
+  - Press "Identify images with specified number of annotations" button to
+see some other previously annotated images.  Leads to concept of image
+attributes.
+
+  -  Click on attributes subtab.  Select aerial images.  No SIFT connection
+     between any MIT ground and aerial images.
+
+  -  TO FIX:  Display main image's attributes above main image window 
+     on attributes sub-tab.
+
+  -  TO FIX: Need to load time info for MIT32K and aerial frames
+
+IV.  Grand Canyon
+
+  - So far, we've been working with semi-cooperatively collected imagery.
+Our next data set was harvested from the internet.  So it represents an
+uncooperatively gathered set of imagery which is generally much more
+diverse and difficult to handle.
+
+  - Select aerial imagery.  Demonstrate weak connections with handful of
+    ground images in 1st and 2nd connected components.
+
+  - Display IR aerial images.  IR classification based upon imperfect BW
+    color classification
+
+  - Generate color histogram for some internet GC photos.  Search for other
+    photos with same dominant colorings
+
+  -  TO FIX:  Compute color histograms for IR aerial GC images.  Declare 
+     images to be IR if %(Grey+black+white) > 98%
+
+  -  TO FIX:  Load time info for GC imagery
+
+V.  NewsWrap 
+
+  - We now turn from working with discrete photo stills to continuous
+    video.  In particular, we'll now focus upon a clip from a news
+    broadcast which we've sampled at 5 Hz.  
+
+  - Relate idea by Kevin Brady and Charlie Dagli (G62) about
+    automatically monitoring different countries' news broadcasts for
+    topics of global interest
+
+  - Note tight clustering among 5 Hz video frames
+ 
+  - Woman vs stock market and single faded node which connects two clusters
+
+  - TO FIX (NOT REALISTIC FOR MAY DEMO): 
+	Display clusters within timeline viewer!
+  
+  - Face detection: Display all detected faces, >=3 detected faces and face
+    circles
+ 
+  - Search for n >= 5 faces if time permits
+
+
+VI.  Thunderstorm
+
+  - Video is becoming ubiquitous not only in the open-source world but also
+    in ISR applications.  In particular, aerial FMV is arguably one of the
+    most sought-after sources of intelligence for a variety of missions.
+
+  - Provide brief story about Tstorm-4 over AZ border with Mexico in May 2011
+
+  - Graph based upon lookpoint geometry rather than SIFT feature topology
+
+  - Turn on crosshairs in graph viewer to illustrate currently selected image
+
+  - Run sauron_client to display aircraft's instantaneous position and
+camera frustum superposed on DTED-2 map
+
+  - Press step forward button on main webpage in order to animate airplane
+    flight over AZ
+
+  - Goto Annotations tab.  Press "Identify images with specified number of
+    annotations" to see pre-annotated video frames stored in database.
+
+  - Select some annotated frame towards end of connected components. On
+Annotations tab underneath "Current image annotation manipulations, press
+press "Backproject points" in order to see geolocation corresponding to
+annotation.
+
+  - Animate movement of intruders through several video frames
+
+  - TO FIX:  Ask Delsey for help with placing time controls to right of
+    main image on Image Annotations tab
+
+
+

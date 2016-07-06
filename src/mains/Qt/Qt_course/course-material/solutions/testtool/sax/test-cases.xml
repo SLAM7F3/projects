@@ -1,0 +1,39 @@
+<test-specification>
+  <test-case name="resize-test">
+    <objective> 
+       Verify that the application window can resize.
+    </objective>
+    <input>
+       Using the window manager handles, resize the window
+    </input>
+    <output>
+       The content of the window should use all space.
+    </output>
+  </test-case>
+
+  <test-case name="load-test">
+    <objective> 
+       Verify that the application can load data
+    </objective>
+    <input>
+      select load from the file menu and chose an image file
+    </input>
+    <output>
+       The content of the file should be loaded into the program.
+    </output>
+  </test-case>
+
+  <test-case name="save-test">
+    <objective> 
+       Verify that the application can save drawings in png
+    </objective>
+    <input>
+       Draw a nice drawing, then chose file->save and type the name test.png
+    </input>
+    <output>
+       The image should be saved in the PNG format.
+    </output>
+  </test-case>
+
+
+</test-specification>

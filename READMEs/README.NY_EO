@@ -1,0 +1,42 @@
+============================================================================
+Processing notes for 11-bit NYC satellite EO imagery
+============================================================================
+Last updated on 6/15/07; 7/5/07
+============================================================================
+
+*.  First save geotiff meta data from raw NYC satellite tiles into text
+files.  These metadata are destroyed by Adobe Photoshop and must be
+restored after color modifying with PhotoShop is completed:
+
+listgeo -no_norm orig_raw_r3c1.tif > orig_raw_r3c1.geo
+
+*.  Restore geotiff meta data to modified photoshop files via
+
+  geotifcp -g original.geo modified.tif modified_geotiff.tif 
+
+*.  Create new TIF file containing multiple levels of detail:
+
+gdaladdo -r average raw_r3c1.tif 2 4 8 16 32 64 128 256
+
+Rename output multi-resolution "raw_r3c1.tif" file as multires_r3c1.tif.
+
+*.  Generate multi-resolution surface using OSGDEM:
+
+osgdem -t multires_r3c1.tif -l 8 -o r3c1.ive -a r3c1_l8.osga
+
+
+*.  As of 6/15/07, we suspect there is a bad endianness problem in the
+recolored TIF files which Ross generated earlier this week.  We tried to
+generate both big-endian and little-endian versions of Ross' recolored
+file:
+
+convert -endian MSB r3c1_ross.tif MSB_endian_ross.tif
+
+convert -endian LSB r3c1_ross.tif LSB_endian_ross.tif
+
+Unfortunately, neither output file yields a colored .osga file when we run
+it through osgdem...
+
+*.  In late June, Ross made a few more conversions using PhotoShop.  We
+empirically found that only the "8 bit" output version which he created
+yielded viable OSGDEM output.  

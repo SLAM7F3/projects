@@ -1,0 +1,15 @@
+# ~/bin/MAKE program=abstraction
+# ~/bin/MAKE program=aerial_drape
+~/bin/MAKE program=apartment
+~/bin/MAKE program=cars
+# ~/bin/MAKE program=drape_bldg
+~/bin/MAKE program=fitimage
+~/bin/MAKE program=ground_bldgs
+~/bin/MAKE program=hsv_colortable
+~/bin/MAKE program=multinets
+# ~/bin/MAKE program=ortho
+~/bin/MAKE program=sat_comm
+~/bin/MAKE program=scriptgen
+# ~/bin/MAKE program=streets
+~/bin/MAKE program=trees
+# ~/bin/MAKE program=voronoi

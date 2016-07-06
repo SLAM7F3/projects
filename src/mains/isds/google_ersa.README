@@ -1,0 +1,75 @@
+============================================================================
+README notes for setting up Google ERSA on an alien internet connection
+============================================================================
+Last updated on 7/11/07; 7/12/07
+============================================================================
+
+0.  To manually reset IP address for ISDS3D laptop, chant:
+
+	 ifconfig eth0 155.34.100.67 netmask 255.255.255.0 
+
+	 route add default gw 155.34.100.1
+
+Be sure to kill any dhcp clients by chanting
+
+	 ps -ax | grep dhcp
+
+and then kill any with /sbin/dhclient appearing in their names
+
+
+1.  In /usr/local/apache-tomcat-6.0.13/webapps/ERSA/load.kml, change IP
+address in 3 locations to be IP address for ISDS3D laptop.  Also change
+refreshinterval for plane icons from 5 secs to 1 sec.
+
+
+2.  Start tomcat server by chanting
+
+	/usr/local/apache-tomcat-6.0.13/bin/startup.sh
+
+3. Start Michelle Hurt's data server by chanting
+
+	cd /home/cho/ersa/playback 
+	/home/cho/ersa/playback/startPlayback.sh
+
+4.  If queried to enter Solipsys license information, cat 
+/home/cho/ersa/ERSA.4.5.22/lib/license.prp contents:
+
+isds3d:lib% cat license.prp 
+#License file
+#Wed Feb 1 00:00:00 EDT 2003
+License.key=115-HUA-QM1-7FW-7EU-CZN-KF6
+License.customer=tdfmsctdev41
+
+5.  Copy web_orig.xml with port numbers appropriate for Michelle Hurt's
+data server to /usr/local/apache-tomcat-6.0.13/webapps/ERSA/WEB-INF/web.xml.
+
+6.  If we need to reinstall either a new version of load.kml or web.xml, be
+sure to shut down apache server gracefull by chanting
+
+ 	/usr/local/apache-tomcat-6.0.13/bin/shutdown.sh
+
+Also be sure to manually kill rogue java processes by chanting
+
+
+ ps -ef | grep java
+
+cho       3733     1  1 14:37 pts/2    00:00:37
+/usr/local/java/jre1.5.0_06/bin/java
+-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+-Djava.util.logging.config.file=/usr/local/apache-tomcat-6.0.13/conf/logging.properties -Djava.endorsed.dirs=/usr/local/apache-tomcat-6.0.13/endorsed -classpath :/usr/local/apache-tomcat-6.0.13/bin/bootstrap.jar:/usr/local/apache-tomcat-6.0.13/bin/commons-logging-api.jar -Dcatalina.base=/usr/local/apache-tomcat-6.0.13 -Dcatalina.home=/usr/local/apache-tomcat-6.0.13 -Djava.io.tmpdir=/usr/local/apache-tomcat-6.0.13/temp org.apache.catalina.startup.Bootstrap start
+
+root      4478  4408  0 15:18 pts/5    00:00:00 grep java
+
+[cho@isds3d WEB-INF]# kill -9 3733
+
+7.  Make sure circularPlayback = 1 within
+/home/cho/ersa/playback/UDPPlayer.config to avoid playback data from
+terminating after 1/2 hour.
+
+================================================================
+
+inside of GoogleEarth on any machine which can ping ISDS3D laptop, we need
+to tell GE where to fetch its KML files from:
+ 
+	add->network link->http://IP address:8080/ERSA/load.kml
+

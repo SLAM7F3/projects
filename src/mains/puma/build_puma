@@ -1,0 +1,16 @@
+~/bin/MAKE program=densecloud
+~/bin/MAKE program=generate_peter_inputs
+~/bin/MAKE program=gpsfit
+~/bin/MAKE program=gps_waypoints
+~/bin/MAKE program=mosaic
+~/bin/MAKE program=orthorectify
+~/bin/MAKE program=parse_puma_metadata
+~/bin/MAKE program=puma_pass_scripts
+~/bin/MAKE program=restricted_asift
+~/bin/MAKE program=separated_packages
+~/bin/MAKE program=timings
+~/bin/MAKE program=triangulate
+~/bin/MAKE program=video_propagator
+~/bin/MAKE program=visualize_puma_metadata
+~/bin/MAKE program=vsfm_vs_orig_images
+~/bin/MAKE program=write_viewbundler_script

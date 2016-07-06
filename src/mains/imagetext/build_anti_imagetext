@@ -1,0 +1,7 @@
+/bin/rm ./binary_dictionary
+/bin/rm ./chars2regions
+/bin/rm ./detect_text
+/bin/rm ./ER_param_bounds
+/bin/rm ./eulertest
+/bin/rm ./initial_descriptors
+/bin/rm ./reasonable_chips

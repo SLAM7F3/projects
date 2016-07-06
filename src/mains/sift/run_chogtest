@@ -1,0 +1,14 @@
+./chogtest \
+--newpass /data/ImageEngine/kermit/kermit000.jpg \
+--newpass /data/ImageEngine/kermit/kermit002.jpg 
+
+# --newpass ./tower_pushcart.jpg \
+# --newpass ./ts.jpg
+
+
+
+
+# --newpass ./ts.jpg \
+# --newpass ./t2_pc.jpg
+
+# --newpass /home/cho/programs/c++/svn/projects/src/mains/newyork/images/empire_night.jpg 

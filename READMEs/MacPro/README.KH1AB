@@ -1,0 +1,119 @@
+=============================================================================
+Kitty Hawk 1A and 1B notes
+=============================================================================
+Last updated on 4/1/15; 4/6/15; 4/13/15
+=============================================================================
+
+
+KH1A:
+
+Shape file: /startown-gpfs/ssdws03/conf/shapes/kitty_hawk/area_a1.shp
+
+45 resources 
+518199 rigs
+99598 extracted physical instances of house_number subtype
+27106 verified physical house numbers
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_local-MacPro_kittyhawk_1a_150303_170952.xml"
+"project_name" : "kittyhawk_1a"
+
+Image path vs camera parameters in /cc2-gpfs/storage/dev/users/pcho/img_vs_cam_params/kittyhawk_1a_0.txt 
+
+------------------------------
+KH1A_remaining:
+
+12 resources
+131411 rigs
+23968 extracted physical instances of house_number subtype
+6829 verified physical house numbers
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_local-MacPro_kittyhawk_1a-remaining_150303_225813.xml",
+"project_name" : "kittyhawk_1a-remaining"
+
+Image path vs camera parameters in /cc2-gpfs/storage/dev/users/pcho/img_vs_cam_params/kittyhawk_1a-remaining_0.txt 
+
+------------------------------
+KH1A_remaining2:
+
+4 resources
+61742 rigs
+10931 extracted physical instances of house_number subtype
+4108 verified physical house numbers
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1a-remaining2_150327_151730.xml"
+"project_name" : "kittyhawk_1a-remaining2"
+
+Image path vs camera parameters in /cc2-gpfs/storage/dev/users/pcho/img_vs_cam_params/kittyhawk_1a-remaining2_0.txt 
+
+
+Resources with missing lidar data:
+	/startown-gpfs/sputnik01/supersize/copyprocess/resource/bay_area/bay_area-v12-20141220_174914-h9-imdata/
+
+
+
+Physical instance house number precision 
+ = (27106 + 6829 + 4108) / (99598 + 23968 + 10931)
+ = 38043 / 134497
+ = 28.2 %
+
+============================================================================================
+
+KH1B:
+
+Shape file = /startown-gpfs/ssdws03/conf/shapes/kitty_hawk_1b/area_a2.shp
+
+199 resources
+2171103 rigs
+1.40M 2D number detections
+1.39M 3D number backprojections
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_150325_102822.xml"
+"project_name" : "kittyhawk_1b"
+
+Image path vs camera parameters in /cc2-gpfs/storage/dev/users/pcho/img_vs_cam_params/kittyhawk_1b_0.txt 
+
+Missing lidar resource:
+
+   /startown-gpfs/sputnik02/supersize/conf/imdata/kittyhawk_1b/bay_area-v12-20141220_174914-h9-imdata/
+
+------------------------------
+KH1B_remaining:
+
+12 resources
+206265 rigs
+1.22K 2D number detections
+1.07K 3D number backprojections
+
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_remaining_150329_191310.xml"
+"project_name" : "kittyhawk_1b_remaining"
+
+Image path vs camera parameters in /cc2-gpfs/storage/dev/users/pcho/img_vs_cam_params/kittyhawk_1b_remaining_0.txt 
+
+KH1B_remaining_snug2.shp
+
+
+Missing lidar resource:
+
+ /startown-gpfs/sputnik02/supersize/conf/imdata/kittyhawk_1b_remaining/bay_area-s15-20150311_195826-q16-imdata/ 
+
+------------------------------
+KH1B_remaining2:
+
+16 resources
+272113 rigs
+95.7K 2D number detections
+80.9K 3D number backprojections
+
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_kittyhawk_1b_remaining2_150401_073815.xml"
+"project_name" : "kittyhawk_1b_remaining2"
+
+Image path vs camera parameters in /cc2-gpfs/storage/dev/users/pcho/img_vs_cam_params/kittyhawk_1b_remaining2_0.txt 
+
+
+Missing lidar resource:
+	/startown-gpfs/sputnik02/supersize/conf/imdata/kittyhawk_1b_remaining2/bay_area-x15-20150127_171013-h10-imdata/ 
+        /startown-gpfs/sputnik02/supersize/conf/imdata/kittyhawk_1b_remaining2/bay_area-y15-20150102_161125-h10-imdata/ 
+
+

@@ -1,0 +1,47 @@
+===========================================================================================
+Grabcut notes
+===========================================================================================
+Last updated on 1/13/16; 1/14/16; 2/2/16
+===========================================================================================
+
+*.  Orthoimages for 1 mile**2 around Mathilda are sitting in subdirs of 
+
+startown-gpfs/sputnik03/supersize/labeling_resources/rdn_sqmile/rdn_ortho_small/images-jpg/13/
+
+
+*.  Lidar height and intensity orthoimages are sitting in subdirs of 
+
+/startown-gpfs/sputnik04/supersize/data/bay_area/rdn_sqmile/rdn_ortho_small
+
+*.  Images of multi-signs are sitting in /data/peter_stuff/grabcut/multisigns
+
+*.  Tho recommends checking out procedure used by creators of Berkeley
+Segmentation Dataset and Benchmark for ideas about how to practically
+improve image segmentation labeling.
+
+*.  Method for importing imagef file (comes from John's
+dl_prepare_dataset_utils.c:
+
+ * Description : Reads a binary imagef file.
+ *
+ * Inputs: filename      Filename.
+ *         [out] imagef  Image.
+ *
+ * Output: P_IMF_OK / P_IMF_FAIL
+ *
+ *****************************************************************************/
+static int pd_alloc_read_imagef(const char *filename, p_imagef *imagef)
+{
+  rw_t *rw = NULL;
+
+  assert(imagef);
+  assert(filename);
+
+  if((rw = rw_open(filename, "rb")) == NULL){
+    return P_IMF_FAIL;
+  }
+  rw_read_imagef(rw, "imagef", imagef);
+  rw_close(rw);
+
+  return P_IMF_OK;
+}

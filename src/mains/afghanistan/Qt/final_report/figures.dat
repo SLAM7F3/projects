@@ -1,0 +1,147 @@
+=============================================================================
+Final report figures & references
+=============================================================================
+Last updated on 2/22/11; 3/15/11; 3/16/11
+=============================================================================
+
+1a.  LOST DTED map covering Afghanistan and Pakistan colored according to
+terrain height.
+
+1b.  Zoomed view of 3D ground map.  Black holes in terrain indicate missing
+IFSAR data.
+
+2.  Firefox web browser window through which nearly all user interactions
+with LOST take place.
+
+3.  Communications block diagram for LOST 
+
+ [ Block diagram illustrates thin client request going out via AJAX, Qt
+server, 3D thick client, and ActiveMQ message polling ]
+
+4.  Region of Interest entered via 2D map appears as 3D box within the
+OpenSceneGraph viewer.
+
+5.  Ground point targets entered via 2D map appear as 3D "Sign Posts"
+within the OpenSceneGraph viewer.
+
+6.  Side and top-down views of aerial sensor's minimum and maximum ground
+range plus its azimuthal field of regard.
+
+7.  Circular flight path entered via 2D map interface and rendered in the
+3D viewer.
+
+8.  Zoomed view in OpenSceneGraph window of 3D model airplane located 
+above DTED map mountains.
+
+9.  Custom flight path can be entered by manipulating waypoints within 2D
+map interface.
+
+10.  Raytracing ground cells  (Paul drawing)
+
+11a.  Coarse raytracing for speed with visible ground cell (Paul drawing)
+
+11b.  Finer raytracing if necessary with occluded ground cell (Paul
+drawing)
+
+12.  Instantaneous terrain visibility results inside a Region of Interest.
+
+13a.  Zoomed view of instantaneous terrain visibility map.
+
+13b.  Rotated 3D map provides views of occluded valley regions.
+
+14.  Time averaged terrain visibility inside a Region of Interest.
+
+15.  Air-to-ground ray colorings.
+
+16.  Point target's visibility over entire flight path.
+
+17.  Some general skymap cartoon (Paul drawing)
+
+18.  Visibility heading skymap depicted as a vector field at the aircraft's
+altitude.
+
+19.  Manual flight path planning following visibility skymap.
+
+20.  Elliptical flight path recommended by machine which maximizes view of
+three ground targets.
+
+21.  Locations for Afghanistan airfields read in from a shape file.
+
+22.  LOST flight path and ground target info imported via shape file into
+Falcon View
+
+23.  Need some screen shot of raster image background appearing on 2D map.
+
+24.  Time averaged Region of Interest visibility exported as a raster image
+and draped onto Google Earth DTED.
+
+25.  Terrain visibility map for a panoramic video camera hoisted atop an 80
+ft mast.  Raytracing computation was performed using ladar rather than
+IFSAR DTED.
+
+=============================================================================
+References
+
+
+1.  See http://www2.jpl.nasa.gov/srtm/ for information about the Shuttle
+Radar Topography Mission.
+
+2.  See http://www.openscenegraph.org/projects/osg for information about
+OpenSceneGraph, a high performance 3D graphics toolkit.
+
+3.  See http://www.google.clom/earth/index.html for information about
+Google earth.
+
+4.  See http://openlayers.org/ for information about the OpenLayers, a
+javascript library for displaying map data in most web browsers.
+
+5.  See http://qt.nokia.com/ for information about the Qt cross-platform
+application and UI framework.
+
+6.  See http://activemq.apache.org/ for information about ActiveMQ, an open
+source messaging and integration patterns provider.
+
+7.  Foley, J.D. et al, "Introduction to Computer Graphics,"  1993,
+Addison-Wesley Professional, 632 pp.
+
+8.  See http://www.aviary.com/ for information about Aviary, a free suite
+of online creation tools.
+
+
+
+=============================================================================
+
+Acknowledgements:
+
+
+
+Michael Yee (G104)
+
+
+
+Kristin Healy (G105)
+ 
+Allison Hoch (G105)
+
+Melissa Meyers (G101)
+
+Steven Pohlig (G105)
+
+Tim Schreiner (G104)
+
+
+
+
+
+Kenneth King Ho Lee (MIT ACL)
+
+Luca Bertuccelli (MIT ACL)
+
+Jon How (MIT ACL)
+
+
+
+
+Unused figures
+
+*.  Aircraft flying along custom path

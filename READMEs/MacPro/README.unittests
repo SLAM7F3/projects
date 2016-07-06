@@ -1,0 +1,305 @@
+=============================================================================
+Unit Test notes
+=============================================================================
+Last updated on 3/28/16; 3/29/16; 4/4/16
+=============================================================================
+
+*.  Running road signs & house numbers on distrib for mini-project
+j125_comparison_area1:
+
+  1a.  Choose j125_mini.shp [contains 15 tiles] for road signs (centered upon freeway clover)
+and press "SELECT" button located in bottom row.
+
+  1b.  Choose j125_mini2.shp [contains 8 tiles] for house numbers (centered upon residential
+streets) and press "SELECT" button located in bottom row.
+
+  2.  Press Settings button at top and then uncheck all buttons related to
+building 3D model.  Press "House Numbers" or "Signs" button 
+
+  3.  Set Priority --> 80
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest -nowin 
+-do1 'c3 distrib prj_check,road_signs 
+-pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest 
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_103344.xml 
+-prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv
+80 -org pcho@ubuntu 
+-pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest_dnn_cpu 
+-pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest_dnn_gpu 
+-shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160328_103346.shape'
+
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest -nowin -do1 'c3 distrib prj_check,house_numbers -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_104148.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160328_104150.shape'
+
+
+Roadsigns using latest master branch for j125_comparison_area1 project on j125_mini.shp
+  run_id = /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_112331.xml
+
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_112331.xml"}).toArray()
+
+
+Housenumbers using latest master branch for j125_comparison_area1 project on j125_mini2.shp
+  run_id = /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_113239.xml
+
+
+*.  Start of road sign jobs launched via c3-viewer gui is logged within run
+collection on fly14 mongo database.
+
+
+db.run.find({project_name:"j125_comparison_area1"}).count()
+> 26
+db.run.find({state:"started", project_name:"j125_comparison_area1"}).count()
+
+db.run.find({state:"finished", project_name:"j125_comparison_area1"}).count()
+> 9
+
+db.run.find({run_type:"road_sign", state:"finished", project_name:"j125_comparison_area1"}).count()
+> 5
+
+db.run.find({run_type:"house_number", state:"finished", project_name:"j125_comparison_area1"}).count()
+> 4
+
+Count all detection jobs started on distrib after 10 am, Mon Mar 28, 2016:
+
+  db.run.find({"created": {"$gte": ISODate("2016-03-28T18:00:00.000Z")} }).count()
+  >  4
+
+Note:  UTC is 7 hours ahead of Silicon Valley time during daylight savings.
+
+*.  Need to deploy "vanilla" pwin binary as well as
+"pwin_dnn_cpu" binary in order to run roadsign and house number test jobs
+on distrib.  Don't need "pwin_dnn_gpu" for either roadsign or housenumber
+jobs as of Mar 2016.
+
+==========================================================================================
+Local Mar 29 master branch
+==========================================================================================
+
+*.  Deployment of our local Mar 29 master branch:
+
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_cpu in startown
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed in startown
+
+Run c3-viewer with our Mar 29 local master branch:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv -do \
+"view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed \
+-pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_cpu"
+
+Roadsigns: B27564 finished with no job crashes
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed -nowin -do1 'c3 distrib prj_check,road_signs -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_125442.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_125443.shape'
+
+Roadsigns: B27605  rerunning as of Tues Mar 29 at 2:13 pm to check for
+randomness in roadsign results; Finished with no crashes
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed -nowin -do1 'c3 distrib prj_check,road_signs -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_141326.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 84 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_141328.shape'
+
+
+House numbers: B27579 started on distrib at 1:18 pm on Tues Mar 29, 2016
+(killed around 2:30 pm on Tues Mar 29, 2016 after we determined house
+number results looked identical on master and uf-cleanup branches)
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed -nowin -do1 'c3 distrib prj_check,house_numbers -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_131718.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_ae5aed_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_131720.shape'
+
+==========================================================================================
+Local Mar 28 master branch
+==========================================================================================
+
+*.  Deployment of our local Mar 28 master branch :
+
+make -C /home/pcho/sputnik/pwin/build/linux64 clean
+make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -dnn_cpu -pwin -par LAPACK=1 
+
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_cpu in startown
+
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -pwin -par LAPACK=1 
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 in startown
+
+Run c3-viewer with our Mar 28 local master branch:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv -do \
+"view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 \
+-pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_cpu"
+
+
+B27607: Rerunning on Tues Mar 29 at 2:17 pm to check for randomness in
+roadsign results; finished with no crashes
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 -nowin -do1 'c3 distrib prj_check,road_signs -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_141539.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 84 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_141540.shape'
+
+
+Mar 28 Local master binary test:
+
+Road signs: B27483: Finished with no job crashes
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_092902.xml",
+
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 -nowin -do1 'c3 distrib prj_check,road_signs -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_092902.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_092903.shape'
+
+House numbers: B27486: Finished with no job crashes
+"run_id": "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml"
+
+db.detection.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml"}).count()
+> 599
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 -nowin -do1 'c3 distrib prj_check,house_numbers -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4 -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_35a1c4_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_093056.shape'
+
+
+> db.detection.find({"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml"}).count()
+599
+
+> db.detection.distinct("description", {run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml"}).length
+208
+
+> db.detection.find({"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml"}).count()
+599
+
+> db.detection.distinct("description", {run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml"}).length
+208
+
+==========================================================================================
+PR cleanup branch (master merged after UF branch was closed and merged)
+==========================================================================================
+
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a_dnn_cpu
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a in startown
+
+
+Run c3-viewer with custom binary for pr_cleanup branch:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv -do \
+"view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a \
+-pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a_dnn_cpu"
+
+Select j125_mini2.shp for small house number region containing 8 tiles.
+This small shape contains level 14 tiles 4574,7299 and 4574,3000
+
+
+House numbers: B27622 started at 2:41 pm on Tues Mar 29, 2016; finished
+with no job crashes
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a -nowin -do1 'c3 distrib prj_check,house_numbers -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_144046.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 84 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_pr_cleanup/pwin_8fc79a_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160329_144047.shape'
+
+
+> db.detection.find({"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_144046.xml"}).count()
+203
+
+> db.detection.distinct("description", {run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_144046.xml"}).length
+98
+
+*.  These house number results do NOT agree with those from recent MASTER
+and UF-CLEANUP branches.  They should!  :(
+
+*.  On Mon 4/4/16, we ran our old demo program on both the PR_cleanup and
+UF_cleanup branches.  They appear to yield identical results.  So the bug
+in the PR_cleanup branch is very unlikely to be in any of the algorithm
+parts of the house number pipeline.
+
+
+
+==========================================================================================
+Union-find branch 
+==========================================================================================
+
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_cpu in startown
+Added /gpfs/mercury11/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_cpu in pv40
+Added /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc in startown
+Added /gpfs/mercury11/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc in pv40
+
+
+Run c3-viewer with custom binary for uf_cleanup branch:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin -vv -do \
+"view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc \
+-pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_cpu"
+
+
+Union-find binary test:
+
+B26685 (road signs)
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc -nowin -do1 'c3 distrib prj_check,road_signs -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150240.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160328_150241.shape'
+
+Finished with no crashes
+
+"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150240.xml",
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150240.xml"}).toArray()
+
+
+B26688 (house numbers)
+
+umask 2; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc -nowin -do1 'c3 distrib prj_check,house_numbers -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_uf_cleanup/pwin_d7b9dc_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160328_150423.shape'
+
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml"}).toArray()
+
+db.detection.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml"}).count()
+> 599
+
+
+
+ db.detection.distinct("description", {run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml"}).length
+> 208
+
+ db.detection.distinct("description", {run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml"}).length
+> 208
+
+
+
+db.detection.find({description:"11655", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_150422.xml"}).count()
+
+
+db.detection.find({description:"11655", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_093055.xml"}).count()
+
+
+
+
+
+==================================================================
+Comparison of road sign results from 3 mini j125_comparison_1a runs
+for 3 different master branches
+
+
+master latest (as of Mon Mar 28 in the afternoon)
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_112331.xml"}).toArray()
+
+
+Local master Mar29 branch
+
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_125442.xml"}).toArray()
+
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_141326.xml"}).toArray()
+
+
+Roadsign results from these two runs of the SAME local master binary differ!
+
+
+Local master Mar 28 branch
+
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_092902.xml"}).toArray()
+
+db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160329_141539.xml"}).toArray()
+
+Roadsign results from these two runs of the SAME local master binary differ!
+
+
+
+*.  Running roadsigns locally on Thinkmate:
+
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -nowin -do 'pr road_signs -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_v3.6/latest -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160328_100952.xml -prj j125_comparison_area1 -dhost st21f01ls-fly0001.st.geo.apple.com -priv 80 -org pcho@ubuntu -pwcmd_dnn_cpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_v3.6/latest_dnn_cpu -pwcmd_dnn_gpu /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_v3.6/latest_dnn_gpu -shp /startown-gpfs/sputnik01/distrib_batch_shapes/shape_pcho_j125_comparison_area1_160328_100953.shape'
+
+
+
+db.detection.find({"created": {"$gte": ISODate("2016-27-03T00:00:00.000Z")} }).count()
+
+

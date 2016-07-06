@@ -1,0 +1,253 @@
+===========================================================================
+Image Search charts
+===========================================================================
+Last updated on 8/16/12; 8/21/12
+===========================================================================
+
+I.  Image graphs
+
+  	SIFT matching	(kermit)
+
+	[ Search system architecture ]
+
+	Pyramid hierarchy formation  (MIT2317)
+	
+II.  Image annotations & attributes
+
+	Graph markings, node captions & picture labels   (MIT30K)
+
+	Aerial vs ground views (MIT30K and GC)
+
+III.  Image queries
+
+	Frequency selection (GC)
+
+	Color content (GC)
+
+	Video transitions (News Wrap)
+
+	Face detection (News Wrap)
+
+=====================================================================
+
+0.  Title chart
+
+1.  Motivation & problem statement
+
+.....................................................................
+2.  Outline  [1 kermit and 1 MIT2317 AVI movie in this section]
+.....................................................................
+
+3.  SIFT Feature Matching (kermit)
+
+	kermit000.jpg vs kermit002.jpg
+	kermit0_SIFT_features.png vs kermit2_SIFT_features.png
+	kermit0_SIFT_matches.png vs kermit2_SIFT_matches.png
+
+4.  Search System Front End
+
+	kermit_thin_thick.png as placeholder for eventual AVI movie of
+	image search system for kermit
+
+	KERMIT AVI movie:  
+
+	- Nodes turn into thumbnails.
+
+	- Clicking on nodes selects carousel thumbnails and vice-versa
+
+	- Edge coloring indicates SIFT content overlap
+
+5.  Search System Diagram
+
+6.  Image Clustering
+
+	MIT2317_thin_thick.png
+	node_clusters.png
+	node_clusters2.png
+
+   - MIT2317 AVI movie is close analog of existing MIT30K_imagesearch AVI
+     movie
+
+   - Eventually replace with movie of MIT2317 at level 0
+
+   - Graph display provides overview of image archive's global structure.
+     Browser display enables drill down into individual photos and also shows
+     similar sibling thumbnails.
+ 
+   - Coloring and clustering have been performed in order to clump
+     similar-lookiing photos together.  Click on some image and then view
+     siblings within carousel.  Don't necessarily need to look at many similar
+     images.  Instead, may want to have higher-level overview of entire image
+     set.
+
+7.  Image Pyramiding
+
+     level0_MIT2317.png
+     level1_MIT2317.png
+     level2_MIT2317.png
+     level2_MIT2317_thumbnails.png
+
+   - Zoom out so that all level-0 nodes are visible.  Turn off thumbnails.
+     Then switch to level 1 within graph viewer.  Thick clients now displays
+     O(200) rather than O(2000) nodes.  Pick parental siblings within carousel.
+     Then press children radio button.  Move around vertically within graph
+     pyramid within thin client.
+
+   - High-level overview of all O(2K) nodes provided by highest level in
+     pyramid.
+
+
+.....................................................................
+8.  Outline  [ 1 MIT30K AVI and 1 GC AVI]
+.....................................................................
+
+9.  Graph Labeling
+
+    components_MIT32K.png 
+	(movie of MIT32K with connected components labeled ??)
+
+  - Multiple connected components within graph.  Largest number down to
+smallest number of nodes.  Do NOT attempt to display all edges within
+level-zero graph!
+
+10.  Node Captions
+
+   killian_annot1.png
+   killian_annot2.png
+   killian_annot3.png
+
+  - Add captions to 2 nodes within upper part of largest O(20K+) connected
+component.  Choose photos which have a dominant single object worthy of
+attention.  (MIT Dome = kermie green nodes; Green Building = Deep blue
+nodes) Eventually want to automatically propagate intelligence between
+marked and unmarked nodes.
+
+11.  Image Annotations
+
+   boat_labels.png
+   multi_labels.png
+
+  -  Choose Node 10114 = dark purple node connecting upper branch to lower
+main part of largest connected component.  Switch to annotations tab.
+
+  - Add a new "stoplight" annotation in addition to existing "Prudential"
+and "truck" annotations.  Do NOT press submit.
+
+  - Press "Identify images with specified number of annotations" button to
+see some other previously annotated images.  Leads to concept of image
+attributes.
+
+12.  Aerial vs Ground Views: Urban Scene
+
+	aerial_MIT32K_2.png
+
+     MIT30K AVI movie: View multiple connected components, select aerial
+	attribute, pick few aerial photos
+
+  -  Click on attributes subtab.  Select aerial images.  No SIFT connection
+     between any MIT ground and aerial images.
+
+13.  Aerial vs Ground Views: Grand Canyon
+	
+
+	GC AVI movie: View multiple connected components, focus on first
+	connected component, view diverse flickr thumbnails, select aerial
+	attribute, pick one aerial video frame
+
+	GC_first_cc.png
+	GC_aerial.png
+
+  - So far, we've been working with semi-cooperatively collected imagery.
+    Our next data set was harvested from the internet.  So it represents an
+    uncooperatively gathered set of imagery which is generally much more
+    diverse and difficult to handle.
+
+  - Select aerial imagery.  Demonstrate weak connections with handful of
+    ground images in 1st and 2nd connected components.
+
+	GC_airgrnd_1.png
+	GC_airgrnd_2.png
+	GC_airgrnd_3.png
+	GC_airgrnd_4.png
+
+.....................................................................
+14.  Outline [ 1 GC IR AVI movie, 1 Newswrap AVI movie, 1 face detection movie]
+.....................................................................
+
+15.  Image Frequency Selection 
+
+   GC IR AVI movie:  Select IR attribute, view IR connected components,
+   view several IR thumbnails.
+
+   GC_IR_components.png
+   GC_IR2a.png
+
+  - Display Grand Canyon connected component with IR aerial images.  
+
+  - No SIFT connections between IR and EO - not surprising given that
+    intensity gradients differ markedly in different electromagnetic bands
+
+  - IR classification based upon imperfect BW color classification
+
+16.  Color Quantization 
+
+    GC_red_color.png
+    toddslagter.png
+    quantized_toddslagter.png
+
+  - Generate color histogram for some internet GC photos.  Search for other
+    photos with same dominant colorings
+
+17.  Video Frame Search
+
+  Newswrap AVI: View multiple connected components with edges turned ON.  
+
+  - newswrap1a.png
+
+  - We now turn from working with discrete photo stills to continuous
+    video.  In particular, we'll now focus upon a clip from a news
+    broadcast which we've sampled at 5 Hz.  
+
+  - Relate idea by Kevin Brady and Charlie Dagli (G62) about
+    automatically monitoring different countries' news broadcasts for
+    topics of global interest
+
+  - Note tight clustering among 5 Hz video frames
+ 
+18.  Video Transitions
+
+   cluster1.png
+   cluster2.png
+   cluster3.png
+   cluster4.png
+   cluster_fade.png
+
+  - Woman vs stock market and single faded node which connects two clusters
+
+*.  Face Detection
+  
+   Face AVI:  Select face classification, click on several nodes with faces,
+
+
+  - Face detection: Display all detected faces, >=3 detected faces and face
+    circles
+
+    newswrap_faces.png
+
+19.  Face Querying
+
+    newswrap_more_4_faces.png
+ 
+......................................
+
+20.  Outline
+
+21.  Ongoing & Future work
+
+	- Text detection	(borders_Ng.png)
+	- 3D mapping		(tstorm_plane3.png, 201105...png)
+	- Automatic image search	
+
+22.  Summary
+
+

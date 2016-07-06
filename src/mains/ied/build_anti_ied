@@ -1,0 +1,5 @@
+/bin/rm ./danger
+/bin/rm ./enhance_scale
+/bin/rm ./ied
+/bin/rm ./refine_ground
+/bin/rm ./rotate_raw_data

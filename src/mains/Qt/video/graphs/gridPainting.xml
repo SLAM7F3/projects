@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kernelgraph>
+
+  <kernels>
+    <kernel class="FilenameToRGBArray" id="VideoSource" args="ubyte" />
+    <kernel class="RGB2Texture" id="rgb2tex" args="ubyte" />
+    <kernel class="GridPainting" id="gp" />
+  </kernels>
+
+  <connections>
+    <connection sourceKernelId="VideoSource" outputPort="size" targetKernelId="rgb2tex" inputPort="size" />
+    <connection sourceKernelId="VideoSource" outputPort="outputRGBArray" targetKernelId="rgb2tex" inputPort="inputRGBArray" />
+
+    <connection sourceKernelId="rgb2tex" outputPort="outputTexture" targetKernelId="gp" inputPort="inputTexture" />
+  </connections>
+
+  <defaults>
+
+    <default kernelId="VideoSource" inputPort="filename" value="string data/greece.png" />
+
+    <default kernelId="gp" inputPort="sigmaSpatial" value="float 30" />
+    <default kernelId="gp" inputPort="sigmaRange" value="float 0.1" />
+    
+  </defaults>
+
+  <views>
+    <view kernelId="gp" outputPort="outputTexture" />
+  </views>
+
+  <autodirtykernels>
+    <!-- <autodirty kernelId="VideoSource" inputPort="filename" /> -->
+  </autodirtykernels>
+
+  <mouselisteners>
+    <mouselistener kernelId="gp" />
+  </mouselisteners>
+
+</kernelgraph>

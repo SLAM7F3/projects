@@ -1,0 +1,59 @@
+===========================================================================
+TOC notes
+===========================================================================
+Last updated on 7/12/10; 7/16/10
+===========================================================================
+
+Ross' iPhone beacon:
+
+1.  Set server IP on Ross' iPhone utility on iPhone to something like
+192.168.1.134.  Set port to 4045 (not to 8080!)
+
+2.  cd /home/cho/programs/c++/svn/projects/src/mains/aerialEO/Qt
+Make sure iPhone_beacon_flag=true in imageservertest.cc
+
+			run_imageservertest
+
+
+3.  Doubleclick bluetracker icon.  Run in off-line mode if laptop is not
+connected to internet.
+
+--------------
+
+On 7/16/10, Brian Shucker set up an NFS server on our ROBOT laptop.
+
+On ROBOT, Brian chanted
+
+		sudo apt-get install nfs-kernel-server
+
+He then edited /etc/exports and added the last line which allows access to
+/data_second_disk/toc_files from any machine on the same network (LLAN or
+private network) 
+
+# /etc/exports: the access control list for filesystems which may be exported
+#		to NFS clients.  See exports(5).
+#
+# Example for NFSv2 and NFSv3:
+# /srv/homes       hostname1(rw,sync,no_subtree_check) hostname2(ro,sync,no_subtree_check)
+#
+# Example for NFSv4:
+# /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
+# /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
+#
+
+/data_second_disk/toc_files	(rw)
+
+In order for TOUCHY2 to see and access /data/toc_files on ROBOT, we needed
+to first
+
+	sudo apt-get install nfs-common 
+
+Then 
+
+	sudo mount -t 155.34.162.239:/data_second_disk/toc_files /tmp/data_test
+
+
+When done with /data/toc_files on touchy2, just
+
+	umount /tmp/data_test/
+

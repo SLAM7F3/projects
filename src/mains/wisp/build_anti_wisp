@@ -1,0 +1,9 @@
+/bin/rm ./airground_match
+/bin/rm ./fix_ladarmap
+/bin/rm ./generate_panels
+/bin/rm ./georegpano
+/bin/rm ./match_masks
+/bin/rm ./panelpkgs
+/bin/rm ./panovsladar
+/bin/rm ./wispmask
+/bin/rm ./wispprop

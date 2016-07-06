@@ -1,0 +1,111 @@
+#include "ColorSpaceUtils.cgh"
+#include "GridUtils.cgh"
+
+const float3 g_f3PaddingXYZ = float3( 1, 1, 1 );
+
+//////////////////////////////////////////////////////////////////////////
+// Build PDF
+//////////////////////////////////////////////////////////////////////////
+
+// TODO: this is exactly the same as bilateral
+// call it something else maybe?
+
+void buildPDFGridVertex( uniform float4x4 mvp,
+						uniform float3 rcpSigma,
+						uniform float3 gridSize,
+						uniform float inputMin,
+						uniform samplerRECT inputSampler,
+						
+						float2 xyIn : POSITION,
+ 						
+						out float4 clipSpaceOut : POSITION )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	float input = texRECT( inputSampler, xyIn + halfdxdy ).x;
+	
+	float3 xyzIn = float3( xyIn, input - inputMin );
+	float3 gridXYZ = gridDownsampleRound( xyzIn, rcpSigma, g_f3PaddingXYZ );
+	clipSpaceOut = gridToClip( gridXYZ, gridSize, mvp );
+}
+
+void buildPDFGridFragment( out float normalizedWeightOut : COLOR )
+{
+	normalizedWeightOut = 1;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Build CDF
+//////////////////////////////////////////////////////////////////////////
+
+void buildCDFGrid( uniform samplerRECT pdfGridSampler,
+				  uniform float gridWidth,
+				  
+				  float2 xyIn : WPOS,
+				  
+				  out float cdfOut : COLOR )
+{
+	float sum = 0;
+
+	float2 xy = xyIn;
+	while( xy.x > gridWidth )
+	{
+		sum += texRECT( pdfGridSampler, xy ).x;
+		xy.x -= gridWidth;
+	}
+	
+	cdfOut = sum;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Normalize CDF
+//////////////////////////////////////////////////////////////////////////
+
+void normalizeCDFGrid( uniform samplerRECT cdfGridSampler,
+					  uniform float3 gridSize,
+					  
+					  float2 xyIn : WPOS,
+					  
+					  out float cdfOut : COLOR )
+{
+	float3 gridXYZ = getGridXYZ( xyIn, gridSize );
+	float3 gridXY_ZEnd = float3( gridXYZ.xy, gridSize.z - 4 );
+	float2 gridXY_ZEndTextureCooordinate = getTextureXY( gridXY_ZEnd, gridSize );
+	
+	float depthCount = texRECT( cdfGridSampler, gridXY_ZEndTextureCooordinate ).x;
+	if( depthCount < 1 )
+	{
+		depthCount = 1;
+	}
+	
+	cdfOut = texRECT( cdfGridSampler, xyIn ).x / depthCount;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Normalize CDF
+//////////////////////////////////////////////////////////////////////////
+
+void sliceGrid( uniform samplerRECT inputSampler,
+			   uniform samplerRECT equalizedGridSampler,
+			   
+			   uniform float3 rcpSigma,
+			   uniform float3 gridSize,
+			   uniform float inputMin,
+			   uniform float inputDelta,
+			   
+			   float2 xy : WPOS,
+			   
+			   out float4 colorOut : COLOR )
+{
+	float input = texRECT( inputSampler, xy ).x;
+	float3 xyzIn = float3( floor( xy ), input - inputMin );
+	float3 gridXYZ = gridDownsampleFloat( xyzIn, rcpSigma, g_f3PaddingXYZ );
+	
+	// gridValue in [0,1]
+	float4 gridValue = texTiledLinear( equalizedGridSampler, gridSize, gridXYZ );
+	
+	// stretch back to original range
+	float luminanceOut = inputMin + inputDelta * gridValue;
+	
+	colorOut = float4( luminanceOut, luminanceOut, luminanceOut, 1.0 );
+}

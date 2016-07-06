@@ -1,0 +1,64 @@
+=============================================================================
+iPhone ios upgrade notes
+=============================================================================
+Last updated on 6/15/15; 8/13/15; 6/24/16
+=============================================================================
+
+*.  As of 6/24/16, we see Genoa 13G32 as an iOS version which has a green
+check enclosed inside a circle on livability.swe.apple.com.  We did not
+need to run ~luna/bin/mountebuild nor login to Apple Open Directory in
+order to update iOS from Copper 12H143 to Genoa 13G32.  We also were able
+to uses Purple Restore 3
+
+Apple Open Directory account (username = pcho, password = @Beebop14 as of
+Dec 2015)
+
+Ross told us on 6/24/16 that we really ought to backup our phone before
+installing a new internal OS on it.  This appears to be happening
+automatically every night.  Ross also said that it's quasi-random as to
+when PurpleRestore and the internal iOS are all compatible.  He suggested
+that a few weeks after WWDC in June is generally a good time to try to
+update our iphone with an internal OS.
+
+
+*.  Christine Keele sent us the following helpful links before she showed
+us how to upgrade the iPhone 5's ios:
+
+https://lockerroom.apple.com
+
+https://livability.swe.apple.com/#/
+
+https://eightball.apple.com/luna/index.php/PurpleRestore_3.0
+
+
+She told us to click on the livability.swe.apple.com link.  It showed
+Copper version 12H136 with a green check enclosed inside a circle.  This
+indicates that this particular Copper version is stable.
+
+
+As of 8/13/15, Copper version 12H143 appears to be stable.  We needed to
+click on the "Livability" tab menu in order to see the latest stable
+version of coppper.
+
+
+*.  On 6/15/15, Christine Keele walked us through the process of installing
+a relatively recent ios on our Apple-owned iPhone 5.  The (stable) version
+we are trying to install is Copper 12H136.  
+
+In order to pull down via our mac laptop this version of Copper, we needed
+to physically connect our iphone to our mac laptop.  We also needed to
+access our Apple Open Directory account (username = pcho, password = @Beebop13).
+
+
+
+We also had to run within a terminal 
+
+~luna/bin/mountebuild
+
+*.  After the iphone is physically connected to the mac laptop and we run
+PurpleRestore on the laptop, we should (eventually) see a graphic display
+which lists "Host log" on the LHS and "Restore log" on the RHS when the
+"Logs" tab located in the lower, left corner of purple restore is selected.
+Updating iphone 6 IOS to Copper 12H143 took roughly 25 minutes to perform.
+
+

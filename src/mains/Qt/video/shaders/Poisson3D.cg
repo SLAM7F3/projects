@@ -1,0 +1,419 @@
+#include "GridUtils.cgh"
+
+// given a 2d texture coordinate representing a grid xyz coordinate
+// returns a 2d (half-integer) texture coordinate clamped to grid
+float2 clampToEdge( float2 xy, float3 gridSize )
+{	
+	float3 xyz = getGridXYZ( xy, gridSize ); // full integer
+	
+	float3 clampedXYZ; // clamp to full integer, since we'll add a half back
+	clampedXYZ.x = clamp( xyz.x, 0, gridSize.x - 1 );
+	clampedXYZ.y = clamp( xyz.y, 0, gridSize.y - 1 );
+	clampedXYZ.z = clamp( xyz.z, 0, gridSize.z - 1 );
+	
+	return getTextureXY( clampedXYZ, gridSize ); // full integer --> half integer
+}
+
+// TODO: linear
+void restrictMask( uniform samplerRECT fullMaskLinearSampler,
+				  
+				  uniform float3 restrictedGridSize,
+				  uniform float3 fullGridSize,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	float2 dx = float2( 1, 0 );
+	float2 dy = float2( 0, 1 );
+	float2 dz = float2( fullGridSize.x, 0 );
+	
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize ); // full integer
+	float3 fullXYZ = 2 * restrictedXYZ; // also full integer
+	float2 fullTextureXYZ = getTextureXY( fullXYZ, fullGridSize );
+	
+	// 27 NEAREST lookups, 12 LINEAR lookups
+	float maskSum = texRECT( fullMaskLinearSampler, fullTextureXYZ ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dy, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dy, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx + dy, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx - dy, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx + dy, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx - dy, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dy + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dy + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx + dy + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx - dy + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx + dy + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx - dy + dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dy - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dy - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx + dy - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ + dx - dy - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx + dy - dz, fullGridSize ) ).x;
+	maskSum += texRECT( fullMaskLinearSampler, clampToEdge( fullTextureXYZ - dx - dy - dz, fullGridSize ) ).x;
+	
+	colorOut = ( maskSum > 0 ) ? 1 : 0;
+}
+
+/*
+void restrictMask( uniform sampler3D fullMaskLinearSampler,
+				  
+				  uniform float3 reciprocalFullSize,
+				  uniform float z,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	float3 dx = float3( reciprocalFullSize.x, 0, 0 );
+	float3 dy = float3( 0, reciprocalFullSize.y, 0 );
+	float3 dz = float3( 0, 0, reciprocalFullSize.z );
+	
+	float3 restrictedXYZ = float3( floor( xy ), floor( z ) );
+	float3 fullXYZ = 2 * restrictedXYZ * reciprocalFullSize; // since it was floor()-ed, it's already on the half integer grid
+	
+	// still need 8 trilinear lookups!
+	float maskSum = tex3D( fullMaskLinearSampler, fullXYZ ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dx ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dy ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dx + dy ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dz ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dx + dz ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dy + dz ).x;
+	maskSum += tex3D( fullMaskLinearSampler, fullXYZ + dx + dy + dz ).x;
+	
+	colorOut = ( maskSum > 0 ) ? 1 : 0;
+	
+	// works
+	// colorOut = z;
+}
+*/
+
+void smoothGrid( uniform samplerRECT gridSampler,
+				uniform samplerRECT maskSampler,
+				uniform samplerRECT sourceSampler,
+				
+				uniform float2 scaleFactorReciprocalScaleFactor,
+				uniform float3 gridSize,
+				
+				float2 xy : WPOS,
+				
+				out float colorOut : COLOR )
+{
+	float2 dx = float2( 1, 0 );
+	float2 dy = float2( 0, 1 );
+	float2 dz = float2( gridSize.x, 0 );
+	
+	float scaleFactor = scaleFactorReciprocalScaleFactor.x;
+	float reciprocalScaleFactor = scaleFactorReciprocalScaleFactor.y;
+	
+	float mask = texRECT( maskSampler, xy ).x;
+	float source = texRECT( sourceSampler, xy ).x;
+
+	if( mask > 0 )
+	{
+		colorOut = source;
+	}	
+	else // plain jacobi
+	{
+		float left = texRECT( gridSampler, clampToEdge( xy - dx, gridSize ) ).x;
+		float right = texRECT( gridSampler, clampToEdge( xy + dx, gridSize ) ).x;
+		float down = texRECT( gridSampler, clampToEdge( xy - dy, gridSize ) ).x;
+		float up = texRECT( gridSampler, clampToEdge( xy + dy, gridSize ) ).x;
+		float back = texRECT( gridSampler, clampToEdge( xy - dz, gridSize ) ).x;
+		float front = texRECT( gridSampler, clampToEdge( xy + dz, gridSize ) ).x;
+		
+		float scaledSumNeighbors = scaleFactor * ( left + right + down + up + back + front );
+		colorOut = ( scaledSumNeighbors - source ) * reciprocalScaleFactor / 6;
+	}
+}
+
+void computeResidual( uniform samplerRECT gridSampler,
+					 uniform samplerRECT maskSampler,
+					 uniform samplerRECT sourceSampler,
+					 
+					 uniform float scaleFactor,
+					 uniform float3 gridSize,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	float2 dx = float2( 1, 0 );
+	float2 dy = float2( 0, 1 );
+	float2 dz = float2( gridSize.x, 0 );
+	
+	float mask = texRECT( maskSampler, xy ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}	
+	else
+	{
+		float source = texRECT( sourceSampler, xy ).x;
+		float center = texRECT( gridSampler, xy ).x;
+				
+		float left = texRECT( gridSampler, clampToEdge( xy - dx, gridSize ) ).x;
+		float right = texRECT( gridSampler, clampToEdge( xy + dx, gridSize ) ).x;
+		float down = texRECT( gridSampler, clampToEdge( xy - dy, gridSize ) ).x;
+		float up = texRECT( gridSampler, clampToEdge( xy + dy, gridSize ) ).x;
+		float back = texRECT( gridSampler, clampToEdge( xy - dz, gridSize ) ).x;
+		float front = texRECT( gridSampler, clampToEdge( xy + dz, gridSize ) ).x;
+		
+		colorOut = source - scaleFactor * (	left + right + down + up + back + front - 6 * center );
+	}
+}
+
+void restrictResidual( uniform samplerRECT residualSampler,
+					  uniform samplerRECT restrictedMaskSampler,
+					  
+					  uniform float3 fullGridSize,
+					  uniform float3 restrictedGridSize,
+					  
+					  float2 xy : WPOS,
+					  
+					  out float4 colorOut : COLOR )
+{
+	// full grid
+	float2 dx = float2( 1, 0 );
+	float2 dy = float2( 0, 1 );
+	float2 dz = float2( fullGridSize.x, 0 );
+	
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize ); // full integer
+	float3 fullXYZ = 2 * restrictedXYZ; // also full integer
+	float2 fullTextureXYZ = getTextureXY( fullXYZ, fullGridSize ); // half integer
+	
+	float mask = texRECT( restrictedMaskSampler, xy ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}
+	else
+	{
+		// 1 center
+		float sum = texRECT( residualSampler, fullTextureXYZ ).x / 8;
+		
+		// 6 1-neighbors
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dy, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dy, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dz, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dz, fullGridSize ) ).x / 16;
+		
+		// 12 2-neighbors
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx - dy, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx + dy, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx - dy, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx + dy, fullGridSize ) ).x / 32;
+		
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx - dz, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx + dz, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx - dz, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx + dz, fullGridSize ) ).x / 32;
+		
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dy - dz, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dy + dz, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dy - dz, fullGridSize ) ).x / 32;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dy + dz, fullGridSize ) ).x / 32;
+		
+		// 8 3-neighbors
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx - dy - dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx - dy + dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx + dy - dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - dx + dy + dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx - dy - dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx - dy + dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx + dy - dz, fullGridSize ) ).x / 64;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + dx + dy + dz, fullGridSize ) ).x / 64;
+		
+		colorOut = sum;
+	}
+}
+
+void restrictResidualFace( uniform samplerRECT residualSampler,
+						  uniform samplerRECT restrictedMaskSampler,
+						  
+						  uniform float2 delta1,
+						  uniform float2 delta2,
+						  uniform float3 fullGridSize,
+						  uniform float3 restrictedGridSize,
+						  
+						  float2 xy : WPOS,
+						  
+						  out float4 colorOut : COLOR )
+{
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize ); // full integer
+	float3 fullXYZ = 2 * restrictedXYZ; // also full integer
+	float2 fullTextureXYZ = getTextureXY( fullXYZ, fullGridSize ); // half integer
+	
+	float mask = texRECT( restrictedMaskSampler, xy ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}
+	else
+	{
+		// 1 center
+		float sum = texRECT( residualSampler, fullTextureXYZ ).x / 4;
+		
+		// 4 1-neighbors
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - delta1, fullGridSize ) ).x / 8;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + delta1, fullGridSize ) ).x / 8;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - delta2, fullGridSize ) ).x / 8;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + delta2, fullGridSize ) ).x / 8;
+		
+		// 4 2-neighbors
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - delta1 - delta2, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - delta1 + delta2, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + delta1 - delta2, fullGridSize ) ).x / 16;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + delta1 + delta2, fullGridSize ) ).x / 16;
+		
+		colorOut = sum;
+	}
+}
+
+void restrictResidualEdge( uniform samplerRECT residualSampler,
+						  uniform samplerRECT restrictedMaskSampler,
+						  
+						  uniform float2 delta,
+						  uniform float3 fullGridSize,
+						  uniform float3 restrictedGridSize,
+						  
+						  float2 xy : WPOS,
+						  
+						  out float4 colorOut : COLOR )
+{
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize ); // full integer
+	float3 fullXYZ = 2 * restrictedXYZ; // also full integer
+	float2 fullTextureXYZ = getTextureXY( fullXYZ, fullGridSize ); // half integer
+	
+	float mask = texRECT( restrictedMaskSampler, xy ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}
+	else
+	{
+		// 1 center
+		float sum = texRECT( residualSampler, fullTextureXYZ ).x / 2;
+		
+		// 2 1-neighbors
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ - delta, fullGridSize ) ).x / 4;
+		sum += texRECT( residualSampler, clampToEdge( fullTextureXYZ + delta, fullGridSize ) ).x / 4;
+		
+		colorOut = sum;
+	}
+}
+
+void restrictResidualVertex( uniform samplerRECT residualSampler,
+							uniform samplerRECT restrictedMaskSampler,
+							
+							uniform float3 fullGridSize,
+							uniform float3 restrictedGridSize,
+							
+							float2 xy : WPOS,
+							
+							out float4 colorOut : COLOR )
+{
+	float3 restrictedXYZ = getGridXYZ( xy, restrictedGridSize ); // full integer
+	float3 fullXYZ = 2 * restrictedXYZ; // also full integer
+	float2 fullTextureXYZ = getTextureXY( fullXYZ, fullGridSize ); // half integer
+	
+	float mask = texRECT( restrictedMaskSampler, xy ).x;
+	if( mask > 0 )
+	{
+		colorOut = 0;
+	}
+	else
+	{
+		// 1 center
+		colorOut = texRECT( residualSampler, fullTextureXYZ ).x;
+	}
+}
+
+void prolongError( uniform samplerRECT restrictedGridLinearSampler,
+				  uniform samplerRECT fullEstimateNearestSampler,
+				  
+				  uniform float3 fullGridSize,
+				  uniform float3 restrictedGridSize,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float colorOut : COLOR )
+{
+	float3 fullXYZ = getGridXYZ( xy, fullGridSize ); // full-integer, i.e. ( 3, 4, 5 )
+	float3 restrictedGridXYZ = fullXYZ / 2; // half-integer, i.e. ( 1.5, 2, 2.5 )
+	
+	// get lower left corner (i.e. 1, 2, 2 )
+	float2 restrictedTextureX0Y0Z0 = getTextureXY( floor( restrictedGridXYZ ), restrictedGridSize );
+	float2 restrictedTextureXYZ0 = restrictedTextureX0Y0Z0 + float2( 0.5, 0.5 );
+	float2 restrictedTextureXYZ1 = restrictedTextureXYZ0 + float2( restrictedGridSize.x, 0 );
+	
+	// get restricted error
+	float errorZ0 = texRECT( restrictedGridLinearSampler, clampToEdge( restrictedTextureXYZ0, restrictedGridSize ) ).x;
+	float errorZ1 = texRECT( restrictedGridLinearSampler, clampToEdge( restrictedTextureXYZ1, restrictedGridSize ) ).x;
+	float error = lerp( errorZ0, errorZ1, 0.5 );
+	
+	// get full estimate
+	float estimate = texRECT( fullEstimateNearestSampler, xy ).x;
+	
+	colorOut = estimate + error;
+	
+	// works
+	// colorOut = estimate;
+}
+
+void convergenceTest( uniform samplerRECT gridSampler,
+					 uniform samplerRECT maskSampler,
+					 uniform samplerRECT sourceSampler,
+					 
+					 uniform float3 gridSize,
+					 
+					 float2 xy : WPOS,
+					 
+					 out float colorOut : COLOR )
+{
+	float2 dx = float2( 1, 0 );
+	float2 dy = float2( 0, 1 );
+	float2 dz = float2( gridSize.x, 0 );
+	
+	float mask = texRECT( maskSampler, xy ).x;	
+	if( mask > 0 )
+	{
+		discard;
+	}	
+	else
+	{
+		float source = texRECT( sourceSampler, xy ).x;
+		float center = texRECT( gridSampler, xy ).x;
+				
+		float left = texRECT( gridSampler, clampToEdge( xy - dx, gridSize ) ).x;
+		float right = texRECT( gridSampler, clampToEdge( xy + dx, gridSize ) ).x;
+		float down = texRECT( gridSampler, clampToEdge( xy - dy, gridSize ) ).x;
+		float up = texRECT( gridSampler, clampToEdge( xy + dy, gridSize ) ).x;
+		float back = texRECT( gridSampler, clampToEdge( xy - dz, gridSize ) ).x;
+		float front = texRECT( gridSampler, clampToEdge( xy + dz, gridSize ) ).x;
+		
+		float residual = source - ( left + right + down + up + back + front - 6 * center );
+		float absResidual = abs( residual );
+		
+		if( absResidual < 0.0001 )
+		{
+			discard;
+		}
+		else
+		{
+			colorOut = absResidual;
+		}
+	}
+}

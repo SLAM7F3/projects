@@ -1,0 +1,5 @@
+/bin/rm ./exifprint
+/bin/rm ./photo_metadata
+/bin/rm ./photos2d
+/bin/rm ./photos3d
+/bin/rm ./timeprint

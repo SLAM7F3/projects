@@ -1,0 +1,15 @@
+=========================================================================
+Powerpoint notes
+=========================================================================
+Last updated on 4/27/09
+=========================================================================
+
+*.  In order to embed a Windows Media Player directly into a Powerpoint
+chart, first select Insert -> Object -> Windows Media Player
+
+Then take the player which pops up, resize it and place it in the desired
+location on the chart.  Right click on the player and select properties.
+
+Look for URL tab in table which comes up and enter path name to AVI movie.
+
+

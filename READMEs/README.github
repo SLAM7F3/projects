@@ -1,0 +1,152 @@
+========================================================================
+GITHUB notes
+========================================================================
+Last updated 12/9/15; 12/10/15; 2/21/16; 7/6/16
+========================================================================
+
+*.  On 12/6/15, we followed directions provided by Brad Westfall in his
+YouTube video about "GitHub Pages and Jekyll Beginner Video"
+
+*.  mkdir ~/github/blog
+    cd ~/github/blog
+    git init
+    touch index.html  (home webpage)
+    git add .
+    git commit -m "Initializing blog for github"
+    git status
+
+*.  Login to github and create a new repository
+
+Make sure SSH box is selected rather than HTTPS:
+
+git remote add origin git@github.com:PeterCho/blog.git
+git push -u origin master
+
+*.  Create a local branch on github called gh-pages for hosting webpages:
+
+git branch gh-pages
+
+Then push this new branch to remote github server:
+
+git push origin gh-pages
+
+
+*.  To completely delete a github repository:
+
+  1.  Manually enter the URL for your repository's Settings page in your browser:
+
+    https://github.com/YOUR-USERNAME/YOUR-REPOSITORY/settings
+
+  2.  Under Danger Zone, click Delete this repository.
+  3.  Read the warnings.
+  4.  To verify that you're deleting the correct repository, type the name of
+the repository you want to delete.
+  5.  Click I understand the consequences, delete this repository.
+
+*.  After creating a local git repository called projects on our local
+machine and after creating a new, empty "projects" repository on github,
+upload local repository's contents to github as follows:
+
+git remote add origin git@github.com:PeterCho/projects.git
+git push -u origin master
+
+If we see the github error message "fatal: remote origin already exists",
+then we need to chant 
+
+  git remote rm origin
+
+At this point, we can reissue the git remote add origin command.
+
+====================================================================
+
+*.  Inside ~/github/, chant
+
+jekyll new blog
+
+*.  From within ~/github/blog/, chant 
+
+	jekyll serve --watch --baseurl "/blog"
+
+in order to run "github-like" server on local machine.  The --watch flag
+instructs jekyll to watch for local file modifications and to update the
+virtual server as appropriate.
+
+Then open a browser page to http://127.0.0.1:4000/blog/.  We should see how
+our blog will look once it's eventually hosted on github.
+
+*.  After jekyll has generated a new ~/github/blog/ folder, we need to 
+    recreate a git master branch for it locally:
+
+    cd ~/github/blog
+    git init
+    git add .
+    git commit -m "Initializing jekyll blog for github"
+    git status
+
+*.  Login to github and create a new repository (assuming that we've
+destroyed our previous "blog" repository generated above)
+
+Make sure SSH box is selected rather than HTTPS:
+
+git remote add origin git@github.com:PeterCho/blog.git
+git push -u origin master
+
+*.  Create a local branch on github called gh-pages for hosting webpages:
+
+git branch gh-pages
+
+Then push this new branch to remote github server:
+
+git push origin gh-pages
+
+
+-----------------------------------
+
+*.  In order to add a new SSH key for a new computer, click on "SSH keys"
+button under "Personal settings" located on LHS.  Then click on "Add SSH
+key" button located near upper right.  Enter a label such as "Thinkmate"
+and copy contents of ~/.ssh/id_rsa.pub into the "Key" box.  Be careful to
+not include any extra white space when cutting and pasting.
+
+*.  After ssh key is added, we can clone our gitlab blog repository via
+following terminal command:
+
+	git clone git@github.com:PeterCho/blog.git
+
+*.  Create a new local branch called blog/gh-pages:
+
+git checkout -b gh-pages
+
+Then set this new local branch to track remote branch origin/gh-pages by
+chanting
+
+    git branch --set-upstream-to=origin/gh-pages gh-pages
+
+*.  Sync local gh-pages branch with remote gh-pages branch by chanting
+
+git pull
+
+and NOT git pull --rebase.
+
+*.  For ubuntu 14.4, we followed the jekyll installation instructions
+listed at http://michaelchelen.net/81fa/install-jekyll-2-ubuntu-14-04/
+
+  1.  sudo apt-get install ruby ruby-dev nodejs
+  2.  sudo getm install jekyll
+  3.  jekyll -v on thinkmate returns jekyll 3.0.1
+  4.  sudo gem install github-pages
+
+
+*.  Markdown cheatsheet:
+
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+
+*.  On 2/21/16, we had difficulty with initially seeing a set of digit
+recognition images that we had uploaded to our github account.  After some
+trial and error, we empirically found that after manually clicking on their
+blue links (located on LHS) within
+
+  https://github.com/PeterCho/blog/tree/gh-pages/images/digit_recog
+
+our local-machine and global github servers were then able to 
+find these images and display them in a new blog post.

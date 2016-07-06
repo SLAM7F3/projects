@@ -1,0 +1,11 @@
+--PostGIS_hostname 127.0.0.1
+# --PostGIS_hostname 155.34.162.199
+# --PostGIS_hostname localhost
+--PostGIS_database_name isds_gis
+# --PostGIS_database_name babygis
+--PostGIS_username postgres
+# --PostGIS_username cho
+--gislines_tablename country_borders
+--gislines_tablename state_borders
+--gispoints_tablename baghdad_poi
+--gispoints_tablename boston_libraries

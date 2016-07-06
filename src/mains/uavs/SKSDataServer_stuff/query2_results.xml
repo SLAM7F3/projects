@@ -1,0 +1,20 @@
+<response><success>true</success><message><![CDATA[Found 1 object(s)]]></message><content><entityList>
+  <entity id="80aea627-b132-45ca-9db7-801d3cce3dde" type="sam">
+    <attribute name="altitude.max.km" value="24.5" fullname="altitude.max.km"/>
+    <attribute name="name" value="SA-4" fullname="name"/>
+    <attribute name="IOC.year" value="1974" fullname="IOC.year"/>
+    <attribute name="range.max.km" value="50" fullname="range.max.km"/>
+    <attribute name="weight" value="150" fullname="weight"/>
+    <attribute name="speed.max.kts " value="1000 " fullname="speed.max.kts "/>
+    <coverage name="date_created" dt-start="2008-03-13T18:03:27.440+0000" fullname="date_created"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (49.22267 45.666805)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (49.22267 45.666805)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (55.171703 65.87181)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (55.413486 67.60353)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (53.6958 59.715096)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (53.75272 89.88394)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (51.207916 90)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (52.350925 90)" fullname="site"/>
+    <coverage name="site" dt-start="2008-01-01T00:00:00.000+0000" dt-stop="2008-01-01T00:00:00.000+0000" geometry="SRID=4326;POINT (52.87951 90)" fullname="site"/>
+  </entity>
+</entityList></content></response>

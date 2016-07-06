@@ -1,0 +1,10 @@
+make -f anotserv_makefile clean
+make -f dataloader_makefile clean
+make -f D7frames_makefile clean
+make -f flipframes_makefile clean
+make -f panopix_makefile clean
+make -f tocserv_makefile clean
+
+cd  ~/programs/c++/svn/projects/src/mains/video/Qt
+make -f movieviewer_makefile clean
+cd  ~/programs/c++/svn/projects/src/mains/tech_challenge/Qt

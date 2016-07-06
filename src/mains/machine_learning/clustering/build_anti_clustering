@@ -1,0 +1,4 @@
+/bin/rm ./crop_single_tcd_chips
+/bin/rm ./extract_features
+/bin/rm ./generate_file_list
+/bin/rm ./random_reduce

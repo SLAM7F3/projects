@@ -1,0 +1,4 @@
+./relative_pose \
+--newpass ./bundler/Korea/korea/images/ground_photo1.jpg  \
+--newpass ./bundler/Korea/korea/images/ground_photo2.jpg  \
+--image_list_filename ./bundler/Korea/korea/image_list.dat

@@ -1,0 +1,4 @@
+This example is not prepared for Qtopia, so simply execute it like this:
+qvfb&
+server/server -qws&
+client/client

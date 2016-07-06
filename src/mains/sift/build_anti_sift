@@ -1,0 +1,18 @@
+/bin/rm ./3dvideo
+/bin/rm ./affine_outliers
+/bin/rm ./asiftvid
+/bin/rm ./chogtest
+/bin/rm ./consolidate_features
+/bin/rm ./extract_descriptors
+/bin/rm ./extract_sift_features
+/bin/rm ./form_image_edgelist
+/bin/rm ./imageposn
+/bin/rm ./ladarpan
+/bin/rm ./lmdemo
+/bin/rm ./mser_regions
+/bin/rm ./pancities
+/bin/rm ./panorama
+/bin/rm ./picker
+/bin/rm ./rays
+/bin/rm ./tiepoints
+

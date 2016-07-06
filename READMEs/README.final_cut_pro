@@ -1,0 +1,17 @@
+============================================================================
+Notes for running Final Cut Pro
+============================================================================
+Last updated on 7/30/08
+============================================================================
+
+*.  Fire up Final Cut Pro on feely by searching under Applications -> Final
+Cut Pro.
+
+*.  In order to transfer video clips from the Lincoln Lab Sony video
+camera's tape into Final Cut Pro, attach a fire wire cable from camera to
+feely.  Select format = HDV-1080i60
+
+*.  Under the main menu, press File -> log & capture.  Then choose "in"
+time = starting time for video clips followed by "out" time = stopping time
+for video clips.  Final Cut Pro will break apart the video stream into
+individual video clips based upon time stamp information.

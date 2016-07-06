@@ -1,0 +1,619 @@
+=============================================================================
+Pattern recognition notes
+=============================================================================
+Last updated on 12/12/14; 1/23/15; 2/19/15; 3/2/15
+=============================================================================
+
+*.  Existing mser extraction routines are sitting in feat/feat_mser.c
+
+*.  Some ground imagery sits in /hypersonic/mercury/traffic_sign_test_set/
+
+*.  Multiple van images are sitting in 
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/2_jpg/pilot_knob
+
+and 
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/3_jpg/pilot_knob
+
+*.  In order to run MSERs within pwin, chant
+
+run_pr_housenumbers
+
+Press "esc x" followed by command "mser_ver 1" to change from default
+OpenCV to Jasmine's version of msers within pwin:
+
+
+VERBOSE: Display bits per pixel: 32
+WARNING: pr_gui_cmd: parameter -dir overrides project settings, no project loaded
+PR GUI
+Command:mser_ver 1
+INFO   : Parameter        mser_ver value: 1
+
+Then press "t" to run and display msers 
+
+*.  Many kbd app keyboard commands are defined within
+void pr_main_mode_init(kbd_app_t* app, void* arg) inside pr_gui.c
+
+*.  On 4/18/14, Jasmine told us that pr_plot_contour_list() within
+pr_fourier_descriptor.c can be used to display MSERs .  Several other
+basic mser methods are contained within pr_fourier_descriptor.c
+(e.g. pr_mser_par_default_init())
+
+
+*.  New CNN file containing retrained weights should go replace
+"/startown-gpfs/sputnik01/supersize/mercury/saved_models/cnn/housenumbersRetrained.new.bin".
+
+Make both old and new weight files write-protected.  
+
+Then create a new version of pr_versions::pr_load_detector_ver_3 with an
+experimental "lab" number greater than 1000.  Try running new version on
+some sample cases for sanity checks.
+
+
+*.  Check pr_classifier::pr_detect() for example of how to work with input
+set of images on distributed cluster.
+
+
+*.  Procedure for running housenumber detector & recognition chain from
+within PR gui:
+
+
+1.  Specify desired imagery test set and detector version within command
+line below:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \ -do1 "pr gui -dir
+/hypersonic/devtest/pr_test_images/house_numbers/simple/ -dver 3"
+
+2.  Press "l" to load detector version.
+
+3.  Press "m" to run entire processing chain on a per image basis.
+
+4.  Alternatively, press "s" to run each of 3 detector steps sequentially.  
+
+
+
+*.  In order to look at results generated from our detector/engine 1004 on
+the distributed cluster on our local mac machine using pr_gui, chant
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -do1 "pr gui -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml  -prj pilot_knob -res -dver 1004"
+
+After an image has loaded in pwin window, press 'a' to toggle annotation
+bboxes on/off.
+
+On 6/19/14, Fredrik helped us create the following command to look at
+results from running the CNN on just digits via detector/engine 1005:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -do1 \
+"pr gui -res -dver 1005 -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob" 
+
+
+Can also change step size for images within PR gui via esc-X followed by 
+
+Command:im_step 50
+
+
+*.  In order to debug pwin code which works OK locally but fails to produce
+output remotely, Fredrik recommended that we login to a remote node (by
+first sshing into launchpad and then sshing into a remote node) and run our
+deployed binary from that machine.  We can then at least see output
+produced on the remote machine:
+
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_f4ac25 -vv -nowin -do1 \
+'pr classify -dver 1005 -nochk -test_class 1 -incl_anno digit \
+-prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob' -nowin
+
+
+*.  Evaluating performance of classifiers versus human annotations is
+not yet parallelized.  But on 5/5/14, Fredrik Larsson recommended such
+evaluation not be performed on local MacPro but rather on a remote machine
+to avoid communication delays.  (Not sure how to do this yet).
+
+
+
+
+Evaluate the performance 
+
+./pwin -vv -nowin -do1 'pr score -dver DETECTOR_VERSION -type SCORING_TYPE -nochk -prjdb
+/startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob'
+
+DETECTOR_VERSION = Need to correspond to the same as in 1)
+SCORING_TYPE = 16 (Foreground vs Background) Set -1 in order to get a list of what can be used
+INFO   : Choose from:
+
+INFO   : Choose from:
+
+INFO   :   4 PR_CLASSIFIED_DIGIT 
+INFO   :   5 PR_CLASSIFIED_BACKGROUND 
+INFO   :   7 PR_CLASSIFIED_ROADSIGN 
+INFO   :   8 PR_CLASSIFIED_NUMBER    (Use for house numbers)
+INFO   :  11 PR_CLASSIFIED_LOGO 
+INFO   :  16 PR_CLASSIFIED_FOREGROUND 
+
+Use scoring type "8" for house numbers.  
+
+Usage: function [args]
+
+  Short    Long              Description                     Type Value
+
+ Project
+ -clear_shp --clear_shape      Remove all original shapes from project  <set> (0)
+ -nochk   --no_prj_check     Skip project check              <set> (0)
+ -nodb    --no_database      Skip database operations        <set> (0)
+ -prj     --project          Project name                    <string> ("")
+ -prjdb   --project_db       Project database                <string> ("")
+ -resf    --resource_file    Resource substitution file      <string> ("")
+ -shp     --add_shape        Shape to add to project         <string> ("")
+ -sres    --single_resource  A single resource to replace all other  <string> ("")
+ -vimd    --virtual_imdata   Load virtual imdata             <set> (0)
+
+ Score
+ -adir    --anno_dir         Annotation directory            <string> ("")
+ -ddir    --detect_dir       Detection directory             <string> ("")
+ -dstage  --n_det_stage      Detector stage                  <int> (-1)
+ -dver    --detector_version Detector version                <int> (1004)
+ -imdir   --image_dir        Image directory                 <string> ("")
+ -isct    --bbox_intersect   Minimum required intersection   <float> (0.500000)
+ -odir    --output_dir       Output directory                <string> ("")
+ -stfn    --stat_file        Statistics filename             <string> ("")
+ -tst     --save_test_data   Save test data too              <int> (0)
+ -type    --bbox_type        Type of annotation              <int> (0)
+
+ Subset
+ -cm      --classmap         Classmap                        <int> (0)
+ -maxh    --sub_max_height   Max height                      <int> (0)
+ -maxn    --sub_max_num      Max number from each class      <int> (0)
+ -maxw    --sub_max_width    Max width                       <int> (0)
+ -minh    --sub_min_height   Min height                      <int> (0)
+ -minstd  --sub_stddev       Min std deviation               <float> (0.000000)
+ -minw    --sub_min_width    Min width                       <int> (0)
+ -subb    --sub_balance      Balance classes                 <set> (0)
+ -subp    --sub_percent      Keep only a percentage          <float> (0.000000)
+
+
+
+Evaluation should then output a score file like
+score_2014_05_05_09:26:06.scs whose contents look like
+
+{
+    "pr_class_stat_list_t":[
+        {
+            "cls":1,			1-digit numbers
+            "cnt":14,
+            "tp_cnt":0,			true positives correctly classified as cls
+            "fp1_cnt":0,		false positives where annotation is wrongly classified as cls
+            "fp2_cnt":0,		false positives where background is wrongly classified as cls
+            "fn_cnt":14			false negatives (missed instances)
+        },
+        {
+            "cls":2,			2-digit numbers
+            "cnt":8,
+            "tp_cnt":0,
+            "fp1_cnt":0,
+            "fp2_cnt":0,
+            "fn_cnt":8
+        },
+        {
+            "cls":3,			3-digit numbers
+            "cnt":10,
+            "tp_cnt":0,
+            "fp1_cnt":179,
+            "fp2_cnt":470,
+            "fn_cnt":10
+        },
+        {
+            "cls":4,			4-digit numbers
+            "cnt":1260,
+            "tp_cnt":249,
+            "fp1_cnt":25,
+            "fp2_cnt":122,
+            "fn_cnt":1011
+        },
+        {
+            "cls":5,			5-digit numbers
+            "cnt":0,
+            "tp_cnt":0,
+            "fp1_cnt":1,
+            "fp2_cnt":62,
+            "fn_cnt":0
+        }
+    ],
+    "tot_n":1292,
+    "tot_tp":249,
+    "tot_fp1":205,
+    "tot_fp2":654,
+    "tot_fn":1043,
+    "BGvsFG stats":":",
+    "tot_n":0,
+    "tot_tp":0,
+    "tot_fp2":0,
+    "tot_fn":0,
+    "test_stats":0
+}
+
+*.  Evaluation results JSON files are exported to subdirs of 
+
+	/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob/pr/results/
+
+
+*.  -sst flag = "split start" = indicates starting image for pwin classify
+jobs.  Can use this flag to minimize number of images which are processed
+for debugging purposes on our local machine.
+
+*.  -sno flag = "number of splits"
+
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -nowin -do1 'pr classify -dver 1004 -stop_st 4 -nochk -prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml -prj pilot_knob -sno 8 -sst 0'
+
+*.  See pr_house_numbers::pr_digits_to_numbers_from_signature() for code
+which instantiates a ROI bbox that encloses a bunch of bbox candidates and
+nominates a line segment along which a CNN sliding window is evaluated.
+
+*.  On 5/22/14, Fredrik Larsson gave us a new set of CNN binary weight
+files along with a new libcnnFwd.a file needed to work with the new CNN
+weights.  The libcnnFwd.a file goes into ~/sputnik/pwin/contrib/core_cnn.
+We have created a soft link between libcnnFwd.a within this subdir to the
+latest version of this library.
+
+*.  Once algorithms and code developed in pr_gui has reached a reasonable
+level of maturity, it's generally a good idea to transfer such code into
+pr_version.  We can then run pr_version methods from within pr_gui by
+chanting "l" to load a specified pr version and then "m" to run the engine
+associated with the version.
+
+*.  Sam Friedman taught us on 5/28/14 that the following pwin command will
+scan through a list of images and corresponding list of annotations and
+generate cropped bboxes around annotated numbers:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pr create_clfts -cropped 1 -odir /home/pcho/ \
+-im /startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/3_jpg/pilot_knob/ \
+-dir /startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/3_jpg/pilot_knob/annotation/ \
+-ftype 1 "
+
+The ftype argument is necessary but important for this command.  The -im
+argument specifies where the image files are located.  The -dir argument
+specifies where corresponding annotation files are located.  The -odir
+argument indicates where cropped bboxes are to be exported.
+
+
+*.  Results from cluster for detector version 1004 are written to 
+
+/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob/pr/results/detector_ver_1004_stage_N/
+pilot_knob/1 or 2 
+
+
+*.  Pilot knob entry within
+/startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml 
+
+
+  <project name="pilot_knob">
+   <title>pilot_knob</title>
+   <resource>pilot_knob</resource>
+   <model>
+     <path>/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob/omni</path>
+     <settings name="default_fw"/>
+     <build_setting MAX_TEXTURE_CNT="1"/>
+     <grid_setting CS="UTM10,EGM96"/>
+     <grid_setting GRID="UTM10,EGM96"/>
+     <grid_setting GRD_CENTER_X="4600000"/>
+     <grid_setting GRD_CENTER_Y="700000"/>
+      <grid_setting TER_MAP_US="512"/>
+      <grid_setting TER_MAP_VS="512"/>
+     <center x="4132165" y="598515" cs="UTM10N"/>
+     <build_setting F3D_VER="1060"/>
+     <build_setting MOPT_VER="1"/>
+     <build_setting LEVEL="17"/>
+     <build_setting TEXTURE_VER="10"/>
+    </model>
+   </project>
+
+*.  List of first [second] camera pilot knob images to be processed on
+cluster is contained in
+/startown-gpfs/sputnik01/supersize/resource/mercury/old-2-camera-van/pilot_knob/imdata.cam1
+
+/startown-gpfs/sputnik01/supersize/resource/mercury/old-2-camera-van/pilot_knob/imdata.cam2
+
+First few entries in imdata.cam1 reads
+
+
+1 1/000275-000272-20130430-210646-8570-SYS-Cam2.jpg -2688434.109 -4304617.912 3850082.016 -2.341949  0.921297  3.011029  248806.454974    -2.586418   -3.057882   -5.195337    0.491516   -0.021040    0.347981
+1 1/000276-000273-19800112-013808-9580-Cam2.jpg -2688435.149 -4304619.262 3850079.630 -2.142360  0.926825 -3.120537  248806.957554    -1.982392   -3.823649   -5.547800    0.297119   -0.035569    0.197127
+1 1/000277-000274-20130430-210647-8570-SYS-Cam2.jpg -2688436.519 -4304622.281 3850076.071 -2.028594  0.920677 -3.043303  248807.455035    -1.926259   -4.113610   -5.885107   
+
+
+*.  ~2K camera 1 and ~2K camera 2 Pilot Knob van cameras are sitting in
+
+
+/startown-gpfs/sputnik01/supersize/resource/mercury/old-2-camera-van/pilot_knob/1
+
+and 
+
+/startown-gpfs/sputnik01/supersize/resource/mercury/old-2-camera-van/pilot_knob/2
+
+
+These last 2 subdirs are actually links to 
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/2_jpg/pilot_knob//
+
+
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/3_jpg/pilot_knob//
+
+
+*.  CLFTs for pilot knob are exported to subdirs of 
+
+	/startown-gpfs/sputnik01/supersize/resource/mercury/old-2-camera-van/pilot_knob/pr/clft/
+
+*.  PWIN "projects" correspond to highest level concept of input data and
+output results.  
+
+*.  PWIN "resources" correspond to set of data inputs.  For example, a
+resource can include imagery, CLFT files, tile information. 
+
+In contrast, machine-generated detection bboxes are regarded as outputs and
+should never reside within resource subdirectories.
+
+
+
+*.  Human-generated ground truth annotation files for Pilot Knob numbers
+are sitting in 
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/2_jpg/pilot_knob/annotation
+
+and 
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130430-SanJose/capture/3_jpg/pilot_knob/annotation
+
+
+*.  CNN digit recognition results for ground-truth inputs are written to
+annotation files in
+
+/startown-gpfs/sputnik01/supersize/mercury/prj/results/pilot_knob/pr/results/detector_ver_1005/pilot_knob/1,2
+
+*.  Inside PR gui, cannot alter starting image.  But can change image step
+size (to e.g. 10) by chanting 
+
+escape-x
+im_step 10
+
+
+*.  In order to run street sign recognition on just one node of the distrib
+cluster, login to that node (via launch pad) and then chant
+
+umask 2 ;
+/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_f68233 -nowin
+-do1 'pr classify -dver 100 \ 
+-oc1c6 -rect -mongodb -nochk \
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml -prj 20140305_v4_lidar_v2'
+
+
+*.  In order to run street sign recognition on full distrib cluster, chant
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do1 'c3 distrib pr -pr_cmd "classify -dver 100 -oc1c6 -rect -mongodb -nochk" \
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml -prj 20140305_v4_lidar_v2 \
+-nochk -priv 80 -sno 200 -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_f68233' -nowin
+
+*.  Raw LA images collected in June 2014 are sitting in subdirs of 
+
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/
+
+*.  Rectified LA images collected in June 2014 are sitting in 6 subdirs of
+
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/
+
+called cam1, cam2, ..., cam6. 
+
+Side-facing camera images are in cam2 and cam5.
+
+List of all rectified images within cam1 - cam6 subdirs are sitting in
+all_rectified_img_paths.txt within the rectified_images/ subdir.
+
+
+*.  Text file output from running detectors 3, 100, 101, 1104, etc on the
+los_angeles_drive project on the distrib cluster are saved into subdirs of
+
+
+/startown-gpfs/sputnik03/supersize/data/los_angeles/los_angeles_drive/pr/results/ 
+
+
+*.  Hawaii projects
+
+/startown-gpfs/sputnik01/supersize/conf/prjdb_voyager.xml 
+
+<project name="oahu_eastern">    
+<project name="oahu_the_rest">    
+<project name="oahu_the_rest2">    
+<project name="oahu_the_rest3">    
+<project name="oahu_the_rest4">    
+<project name="oahu_complete">  
+
+
+House numbers : version 23
+
+State : 0-4
+0: Not Served
+1: Served
+2:Correctly_classified
+3: Incorrectly classified
+4 : Undetermined classified
+
+*.  Chicago and LA imagery is sitting in subdirs of 
+/startown-gpfs/sputnik03/supersize/labeling_resources
+
+
+*.  Digits harvested from human annotations of LA and Hawaii imagery are
+sitting in subdirectories of
+
+	/startown-gpfs/sputnik03/supersize/labeling_resources/image_chips/
+
+
+*.  To create new human markup project (for tagger annotation purposes),
+first point browser to
+
+https://flyover.st.geo.apple.com/admin/markupproject/
+
+  -   Press blue "Create" button located next to "List" button near top.
+
+  -   Name: e.g. Chicago_housenumbers_1
+
+  -   Markup_types: e.g. house-numbers
+
+  -   Help text:  Make sure help text is not too wide.
+
+	Ignore all numbers that do not
+	correspond to house/building 
+	street addresses 
+
+  -  Groups:  QA, FlightOps, QA-Ninjas
+
+  -  Markup_path: path to directories holding images to be annotated
+     Don't specify too many images to annotate!
+
+  -  Randomize markup :  yes
+
+After pressing submit button, press "export"  .  
+
+Then test on Mac laptop with tagger. Open mac terminal and chant
+
+ ./tagger.app/Contents/MacOS/tagger http://st21f01ls-fly0003.st.geo.apple.com/prjdb/markup/my_project?username=pcho
+
+where my_project is replaced by the name of the markup project.
+
+
+*.  Gustaf Lindqvist's instructions for cloning "human verification"
+projects on Detection project model website:
+
+To clone an existing "human verification" project
+(e.g. digits_los_angeles_drive), first make sure "Detector 1200" entries
+are already in fly0006.  
+
+I’ve created the project oahu_eastern by selecting digits_los_angeles_drive
+here: https://flyover.geo.apple.com/admin/detectionproject/ .  Press
+"Clone" button. Then press red "Confirm" button. Edit the newly created
+detection project and change its name and project fields.  Press "Submit"
+button.
+
+View verification "red-yellow-green" buttons webpage by pointing a browser
+to https://flyover.geo.apple.com/prjdb/detection/view/digits_oahu_eastern
+(replace the last part after / with project name)
+
+
+*.  SF CAM2 project information:
+
+-prjdb /startown-gpfs/sputnik01/supersize/mercury/prj/pr_prjdb.xml 
+-prj sf_cam2 
+
+
+<project name="sf_cam2">
+   <title>tmp</title>
+   <resource>sf_march_cam2</resource>
+   <model>
+     <path>/startown-gpfs/sputnik01/supersize/mercury/lab/sf_march_cam2/omni</path>
+     <settings name="default_fw"/>
+     <build_setting MAX_TEXTURE_CNT="1"/>
+     <grid_setting CS="UTM10,EGM96"/>
+     <grid_setting GRID="UTM10,EGM96"/>
+     <grid_setting GRD_CENTER_X="4600000"/>
+     <grid_setting GRD_CENTER_Y="700000"/>
+      <grid_setting TER_MAP_US="512"/>
+      <grid_setting TER_MAP_VS="512"/>
+     <center x="4132165" y="598515" cs="UTM10N"/>
+     <build_setting F3D_VER="1060"/>
+     <build_setting MOPT_VER="1"/>
+     <build_setting LEVEL="17"/>
+     <build_setting TEXTURE_VER="10"/>
+    </model>
+   </project>
+
+
+Images for SF cam2 project are enumerated within the following 2 text files:
+
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130512-SanFrancisco/capture/camera2_images.txt 
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130512-SanFrancisco/capture/camera3_images.txt 
+
+
+prefix = /gpfs/sputnik01/supersize/mercury/collections/20130512-SanFrancisco/capture/2_jpg/
+$prefix/california
+$prefix/broadway
+$prefix/beach
+
+
+
+*.  Procedure for tracking down full paths to DNG files for Cupertino van
+imagery which we learned from Rahul and Viktor on 10/20/14:
+
+0.  Define g3d root subdir $root = /startown-gpfs/sputnik02/supersize/devtest/g3d
+
+1.  Look in $root/project.xml for project name (e.g. "dual_return")
+
+2.  Look inside of project of interest for resource name (e.g. "dual_return")
+
+3.  Look inside resource name for imdata name 
+(e.g. imdata name="imdata/mercury/dual_test/san_jose-rainbow_west-20141011_155507-q6-imdata/"/>
+
+4.  cd to full path for imdata subdirectory = $root/imdata name
+e.g. /startown-gpfs/sputnik02/supersize/devtest/g3d/imdata/mercury/dual_test/san_jose-rainbow_west-20141011_155507-q6-imdata/
+
+In this imdata subdir, there should exist an imdata.json file.
+
+5.  Open imdata.json and search for "path".  All images are relative to
+this "path" key:
+
+"path":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+
+6.  Search for ".dng" suffix
+
+"filename":"unplanned-20141011_194607/02-2645D-07448/17k/017505-000001-20141011_194655_567-Cam02_2645D_07448.dng"
+
+So Cupertino images have full pathnames like
+
+
+/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6/unplanned-20141011_194607/02-2645D-07448/17k/unplanned-20141011_194607/02-2645D-07448/17k/017505-000001-20141011_194655_567-Cam02_2645D_07448.dng
+
+
+*.  Rectified Cupertino side-facing camera images are sitting in cam2 and cam5 subdirs of 
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/san_jose-rainbow_west-20141011_155507-q6-imdata
+
+Cam2 = 02-2645D-07409
+Cam5 = 02-2645D-07448
+
+Rectified Cupertino forward/backward facing camera images are sitting in
+cam1, cam3, cam4 and cam6 subdirs of 
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/san_jose-rainbow_west-20141011_155507-q6-imdata-lidar
+
+N_rigs = 10495 for Cupertino project
+
+N_rigs = 17500 for Cupertino project  (as of 11/4/2014)
+
+Side-facing cameras 2 and 5 appear to have upside-down raw images!
+
+
+*.  Rectified downtown San Francisco images for forward and backward facing
+cameras were generated on 2/19/15.  They are sitting in cam1, cam3, cam4
+and cam6 subdirs of
+/startown-gpfs/sputnik03/supersize/labeling_resources/bay_area-g6-20150102_162450-h1-imdata/
+
+*.  Rectified NYC images for forward & backward facing cameras were
+generated on 3/2/15.  They are sitting in cam1, cam3, can4 and cam6 subdirs
+of
+/startown-gpfs/sputnik03/supersize/labeling_resources/new_york-d05-20140901_124321-q9-imdata/
+and
+/startown-gpfs/sputnik03/supersize/labeling_resources/none-ground-20140824_125006-q9-imdata/
+
+
+*.  On some node machine, execute find command like the one below in order
+to generate relative paths to all unrectified images which will be
+"sparsely" annotated that Weiyu wants as of March 2015:
+
+cd none-ground-20140827_133550-q9-imdata
+find . -name "*.jpg" -print > none-ground-20140827_133550-q9-imdata.rect_images
+
+Place "*.rect_images" text files into
+/cc2-gpfs/storage/dev/pr_databases/labeling_resource/san_francisco_downtown_mercury/sparsely_labeled_images/
+
+

@@ -1,0 +1,141 @@
+==========================================================================
+Face dataset statistics
+==========================================================================
+Last updated on 6/6/16; 6/7/16; 6/14/16; 6/18/16
+==========================================================================
+
+OUR face/hands dataset (updated 6/6/16):
+
+ubuntu:images% imglab --stats all_labeled_faces_hands.xml 
+Number of images: 8676
+Number of different labels: 2
+Number of non-ignored boxes: 45498
+
+Label: face
+   number of images:      5859
+   number of occurrences: 26081
+   min box area:    1
+   max box area:    2.95653e+06
+   mean box area:   10240.8
+   stddev box area: 54160.6
+   mean width/height ratio:   0.778027
+   stddev width/height ratio: 0.253923
+
+Label: hand
+   number of images:      5087
+   number of occurrences: 19417
+   min box area:    1
+   max box area:    3.42514e+06
+   mean box area:   8284.96
+   stddev box area: 55430.6
+   mean width/height ratio:   1.05497
+   stddev width/height ratio: 0.488975
+
+WIDER face dataset:
+
+ubuntu:WIDER% imglab --stats train_annotations.xml 
+Number of images: 12876
+Number of different labels: 1
+Number of non-ignored boxes: 159395
+
+Label: face
+   number of images:      12876
+   number of occurrences: 159395
+   min box area:    2
+   max box area:    1.1029e+06
+   mean box area:   3857.34
+   stddev box area: 23087.8
+   mean width/height ratio:   0.800371
+   stddev width/height ratio: 0.161386
+
+ubuntu:WIDER% imglab --stats val_annotations.xml 
+Number of images: 3222
+Number of different labels: 1
+Number of non-ignored boxes: 39698
+
+Label: face
+   number of images:      3222
+   number of occurrences: 39698
+   min box area:    1
+   max box area:    1.23379e+06
+   mean box area:   3842.53
+   stddev box area: 23462.4
+   mean width/height ratio:   0.804089
+   stddev width/height ratio: 0.173542
+
+
+ubuntu:pcho% imglab --stats gimages1-20_nofaces1-9_wider2.3K_nontiny_faces_hands.xml 
+Number of images: 11032
+Number of different labels: 2
+Number of non-ignored boxes: 61338
+
+Label: face
+   number of images:      8212
+   number of occurrences: 34463
+   min box area:    1
+   max box area:    2.95653e+06
+   mean box area:   11553.8
+   stddev box area: 52926.5
+   mean width/height ratio:   0.786136
+   stddev width/height ratio: 0.245518
+
+Label: hand
+   number of images:      6913
+   number of occurrences: 26875
+   min box area:    1
+   max box area:    3.42514e+06
+   mean box area:   7093.97
+   stddev box area: 47373.2
+   mean width/height ratio:   1.06503
+   stddev width/height ratio: 0.51526
+
+width_10 = 7.50549
+width_20 = 12.4004
+width_25 = 15.0534
+width_30 = 17.9286
+width_40 = 24.1178
+width_50 = 30.4361
+width_60 = 38.1931
+width_70 = 49.8943
+width_75 = 57.3194
+width_80 = 67.2405
+width_90 = 99.5993
+
+ubuntu:pcho% imglab --stats gimages1-20_nofaces1-9_wider2.3K_wider0.4K_nontiny_faces_hands.xml 
+Number of images: 11491
+Number of different labels: 2
+Number of non-ignored boxes: 64608
+
+Label: face
+   number of images:      8671
+   number of occurrences: 36196
+   min box area:    1
+   max box area:    2.95653e+06
+   mean box area:   11763.3
+   stddev box area: 52772.7
+   mean width/height ratio:   0.787999
+   stddev width/height ratio: 0.244677
+
+Label: hand
+   number of images:      7259
+   number of occurrences: 28412
+   min box area:    1
+   max box area:    3.42514e+06
+   mean box area:   6894.43
+   stddev box area: 46107
+   mean width/height ratio:   1.06546
+   stddev width/height ratio: 0.518335
+
+width_10 = 7.74278
+width_20 = 12.8915
+width_25 = 15.721
+width_30 = 18.7037
+width_40 = 24.9123
+width_50 = 31.2091
+width_60 = 39.1713
+width_70 = 50.8385
+width_75 = 58.1365
+width_80 = 67.9516
+width_90 = 100.315
+
+As of 6/18/16, this is our "final" face dataset

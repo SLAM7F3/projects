@@ -1,0 +1,516 @@
+======================================================================
+Notes for setting up new ubuntu 14.4 box
+======================================================================
+Last updated on 1/7/16; 1/20/16; 1/23/16; 2/11/16
+======================================================================
+
+*.  Copy .cshrc old machine to new machine.
+
+*.  Copy ~/bin/ contents from old machine to new machine.
+
+*.  Generate an updated list of packages installed on old machine.
+Then use that package list to install packages on new machine.
+
+
+dpkg --list | cut -f 1-3 -d' ' > packages.txt
+
+MAKE CERTAIN TO ELIMINATE ANY PACKAGES REFERRING TO NVIDIA BEFORE
+TRANSFERING THIS PACKAGES FILE TO A NEW MACHINE !!!
+
+Install all of those packages:
+
+Create install_packages script with following contents:
+
+for i in `cat packages.txt`; do sudo apt-get install --yes $i; done
+
+
+*.  After all packages have been installed into our local (non-Apple LDAP)
+account, set user shell to tcsh
+
+		chsh -s /bin/tcsh
+
+*.  In order to get our Apple LDAP account to have a tcsh rather than bash
+account, we had to find our LDAP user id and group id.  Chant "id".  This
+shows 
+
+cho-MacPro:pcho% id
+uid=374961464(pcho) gid=18010(apple_ga) groups=18010(apple_ga),27(sudo),142291(mme-wiki-all),153268(geoeng-wiki),156136(geoninja-wiki)...
+
+So our LDAP user id = 374961464 and group id = 18010.  Enter this user and
+group id into /etc/passwd and change shell from default /bin/bash to
+/bin/tcsh:
+
+
+cho:x:1000:1000:cho,,,:/home/cho:/bin/tcsh
+gitlog:x:116:65534::/nonexistent:/bin/false
+.
+.
+.
+gdm:x:122:128:Gnome Display Manager:/var/lib/gdm:/bin/false
+pcho:x:374961464:18010:pcho (LDAP):/home/pcho:/bin/tcsh
+
+
+*.  Copy .emacs from old machine to new.  Make sure path to TAGS file
+within .emacs is correct.  For example within MacPro version of .emacs, 
+
+;; ====================================================================
+;; TAGS
+;; ====================================================================
+
+(setq tags-file-name "/home/pcho/sputnik/pwin/build/linux64/TAGS")
+
+Then byte-compile .emacs.elc on new machine.  Also copy xcscope.elc and
+xcscope.el from /usr/share/emacs/24.3/lisp/ to corresponding subdir on new
+machine.
+
+
+*.  Dump SVN projects on old machine.  Then restore SVN projects subdir on
+new machine.
+
+svn server = 127.0.0.1
+
+Create subdir ~/programs/c++/svn/projects/ .  Then from inside this subdir,
+chant
+
+	svn checkout svn://127.0.0.1/svn/projects .
+
+
+*.  Try installing GNOME shell classic (didn't need to do this on gpu box)
+via sudo apt-get install gnome-session-fallback.
+
+*.  At login window, click on ubuntu symbol next to user name.  Then select
+gnome flashback instead of unity.  (Definitely did this on gpu box).
+
+*.  In order to manipulate "top" and "bottom" panels, press "Alt" while
+right clicking on panel with mouse.  Then selected panel properties.  Can
+reset location from top to bottom, expand panel height and show hide
+buttons.
+
+*.  Can remove an application icon appearing on panel by pressing "Alt"
+while right clicking near icon	.
+
+*.  Right click on desktop switcher.  Change number of rows to 2 and number
+of workspaces to 6.  When setting up the Apple ThinkMate GPU machine in Oct
+2015, we had to chant
+
+sudo apt-get install compizconfig-settings-manager compiz-plugins
+
+Then mouse click Applications -> System Tools -> CompizConfig Settings
+Manager.  A window will appear and a warning dialog. Click ok on warning
+dialog.
+
+Double click General otpions on the next window.  Now click on desktop
+size.  Change desktop dimensions to 2 rows by 3 columns.
+
+
+*.  Add an empty folder icon to the Desktop called "DesktopFolder" by right
+clicking with mouse on desktop and selecting "New Folder".
+
+*.  Right click on a terminal and choose to edit profile.  Under Scrolling
+tab, set scrollback number of lines = 10000
+
+*.  Right click on clock.  Choose "Clock" menu tab.  Select show Weekday
+and Date and month buttons.  Also select "Seconds".
+
+*.  In order to switch window controls (min, max, close) from left to
+right, use Unity Tweak Tool -> Appearance Theme.  Then click on Window
+Controls tab.  Change Layout alignment from left to right.
+
+*.  Download C++ version of Eclipse from www.eclipse.org/downloads/ . As of
+Apr 2015, latest version = eclipse-cpp-luna-SR2-linux-gtk-x86_64.tar.gz
+
+*.  In order to restore FILE, EDIT, VIEW, etc tabs within firefox browser, 
+click on 3 horiz lines button located near very top of browser page.  Then
+click on Customize button at very bottom of menu.  Click on Show/Hide
+Toolbars at very bottom of new webpage.  Activate "Menu Bar".
+
+*.  Export bookmarks from firefox into html file on old machine.  Then
+import bookmarks.html file on new machine.
+
+*.  In order to change the coloring of xterm scrollbars, copy
+gtk-widgets.css from /usr/local/src into
+/usr/share/themes/Ambiance/gtk-3.0/gtk-widgets.css.  See
+/usr/share/themes/Ambiance/gtk-3.0/gtk-widgets.css
+
+Compiling our 3rd-party source codes:
+-------------------------------------
+
+*.  Download latest version of boost (1_59_0 as of late 2015). Install
+according to notes in README.boost.
+
+*.  Download latest version of Anaconda (2-2.4.1 as of early 2016).  See
+README.python for instructions on how to install python.
+
+*.  Build ann_1.1.2 .  Chant "make linux-g++". Manually copy libAnn.a to
+/usr/local/lib/ .  Manually copy ANN.h, ANNperf.h and ANNx.h into
+/usr/local/include/ANN.
+
+*.  Build and install tdp-unstable_gcc4.8.2.tgz.  Copy all .h files
+contained within libtdp_include_gcc4.8.2.tgz into
+/usr/local/include/libtdp/
+
+*.  Build Iva's "meta" program AFTER moving meta to /home/cho/ ! .  After
+compling adobe executable, move entire /home/cho/meta/ subdirectory into
+/usr/local/.  Then create soft link from /usr/local/meta/beta_bin/adobe -->
+/usr/local/bin/adobe
+
+*.  Download latest binary version of apache-tomcat/ (8.0.21 as of Apr
+2015; 8.0.27 as of Oct 2015).  Create soft link from
+/usr/local/apache-tomcat-8.0.21 to /usr/local/apache-tomcat
+
+  - Copy tomcat activation script into /etc/init.d .  See README.tomcat.
+
+  - Follow directions in README.tomcat for adding environment vars to 
+    /etc/profile and /root/.bashrc.
+
+*.  Copy apache-activemq-5.3.2 to /usr/local/.  Create soft link from
+/usr/local/apache-activemq-5.3.2 to /usr/local/apache-activemq.
+
+  - Copy activemq activation script into /etc/init.d/ . See README.activemq.
+
+*.  Build and install activemq-cpp-2.0.1-src .  Make sure to create soft
+link between /usr/local/include/activemq-cpp-2.0.1 and
+/usr/local/include/activemq-cpp.
+
+*.  Download and install latest version of bison (3.0.4 as of Oct 2015)
+
+*.  Build connexe-2012-02-22 .  Follow instructions inside README.connexe.
+
+*.  Unpack eyeglass_gcc4.8.2.tgz within ~/programs/c++/svn/
+
+*.  Download latest version of dlib (18.17 as of Oct 2015). Move into
+/usr/local/include/ .  Create soft link to /usr/local/include/dlib .
+
+*.  Download latest version of eigen (3.2.4 as of Apr 2015; 3.2.6 as of Oct
+2015)
+
+*.  Download latest version of Google Log (0.3.4 as of Apr 2015 ?) and
+google flags.
+
+*.  Unpack levmar-2.6_OK.tgz and build liblevmar.  Manually copy
+liblevmar.a into /usr/local/lib/ and levmar.h into /usr/local/include/
+
+*.  Build FANN and flann libraries.
+
+*.  Build ffmpeg_checkout_May23_2010.  Some linking errors as of Apr 2015.
+Need to add #include "libavformat/internal.h" near top of ffserver.c . 
+
+*.  Unpack ffmpeg_include.tgz . Move resulting ffmpeg subdir into
+/usr/local/include/ffmpeg
+
+*.  Unpack AutopanoPro_Linux64_308_2013-09-05.tar.gz into /usr/local/AutoPanoPro
+
+*.  Download latest version of flex (2.5.39 as of Oct 2015)
+
+*.  Download and install latest version of GDAL (1.11.2 as of Apr 2015;
+versions 1.11.3 and 2.0.1 as of Oct 2015; But GDAL version 2.X.Y is no
+longer compatible with even relatively recent versions of OSG!) into
+/opt/gdal.  In order to install GDAL into /opt/gdal, chant
+
+	./configure --prefix=/opt/gdal/
+
+when building GDAL from source.
+
+*.  Unpack and install geos-3.4.2.tgz (Latest version as of Apr 2015 =
+3.4.2; Lastest version as of Oct 2015 = 3.5.0) into /opt/geos/
+
+	./configure --prefix=/opt/geos/
+
+*.  Download and install latest version of opencv (3.1.0 as of early 2016)
+Set installation dir = /usr/local/OpenCV.  See README.OpenCV !!!
+
+To avoid namespace clashes with flann and to avoid using the OpenCV version
+of flann, rename /usr/local/OpenCV/include/opencv2/flann as flann_opencv
+and /usr/local/OpenCV/include/flann.hpp as flann_opencv.hpp.  Then recreate
+/usr/local/OpenCV/include/opencv2/flann.  Copy just config.h, defines.h and
+miniflann.hpp from /usr/local/OpenCV/include/opencv2/flann_opencv into
+/usr/local/OpenCV/include/opencv2/flann/
+
+
+*.  Download and install latest version of GMM++ (generic C++ template
+library for sparse, dense and skyline matrices).  As of Apr 2015, latest
+version = 4.3.  As of Oct 2015, latest version = 5.0
+
+*.  Download and install latest version of Java Developer Kit (jdk1.7.0_80
+as of Apr 2015).  Place into /opt/java/ and create link from
+/opt/java/jdk1.7.0_80 to /opt/java/jdk)
+
+*.  Unpack and make lear_gist-1.2_gcc.4.6.3.  Rename executable
+compute_gist as /usr/local/bin/lear_gist.
+
+*.  Unpack and install libcmt-0.1.0.tgz.  Latest version as of Oct 2015.
+
+*.  Unpack and install libsiftfast-1.2.tgz.  Latest version as of Oct 2015.
+
+*.  Unpack and install lmfit-3.5.tgz.  We may need
+/usr/local/lib/liblmmin.a which comes from this older version of lmfit.
+Then unpack and install lmfit-5.1.tgz.  This newer version of lmfit does
+not install any version of liblmmin.a . 
+
+*.  Unpack and install mallet-2.0.7.  (Latest version as of Apr 2015 =
+mallet-2.0.7; latest version as of Oct 2015 = mallet-2.0.8RC2).  Chant ant
+inside mallet subdir.
+
+*.  Unpack and install metis-5.1.0 (latest version as of Apr 2015).  Cd
+into metis-5.1.0/GKlib, chant cmake . , make and sudo make install.
+
+*.  Unpack and compile Open Graph Drawing Framework (v2012.07 is latest
+stable version as of Apr 2015; v2015.05 is latest version as of Oct 2015).
+Manually copy ogdf header files into /usr/local/include/ .  Manually copy
+_release/libOGDF.a into /usr/local/lib/ . Make sure
+/usr/local/include/ogdf/ and all its subdirectories are globally readable
+and executable.
+
+*.  Unpack philbinj-fastann-1f65a4d/  Chant cmake within main directory
+(and not inside a new build subdir).  Then chant make.
+
+*.  Unpack piyush-triangle-8e084aebc825.  Create a bin/ and lib/ subdir
+within main dir.  Then chant make.  Manually copy include header files into
+/usr/local/include/trianglepp/ . Manually copy lib/libdel.a to
+/usr/local/lib/
+
+*.  Unpack pngwriter-master.zip (latest version as of Apr 2015; As of Oct
+2015, newer pngwriter version is available via github at
+https://github.com/pngwriter/pngwriter).  mkdir build, cd build, cmake ..
+make and sudo make install.  Manually copy build/lib/libpngwriter.a to
+/usr/local/lib/ and build/include/pngwriter.h to /usr/local/include/
+
+*.  Unpack sba-1.6 (latest version as of Apr 2015).  Chant "make" at least
+twice.  Manually copy sba.h to /usr/local/include and libsba.a to
+/usr/local/lib/
+
+*.  Download svdlibc.tgz from https://tedlab.mit.edu/~dr/SVDLIBC/ .  After
+building, manually copy svd binary into /usr/local/bin, libsvd.a into
+/usr/local/lib/ and svdlib.h + svdutil.h into /usr/local/include/ . 
+
+*.  Unpack trimesh-2.2.11_modified.tgz.  Make and ignore error
+messages. Manually copy libtrimesh.a into /usr/local/lib.  Copy contents of
+trimesh2_include/ into /usr/local/include/trimesh2.
+
+*.  Unpack and install freetype (As of Apr 2015, latest version = 2.5.5; 
+As of Oct 2015, latest version = 2.6.1).
+
+*.  Unpack and install libungif-4.1.4.  Needed for OSG linking.
+
+*.  Unpack header files within 2015 version of OleanderStemming.  Place
+them into indexing, stemming and utilities subdirs of
+/usr/local/OleanderStemming/.  
+
+*.  Unpack and install OSG_OP_OT-1.2 within ~/osg_stuff/.  For gcc 4.8.2,
+we needed to add a few "this->" entries into a few header files.  For gcc
+4.8.4, we had to add "this->" entries into more header files.
+
+*.  On 11/5/15, we ran into lots of conflicts between SuiteSparse, bundler
+and pwin!  As of Nov 2015, we believe that these 3 code packages are
+inconsistent unless we follow the rules below:
+
+  0.  Do NOT download the latest version of SuiteSparse (4.4.4 as of Apr 2015; 4.4.5 as
+		of Oct 2015).
+
+  1.  Instead, install following packages from repositories:
+
+	sudo apt-get install libatlase-base-dev
+	sudo apt-get install libsuitesparse-dev
+
+*.  Download and install latest version of ceres-solver (1.10.0 as of Oct
+2015)
+
+*.  Inside /usr/lib/x86_64-linux-gnu/ , create soft link
+
+   sudo ln -s ./libminpack.so.1.0.0  ./libminpack.so
+
+*.  Download and install latest version of bundler from Noah's github site.
+Manually copy lib5point.a, libimage.a, libmatrix.a, libsba.v1.5.a and
+libsfmdrv.a from /software/bundler_sfm-master/lib/ into
+/usr/local/lib/bundler/
+
+  1.  Followed Noah's instructions within his README.md and uncommented "USE_CERES=true"
+      line within BASE_PATH/src/Makefile
+
+  2.  Needed to create a softlink for Eigen library headers:
+
+	cd /usr/local/include
+	sudo ln -s ./eigen3/Eigen/ .
+
+  3.  When compiling bundler in Nov 2015, we first encountered the error
+message
+
+"gcc: error trying to exec 'f951': execvp: No such file or directory"
+
+After some googling, we found a suggestion to chant "find /usr/ -name
+f951".  Based upon thinkmate's response, we then created the following
+softlink
+ 
+	sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/4.4/f951 /usr/local/bin
+
+  4.  We also needed to install libgfortran:
+
+	sudo apt-get install libgfortran-4.8-dev
+
+  5.  Download siftDemoV4.zip from David Lowe's website:
+
+	http://www.cs.ubc.ca/~lowe/keypoints/
+
+      Copy sift binary into /usr/local/bin and into bundler's BASEPATH/bin
+
+  6.  sudo apt-get install jhead in order to extract focal lengths from
+	exif metadata.  Then we need to create a softlink from
+	/usr/bin/jhead to bundler's BASEPATH/bin
+
+  7.  We encountered the same seg fault as described at
+https://github.com/snavely/bundler_sfm/issues/21.  Here are the most
+important comments from that blog listing:
+
+Bingo!
+
+I had libopenblas-base, libblas3 and libblas-dev installed on my system. These are the commands I ran to clean things up...
+
+    sudo apt-get autoremove libblas3
+    also removes libblas-dev
+
+    sudo apt-get autoremove libopenblas-base
+    installs libblas3 (when I attempted to make bundler_sfm at this point, the process failed)
+
+    sudo apt-get install libblas-dev
+    bundler_sfm built and ran all the way through the kermit data set.
+
+After uninstalling libblas3 and libopenblas-base and libopenblas-dev, we
+had to also reinstall libcxsparse3.1.2:
+
+	sudo apt-get install libcxsparse3.1.2
+	sudo apt-get install liblapack-dev
+
+Bottom line to successfully compile and run bundler on Thinkmate:  Remove
+libopenblas-base and libopenblas-dev!
+
+But then kermit builds with latest version of bundler on thinkmate!
+
+Note:  As of Jan 2016, we believe that we can safely use 
+the ATLAS version of BLAS rather than openblas which is needed for Caffe.
+
+
+*.  Git clone latest public version of caffe into ~/software/.  See
+README.caffe for compiling instructions.
+
+*.  Download and install latest version of dropbox onto new machine.  As of
+Oct 2015, dropbox_2015.02.12_amd64.deb is the latest ubuntu dropbox binary
+file.
+
+*.  Copy /home/pcho/programs/c++/svn/projects/src/mains/video/montageview
+executable binary into /usr/local/bin/
+
+*.  Copy contents of usrshareicons.tgz into /usr/share/icons/
+
+*.  Copy Michael Yee's graph viewer within
+ScalableGraphVisualization-20131217.tgz to
+/home/pcho/programs/c++/svn/projects/src/mains/graphs/ScalableGraphVisualization/.
+After unpacking this tarball, create soft link
+
+    ln -s ./ScalableGraphVisualization-20131217 ./latest_version
+
+*.  Remove libopencv_contrib, libopencv_legacy and libopencv_nonfree
+entries within /home/pcho/programs/c++/svn/projects/config/common_all.pro.
+Then cd /home/pcho/programs/c++/svn/projects/src/mains/photosynth/Qt and
+chant
+
+	qmake photoserver.pro -o makefile
+	make
+
+	qmake viewbundler.pro -o makefile
+	make
+
+*.  Download and install affine sift within tarball demo_ASIFT_src.tar.gz
+Move binary into /usr/local/bin/extract_ASIFT
+
+*.  Download and install Patch-based Multi-view Stereo Software (PMVS2) for
+linux.  Copy clapack.h and f2c.h from bundler into
+pmvs-2/program/main/clapack/.  Then modified pmvs-2/program/main/Makefile
+as follows:
+
+# Your INCLUDE path (e.g., -I/usr/include)
+YOURINCLUDEPATH = -I./
+
+# Your LDLIBRARY path (e.g., -L/usr/lib)
+YOURLDLIBPATH = -L ./
+
+CXXFLAGS = -O2 -Wall -Wno-deprecated ${YOURINCLUDEPATH}
+
+LDFLAGS = ${YOURLDLIBPATH} -lXext -lX11 -ljpeg -lm -lpthread \
+	-llapack -lgsl -lgslcblas
+
+After building, manually copy pmvs2 binary into /usr/local/bin/.
+
+*.  Imagesearch setup
+
+  -  Copy PHOTOSERVER.desktop and IMAGESEARCH.desktop scripts into
+     ~/Desktop/ folder
+
+  -  Copy start_photoserver script into /usr/local/bin/ and make it executable
+
+  -  Create tarballs (with no .SVN folders) of /usr/local/apache-tomcat/webapps/photo and 
+     /usr/local/apache-tomcat/webapps/image from some previous machine.
+     Unpack these tarballs within corresponding location on new ubuntu 14.4
+     machine.  
+
+  -  Follow instructions within README.tomcat
+
+  -  On 11/13/15, we were able to get image search tool to work on
+     thinkmate under ubuntu 14.4.
+
+*.  MapServer setup
+
+  - See README.mapserver
+
+Apple Flyover specific issues
+-----------------------------
+
+*.  Create softlink within /
+
+sudo ln -s ./startown-gpfs/ ./gpfs
+
+*.  Change hostname to pcho-MacPro within /etc/hostname and /etc/hosts
+
+*.  Create subdir ~/programs/c/pwin/src/ .  Copy copy_files_from_pwin along
+with cp_files_from_XXX into this subdir.
+
+*.  Copy ~/.gitconfig from old machine to new.  The contents of this file
+should look like
+
+[push]
+        default = current
+[user]
+        name = Peter Cho
+        email = pcho@apple.com
+[core]
+        editor = emacs
+[merge]
+        tool = meld
+
+*.  Create web browser bookmarks:
+
+Apple webmail:
+
+   https://webmailnew.apple.com
+
+C3 wiki:
+
+   https://rd17d01ls-geo0838.rd.geo.apple.com/wiki/index.php/Main_Page
+
+*.  After installing pwin, be sure to run Tho's RDN commands listed under
+https://rd17d01ls-geo0838.rd.geo.apple.com/wiki/index.php/Installation_and_Compiling/
+on the C3 wiki
+
+  - After cd'ing to /opt/geo/ext/boost-1.48.0/lib, we had to manually create symbolic links
+
+	sudo ln -s ./libboost_thread.so ./libboost_thread-mt.so
+   	sudo ln -s ./libboost_thread-mt.so ./libboost_thread-mt.so.1.48.0
+
+*.  In Oct 2015, Viktor told us that the flyover group is no longer using
+LDAP.  So we need to change all previous LDAP IDs for user pcho from
+374961464 to user pcho on the 4GB and 1 GB data drives.  Chant the
+following recursive command to perform this user ID change:
+
+   sudo chown -R --from=374961464:apple_ga  -R pcho:apple_ga  *
+
+*.  Install matlab following instructions on wiki page
+https://rd17d01ls-geo0838.rd.geo.apple.com/wiki/index.php/Matlab

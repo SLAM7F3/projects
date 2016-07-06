@@ -1,0 +1,51 @@
+========================================================================
+HMI demo notes
+========================================================================
+Last updated on 4/4/11
+========================================================================
+
+*.  Plug in orange Xsens into a USB socket on a Dell precision M6400
+laptop.  Then Velcro bottom of Xsens to Dell laptop's front.  
+
+*.  Plug in Belkin bluetooth dongle into USB socket
+
+*.  Doubleclick HMI icon to start the main program
+
+*.  Main program will first try to initialize XSENS.  If it has trouble
+doing so, you'll see lots of error messages:
+
+
+Error 269 occured during open : A device is already open
+Trying to initialize XSENS
+Connect to the MT, configure it for euler output at 100Hz
+ and read data messages until Control-C is pressed
+Error 269 occured during open : A device is already open
+Trying to initialize XSENS
+Connect to the MT, configure it for euler output at 100Hz
+ and read data messages until Control-C is pressed
+Error 269 occured during open : A device is already open
+Trying to initialize XSENS
+Connect to the MT, configure it for euler output at 100Hz
+ and read data messages until Control-C is pressed
+Error 269 occured during open : A device is already open
+Trying to initialize XSENS
+.
+.
+.
+
+In this case, it's probably necessary to try running the main program again
+by doubleclicking the HMI icon
+
+*.  If the XSENS successfully connects, the main program will next try to
+initialize the Wiimote.  Press the lowest 1 & 2 buttons simultaneously.  If
+the Wiimote does NOT successfully connect, an error message will quickly
+appear indicating no wiimotes were found and the main program's window will
+close.  In this case, you need to start again by doubleclicking the HMI
+icon.
+
+*.  After some number of tries, both the XSENS and Wiimote will
+successfully connect.  Then the main program should pop up the 3D
+panoramas.  Maximize the 3D window once it appears.
+
+
+

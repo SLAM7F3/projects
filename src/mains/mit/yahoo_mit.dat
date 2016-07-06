@@ -1,0 +1,72 @@
+
+Enter min_U:
+0
+Enter max_U:
+1.46941
+
+geo_lower_left = 
+327412.9266
+4691638.509
+
+
+geo_lower_right = 
+327961.2592
+4691629.496
+
+
+geo_upper_right = 
+327969.4183
+4692003.849
+
+
+geo_upper_left = 
+327421.0857
+4692012.862
+
+
+lower_left_corner = 
+UTM zone number = 19 northern hemisphere flag = 1
+Easting = 327412.926524 meters
+Northing = 4691638.50877 meters
+
+longitude = -71.0956811052 degs = -71 degs -5' -44.4519785464" 
+latitude = 42.3578704152 degs = 42 degs 21' 28.3334946268" 
+altitude = 0 meters
+time = 0
+dt = 0
+
+lower_right_corner = 
+UTM zone number = 19 northern hemisphere flag = 1
+Easting = 327961.259149 meters
+Northing = 4691629.49573 meters
+
+longitude = -71.0890244554 degs = -71 degs -5' -20.488039497" 
+latitude = 42.3579107763 degs = 42 degs 21' 28.4787946129" 
+altitude = 0 meters
+time = 0
+dt = 0
+
+
+upper_right_corner = 
+UTM zone number = 19 northern hemisphere flag = 1
+Easting = 327969.418298 meters
+Northing = 4692003.8489 meters
+
+longitude = -71.0890370938 degs = -71 degs -5' -20.533537563" 
+latitude = 42.3612817984 degs = 42 degs 21' 40.6144742015" 
+altitude = 0 meters
+time = 0
+dt = 0
+
+
+upper_left_corner = 
+UTM zone number = 19 northern hemisphere flag = 1
+Easting = 327421.085673 meters
+Northing = 4692012.86194 meters
+
+longitude = -71.0956940995 degs = -71 degs -5' -44.4987580457" 
+latitude = 42.3612414287 degs = 42 degs 21' 40.4691434021" 
+altitude = 0 meters
+time = 0
+dt = 0
+

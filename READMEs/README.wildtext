@@ -1,0 +1,514 @@
+========================================================================
+Localizing text in the wild notes
+========================================================================
+Last updated 4/20/16; 4/21/16; 4/22/16; 4/24/16
+========================================================================
+
+TODO:
+
+*.  Develop precision and recall scoring for MSRA truth data.
+
+*.  Try to distinguish between upper case and lower case letters
+
+*.  Reintroduce horizontal background lines underneath all chars in some
+synthetic words
+
+*.  Add tables/lists of words to training sets with variable font sizes.
+
+*.  Do not composite foreground text with no background onto background
+images high local gradient content
+
+*.  Experiment with composite foreground text onto MSERs within background
+images
+
+*.  Wrap genuine bboxes around all vertically and horizontally segmented
+words
+
+*.  Form additive ensemble semantic segmentation results from multiple
+models trained on different synthetic text sets
+
+
+DONE:
+
+*.  Add numerals containing decimal points and $ to training sets
+
+*.  Created masks using ImageMagick's undercolor feature.  Masks now block
+out entire rectangular regions containing both text and immediate non-text
+pixels.  Generally yields superior segmentation results to masks marking
+only synthetic text pixels.
+
+*.  Eliminate any weird control characters, /n, /t, etc within input
+phrases within PHRASES.cc and GENERATE_STRING_IMAGES.cc
+
+*.  Generate masks for words with spaces between words marked by a
+different mask value than that used for text pixels.
+
+*.  Generate masks with first word, second word, 3rd word, etc classes
+(Doesn't work!)
+
+*.  Generate masks where chars are labeled by the number of characters
+in words (e.g. THE --> 3,  QUICK --> 5, BROWN --> 5, etc)
+
+*.  Generate masks where chars are labeled as {digit, letter, space,
+punctuation}.    Consider letter --> vowel, consonant.  (doesn't work!)
+
+*.  Add punctuation to synthetic training sets
+
+*.  Generate masks where each char is labeled (A, B, C, 1, 2, 3, etc);
+This idea will definitely fail!
+
+*.  Merge multiple segmented tiles together into single segmentation result
+
+*.  Add words with letters intentionally separated by spaces to synthetic
+training sets
+
+*.  Add stationary, empty lined paper as background internet images;
+add tile background internet images
+
+*.  Add nontrivial fraction of isolated single chars to training set.
+
+*.  Add fonts where chars are made up of dots/dashes.  Perhaps add more
+font variation.  Add "3D" fonts with drop shadows.
+
+*.  Add fancy architecture details (e.g. rod iron gating) with periodic
+structure as internet image backgrounds.
+
+*.  Intentionally add occluders (e.g. vertical poles, tree leaves) in front
+of foreground text
+
+*.  When all chars in a phrase are spaced apart, do NOT classify each char
+as an isolated character!
+
+*.  Apply nontrivial blur to some small fraction of composited images.
+
+*.  Apply gaussian noise to some nontrivial fraction of composited images.
+
+*.  Eliminate ~ subdirs
+
+*.  Synthesize short vertical words e.g.     T  9  S
+	            			     O  0  A
+ 				             W  2  L
+                        	             N     E
+
+*.  Record and save number of words and lines corresponding to each phrase
+exported by GENERATE_STRING_IMAGES.
+
+*.  Add line drawings (e.g. hearts, bees, flowers) as negative examples of
+characters within internet backgrounds.
+
+*.  Introduce double spaces between individual chars within phrases.
+
+*.  Downsize and upsize truth bboxes for half-sized and double-sized truth
+textdb images.  Then take union of text pixel classifications in original,
+half-sized and double-sized segmented images.  Compute recall based upon
+this union.
+
+
+--------------------------
+
+In this README, we define the following root directory
+
+	$root= ~/programs/c++/svn/projects/src/mains/
+
+	$deeplab = ~/software/deeplab-public
+
+---------------------------------------
+GENERATING SYNTHETIC TEXT TRAINING DATA
+---------------------------------------
+
+*.  Program $root/syntext/PHRASES imports a set of text files in various
+topic categories.  Looping every line in each file, PHRASES first removes
+any special characters such as .,;:'".  It then retrieves 1 - 15 words from
+the cleaned lines.  PHRASES all randomly intersperses house numbers among
+English words.  Cleaned "phrases" are exported to an output text file.
+
+*.  Program $root/syntext/SINGLE_CHARS writes multiple copies of upper and
+lower case letters to an output text file.
+
+*.  Program $root/syntext/COMPANY_NAMES imports a set of company names from
+a text file.  It removes all leading and trailing white space from the
+names.  The cleaned company names are exported to another text file.
+
+*.  Program $root/syntext/TELEPHONE_NUMBERS synthesizes 10 or 7 digit
+telephone numbers which randomly include parentheses and hyphens.
+
+*.  Program $root/syntext/DECIMAL_NUMBERS synthesizes numerals containing 1
+or 2 digits after a decimal point as well as money numerals.
+
+*.  Run $root/syntext/text_files/generate_all_text script.   
+
+*.  Program $root/syntext/CLEAN_INPUT_TEXT imports the context of
+./text_files/all_text.txt.  It scans through every character within the
+input file and rejects any whose ascii value does not lie within the
+printable interval [32, 126].  CLEAN_INPUT_TEXT shuffles and exports the
+cleaned text lines to ./text_files/shuffled_all_text.txt".
+
+*.  Program $root/syntext/GENERATE_STRING_IMAGES imports a set of
+"reasonable" computer and handwriting fonts along with a set of background
+internet images which should contain no text content.  Looping over a large
+set of text phrases, it first randomly selects a particular text label
+along with a font.  RGB colors for the text foreground and possible stroke
+are also randomly chosen.  If an underbox for the text is randomly
+selected, its background color is required to be reasonably different from
+the text foregorund's color.  Otherwise, the foreground text is rendered
+against a transparent background.
+
+The overall width and height for the entire text phrase is next
+quasi-randomly selected so that a fair number of strings will be rendered
+onto two or more text lines.  To good approximation, character height is
+linearly related to font pointsize.  All ImageMagick rendering calls are
+passed the text image width along with font pointsize.
+
+After a text phrase is rendered via ImageMagick, GENERATE_STRING_IMAGES
+computes reasonable estimates for all the rendered characters' widths.  A
+very wide image is rendered in which the entire string is essentially
+guaranteed to lie within a single textline.  Once rendered character widths
+are known, pixel bounding boxes around each character are derived.
+
+The synthetic text image is next intentionally corrupted via the addition
+of random solar shadows and foreground occlusions.  The text chip is
+exported to an output subdirectory.  Character and word masks are also
+generated and exported to output folders.
+
+Finally, GENERATE_STRING_IMAGES rotates the text image chip along with its
+masks by some random az, el and roll angles.  For each image, it
+instantiates a virtual camera whose horizontal FOV and aspect ratio are
+random gaussian variables.  The string image and mask are also rotated in 3
+dimensions according to random az, el and roll gaussian variables.  After
+perspectively projecting the string image and mask into the virtual camera,
+ImageMagick is used to generate and export their 2D imageplane renderings.
+The rotated & projected images and masks are exported to separate folders.
+If any character or word mask value lies outside their valid ranges, then
+the rotated image and both masks are discarded.
+
+Multiple instances of GENERATE_STRING_IMAGES can be run in parallel
+on a single CPU machine.
+
+			 ./generate_string_images
+
+
+*.  Program $root/syntext/VERTICAL_STRING_IMAGES is a specialized variant
+of GENERATE_STRING_IMAGES which exports synthetic text images and
+accompanying masks that are vertically oriented.  Multiple instances of
+VERTICAL_STRING_IMAGES can be run in parallel on a single CPU machine.
+
+			 ./vertical_string_images
+
+
+*.  Program $root/syntext/RESIZE_BACKGROUNDS imports all image files from a
+specified folder.  It retrieves each image's width and height in pixels.
+If the width or height exceed max_x[y]dim, the image is downsized.  If
+either the pixel width or height is less than composite_tile_size, the
+image is moved into a "small_pics" subdir of the input folder.
+
+We wrote this little utility in order to ensure all background internet
+image inputs to program to COMPOSITE_STRING_TILES are sufficiently large
+[but not too large] for semantic segmentation purposes.
+
+*.  Program $root/syntext/RENAME_BACKGROUND_IMAGES imports a set of raw
+background internet image filenames from a specified subdirectory.  It
+first alphabetically sorts the input image filenames.  It next wraps the
+filenames in double quotes to shield subsequent link commands from white
+spaces.  After querying the user to enter the first image's ID,
+RENAME_BACKGROUND_IMAGES generates an executable script which copies input
+raw filenames to homogenized and ordered output filenames.
+
+*.  Program $root/syntext/ENTROPY_DISTS imports all non-text images used as
+backgrounds for synthetic text images.  Looping over each image, it
+randomly picks a set of bounding boxes and computes the RGB entropies
+within them.  ENTROPY_DISTR outputs the entropy distribution for the R,G,B
+channels.
+
+*.  Program $root/syntext/COMPOSITE_STRING_TILES imports a set of synthetic
+text chips and their masks generated by programs GENERATE_STRING_IMAGES and
+VERTICAL_STRING_IMAGES.  It also takes in a set of background internet
+photos which should contain no text content.  COMPOSITE_STRING_TILES
+generates a specified number of output tiles whose pixel size is consistent
+with deeplab semantic segmentation network finetuning.
+
+Each composite tile contains 3x3 individual tiles.  A random internet image
+is first laid down as a background for the entire composite tile.
+Foreground text chips are then randomly superposed onto the background
+texture.  Foreground chip bounding boxes are not allowed to overlap.
+
+Entropy density is calculated within the background image within candidate
+foreground bboxes locations.  If the background entropy density is too
+large, the candidate foreground text location is rejected.  the Average
+foreground and background RGB values are also calculated for each image
+chip before it's superposed.  If their color contents are not sufficiently
+different, the candidate foreground chip is rejected and another random
+chip is selected.  The number of foreground overlays within each composite
+varies randomly over the interval [9,27].
+
+Once a composite image is formed, each pixel's RGB values are fluctuatued
+by a nonzero amount of random gaussian noise.  A sizable fraction of the
+composites are also blurred by a random amount.  We found that such
+composite degradation significantly improves deeplab semantic segmentation
+classifier performance on test images containing genuine text content.
+
+8-bit greyscale "character" and "word" masks are also iteratively
+constructed which display the location of all synthetic text within the
+entire composite.  Once generation of a composite image and its associated
+masks are completed, they are decomposed into 3x3 individual tiles.
+Individual tiles and masks are exported to separate output folders.
+
+Multiple instances of COMPOSITE_STRING_TILES can be run in parallel on a
+single CPU machine.
+
+                     ./composite_string_tiles
+
+
+*.  Program $root/syntext/PREPARE_DEEPLAB_INPUTS imports tile and mask
+pairs generated by program COMPOSITE_STRING_TILES.  This program ignores
+any input tile for which a corresponding mask file does not exist and
+vice-versa.  It also rejects any tile,mask pair which do not both have
+pixel width = height = tile_pixel_size.
+
+Associations between tiles and masks are stored in an STL map.  20% of the
+tile/mask pairs are reserved for DNN finetuning validation.  A shuffled set
+of training and testing tile/mask filename pairs are written to text files
+which are needed as inputs for Deeplab.  A final set of tile and mask chips
+are also exported to a deeplab_inputs folder so that they can be more
+easily uploaded to Titan GPU machines for Deeplab processing.
+
+-------------------------------------
+RUNNING DEEPLAB SEMANTIC SEGMENTATION
+-------------------------------------
+
+*.  Create deeplab_inputs tarball on ThinkMate.  After ftping to a Titan
+GPU machine, unpack deeplab_inputs tarball within /data/imagery/syntext/ .
+Rename deeplab_inputs subdirectory within this folder as something like
+Mar16_strings_deeplab/ .
+
+Make sure that some file is linked to object_names.classes within the dated
+subfolder!
+
+*.  Within /data/imagery/syntext/, relink train.txt and test.txt to
+something like Mar16_strings_deeplab/shuffled_images_masks_training.txt and
+Mar16_strings_deeplab/shuffled_images_masks_testing.txt.
+
+*.  Within $deeplab/experiments/syntext, unpack new_text_experiments.tgz.
+Then mv the unpacked "text/" subdir into to a new subfolder of
+$deeplab/experiments/syntext containing a date in its name:
+
+		e.g. mv text ./syntext/Mar16_strings
+
+*.  Change as necessary the test_iter and base learning rate parameters in
+$deeplab/experiments/DATED_TEXT_DIR/config/vgg128_large_fov/solver_base.prototxt.
+Also we've empirically found that validation testing should never be
+performed for less than every 100th training iteration, and probably should
+be performed no more frequently than every 200th training interation.  Also
+export trained caffemodels no more frequently than every 750th training
+iteration.
+
+*. Make sure $deeplab/experiments/DATED_TEXT_DIR/list/train.txt and
+test.txt links point to /data/imagery/syntext/train.txt and test.txt .
+
+*.  Create a new caffe run script within $deeplab/experiments/:
+
+		e.g. copy run_Mar14_strings run_Mar16_strings
+
+Be sure to alter its DATE_ROOT and EXP lines.  For example:
+
+DATA_ROOT=/data/imagery/syntext/Mar16_strings_deeplab
+EXP=syntext/Mar16_strings
+
+*.  Following Tho's advice, be sure to have a "screen" session running
+BEFORE we start a long deeplab training session.  Chant "screen -ls" to see
+if current window is within a screen.  If not, chant "screen" followed by
+spacebar to start a screen session.
+
+*.  From within $deeplab/experiments, chant
+
+	run_Mar16_strings
+
+in order to start finetuning neural network.  Deeplab log file is written
+to /tmp/caffe.bin.INFO.
+
+*.  After caffe finetuning has essentially finished, ftp
+/tmp/caffe.bin.INFO from Titan GPU machine back to Thinkmate.  Place
+caffe.bin.INFO into
+/data/deeplab/caffe.bin.INFO_some_description_goes_here.  Relink
+/data/deeplab/caffe.bin.INFO to this latest caffe.bin.INFO file.
+
+Program $root/machine_learning/deeplab/TRAINING_PERFORMANCE imports a
+caffe.bin.INFO file generated by Deeplab caffe run on a GPU machine.  It
+plots the 3 accuracy values and loss as functions of training epoch number
+for the training set.  It further plots 3 accuracy values as functions of
+training epoch number for the validation set.
+
+---------------------------------------------
+PERFORMING TEXT STRING LOCALIZATION INFERENCE
+---------------------------------------------
+
+*.  Copy fine tuned caffe model from a subdir such as
+$deeplab/experiments/syntext/Apr22_strings/model/vgg128_large_fov/ into
+/data/deeplab/strings_deploy/.  Give it a name which includes a time stamp.
+Then relink /data/deeplab/strings_deploy/test.caffemodel to the new model:
+
+e.g.    ln -s ./train_iter_8500_03172016.caffemodel  ./test.caffemodel
+
+*.  Create a soft link within $root/machine_learning/deeplab/images/faces
+to testing images sitting in
+/data/TrainingImagery/faces/training_data/faces_XX/testing_images/
+
+e.g.    ln -s  
+/data/TrainingImagery/faces/training_data/faces_01/testing_images/
+./testing_images_01/
+
+*.  Program $root/machine_learning/deeplab/PYRAMID_IMAGES imports all
+images within a specified input subdirectory.  It downsizes by a factors of
+2 and 4 each image within the input folder. It also upsamples by a factor
+of 2 each input image.
+
+*.  Program $root/machine_learning/deeplab/GENERATE_IMAGE_TILES imports all
+image files from within a specified input subdirectory.  It breaks apart
+each input image into a set of square tiles whose pixel size is set by
+image_tile_size.  The image tiles are exported as jpeg files to a specified
+output subdirectory.
+
+*.  Program $root/machine_learning/deeplab/SEGMENT_IMAGES imports a caffe
+model finetuned via deeplab, its test.prototxt file, a text file containing
+class labels and another text file containing mean BGR values.  It
+instantiates a caffe_classifier from these inputs.  SEGMENT_IMAGES then
+loops over all image tiles within a specified subdirectory and performs
+semantic segmentation on each one.  Image tile segmentation results are
+exported as to files whose names end with "_segmented.jpg".
+
+./segment_images \
+/data/deeplab/strings_deploy/test.prototxt_charhalves_1000x1000 \
+/data/deeplab/strings_deploy/train_iter_40000_04222016_T3_vert.caffemodel \
+/data/deeplab/strings_deploy/fcn.pixel_mean \
+/data/deeplab/strings_deploy/char_vert_halves.classes \
+text_database
+
+
+  Important notes:
+
+  1.  Make sure name for fc8 layer within
+  /data/deeplab/strings_deploy/test.prototxt agrees with fc8 layer name as it
+  appears within /config/vgg128_large_fov/train.prototxt on GPU Titan
+  machine!
+
+  2.  Make sure width and height dimensions at top of
+  /data/deeplab/strings_deploy/test.prototxt agree with those for tiles to be
+  segmented by this program.  
+
+  3.  Make sure object_names.classes within /data/deeplab/strings_deploy/ has
+  the correct number of object labels.  Similarly make sure final num_outputs
+  appearing in bottom layer = fc7 --> top layer = fc8_syntext/... equals the
+  correct number of classes.
+
+*.  Program $root/machine_learning/deeplab/RECOMBINE_SEGMENTED_TILES
+imports a list of input image files from a specified subdirectory. It also
+imports all their segmented image tiles from another specified
+subdirectory.  For each input image, RECOMBINE_SEGMENTED_TILES stitches
+together its segmented tiles into a single mosaic.  The reconstructed
+segmentation images are exported to a specified output subdirectory.
+
+*.  Program $root/machine_learning/deeplab/TEXTDB_TRUTH parses the text
+file accompanying O(300) images.  It displays the manually-extracted
+axis-aligned bboxes for text labels within the images.  TEXTDB_TRUTH also
+retrieves the semantically segmented images and searches for colored
+pixels.  It forms precision and recall metrics which quantify gross text
+localization performance.  
+
+
+---------------------------------------------
+Deeplab validation performance:
+---------------------------------------------
+
+1.  Semantic segmentation of Mar 14 strings containing 14320 training
+images and 3580 validation images:
+
+base learning rate 0.003 yielded better pixel mean IoU than base learning
+rate 0.001 which in turn was better than base learning rate 0.0003.
+
+Similarly average class recall was better for learning rate = 0.003 than
+for learning rate = 0.001 which was in turn better than learning rate
+0.0003
+
+2.   Semantic segmentation of Mar 16 strings containing 40010 training
+images and 10002 validation images:
+
+base learning rate 0.001:  Avg class recall --> 0.8,  Pixel mean IoU  --> 0.725
+
+base learning rate 0.0033:  Avg class recall --> 0.86,  Pixel mean IoU --> 0.775
+
+base learning rate 0.01:  Avg class recall --> 0.885, Pixel mean IoU --> 0.795
+
+3.  Semantic segmentation of Mar 18 strings containing 4200 training images
+and 10500 validation images (with block masks covering both text and
+immediate surrounding non-text pixels):
+
+base learning rate 0.001: Avg class recall --> 0.92, Pixel mean IoU --> 0.88
+
+base learning rate 0.003:  Ran for less than 1 epoch
+
+base learning rate 0.01:  Failed to converge to anything reasonable
+
+4.  Semantic segmentation of first, last, middle and space chars within Mar
+29 strings works reasonably well.
+Semantic segmentatic of 1st, 2nd, 3rd, ..., 20th word within Mar 29 string
+words fails miserably!
+
+5.  Semantic segmentation of digits, vowels, consonants, punctuation does
+NOT look promising after a few epochs of training.
+
+6.  Semantic segmentation for character vertical half separation seems to
+work reasonably well.  No significant differences in learning curve outputs
+for base learning rates of 0.004, 0.006 and 0.008.
+
+7.  Horizontal character semantic segmentation training failed and output
+NaNs when base learning rate = 0.009.  Training yielded quasi decent (but
+definitely not great) learning curves when base learning rate = 0.003.
+
+8.  Reran horizontal character semantic segmentation on 4/6/16.  Base
+learning rate = 0.006 yielded slightly better validiation curves than base
+learning rate = 0.003.  But average class recall = 0.7 and pixel mean IoU =
+0.65 still seem pretty poor.
+
+9.  Reran horizontal character semantic segmentation on 4/12/16 on Titan3.
+Base learning rate = 0.006 yields NAN losses.  So restarted training on
+Titan 3 with learning rate = 0.004.  Training on Titan 1 with learning rate
+= 0.003 seems OK.
+
+10.  On 4/13/16, we ran the horizontal string classifier trained on 4/12/16
+on Titan3 on the text_database corpus of truthed images.  As we suspected,
+we found that we definitely need to run the classifier on BOTH original and
+half-sized images in order to significantly improve recall!
+
+11.  On 4/14/16, we performed semantic segmentation on 135K synthetic
+tiles at base learning rates = 0.003 and 0.0045.  There was no significant
+difference in (lousy) per-pixel metrics for these two cases.
+
+12.  On 4/18/16, we performed semantic segmentation on 189K synthetic tiles
+at base learnign rates = 0.003 and 0.0045.  There was no significant
+different in (lousy) per-pixel metrics for these two cases.
+
+13.  Precision for the Apr 18 run for horizontal text_database truth set is
+better than that for the Apr 14 run.  But recall is noticeably reduced.  So
+on Apr 19, we are attempting to regenerate a new set of O(200K) composites
+using the same (increased) noise and blur levels as were used for the Apr
+14 run.
+
+We also observed very little genuine vertical text detection in the Apr 18
+run results.  Perhaps we need to include a higher percentage of vertical
+text within the synthetic training set.
+
+Apr 18 results for horizontal text_database truth set:
+
+  double noise_frac= nrfunc::ran1() * 0.07;   Apr 18 run
+  40% of composite images guaranteed have no blur
+
+  Recall:    median +/- quartile width = 0.5408 +/- 0.4159
+  Precision: median +/- quartile width = 0.8655 +/- 0.0826
+
+Apr 19 results for horizontal text_database truth set:
+
+  double noise_frac= 0.02 + nrfunc::ran1() * (0.07 - 0.02); Apr 19 run
+
+  Recall:   median +/- quartile width = 0.6254 +/- 0.3978
+  Precision median +/- quartile width = 0.8304 +/- 0.0857
+
+

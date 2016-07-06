@@ -1,0 +1,57 @@
+
+# TDP files corresponding to satellite EO row 3:
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x0y0_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y0_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y0_fused_walls.tdp
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x0y1_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y1_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y1_fused_walls.tdp
+
+# TDP files corresponding to satellite EO row 2.5:
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x0y2_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y2_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y2_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x3y2_fused_walls.tdp
+
+# TDP files corresponding to satellite EO row 2:
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x0y3_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y3_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y3_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x3y3_fused_walls.tdp
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x0y4_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y4_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y4_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x3y4_fused_walls.tdp
+
+# TDP files corresponding to satellite EO row 1.5:
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y5_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y5_fused_walls.tdp
+/media/usbdisk/new_york/rtv/filled_walls/tdp_files/x3y5_fused_walls.tdp
+
+# TDP files corresponding to satellite EO row 1:
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x1y6_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y6_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x3y6_fused_walls.tdp
+
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x2y7_fused_walls.tdp
+# /media/usbdisk/new_york/rtv/filled_walls/tdp_files/x3y7_fused_walls.tdp
+
+
+--height_colormap 11 
+# --height_colormap 12
+--prob_colormap 6 
+# --height_cyclic_frac_offset 0.01
+# --height_cyclic_frac_offset 0.0625
+# --height_cyclic_frac_offset 0.125
+# --height_cyclic_frac_offset 0.24
+--height_cyclic_frac_offset 0.245
+# --height_cyclic_frac_offset 0.25
+# --height_cyclic_frac_offset 0.5
+--min_threshold_frac 0.001 --max_threshold_frac 0.999

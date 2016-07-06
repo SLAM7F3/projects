@@ -1,0 +1,382 @@
+=============================================================================
+Kitty Hawk project statistics
+=============================================================================
+Last updated on 1/27/15; 2/6/15; 10/19/15; 10/21/15
+=============================================================================
+
+*.  San Francisco
+
+In December 2014, San Francisco had 93 resources containing 1,079,936 rigs
+
+As of 1/23/15, San Francisco has 77 resources containing 796,706 rigs
+Model total: 5656 Mb
+
+  i.  sanfrancisco_kitty_hawk1.shape encloses all of Cupertino
+	 contains 603 level-14 tiles
+
+	flyover admin resource name = sanfrancisco_pr_kittyhawk_1
+
+  ii. sanfrancisco_kitty_hawk2.shape lies to south east of San Francisco and
+          north of Cupertino.  It contains 3063 level-14 tiles.
+
+	flyover admin resource name = sanfrancisco_pr_kittyhawk_2
+
+   iii. sanfrancisco_kitty_hawk3.shape lies to south of San Francisco and
+           north of Cupertino.  It contains 21980 level-14 tiles.  But most of these
+            tiles are empty
+
+	flyover admin resource name = sanfrancisco_pr_kittyhawk_3
+
+
+*.  Chicago
+
+Chicago has 220 resources containing 1,927,595 rigs spread over 99,860 level-14 tiles
+Model total: 14998 Mb
+
+Chicago has 201 resources containing 1,788,610 rigs (updated 12/12/14; confirmed 1/26/15)
+Model total: 13794 Mb
+
+    	Shape subdirectory = /startown-gpfs/ssdws03/conf/shapes/
+
+    chicago_kittyhawk_tiny.shape contains 6 tiles and is barely 
+	selectable within the C3-viewer
+    chicago_kittyhawk_1.shape contains O(12.5K) level-14 tiles.
+    chicago_kittyhawk_2.shape contains 5200 level-14 tiles.
+    chicago_kittyhawk_3.shape contains O(10.2K) level-14 tiles.
+
+
+*.  New York City
+
+New York has 266 resources containing 2,538,375 rigs spread over 77,568 level-14 tiles
+Model total: 21299 Mb
+
+As of 1/26/15, NYC kitty hawk has 227 resources containing 2,112,402 rigs
+Model total: 16933 Mb
+
+	nyc_kittyhawk_tiny.shape contains 3 tiles and is just barely
+	   selectable within the C3viewer
+	nyc_kittyhawk_1.shape covers downtown Manhattan (below central park) 
+		and contains 1054 level-14 tiles
+	nyc_kittyhawk_2.shape covers Brooklyn and contains 717 level-14 tiles
+	nyc_kittyhawk_3.shape covers part of New Jersey and contains 731 level-14 tiles
+
+XML files for Chicago and New York Kitty Hawk projects are sitting in 
+
+/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_abhishek-sharma-MacPro_new_york_kitty_hawk_141130_200209.xml
+
+and
+
+/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_abhishek-sharma-MacPro_chicago_kitty_hawk_141201_174626.xml
+
+Mini versions of these XML files called prjdb_mini_chicago_kittyhawk.xml
+and prjdb_mini_nyc_kittyhawk.xml are also sitting in
+/startown-gpfs/sputnik01/distrib_batch_prj/ .   Access this sputnik01
+subdir via some distrib node such as cn0100 rather than via our local
+MacPro !
+
+*.  Run IDs for KH1C results (Oct 2015)
+
+Project name:  bay_area-ground
+
+> db.run.distinct("run_id", {project_name:"bay_area-ground"})
+[
+    "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml",
+    "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_133044.xml",
+    "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151026_155857.xml"
+]
+
+
+    "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml",
+        "project_name" : "bay_area-ground",
+        "created" : ISODate("2015-10-07T22:17:58Z"),
+        build_ver: 21156
+
+    "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_133044.xml",
+        "project_name" : "bay_area-ground",
+        "created" : ISODate("2015-10-08T02:01:49Z"),
+        build_ver: 76000
+
+    "build" : ObjectId("562eb2d2e5178b7415132a01"),
+        "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151026_155857.xml",
+        "project_name" : "bay_area-ground",
+        "created" : ISODate("2015-10-26T23:10:10Z"),
+
+
+Based upon build versions, the run started on Oct 7 corresponds to house
+numbers for KH1C.  The run started on Oct 26 corresponds to road signs for
+KH1C.  Not sure what the run started on Oct 8 corresponds to ...
+
+
+> db.detection.find({sub_type:"house_number", "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+2959506
+
+
+> db.detection.find({type:"us_road_sign", "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_133044.xml"}).count()
+320514
+
+
+*.  House numbers for KH1C area (Oct 2015):
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+>  3659983
+
+db.detection.find({gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+> 2686776
+
+db.detection.find({duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+> 2290195
+
+db.detection.find({sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+> 1858408
+
+db.detection.find({confidence:{"$gte":0.9}, sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+>894852
+
+db.detection.find({confidence:{"$gte":0.99}, sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+>845993
+
+db.detection.find({n_hits:{"$gte":2}, confidence:{"$gte":0.99}, sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+>125711
+
+db.detection.find({n_hits:{"$gte":2}, sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+>202726
+
+db.detection.find({n_hits:{"$gte":3}, sub_type:"house_number", duplicate:0, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+>55239
+
+
+
+db.detection.find({sub_type:"house_number", duplicate:0, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+> 2640116
+
+
+db.detection.find({loc.coordinates[0]: {$gte:-150}, sub_type:"house_number", duplicate:0, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+
+
+db.detection.find({ "loc.coordinates.0": {$gte:-150}, gnd:{$exists:true}, sub_type:"house_number", duplicate:0, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"}).count()
+
+
+
+
+db.detection.aggregate(
+   { $match : { "detector_version" : 755620 , "verification_value" : "correct", "state" : {$nin : [3]}} },
+   {$project: {
+        heightlb: {$subtract:["$road_sign_height", {$mod:["$road_sign_height",1]}] }}
+   },
+   {$group: {
+       _id:"$heightlb", 
+       count:{$sum:1}
+   }
+})
+
+
+
+
+db.detection.aggregate(
+   {$match: {description:"16842", sub_type:"house_number",duplicate:0,"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$group: {
+       _id: {description: "$description"},
+       count:{$sum:1}} }
+)
+
+
+
+db.detection.aggregate(
+   {$match: {description:"16842", sub_type:"house_number",duplicate:0,"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$project: {
+        longitude: "$loc.coordinates[0]"  } },
+   {$group: {
+       _id:null,
+       max_longitude: {$max: "$longitude"},
+       count:{$sum:1}} }
+)
+
+
+
+db.detection.aggregate(
+   {$match: {description:"16842", sub_type:"house_number",duplicate:0,"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$group: {
+       _id: {description: "$description"},
+       count:{$sum:1}} }
+)
+
+
+
+
+
+db.detection.aggregate(
+   {$match: {description:"16842", sub_type:"house_number",duplicate:0,"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$group: {
+       _id: null,
+       max_lon: {$max:"$loc.coordinates[0]"},
+       min_lon: {$min:"$loc.coordinates[0]"},
+       max_lat: {$max:"$loc.coordinates[1]"},
+       min_lat: {$min:"$loc.coordinates[1]"},
+       count:{$sum:1}} }
+)
+
+=======================
+
+db.detection.aggregate(
+   {$match: {sub_type:"house_number","run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$group: {
+       _id: null,
+       max_lon: {$sum:"$loc.coordinates.0"},
+       count:{$sum:1}} }
+)
+
+       min_lon: {$min:"$loc.coordinates[0]"},
+       max_lat: {$max:"$loc.coordinates[1]"},
+       min_lat: {$min:"$loc.coordinates[1]"},
+
+
+=======================
+
+db.detection.aggregate(
+   {$group: {
+       _id: null,
+       max_x: {$max:"$gnd.x"},
+       min_x: {$min:"$gnd.x"},
+       max_y: {$max:"$gnd.y"},
+       min_y: {$min:"$gnd.y"},
+       max_z: {$max:"$gnd.z"},
+       min_z: {$min:"$gnd.z"} }},
+   {$match: {sub_type:"house_number",
+             run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} }
+)
+
+
+
+=======================
+
+db.detection.aggregate(
+   {$match: {sub_type:"house_number","run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$group: {
+       _id: null,
+       max_x: {$max:"$gnd.x"},
+       min_x: {$min:"$gnd.x"},
+       max_y: {$max:"$gnd.y"},
+       min_y: {$min:"$gnd.y"},
+       max_z: {$max:"$gnd.z"},
+       min_z: {$min:"$gnd.z"},
+       count:{$sum:1}} }
+)
+
+{
+	"result" : [
+		{
+			"_id" : null,
+			"max_x" : -2669267.4304726473,
+			"min_x" : -2710359.759413775,
+			"max_y" : -4280573.433462031,
+			"min_y" : -4329058.206224467,
+			"max_z" : 3869246.4266090244,
+			"min_z" : 3831163.356683098,
+			"count" : 2959506
+		}
+	],
+	"ok" : 1
+}
+
+
+=======================
+
+db.detection.aggregate(
+
+   {$match: {sub_type:"house_number",
+             duplicate:0,
+             "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml"} },
+   {$group: {
+       _id: null,
+       max_x: {$max:"$gnd.x"},
+       min_x: {$min:"$gnd.x"},
+       max_y: {$max:"$gnd.y"},
+       min_y: {$min:"$gnd.y"},
+       max_z: {$max:"$gnd.z"},
+       min_z: {$min:"$gnd.z"}} }
+
+)
+
+
+
+{
+	"result" : [
+		{
+			"_id" : null,
+			"max_x" : -2669267.4304726473,
+			"min_x" : -2710359.759413775,
+			"max_y" : -4280573.433462031,
+			"min_y" : -4329058.206224467,
+			"max_z" : 3869246.4266090244,
+			"min_z" : 3831163.356683098,
+			"count" : 2640116
+		}
+	],
+	"ok" : 1
+}
+
+
+
+=======================
+
+db.detection.find({sub_type:"house_number", duplicate:0, gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_bay_area-ground_151007_132957.xml", loc: {$near:{$geometry: {type:"Point", coordinates:[0, 0]}}} } ).limit(3).toArray()
+
+
+coordinates[0,80] yields max latitude
+coordinates[0,-80] yields min latitude
+
+coordinates[0,0] yields min longitude
+coordinates[-140,0] yields min longitude
+
+Maximum latitude = 37.586143
+Minimum latitude = 37.154348
+
+Maximum longitude = -121.71409343629186
+Minimum longitude = -122.24166226676499
+
+
+
+
+
+
+*.  Roadsigns for 5K stretch of Hwy 280
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_flylab02_5k_kmz-dev_151010_102148.xml"}).count()
+>1093
+
+db.detection.find({gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_flylab02_5k_kmz-dev_151010_102148.xml"}).count()
+>1093
+
+db.detection.find({type:"us_road_sign", gnd:{$exists:true}, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_flylab02_5k_kmz-dev_151010_102148.xml"}).count()
+>1093
+
+
+
+db.detection.aggregate(
+   {$match: {"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_flylab02_5k_kmz-dev_151010_102148.xml"} },
+   {$group: {
+       _id: null,
+       max_x: {$max:"$gnd.x"},
+       min_x: {$min:"$gnd.x"},
+       max_y: {$max:"$gnd.y"},
+       min_y: {$min:"$gnd.y"},
+       max_z: {$max:"$gnd.z"},
+       min_z: {$min:"$gnd.z"},
+       count:{$sum:1}} }
+)
+
+{
+	"result" : [
+		{
+			"_id" : null,
+			"max_x" : -2693935.6336215795,
+			"min_x" : -2699691.931941622,
+			"max_y" : -4298106.157207395,
+			"min_y" : -4304118.333187435,
+			"max_z" : 3849744.4562627673,
+			"min_z" : 3846300.2318348484,
+			"count" : 1093
+		}
+	],
+	"ok" : 1
+}

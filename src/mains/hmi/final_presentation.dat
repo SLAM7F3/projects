@@ -1,0 +1,82 @@
+============================================================================
+Final FY11 HMI presentation 
+============================================================================
+Last updated on 9/1/11; 9/2/11; 9/5/11
+============================================================================
+
+*.  Title
+
+	Laura Brattain (G47)
+	Tom Hobson, Tamara Wu (G68)
+	Peter Cho, Dan Dumanis, Lucas de la Garza (G106)
+	Darin Marriot (G107)
+
+*.  Opening concept slide
+
+*.  Outline
+
+	- Virtual vs physical tour through panoramas (Killian)
+
+	- RF direction finding
+
+	- Ultrasound imaging
+
+	- Summary & future work
+
+*.  Sensors (XSENS, Wii, GPS)
+
+*.  Tamara in LL hallway movie from winter
+
+*.  D7s on tripod + Lucas gathering panos at Killian
+In /home/cho/programs/c++/svn/projects/src/mains/hmi/screen_shots/2011/July/Killian/ :
+
+	lucas_w_tripod.jpg, D7_closeup.jpg
+
+*.  Movie of Killian courtyard virtual tour
+
+Pano 6 aimed toward dome -> Pano 7 ->  Pano 8 -> Pano 9 -> Pano 11 -> spin
+towards pano 10
+
+Orange Disk #2: 
+AVI_movies/Killian_tour/Killian_panos_7fps.avi
+
+*.  Nighttime video of correlated physical and virtual tours
+
+/media/66368D22368CF3F9/hmi/killian/Aug29_2011_dusk_fieldtrip/
+magic_window_Mem_Drive_2.MOV
+
+*.  Outline (RF direction finding)
+
+*.  Concept slide
+
+*.  Photos of RF direction finding devices
+
+*.  RF results near volleyball court
+
+In /home/cho/programs/c++/svn/projects/src/mains/hmi/screen_shots/2011/August/RF_dirfinding/ :
+
+	segments2.png
+
+*.  Outline (Ultrasound imaging)
+
+*.  Background on Laura's Ph.D. project
+
+*.  Motivation for introducing HMI technology for Laura's problem
+
+*.  Movie of 3D ultrasound imagery
+
+*.  Movie of Laura using Wii to control 3D data
+
+*.  Outline (Summary & future work)
+
+*.  Summary
+
+*.  Reality pointer 
+
+*.  Computer vision needed for FY11 (errors in GPS and pointing)
+
+*.  Dan's "iPad"
+
+*.  Octocopter
+
+

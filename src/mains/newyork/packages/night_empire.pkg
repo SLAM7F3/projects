@@ -1,0 +1,12 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/empire_night.jpg
+--frustum_color red
+--frustum_sidelength 3000
+# --frustum_sidelength 4000
+# --downrange_distance 75
+# --downrange_distance 150
+--downrange_distance 300
+--projection_matrix
+3.271366553e-07 -1.607998052e-07        -2.48714167e-08 0.533842316
+1.246821766e-07 1.017062755e-07 3.189442527e-07 -0.5319570393
+1.434922948e-07 1.27073227e-07  -3.923885584e-08        -0.6572930016
+

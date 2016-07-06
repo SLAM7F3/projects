@@ -1,0 +1,12 @@
+var script = File.read("script");
+print( "Content of script:\n----------\n" + script + "----------");
+
+var f = new File( "test" );
+if ( !f.open( File.WriteOnly ) )
+    print("Couldn't open file for writing");
+else 
+{
+    f.writeLine("Hello World");
+    f.writeLine("Goodbye world");
+    f.close();
+}

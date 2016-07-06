@@ -1,0 +1,1 @@
+../../src/osg/Custom3DManipulator.h

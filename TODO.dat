@@ -1,0 +1,97 @@
+=============================================================================
+To do list for multiple projects
+=============================================================================
+Last updated on 8/20/13; 8/22/13; 8/26/13
+=============================================================================
+
+RRTO
+----
+
+*.  Generate initial az,el,roll angles given aerial camera GPS+focal
+lengths and SIFT tracks
+
+GEO
+---
+
+*.  [BASICALLY DONE] : Display reconstructed 3D geolocations in GEO demo in
+both 3D and 2D panels of VIDEO_PROPAGATOR program.
+
+*.  [BASICALLY DONE] : Update GEO slide deck
+
+*.  [BASICALLY DONE] Find out about ISR13 demo status; prepare poster
+
+*.  Compute absolute altitude of selected 3D features
+
+*.  Test GEO accuracy on 9 circular orbits culled by Dave Ireland.
+
+20110728_1026_minimal.tgz  
+20120105_1054_minimal.tgz  
+20120105_1427_minimal.tgz
+20110730_1303_minimal.tgz  
+20120105_1130_minimal.tgz  
+20120105_1438_minimal.tgz
+20120105_1036_minimal.tgz  
+20120105_1402_minimal.tgz  
+20120105_1456_minimal.tgz
+
+*.  Fix Mar 2012 GEO metadata camera angles
+
+*.  Generate short ppt plan for GEO autumn/winter/spring 2013-2014
+
+
+GPS DENIAL
+----------
+
+*.  [BASICALLY DONE] : Order orthorectified MA aerial imagery from MassGIS
+
+USGS Color Ortho Imagery 2008 30 cm covers all of inner 495 ring.
+Actually, most of eastern MA is contained in this data set.
+
+LL Library has 2008 30/15 cm ortho imagery.  
+
+Download 3 zip files from LL library website containing 2008 30 cm imagery
+
+*.  [BASICALLY DONE] : Convert SID files into geotif format
+
+*.  Develop geotif image pyramid
+
+
+IMAGESEARCH
+-----------
+
+*.  [BASICALLY DONE] : Fix carousel sibling thumbnail selection so that
+only siblings within a connected component are displayed.  Mon Aug 12,
+2013: Sibling thumbnails actually appear to be those located nearby current
+thumbnail within a connected component.
+
+*.  [BASICALLY DONE] : Send camera params to Brendan's thin client.
+
+*.  [BASICALLY DONE] :  Release paperwork for Colleen's MIT Media lab
+presentation in October 
+
+*.  [BASICALLY DONE] : Obtain Colleen's graph viewer modifications
+
+*.  [PARTLY DONE] : Release paperwork for ARTS Nov talk
+
+*.  [DONE] Write 1-page proposal for FY14 Tidmarsh Farms work and send to
+Bernadette Johnson
+
+*.  [PARTLY DONE] Add SQL constraints as suggested by Colleen
+
+*.  [IN PROGRESS] Develop SIFT word dictionaries
+
+*.  Implement Davis' idea for rapid extremal region identification
+
+*.  Revisit photo OCR problem
+
+*.  Propagate labels along MIT2317 graph
+
+*.  Fix postgis2/postgres 9.1 problems for polygon/polyline display in
+Michael's viewer.
+
+*.  Prepare HPEC13 talk
+
+*.  Software release forms
+
+
+

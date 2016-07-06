@@ -1,0 +1,202 @@
+-- =======================================================================
+-- Tables within MACHETE database
+-- =======================================================================
+-- Last updated on 4/4/12
+-- =======================================================================
+
+DROP TABLE world_regions;
+
+CREATE TABLE world_regions
+(
+  ID serial NOT NULL,
+  world_region_ID integer,
+  name text,
+  description text,
+  UTM_zonenumber integer,
+  northern_hemisphere_flag integer,
+  min_longitude double precision,
+  max_longitude double precision,
+  min_latitude double precision,
+  max_latitude double precision,
+  min_altitude double precision,
+  max_altitude double precision,
+  CONSTRAINT world_regions_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE world_regions OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE campaigns;
+
+CREATE TABLE campaigns
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  name text,
+  description text,
+  world_region_id integer,
+  start_UTC timestamp,
+  start_epoch double precision,
+  stop_UTC timestamp,
+  stop_epoch double precision,
+  CONSTRAINT campaigns_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE campaigns OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE platforms;
+
+CREATE TABLE platforms
+(
+  ID serial NOT NULL,
+  platform_ID integer,
+  name text,
+  description text,
+  CONSTRAINT platforms_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE platforms OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE sensors;
+
+CREATE TABLE sensors
+(
+  ID serial NOT NULL,
+  sensor_ID integer,
+  name text,
+  description text,
+  CONSTRAINT sensors_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE sensors OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE sorties;
+
+CREATE TABLE sorties
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  sortie_ID integer,
+  name text,
+  description text,
+  start_UTC timestamp,
+  start_epoch double precision,
+  stop_UTC timestamp,
+  stop_epoch double precision,
+  min_longitude double precision,
+  max_longitude double precision,
+  min_latitude double precision,
+  max_latitude double precision,
+  min_altitude double precision,
+  max_altitude double precision,
+  CONSTRAINT sorties_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE sorties OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE passes;
+
+CREATE TABLE passes
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  sortie_ID integer,
+  pass_ID integer,
+  name text,
+  description text,
+  start_UTC timestamp,
+  start_epoch double precision,
+  stop_UTC timestamp,
+  stop_epoch double precision,
+  min_longitude double precision,
+  max_longitude double precision,
+  min_latitude double precision,
+  max_latitude double precision,
+  min_altitude double precision,
+  max_altitude double precision,
+  CONSTRAINT passes_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE passes OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE platform_metadata;
+
+CREATE TABLE platform_metadata
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  sortie_ID integer,
+  platform_ID integer,
+  metadata_ID integer,
+  image_ID integer,
+  data_ID integer,
+  image_prefix text,
+  UTC timestamp,
+  epoch double precision,
+  longitude double precision,
+  latitude double precision,
+  altitude double precision,
+  yaw double precision,
+  pitch double precision,
+  roll double precision,
+  CONSTRAINT platform_metadata_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE platform_metadata OWNER TO postgres;
+
+
+-- =======================================================================
+DROP TABLE sensor_metadata;
+
+CREATE TABLE sensor_metadata
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  sortie_ID integer,
+  sensor_ID integer,
+  metadata_ID integer,
+  image_ID integer,
+  data_ID integer,
+  status integer,
+  x_posn double precision,
+  y_posn double precision,
+  z_posn double precision,
+  az double precision,
+  el double precision,
+  roll double precision,
+  horiz_fov double precision,
+  vert_fov double precision,
+  focal_param double precision,
+  u0 double precision,
+  v0 double precision,
+  CONSTRAINT sensor_metadata_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE sensor_metadata OWNER TO postgres;
+
+-- =======================================================================
+DROP TABLE data_files;
+
+CREATE TABLE data_files
+(
+  ID serial NOT NULL,
+  campaign_ID integer,
+  sortie_ID integer,
+  pass_ID integer,
+  type text,
+  URL text,
+  import_UTC timestamp,
+  import_epoch double precision,
+  CONSTRAINT data_files_pkey PRIMARY KEY (ID)
+)
+WITH (OIDS=FALSE);
+ALTER TABLE data_files OWNER TO postgres;

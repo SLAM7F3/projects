@@ -1,0 +1,33 @@
+===========================================================================
+PGADMIN3 notes
+===========================================================================
+Last updated on 12/14/10; 12/15/10, 7/29/13
+===========================================================================
+
+In order to extract sailplane imagery names, timestamps, lon and lat
+---------------------------------------------------------------------------
+open SQL editor window and chant in top pane
+
+select url,time_stamp::abstime::integer,x(xy_posn), y(xy_posn), z_posn from photos
+where mission_id=95 order by url
+
+Then click file->export in order to write out results to text file.
+
+===============================================================================
+Copy a table from one database to another: 
+-------------------------------------------------------------------------------
+Right-click table -> Scripts -> CREATE Script
+A query window will open up, at the top there is a drop down bar that lists 
+[your database] on postgres@[IP address], click the drop down arrow
+->new connection, change database to destination database, then run script
+
+===============================================================================
+Execute a function: 
+-------------------------------------------------------------------------------
+In the SQL query tool: 
+SELECT "functionname"([function parameters]);
+
+ex. SELECT "addgeometrycolumn"('public', 'images', 'the_geom', 4326, 'GEOMETRY',  2);
+
+===============================================================================
+

@@ -1,0 +1,17 @@
+#ifndef ARITHMETIC_CGH
+#define ARITHMETIC_CGH
+
+float remainder( float numerator, float denominator )
+{
+	float quotient = floor( numerator / denominator );
+	return( numerator - denominator * quotient );
+}
+
+void divide( float numerator, float denominator,
+			out float quotient, out float remainder )
+{
+	quotient = floor( numerator / denominator );
+	remainder = numerator - denominator * quotient;
+}
+
+#endif // ARITHMETIC_CGH

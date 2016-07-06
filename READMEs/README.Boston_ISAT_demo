@@ -1,0 +1,306 @@
+=============================================================================
+Notes for running Peter Cho's multi-UAV path planning web service for the
+Feb 27, 2009 ISAT demo
+=============================================================================
+Last updated on Friday, Feb 20, 2009; Monday, Feb 23, 2009
+=============================================================================
+
+*.  Turn on Dell Precision M90 laptop and let it automatically boot into
+Fedora Core 2.6.17-1.2142_FC4smp
+
+*.  Login information:
+
+Username = cho
+Password = ISATdemo
+
+-----------------------------------------------------------------------------
+PRIVATE NETWORK NOTES
+
+*.  In order to change laptop's IP assignment from its default dynamic
+state to static, chant 
+
+			sudo system-config-network
+
+This brings up a GUI.  Click on the "Devices" tab and double-click on the
+eth0 line.  Then change the radial button on the subsequent menu from
+"Automatically obtain IP address settings with dhcp" to "Statically set IP
+addresses".
+
+*.  As of 2/23/09, the laptop running the path planning module has been
+assigned the following private network IP:
+
+Address: 192.168.207.188
+Subnet mask: 255.255.255.0
+Default gateway aderess: 192.168.207.1
+
+*.  After entering this static IP information, click on Activate button
+within GUI to turn on eth0.  If all goes well, the laptop should be on the
+private network which can be tested via pinging:
+
+			ping 192.168.207.121
+
+
+*.  Once you're done working in the Group 104 area, you need to reset the
+laptop back to DHCP.  So again bring up networking GUI by chanting
+
+			sudo system-config-network
+
+Change network setting back to automatically obtain IP address settings
+with DHCP.  
+
+*.  Edit /etc/sysconfig/network-scripts/ifcfg-eth0 and delete any
+192.168.207... subnet entries in this file.
+
+*.  After making the above changes in the Group 104 area and returning back
+ your office, you probably won't be able to ping any other machines on your
+network.  If so, chant 
+
+		sudo route add default gw 155.34. ___ .1
+
+where ___ is the subnet appropriate for your group's area.
+
+(On 8/22/08, we had to manually chant this line within the G104 conference
+room)
+
+-----------------------------------------------------------------------------
+UAV PATH PLANNING NOTES
+
+*.  Open at least two terminal windows using screen icon located near left
+hand side on bottom toolbar 
+
+*.  In opened window #1, change working directory as follows:
+
+cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS/KTSP_Sep17
+
+Within the KTSP_Sep17 subdirectory, start Michael Yee's traveling salesman
+codes by running the following script:
+
+			run_startup_script
+
+No ouptut will appear in this window until after a UAV path replanning call
+is executed.
+
+*.  In opened window #2, change working directory as follows:
+
+	cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass/AVS
+
+Then start Peter Cho's service interface to the traveling salesman codes by
+running the following script:
+
+			run_Boston_ISAT_demo
+
+
+Several text lines will scroll by in window #2, and a new 3D viewer screen
+will pop open showing a purple longitude-latitude grid.
+
+*.  If you want to manipulate the 3D viewer screen after it opens, use the
+same mouse controls as for GoogleEarth:
+
+	- Left button translates
+
+	- Center button (held down, not scroll wheel!) rotates
+
+	- Right button zooms
+
+*.  If everything has worked up till this point, the path planning service
+should now be ready to receive ActiveMQ messages.  ActiveMQ topicname =
+GoogleEarth.  ActiveMQ port = 61616.  To see the Dell Precision M90
+laptop's IP, chant
+
+			ifconfig | more
+
+You will then see output which looks as follows:
+
+eth0      Link encap:Ethernet  HWaddr 00:1c:23:46:d2:2f  
+          inet addr:155.34.162.132  Bcast:155.34.162.255  Mask:255.255.255.0
+          inet6 addr: fe80::21c:23ff:fe46:d22f/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:106345 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:11842 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:20134209 (19.2 MB)  TX bytes:1144580 (1.0 MB)
+          Interrupt:17 
+
+The laptop's IP address is shown on the 2nd line after "inet addr:".  In
+this example, the laptop's IP is 155.34.162.132.
+
+-----------------------------------------------------------------------------
+FLIGHTPATH_SENDER EMULATOR PROGRAM NOTES
+
+*.  We have created an auxilliary program to transmit examples of ActiveMQ
+messages which the UAV path planner module is expecting to receive as of
+Feb 2009.  To run this program, chant
+
+    /home/cho/programs/c++/svn/projects/src/mains/isds/flightpath_sender
+
+The user is then prompted to enter one of the following options:
+
+
+Enter label indicating type of message to be broadcast:
+index = 0 --> INSTANTIATE_UAV message
+index = 1 --> SET_INIT_WAYPOINTS message
+index = 2 --> UPDATE_UAV_STATEVECTOR message
+index = 3 --> UPDATE_WAYPOINTS message
+index = 4 --> UPDATE_UAV_PATHS message
+index = 5 --> PURGE_WAYPOINTS message
+index = 6 --> PURGE_UAVS message
+
+You must first enter 0 to create a UAV at a predetermined location relative
+to Boston.  Run the program again and choose option 1 to see an example
+flight path which emulates the one Paul Metzger said he'd have for the 2/27
+ISAT demo.  Run flightpath_sender again and choose option 2 to emulate the
+UAV being commanded to move from its initial location to some position at a
+later time during its mission.  Run program again and choose option 3 to
+emulate new waypoints being added to UAV's mission.  Run program again and
+choose option 4 to see path generated for more complicated set of waypoints
+which differs from UAV's initial mission.
+
+*.  Can reset UAV path planner program to its initial state by running
+emulator twice and calling purging options 5 and 6.
+
+-----------------------------------------------------------------------------
+ACTIVEMQ MESSAGE NOTES
+
+*.  As of 2/20/09, the 7 ActiveMQ messages listed below are supported by
+Peter's service.  These are sufficient to initialize a UAV, initialize its
+input flight path, update its statevector, udpate its waypoints, compute a
+new flight path.  There are also two messages which can be used to purge
+all waypoints and purge all UAVs which will reset Peter's service back to
+its starting clean state.
+
+Note that each of these messages is expected to contain a
+Message_sender_ID property of the form
+
+		Property
+		  key = Message_sender_ID
+		 value = FLIGHTPATH_SENDER_Fri Feb 20 08:12:03 2009
+
+which I have not explicitly listed in all of the examples below.
+
+-------------------------------------------------------------------------
+text_command = INSTANTIATE_UAV
+Property 0
+  key = LONGITUDE LATITUDE ALTITUDE 
+ value = -70.17600 41.68400 2500
+.
+.
+.
+-------------------------------------------------------------------------
+text_command = SET_INIT_WAYPOINTS
+Property 0
+  key = LONGITUDE LATITUDE ALTITUDE 000
+ value = -70.38940 41.64950 10
+Property 1
+  key = LONGITUDE LATITUDE ALTITUDE 001
+ value = -70.74029 41.81630 10
+Property 2
+  key = LONGITUDE LATITUDE ALTITUDE 002
+ value = -70.82360 42.07670 10
+Property 3
+  key = LONGITUDE LATITUDE ALTITUDE 003
+ value = -70.94880 42.29889 10
+.
+.
+.
+-------------------------------------------------------------------------
+text_command = UPDATE_UAV_STATEVECTOR
+Property 0
+  key = LONGITUDE LATITUDE ALTITUDE
+ value = -70.8 42.03 2500
+.
+.
+.
+-------------------------------------------------------------------------
+text_command = UPDATE_WAYPOINTS
+Property 0
+  key = LONGITUDE LATITUDE ALTITUDE 000
+ value = -70.38940 41.64950 10
+Property 1
+  key = LONGITUDE LATITUDE ALTITUDE 001
+ value = -70.74029 41.81630 10
+Property 2
+  key = LONGITUDE LATITUDE ALTITUDE 002
+ value = -70.82360 42.07670 10
+Property 3
+  key = LONGITUDE LATITUDE ALTITUDE 003
+ value = -70.94880 42.29889 10
+.
+.
+.
+-------------------------------------------------------------------------
+text_command = UPDATE_UAV_PATHS
+Property 0
+  key = Message_sender_ID
+ value = FLIGHTPATH_SENDER_Fri Feb 20 08:18:05 2009
+.
+.
+.
+
+
+
+-------------------------------------------------------------------------
+text_command = PURGE_WAYPOINTS
+Property 0
+  key = Message_sender_ID
+ value = FLIGHTPATH_SENDER_Fri Feb 20 08:19:28 2009
+.
+.
+.
+-------------------------------------------------------------------------
+text_command = PURGE_UAVS
+Property 0
+  key = Message_sender_ID
+ value = FLIGHTPATH_SENDER_Fri Feb 20 08:19:46 2009
+
+
+
+*.  After an UPDATE_UAV_PATHS messages is sent, the traveling salesman
+algorithm computes a new path for the input UAV starting at its current
+location.  The path does not return to any waypoints which the UAV already
+visited in the past.  (Such visited waypoints are colored pink in the 3D
+viewer window.)  The calculated traveling salesman track output returned on
+GoogleEarth topic to Mark's calling translator Java program looks as
+follows:
+
+
+text_command = START_PACKET
+Property 0
+  key = Message_sender_ID
+ value = QTCITIES_Fri Feb 20 08:28:24 2009
+Property 1
+  key = Message_timestamp
+ value = Fri Feb 20 08:31:25 2009
+
+
+text_command = ADD_TRACK
+Property 0
+  key = ID
+ value = 0
+Property 1
+  key = LONGITUDE LATITUDE ALTITUDE 0
+ value = -70.80000 42.03000 2483.18415
+Property 2
+  key = LONGITUDE LATITUDE ALTITUDE 1
+ value = -70.82360 42.07670 10
+Property 3
+  key = LONGITUDE LATITUDE ALTITUDE 2
+ value = -70.94880 42.29889 10
+Property 4
+  key = LONGITUDE LATITUDE ALTITUDE 3
+ value = -71.14801 42.30496 10
+Property 5
+  key = LONGITUDE LATITUDE ALTITUDE 4
+ value = -71.26778 41.97574 10
+.
+.
+.
+
+
+text_command = STOP_PACKET
+Property 0
+  key = Message_sender_ID
+ value = QTCITIES_Fri Feb 20 08:28:24 2009
+Property 1
+  key = Message_timestamp
+ value = Fri Feb 20 08:31:25 2009
+

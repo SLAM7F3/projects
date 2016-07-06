@@ -1,0 +1,42 @@
+piers3.jpg 
+
+# --focal_length -1.99379
+
+# Compromise values for coarse matching with NYC point cloud
+
+# --Uaxis_focal_length  -1.79636363215
+# --Vaxis_focal_length  -1.72363636785
+# --U0  0.610321226453 --V0  0.534545448221
+# --pixel_skew_angle 90.9045454018
+
+# Optimal match between piers2 and piers3:
+
+# Minimum score = 0.118250698088
+# 1st photo orientation relative to 2nd: 
+
+# --Uaxis_focal_length  -1.96879774102
+# --Vaxis_focal_length  -1.53636367853
+# --U0  0.631734128323 --V0  0.435204270819
+# --pixel_skew_angle 89.010901726
+
+# Parameters derived on 10/7/07 using closed-form homography approach:
+
+
+# --Uaxis_focal_length -2.00824
+# --Vaxis_focal_length -2.00824
+# --U0 0.638165
+# --V0 0.481636
+
+--Uaxis_focal_length  -1.98326830503
+--Vaxis_focal_length  -1.98326830503
+--U0  0.629019799034 --V0  0.476118375527
+
+# --Uaxis_focal_length  -1.914213552
+# --Vaxis_focal_length  -1.914213552
+# --U0  0.628366067986 --V0  0.491912349963
+
+--relative_az  0
+--relative_el   0
+--relative_roll  0
+
+

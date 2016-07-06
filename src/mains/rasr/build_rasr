@@ -1,0 +1,14 @@
+~/bin/MAKE program=crop_pan
+~/bin/MAKE program=extract_walls
+~/bin/MAKE program=fade
+~/bin/MAKE program=gstreets
+~/bin/MAKE program=ladar2roboworld
+~/bin/MAKE program=pangen
+~/bin/MAKE program=robo2tdp
+~/bin/MAKE program=roboceiling
+~/bin/MAKE program=roboladar
+~/bin/MAKE program=robo_register
+~/bin/MAKE program=simple_floor
+~/bin/MAKE program=viewpanos
+~/bin/MAKE program=viewrasr
+~/bin/MAKE program=wagonwheel

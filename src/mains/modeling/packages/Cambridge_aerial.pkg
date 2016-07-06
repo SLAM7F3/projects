@@ -1,0 +1,5 @@
+/home/cho/programs/c++/svn/projects/src/mains/modeling/MassGIS/MIT_EastCampus_UTM.png
+--projection_matrix
+1   0   0    -327768.063
+0   1   0   -4691635.894
+0   0   0        710.546

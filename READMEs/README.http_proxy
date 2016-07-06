@@ -1,0 +1,19 @@
+===========================================================================
+HTTP_PROXY notes
+===========================================================================
+Last updated on 5/16/11
+===========================================================================
+
+During the May 2011 Thunderstorm exercise in Tucson, AZ, we needed to unset
+our tcsh environmental variable $http_proxy in order for Google Earth to
+find its image/map server on the internet.  In order to unset $http_proxy
+environmental var, Dan Dumanis told us to comment out its definition in
+/etc/profile.  We also commented out all $http_proxy and $ftp_proxy defns
+in our .bashrc and .cshrc files.  And /root/.cshrc had these environmental
+varibles commented out as well.  Google Earth then worked fine in Tucson.
+
+When we return to LL after the Thunderstorm exercise finished, we restored
+all of these commented out environmental variables!
+
+
+

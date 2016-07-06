@@ -1,0 +1,7 @@
+--PostGIS_hostname localhost
+# --PostGIS_hostname 155.34.162.148
+# --PostGIS_hostname 155.34.125.216	# Family day OSTF setup
+# --PostGIS_hostname 155.34.135.239 	# G104 conf room RCO demo setup	
+--PostGIS_database_name bluegrass
+--PostGIS_username cho
+--gispoints_tablename loi

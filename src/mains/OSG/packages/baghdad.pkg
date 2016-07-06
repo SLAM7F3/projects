@@ -1,0 +1,17 @@
+#/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad*.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad36_surf.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad37_surf.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad38_surf.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad39_surf.osga 
+# /home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad39_fused.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad40_surf.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad46_surf.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad47_surf.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad48_surf.osga 
+# /home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad48_fused.osga 
+/home/cho/programs/c++/svn/projects/src/mains/OSG/baghdad49_surf.osga 
+# /home/cho/programs/c++/svn/projects/src/mains/OSG/sadr*.osga 
+# sadr_city*.osga 
+--height_colormap 12 --prob_colormap 6 --height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.001 --max_threshold_frac 0.999
+# --min_threshold_frac 0.0 --max_threshold_frac 1.0

@@ -1,0 +1,15 @@
+~/bin/MAKE program=3dvideo
+~/bin/MAKE program=affine_outliers
+~/bin/MAKE program=asiftvid
+~/bin/MAKE program=chogtest
+~/bin/MAKE program=consolidate_features
+~/bin/MAKE program=extract_descriptors
+~/bin/MAKE program=extract_sift_features
+~/bin/MAKE program=form_image_edgelist
+~/bin/MAKE program=imageposn
+~/bin/MAKE program=ladarpan
+~/bin/MAKE program=mser_regions
+~/bin/MAKE program=pancities
+~/bin/MAKE program=panorama
+~/bin/MAKE program=picker
+~/bin/MAKE program=rays

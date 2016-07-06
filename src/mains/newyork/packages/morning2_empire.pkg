@@ -1,0 +1,7 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/empire_morning2_rot.jpg
+--downrange_distance 150
+# --downrange_distance 75
+--projection_matrix
+-1.320129232e-07        -1.083415049e-07        2.135396332e-08 0.5660669499
+5.271858727e-08 -1.327256604e-07        -1.050256543e-07        0.567934193
+4.722932712e-08 -1.385822189e-07        7.234385568e-08 0.5975106364

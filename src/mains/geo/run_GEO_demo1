@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Get time as a UNIX timestamp (seconds elapsed since Jan 1, 1970 0:00 UTC)
+Time0="$(date +%s)"
+
+echo "*****************************************************************"
+echo "INITIALIZING INPUTS"
+./run_generate_peter_inputs
+
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "VISUALIZING FLIR METADATA"
+./run_visualize_FLIR_metadata
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+
+echo "*****************************************************************"
+echo "CROPPING ANALOG FRAMES"
+display -geometry +0+0 ./demo_flow_diagrams/flow_diag_1.png &
+./run_crop_analog_frames
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+
+echo "*****************************************************************"
+echo "SEPARATING PACKAGES"
+./run_separated_packages
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "MATCHING FEATURES"
+
+display -geometry +0+0 ./demo_flow_diagrams/flow_diag_2.png &
+./run_restricted_asift
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+echo "TRIANGULATING"
+display -geometry +0+0 ./demo_flow_diagrams/flow_diag_3.png &
+display -geometry +0+0 ./demo_flow_diagrams/flow_diag_4.png &
+
+./run_triangulate
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+echo "*****************************************************************"
+./view_init_reconstruction
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+./run_viewbundler
+
+echo "*****************************************************************"
+Time="$(($(date +%s)-Time0))"
+printf "TOTAL ELAPSED TIME = %02d mins %02d secs \n" "$((Time/60%60))" "$((Time%60))"
+
+
+

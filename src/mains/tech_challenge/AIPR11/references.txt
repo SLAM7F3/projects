@@ -1,0 +1,57 @@
+==========================================================================
+AIPR 11 paper references
+==========================================================================
+Last updated on 10/5/11; 10/6/11
+==========================================================================
+
+
+[1].  For a history of cameras, see
+http://en.wikipedia.org/wiki/History_of_the_camera#Digital_cameras.  
+
+[2] http://www.petapixel.com/2010/08/05/the-worlds-first-digital-camera-by-kodak-and-steve-sasson/
+
+[3] N. Snavely, S.M. Seitz and R. Szeliski, "Photo Tourism: Exploring image
+collections in 3D", SIGGRAPH 2006.
+
+[4] N. Snavely, S.M. Seitz and R. Szeliski, "Modeling the World from
+Internet Photo Collections", International Journal of Computer Vision,
+2007.
+
+[5]  S. Agarawal, N. Snavely, I. Simon, S.M. Seitz and R. Szeliski,
+"Building Rome in a Day", ICCV 2009.
+
+[6]  D.G. Lowe, "Distinctive image features from scale-invariatn
+keypoints," International Journal of Computer Vision (2004) 91-110.
+
+[7] M.A. Fischler and R.C. Bolles, "Random Sample Consensus: A Paradigm for
+Model Fitting with Applications to Image Analysis and Automated
+Cartography," Comm. of the ACM 24 (1981) 381-395.
+
+[8] B. Triggs, P. McLauchlan, R. Hartley and A. Fitzgibbon, "Bundle
+Adjustment - A Modern Synthesis," in Vision Algorithms: Theory and Practice
+(1999).
+ 
+[9] N. Snavely, R. Garg, S.M. Seitz and R. Szeliski, "Finding Paths through
+the World's Photos", SIGGRAPH 2008.
+
+[10] A. Vidan, P. Cho, M.R. Fetterman and T. Hughes, "Distributed Robotic
+Systems Rapid Prototyping Challenge," AUVSI 2011.
+
+[11] Furukawa and Ponce, "Accurate, Dense and Robust Multi-View
+Stereopsis", PAMI 2010.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

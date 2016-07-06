@@ -1,0 +1,48 @@
+piers4.jpg 
+# --focal_length -1.99379
+# --relative_az -8.34023873776
+# --relative_el -0.08186104873
+# --relative_roll -0.495991564857
+
+# --Uaxis_focal_length -1.96279
+# --Vaxis_focal_length -1.69934
+# --U0 0.636536 --V0 0.452635
+
+# --relative_az -8.33941653339
+# --relative_el -0.104599917929
+# --relative_roll -0.502878389311
+
+# --relative_az -8.25936543762
+# --relative_el -0.103079812569
+# --relative_roll -0.424901566983
+
+# Parameters based upon nearly ideal fit between piers2.jpg & piers3.jpg
+# (but which yields lousy fit to NYC point cloud!)
+
+
+# --Uaxis_focal_length  -1.96879774102
+# --Vaxis_focal_length  -1.53636367853
+# --U0  0.631734128323 --V0  0.435204270819
+# --pixel_skew_angle 89.010901726
+
+# --relative_az -8.23954676984
+# --relative_el -0.120058114827
+# --relative_roll -0.379054784423
+
+
+# Parameters derived on 10/7/07 using closed-form homography approach:
+
+# --Uaxis_focal_length -2.00777
+# --Vaxis_focal_length -2.00818
+# --U0 0.617584
+# --V0 0.480563
+# --relative_az  -8.34236
+# --relative_el  -0.0781776
+# --relative_roll 0.513258
+
+--Uaxis_focal_length  -1.914213552
+--Vaxis_focal_length  -1.914213552
+--U0  0.628366067986 --V0  0.491912349963
+--relative_az -8.4412359147
+--relative_el -0.121291788641
+--relative_roll -0.505888874327

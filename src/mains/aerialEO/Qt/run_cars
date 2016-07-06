@@ -1,0 +1,11 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/aerialEO/Qt
+
+http_proxy=""
+
+/home/cho/programs/c++/svn/projects/src/mains/aerialEO/Qt/cars \
+--dataserver ./packages/ar1_dataserver.pkg \
+--LogicServer_URL 127.0.0.1:4040 \
+--SKSDataServer_URL 127.0.0.1:8080 \
+--world_start_UTC 2007,9,27,16,8,54 \
+--world_stop_UTC 2007,9,27,16,59,0 \
+--world_time_step 0.5 

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="flash"
+	ProjectGUID="{75656796-1928-386D-9599-251A5D7D9865}"
+	Keyword="Qt4VSv1.0">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="."
+			IntermediateDirectory="Debug\"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm200 -EHsc -w34100 -w34189 -Zm200 -EHsc -w34100 -w34189 -w34100 -w34189"
+				Optimization="4"
+				AdditionalIncludeDirectories="C:/Qt/4.0.0/include/QtGui,C:/Qt/4.0.0/include/QtCore,C:/Qt/4.0.0/include,.,C:/Qt/4.0.0/include/ActiveQt,GeneratedFiles\Debug,GeneratedFiles,C:\Qt\4.0.0\mkspecs\win32-msvc.net"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_CORE_LIB,QT_GUI_LIB,QT_THREAD_SUPPORT"
+				GeneratePreprocessedFile="0"
+				ExceptionHandling="TRUE"
+				RuntimeLibrary="3"
+				BufferSecurityCheck="FALSE"
+				RuntimeTypeInfo="TRUE"
+				AssemblerListingLocation="Debug\"
+				ObjectFile="Debug\"
+				ProgramDataBaseFileName=".\"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="C:\Qt\4.0.0\lib\qtmaind.lib C:\Qt\4.0.0\lib\QAxContainerd.lib C:\Qt\4.0.0\lib\QtCored4.lib C:\Qt\4.0.0\lib\QtGuid4.lib ole32.lib oleaut32.lib user32.lib gdi32.lib advapi32.lib"
+				OutputFile="debug\flash.exe"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="C:\Qt\4.0.0\lib"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile=""
+				SubSystem="2"/>
+			<Tool
+				Name="VCMIDLTool"
+				WarningLevel="0"
+				DefaultCharType="0"
+				EnableErrorChecks="1"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_CORE_LIB,QT_GUI_LIB,QT_THREAD_SUPPORT"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="."
+			IntermediateDirectory="Debug\"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm200 -EHsc -w34100 -w34189 -Zm200 -EHsc -w34100 -w34189 -w34100 -w34189"
+				Optimization="2"
+				AdditionalIncludeDirectories="C:/Qt/4.0.0/include/QtGui,C:/Qt/4.0.0/include/QtCore,C:/Qt/4.0.0/include,.,C:/Qt/4.0.0/include/ActiveQt,GeneratedFiles\Debug,GeneratedFiles,C:\Qt\4.0.0\mkspecs\win32-msvc.net"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_CORE_LIB,QT_GUI_LIB,QT_THREAD_SUPPORT,NDEBUG"
+				GeneratePreprocessedFile="0"
+				ExceptionHandling="TRUE"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
+				RuntimeTypeInfo="TRUE"
+				AssemblerListingLocation="Debug\"
+				ObjectFile="Debug\"
+				ProgramDataBaseFileName=".\"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="0"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="C:\Qt\4.0.0\lib\qtmain.lib C:\Qt\4.0.0\lib\QAxContainer.lib C:\Qt\4.0.0\lib\QtCore4.lib C:\Qt\4.0.0\lib\QtGui4.lib ole32.lib oleaut32.lib user32.lib gdi32.lib advapi32.lib"
+				OutputFile="release\flash.exe"
+				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="C:\Qt\4.0.0\lib"
+				GenerateDebugInformation="FALSE"
+				ProgramDatabaseFile=""
+				SubSystem="2"/>
+			<Tool
+				Name="VCMIDLTool"
+				WarningLevel="0"
+				DefaultCharType="0"
+				EnableErrorChecks="1"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="QT_NO_DEBUG,NDEBUG,_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_NO_DEBUG,QT_CORE_LIB,QT_GUI_LIB,QT_THREAD_SUPPORT"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<Filter
+			Name="Source Files"
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath="flashviewer.cpp">
+			</File>
+			<File
+				RelativePath="main.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			<File
+				RelativePath="flashviewer.h">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Moc&apos;ing flashviewer.h..."
+						CommandLine="$(QTDIR)\bin\moc.exe -D_WINDOWS,UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_DLL,QT_CORE_LIB,QT_GUI_LIB,QT_THREAD_SUPPORT -IC:/Qt/4.0.0/include/QtGui -IC:/Qt/4.0.0/include/QtCore -IC:/Qt/4.0.0/include -I. -IC:/Qt/4.0.0/include/ActiveQt -IGeneratedFiles\Debug -IGeneratedFiles -IC:\Qt\4.0.0\mkspecs\win32-msvc.net &quot;flashviewer.h&quot; -o &quot;GeneratedFiles\Debug\moc_flashviewer.cpp&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\moc.exe;flashviewer.h"
+						Outputs="&quot;GeneratedFiles\Debug\moc_flashviewer.cpp&quot;"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="MOC flashviewer.h"
+						CommandLine="C:\Qt\4.0.0\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_THREAD_SUPPORT -IC:\Qt\4.0.0\include\QtGui -IC:\Qt\4.0.0\include\QtCore -IC:\Qt\4.0.0\include -I. -IC:\Qt\4.0.0\include\ActiveQt -IGeneratedFiles\Debug -IGeneratedFiles -IC:\Qt\4.0.0\mkspecs\win32-msvc.net -D_MSC_VER=1300 -DWIN32 flashviewer.h -o GeneratedFiles\Debug\moc_flashviewer.cpp
+"
+						AdditionalDependencies="C:\Qt\4.0.0\bin\moc.exe"
+						Outputs="GeneratedFiles\Debug\moc_flashviewer.cpp"/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="Generated Files"
+			Filter="cpp;c;cxx;moc;h;qrc;def;odl;idl;res;"
+			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}">
+			<File
+				RelativePath="Debug\flash.res">
+			</File>
+			<File
+				RelativePath="GeneratedFiles\Debug\moc_flashviewer.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\generatedfiles\release\moc_flashviewer.cpp">
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="GeneratedFiles\ui_flashviewer.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Form Files"
+			Filter="ui"
+			UniqueIdentifier="{99349809-55BA-4b9d-BF79-8FDBB0286EB3}"
+			ParseFiles="FALSE">
+			<File
+				RelativePath="flashviewer.ui">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing flashviewer.ui..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;GeneratedFiles\ui_flashviewer.h&quot; &quot;flashviewer.ui&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;GeneratedFiles\ui_flashviewer.h&quot;"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Uic&apos;ing flashviewer.ui..."
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;GeneratedFiles\ui_flashviewer.h&quot; &quot;flashviewer.ui&quot;
+"
+						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
+						Outputs="&quot;GeneratedFiles\ui_flashviewer.h&quot;"/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<File
+			RelativePath="flash.rc">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

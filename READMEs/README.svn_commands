@@ -1,0 +1,308 @@
+=========================================================================
+SVN notes
+=========================================================================
+Last updated on 12/8/13; 1/24/14; 4/13/15; 3/5/16
+=========================================================================
+
+* Whenever the machine on which the SVN repository is stored is rebooted,
+we need to manually execute the following command in order to restart its
+SVN server daemon:
+
+ sudo svnserve -d
+
+Notes:  
+
+1.  If we encounter connection refused errors such as 
+
+ svn: Can't connect to host '127.0.0.1': Connection refused
+
+it's probably because the above server daemon command has not been executed
+and the server is not running.
+
+2.  The svnserver must be started by root.  If we accidentally start the
+server as user cho, we encounter permission errors like the one below when
+we try to perform a commit:
+
+Sending        src/osg/osg2D/Movie.cc
+Sending        src/osg/osg2D/MoviesGroup.cc
+svn: Commit failed (details follow):
+svn: Can't open file '/svn/projects/db/txn-current-lock': Permission denied
+
+3.  In order to automatically have the SVN server start at boot time, 
+add file /etc/init.d/svnserve containing the single line
+
+			svnserve -d
+
+and make this svnserve file executable.  Then chant 
+
+	sudo update-rc.d svnserve defaults
+
+in order to populate /etc/rcN.d/ subdirs within start and kill scripts
+(where N=0,1,2,3,4,5,6).
+
+--------------------------------------------------------------------------
+*.  To check "projects" changes into the repository, chant 
+
+svn commit -m "notes go here" 
+
+from within the "projects" subdir.
+
+--------------------------------------------------------------------------
+*.  To delete a file, chant
+
+	svn delete myfile
+
+--------------------------------------------------------------------------
+* To check the subdirectory structure of the "ali2pcp" repository, chant,
+
+svn ls svn://photon/svn/ali2pcp
+
+--------------------------------------------------------------------------
+*  To check the log history for the SVN "ali2pcp" repository, chant:
+
+svn log svn://photon/svn/projects | more
+
+svn log svn://photon/svn/bluetracker | more
+
+svn log svn://photon/svn/dataloader | more
+
+svn log svn://photon/svn/geoalign | more
+
+svn log svn://photon/svn/image | more
+
+svn log svn://photon/svn/ladar | more
+
+svn log svn://photon/svn/LOST | more
+
+svn log svn://photon/svn/machete | more
+
+svn log svn://photon/svn/photo | more
+
+svn log svn://photon/svn/video | more
+
+
+svn log svn://photon/svn/Documents | more
+
+svn log svn://photon/svn/ali2pcp | more
+
+svn log http://svn106/svn/eyeglass | more
+
+svn log http://svn106/svn/dt-portal | more
+
+
+
+--------------------------------------------------------------------------
+* To recursively list full contents of all repository entries
+sitting in current directory or any of its subdirectories, chant:
+
+svn ls -R
+
+--------------------------------------------------------------------------
+* To generate a listing of all non-directory entries within repository
+sitting in current directory or any of its subdirectories, chant:
+
+svn ls -R | xargs file | grep -v directory | cut -f 1 -d :
+
+--------------------------------------------------------------------------
+
+* In order to check out the latest version of our projects codes into some
+local svn/projects subdir, chant
+
+svn checkout svn://photon/svn/projects/trunk .
+
+* To check out revision 8 from the SVN "projects/trunk" repository, chant:
+
+svn checkout -r8 svn://photon/svn/projects/trunk .
+
+
+From within /usr/local/apache-tomcat/webapps/bluetracker, chant
+
+	svn checkout svn://photon/svn/bluetracker/ .
+
+From within /usr/local/apache-tomcat/webapps/dataloader, chant
+
+	svn checkout svn://photon/svn/dataloader/ .
+
+From within /usr/local/apache-tomcat/webapps/geoalign, chant
+
+	svn checkout svn://photon/svn/geoalign/ .
+
+From within /usr/local/apache-tomcat/webapps/image, chant
+
+	svn checkout svn://photon/svn/image/ .
+
+From within /usr/local/apache-tomcat/webapps/imagesearch, chant
+
+	svn checkout svn://photon/svn/imagesearch/ .
+
+From within /usr/local/apache-tomcat/webapps/ladar, chant
+
+	svn checkout svn://photon/svn/ladar/ .
+
+From within /usr/local/apache-tomcat/webapps/LOST, chant
+
+	svn checkout svn://photon/svn/LOST/ .
+
+From within /usr/local/apache-tomcat/webapps/machete, chant
+
+	svn checkout svn://photon/svn/machete/ .
+
+From within /usr/local/apache-tomcat/webapps/photo, chant
+
+	svn checkout svn://photon/svn/photo/ .
+
+From within /usr/local/apache-tomcat/webapps/video, chant
+
+	svn checkout svn://photon/svn/video/ .
+
+
+
+From within /home/cho/programs/SQL/, chant 
+
+	svn checkout svn://photon/svn/SQL/ .
+
+From within /home/cho/svn/Documents/, chant 
+
+	svn checkout svn://photon/svn/Documents/ .
+
+From within /home/cho/svn/Documents/papers, chant 
+
+	svn checkout svn://photon/svn/papers/ .
+
+
+To list subdirectories within branches of Ross' eyeglass code, chant
+
+svn ls svn://glows/repositories/dataviewer/branches
+
+To check out trunk version Ross' eyeglass viewer codes on SVN106 (which is
+accessed via an http web service call rather than an svn daemon), chant
+
+svn checkout http://svn106/svn/eyeglass/trunk .
+
+To check out trunk version of Ross' hairball graph viewer, chant
+
+svn checkout http://svn106/svn/hairball/trunk .
+
+To check out coord-system branch version of Ross' eyeglass viewer codes and
+put them into a new ./eyeglass_cs subdirectory, chant
+
+svn checkout svn://glows/repositories/dataviewer/branches/coord-system ./eyeglass_cs
+
+svn checkout svn://cvs102.llan.ll.mit.edu/SIGMA/trunk/Utils/cho_stuff .
+
+To check out TDP libraries on CVS repository on glows, chant
+
+cvs checkout tdp-unstable
+cvs checkout tdp-config
+
+--------------------------------------------------------------------------
+*.  To export the entire contents of projects/trunk to a new source tree
+which contains NO .svn subdirectories, chant
+
+svn export svn://photon/svn/projects /tmp/projects_export
+
+Ross Anderson recommends that exports be sneaker-netted from unclassified
+to classified boxes in order to keep the latter in sync with the former.
+
+--------------------------------------------------------------------------
+*.  To dump the "projects" repository, chant 
+
+sudo svnadmin dump /data2/projects > photon_svn_projects.dump
+
+On SVN server machine #1, chant
+
+   sudo svnadmin dump /svn/projects > projects_Jun12_2013.dump
+
+On SVN server machine #2, chant
+
+   sudo svnadmin create /svn/projects
+
+   sudo svnadmin load /svn/projects < projects_Jun12_2013.dump
+
+--------------------------------------------------------------------------
+*.  Example from http://svnbook.red-bean.com/en/1.0/re36.html showing how
+to load the contents of a dump file:
+
+This shows the beginning of loading a repository from a backup file (made,
+of course, with svn dump):
+
+$ svnadmin load /usr/local/svn/restored < repos-backup
+<<< Started new txn, based on original revision 1
+     * adding path : test ... done.
+     * adding path : test/a ... done.
+
+
+Or if you want to load into a subdirectory:
+
+$ svnadmin load --parent-dir new/subdir/for/project /usr/local/svn/restored < repos-backup
+<<< Started new txn, based on original revision 1
+     * adding path : test ... done.
+     * adding path : test/a ... done.
+
+
+--------------------------------------------------------------------------
+* To create a brand new repository on photon, we first need to physically
+log into photon.  Then chant
+
+sudo svnadmin create /svn/tdptools
+
+to instantiate the repository.  Next edit /svn/tdptools/conf/svnserve.conf
+and uncomment hash marks and change read --> write as shown below:
+
+[general]
+### These options control access to the repository for unauthenticated
+### and authenticated users.  Valid values are "write", "read",
+### and "none".  The sample settings below are the defaults.
+anon-access = write
+auth-access = write
+
+Next we need to read in a directory tree containing files to be stored
+within the newly created repository:
+
+svn import -m "Import of Group 106 tdp tools main programs" ./tdp_tools/
+svn://photon/svn/tdp_tools/
+
+Notes: 
+
+1) svn:// stands for a "daemon service" like ftp:// or http://.  
+
+2) If we want to have trunk and branch subdirectory structures within the
+repository, we need to create them within the initial directory tree BEFORE
+we perform the import command.  See documentation within
+http://svnbook.red-bean.com for info about trunks and branches.  
+
+Finally, we need to checkout from the newly created repository a local copy
+which has the necessary .svn files within its subdirectory structure.  So
+we move the initial local checkin subdir to ./tdp_tools_init and then
+recreate ./tdp_tools/.  After cd'ing into ./tdp_tools, execute the
+following checkout call:
+
+fusion1:tdp_tools% svn checkout svn://photon/svn/tdp_tools/ .
+A    tdp_point_statistics.h
+A    tdp_swath_reassemble.cpp
+A    split.h
+A    tdp_genericio.h
+A    args.h
+A    tdp_generate_overlap.cpp
+A    tdp_to_fxyz.cpp
+A    tdp_point_statistics.cpp
+A    split.cpp
+A    tdp_genericio.cpp
+A    Makefile
+A    args.cpp
+Checked out revision 1.
+
+
+--------------------------------------------------------------------------
+Notes:
+
+*  Ross Anderson's svn repository can be accessed via
+
+svn checkout svn://glows/repositories/dataviewer/trunk .
+
+
+--------------------------------------------------------------------------
+sudo apt-get --purge remove <package>
+
+
+

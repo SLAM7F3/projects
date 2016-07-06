@@ -1,0 +1,8 @@
+/bin/rm ./caffe_classification
+/bin/rm ./check_lmdb
+/bin/rm ./classify_chars
+/bin/rm ./finetuned_classify
+/bin/rm ./generate_file_list
+/bin/rm ./parse_leveldb
+/bin/rm ./parse_lmdb
+/bin/rm ./tuning_performance

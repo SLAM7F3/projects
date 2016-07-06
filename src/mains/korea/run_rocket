@@ -1,0 +1,6 @@
+~/programs/c++/svn/projects/src/mains/korea/rocket \
+--surface_texture ./packages/korea_texture.pkg \
+--region_filename ./bundler/Korea/korea1/packages/photo_0000.pkg \
+--image_list_filename ./bundler/Korea/korea1/image_list.dat \
+--image_sizes_filename ./bundler/Korea/korea1/image_sizes.dat \
+--initial_mode Manipulate_Fused_Data_Mode

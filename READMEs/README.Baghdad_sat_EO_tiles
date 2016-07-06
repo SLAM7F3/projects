@@ -1,0 +1,461 @@
+==========================================================================
+Metadata about Quickbird Baghdad EO images
+==========================================================================
+Last updated on 4/26/07
+==========================================================================
+
+R1C1:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (429981.899999999965075,3699457.500000000000000)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  429981.900, 3699457.500) ( 44d14'48.42"E, 33d25'55.97"N)
+Lower Left  (  429981.900, 3690855.900) ( 44d14'50.83"E, 33d21'16.69"N)
+Upper Right (  438583.500, 3699457.500) ( 44d20'21.51"E, 33d25'57.87"N)
+Lower Right (  438583.500, 3690855.900) ( 44d20'23.62"E, 33d21'18.58"N)
+Center      (  434282.700, 3695156.700) ( 44d17'36.10"E, 33d23'37.31"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+R1C2:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (438583.499999999941792,3699457.500000000000000)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  438583.500, 3699457.500) ( 44d20'21.51"E, 33d25'57.87"N)
+Lower Left  (  438583.500, 3690855.900) ( 44d20'23.62"E, 33d21'18.58"N)
+Upper Right (  447185.100, 3699457.500) ( 44d25'54.61"E, 33d25'59.52"N)
+Lower Right (  447185.100, 3690855.900) ( 44d25'56.43"E, 33d21'20.23"N)
+Center      (  442884.300, 3695156.700) ( 44d23'9.04"E, 33d23'39.08"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R1C3:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (447185.099999999976717,3699457.500000000000000)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  447185.100, 3699457.500) ( 44d25'54.61"E, 33d25'59.52"N)
+Lower Left  (  447185.100, 3690855.900) ( 44d25'56.43"E, 33d21'20.23"N)
+Upper Right (  455786.700, 3699457.500) ( 44d31'27.72"E, 33d26'0.92"N)
+Lower Right (  455786.700, 3690855.900) ( 44d31'29.24"E, 33d21'21.63"N)
+Center      (  451485.900, 3695156.700) ( 44d28'42.00"E, 33d23'40.61"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R1C4:
+
+
+Driver: GTiff/GeoTIFF
+Size is 2799, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (455786.699999999953434,3699457.500000000000000)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  455786.700, 3699457.500) ( 44d31'27.72"E, 33d26'0.92"N)
+Lower Left  (  455786.700, 3690855.900) ( 44d31'29.24"E, 33d21'21.63"N)
+Upper Right (  457466.100, 3699457.500) ( 44d32'32.76"E, 33d26'1.17"N)
+Lower Right (  457466.100, 3690855.900) ( 44d32'34.22"E, 33d21'21.87"N)
+Center      (  456626.400, 3695156.700) ( 44d32'0.98"E, 33d23'41.40"N)
+Band 1 Block=2799x2 Type=Byte, ColorInterp=Red
+Band 2 Block=2799x2 Type=Byte, ColorInterp=Green
+Band 3 Block=2799x2 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R2C1:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (429981.899999999965075,3690855.899999999906868)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  429981.900, 3690855.900) ( 44d14'50.83"E, 33d21'16.69"N)
+Lower Left  (  429981.900, 3682254.300) ( 44d14'53.23"E, 33d16'37.41"N)
+Upper Right (  438583.500, 3690855.900) ( 44d20'23.62"E, 33d21'18.58"N)
+Lower Right (  438583.500, 3682254.300) ( 44d20'25.73"E, 33d16'39.29"N)
+Center      (  434282.700, 3686555.100) ( 44d17'38.35"E, 33d18'58.02"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R2C2:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (438583.499999999941792,3690855.899999999906868)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  438583.500, 3690855.900) ( 44d20'23.62"E, 33d21'18.58"N)
+Lower Left  (  438583.500, 3682254.300) ( 44d20'25.73"E, 33d16'39.29"N)
+Upper Right (  447185.100, 3690855.900) ( 44d25'56.43"E, 33d21'20.23"N)
+Lower Right (  447185.100, 3682254.300) ( 44d25'58.24"E, 33d16'40.93"N)
+Center      (  442884.300, 3686555.100) ( 44d23'11.00"E, 33d18'59.79"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R2C3:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (447185.099999999976717,3690855.899999999906868)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  447185.100, 3690855.900) ( 44d25'56.43"E, 33d21'20.23"N)
+Lower Left  (  447185.100, 3682254.300) ( 44d25'58.24"E, 33d16'40.93"N)
+Upper Right (  455786.700, 3690855.900) ( 44d31'29.24"E, 33d21'21.63"N)
+Lower Right (  455786.700, 3682254.300) ( 44d31'30.76"E, 33d16'42.33"N)
+Center      (  451485.900, 3686555.100) ( 44d28'43.67"E, 33d19'1.31"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R2C4:
+
+Driver: GTiff/GeoTIFF
+Size is 2799, 14336
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (455786.699999999953434,3690855.899999999906868)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  455786.700, 3690855.900) ( 44d31'29.24"E, 33d21'21.63"N)
+Lower Left  (  455786.700, 3682254.300) ( 44d31'30.76"E, 33d16'42.33"N)
+Upper Right (  457466.100, 3690855.900) ( 44d32'34.22"E, 33d21'21.87"N)
+Lower Right (  457466.100, 3682254.300) ( 44d32'35.68"E, 33d16'42.57"N)
+Center      (  456626.400, 3686555.100) ( 44d32'2.47"E, 33d19'2.10"N)
+Band 1 Block=2799x2 Type=Byte, ColorInterp=Red
+Band 2 Block=2799x2 Type=Byte, ColorInterp=Green
+Band 3 Block=2799x2 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R3C1:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14226
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (429981.899999999965075,3682254.299999999813735)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  429981.900, 3682254.300) ( 44d14'53.23"E, 33d16'37.41"N)
+Lower Left  (  429981.900, 3673718.700) ( 44d14'55.60"E, 33d12'0.26"N)
+Upper Right (  438583.500, 3682254.300) ( 44d20'25.73"E, 33d16'39.29"N)
+Lower Right (  438583.500, 3673718.700) ( 44d20'27.81"E, 33d12'2.14"N)
+Center      (  434282.700, 3677986.500) ( 44d17'40.59"E, 33d14'19.81"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+
+==========================================================================
+
+R3C2:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14226
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (438583.499999999941792,3682254.299999999813735)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  438583.500, 3682254.300) ( 44d20'25.73"E, 33d16'39.29"N)
+Lower Left  (  438583.500, 3673718.700) ( 44d20'27.81"E, 33d12'2.14"N)
+Upper Right (  447185.100, 3682254.300) ( 44d25'58.24"E, 33d16'40.93"N)
+Lower Right (  447185.100, 3673718.700) ( 44d26'0.03"E, 33d12'3.78"N)
+Center      (  442884.300, 3677986.500) ( 44d23'12.95"E, 33d14'21.57"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+
+==========================================================================
+
+R3C3:
+
+Driver: GTiff/GeoTIFF
+Size is 14336, 14226
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (447185.099999999976717,3682254.299999999813735)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  447185.100, 3682254.300) ( 44d25'58.24"E, 33d16'40.93"N)
+Lower Left  (  447185.100, 3673718.700) ( 44d26'0.03"E, 33d12'3.78"N)
+Upper Right (  455786.700, 3682254.300) ( 44d31'30.76"E, 33d16'42.33"N)
+Lower Right (  455786.700, 3673718.700) ( 44d31'32.25"E, 33d12'5.17"N)
+Center      (  451485.900, 3677986.500) ( 44d28'45.32"E, 33d14'23.08"N)
+Band 1 Block=14336x1 Type=Byte, ColorInterp=Red
+Band 2 Block=14336x1 Type=Byte, ColorInterp=Green
+Band 3 Block=14336x1 Type=Byte, ColorInterp=Blue
+
+==========================================================================
+
+R3C4:
+
+Driver: GTiff/GeoTIFF
+Size is 2799, 14226
+Coordinate System is:
+PROJCS["UTM    38   E012",
+    GEOGCS["Unknown datum based upon the WGS 84 ellipsoid",
+        DATUM["Not_specified_based_on_WGS_84_ellipsoid",
+            SPHEROID["WGS 84",6378137,298.2572235629972,
+                AUTHORITY["EPSG","7030"]],
+            AUTHORITY["EPSG","6030"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4030"]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["latitude_of_origin",0],
+    PARAMETER["central_meridian",45],
+    PARAMETER["scale_factor",0.9996],
+    PARAMETER["false_easting",500000],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]]]
+Origin = (455786.699999999953434,3682254.299999999813735)
+Pixel Size = (0.600000000000000,-0.600000000000000)
+Metadata:
+  AREA_OR_POINT=Area
+Corner Coordinates:
+Upper Left  (  455786.700, 3682254.300) ( 44d31'30.76"E, 33d16'42.33"N)
+Lower Left  (  455786.700, 3673718.700) ( 44d31'32.25"E, 33d12'5.17"N)
+Upper Right (  457466.100, 3682254.300) ( 44d32'35.68"E, 33d16'42.57"N)
+Lower Right (  457466.100, 3673718.700) ( 44d32'37.12"E, 33d12'5.41"N)
+Center      (  456626.400, 3677986.500) ( 44d32'3.95"E, 33d14'23.87"N)
+Band 1 Block=2799x2 Type=Byte, ColorInterp=Red
+Band 2 Block=2799x2 Type=Byte, ColorInterp=Green
+Band 3 Block=2799x2 Type=Byte, ColorInterp=Blue

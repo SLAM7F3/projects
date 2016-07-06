@@ -1,0 +1,12 @@
+~/bin/MAKE program=color_nodes_by_classes
+~/bin/MAKE program=extract_OGDF_layout
+~/bin/MAKE program=generate_mcl_scripts
+~/bin/MAKE program=generate_singleton_clusters
+~/bin/MAKE program=graphjson
+~/bin/MAKE program=kmeans_clusters
+~/bin/MAKE program=mcl_clusters
+~/bin/MAKE program=mcl_hierarchy
+~/bin/MAKE program=OGDF_layout
+~/bin/MAKE program=plot_layout
+~/bin/MAKE program=select_nodes
+

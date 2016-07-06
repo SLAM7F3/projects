@@ -1,0 +1,31 @@
+=============================================================================
+BitBucket notes
+=============================================================================
+Last updated on 9/2/15
+=============================================================================
+
+Username = PeterLCho		@George12 (reset on 9/2/15)
+email = peter.leslie.cho@gmail.com
+
+
+*.  In order to inform the Bitbucket github of the existence of the TITAN 1
+GPU box, we need to enter new SSH key informaton into github.  So we
+generated a new public SSH key on TITAN 1 GPU box.  In a terminal, chant
+"ssh-keygen".  Enter returns to all questions.  In particular, do NOT enter
+any passphrase when queried.  Generated public key is exported to
+~/.ssh/id_rsa.pub.
+
+*.  We added public keys from our Apple MacPro and Titan 1 GPU box on
+9/2/15.  
+
+From https://bitbucket.org/deeplab/deeplab-public/, click on avatar button
+located near upper right.  Thenm click on "Manage account".  Choose "SSH
+keys" from menu on LHS.  Press blue "Add key" button.  Then copy contents
+of ~/.ssh/id_rsa.pub into box being careful to not introduce extra white
+space.
+
+
+*.  After ssh key is added, we can clone deeplab repository via following
+terminal command:
+
+   git clone git@bitbucket.org:deeplab/deeplab-public.git

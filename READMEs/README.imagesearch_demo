@@ -1,0 +1,21 @@
+==========================================================================
+Imagesearch demo
+==========================================================================
+Last updated on 5/29/12
+==========================================================================
+
+On 5/24/12, we performed a demonstration of the image search tools within
+S2-180.  We used the conference room's main projector to display Michael's
+graph viewer.  And we displayed the web browser thin client as well as the
+Sauron thick client on one of our rolling monitors.
+
+We drove the demo with two laptops.  As of May 2012, Michael's viewer runs
+to a crawl on several of our machines for the 36K+ MIT data set.  So we had
+to use our own LOST laptop to run Michael's viewer.  We set this on the LHS
+of the S2-180 podium.  Our LOST laptop also ran as a Quicksynergy client.
+
+We also brought in the G105 clone (Jennifer's LOST laptop) and set it on
+the RHS of the S2-180 podium.  The G105 clone ran as the Quicksynergy
+server.  Both LOST laptops were plugged into a switch that communicated
+with BEAST in S3-314 via the LLAN.  The G105 clone ran the web browser thin
+client as well as the Sauron client for the final Tstorm imagery example.

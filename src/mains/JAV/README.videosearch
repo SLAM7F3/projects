@@ -1,0 +1,369 @@
+===========================================================================
+Video Search programs
+===========================================================================
+Last updated on 10/30/13; 10/31/13; 12/21/13; 2/9/14
+===========================================================================
+
+This README is located in
+~/programs/c++/svn/projects/src/mains/JAV/README.videosearch
+
+========================================================================
+I. VIDEO CLIPS INITIALIZATION
+========================================================================
+
+*.  mains/JAV/LINK_VIDEO_FILENAMES imports a set of mp4, real-media or
+Advanced System Format video clips from a specified subdirectory.  It first
+alphabetically sorts the input video clips' filenames.  It next wraps the
+video filenames in double quotes in order to shield subsequent link
+commands from any white spaces.  LINK_VIDEO_FILENAMES generates an
+executable script which links the input mp4 files to homogenized output
+filenames.
+
+If text transcripts for the videos' sound tracks exist within the same
+subdirectories as the raw media files, LINK_VIDEO_FILENAMES generates an
+executable script which links the text files to homogenized output
+filenames.
+
+*.  mains/JAV/RIP_VIDEO_FRAMES imports a set of homogenized mp4,rm or asf
+video clips generated via program LINK_VIDEO_FRAMES.  For each clip, it
+executes an ffmpeg command which rips frames to JPG images at 1 Hz.
+
+
+*. Create an appropriately named new subdirectory of /data/ImageEngine/
+
+e.g.		 mkdir /data/ImageEngine/Oct2013NewsWraps
+
+Also create $bundler_IO_subdir:
+
+   e.g.    cd ~/programs/c++/svn/projects/src/mains/JAV/bundler/
+	   mkdir Oct2013NewsWraps
+
+$bundler_IO_subdir will hold many input and output image search files.
+Allow all users to read & write files in $bundler_IO_subdir via a "change
+mode" command like
+
+   chmod a+rw ~/programs/c++/svn/projects/src/mains/photosynth/bundler/Oct2013NewsWraps
+
+
+*.  From within $bundler_IO_subdir, create an images subdirectory:
+
+			mkdir images 
+
+Then link all image files in /data/ImageEngine/ subdirectory to
+$bundler_IO_subdir/images/ :
+
+	e.g.	images% ln -s /data/ImageEngine/Oct2013NewsWraps/*.jpg .
+
+Change directory back to $root.
+
+*.  From within $root, run GENERATE_PETER_INPUTS program via following
+command:
+
+			generate_peter_inputs 
+
+Program GENERATE_PETER_INPUTS queries the user to enter a subdirectory of
+./bundler/ in which some set of images and metadata reside.  It expects to
+find "list_tmp.txt" sitting in bundler_IO_subdir.  If no "bundle.out" file
+resides in bundler_IO_subdir, GENERATE_PETER_INPUTS creates a trivial
+version.  It next generates an images_list.dat file containing renamed
+versions of the input images.  This program then creates a packages subdir
+of bundler_IO_subdir and generates a peter_inputs.pkg file containing names
+for various input parameters.  Finally, GENERATE_PETER_INPUTS writes out
+executable scripts for the several programs which must be run in order to
+produce thumbnails, construct SIFT graphs and visualize reconstructed
+points clouds and frusta in Peter's 3D viewer.
+
+========================================================================
+II.  VIDEO FRAME THUMBNAIL GENERATION 
+========================================================================
+
+*.  Execute the auto-generated run_photo_sizes script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_photo_sizes
+
+Program PHOTO_SIZES reads in a set of photo image filenames.  It calls
+ImageMagick's ping command to extract image width and height measured in
+pixels.  Image size results are saved into output text file
+$bundler_IO_subdir/image_sizes.dat.
+
+This expensive operation should only be performed once!
+
+*.  Execute the auto-generated run_thumbnails script: 
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_thumbnails
+
+Program THUMBNAILS generates subsampled versions of input photos within
+$bundler_IO_subdir/images/thumbnails/.  This expensive operation should
+only be performed once!
+
+Make thumbnail image files readable & writeable by all users:
+
+  e.g.  From within $bundler_IO_subdir/Oct2013NewsWraps/images/, chant
+
+			 chmod a+rw thumbnails
+
+Move entire thumbnails directory to subdirectory of /data/ImageEngine/:
+
+  e.g.	images% mv thumbnails /data/ImageEngine/Oct2013NewsWraps
+
+Then relink thumbnails/ subdirectory in /data/ImageEngine/ to
+$bundler_IO_subdir/images/ :
+
+  e.g. 	images% ln -s /data/ImageEngine/Oct2013NewsWraps/thumbnails .
+
+========================================================================
+III. DATABASE UPDATING
+========================================================================
+
+*.  Using PGADMIN3, enter new Campaign and Mission entries into IMAGERY
+database.
+
+*.  Execute the auto-generated run_load_image_metadata script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_load_image_metadata
+
+mains/imagesearch/LOAD_IMAGE_METADATA queries the user to enter campaign
+and mission IDs for a set of images to be loaded into the images table of
+the IMAGERY database.  It also requests a subdirectory of
+/data/ImageEngine/ where a set of image and thumbnail files must already
+exist.  LOAD_IMAGE_METADATA then inserts metadata for images within
+image_list_filename into the images database table.
+
+*.  Execute the auto-generated run_load_video_metadata script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_load_video_metadata
+
+mains/JAV/LOAD_VIDEO_METADATA queries the user to enter campaign and
+mission IDs for a set of video clips to be loaded into the videos table of
+the IMAGERY database.  For each video frame, it retrieves the image ID and
+URL from the images table.  It also extracts the clip and frame ID from the
+image's filename.  If an audio transcript and/or mp4 file exists within the
+same subdirectory of /data/ImageEngine/ as the jpg images, their URLs are
+recovered as well.  For each video frame from multiple clips, these
+metadata are stored within the videos table
+
+*.  Execute the auto-generated run_update_rel_frame_times script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_update_rel_frame_times
+
+mains/imagesearch/UPDATE_REL_FRAME_TIMES queries the user to enter
+campaign and mission IDs for a set of video frames already loaded into the
+images table of the IMAGERY database.  It retrieves the UTM zonenumber
+corresponding to a set of images residing within /data/ImageEngine/ from
+the world_regions table of the IMAGERY database.  UPDATE_REL_FRAME_TIMES
+assumes the current video clip began at midnight, and it bases video frame
+times upon frame number.  UPDATE_REL_FRAME_TIMES exports a series of SQL
+commands which update timing metadata within the images table of the
+IMAGERY database.
+
+========================================================================
+IV. VIDEO TIMELINE GRAPH CONSTRUCTION 
+========================================================================
+
+*.  Execute the auto-generated run_dummy_videos_edgelist:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_dummy_videos_edgelist
+
+mains/imagesearch/DUMMY_VIDEOS_EDGELIST queries the user for campaign and
+mission IDs corresponding to some set of video clips.  It generates a dummy
+edgelist for this imagery set where each video frame within a clip is
+connected to its nearest temporal neighbors.  Frames between video clips
+are disconnected.  So the number of disconnected components within the
+image graph equals the number of distinct video clips.
+
+*.  Execute the auto-generated run_OGDF_layout script:
+
+	~/programs/c++/svn/projects/src/mains/photosynth/run_OGDF_layout
+
+Program OGDF_LAYOUT parses a text file containing a photo graph edge list
+generated program SIFT_PARSER.  It queries the user to set a minimum edge
+weight threshold.  It next calls a graphical layout algorithm within the
+C++ Open Graph Drawing Framework (OGDF) library.  As of 9/1/09, we have
+found that only the Fast Multipole Multilevel layout algorithm can handle
+the 25K connected graph coming from the July 2009 MIT photo collect.  This
+program outputs the OGDF layout as a Graph Modeling Language (GML) text
+file which can be viewed using the yEd java graph tool.
+
+
+*. Execute the auto-generated run_extract_OGDF_layout script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_extract_OGDF_layout
+
+Program EXTRACT_OGDF_LAYOUT reads in a Graph Modeling Language (GML) file
+generated by OGDF_LAYOUT.  For each node within the GML file,
+EXTRACT_OGDF_LAYOUT recovers its ID as well as its 2D X and Y positions
+calculated by OGDF.  This program generates text file
+"graph_XY_coords.fm3_layout" containing these outputs normalized to range
+within [0,1] which can be read in by GRAPHJSON.
+
+
+*.  Execute the auto-generated run_kmeans_clusters script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_kmeans_clusters
+
+INPUT: Enter desired number (>= 2) of evenly-spaced levels within graph hierarchy pyramid:
+*IMPORTANT: n_photos = # photos in largest cluster, not total # photos ran in bundler
+levels ~= log_10(n_photos)+1.  		
+O(100) 	photos should have 3 levels
+O(1000)	photos should have 4 levels
+
+
+Program KMEANS_CLUSTERS reads in the gx-gy layout for a SIFT graph
+generated by program EXTRACT_OGDF_LAYOUT and the edge list generated by
+program SIFT_PARSER.  It first modifies the layout by migrating nodes
+towards each other depending upon their SIFT edge weight.  The modified
+gx-gy node coordinates are written out to
+"graph_XY_coords.modified_fm3_layout".  
+
+KMEANS_CLUSTERS next computes the minimum number of nodes which should
+appear in the highest level of a graph hierarchy pyramid.  It queries the
+user to enter the desired number of levels within the pyramid.
+KMEANS_CLUSTERS then uses the K-means++ algorithm of David Arthur from
+Stanford to compute a uniform sequence of parent, grandparent,
+great-grandparent, etc nodes for the specified number of pyramid levels.
+It exports pyramided clustering results to level_0l_clusters.dat text
+files.
+
+
+*.	Execute the auto-generated run_generate_ccs script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_generate_ccs
+
+Program GENERATE_CCS reads in the graph edge list generated by SIFT_PARSER
+which establishes links between two photos if they share SIFT features in
+common.  It also reads in hierarchical graph clustering information
+generated by the Markov Cluster Algorithm or K-means algorithm.
+
+GENERATE_CCS exports text files containing image URLs versus node IDs for
+each connected component.  It also writes out SQL scripts which load
+metadata into the graph_hierarchies and connected_components tables of the
+imagery database.
+
+*. Use PGADMIN3 to execute SQL scripts output by GENERATE_CCS program.
+Within PGADMIN3, click the button that looks like a magnifying glass
+"execute arbitrary SQL queries"
+
+Open the following from $bundler_IO_subdir/Oct2013NewsWraps/graphs: 
+
+a) insert_graph_hierarchy.sql, run it (by clicking green arrow)
+b) insert_all_ccs.sql, run it
+
+*.  Execute the auto-generated run_fill_photo_hierarchy script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_fill_photo_hierarchy
+
+Program FILL_PHOTO_HIERARCHY reads in the graph edge list generated by
+SIFT_PARSER which establishes links between two photos if they share SIFT
+features in common.  It also reads in hierarchical graph clustering
+information generated by the Markov Cluster Algorithm or K-means algorithm.
+FILL_PHOTO_HIERARCHY writes out a set of SQL script files which populate
+the graphs, nodes, links and graph_annotations tables in the imagery
+database.  Each level within the graph pyramid contains node, edge and
+connected component information which can be parsed and visualized by
+Michael Yee's graph viewer.
+
+
+*.  Using PGADMIN3, click the button that looks like a magnifying glass
+"execute arbitrary SQL queries"
+
+Open the following from $bundler_IO_subdir/Oct2013NewsWraps/graphs: 
+
+a) insert_all_graphs, run it (by clicking green arrow), 
+b) insert_all_nodes, run it, 
+c) insert_all_links, run it, 
+d) insert_cc_annotations, run it
+
+*.  Execute the auto-generated run_videos_temporal_layout:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_videos_temporal_layout
+
+mains/imagesearch/VIDEOS_TEMPORAL_LAYOUT reads in a set of node and image
+IDs as well as epoch times from the IMAGERY database for some
+user-specified graph hierarchy.  (As of April 2013, we have stored video
+times relative to their starting frames within the epoch column of the
+IMAGERY database for Boston bombing YouTube clips.  Each clip was
+arbitrarily assigned an absolute start time of midnight, April 15, 2013.)
+
+VIDEOS_TEMPORAL_LAYOUT generates a set of stacked cosines layout for
+(gx2,gy2) graph node coordinates which can serve as a reasonable
+timeline display for multiple video clips.  The period for all
+cosines is assumed to equal 1 minute.  VIDEOS_TEMPORAL_LAYOUT
+exports gx2,gy2 coordinates to ascii output as well as updates
+gx2,gy2 columns in the nodes table of the IMAGERY database.  It
+also exports a SQL script which contains time stamp annotations
+that label the sinusoidal graph layout.  Each video clip is also
+labeled on its left-hand side.
+
+*. To view SIFT graph, launch PHOTOSERVER and IMAGESEARCH front-end clients
+by clicking on their Desktop icons.
+
+========================================================================
+V. VIDEO KEYFRAME IDENTIFICATION
+========================================================================
+
+*.  mains/gist/COMPUTE_COLOR_HISTOGRAMS loops over all images within
+an images directory.  It exports their color histograms to text files
+within a color_histograms subdirectory of the images directory.
+
+*.  mains/gist/COMPARE_COLOR_HISTOGRAMS imports a set of color
+histograms generated by program COMPUTE_COLOR_HISTOGRAMS.
+Looping over all imported histograms, it calculates dotproducts
+between successive pairs.  The dotproducts are sorted in descending
+order.  Dotproducts exceeding a specified threshold value are
+exported to an output text file with the corresponding pair's image
+filenames.
+
+*.  mains/gist/COMPUTE_TEXTURE_HISTOGRAMS loops over all images within some
+set of subdirectories.  For each input image, it computes gradient
+magnitude and phases for separate R, G and B color channels.  The results
+are separated into 45, 90, 135 and 180 orientation angle bins as well as
+logarithmic fractional magnitude bins.  Binning according to coarse image
+plane gridding is performed as well.  Concatenated texture histograms are
+exported to output text files.
+
+*. mains/gist/COMPARE_TEXTURE_HISTOGRAMS imports a set of texture
+histograms generated by program COMPUTE_TEXTURE_HISTOGRAMS.  Looping over
+all imported histograms, it computes dotproducts between successive pairs.
+The dotproducts are sorted in descending order and exported to an output
+text file with the corresponding pair's image filenames.
+
+*.  mains/gist/COMPUTE_LBP_HISTOGRAMS is a minor rewrite of LBPTest.cpp
+written by Navid Nourani-Vatani on 1/25/2013.  It subdivides each input
+image into a small number of regions of interest.  Within each ROI,
+COMPUTE_LBP_HISTOGRAMS calls Noruani-Vatani's LBP descriptor library and
+generates a histogram.  The ROI histgrams are individually L2-normalized
+and then concatenated together into a single large descriptor which is also
+L2-normalized.  Concatenated LPB histograms are exported to output text
+files.
+
+*.  mains/gist/COMPARE_LBP_HISTOGRAMS imports a set of LBP histograms
+generated by program COMPUTE_LBP_HISTOGRAMS.  Looping over all imported
+histograms, it computes dotproducts between successive pairs.  The
+dotproducts are sorted in descending order and exported to an output text
+file with the corresponding pair's image filenames.
+
+*.  mains/JAV/VIDEO_KEYFRAMES imports color, texture and LBP image matching
+scores for some set of video frame pairs.  It declares the very first video
+frame to be a "keyframe".  The program then requires all subsequent
+keyframes to be nontrivially in terms of their color, texture and LBP
+contents relative to all preceding keyframes.  VIDEO_KEYFRAMES creates soft
+links to video frames declared to be key within a keyframes/ subdirectory
+of the root video directory.  It also generates (but unfortunately cannot
+run) an executable script to form an AVI movie of the video keyframes.
+
+*.  mains/JAV/IDENTIFY_KEYFRAMES is a minor variant of program
+VIDEO_KEYFRAMES.  It is intended to work with a set of videos that have
+already been entered into the IMAGERY database.  IDENTIFY_KEYFRAMES updates
+the videos table in the IMAGERY database with keyframe IDs after they're
+identified.
+
+
+========================================================================
+
+
+*.  Program ATTRIBUTE_IMAGES takes in campaign and mission IDs.  It then
+queries the user to enter an image filename substring to search for within
+all URLs matching the specified campaign and mission.  ATTRIBUTE_IMAGES
+fills in rows within the image_attributes table of the IMAGERY database
+corresponding to the retrieved URLS with key-value pairs specified by the
+user.

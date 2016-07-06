@@ -1,0 +1,35 @@
+===========================================================================
+Qinetic demo notes
+===========================================================================
+Last updated on 11/19/12
+===========================================================================
+
+1.  First demo works with sailplane flight #3 video frames
+
+Doubleclick on movies_and_screen_shots folder
+
+Then cd to /data_second_disk/bundler/sailplane_flight3/images_rd
+
+
+2.  Run 3D viewer showing reconstructed point cloud, 74 of 1.5K
+georegistered frusta and GPS flight path:
+
+
+cd /home/cho/programs/c++/svn/projects/src/mains/aerosynth
+run_sailplane1
+
+
+Absolute lat-long grid:
+
+
+run_sailplane2
+
+
+3.  Next demo works with Twin Otter imagery gathered over HAFB in summer
+2011 plus ladar imagery gathered over HAFB in summer 2010:
+
+Geopoint selection within individual video frames and 3D knowledge
+propagation:
+
+cd /home/cho/programs/c++/svn/projects/src/mains/geo
+run_video_propagator

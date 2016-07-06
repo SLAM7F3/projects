@@ -1,0 +1,13 @@
+/bin/rm ./abstraction
+/bin/rm ./apartment
+/bin/rm ./cars
+/bin/rm ./fitimage
+/bin/rm ./ground_bldgs
+/bin/rm ./hsv_colortable
+/bin/rm ./multinets
+/bin/rm ./ortho
+/bin/rm ./sat_comm
+/bin/rm ./scriptgen
+/bin/rm ./streets
+/bin/rm ./trees
+/bin/rm ./voronoi

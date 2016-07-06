@@ -1,0 +1,628 @@
+===========================================================================================
+More mongo database notes
+===========================================================================================
+Last updated on 12/2/2014; 12/3/2014; 1/5/15
+===========================================================================================
+
+mongodump --db prjdb --collection markup_unrect_object -q '{created: {"$gte": ISODate("2014-09-08T00:00:00.000Z")} }'
+
+
+db.markup_unrect_object.find({"created":{"$gte":ISODate("2014-09-08T00:00:00.000Z")}}).count()
+
+db.markup_unrect_object.find({"created":{"$gte":ISODate("2014-11-01T00:00:00.000Z")} }).count()
+
+
+
+// FLY3:
+
+db.markup_unrect_object.find({"created":{"$gte":ISODate("2014-09-10T00:00:00.000Z")} }).count()
+
+
+Ans as of Tues Sep 30 at 11:55 am:  66919
+Ans as of Tues Sep 30 at 12:11 pm:  61873
+
+
+db.markup_unrect_object.remove({"created":{"$gte":ISODate("2014-09-10T00:00:00.000Z")} })
+
+
+db.markup_unrect_object.find({"type":2, "rectified_image_path":{$regex:"la_downtown-ground-20140611"}, label: {$exists: false}}).count()
+
+
+
+db.markup_object.find({ location:{$regex:"la_downtown-ground-20140611"},"markups" : {$elemMatch: {"markup_type":"house-numbers"}} , "state.timestamp": {"$gte": ISODate("2014-08-14T00:00:00.000Z")}  }).count()
+
+
+
+
+db.markup_unrect_object.find({"type":2 , rectified_image_path: {$exists: true} }).count()
+
+
+db.markup_unrect_object.find({"type":2  , image_xsize: 5112 }).count()
+
+
+mongodump --db prjdb --collection markup_unrect_object -q '{type:2, image_xsize: 5112  }'
+
+
+db.detection.find({detector_version:1200}).count()
+
+db.detection.find({detector_version:1200, image_fn:"007401-013848-20131022_215445_2740-Cam3.jpg"}).toArray()
+
+mongodump --collection detection --db prjdb -q '{detector_version:1200}'
+
+
+On fly3 detection collection:
+----------------------------
+
+
+
+
+
+
+
+
+
+
+db.detection.find({project_name:"la_downtown_copy2"  }).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } }).count()
+
+
+db.detection.remove({detector_version: 1105, project_name:"los_angeles_drive","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } })
+
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy2","created": {"$gte":ISODate("2014-10-23T00:00:00.000Z") } }).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy3","created": {"$gte":ISODate("2014-10-23T00:00:00.000Z") } }).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy9","created": {"$gte":ISODate("2014-10-23T00:00:00.000Z") } }).count()
+
+db.detection.find({detector_version: 1105, project_name:"la_downtown_copy4","created": {"$gte":ISODate("2014-10-23T00:00:00.000Z") } }).count()
+
+
+
+"image_path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/02-2645D-07487/9k/009626-009625-20140612_003154_495-Cam02_2645D_07487.jpg",
+		"image_fn" : "009626-009625-20140612_003154_495-Cam02_2645D_07487.jpg",
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy2", image_fn: "009626-009625-20140612_003154_495-Cam02_2645D_07487.jpg"}).toArray()
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7", image_fn: "009626-009625-20140612_003154_495-Cam02_2645D_07487.jpg"}).toArray()
+
+
+
+
+
+
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy2", image_fn: "000003-000002-20140611_210524_854-Cam02_2645D_07392.jpg"}).count()
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy3", image_fn: "000003-000002-20140611_210524_854-Cam02_2645D_07392.jpg"}).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy2", image_fn: "000006-000005-20140611_210534_894-Cam02_2645D_07392.jpg"}).toArray()
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy3", image_fn: "000006-000005-20140611_210534_894-Cam02_2645D_07392.jpg"}).toArray()
+
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy2", image_fn: "000009-000008-20140611_210538_123-Cam02_2645D_07392.jpg"}).toArray()
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy3", image_fn: "000009-000008-20140611_210538_123-Cam02_2645D_07392.jpg"}).toArray()
+
+
+
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7","created": {"$gte":ISODate("2014-10-30T00:00:00.000Z") } }).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7", image_fn: "000010-000009-20140611_210538_826-Cam02_2645D_07392.jpg "}).toArray()
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7", image_fn: "000004-000003-20140611_210527_552-Cam02_2645D_07392.jpg"}).toArray()
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7", image_fn:  "000005-000004-20140611_210530_814-Cam02_2645D_07392.jpg"}).toArray()
+
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7", image_fn: "000003-000002-20140611_210524_854-Cam02_2645D_07392.jpg"}).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive_copy7", image_fn: "000006-000005-20140611_210534_894-Cam02_2645D_07392.jpg"}).count()
+
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"los_angeles_drive"}' 
+
+mongorestore --db prjdb --collection detection dump_100314_1/prjdb/detection.bson
+
+
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"los_angeles_drive_copy2"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105,
+project_name:"los_angeles_drive_copy8"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"los_angeles_drive_copy9"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version:21050, project_name:"la_downtown"}' 
+
+
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"cupertino_1km_pr_copy3"}' 
+
+
+db.detection.find({project_name:"la_downtown_copy5"}).count()
+
+mongodump --db prjdb --collection detection -q '{project_name:"la_downtown_copy5"}' 
+
+mongodump --db prjdb --collection detection -q '{project_name:"cupertino_1km_pr_copy9"}' 
+
+
+db.detection.find({project_name:"cupertino_1km_pr_copy9"}).count()
+
+
+
+
+
+db.markup_object.find({"location":{$regex: "*20130512-SanFrancisco*"}}).count()
+
+
+
+
+db.markup_object.find({"location":{$regex: "sputnik01/supersize/mercury/collections/20130512-SanFrancisco/capture"} }).limit(3).toArray()
+
+
+db.markup_object.find({"location" : {$regex:
+"20130512-SanFrancisco/capture/2_jpg/5th/032999-000002-20130513-004433-5520-Cam2.jpg"} }).count()
+
+
+
+db.markup_object.find({"location" : {$regex: "20130512-SanFrancisco/capture/2_jpg/5th/033002-000005-20130513-004435-0520-Cam2.jpg"} }).count()
+
+
+Cupertino "Dual return" project
+-------------------------------
+
+db.detection.find({detector_version: 1105, project_name:"dual_return","created": {"$gte":ISODate("2014-10-19T00:00:00.000Z") } }).count()
+
+
+db.detection.remove({detector_version: 1105, project_name:"dual_return","created": {"$gte":ISODate("2014-10-19T00:00:00.000Z") } })
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"dual_return"}' 
+
+mongorestore --db prjdb --collection detection dump_100314_1/prjdb/detection.bson
+
+
+
+db.detection.find({detector_version: 1105, project_name:"dual_return_copy2","created": {"$gte":ISODate("2014-11-01T00:00:00.000Z") } }).count()
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"dual_return_copy2"}' 
+
+
+
+Hawaii unrecognized digits (10/30/14)
+-------------------------------------
+
+db.markup_object.find( {"markups" : {$elemMatch: {"markup_type":"digit"}}}).count()  --> 23101
+
+db.markup_object.remove( {"markups" : {$elemMatch: {"markup_type":"digit"}}} )
+
+mongodump --db prjdb --collection markup_object -q '{"markups" : {$elemMatch: {"markup_type":"digit"}}}' 
+
+mongorestore --db prjdb --collection markup_object ./dump_103014_113200_fly3_markup_object_digit/prjdb/markup_object.bson
+
+
+
+db.markup_object.find({"location":{$regex:"oahu_eastern"} }).count()  --> 8.2K
+
+db.markup_object.find({"location":{$regex:"oahu_the_rest"} }).count()  --> 17.2K
+
+db.markup_object.find({"location":{$regex:"oahu_the_rest2"} }).count()  --> 8.3K 
+
+db.markup_object.find({"location":{$regex:"oahu_the_rest3"} }).count() --> 3.8K
+
+db.markup_object.find({"location":{$regex:"oahu_the_rest4"} }).count()  --> 1.3K
+
+
+
+
+
+db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"digit"}} } ).count()
+6987
+
+db.markup_object.find( {"location":{$regex:"unrecognized"}, "markups" : {$elemMatch: {"markup_type":"digit"}} } ).count()
+6987
+
+
+LA_downtown_copyN projects
+--------------------------
+
+
+db.detection.find({project_name:"la_downtown_copy5"  }).count()
+db.detection.find({project_name:"la_downtown_copy5" , duplicate:0}).count()
+db.detection.find({project_name:"la_downtown_copy5" , duplicate:1}).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"la_downtown_copy5","created": {"$gte":ISODate("2014-10-30T00:00:00.000Z") } }).count()
+
+
+
+
+db.detection.remove({detector_version: 1105, project_name:"la_downtown_copy2","created": {"$gte":ISODate("2014-10-30T00:00:00.000Z") } })
+
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"la_downtown_copy5"}' 
+
+mongorestore --db prjdb --collection detection dump_100314_1/prjdb/detection.bson
+
+
+mongodump --db prjdb --collection detection -q '{detector_version:1107, project_name:"la_downtown_copy6"}' 
+
+
+Cupertino markup_object
+----------------------
+
+
+Cupertino side-facing camera human markups:
+
+db.markup_object.find({"location":{$regex: "san_jose-rainbow_west-20141011_155507-q6-imdata/"}}).count()
+20970
+
+Cupertino corner cameras street signs, traffic lights and street names:
+
+db.markup_object.find({"location":{$regex: "san_jose-rainbow_west-20141011_155507-q6-imdata-lidar"}}).count()
+62948
+
+
+db.markup_object.find({detector_version: 1105, project_name:"los_angeles_drive_copy2", image_fn: "009626-009625-20140612_003154_495-Cam02_2645D_07487.jpg"}).toArray()
+
+
+db.markup_object.find({"location" : {$regex: "018024-000519-20141011_195457_583-Cam02_2645D_07409.jpg"} }).toArray()
+
+
+
+db.markup_object.find({"location":{$regex: "san_jose-rainbow_west-20141011_155507-q6-imdata"}}).limit(5).toArray()
+
+db.markup_object.find({"location":{$regex: "san_jose-rainbow_west-20141011_155507"}}).limit(5).toArray()
+
+db.markup_unrect_object.find({"rectified_image_path":{$regex: "san_jose-rainbow_west-20141011_155507"}}).count()
+
+db.markup_unrect_object.find({"rectified_image_path":{$regex: "san_jose-rainbow_west-20141011_155507"}}).limit(100).toArray()
+
+
+db.detection.find({detector_version: 1105, project_name:"dual_return_copy2"}).count()
+
+
+db.detection.find({detector_version: 1105, project_name:"dual_return_copy2", image_fn: "000003-000002-20140611_210524_854-Cam02_2645D_07392.jpg"}).count()
+
+
+
+db.detection.find({detector_version: 1105, project_name:"cupertino_1km_pr_copy2"}).count()
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"cupertino_1km_pr_copy2"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version:21056, project_name:"cupertino_1km_pr"}' 
+
+
+db.markup_unrect_object.find({"rectified_image_path":{$regex: "017551-000047-20141011_194901_705-Cam02_2645D_07409"}}).toArray()
+
+db.detection.find({detector_version: 1105, project_name:"cupertino_1km_pr_copy2", image_fn:"017551-000047-20141011_194901_705-Cam02_2645D_07409.dng"}).toArray()
+
+
+Kitty Hawk projects
+-------------------
+
+> db.detection.find({project_name:"chicago_kitty_hawk"}).count()
+2037147
+
+> db.detection.find({detector_version_orig: 1110, gnd:{$exists:true}, project_name:"chicago_kitty_hawk"}).count()
+767277
+
+
+> db.detection.find({project_name:"new_york_kitty_hawk"}).count()
+2566496
+
+> db.detection.find({detector_version_orig: 1110, gnd:{$exists:true}, project_name:"new_york_kitty_hawk"}).count()
+2532210
+
+
+mongodump --db prjdb --collection detection -q '{detector_version_orig: 1110, project_name:"chicago_kitty_hawk"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version: 21156, project_name:"chicago_kitty_hawk"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version: 21156, project_name:"new_york_kitty_hawk"}' 
+
+mongorestore --db prjdb --collection detection dump_120214_081000_fly3_detection_21156_nyc_kittyhawk/
+
+
+
+
+Fly3 KH results as of 7 am on Dec 5, 2014:
+
+> db.detection.find({"project_name":"chicago_kitty_hawk", detector_version:21156}).count()
+2037147
+> db.detection.find({"project_name":"chicago_kitty_hawk", "gnd":{$exists:true}, detector_version:21156}).count()
+2014425
+> db.detection.find({"project_name":"chicago_kitty_hawk", "gnd":{$exists:false}, detector_version:21156}).count()
+22722
+> db.detection.find({"project_name":"chicago_kitty_hawk", "gnd.x":NaN, detector_version:21156}).count()
+0
+
+
+> db.detection.find({"project_name":"new_york_kitty_hawk", detector_version:21156}).count()
+4194573
+> db.detection.find({"project_name":"new_york_kitty_hawk", "gnd":{$exists:true}, detector_version:21156}).count()
+4151815
+> db.detection.find({"project_name":"new_york_kitty_hawk", "gnd":{$exists:false}, detector_version:21156}).count()
+42758
+> db.detection.find({"project_name":"new_york_kitty_hawk", "gnd.x":NaN, detector_version:21156}).count()
+6
+
+Fly3 KH results as of Dec 4, 2014:
+
+> db.detection.find({"project_name":"chicago_kitty_hawk", detector_version:21156}).count()
+2037147
+> db.detection.find({"project_name":"chicago_kitty_hawk", "gnd":{$exists:true}, detector_version:21156}).count()
+1636240
+> db.detection.find({"project_name":"chicago_kitty_hawk", "gnd":{$exists:false}, detector_version:21156}).count()
+400907
+> db.detection.find({"project_name":"chicago_kitty_hawk", "gnd.x":NaN, detector_version:21156}).count()
+0
+
+
+> db.detection.find({"project_name":"new_york_kitty_hawk", detector_version:21156}).count()
+4168389
+> db.detection.find({"project_name":"new_york_kitty_hawk", "gnd":{$exists:true}, detector_version:21156}).count()
+3632771
+> db.detection.find({"project_name":"new_york_kitty_hawk", "gnd":{$exists:false}, detector_version:21156}).count()
+535618
+> db.detection.find({"project_name":"new_york_kitty_hawk", "gnd.x":NaN, detector_version:21156}).count()
+66
+
+
+
+
+db.detection.find({utm_zone: 10  }).count()
+
+
+db.detection.find({ "project_name": {$ne: "la_downtown_copy4"} , "created": {"$gte": ISODate("2014-12-09T04:00:00.000Z")} }).count()
+
+
+db.detection.find({ "project_name": "la_downtown_copy5"  }).count()
+
+db.detection.find({ "project_name": "la_downtown_copy5", "gnd":{$exists:true}  }).count()
+
+db.detection.find({ "project_name": {$regex: "cupertino"}, "gnd":{$exists: true}, "created": {"$gte": ISODate("2014-12-08T04:00:00.000Z")} }).count()
+
+db.detection.find({ "project_name": "cupertino_1km_pr_copy7"  }).count()
+
+db.detection.find({ "_id": ObjectId("54866dcd0d9a2a2fb33a9e14") }).toArray()
+
+
+db.detection.find({ "project_name": "cupertino_1km_pr_copy9"  }).count()
+db.detection.find({ "project_name": "cupertino_1km_pr_copy9", "gnd":{$exists:true}  }).count()
+
+db.detection.find({ detector_version: 21156, "image_fn" : "022784-005280-20141011_205617_862-Cam02_2645D_07488.dng"}).count()
+
+db.detection.find({ "project_name":"cupertino_1km_pr_copy6", detector_version: 21156, "image_fn" : "023066-005562-20141011_205929_026-Cam02_2645D_07488.dng"}).toArray()
+
+
+db.detection.find({"project_name":"cupertino_1km_pr_copy6",detector_version: 21156, "image_fn":"023132-005628-20141011_210008_701-Cam02_2645D_07488.dng"}).toArray()
+
+
+db.detection.find({"project_name":"cupertino_1km_pr_copy6",detector_version:21156, "image_fn":"023131-005627-20141011_210008_093-Cam02_2645D_07488.dng"}).toArray()
+
+
+Performance projects
+--------------------
+
+
+db.performance.find({ "project_name": "la_downtown_copy9"  }).count()
+
+db.performance.find({ "project_name": "cupertino_1km_pr_copy4"  }).count()
+
+mongodump --db prjdb --collection performance 
+
+mongodump --db prjdb --collection performance -q '{project_name:"chicago_kitty_hawk"}' 
+
+db.performance.find({ "project_name": "chicago_kitty_hawk"  }).count()
+17707  (for both lidar_point_skip = 1 and 3)
+
+db.performance.find({ "project_name": "chicago_kitty_hawk"  }).count()
+
+db.performance.remove({ "project_name": "chicago_kitty_hawk"  })
+
+mongorestore --db prjdb --collection performance ./dump_1215
+
+
+
+db.performance.find({project_name:"cupertino_1km_pr_copy5"}).count()
+
+
+> db.performance.find({project_name:"cupertino_1km_pr_copy5"}).toArray()
+
+[
+	{
+		"_id" : ObjectId("54934e395192872e9e0ae856"),
+		"project_name" : "cupertino_1km_pr_copy5",
+		"processing_stage" : "2D detection",
+		"tile_id" : {
+			"lev" : 14,
+			"x" : 4511,
+			"y" : 7304
+		},
+		"n_rigs" : 24,
+		"peak_RAM_GB" : 6.441864,
+		"pwin_revision" : "b303c23f054c2ddcebac24dd8e130468a39567b7",
+		"pwin_args" : "/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_b303c2 -nowin -vv -mq 85 -do1 pr build  -run_id foobar -build_ver 21156  -dver_db 0 -misc_par_str \\\n-org -detect -detect2D -mongodb -resume \\\n-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml \\\n-prj cupertino_1km_pr_copy5 -nochk -area 14 1 4511 7304",
+		"created" : ISODate("2014-12-18T21:59:21Z")
+	}
+]
+
+
+New pr_ebbox conventions (as of Dec 2014)
+-----------------------------------------
+
+1.  "build" collection
+
+> db.build.find().toArray()
+[
+	{
+		"_id" : ObjectId("548ab663b10f3e60f94dbd51"),
+		"build_version" : 21156,
+		"types" : [
+			"CLASSIFIED_NUMBER"
+		]
+	}
+]
+
+
+2.  "run" collection
+
+When running pr_build on local MacPro, specify run_id as input argument
+(e.g. as "foobar_Jan" in the example below)
+
+umask 2 ; /home/pcho/sputnik/pwin/build/linux64/pwin -v \
+-cfg /home/pcho/sputnik/peter_stuff/mongo_db/my_mongo.dcfg  \
+-nowin -do 'pr build  -run_id foobar_Jan -build_ver 21156  -misc_par_str -org \
+-detect -detect2D -mongodb -mongo_local -resume \
+-start_rig 2 -stop_rig 3 \
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml \
+-prj cupertino_1km_pr_copy5 \
+-nochk -area 14 1 4511 7302'
+
+> db.run.find({ "run_id" : "foobar_Jan"} ).toArray()
+
+[
+	{
+		"_id" : ObjectId("54aac1fa222b496ca43aa771"),
+		"build" : ObjectId("548ab663b10f3e60f94dbd51"),
+		"run_id" : "foobar_Jan",
+		"publish" : 0,
+		"project_name" : "cupertino_1km_pr_copy5",
+		"created" : ISODate("2015-01-05T16:55:22Z"),
+		"pwin_revision" : "a2023a1a311becd95586fe1d93449790e393a350",
+		"pwin_args" : "/home/pcho/sputnik/pwin/build/linux64/pwin -v -cfg /home/pcho/sputnik/peter_stuff/mongo_db/my_mongo.dcfg -nowin -do pr build  -run_id foobar_Jan -build_ver 21156  -misc_par_str -org \n-detect -detect2D -mongodb -mongo_local -resume \n-start_rig 2 -stop_rig 3 \n-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml \n-prj cupertino_1km_pr_copy5 \n-nochk -area 14 1 4511 7302"
+	}
+]
+
+3.  "detection" collection
+
+> db.detection.find({"run_id":"foobar_Jan"}).toArray()
+[
+	{
+		"_id" : ObjectId("54aac1fa222b496ca43aa772"),
+		"run_id" : "foobar_Jan",
+		"imdata_id" : NumberLong("8490256479908596402"),
+		"image_size" : {
+			"xsize" : 5120,
+			"ysize" : 3840
+		},
+		"tile_id" : {
+			"lev" : 14,
+			"x" : 4511,
+			"y" : 7302
+		},
+		"utm_zone" : 10,
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				0,
+				0,
+				0
+			]
+		},
+		"type" : "8",
+		"class" : 10225,
+		"score" : 0.9998947978019714,
+		"description" : "10225",
+		"detection_polygon" : {
+			"type" : "Polygon",
+			"coordinates" : [
+				[
+					4775.833491612679,
+					3055.744974083295
+				],
+				[
+					4688.96390857929,
+					3058.1364342527804
+				],
+				[
+					4774.928315546652,
+					3022.7574247002376
+				],
+				[
+					4688.058904681254,
+					3025.1490094168166
+				]
+			]
+		},
+		"detector_version" : 1110,
+		"cam_id" : 1
+	}
+]
+> 
+
+
+
+
+
+
+
+db.detection.find({project_name:"la_downtown_copy5", image_fn:" 000002-000001-20140611_210519_051-Cam02_2645D_07487.jpg" }).count()
+
+
+db.detection.find({run_id: {$exists:false} }).count()
+
+db.detection.find({project_name:"la_downtown_copy5", image_fn:" 000002-000001-20140611_210519_051-Cam02_2645D_07487.jpg"  }).count()
+
+
+db.detection.find({project_name:"la_downtown_copy5", class: 441, type: 8  }).count()
+
+
+db.detection.find({project_name:"la_downtown_copy5", image_fn:"000003-000002-20140611_210524_854-Cam02_2645D_07392.jpg"
+}).count()
+
+
+db.detection.find({"run_id":"Mon_Jan12_b"}).toArray()
+
+
+
+db.detection_pre_2015.find({project_name:"cupertino_1km_pr_copy2" }).count()
+
+
+mongodump --db prjdb --collection detection_pre_2015 -q '{project_name:"cupertino_1km_pr_copy2"}' 
+
+mongorestore --db prjrdb --collection detection ./
+
+
+
+
+db.detection.find({run_id: "/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+
+
+db.detection.find({project_name:"cupertino_1km_pr_copy2", class: 10864, type: 8  }).count()
+
+
+
+OLD
+----
+
+
+db.detection.find({project_name:"cupertino_1km_pr_copy2", class: 10864, image_fn: "018330-000825-20141011_195808_717-Cam02_2645D_07409.dng"}).count()
+
+
+NEW
+---
+
+db.detection.find({run_id:"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml", class: 10864,  "image_path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6/unplanned-20141011_194607/02-2645D-07409/18k/018330-000825-20141011_195808_717-Cam02_2645D_07409.dng"}).count()
+
+
+
+db.detection.find({run_id:"010915_a", class: 10864}).count()
+
+
+

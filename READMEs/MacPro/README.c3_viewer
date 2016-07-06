@@ -1,0 +1,294 @@
+=============================================================================
+C3 viewer notes
+=============================================================================
+Last updated on 4/23/15; 4/24/15; 5/17/15; 3/28/16
+=============================================================================
+
+*. On 3/31/14, Viktor taught us that we should NOT use the middle
+scroll-wheel button when navigating within the C3 viewer.  In order to 
+alter the virtual camera's azimuth and elevation, use the LEFT mouse 
+button instead of the MIDDLE!  
+
+*.  3D manipulation of virtual camera is controlled by
+lib/base/g_view3d.c/g_view3d_ctrl() . 
+
+*.  Lab 0
+
+Now start out by starting the viewer and look around in 4 different cities
+If you don't see anything when loading, try another city or zoom out.
+
+Learn how to navigate
+
+ double left click (or 'v') - Center on the location of the mouse
+pointer. If it seem like double clicking does not work, try clicking slower
+(or ask someone to show you)
+
+ hold right mouse button and drag vertically - Zoom in and out
+ 'w' - Show/Hide Wireframe
+ CTRL-'s' - Show/Hide Shaded mode
+ 'l' - Show/Hide Labels  (Displays tile level, x and y coordinates)
+ 'b' - Show/Hide Bounding boxes
+ 'c' - "home" operation which recenters virtual camera in a nadir orientation
+
+Notes:
+
+    . A long list of possible 3D maps is initially displayed after one
+chants pwin -do "view". The user may enter the first few letters of a
+desired 3D map's name to restrict the long list (e.g. chant "bos" so that
+the list collapses to just "boston"). 3D map names are case sensitive.
+
+    . To perform "continuous 2D translations" of a 3D map, first hold down
+a control key. Then right click with your mouse on some screen
+location. The map will translate towards the screen location with a scale
+factor proportional to the location's distance from the screen center.
+
+
+
+*.  In order to set "waypoints" for virtual camera (at which position and
+orientation are recorded), press "WP" button located in upper left of C3
+viewer.  Text file is written to default project subdirectory.  Next time
+C3 viewer is invoked, waypoints are automatically imported.  Press ">" and
+"<" buttons next to "WP" button in order to have virtual
+
+
+*.  Within C3 viewer menu, multiple projects can be selected.  Once first
+project is loaded, press ">" to load next project and "<" to load previous
+project.  Useful for comparing different builds with different parameter
+settings.
+
+
+*.  To view within c3-viewer a fast downtown Boston example recommended by
+Hamid for water classification development, chant
+
+p -do "view -prjdb /startown-gpfs/sputnik02/supersize/devtest/water/water.xml"
+
+After bringing up dual 3D/2D windows, move virtual 3D camera to some local
+water region.  Then press "update" button (or press u key) in order to 
+refresh 2D images which correspond to the 3D region of interest.
+
+*.  To view original flyover aerial images next to reconstructed 3D map, 
+first fire up c3-viewer by chanting 
+
+		p -do "view"
+
+Then select some water city of interest (e.g. boston_water_test).
+
+Within "Main" tab button, select "orig" in order to pop open secondary
+window which displays original aerial images.  Loading of original
+aerial images can take many minutes.  Eventually, the secondary
+window should appear to the right of the 3D map.  
+
+   - Original images backprojected onto a ground plane can then be viewed
+by pressing the frame-forward (">>") or frame-backward ("<<") buttons at
+the bottom of the RHS window
+
+  - The n = 0, 1, 2 and 3 buttons appearing in the lower part of the RHS window
+indicate that the aerial images are downsampled by 2**n.  
+
+  - Enter classifier ID "208" into the small box to the upper right of the
+"classify" button.  Then press the "classify" button.  Once the feature
+extraction and classification is done, a new, single window should pop open
+which shows original aerial images.  
+
+  - Press 'n' in order to cycle through original aerial image and and its
+water classification mask.  Press 'q' to return to the dual-window display.
+
+  - Pwin code which controls toggling between original aerial image and
+water classification mask resides in pr_classifier.c within
+pr_classify_gui_debug() method.
+
+
+*.  In order to see car track for the Los Angeles resource which we've been
+working with in summer 2014, chant
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "view -prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project_LA.xml \
+-prj los_angeles_drive "
+
+Then press "t" within the C3 viewer window in order to visualize the car
+track.  Roughly 5 seconds will pass before car's track appears within the
+C3 viewer window.
+
+*.  On 4/6/15, we learned from Ottar that we can view individual tracks
+within the c3-viewer by using our mouse scroll wheel.
+
+
+*.  On 11/17/14, Andreas pointed us toward c3_view_plugin_track_key()
+within view_plugin_track.c which manipulates track display depending upon
+keyboard input.  Pressing "~" changes the display output superposed onto
+ground tracks.  We empirically found that data->disp_style =
+data->disp_style = DISP_POINT | DISP_IMNR | DISP_IMNAME causes the c3
+viewer to crash when working with kitty_hawk and chicago_kitty_hawk project
+tracks.  So we swapped case 1 and case 2 as follows:
+
+	case 1:
+          data->disp_style = DISP_POINT ;
+//	  data->disp_style = DISP_POINT | DISP_IMNR | DISP_IMNAME;
+	  break;
+	case 2:
+//	  data->disp_style = DISP_POINT;
+	  data->disp_style = DISP_POINT | DISP_IMNR | DISP_IMNAME;
+	  break;
+
+This lets us press "~" to change the default value for data->disp_style_idx
+from 4 to 5 to 1 without encountering the bad case #2.
+
+*.  To create a shape file from within the C3 viewer, press "shape" button
+located near top of C3 viewer window GUI.  Then select "scratch".   Next
+press "NEW" button located near bottom of C3 viewer window.  Then start
+clicking on the map in order to specify vertices for the new shape.
+
+*.  After shape file is generated, press "Save As".  Then enter "User" in
+response to "What kind of shape is this?" .  
+Shape files generated within the C3 viewer are saved within
+the following subdirectory:
+
+		/startown-gpfs/ssdws03/conf/shapes/
+
+Need to name C3 viewer shape files as something like
+"los_angeles_drive.shp".  As of spring 2015, it appears that shape files
+are saved in ESRI shape file format.  So be sure to give shape file name a
+".shp" rather than a ".shape" suffix!
+
+*.  In order to submit jobs from c3-viewer to distrib, first invoke c3view
+via a command line that looks something like
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "view -prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml \
+-prj la_downtown_small4 \
+-shp /startown-gpfs/ssdws03/conf/shapes/la_downtown_small4.shape \
+-pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_9c2700"
+
+Then use the shape button near the top of the viewer window to choose the
+shape specified within the input command line.  Press the "select" button
+at the bottom of the viewer window.  Click on the actual shape polygon
+which should turn from dark blue to bright blue when actually selected.  
+
+Next change the default "main" to "PR" within the button located near the
+top-left of the viewer window.  Make sure the "DETECT" option is selected
+on the button located near the top-center of the viewer window.  Enter the
+detector version number within the "ver:" field and press return.  Select
+also the priority (e.g. 75) next to the "P:" box.  Then press the "RUN"
+button near the center top.
+
+Several jobs should be submitted to distrib via this process.
+
+Note: As of 8/15/14, -monogodb and -resume flags are automatically inserted
+by c3viewer itself into commands sent to distrib.
+
+
+In order to run "Basic" version of pr_build (w/o 3d bells/whistles), enter
+"21050" in the "version" field and then press Build.
+
+As of 11/7/14, we need to press "Settings".  Then press "dedup" and
+"hn-sequencing".  No longer need to press "side-facing" or specify mela
+context number.
+
+Then press "Build" button .  Then press "RUN" button.
+
+
+Entries written to mongo from pr_build have detector version = 21050 rather
+than 1150!
+
+
+*.  On 11/19/14, we attempted to process the chicago_kittyhawk project
+which contains O(1.9M) rigs.  We created a single shape file which
+encompassed all these rigs.  When we attempted to send this entire shape
+file to distrib, we learned that it involved O(200K) tiles = O(200K) jobs.
+This is way too many to run at priority level 80!
+
+According to Jared Fagan, huge numbers of distrib jobs should be run at
+priority level 70-75.  
+
+*.  Martin Byrod and Ibrahim Musab also started to teach us about ways to
+gather performance statistics (memory usage, time consumption, etc) for
+very large jobs.  We can do so only for projects which are defined within
+flyover admin (i.e. appear within the c3-viewer and NOT those which are
+defined within customized xml files).  
+
+The high-level entry point method pr_build_cmd() within pr_build.c contains
+the following line which enables performance statistics to be logged when
+pr_build jobs are run:
+
+  // pstat tag
+  ps_add_job_tag("PR");
+
+Once a job has started, go to the flyover admin webpage.  Click on the
+"Project Database" tab --> Batches submenu.  In the query field next to the
+blue "List" button, type "pcho" in order to find batch jobs submitted by us
+in the past.  Then click on a black, round "i" button in order to see
+performance statistics for the submitted batch jobs.  A python script
+queries a mongo database and generates the performance statistics webpages
+on the fly.  So depending upon the number of mongo database entries, it may
+take a while for the webpage to be dynamically generated.  
+
+
+			mean 		sum 		min 		max 		count
+
+cpu_usage 		7.9244512428 	790725.51836 	0.224720704823 	17.2860172851 	99783
+job_duration 		887.093732279 	88516873.8879 	21.607503 	20014.688514 	99783
+map_rig_read_images 	1.48442647511 	5351446.50836 	0.771314 	48.761269 	3605060
+mem_usage 		- 		- 		16904816.0 	207844724.0 	99783
+prj_load_io_time 	29.0911978307 	2902806.99314 	15.309693 	763.984609 	99783
+prj_load_lidar_io_time 	12.6418221016 	520615.517787 	0.785855 	156.650171 	41182
+
+
+When we click on a particular statistic (e.g. memory usage), we're taken to
+a new webpage which shows the explicit command lines (for processing
+various tiles) ordered from max memory usage to min.  For example, here is
+the command for the tile which used over 207 GB of RAM!
+
+207844724.0 	/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_a03f40 -nowin -do1 'pr build -build_ver 21150 -dver_db 0 -misc_par_str -org -detect -mongodb -resume -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_chicago_kitty_hawk_141119_160355.xml -prj chicago_kitty_hawk -nochk -area 14 1 13170 7734' 
+
+
+In order to see units for performance statistics, we generally need to find
+the explicit call to ps_job_stat() within the method which is being
+profiled.  For example within map_rig_read_and_allocate_images(), time is
+recorded via the lines
+
+
+  t += u_timel();
+  ps_job_stat("map_rig_read_images", t/1000000.0, PS_CONTENT_DEFAULT);
+
+*.  Abhishek showed us that we can search for the most recent batch lists
+by pressing the "up" arrow 
+
+
+*.  On 12/8/14, Abhishek showed us run_pr() within
+pwin/app/view/view_plugin_distrib.c.  He suggested that we search for
+PR_MODE_DETECT in this method.  Various arguments are
+constructed in various conditionals for the call to c3_distrib_pr() which
+resides within pwin/app/unsorted/c3_distrib.c .  This latter method
+constructs and then sends PR commands to the distrib cluster.
+
+*.  Add/alter buttons to/in Abhishek's secondary menu within
+pr_settings_popup() of pwin/app/view/view_plugin_distrib.c
+
+*.  Pressing "Perform 2D/3D detections" on Abhishek's secondary menu which
+pr_build() pops up when the primary "settings" button is pushed on the
+first menu ends up setting do_detect_str --> "do_detect" rather than its
+default "" value
+
+*.  Zooming within the C3 viewer via right-mouse button is *backwards* from
+Google Earth conventions.  While depressing right mouse button, pull mouse
+downwards in order to zoom out.  Push mouse upwards in order to zoom in
+within C3 viewer.
+
+*.  Press "v" to make a batch of jobs conditionally start after some other
+group of jobs finishes.  
+
+*.  Production people will generally press the "Settings" button located
+near the top center of the very first c3 view window.  A menu entitled
+"Build settings" will then appear with a list of production jobs which can
+be run.  In order to add entries into the "Other jobs" category, look at
+settings_popup() within pwin/app/view/view_plugin_build.c .
+
+Buttons pressed within "Build settings" menu control whether
+distrib_house_numbers(), distrib_road_signs(), etc methods are called
+within pwin/app/unsorted/c3_distrib.c.  
+
+*.  On 3/28/16, Weiyu taught us the following command in order to run
+c3view with the latest master binary:
+
+umask 2; /home/pcho/sputnik/pwin/build/linux64/pwin \
+ -vv -do "view -pwcmd /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/latest"

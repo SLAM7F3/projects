@@ -1,0 +1,64 @@
+==========================================================================
+Notes for TouchTable demo to be presented on 7/19/07
+==========================================================================
+Last updated on 7/18/07; 7/19/07
+==========================================================================
+
+*.  General Touchtable introduction
+	
+   - As part of an internally funded Lincoln effort, we've been
+investigating touch table technology as a potentially better means for
+letting humans interact with complex data sets.  Our experimentation to
+date is preliminary from both a hardware and software standpoint.  Today we
+will demonstrate the capabilities we've developed over the past 3 months
+and describe our ideas for integrating touch table technology into a
+variety of different tactical applications.
+
+   - This particular TouchTable was purchased last summer from Mitsubishi
+Electronics Research Lab.  A year ago, it was the only reasonably
+affordable commercial table on the market.  Over the past few months, there
+has been growing interest and competition in touch tables.  So we expect
+more viable options will become available during the coming year.  And
+we'll develop our software to be general enough so that we can switch to
+alternative hardware if that makes sense in the future.
+
+   - Ross Anderson is going to start off by demonstrating two applications
+which we now have now running on this table.  The first is Google Earth
+with Enhanced Regional Situational Awareness (ERSA) tools built on top.
+The second application consists of a laser radar dataviewer which shows
+high resolution 3D imagery collected by a Lincoln Lab ladar.  These air
+defense and urban ground operation applications are complementary.  The
+Google tool has the advantage that it's based purely upon COTS software,
+but its versatility is limited.  On the other hand, the ladar viewer is
+home-grown Lincoln software which can be arbitrarily customized.  These two
+applications nicely bracket the potential for touch table technology.
+
+*.  Simulated pink airplane
+
+   - After we installed Google ERSA onto the touch table, we immediately
+wanted to be able to select airplanes and move them around.  That is
+obviously impossible for live data.  And even for pre-recorded data, Google
+ERSA is designed to play back flights rather than manipulate them.  So in
+order to design and demonstrate a future system which can control air
+vehicles on demand, we need to inject simulated aircraft into this
+environment.
+
+   - As a first step towards this future capability, we see one pink
+airplane flying amongst all the other green aircraft.  The inputs for the
+pink airplane come from an external flight simulator rather than from the
+pre-recorded (or live) radar data stream.  [Lisa will describe how the pink
+airplane circulates on an orbit taking it by various waypoints.  She can
+then alter its flight path via the joystick.]
+
+   - The joystick control represents another input device which complements
+the touch table's.  Each input controller should be used when appropriate.
+Similarly, the flight simulator's video output shown on the two side
+monitors provides a different view of the environment than that of Google
+Earth.
+
+   - As this first air defense example demonstrates, we are planning to
+integrate multiple input and output devices into systems which provide
+humans with intuitive views of and interactions with complex situations.
+Such a multi input/output system can be used for other applications like
+urban ground operations.  This leads us to the second touch table
+application which Ross can now demonstrate.

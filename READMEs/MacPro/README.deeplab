@@ -1,0 +1,647 @@
+=============================================================================
+Deeplab notes
+=============================================================================
+Last updated on 1/7/16; 1/8/16; 6/6/16; 6/9/16
+=============================================================================
+
+*.  See README.bitbucket in order to clone deeplab repository from
+
+	https://bitbucket.org/deeplab/deeplab-public
+
+*.  Log in to Bitbucket:
+
+	email = peter.leslie.cho@gmail.com
+	password = @George12
+
+*.  Click on avatar button (near upper right of webpage).  Then select
+"Manage account" from drop down menu.  Next click on "SSH keys" located on
+LHS.  After pressing blue "Add key" button, enter a label such as "Titan 1
+GPU box public key" and copy contents of ~/.ssh/id_rsa.pub into the "Key"
+box.  Be careful to not include any extra white space when cutting and
+pasting.
+
+*.  After ssh key is added, we can clone deeplab repository via following
+terminal command:
+
+	git clone git@bitbucket.org:aquariusjay/deeplab-public-ver2.git
+	   (updated 6/6/16)
+
+	git clone git@bitbucket.org:deeplab/deeplab-public.git
+
+*.  Copy Makefile.config.example onto Makefile.config.  Then edit 
+Makefile.config as follows:
+
+Do NOT uncomment cuDNN acceleration switch within Makefile.config
+
+Do uncomment the *_50 lines within CUDA_ARCH.
+
+Set MATLAB_DIR := /usr/local/MATLAB/R2013a/
+
+Set PYTHON_LIB := /usr/lib/x86_64-linux-gnu
+
+Set INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/local/cuda/include
+
+*.  Chant "sudo apt-get install libmatio-dev".  Then chant "make".
+
+*.  Need to copy deeplab-public/experiments/sub.sed from existing machine
+to new gpu box:
+
+scp -r pcho@17.228.154.162:/home/johnc_wood/deep_learning/deeplab-public/experiments/sub.sed .
+
+
+*. John recommends as a first hello-world example to rerun his sbd15-1000
+deep lab experiment:
+
+On his titan 7 machine (17.228.154.162), look in
+   /home/johnc_wood/deep_learning/deeplab-public/experiments/
+
+*.  scp -vr pcho@17.228.154.162:/home/johnc_wood/deep_learning/deeplab-public/experiments/sbd15-1000/ .
+
+*.  scp -r pcho@17.228.154.162:/home/johnc_wood/data/VOCdevkit .
+
+*.  scp -r pcho@17.228.154.162:/home/johnc_wood/deep_learning/deeplab-public/experiments/sub.sed .
+
+*.  scp -r pcho@17.228.154.162:/home/johnc_wood/data/sbd15-1000 .
+
+*.  scp -r pcho@17.228.154.162:/home/johnc_wood/data/sbd15 .
+
+*.  If caffe quickly dies with the following error message
+
+   Check failed: error == cudaSuccess (2 vs. 0) out of memory, 
+
+try reducing the batch size defined in
+deeplab-public/experiments/sbd15-1000/config/vgg128_large_fov/train.prototxt.
+
+*.  Caffe configuration files sit in
+/home/pcho/software/deeplab-public/experiments/sbd15-1000/config/vgg128_large_fov :
+
+solver.prototxt sets
+
+  1.  Maximum number of solver iterations (e.g. 6000)
+  2.  Snapshots of network params are created after specified number of
+iterations have passed (e.g. 2000)
+  
+train.prototxt sets  
+
+  1.  Image crop size (e.g. 322) :  Random cropped samples from input images 
+      are crop x crop in pixel size .  Want this parameter to be as large
+      as possible in order for network to learn object identities with as
+      much context as possible
+
+  2.  Batch size (e.g. 15):  Number of images used per Stochastic Gradient
+      Descent step.  Want this value to be as large as possible in order to
+      mini batch to be as representative of entire input imagery corpus as
+      possible.  
+
+  But total memory on GPU cards limits product of image crop size x batch
+  size :(
+
+We cannot change network architecture (e.g. VGG_16) if we want to
+initialize neural network parameters based upon previous ImageNet training.
+
+
+
+*.  pwin command to run John Wood's image chip + segmentation mask
+generation program (appropriate for relatively localized 2D objects such as
+house numbers & faces)
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do "pr prepare_dataset \
+--project_name Chicago_house_numbers_2 \
+--output_dir ./hn_segmentation \
+--tile_mode 0 \
+--x_size 322 --y_size 322 \
+--use_markup_type  \
+--draw_border \
+--max_images 5"
+
+This command generates the following output files:
+
+dataset.txt (contains associations between images and their corresponding segmentation masks)
+JPEGImages/  (contains input images)
+object_names.classes (contains subtype names pulled from mongo markup projects)
+SegmentationClass/  (contains segmentation masks as PNG files corresponding to ninja polygon annotations)
+
+
+
+For extended 2D objects annotated by ninjas with polygons (e.g. roadway barriers), 
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -nowin \
+-do "pr prepare_dataset \
+--project_name 20150909_roadway_barriers_a \
+--output_dir ./barriers_a \
+--tile_mode 1 \
+--x_size 16  --y_size 12 \
+--max_images 5"
+
+Recall rectified images for all cameras have pixel dimensions 5120 x 3840
+
+*.  Do NOT invoke "use_markup_type" when we have more than 1 class of
+objects to be detected.  Instead, prepare_dataset should pull subtypes'
+names and number from mongo.  
+
+*.  The "draw_border" argument to prepare_dataset is intended primarily for
+visualization.  We can neglect this boolean input argument when preparing
+genuine image chip/mask pairs for actual caffe training rather after we
+have debugged a small number of such pairs first.
+
+*.  Make sure that image chips & masks coming out of John's prepare_dataset
+codes are AT LEAST 321x321 in pixel size in order to meet deeplab's input
+expectations!  See "crop_size" parameter within
+config/vgg128_large_fov/train_base.prototxt file.
+
+*.  Several authors stress that training and validation data sets should be
+randomized!  As John Wood pointed out, we can use the linux utility "shuf"
+to generate random permutations:
+
+	shuf dataset.txt > shuffled_dataset.txt
+
+
+*.  (1) In order to train/fine tune a deep lab caffe model, we need to copy
+over all output files generated by John Wood's "prepare_dataset" to titan
+1.  Place them into an appropriately named subdir of /data/imagery/ on
+titan 1.
+
+    (2) We also need to create a new executable script within
+/home/pcho/software/deeplab-public/experiments called something like
+run_barriers_a.  Should only need to update DATA_ROOT and EXP vars in this
+script.
+
+    (3) Create soft link to latest version of caffe model which is to be 
+trained/fine-tuned:
+
+e.g. ln -s /blahblah/model/vgg128_large_fov/init.caffemodel /blahblah/model/vgg128_large_fov/latest.caffemodel
+
+    (4) Potentially update parameter values within
+/blahblah/config/vgg128_large_fov/solver_base.prototxt and
+/blahblah/config/vgg128_large_fov/train_base.prototxt
+
+Note: solver.prototxt and train.prototxt files are automatically generated
+by caffe from solver_base.prototxt and train_base.prototxt.
+
+    (5) Copy dataset.txt file generated by John Wood's "prepare_dataset"
+to /blahblah/list/dataset.txt .  May want to create a smaller version
+containing just 20K lines and name it as train20K.txt.  Link subset file
+onto /blahblah/list/train.txt.
+
+    (6) Run executable script from within
+/home/pcho/software/deeplab-public/experiments/ on titan1.  Use "screen" to
+prevent caffe from dying when network connection between our local MacPro
+and titan1 inevitably terminates.
+
+
+
+*.  For our "Hello World" Deeplab sbd15_1000 imagery segmentation example,
+we created new subdir
+/startown-gpfs/ssdws03/devdata/pr_models/dense_seg/deeplab_sbd15_1000/ .
+We then added a file containing the names of the 21 PASCAL classification
+categories within object_names.classes into this subdir.  (Make sure that
+this file contains no extra empty lines at its end.)  We also had to copy
+over the trained caffe model into test.caffemodel in this same subdir.
+
+John told us that we must also copy fcn.pixel_mean which contains average
+RGB values into this new subdir.  And we need to include test.prototxt.
+But be sure that the nomenclature convention for the 8th and final VGG
+layer that was used for training the caffe model is the same as that used
+for testing.  Also make sure that num_output within fc7 layer is the same
+in both the training and testing prototxt files.
+
+*.  On 9/3/15, Tho told us that the 3 different "Train net output"
+accuracies reported by Deeplab are different measures of imagery
+segmentation performance.  We want to see all of these accuracy values
+increase as training proceeds.  Output accuracy #0 = "accuracy" or
+"precision".  Output accuracy #1 = "recall".  Output accuracy #2 =
+Intersection / Union.
+
+*.  Tho highly recommends reading the book "Neural Networks: Tricks of the
+Trade", editors G. Montavon, G. Orr and KR Muller.
+
+*.  Trying to implement PR detector version 29000 for imagery segmentation
+border detection using Deeplab
+
+*.  Tho recommends using "screen" command on gpu box to avoid automatic
+timeout of ssh sessions!
+
+*.  When adding a new version to pr_semseg_load_model_version() within
+pr_semseg.c, set use_tiling = 1 if segmentation is to be performed on
+flyover imagery whose pixel size is O(5K) x O(4K).  Set scale_factor = 2.0
+if input images are to be downsized by a factor of 2.  
+
+*.  Old Tho model which should run OK within pr gui on titan 1:
+
+./pwin -vv -do "pr gui -dver 41000 -dir /startown-gpfs/sputnik04/supersize/data/bay_area/bay_area_650_ground_dev_3/rdn_ortho/13/2250"
+
+*.  pr_gui commands to run trained semantic segmentation models on test images:
+
+*.  When compiling pwin for first time on a gpu machine, Tho told us that
+we need to be sure to chant "make clean_caffe".  We also must have
+"WITH_GPU=1" flag as an argument to make:
+
+make -s -j pwin OPT=3 OPENCL=1 OPENCV=1 DNN=1 LAPACK=1 RDN=1 WITH_GPU=1
+
+Faces (on titan1):
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv  \
+-do "pr gui \
+-dir /data/imagery/Face_samples/JPEGImages \
+-dver 60101"
+
+Two-stage semantic segmentation for faces using Deeplab with tiling (on thinkmate):
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv  \
+-do "pr gui \
+-dir /data/peter_stuff/imagery/john_wood/Face_samples/JPEGImages \
+-dver 60101"
+
+1st detector version = 20001 (semantic segmentation using Deeplab with tiling for humans)
+2nd detector version = 60101 (semantic segmentation using CRF and tiling trained for faces)
+engine version = 11000
+
+John explained that this particular 2-stage detector performs an "AND"
+operations between pixels which are segmented as both "humans" and "faces".
+
+Press "l" to load detector.  
+Press "cntrl-r" to rectify current image.   [Doesn't work as of 1/7/16]
+Press press "m" to run detector on current image.  
+Press "esc-x im_step 2000" to change image step to 2000.
+Press right-arrow to advance to next image.
+
+Semantic boundaries:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv  \
+-do "pr gui \
+-dir /data/imagery/sbd15/jpeg_images_test \
+-dver 29000"
+
+
+House numbers:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv  \
+-do "pr gui \
+-dir /data/imagery/hn_segmentation/PilotKnob \
+-dver 29100"
+
+Road barriers:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv  \
+-do "pr gui \
+-rtag bay_area_650_ground_dev_3 \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/bay_area_5k_Hwy_87/xml \
+-prj bay_area_5k_Hwy_87 \
+-dver 40101"
+
+*.  Colorings for polygons surrounding semantic segmentation regions are
+set within pr_semantic_string_color_rgb() in pr_semantic.c.  Must specify
+type and subtype for segmentation polygons.
+
+*.  On 9/8/15, we learned the hard and painful way that the training input
+file /deeplab-public/experiments/chicago_hns2/list/train.txt must NOT
+contain any extra white space at its end (or within its interior)!  
+
+*.  Cannot train and test Caffe models using a single GPU card.  Training
+exhausts memory on the GPU card.
+
+*.  On 9/24/15, we started within an initial caffe VGG model and set
+deeplab training on 20K image chip/mask pairs for roadway barriers.  After
+running O(22K) iterations overnight, we plotted the accuracy values as a
+function of deeplab training iteration.  We saw NO training improvment.
+
+Tho and John told us on 9/25/15 that we likely have a base learning rate
+(base_lr inside solver.prototxt) which is too large.  SGD cannot converge
+if base_lr is too large.  So Tho recommended cutting our initial value
+0.001 by factors of two until we do see training improvment.  Moreover, Tho
+also highly recommended starting with a smaller training sample so that
+deeplab runs through several epochs over all images.  Only then can the
+deep network start to really converge to a solution.
+
+*.  In /blahblah/software/deeplab-public/src/caffe/layers/seg_accuracy_layer.cpp
+near line 100, 3 output accuracies are exported:
+
+  // we report all the resuls
+  top[0]->mutable_cpu_data()[0] = (Dtype)confusion_matrix_.accuracy();
+  top[0]->mutable_cpu_data()[1] = (Dtype)confusion_matrix_.avgRecall(false);
+  top[0]->mutable_cpu_data()[2] = (Dtype)confusion_matrix_.avgJaccard();
+
+
+// Added these next few lines on Fri, Sep 25 at 5 pm
+
+// Dtype = C++ template parameter (think of as "float" or "double")
+
+  Dtype* top1out = top[1]->mutable_cpu_data();
+
+// Retrieve last two dimensions of top[1] (using top[1]->Shape()
+// method?) which should equal nclasses x nclasses.  Loop over
+// nclasses x nclasses elements in confusion matrix.  Place each of
+// these elements into top[1]->mutable_cpu_data()[0],
+// top[1]->mutable_cpu_data()[1], top[1]->mutable_cpu_data()[2],
+// etc...
+
+
+*.  confusion_matrix.cpp is located in
+/home/pcho/software/deeplab-public/src/caffe/util/
+
+*.  In deeplab code, "typename Dtype" = C++ template parameter.  Think of
+Dtype as "float" or "double".
+
+*.  When refering to a data variable which we want to change, use the
+"mutable_cpu_data()" method.  For example
+
+  top[0]->mutable_cpu_data()[0] = (Dtype)confusion_matrix_.accuracy();
+  top[0]->mutable_cpu_data()[1] = (Dtype)confusion_matrix_.avgRecall(false);
+  top[0]->mutable_cpu_data()[2] = (Dtype)confusion_matrix_.avgJaccard();
+
+  Dtype* top1out = top[1]->mutable_cpu_data();
+
+*.  Deeplab is apparently working with an older version of caffe (which is
+hardwired into its src code).  So instead of calling a shape() method, we
+must instead call the num(), channels(), height() and width() methods
+inside deeplab-public/include/caffe/blob.hpp.
+
+*.  Total number of output classes is entered as an input via within
+executable deeplab script (e.g. In run_small_barriers, NUM_LABELS = 5").
+
+   num_output: ${NUM_LABELS}
+
+line appears within final "fc8_$EXP" layer of VGG-16 network in
+train.prototxt.  After we run the executable deeplab script, actual
+numerical value for NUM_LABELS should appear in train_train.prototxt.
+
+layers {
+  bottom: "fc7"
+  top: "fc8_barriers/small_barriers_a"
+  name: "fc8_barriers/small_barriers_a"
+  type: CONVOLUTION
+#  strict_dim: false
+  blobs_lr: 10
+  blobs_lr: 20
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 5
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+
+*.  Tho suggested that we extract the number of classes from the output of
+the top-most layer.  n_classes is passed as an input from train.prototxt.
+In SegAccuracyLayer<Dtype>::Reshape, following line recovers number of
+classification labels:
+
+ int n_labels = bottom[0]->channels();
+
+
+*.  See deeplab-public/include/caffe/utilconfusion_matrix.hpp for confusion
+matrix interface.  In particular, matrix is stored internally as
+vector<vector<long> >.  Inner STL vectors correspond to individual rows
+within confusion matrix.
+
+*.  Deeplab periodically reports accuracy progress:
+
+
+Train net output #0: accuracy = 0.802102
+Train net output #1: accuracy = 0.25
+Train net output #2: accuracy = 0.36042
+
+This info is printed out within solver<Dtype>::Solve() within solver.cpp.
+
+We need to add more print statements in this method for exporting confusion
+matrix.
+
+// Index j labels top layer "blobs".  Index k labels fasting changing index for top layer blobs.
+// For top layer #0, k ranges from 0 to 2.  For top layer #1, k should range from 0 to nclasses*nclasses - 1.
+
+      for (int j = 0; j < result.size(); ++j) {
+
+// if j == 0, do the following.  
+
+        const Dtype* result_vec = result[j]->cpu_data();
+        const string& output_name =
+            net_->blob_names()[net_->output_blob_indices()[j]];
+        const Dtype loss_weight =
+            net_->blob_loss_weights()[net_->output_blob_indices()[j]];
+        for (int k = 0; k < result[j]->count(); ++k) {
+          ostringstream loss_msg_stream;
+          if (loss_weight) {
+            loss_msg_stream << " (* " << loss_weight
+                            << " = " << loss_weight * result_vec[k] << " loss)";
+          }
+          LOG(INFO) << "    Train net output #"
+              << score_index++ << ": " << output_name << " = "
+              << result_vec[k] << loss_msg_stream.str();
+        }
+
+// if j == 1, print out confusion matrix.
+
+*. On 9/25/15, Tho recommended that we add a new "top" layer blob into the
+final layer of the network.  The new "top" layer blob is called "confusion
+matrix", and it should hold confusion matrix entries.  In loss_layers.hpp,
+we had to reset
+
+//  virtual inline int ExactNumTopBlobs() const { return 1; }
+  virtual inline int ExactNumTopBlobs() const { return -1; }
+
+in class SegAccuracyLayer : public Layer<Dtype> so that new confusion
+matrix top layer doesn't throw run-time error.
+
+*.  CheckBlobCounts() in layer.hpp is called by the parent Layer's SetUp to
+check that the number of bottom and top Blobs provided as input match the
+expected numbers specified by the {ExactNum,Min,Max}{Bottom,Top}Blobs()
+functions.
+
+*.  In SegAccuracyLayer<Dtype>::Reshape() inside seg_accuracy_layer.cpp, we
+added the following lines to enable storage of confusion matrix information
+within a new "top" blob:
+
+  int n_labels = bottom[0]->channels();
+  std::cout << "n_labels = " << n_labels << std::endl;
+  top[1]->Reshape(1, 1, n_labels, n_labels);
+
+*.  On 9/30/15, we discovered the hard and painful way that we must be
+extremely careful to check that the name of the caffe training model within
+the deeplab executable script must match the actual input caffe model name
+within $EXP/model/vgg128_large_fov !!!  If not, caffe will effectively
+start with a model containing random garbage blob values.  Training on
+relatively small datasets then basically never converges!
+
+On Feb 2016, we ran into the same problem with having the name of the
+initial model file incorrectly spelled.  John Wood reminded us that when
+the initial model is not correctly imported, the 2nd accuracy figure =
+1/(number of classes) !!!
+
+*.  On 1/8/16, we learned from Tho that the public version of caffe
+requires that input image pixel sizes sent into trained semantic
+segmentation networks for inference must those width and height dimensions
+specified within the top few lines of test.prototxt:
+
+input_shape {
+  dim: 1
+  dim: 3
+  dim: 512
+  dim: 512
+}
+
+Tho has generalized his customized version of caffe so that it can
+dynamically resize input images so that they do not have to come in with
+pixel dimensions equal to those specified within input_shape{}
+
+*.  On 1/8/16, Tho told us that enabling the CRF layer within semantic
+segmentation test.prototxt files would turn on conditional random field
+computation for entire image.  But it's impractically slow.  So Tho has
+implemented some local version of CRF for objects such as lane markings
+which runs orders of magnitude faster than global CRF.
+
+*.  On 1/8/16, we learned from John and Tho that the canonical 321 crop
+size for image tiles used to train semantic segmentation networks is
+essentially fixed by the amount of memory which is consumed by a typical
+batch size of 30 tiles on a 12 GB GPU card.  We further learned that the
+pixel crop size for tiles at inference time does NOT have to equal 321.
+Instead, it can be larger (at least 1024) since batch size = 1 at inference
+time.  
+
+*.  On 6/9/16, John Wood showed us that we can cut and paste (via gedit) a
+prototxt file (e.g. for an inference network) into the LHS of the following
+flyover website and visualize its network:
+
+   https://flyover-static.geo.apple.com/netscope/#/editor
+
+This visualization also helps to uncover syntax errors in the prototxt
+file.
+
+*.  On 6/9/16, John Wood helped us convert the original test.prototxt file
+for the Deeplab-ver2 VGG-16 model into a form that we could use with our
+C++ inference codes.  He told us to make the following changes:
+
+A.  Deeplab-ver2 original test.prototxt file is set up to read testing
+images directly from a specified subdirectory.  In our C++ inference codes,
+we are already supplying info such as mean RGB values as well as the pixel
+sizes of the input test images.  So replace 
+
+layer {
+  name: "data"
+  type: "ImageSegData"
+  top: "data"
+  top: "label"
+  top: "data_dim"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    mirror: false
+    crop_size: 513
+    mean_value: 104.008
+    mean_value: 116.669
+    mean_value: 122.675
+  }
+  image_data_param {
+    root_folder: "${DATA_ROOT}"
+    source: "${EXP}/list/${TEST_SET}.txt"
+    batch_size: 1
+    label_type: NONE
+  }
+}
+
+with
+
+
+input: "data"
+
+input_shape {
+  dim: 1
+  dim: 3
+#   dim: 1280
+#   dim: 1280
+   dim: 1500
+   dim: 1500
+}
+
+
+B.  John told us that "silence" layers in caffe are meant to not have
+network output be echoed to the terminal.  He told us to delete the
+following last lines from the original deeplab-ver2 VGG16 test.prototxt
+file:
+
+layer {
+  name: "silence"
+  type: "Silence"
+  bottom: "label"
+  bottom: "data_dim"
+}
+
+C.  It looks like the original deeplab-ver2 VGG16 test.prototxt file was
+written to have inference output sent to matlab.  So John told us to delete
+the lines
+
+layer {
+  name: "fc8_mat"
+  type: "MatWrite"
+#  bottom: "fc8_interp_argmax"
+  bottom: "fc8_interp"
+  include {
+    phase: TEST
+  }
+  mat_write_param {
+    prefix: "${FEATURE_DIR}/${TEST_SET}/fc8/"
+    source: "${EXP}/list/${TEST_SET}_id.txt"
+    strip: 0
+    period: 1
+  }
+}
+
+
+D.  Our C++ inference codes use custom-caffe's ArgMaxDense in order to
+generate final segmentation output.  So John told us to add back in the
+lines below to the end of our revised deeplab-ver2 VGG16 test.prototxt:
+
+
+
+layer {
+ name: "prob"
+ type: "Softmax"
+ bottom: "fc8_interp"
+ top: "prob"
+ softmax_param {
+   engine: CAFFE
+   # engine: CUDNN
+ }
+}
+
+# # CRF layer
+# layer {
+#   # bottom: "prob"
+#   bottom: "fc8_interp"
+#   bottom: "data"
+#   top: "crf_inf"
+#   name: "crf"
+#   type: "DenseCRF"
+#   dense_crf_param {
+#     max_iter: 10
+#     pos_w: 3
+#     pos_xy_std: 3
+#     bi_w: 5
+#     bi_xy_std: 50
+#     bi_rgb_std: 10
+#   }
+# }
+
+# Output layer
+layer {
+  name: "output"
+  type: "ArgMaxDense"
+  # bottom: "crf_inf"
+  # bottom: "fc8_interp"
+  bottom: "prob"
+  top: "output"
+  argmax_param {
+    out_max_val: true;
+    top_k: 1
+  }
+}

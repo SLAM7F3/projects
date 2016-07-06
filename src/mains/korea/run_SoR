@@ -1,0 +1,5 @@
+~/programs/c++/svn/projects/src/mains/korea/SoR \
+--region_filename ./bundler/korea/packages/photo_0000.pkg \
+--image_list_filename ./bundler/korea/image_list.dat \
+--image_sizes_filename ./bundler/korea/image_sizes.dat \
+--initial_mode Manipulate_Fused_Data_Mode

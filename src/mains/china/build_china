@@ -1,0 +1,5 @@
+~/bin/MAKE program=consolidate
+~/bin/MAKE program=fov
+~/bin/MAKE program=new_fov
+~/bin/MAKE program=relrot
+~/bin/MAKE program=rot

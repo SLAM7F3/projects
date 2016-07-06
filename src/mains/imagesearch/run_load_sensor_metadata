@@ -1,0 +1,2 @@
+./load_sensor_metadata \
+--GIS_layer ./packages/imagery_metadata.pkg 

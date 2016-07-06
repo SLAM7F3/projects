@@ -1,0 +1,26 @@
+===========================================================================
+Flickr scraping nodes
+===========================================================================
+Last updated on 11/29/10; 1/31/11; 2/10/11; 4/6/12
+===========================================================================
+
+*.  In April 2012, Noah sent us an updated version of his flickr_leech.pl
+script.  Sometime in 2011, the flickr API must have changed, and Noah's
+2012 scraping script no longer works.  But the new version seems to run
+fine.
+
+*.  In Nov 2010, Noah Snavely sent us his PERL script flickr_leech.pl which
+he uses to scrape photos from flickr's website.  We used Noah's script to
+download photos of Bagram AFB as well as the Grand Canyon
+
+		flickr_leech.pl download "Grand+Canyon"
+
+*.  The Grand Canyon scrape ran for approximately one week on our BEAST
+machine.  It downloaded 15K non-zero sized jpg files (32 Gbytes).  
+
+*.  Several flickr files are zero-sized.  Dave Ceddia taught us that we can
+use the following find command to segregate out the zero-sized files from the
+non-zero sized ones:
+
+	mkdir ./zero_sized_files
+	find . -size 0 -exec mv {} ./zero_sized_files/ \;

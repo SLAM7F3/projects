@@ -1,0 +1,3 @@
+--PostGIS_hostname 127.0.0.1
+--PostGIS_database_name plume
+--PostGIS_username postgres

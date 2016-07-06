@@ -1,0 +1,4 @@
+cambridge.osga
+--height_colormap 10 --prob_colormap 6 
+--height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0 --max_threshold_frac 0.9999

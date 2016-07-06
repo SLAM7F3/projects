@@ -1,0 +1,85 @@
+==========================================================================
+Last updated on 10/18/10; 2/5/13; 12/8/13
+==========================================================================
+
+touchy:X11R6% apt-cache search jpeg | sort | less
+touchy:X11R6% apt-cache search gif | sort | less
+touchy:X11R6% apt-cache search tiff | sort | less
+
+In order to see information about package libopenscenegraph56 on a remote
+server, chant
+
+	apt-cache show libopenscenegraph56
+
+sudo apt-get install libungif4-dev
+
+sudo apt-get install libungif4g
+
+sudo apt-get install build_essential
+
+sudo apt-get install autoconf, automake
+
+sudo apt-file search netcdf
+
+In order to remove a package, chant,
+
+	sudo apt-get --purge remove <package>
+
+	e.g. sudo apt-get --purge remove postgres
+
+
+Use synaptic package manager to change ubuntu repositories from North
+Eastern to MIT if former is flaky.
+
+text editor -- Non-mule binary
+xemacs21-mule - highly customizable text edit
+
+
+*.  On 3/24/09, Dave Ceddia taught us that the list of ubuntu repositories
+which are searched is contained within /etc/apt/sources.list.  Be sure to
+make any necessary ubuntu version changes (i.e. touchy2 is running gutsy
+("G" version of ubuntu), while vision laptop is running hardy ("H" version
+of ubuntu)).  After making any changes to sources.list, we need to chant
+
+sudo apt-get update
+
+before attempting to perform apt-cache search or apt-get install commands.
+
+*.  On 6/5/09, Dave Ceddia showed us that the "emacs21" package contains
+emacs21-x which should be installed into /usr/bin via a "sudo apt-get
+install emacs21" command.  We needed to explicitly run this command again
+in order to get emacs21-x to install onto the LOS laptops.
+
+*.  On 4/24/09, Dave Ceddia taught us how to get a list of all installed
+packages:
+
+dpkg --list | cut -f 1-3 -d' ' > packages.txt
+
+MAKE CERTAIN TO ELIMINATE ANY PACKAGES REFERRING TO NVIDIA BEFORE
+TRANSFERING THIS PACKAGES FILE TO A NEW MACHINE !!!
+
+Install all of those packages:
+
+Create install_packages script with following contents:
+
+for i in `cat packages.txt`; do sudo apt-get install --yes $i; done
+
+Note:  As of 2/5/13, it appears the --yes option does indeed suppress
+interactive querying (at least under ubuntu 12.4) !
+
+===================================
+
+*.  On 10/18/10, Dave Ceddia figured out that we should follow these steps
+in order to more likely be able to download Ubuntu packages from various
+repositories:
+
+1.  In /etc/bash.bashrc, add export https_proxy=http://llproxy:8080
+
+2.  Open up a bash shell by chanting "sudo bash".  
+
+3.  From within this new bash shell, chant
+
+apt-get update 
+
+apt-get install blah blah
+

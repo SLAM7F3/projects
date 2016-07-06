@@ -1,0 +1,23 @@
+
+image_legend
+   min -3.14
+   max 3.14
+   height 4.0
+   width 0.15
+#    label 'Phase'
+   legloc 4.2 1.75
+   reverse_colors
+
+colortable
+# index	red	green 	blue	interpolations  label
+
+-3.17	180	0	180	20  '-^g\160^u'
+-2.356	0	0	250	20  
+-1.571	0	158	200	20  '-^g\160^u/2'
+-0.7854	0	180	180	20
+0       0	250	0	20  '0'
+0.7854  180	180	0	20
+1.571	200	158	0	20  '^g\160^u/2'
+2.356	255	0	0	20
+3.17	180 	0	180	20  '^g\160^u'
+3.18	255 	255	255	2

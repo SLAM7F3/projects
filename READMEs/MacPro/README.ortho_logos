@@ -1,0 +1,203 @@
+=============================================================================
+Ortho logo notes
+=============================================================================
+Last updated on 11/18/15; 11/19/15; 11/30/15; 12/9/15
+=============================================================================
+
+*.  On 10/27/15, we ran into problems with generating an RDN "map dump" (as
+opposed to a 'stage' dump) for a tile of interest to John Wood.  Ibrahim
+suggested that we add various "nochk" options in which case the following
+command did work:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-nowin -do 'dump_build \
+-prjdb http://flyover.geo.apple.com/prjdb/FlightOps/project/M5-old/xml \
+-prj M5-old \
+-area 13 1 2264 3628 \
+-o /data/peter_stuff/road_networks/dump/scripts/  -nochk -nodb --preset rdn_margin '
+
+*.  In order to run RDN gui using a previously generated "map dump" and to
+detect ortho logos via a previously trained deeplab model, invoke version
+1306 within the rdn_restore pwin command:
+
+home/pcho/sputnik/pwin/build/linux64/pwin -vv \
+-do 'rdn_restore /data/peter_stuff/road_networks/dump/scripts/map_13_2264_3628.dump \
+-ver 1306'
+
+Once gui comes up, press "F1" to run initialization stage.  A point cloud
+should subsequently appear within pwin window.  (Can later press "cntrl p"
+to toggle point cloud on/off.)
+
+Press "F2" to run preprocessing stage.  After F2 stage completes
+processing, we should be able to press "cntrl o" and see orthoimages within
+pwin window.  Also should be able to press "esc s" to toggle on/off
+semantic segmentations superposed on ortho images.
+
+Press "cntrl d" to see RDN detections (which should contain ortho logo
+detections).
+
+Press "esc x", then chant "dump stageN".  Output from stage N is then
+exported to subdirectory "stageN".  
+
+*.  Check out rdn_ortho_detect() within rdn_ortho.c .  This method detects
+ortho logos from the segmantic segmentation of an ortho image.
+
+
+rdn_preprocess() -> rdn_orthos_detect() --> rdn_ortho_detect()
+
+*.  Semantic segmentation version numbers are defined within
+lib/dl/dl_semseg.c . Full paths on startown for trained caffe models are
+hardwired within this file.  In particular, caffe models are sitting in 
+
+	/startown-gpfs/ssdws03/devdata/pr_models/
+
+*.  In dl_semseg.c, look at dl_semseg_get_contours() method at
+dl_semseg_cc() call.  It returns cc_list containing list of connected
+components.  Experiment with coalescing ortho logo CCs which are spatially
+close (e.g. within 1 or 2 meters).  Tho warns that we need to be careful
+when coalescing CCs to be sure to corresponding merge labels that go along
+with the CCs.
+
+*.  In del_semseg.c, can reset 
+
+semseg->debug = 1
+
+for Caffe version 42000 in order to see Caffe tiling of ortho images within
+an interactive gui
+
+*.  Ortho logo information for Ibrahim's nightly regression project which
+covers the 5km stretch of Hwy280 is labeled by tile IDs that are exported
+to subdirs of
+
+   /startown-gpfs/sputnik02/supersize/devtest/g3d/regression_tests/rdn_nightly/dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote/model/rdn_ortho_small/
+
+
+*.  For projects such as M5 (covers 650km around entire SF Bay area) that
+can be viewed inside C3-viewer, Ibrahim taught us that we can find the
+"omni" directory within C3-viewer console text file output.  The
+"rdn_ortho_small" subdirectory is a sibling to the "omni" subdirectory.  So
+small ortho images for the M5 project are exported to
+
+   /startown-gpfs/sputnik04/supersize/data/bay_area/M5/rdn_ortho_small/
+
+*.  Ortho logo chips are generally exported to 
+
+   /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips
+
+*.  As of early Nov 2015, we must remember to manually add an "(rdn_seg)"
+prefix to each entry in object_names.classes.  The former then acts as a
+"type", while the latter acts as a "subtype".
+
+*.  Ortho images with logos tinted purple for 5 km stretch along Hwy 280 are sitting in 
+
+/startown-gpfs/sputnik02/supersize/devtest/g3d/regression_tests/rdn_nightly/dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote/model/rdn_ortho_small/13_detXXXX_Nov9/
+
+where XXXX = 1307 and 1308.  Det 1307 corresponds to large FOV detector
+with CRF;  Det 1308 corresponds to large FOV detector without CRF.
+
+
+*.  Image chips for logos for 5 km stretch along Hwy 280 are sitting in 
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/det_XXXX
+
+where XXXX = 1307 and 1308.  Det 1307 corresponds to large FOV detector
+with CRF; Det 1308 corresponds to large FOV detector without CRF.
+
+*.  When creating verification ("thumbs up/down") projects via flyover
+admin, make sure to specify both "type" and "subtype".  Also select "sub
+type" for Group By field.
+
+*.  O(1.2K) verified orthologo image chips extracted from "small"
+orthoimages for the 5 km stretch of Hwy 280 are sitting in subdirectories
+of /data/peter_stuff/road_networks/ortho_logos/screen_shots/2015/Nov/Nov11/verified_orthologos
+We manually sorted these 1.2K image chips into 30 orthologo subtype categories.
+
+
+AHEAD   		60
+BIKE   		 	5
+Bike symbols   		39
+BUMPS 		 	1
+CLEAR 			13	 
+CURVE 	         	3
+EXPWY 		 	3
+Handicap	 	6		
+HOV diamond    		324
+KEEP			13
+LANE		 	3
+left & right turns 	4
+left turn & thru   	8
+left turn		111
+NO PARKING		5
+ONLY			3
+PED			12
+right turn & thru	10		
+right turn 		42
+SB (southbound)		3
+SCHOOL			14
+SIGNAL			21
+SLOW			11
+Speed limits 
+  (25,30,35,40,45)	60
+STOP			243
+Straight arrow		171
+XING			26
+X marks the spot	48
+YIELD			1		
+
+
+Total = 1263
+
+*.  Examples of word, arrow, symbol and speed limit logos are sitting in 
+/data/peter_stuff/road_networks/ortho_logos/screen_shots/2015/Nov/Nov12/.
+
+*.  921 "small" ortho images with purple bbox around candidate detections
+exported for 5 km stretch of Hwy 280
+
+*.  On 11/12/15, we ran C++ program
+/home/pcho/programs/c++/svn/projects/src/mains/flyover/downsize_orthoimages
+in order to generate downsized set of orthoimages whose largest pixel
+dimension does not exceed 4000.  Downsized images uploaded to 
+
+/startown-gpfs/sputnik02/supersize/devtest/g3d/regression_tests/rdn_nightly/
+dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote/model/rdn_ortho_small/13_det1308_Nov10/downsized
+
+
+*.  Typical geocoordinates for points within level 13 tile 2260 3635:
+
+Current mouse 2D geocoordinates: 
+   WGS84: Longitude = -122.069035  Latitude = 37.331502 
+   UTM: Easting = 582473.58  Northing = 4132054.33  Zone = 10 
+   ECF: X = -2695993.22  Y = -4302945.62  Z = 3846711.01 
+   Tile: level = 13  x = 2260  y = 3635 
+   Tile: level = 14  x = 4521  y = 7270 
+   Tile: level = 15  x = 9043  y = 14540 
+   Tile: level = 16  x = 18087  y = 29080 
+
+*. Calculating orthologos for 650 km project "M5" involves 4072 level-13 tiles
+
+
+*.  On 12/9/15, Tho recommended that we follow the pwin pattern he
+established for classifying house number image chips as particular digits.
+See dl_dnn_classify() within dl_dnn.cpp and pr_dnn_classify_roi() in
+pr_matching.c for examples of how to submit an image chip in memory to a
+trained caffe model for classification.  
+
+Tho also suggested that all semantic segmentation of orthologos and caffe
+subsequent classification should occur in "stage 2" of the RDN processing
+pipeline.  See rdn_ortho_semseg() in rdn_ortho.c for a likely location
+where orthologo semantic segmentation should occur within stage 2 of the
+RDN pipeline.
+
+Stage 3 corresponds to RDN feature extraction.  So by the time
+rdn_feature_semseg_extract_logos_from_curr_orthoimage() is called in
+rdn_feature_semseg.c, all orthologo semantic segmentation and
+orthologo classification should have already occured.
+
+*.  On 12/9/15, John Wood showed us that skip_crf flags are set within
+dl_semseg versions.  For example, dl semseg version 44000 set skip_crf[2] =
+1 where index 2 corresponds to orthologos.
+
+John further pointed out that RDN versions can utilize more than 1 DL
+semseg version.  For example, RDN version 30 utilizes both DL semseg
+versions 44000 (general lane markings) and 43000 (specialized botts dots).
+

@@ -1,0 +1,4 @@
+~/bin/MAKE program=create
+~/bin/MAKE program=landmarks
+~/bin/MAKE program=pqtest
+~/bin/MAKE program=shp2polylines

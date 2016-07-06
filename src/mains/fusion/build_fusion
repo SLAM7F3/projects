@@ -1,0 +1,12 @@
+~/bin/MAKE program=backproject
+~/bin/MAKE program=bundle
+~/bin/MAKE program=camera_params
+~/bin/MAKE program=drape
+~/bin/MAKE program=filter_params
+~/bin/MAKE program=fusion
+~/bin/MAKE program=generate_color_arrays
+~/bin/MAKE program=internals
+~/bin/MAKE program=test3d
+~/bin/MAKE program=video3d
+~/bin/MAKE program=viewdrape
+~/bin/MAKE program=wander

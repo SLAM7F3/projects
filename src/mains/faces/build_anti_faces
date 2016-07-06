@@ -1,0 +1,11 @@
+/bin/rm ./bbox_widths
+/bin/rm ./clean_images
+/bin/rm ./downsize_images
+/bin/rm ./generate_bbox_tiles
+/bin/rm ./homogenize_images
+/bin/rm ./partition_labeled_imgs
+/bin/rm ./prepare_deeplab_inputs
+/bin/rm ./pyramid_training_images
+/bin/rm ./reset_img_numbers
+/bin/rm ./wider_images
+/bin/rm ./xml2txt

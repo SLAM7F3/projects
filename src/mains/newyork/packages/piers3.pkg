@@ -1,0 +1,65 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/piers3.jpg
+--OSGsubPAT_ID 100
+--frustum_sidelength 1500
+# --frustum_sidelength 2000
+# --downrange_distance 75
+--downrange_distance 150
+# --downrange_distance 300
+# --downrange_distance 400
+--projection_matrix
+
+# Compromise fit with modified internal AND external parameters:
+
+0.9358399684    -1.649274747    -0.06568916905  6885765.746
+0.4461987669    0.09527880548   -1.74620456     -690166.6004
+0.9810505087    0.188416904     -0.04515495221  -1422676.395
+
+# Normalization factor rho = 1
+# fu = -1.79636363215 fv = -1.72363636785
+# u0 = 0.610321226453 v0 = 0.534545448221
+# theta = 90.9045454018 degs
+
+# best x = 584609.3376
+# best y = 4506746.633
+# best z = 47.41765454
+# best az = -169.1283651
+# best el = 2.588068193
+# best roll = -0.3128133326
+# min_chisq = 0.000537930581
+
+
+# Compromise fit with internal parameters modified based upon mosiaced
+# match between piers2 and piers3 images:
+
+# 0.933792511331  -1.65030878345  -0.0687835082134        6891626.23754
+# 0.468890241153  0.110493432767  -1.73934898733  -772006.856943
+# 0.981872504928  0.187031198179  -0.0307524791585        -1416906.74492
+
+# Normalization factor rho = 1
+# fu = -1.79636363215 fv = -1.72363636785
+# u0 = 0.610321226453 v0 = 0.534545448221
+# theta = 90.9045454018 degs
+# Camera world X = 584603.43993
+# Camera world Y = 4506745.47044
+# Camera world Z = 42.4116275444
+# Camera azimuth = -169.215259312 degs
+# Camera elevation = 1.76226510656 degs
+# Camera roll = -0.691454377891 degs
+
+
+# Nearly ideal fit based upon pure match of piers3.jpg with NYC point cloud
+
+# 1.339120051e-07 -2.334256049e-07        -8.372842193e-09        0.9737047237
+# 6.053162507e-08 1.466985373e-08 -2.575778566e-07        -0.1014893688
+# 1.413368395e-07 2.692243474e-08 -4.426703253e-09        -0.2039583757
+
+# Normalization factor rho = -6947038.77848
+# fu = -1.76739664653 fv = -1.77530391234
+# u0 = 0.611923873586 v0 = 0.48698197413
+# theta = 90.5847879487 degs
+# Camera world X = 584603.43993
+# Camera world Y = 4506745.47044
+# Camera world Z = 42.4116275444
+# Camera azimuth = -169.215259312 degs
+# Camera elevation = 1.76226510656 degs
+# Camera roll = -0.691454377891 degs

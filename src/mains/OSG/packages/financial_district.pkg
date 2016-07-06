@@ -1,0 +1,5 @@
+/data/alirt2/Boston_2007/osga_files/financial_district_filled.osga
+--height_colormap 9	# Wrap 2 colormap
+--prob_colormap 6 
+--height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0 --max_threshold_frac 0.9999

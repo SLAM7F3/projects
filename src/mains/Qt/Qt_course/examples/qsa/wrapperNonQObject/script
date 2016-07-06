@@ -1,0 +1,7 @@
+function clicked( item ) {
+  print( item.text(0) )
+}
+
+connect( listview, "clicked( QListViewItem )", clicked )
+
+var s = new QListViewItem(listview, "foo", "bar");

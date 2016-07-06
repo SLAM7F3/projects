@@ -1,0 +1,20 @@
+/bin/rm ./basement
+/bin/rm ./dpm_bboxes
+/bin/rm ./facade_warp
+/bin/rm ./georeg
+/bin/rm ./linemodeler
+/bin/rm ./map_VSFM_imagenames
+/bin/rm ./model_bldgs
+/bin/rm ./modelprop
+/bin/rm ./package_finder
+/bin/rm ./pointmodeler
+/bin/rm ./poly_difference
+/bin/rm ./propagator
+/bin/rm ./pushcartreg
+/bin/rm ./reconstructed_posns
+/bin/rm ./viewmodels
+/bin/rm ./viewsubfrusta
+/bin/rm ./write_view_pushcarts_script
+
+
+

@@ -1,0 +1,15 @@
+~/bin/MAKE program=compsat
+~/bin/MAKE program=fourd
+~/bin/MAKE program=fusesat
+~/bin/MAKE program=imagecdf_info
+~/bin/MAKE program=imagecdf2vid
+~/bin/MAKE program=iplanes
+~/bin/MAKE program=imageplanes
+~/bin/MAKE program=initweights
+~/bin/MAKE program=isar_isar_fusion
+~/bin/MAKE program=isar_opt_fusion
+~/bin/MAKE program=null_probs
+~/bin/MAKE program=optshadow
+~/bin/MAKE program=scintillate
+~/bin/MAKE program=subdivide
+~/bin/MAKE program=viewsat

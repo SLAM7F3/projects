@@ -1,0 +1,15 @@
+/bin/rm ./align_contour_vertices
+/bin/rm ./calibrate_camera
+/bin/rm ./f_from_vanishing_points
+/bin/rm ./fix_TEL_contours
+/bin/rm ./imagelines
+/bin/rm ./model_bldgs
+/bin/rm ./orthobldgs
+/bin/rm ./planarize_TEL_contours
+/bin/rm ./rectify_ground_photo
+/bin/rm ./relative_pose
+/bin/rm ./rocket
+/bin/rm ./triangulate_features
+/bin/rm ./vanishing_point
+/bin/rm ./view_tel
+/bin/rm ./writepackages

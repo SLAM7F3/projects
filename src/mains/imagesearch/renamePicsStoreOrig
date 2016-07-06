@@ -1,0 +1,90 @@
+#!/bin/bash
+
+
+# 	Last updated by Colleen Rock on 6/18/13
+
+
+#	This script "renames" (it doesn't modify the input, just copies or links to it)
+# 	all .jpg files in a directory, and outputs their original names (full pathname) and their new names 
+# 	to a log file, orig_names_(param#4).txt
+
+#	So if a file is in 
+# 	./baseball/redsox/apicture.jpg  --> ./[output Directory]/pic[index].jpg 
+# text file contains: pic[index].jpg    [full pathname]/baseball/redsox/apicture.jpg
+
+
+# Chant 
+## renamePicsStoreOrig [source directory] cp [dest path] [name for output file]
+
+# Parameters: 
+# 1. path to dir to copy from
+# 2. either "ln" for link or "cp" for copy 
+# 3. path to output directory (if none, "renameoutput" will be used)
+# 4. (optional) appends $4 to output file name
+
+	if [ -z "$3" ] 	# if 3rd input is null
+	then 
+		output=$(pwd)"/renameoutput"
+	else
+		output="$3"
+	fi
+
+	mkdir -p $output # -p, among other things, silences the error "that directory already exists"
+
+	the_pwd=$(pwd)
+
+	files=$(find $1 -name "*.jpg" -or -name "*.JPG") # find all .jpg files in directory specified as 1st param
+	index=00000
+	
+	if [ "$2" == "cp" ] 	# copy mode
+	then 
+		for x in $files
+			do 							
+				y=$(echo "pic"$index".jpg")
+					# rename: pic index ".jpg"
+				
+				cp $x $output/$y
+				index=$((10#$index+1)) 			#increment (and force base 10)
+				index=$(printf "%05d" $index)	#format
+
+				echo $y" "$the_pwd"/"$x >> orig_names_$4.txt
+		done
+		echo "----------Done renaming!"
+
+	elif [ "$2" == "ln" ] 	# link mode
+	then
+		for x in $files
+			do 
+		
+				y=$(echo "pic"$index".jpg")
+								
+				ln -s -T $x $output/$y
+				index=$((10#$index+1)) 			#increment (and force base 10)
+				index=$(printf "%05d" $index)	#format
+
+				echo $y" "$the_pwd"/"$x >> orig_names_$4.txt
+		done
+		echo "----------Done renaming!"
+	else 	
+		echo "2nd Parameter must be either 'cp' or 'ln'."
+	fi
+	
+ 	exit
+
+
+# SPACES IN NAMES NOTE
+
+# if picture names have spaces in them: 
+# a) chant:  find -name \*\ \* 
+	# store results in a file, ex "badfiles.txt"
+# b) uncomment and run the following script:
+
+## #!/bin/bash
+##
+## file="badfiles.txt"
+##
+## while read line
+##	do 
+##		rename 's/\ /_/g' "$line"
+##	done <"$file"
+## exit

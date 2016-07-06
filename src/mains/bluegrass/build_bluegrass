@@ -1,0 +1,9 @@
+~/bin/MAKE program=consolidate
+~/bin/MAKE program=georegister_video
+# ~/bin/MAKE program=lubbock_roads
+~/bin/MAKE program=median_fill
+~/bin/MAKE program=tile_fuse
+~/bin/MAKE program=tile_neighbors
+~/bin/MAKE program=tile_transform
+~/bin/MAKE program=videocities
+~/bin/MAKE program=videotexture

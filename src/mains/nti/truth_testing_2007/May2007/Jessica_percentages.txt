@@ -1,0 +1,8 @@
+# Jessica: % time vehicle in track
+
+94.4
+66.0
+57.1
+97.5
+58.2
+

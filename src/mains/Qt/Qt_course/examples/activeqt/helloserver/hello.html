@@ -1,0 +1,24 @@
+<html>
+<head><title>Hello World</title></head>
+<script language=javascript>
+    function setText( form )
+    {
+        Hello.text = form.textEdit.value;
+    }
+</script>
+<body>
+
+<object ID="Hello" CLASSID="CLSID:500F47E0-A9F1-4c50-9642-6E3EB464662F" height="80" width="250">
+    [Object not available! Did you forget to build and register the server?]
+ </object>
+
+<form>
+    Text: <input type="edit" ID="textEdit" value = "Hello">
+    <input type="button" value = "Set" onClick="setText(this.form)">
+	<br>
+	<input type="button" value = "Start" onClick="Hello.start()">
+	<input type="button" value = "Stop" onClick="Hello.stop()">
+</form>
+
+</body>
+</html>

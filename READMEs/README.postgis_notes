@@ -1,0 +1,552 @@
+===========================================================================
+PostGIS/Postgres database notes (primarily about initial toy world model
+tables)
+===========================================================================
+Last updated on 6/19/09; 7/14/09; 1/26/10; 6/21/13
+===========================================================================
+
+Initialization notes from Matt Harrington (12/26/06)
+
+You need postgres, postgis, mass.gov/mgis
+
+shp2pgsql landmax1.shp landmarks | psql babygis
+
+make sure the table name is lower case.
+
+
+you may need to "createlang plpgsql"
+
+also see: http://ogr.maptools.org/
+===========================================================================
+To list databases, chant "psql -l"
+
+To enter into a database, chant "psql -d [database]"
+===========================================================================
+To list basic table structure of a database, chant "\d":
+
+world_model=> \d
+                List of relations
+ Schema |       Name        |   Type   |  Owner   
+--------+-------------------+----------+----------
+ public | annotation        | table    | cho
+ public | annotation_id_seq | sequence | cho
+ public | geom_test         | table    | cho
+ public | geometry_columns  | table    | postgres
+
+
+ public | spatial_ref_sys   | table    | postgres
+(5 rows)
+
+===========================================================================
+
+To list basic column structure of a table, chant "\d tablename":
+
+world_model=> \d annotation
+                                   Table "public.annotation"
+  Column   |           Type           |                        Modifiers                        
+-----------+--------------------------+---------------------------------------------------------
+ id        | integer                  | not null default nextval('annotation_id_seq'::regclass)
+ timestamp | timestamp with time zone | 
+ label     | character varying(255)   | 
+ geometry  | geometry                 | 
+ altitude  | double precision         | 
+Check constraints:
+    "enforce_dims_geometry" CHECK (ndims(geometry) = 2)
+    "enforce_geotype_geometry" CHECK (geometrytype(geometry) = 'POINT'::text OR geometry IS NULL)
+    "enforce_srid_geometry" CHECK (srid(geometry) = 4326)
+
+world_model=> select id, timestamp, geometry, altitude, label from annotation;
+ id | timestamp | geometry | altitude | label 
+----+-----------+----------+----------+-------
+(0 rows)
+
+===========================================================================
+
+world_model=> insert into annotation (timestamp, geometry, altitude, label) values ('2006-10-02 16:51', 'SRID=4326;POINT(-71.27894 50.239842)', 212389.234987214, 'First point');
+INSERT 0 1
+world_model=> select * from annotation;
+ id |       timestamp        |    label    |                      geometry                      |     altitude     
+----+------------------------+-------------+----------------------------------------------------+------------------
+  1 | 2006-10-02 16:51:00-04 | First point | 0101000020E6100000F6622827DAD151C0871A8524B31E4940 | 212389.234987214
+(1 row)
+
+===========================================================================
+
+select st_astext(the_geom) from images  (Use this format as of
+  Postgres/postgis  9.1/2)
+
+world_model=> select astext(geometry) from annotation;
+           astext           
+----------------------------
+ POINT(-71.27894 50.239842)
+(1 row)
+
+===========================================================================
+
+world_model=> select x(geometry), y(geometry), altitude as z from annotation;
+     x     |     y     |        z         
+-----------+-----------+------------------
+ -71.27894 | 50.239842 | 212389.234987214
+
+===========================================================================
+
+world_model=> select id, label, timestamp::abstime::integer, x(geometry), y(geometry), altitude as z from annotation;
+ id |    label    | timestamp  |     x     |     y     |        z         
+----+-------------+------------+-----------+-----------+------------------
+  1 | First point | 1159822260 | -71.27894 | 50.239842 | 212389.234987214
+
+===========================================================================
+
+select id,timestamp,x(geometry) as Longitude,y(geometry) as Latitude,altitude as Altitude, label from annotation;
+
+id |       timestamp        |    longitude     |    latitude     |    altitude     |       label       
+----+------------------------+------------------+-----------------+-----------------+-------------------
+ 49 | 2006-10-03 14:07:20-04 |        -71.08902 |        42.36084 |        24.25772 | Triangle building
+ 50 | 2006-10-03 14:07:34-04 |        -71.09206 |        42.35974 |        48.36088 | MIT Dome
+ 51 | 2006-10-03 14:07:47-04 |        -71.09013 |        42.36447 |        35.69175 | Draper Lab
+ 56 | 2006-10-03 23:01:25-04 | -71.090649267187 | 42.361672518662 | 14.773633003235 | Strata Center
+ 57 | 2006-10-04 11:16:13-04 | -71.080315744473 | 42.360653814235 |  2.796305656433 | Memorial Drive
+ 58 | 2006-10-04 11:16:36-04 | -71.087614260709 | 42.360755244971 | 24.886127471924 | Media Lab
+ 59 | 2006-10-04 11:37:02-04 | -71.086097057143 | 42.362574973732 |   5.38215637207 | T entrance
+ 60 | 2006-10-04 11:37:30-04 | -71.085827758921 |  42.36300313553 | 86.633995056152 | Hotel
+
+===========================================================================
+
+world_model=> insert into annotation(id,timestamp,altitude)
+world_model-> values (default,cast('2006-10-03 7:45:00' as timestamp),15);
+
+===========================================================================
+
+world_model=> delete from annotation where id=3;
+===========================================================================
+
+
+insert into annotation(timestamp,geometry,altitude,label)
+values('2006-10-03 8:13',
+'SRID=4326; POINT(-71.09206 42.35974)', 48.36088,'MIT Dome');
+
+insert into annotation(timestamp,geometry,altitude,label)
+values('2006-10-03 8:13',
+'SRID=4326; POINT(-71.0860970514 42.36257497)', 5.38215,'T entrance');
+
+insert into annotation(timestamp,geometry,altitude,label)
+values('2006-10-03 8:13',
+'SRID=4326; POINT(-71.0803157444 42.360653814)', 2.7963,'Memorial Drive');
+
+select id,timestamp,x(geometry) as Longitude,y(geometry) as Latitude,altitude as Altitude, label from annotation;
+
+===========================================================================
+
+world_model=> insert into annotation(timestamp)
+world_model-> values(now());
+
+select id,date_created,x(geometry) as Longitude,y(geometry) as Latitude,altitude as Altitude from entity;
+
+select id,entity_id,text from comments;
+
+===========================================================================
+
+Information about stateplane coordinate systems is contained within
+gdal/data/stateplane.csv 
+
+===========================================================================
+In order to connect postgres to the genuine Group 104 SKS database (as of
+Jan 2007), we need to chant:
+
+psql -h sks -d isdsid_dev -U sks
+
+psql -h sks -d isdsid_stage_know -U sks
+
+psql -h sks -d isdsid_stage_sar -U sks
+
+===========================================================================
+
+To convert ESRI shape file cities.shp into a postgis "cities" table, chant
+
+  	shp2pgsql -s 4326 cities.shp cities > create_cities.sql
+
+SRID #		Ellipsoid model
+
+4326		WGS84
+4267		NAD27
+4269		NAD83
+
+To convert Lead Dog shape file for Baghdad points-of-interest into a
+postgis "baghdad_POI" table, chant
+
+ shp2pgsql -d -s 4326 -W LATIN1 bagpi.shp baghdad_POI > create_baghdad_poi.sql
+
+Then once inside psql, chant "\i create_baghdad_poi.sql" to import
+information into database.
+
+===========================================================================
+In Jan 2010, we converted Address information for all buildings in
+Cambridge provided to us by Jeff Amero from the City of Cambridge from its
+intrinsic Massachusetts State Plane (NAD 83 projection - we believe MA
+state plane EPSG # = 2001) into WGS-84 via the command
+
+	ogr2ogr -t_srs EPSG:4326 AddressPoints_4326.shp AddressPoints.shp
+
+In order to import the converted shape file into ISDS_GIS database table,
+we chanted
+
+shp2pgsql -s 4326 AddressPoints_4326.shp cambridge_addresses > create_cambridge_addresses.sql
+
+After invoking postgres via
+
+psql -d isds_gis
+
+we imported the sql commands via
+
+\i create_cambridge_addresses.sql
+
+===========================================================================
+
+In order to ignore capital letters within names, first convert all
+text characters to lower case:
+
+babygis=> select name, capital from cities where lower(name) = 'belfast';
+  name   | capital
+---------+---------
+ Belfast | N
+(1 row)
+
+babygis=> select name, capital from cities where lower(name) = lower('belfast');
+  name   | capital
+---------+---------
+ Belfast | N
+(1 row)
+
+babygis=> select lower(name), capital from cities;
+           lower           | capital
+---------------------------+---------
+ murmansk                  | N
+ arkhangelsk               | N
+ saint petersburg          | N
+ magadan                   | N
+ perm'                     | N
+ yekaterinburg             | N
+ nizhniy novgorod          | N
+
+===========================================================================
+
+ babygis=> select asewkt(the_geom) from boston_libraries where name='Boston Public Library';
+                  asewkt
+-------------------------------------------
+ POINT(-71.0787906748844 42.3493878362304)
+ POINT(-71.07796679115 42.3495941646425)
+(2 rows)
+
+babygis=> select asewkt(the_geom) from boston_libraries where name='HIV Resource Library';
+                  asewkt
+-------------------------------------------
+ POINT(-71.0740700018771 42.3485299983343)
+(1 row)
+
+===========================================================================
+Update commands to modify longitude/latitude geometry entries for Baghdad
+points-of-interest table within babygis/isds_gis database:
+
+// Clock tower
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.375035 33.301660)') where gid=70;
+
+// Unknown soldier monument
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.389250551 33.3085874645)') where gid=239;
+
+// Al salam palace
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.36185689 33.300893590)') where gid=206;
+
+
+// Parade reviewing stand
+
+insert into baghdad_poi (the_geom, name) values
+(GeomFromEWKT('SRID=4326; POINT(44.3829418273 33.3049079669)'),
+'PARADE REVIEWING STAND' );
+
+ update baghdad_poi set type='MONUMENT';
+
+Adjusted landmark geocoords for fused ladar/EO point cloud:
+----------------------------------------------------------
+
+// Clock tower
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.37487222 33.30158443)') where gid=70;
+
+// Parade reviewing stand:
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.38276557 33.30484393)') where gid=298;
+
+// unknown soldier monument:
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.38902382 33.30851882)') where gid=239;
+
+// Ministry of industry
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.39125475 33.31205649)') where gid=136;
+
+// Al salam palace
+
+ update baghdad_poi set the_geom=
+ GeomFromEWKT('SRID=4326;POINT(44.36142921 33.30084636)') where gid=206;
+
+===========================================================================
+Update command for New York City longitude/latitude within cities table of
+isds_gis database:
+
+isds_gis=> \dt
+               List of relations
+ Schema |        Name        | Type  |  Owner   
+--------+--------------------+-------+----------
+ public | baghdad_poi        | table | cho
+ public | baghdad_streets    | table | cho
+ public | boston_colleges    | table | cho
+ public | boston_hospitals   | table | cho
+ public | boston_libraries   | table | cho
+ public | boston_schools     | table | cho
+ public | cities             | table | cho
+ public | country_borders    | table | cho
+ public | eotmajroads        | table | cho
+ public | geometry_columns   | table | postgres
+ public | san_clemente_roads | table | cho
+ public | schools            | table | cho
+ public | spatial_ref_sys    | table | postgres
+(13 rows)
+
+isds_gis=> update cities set the_geom=
+isds_gis-> GeomFromEWKT('SRID=4326; POINT(-73.975 40.775)') where gid=549;
+UPDATE 1
+
+===========================================================================
+
+On 2/7/07, Jim Garlick created a special coordinate system for California
+which was not already in the default spatial_ref_sys table.  He labeled
+with ID = 1001.
+
+babygis=> insert into spatial_ref_sys (srid, proj4text) values (1001, '+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs');
+INSERT 0 1
+
+To create a bbox around San Clemente, chant:
+
+ select geomfromtext('SRID=4326;POLYGON((-118.62 33.04,-118.34 33.04,-118.34 32.8,-118.62 32.8,-118.62 33.04))');
+
+To count number of road segments from local_ca_roads which intersect the
+San Clemente bbox, chant:
+
+ select count(*) from local_ca_roads where transform(the_geom, 4326) && geomfromewkt('SRID=4326;POLYGON((-118.62 33.04,-118.34 33.04,-118.34 32.8,-118.62 32.8,-118.62 33.04))');
+
+===========================================================================
+
+To clone babygis tables from fusion1 and transfer them to our laptop, we'll
+need to use pgsql2shp to generate shape files from babygis tables, bundle
+together the output in a tarball, and then use shp2pgsql on ISDS3D to
+install their contents into the new laptop database.
+
+To transfer contents of country_borders table within babygis database into
+a shape file called country_borders, chant
+
+     pgsql2shp -f country_borders.shp babygis country_borders
+
+
+In June 2009, we ran into trouble performing this last operation on
+touchy2.  We ended up having to first sudo su postgres.  We then needed to
+cd /tmp in order to work in a subdir with write permissions.  When we then
+chanted
+
+	    pgsql2shp -f country_borders.shp isds_gis country_borders
+
+the following files were generated:
+
+	country_borders.dbf, country_borders.shp and country_borders.shx
+
+
+To load shape file directly into new PostGIS table within isds_gis database
+on isds3d laptop, first sudo su postgres.  Then chant something like
+
+     shp2pgsql -s 4326 country_borders.shp country_borders | psql isds_gis
+
+===========================================================================
+On ISDS3D laptop, chant 
+
+		ogrinfo -al cities.shp | more
+
+within /home/cho/gis/world to find out information about this shape file.
+
+
+INFO: Open of `cities.shp'
+      using driver `ESRI Shapefile' successful.
+
+Layer name: cities
+Geometry: Point
+Feature Count: 606
+Extent: (-165.270004, -53.150002) - (177.130188, 78.199997)
+Layer SRS WKT:
+GEOGCS["GCS_WGS_1984",
+    DATUM["WGS_1984",
+        SPHEROID["WGS_1984",6378137,298.257223563]],
+    PRIMEM["Greenwich",0],
+    UNIT["Degree",0.0174532925199433]]
+NAME: String (40.0)
+COUNTRY: String (12.0)
+POPULATION: Real (11.0)
+CAPITAL: String (1.0)
+OGRFeature(cities):0
+  NAME (String) = Murmansk
+  COUNTRY (String) = Russia
+  POPULATION (Real) =      468000
+  CAPITAL (String) = N
+  POINT (33.086040496826172 68.963546752929688)
+
+OGRFeature(cities):1
+  NAME (String) = Arkhangelsk
+  COUNTRY (String) = Russia
+  POPULATION (Real) =      416000
+  CAPITAL (String) = N
+  POINT (40.646160125732422 64.520668029785156)
+
+===========================================================================
+
+On 4/13/07, Jim Garlick searched the contents of the spatial_ref_sys table
+and found that the New York Long Island coordinate system for the shape
+files which we downloaded today from
+www.nyc.gov/html/doitt/html/eservices/eservices_gis.shtml are in the
+SRID=2908 coordinate system.
+
+===========================================================================
+On 4/18/07, we converted the NYC street shape file that we downloaded from
+the web in early April 2007 from its native SRID=2908 coordinate into a
+shape file with a WGS-84 coordinate system (with SRID=4326) via the command
+
+	ogr2ogr -t_srs EPSG:4326 street_4326.shp street_centerline.shp
+
+
+===========================================================================
+In order to use ogrinfo utility program to examine contents of nyc_streets
+table within isds_gis database, chant
+
+		ogrinfo PGB:dbname=isds_gis nyc_streets | more
+
+
+INFO: Open of `PGB:dbname=isds_gis'
+      using driver `PostgreSQL' successful.
+
+Layer name: nyc_streets
+Geometry: Multi Line String
+Feature Count: 123866
+Extent: (-74.266777, 40.498047) - (-73.699600, 40.920448)
+Layer SRS WKT:
+GEOGCS["WGS 84",
+    DATUM["WGS_1984",
+        SPHEROID["WGS 84",6378137,298.257223563,
+            AUTHORITY["EPSG","7030"]],
+        AUTHORITY["EPSG","6326"]],
+    PRIMEM["Greenwich",0,
+        AUTHORITY["EPSG","8901"]],
+    UNIT["degree",0.01745329251994328,
+        AUTHORITY["EPSG","9122"]],
+    AUTHORITY["EPSG","4326"]]
+Geometry Column = the_geom
+alts: RealList (0.0)
+borough: String (13.0)
+class: Integer (0.0)
+exported: String (12.0)
+feat_code: Integer (5.0)
+feat_desc: String (50.0)
+gid: Integer (0.0)
+modified: String (25.0)
+name: String (32.0)
+source_id: Integer (0.0)
+sourcedate: String (25.0)
+sourcetype: String (15.0)
+vsam: Integer (0.0)
+OGRFeature(nyc_streets):0
+  alts (RealList) = (null)
+  borough (String) = Brooklyn
+  class (Integer) = (null)
+  exported (String) = 05/19/2004
+  feat_code (Integer) = 190054400
+  feat_desc (String) = Paved Road
+  gid (Integer) = 1
+  modified (String) = 5/28/2001
+  name (String) = JOHN BERRY BL
+  source_id (Integer) = 0
+  sourcedate (String) = 3/31/1996
+  sourcetype (String) = Photogrammetric
+  vsam (Integer) = 0
+  MULTILINESTRING ((-73.931247256386385 40.576221040625612,-73.931246398614363 4
+0.576216789636284,-73.931246650161057 40.576213358788223,-73.931249540256459 40.
+576205201765198,-73.931253504776492 40.57619734255816,-73.931256888212289 40.576
+191797351434,-73.931260967728278 40.576186954970261,-73.931559784903271 40.57583
+:
+
+===========================================================================
+In order to use ogrinfo utility program to examine contents of Boston's
+eotmajroads table within isds_gis database, chant
+
+		ogrinfo PGB:dbname=babygis eotmajroads | more
+
+INFO: Open of `PGB:dbname=babygis'
+      using driver `PostgreSQL' successful.
+
+Layer name: eotmajroads
+Geometry: Multi Line String
+Feature Count: 32570
+Extent: (34847.160156, 780218.437500) - (329932.687500, 959485.500000)
+Layer SRS WKT:
+(unknown)
+Geometry Column = the_geom
+admin_type: Integer (0.0)
+altrt1type: Integer (0.0)
+altrtnum1: String (4.0)
+altrtnum2: String (4.0)
+altrtnum3: String (4.0)
+altrtnum4: String (4.0)
+class: Integer (0.0)
+gid: Integer (0.0)
+rt_number: String (4.0)
+shape_len: Integer (0.0)
+street_nam: String (50.0)
+OGRFeature(eotmajroads):0
+  admin_type (Integer) = 0
+  altrt1type (Integer) = 0
+  altrtnum1 (String) = (null)
+  altrtnum2 (String) = (null)
+  altrtnum3 (String) = (null)
+  altrtnum4 (String) = (null)
+  class (Integer) = 4
+  gid (Integer) = 1
+  rt_number (String) = (null)
+  shape_len (Integer) = 262144
+  street_nam (String) = RAMP-RT 95 SB TO RT 286
+  MULTILINESTRING ((250084.656261946540326 958269.374857151531614,250068.172170898411423 958311.500229598139413))
+
+==========================================================================
+
+July 2009 Photosynth-induced modifications to edited_landmarks table in
+nycity database:
+
+
+Statue of Liberty modifications:
+
+  update edited_landmarks set the_geom=
+  GeomFromEWKT('SRID=4326;POINT(-74.0444282634 40.6891438666)') where gid=658;
+
+  update edited_landmarks set name='Statue of Liberty' where gid=658;
+
+
+==========================================================================
+
+April 2010:  Trying to extract out Afghanistan border lying within
+specified bounding box:
+
+ select asewkt(the_geom) from country_borders where transform(the_geom, 4326)
+&& geomfromewkt('SRID=4326; polygon( (69.073 33.068, 72.035 33.068, 72.035 35.178, 69.073 35.178, 69.073 33.068))');

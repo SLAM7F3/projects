@@ -1,0 +1,7 @@
+make -f analysis2comm_makefile
+make -f analysisfromcomm_makefile
+make -f cars_makefile
+make -f commfromanalysis_makefile
+make -f imageclienttest_makefile
+make -f imageservertest_makefile
+make -f qteocities_makefile

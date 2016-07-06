@@ -1,0 +1,15 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass
+
+http_proxy=""
+
+/home/cho/programs/c++/svn/projects/src/mains/bluegrass/videocities \
+--region_filename ./packages/lubbock_fused.pkg \
+--surface_texture ./packages/ar1_texture_frames_all_orig.pkg \
+--sensor_metadata ./packages/ar1_sensor_metadata.pkg \
+--dataserver ./packages/ar1_dataserver.pkg \
+--GIS_layer ./packages/lubbock_landmarks.pkg \
+--world_start_UTC 2007,9,27,16,8,54 \
+--world_stop_UTC 2007,9,27,16,59,0 \
+--world_time_step 0.5 \
+--classification 1 \
+--initial_mode Run_Movie_Mode

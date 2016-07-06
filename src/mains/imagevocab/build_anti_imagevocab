@@ -1,0 +1,23 @@
+/bin/rm ./accum_features
+/bin/rm ./binarize_sift_descriptors
+/bin/rm ./cell_freq
+/bin/rm ./cluster_centers
+/bin/rm ./compute_sift_keyfiles
+/bin/rm ./concatenate_binary_keys
+/bin/rm ./covar_descriptors
+/bin/rm ./descriptors_covar
+/bin/rm ./generate_image_words
+/bin/rm ./identify_bad_images
+/bin/rm ./image_relns
+/bin/rm ./image_word_histograms
+/bin/rm ./keys_to_hdf5
+/bin/rm ./kmeans
+/bin/rm ./match_vocab
+/bin/rm ./nplusone
+/bin/rm ./parse_cluster_centroids
+/bin/rm ./randomhash
+/bin/rm ./siftwords_2_text
+/bin/rm ./tfidf
+/bin/rm ./tfidf2
+/bin/rm ./whiten_features
+

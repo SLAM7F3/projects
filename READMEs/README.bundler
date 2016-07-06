@@ -1,0 +1,429 @@
+===========================================================================
+Bundler notes
+===========================================================================
+Last updated on 1/21/13; 2/9/13; 3/10/13; 4/26/13
+===========================================================================
+
+---------------------------------------------------------------------------
+Running Bundler on TXX 
+---------------------------------------------------------------------------
+
+In order to reconstruct video frames using Noah's version of BUNDLER on
+TXX, we need to supply initial estimates for the focal length within each
+frame (recall video frames have no exif metadata).
+
+Noah suggests creating a file called list.txt which is of the form
+
+images/frame000001.jpg  0   5997.24
+images/frame000002.jpg  0   5997.24
+images/frame000003.jpg  0   5997.24
+.
+.
+.
+
+where the last column contains fabs(fv)*Npy.  Important note:  Npx
+denotes the number of horizontal pixels AFTER subsampling! 
+
+In order for Bundler to read the hardwired focal parameter estimates, we
+need to chant
+
+export IMAGE_LIST=list.txt 
+
+prior to running our "run_bundler" script on TXX.
+
+---------------------------------------------------------------------------
+Radial undistortion
+---------------------------------------------------------------------------
+
+RadialUndistort list.txt bundle.out output_path
+
+
+---------------------------------------------------------------------------
+Dense point cloud reconstruction 
+---------------------------------------------------------------------------
+
+First, given the bundle.out file generated, I have a program called
+"Bundle2PMVS" that converts the bundle file to PMVS's input (or more
+precisely, generates a script to finalize the conversion).  The usage is:
+
+   > Bundle2PMVS <list.txt> <bundle.out> [output_dir (default: pmvs)]
+
+e.g., 
+
+   > Bundle2PMVS list.txt results/bundle.33.0/bundle.out pmvs
+
+This will do some processing, then output the message:
+
+@@ Conversion complete, execute "sh pmvs/prep_pmvs.sh" to finalize
+
+as the message implies, finalize the conversion process by executing 
+
+   > sh pmvs/prep_pmvs.sh
+
+Some more processing will happen, then you'll get the message:
+
+@@ Sample command for running pmvs:
+   pmvs2 pmvs/ pmvs_options.txt
+    - or - 
+   use Dr. Yasutaka Furukawa's view clustering algorithm to generate a set
+of options files.
+       The clustering software is available at
+http://grail.cs.washington.edu/software/cmvs 
+
+
+In the pmvs subdir, edit pmvs_options.txt and reset CPU 8 to CPU 1.  This
+should hopefully prevent the TXX login node from  becoming unresponsive!
+
+
+As the message says, the simplest option is to run pmvs2:
+
+  > pmvs2 pmvs/ pmvs_options.txt
+
+You could also run CMVS.  This breaks the dense reconstruction task into
+chunks for faster (and less memory intensive) reconstruction, but isn't
+installed on the cluster yet.  I can copy it on in the next couple days,
+though.
+
+---------------------------------------------------------------------------
+Instructions from Zach Sun for running Noah Snavely's BUNDLER codes on
+BEAST machine:
+---------------------------------------------------------------------------
+
+To generate reconstructed bundle file for N images:
+
+1) Create a new folder in /home/bots/bundler/Bundler3-distr/examples
+2) Put all of your images into this new folder
+3) From that folder run /home/bots/bundler/Bunder3-dist/bundler-scripts/BundlerVocab.sh
+
+Results from bundler
+Results will appear in the folder
+/home/bots/bundler/Bundler3-distr/examples/[folder you created]/results
+
+Within the results folder, bundle.0.0 will be the largest connected
+component along with subsequent sets in bundle.#.0
+readme.bundler.txt (END) 
+
+---------------------------------------------------------------------------
+Bundler SIFT matching notes
+---------------------------------------------------------------------------
+
+kermit000.key
+
+1265 128 = # SIFT features found in kermit000.jpg, 128 = size of SIFT vector
+142.77 231.89 56.09 0.155 # py, px, orientation, scale
+ 9 0 0 0 0 0 0 2 15 0 0 0 0 0 6 25 0 0 0 0  # 128 vector for SIFT feature #1
+ 0 3 19 9 0 0 0 0 0 6 1 0 81 0 0 0 0 0 0 22
+ 140 16 1 2 1 1 52 140 18 10 9 29 24 82 140 83 0 5 4 9
+ 42 140 26 0 62 21 2 0 0 0 1 13 140 140 28 7 2 0 3 34
+ 29 110 68 85 54 12 9 10 0 15 17 70 135 70 4 0 17 14 2 0
+ 0 0 0 0 110 118 4 0 0 0 0 0 34 123 31 8 3 1 1 0
+ 7 19 6 9 23 53 14 1
+400.03 533.66 26.02 1.689 # py, px, orientation, scale
+ 0 0 0 0 0 0 0 3 49 0 2 5 0 0 32 134 134 11 5 18  # 128 vec for SIFT #2
+ 32 7 20 113 19 55 20 43 47 6 2 6 18 1 0 0 0 0 0 6
+ 134 20 1 2 3 7 62 134 45 5 3 47 134 50 70 77 15 24 60 55
+ 89 20 26 63 7 0 0 0 0 1 10 9 134 56 37 27 3 4 26 50
+ 31 27 61 134 82 8 1 2 2 7 92 134 76 1 1 4 0 0 0 0
+ 0 0 1 0 2 3 9 11 0 2 4 1 0 1 11 67 16 0 0 0
+ 0 0 0 43 57 0 0 0
+
+kermit000.ks = reduced version of kermit000.keys
+
+# keys = 1265, focal = 660.80306, px = 320.0, py = 240.0
+231.89 142.77 56.09 0.155  # px,py,orientation,scale for SIFT feature #1
+533.66 400.03 26.02 1.689  # px,py,orientation,scale for SIFT feature #2
+269.32 311.59 24.32 0.617
+458.52 99.95 27.08 -2.129
+
+Output subdirectory kermit/matches_buildpair contains 
+
+match-000-001.txt  match-001-002.txt  match-002-003.txt  match-007-008.txt
+match-000-002.txt  match-001-003.txt  match-002-005.txt  match-007-009.txt
+match-000-003.txt  match-001-005.txt  match-002-007.txt  match-007-010.txt
+match-000-005.txt  match-001-007.txt  match-002-009.txt  match-009-010.txt
+match-000-007.txt  match-001-008.txt  match-002-010.txt
+match-000-009.txt  match-001-009.txt  match-003-004.txt
+match-000-010.txt  match-001-010.txt  match-005-007.txt
+
+match-000-001.txt looks like
+
+221	  = # SIFT matches
+465 482   = index for matching feature # 1 in first photo & second photo
+872 876	  = index for matching feature # 2 in first photo & second photo
+857 856
+28 18
+23 32
+1169 1202
+1249 963
+1086 1123
+164 181
+281 211
+227 246
+
+====================================================
+
+To run May 2011 version of Bundler on internal grid, chant
+
+BundlerVocabBSUB.sh > bundler.log &
+
+====================================================
+
+To run May 2011 version of Bundler script specialized for dense video
+reconstruction on TXX, chant
+
+BundlerVocabSparse.sh > bundler.log &
+
+====================================================
+
+In BundlerVocabfoo.sh script, can terminate before following
+if statement if we only want to generate a SIFT graph...              
+
+
+##### STOP AT THIS POINT IF ONLY THE SIFT GRAPH IS NEEDED                     
+
+if [ "$SKIP_TRACKS" == "" ]                                                   
+then                                                                          
+  rm -f constraints.txt                                                       
+  rm -f track-pairs.txt                             
+
+
+On 5/27/11, we created BundlerSiftGraph.sh within
+/home/gridsan/snavely/local/bin/ on TXX.  Can now chant run_siftgraph on
+TXX to generate just SIFT graph.
+
+====================================================                         
+
+From: Peter Cho [mailto:cho@ll.mit.edu] 
+Sent: Friday, May 27, 2011 12:18 AM
+To: Noah Snavely
+Subject: Aerial GC reconstruction: good and bad news
+
+Hi Noah.
+
+This morning when I checked on the aerial GC reconstruction which you 
+had started last night, I found good and bad news:
+
+     Good: The final results are definitely better than before you
+       altered the chip size parameter for the FujiFilm camera in your
+       python file.
+
+     Bad: There's still a nonnegligible number of cameras
+       whose reconstructed positions are clearly incorrect.
+
+So at this stage, I'd like to try your last suggestion and alter the
+projection_estimation_threshold 4.0 parameter in the
+options.bundler.9.0.txt file.  After this change is made, I assume that
+only the last reconstruction step in bundler's chain needs to be rerun.
+
+Can you please say exactly what needs to be chanted in order to force
+bundler to read the altered options.bundler.9.0.txt file rather than trying
+to regenerate such a file from scratch?
+
+Thanks.
+
+
+Peter
+
+
+To answer your first question first, all you would need to do is run:
+
+ > bundler64 list.txt --options_file options/options.bundler.9.0.txt >
+some_log_file
+
+See the commands in bundler-script.txt for examples.
+
+Noah
+
+
+===============================
+
+*.  On 6/2/11, Noah told us that list.txt should NOT have any extra, empty
+lines at its end.  On 2/9/13, we confirmed this using Noah's publically
+available bundle4 code.
+
+*.  On 11/2/2011, Noah told us that trying to reconstruct multiple views
+from a camera which have a constant set of extrinsic and intrinsic camera
+parameters is OK.
+
+*.  On 11/2/2011, Noah told us to look within results/bundle0.0/bundle.log
+to find the 2 cameras which bundler chose to initiate the reconstruction.
+Search for "Adjusting cameras I and J (score = 0.000)".  I and J are the
+indices for the first 2 cameras in the reconstruction process.
+
+*.  Can override bundler's choice for the first 2 cameras.  (See Other
+options notes within
+http://phototour.cs.washington.edu/bundler/bundler-v0.4-manual.html).  
+
+Add specified initial cameras to options/options.bundler.0.0.txt.  But Noah
+recommends removing --skeletal_set line from this same text file in order
+to avoid not having first two cameras within the skeletal set.  By removing
+this line, skeletal step in entire bundler pipeline is avoided.  In this
+case, there is no possibility for skeletal step to get confused, for it is
+simply skipped over.
+
+Here is an example of a manually altered options.bundler.0.0.txt file:
+
+[cho@login-0-0 options]$ cat options.bundler.0.0.txt
+--output bundle.out
+--output_all bundle_
+--output_dir results/bundle.0.0
+--skip_fmatrix
+--skip_homographies
+--init_focal_length 3995.486809
+--variable_focal_length
+--projection_estimation_threshold 4.0
+--run_bundle
+--min_camera_distance_ratio 0.0
+--ray_angle_threshold 2.0
+--use_focal_estimate
+--trust_focal_estimate
+--constrain_focal
+--constrain_focal_weight 0.0001
+--estimate_distortion
+--min_proj_error_threshold 6.0
+--max_proj_error_threshold 12.0
+--min_max_matches 10
+--min_feature_matches 64
+--estimate_ignored
+--keys_file skeletal_output/coords_0_0.txt
+--tracks_file skeletal_output/tracks_0_0.txt
+--match_graph_file skeletal_output/matchpairs_0_0.txt
+--init_pair1 278
+--init_pair2 288
+--cc_file skeletal_output/components_0.txt
+--cc_to_reconstruct 0
+
+*.  In skeletal_output/skeletal_0.0.txt, can manually alter contents to
+specify which photos to use for initial bundle adjustment.  Once a hand
+generated skeletal set file is created, just manually run final bundler64
+(= BUNDLER) step within Noah's full pipeline script.  Do not rerun entire
+bundler pipeline.
+
+
+# Run the bundler!
+mkdir results
+GenerateBundlerScript.sh skeletal_output results 9 > bundler-script.txt
+
+echo "[- Running bundler -]"
+
+qsub-exec.sh bundler-script.txt BUNDLER-$TIME
+date
+
+
+*.  On 12/21/12, Noah insisted that the skeletal step on the TXX pipeline
+should almost never fail!  Instead, failures clearly evident within
+skeletal_output/ are much more likely to have originated from earlier
+problems.  
+
+In particular, Noah warned us that there should NEVER be both .key and
+.key.gz files sitting in /images.  The existence of .key and .key.gz files
+implies that bundler was run twice and that earlier keys were not cleaned
+out and/or overwritten by later keys.  This can definitely lead to feature
+track failures and subsequent skeletal step failures.
+
+*.  Basic syntax for instructing bundler to perform incremental bundle
+adjustment on an N+1st JPEG image given a previously calculated
+reconstruction:
+
+$BUNDLER"/bin/bundler" $INPUT"/list.txt" --bundle $INPUT"/bundle/bundle.out" --add_images $OUTPUT"/addlist.txt"
+
+/home/cho/software/bundler-v0.4-source/bin/bundler list.txt --bundle \
+bundle.out --add_images ./addlist.txt 
+
+
+*.  Running bundler on BEAST:
+
+/home/cho/software/bundler-v0.4-source/bin/bundler list.txt --options_file options.txt > bundle/out
+
+
+*.  On 12/21/12, Noah indicated that we should be able to take the
+list.txt, bundle.out and key files from TXX over to any non-cluster
+computer running his publically available bundler4.0 software.  If
+possible, it's useful to incorporate focal parameters into "addlist.txt".
+But this is not absolutely necessary.  We should in theory be able to run
+bundler4 on an N+1st JPG image so long as we supply it the critical outputs
+from TXX bundler for the previous reconstruction.
+
+*.  On 12/21/12, Noah suggested that we look at
+skeletal_output/matchpairs_0_0.txt in order to try to intelligently advise
+bundler on a good initial camera pair for bundle adjustment if the
+auto-selected pair yields lousy reconstruction results.
+
+For each nontrivial row in this file, the first and second integers
+correspond to image indices.  The next-to-last number = homography value.
+The closer this homography number is to one, the less 3-dimensional is the
+selected camera pair.  The last number in the row = number of SIFT matches
+for the selected camera pair.  Noah recommends choosing a camera pair which
+is as "3D" as possible and yet also has large numbers of SIFT matches.
+
+395808
+0 1 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.978 1431
+0 2 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.776 1683
+0 3 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.621 1329
+0 4 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.666 911
+0 5 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.667 634
+0 6 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.782 308
+0 7 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.704 71
+0 8 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 9 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 10 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 11 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 12 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 13 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 14 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 15 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 16 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 17 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 18 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 19 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 20 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 21 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 22 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 28 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 29 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 30 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 31 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 32 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 33 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.000 0
+0 34 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.904 50
+0 35 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.959 142
+0 36 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.975 310
+0 37 F 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.979 469
+.
+.
+.
+
+
+*.  As of 1/21/13, we believe the following command takes in an initial
+"bundle_raw.out" file and uses bundler to perform just bundle adjustment:
+
+/home/cho/software/bundler-v0.4-source/bin/bundler \
+list_tmp.txt --bundle bundle_raw.out  \
+--output bundle.out \
+--use_focal_estimate \
+--variable_focal_length \
+--constrain_focal \
+--constrain_focal_weight 0.0001 \
+--estimate_distortion \
+--rerun_bundle
+
+
+Perform bundle adjustment with fixed focal length and zero radial
+distortion assumed:
+
+/home/cho/software/bundler-v0.4-source/bin/bundler \
+list_tmp.txt --bundle bundle_raw.out  \
+--output bundle.out \
+--use_focal_estimate \
+--rerun_bundle
+
+
+
+
+/home/cho/software/bundler-v0.4-source/bin/bundler \
+./bundler/GEO/20120105_1402/list_tmp_modified.txt \
+--bundle ./bundler/GEO/20120105_1402/bundle_raw.out  \
+--output ./bundler/GEO/20120105_1402/bundle.out \
+--use_focal_estimate \
+--rerun_bundle
+

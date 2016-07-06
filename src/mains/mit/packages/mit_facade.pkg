@@ -1,0 +1,13 @@
+/home/cho/programs/c++/svn/projects/src/mains/mit/cropped_facade3.png
+--frustum_color white
+# --frustum_sidelength 200
+# --frustum_sidelength 400
+--frustum_sidelength 500
+# --frustum_sidelength 600
+# --downrange_distance 20
+--downrange_distance 25
+# --downrange_distance 400
+--projection_matrix
+ -4.7080856447e-07   1.88729850972e-07  -8.40704649209e-09  -0.731274852541
+ -8.26105538399e-08 -5.69555712409e-08  -3.80367226118e-07   0.294270631553
+ -2.23013592364e-07 -1.15584976013e-07   2.47783407523e-10   0.615338837914

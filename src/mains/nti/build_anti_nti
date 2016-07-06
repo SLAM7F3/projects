@@ -1,0 +1,6 @@
+/bin/rm ./coasting
+/bin/rm ./parallax
+/bin/rm ./register
+/bin/rm ./reject
+/bin/rm ./spurious
+/bin/rm ./track

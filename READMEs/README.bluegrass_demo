@@ -1,0 +1,262 @@
+============================================================================
+Notes for running Bluegrass demo
+============================================================================
+Last updated on 9/25/08; 10/7/08; 10/8/08; 10/20/08
+============================================================================
+
+ACTIVEMQ & GraphExplorer notes:
+
+A0.  On all Windows machines connected to a private network, make sure that
+McAffee Host Intrusion Prevention FireWall is disabled.  Left click on
+small toolbar icon near bottom right corner of screen which looks like a
+pair of crossed red & green flags.  Select "Disable All" on the menu which
+pops up.  Only after the firewall protection is down will linux laptops on
+the private network be able to ping windows laptops.
+
+A1.  Make sure ActiveMQ is running (doesn't start at bootup on ISDS3D as of
+5/29/08).
+
+A2.  In order to start Michael Yee's social network tool, open DOS window
+via 'run cmd'.  Then cd to Documents and
+Settings\pe16649\Desktop\Downloads\GraphExlorer3.  Within this subdir,
+chant
+
+	runGraphExplorer tcp://155.34.162.160:61616 urban_network
+	runGraphExplorer tcp://155.34.125.216:61616 urban_network  
+			(touchy in OSTF)
+
+where the IP corresponds to the machine running the ActiveMQ broker.
+
+A3.  Make sure to modify --ActiveMQ_hostname tcp://155.34.125.216:61616
+entry within run_touchy_qtcities (or run_qtcities) with the appropriate
+URL.  
+
+A4.  Don't run GraphExplorer in full screen mode on side G104 conference
+room monitors.  OpenGL can reset video resolution settings causing a black
+output on the side monitor and/or Windows to crash!
+
+A5.  Make sure to disable firewall (or disable ALL) on ancient windows
+laptop when it's running Michael's social network tool on the private
+network.  Click on red & green shield icon on bottom tool bar.
+
+----------------------------------------------------------------------------
+WIKI PAGE NOTES
+
+B1.  If running Bluegrass demo locally on ISDS3D which is NOT connected up
+to LLAN, need to reset SKS database URL by opening upon firefox to
+http://localhost:8080/SKSDataServer/admin and changing database.url to
+jdbc:postgresql://127.0.0.1:5432/bluegrass_dsa2.
+
+B2.  Need to reset the IP for the secondary machine (typically old windows
+laptop or ISDS3D run in windows mode) which will display dynamic truth
+vehicle web pages when we're in the OSTF.   
+
+Settings -> Network Connections -> Local Area Connection -> Properties ->
+Internet Protocol (TCP/IP).  
+
+IP address:  155.34.125.217 		(OK for OSTF as of June 2, 2008)
+Subnet mask: 255.255.255.0
+Default gateway: 155.34.125.1
+
+Preferred DNS server: 155.34.3.8
+Alternative DNS server: 155.34.3.22
+
+Recall that these settings should be reset to "Obtain an IP address
+automatically" and "Obtain DNS server address automatically" once the
+windows laptop is back in our G106 office.
+
+B3.  Specify the URL in run_touchy_logic for the machine (typically old
+windows laptop) on which we run Michael Yee's Launch Service in order to
+view dynamically generated truth vehicle webpages within Firefox.  This
+parameter corresponds to HTMLServer_URL.  The 8080 portnumber is mandatory
+for tomcat.  HTMLServer_URL is set only in run_touchy_logic and NOT in
+run_touchy_qtcities!
+
+Once tomcat is started up on the secondary machine, no further scripts need
+to be run.
+
+----------------------------------------------------------------------------
+IPOD, LLAN & PRIVATE NETWORKING NOTES
+
+C1.  In order to take touchy/touchy2 off the LLAN and put it onto the LLEN,
+we need to physically disconnect the ethernet cable from the LLAN jack and
+place it into the upper left port on the face plates in the Engineering lab
+S3-314, OSTF and the back of the G104 conference room.  (As of early June
+2008, we have asked LL's networking department [Rick Merrick, x5099] to
+give us LLEN connectivity in all 3 LL locations via the upper left port.)  
+
+We next need to make sure the LLEN ethernet cable goes into the "internet"
+slot on the back of the wireless router.  We then need to connect another
+ethernet cable from the router to touchy/touchy2.  
+
+In order to release eth0 from its earlier LLAN IP address, chant "ifdown
+eth0".  Then to reset eth0 to its new LLEN IP address, chant "ifup eth0".
+These operations should reset the nameservers listed within
+/etc/resolv.conf.  If not, they have to be manually changed within this
+file.  We also need to manually modify the contents of
+/etc/network/interfaces for touchy when it's located in the OSTF.
+
+C2. When touchy is on private network, create symbolic link between
+/etc/network/interfaces to /etc/network/interfaces_dhcp.  When touchy is in
+OSTF, link should instead point to /etc/network/interfaces_OSTF_llan.
+
+C3.  When touchy is on private network, may need to link /etc/resolv.conf to
+/etc/resolv_private_network.conf
+
+C4.  When touchy is on private network connected to LLEN via wireless
+router, we need to change firefox's proxy setting to "Direct connection to
+the Internet" from "Automatic proxy configuration URL".  In Firefox, chant
+edit->preferences->Advanced->network->settings to get Connection Settings
+menu to make these changes.
+
+C5.  When touchy is on private network,we need to load localhost versions
+of html files in programs/c++/svn/projects/src/mains/bluegrass/AVS:
+
+			video_player_local.html
+			OSGbuttons_local.html
+
+C6.  When touchy is on private network, we need to reset tomcat's database
+adminstration URL to localhost:
+
+Open file:    http://localhost:8080/SKSDataServer/admin
+
+database.url = jdbc:postgresql://127.0.0.1:5432/bluegrass_dsa2
+
+C7.  When touchy is taken off LLAN and put onto private network, we do not
+need to modify /etc/resolv.conf links if we are not going to need to work
+with the LLEN.  But we do need to relink /etc/network/interfaces to
+interfaces_dhcp.  When touchy is put back onto LLAN, relink interfaces to
+interfaces_OSTF_llan.
+
+need to make chants in following order:
+
+ifdown eth0
+relink /etc/network/interfaces file and modify etc/resolv.conf 
+ifup eth0
+
+This order is critically important!  Do not perform relinking/modifying
+without first executing the ifdown command.
+
+C8.  When touchy is returned from the private network back to the OSTF LLAN,
+we must recopy /etc/resolv_OSTF_LLAN.conf onto /etc/resolv.conf.  Dave
+Ceddia taught us that contents of resolv.conf are automatically overwritten
+by wireless router.
+
+C9.  May need to modify the host line within Dave Ceddia's CGI script
+
+		/usr/lib/cgi-bin/query_aerial_photos.cgi
+
+When touchy is on the private network, this line should read something like
+
+			host = "192.168.1.101"
+
+C10.  Change IP in /var/www/rco/display_ground.rhtml to 192.168.1.101 when
+on private network.
+
+C11.  When viewing "Busy street intersection" video chips, can return to
+Dave Ceddia's web page containing buttons for both aerial and ground
+imagery via "book" icon at bottom of iPod display.
+
+C12.  On iPod, need to access following URL in order to bring up Dave
+Ceddia's aerial/ground photos webpage:
+		
+			http://192.168.1.101/rco/query.rhtml
+
+C13.  Make sure ethernet connection from touchy does NOT plug into yellow
+INTERNET jack on back of Linksys wireless router.  Instead, it should plug
+into a blue ETHERNET jack.
+
+C14.  Number of ethernet faceplace in OSTF to which DiamondTouch table is
+connected = SL0EA-857.  As of 9/25/08, we were told by Craig from computer
+help desk (x4202) that bottom left jack is connected to 155.34.125.  Bottom
+right jack is apparently not connected, upper right is for telephone while
+upper left is for LLEN.
+
+C15.  If linksys network does not come up automatically when iPod is turned
+on (e.g. Lincoln wireless visitor network appears instead), then return to
+iPod's startup page by pressing the square button located at the center
+bottom on iPod's front, press Settings icon located on bottom right (with
+Gears picture), press Wi-Fi button at top of subsequent menu.  Finally,
+choose "linksys" network which corresponds to our private network on which
+touchy and wireless router sit.  
+
+----------------------------------------------------------------------------
+STARTUP SCRIPT NOTES
+
+D1.  Must first start Bluegrass demo logic server before running QTCITIES
+script.
+
+D2.  When entire Bluegrass demo is running on private network, start up
+Michael Yee's social network tool via run_startup_script which has
+hardwired IP address and port number (192.168.1.101:61616) for ActiveMQ.
+If social network tool should fail (e.g. blue screen of death under
+windows), should be able to restart tool via this startup script.
+
+----------------------------------------------------------------------------
+LUCA'S UAV TASK ASSIGNMENT NOTES
+
+E0.  When Windows laptop is running on private network, make sure all
+firewalls are disabled.  See note A0 above.
+
+E1.  Start Matlab by double clicking icon on desktop
+
+E2.  Use Matlab menu form to change subdirectory to Downloads/LL_Version1.
+
+E3.  Chant "setup_initialization" in main matlab window to invoke
+setup_initialization.m file.  This initialization file sets up MatlabMQ.
+
+E4.  To change URL for activeMseQ server within Luca's Matlab codes, we need
+to edit setup_initialization.m which resides in Version1 subdirectory.
+"edit initialization.m".  Then modify last line in setup_initialization.m
+with appropriate URL.
+
+E5.  To change combinatorial factor used by Luca's algorithms from 2 to 3
+and thereby improve task assignment (though also significantly increase
+number of variables which his codes must handle), change directory to TA
+(for Task Assignment)\Task Allocation\ : "cd ./TA/TaskAllocation".  Then
+edit createPerms.m : "edit createPerms.m".  Modify very first "2" or "3"
+number in this file, save file and cd back to main version 1 subdirectory.
+
+----------------------------------------------------------------------------
+LARGE SHARP MONITOR NOTES
+
+F0.  Recall that X does NOT automatically detect when a new monitor is
+added to a linux box.  So we generally need to restart X (e.g. reboot
+touchy) when we connect up a Sharp monitor to the 2nd bottom, left DVI port
+next to the bottom, right DVI port on touchy's back panel.  When X
+restarts, it should automatically clone the 1024x780 (?) Diamond Touch
+projector image onto the Sharp monitor.
+
+F1.  As of 8/20/08, we have had difficulty connecting the 2nd Sharp monitor
+via a DVI cable to our ISDS3D laptop when it's running in Windows mode (and
+displaying Michael Yee's social network tool).  It appears to be safer to
+instead connect ISDS3D via a VGA cable and to run Windows at a relatively
+low screen resolution (e.g. 1024x780).  
+
+F2.  As of 8/20/08, we have not tried running Michael's social network tool
+under linux on the Sharp monitors.  Perhaps it would be more reliable and
+robust if we ran it under linux rather than under windows.
+
+F3.  On 10/7/08, we learned (after much tedious trial and error!) that
+the key combination "Cntrl Fn (blue) F8/CRT/LCD" works under linux in much
+the same was as under Windows.  This key combination toggles between
+TwinView output appearing first just on the laptop screen, then on a
+secondary output screen and finally on both.  So when we plug either ISDS3D
+or VISION laptops into the Sharp monitors, we generally need to press this
+key combination a few times before we'll see output on both output
+monitors.
+
+F4.  "Best" output resolution for simultaneous display on ISDS3D/VISION
+laptop monitors and Sharp LCD screens is 1400x1050.  At this resolution
+setting, both screens are precisely filled (but not overfilled which leads
+to annoying screen movements in response to large mouse deflections.)
+
+F5.  In order to run Michael Yee's GraphExplorer tool on ISDS3D laptop, be
+sure to relink /etc/X11/xorg.conf to xorg.conf_good_sharp.
+
+F6.  Do NOT use the Sharp monitors' remote controls when *both* monitors
+are in use (e.g. one mirroring touchy's output on DiamondTouch, the other
+showing Michael's GraphExplorer output).  As we learned with Erin back in
+the summer, one remote appears to affect both monitors.  Instead, just use
+the buttons on the sides of the Sharp monitors to control input settings
+and power to the screens.

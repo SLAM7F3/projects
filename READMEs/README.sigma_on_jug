@@ -1,0 +1,11 @@
+ssh pe16649@jug
+password = standard e-mail password
+
+SIGMA data is sitting in /raid2/SIGMA
+
+Ross' code output sits in subdirs like
+
+/raid2/SIGMA/SIGMA_Analog-Metadata/SIGMA_FLIGHT_5-25-2011/flight_1/20110525_091610
+
+
+sftp pe16649@jug.llan.ll.mit.edu

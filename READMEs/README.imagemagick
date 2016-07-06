@@ -1,0 +1,177 @@
+========================================================================
+Image Magick notes
+========================================================================
+Last updated 3/26/16; 4/9/16; 6/26/16; 6/28/16
+========================================================================
+
+*.  Uniform red foreground text:
+
+convert -background '#00000000' -fill '#FF0000' -stroke '#b608e4' \
+-strokewidth 0.45196 -depth 8 \
+-font './fonts/reasonable_fonts/Lato-Bold.ttf' \
+-pointsize 40 -size 315x -gravity Center \
+caption:"He started to approach. And I must say, your ex-concubine is" \
+png32:dummy_chip_0.png
+
+// Drop shadow effect (only applicable to text foregrounds with no
+backgrounds)
+
+montage -background '#00000000' -fill '#FF0000' -stroke '#b608e4' \
+-strokewidth 0.45196 -depth 8 \
+-font './fonts/reasonable_fonts/Lato-Bold.ttf' \
+-pointsize 40 -size 315x -gravity Center \
+caption:"He started to approach. And I must say, your ex-concubine is" \
+-shadow -geometry +1+1 \
+png32:dummy_chip_0.png
+
+// Variegated greyscale text foreground coloring (slight 3D effect)
+
+convert -background '#00000000' -fill '#FF0000' -stroke '#b608e4' \
+-strokewidth 0.45196 -depth 8 \
+-font './fonts/reasonable_fonts/Lato-Bold.ttf' \
+-pointsize 40 -size 315x -gravity Center \
+caption:"He started to approach. And I must say, your ex-concubine is" \
+-gamma 2 +level 0,1000 -white-threshold 999 \
+-shade 135x30 -auto-level +level 10,90% \
+png32:dummy_chip_1.png
+
+// Variegated colored text foreground coloring (3D effect) - only works for
+pure foreground text images with no colored underboxes
+
+convert dummy_chip_1.png  -alpha extract  -blur -0x3 -shade 50x10  -normalize \
+          dummy_chip_1.png  -compose Overlay -composite \
+          dummy_chip_1.png  -alpha on  -compose Dst_In  -composite \
+          dummy_chip_1_3D.png
+
+convert dummy_chip_1.png  -alpha extract  -blur -0x3 -shade 20x50  -normalize \
+          dummy_chip_1.png  -compose Overlay -composite \
+          dummy_chip_1.png  -alpha on  -compose Dst_In  -composite \
+          dummy_chip_2_3D.png
+
+convert dummy_chip_1.png  -alpha extract  -blur -0x3 -shade 100x50  -normalize \
+          dummy_chip_1.png  -compose Overlay -composite \
+          dummy_chip_1.png  -alpha on  -compose Dst_In  -composite \
+          dummy_chip_3_3D.png
+
+// Greyscale 3D-ish effect (only works for pure foreground text images with
+no colored underboxes)
+
+convert dummy_chip_1.png  -alpha extract  -blur -0x8 -shade 20x50  -alpha On \
+          -background gray50 -alpha background -auto-level \
+          aqua_shade.png
+
+convert dummy_chip_1.png  -alpha extract  -blur -0x8 -shade 50x25  -alpha On \
+          aqua_shade2.png
+
+*.  In order to see verbose text rendering information, use the "-debug
+annotate" argument to ImageMagick's convert command:
+
+convert  -debug annotate -background '#00000000' -fill '#6f374f'  -depth 8 \
+-font './fonts/reasonable_fonts/Zekton Bold.ttf'  \
+-size 273x98   \
+-undercolor '#43c5a0ff'  -gravity Center  caption:'hopes to' \
+png32:dummy_chip_0.png
+
+*.  Individually coloring substrings within a full string of text:
+
+str1="Rocky Mountains"
+str2=": "
+str3="Taken 10/22/2007"
+convert -background white \
+\( -fill red -font Helvetica -pointsize 12 label:"$str1" \) \
+\( -fill black -font Helvetica -pointsize 12 label:"$str2" \) \
+\( -fill blue -font Helvetica -pointsize 12 label:"$str3" \) \
++append sometext.png
+
+
+*.  Command to pad an image with white space:
+
+convert -size 1000x500 xc:white figure_01.jpg -gravity center -composite padded_figure_01.jpg
+
+convert -size 1000x500 xc:white figure_05.jpg -gravity center -composite padded_figure_05.jpg
+
+convert -size 1000x500 xc:white figure_06.jpg -gravity center -composite padded_figure_06.jpg
+
+convert -size 1000x500 xc:white figure_07.jpg -gravity center -composite padded_figure_07.jpg
+
+convert -size 1000x500 xc:white figure_08.jpg -gravity center -composite padded_figure_08.jpg
+
+convert -size 1500x660 xc:white figure_09.jpg -gravity center -composite padded_figure_09.jpg
+
+convert -size 1000x500 xc:white figure_12.jpg -gravity center -composite padded_figure_12.jpg
+
+
+convert -size 1100x800 xc:white letters_decision_tree_01.png -gravity center -composite padded_letters_decision_tree_01.png
+
+convert -size 1100x800 xc:white letters_decision_tree_02.png -gravity center -composite padded_letters_decision_tree_02.png
+
+convert -size 1100x800 xc:white letters_decision_tree_03.png -gravity center -composite padded_letters_decision_tree_03.png
+
+convert -size 1100x800 xc:white letters_decision_tree_04.png -gravity center -composite padded_letters_decision_tree_04.png
+
+
+
+convert -size 828x539 xc:white segmented_image_00002.jpg -gravity South -composite padded_segmented_02.jpg
+
+convert -size 828x539 xc:white segmented_image_00003.jpg -gravity South -composite padded_segmented_03.jpg
+
+
+
+convert -size 256x256 xc:black 4_000294.jpg -gravity center -composite 4_000294_padded.jpg
+
+convert -size 256x256 xc:black 9_000280.jpg -gravity center -composite 9_000280_padded.jpg
+
+convert -size 256x256 xc:black 9_000282.jpg -gravity center -composite 9_000282_padded.jpg
+
+*.  
+
+convert 0_037281_256.jpg -crop 224x224+16+16 cropped_0_037281_256.jpg
+
+convert 2_150503_256.jpg -crop 224x224+16+16 cropped_2_150503_256.jpg
+
+convert 5_046806_256.jpg -crop 224x224+16+16 cropped_5_046806_256.jpg
+
+convert 7_138084_256.jpg -crop 224x224+16+16 cropped_7_138084_256.jpg
+
+
+
+convert 3_000043_256.jpg -crop 224x224+16+16 cropped_3_000043_256.jpg
+
+convert 6_000099_256.jpg -crop 224x224+16+16 cropped_6_000099_256.jpg
+
+convert 8_000048_256.jpg -crop 224x224+16+16 cropped_8_000048_256.jpg
+
+*.  Montage of double-sized, full-sized and half-sized images:
+
+convert -size 728x409 xc:white score_image_04084_2.png -gravity center -composite padded_score_image_04084_2.png
+
+montage -tile 1x2 score_image_04084_1.png padded_score_image_04084_2.png full_half_scores.png
+
+montage score_image_04084_0.png montage_full_half_scores.png -mode Concatenate -frame 2 double_full_half_scores.png
+
+
+
+
+convert -size 728x409 xc:white ccs_image_04084_2.png -gravity center -composite padded_ccs_image_04084_2.png
+
+montage -geometry 728x409 -tile 1x2 ccs_image_04084_1.png padded_ccs_image_04084_2.png full_half_ccs.png
+
+montage ccs_image_04084_0.png full_half_ccs.png -mode Concatenate -frame 2 double_full_half_ccs.png
+
+
+
+
+convert -size 728x409 xc:white half_quads_image_04084.png -gravity center -composite padded_half_quads_04084.png
+
+montage -geometry 728x409 -tile 1x2 full_quads_image_04084.png padded_half_quads_04084.png full_half_quads.png
+
+montage double_quads_image_04084.png full_half_quads.png -mode Concatenate -frame 2 double_full_half_quads.png
+
+
+
+montage -tile 2x2 -geometry 400x300  \
+multi_hand_bboxes_02622.png \
+single_hand_bboxes_04276.png \
+multi_hand_bboxes_04316.png \
+single_hand_bboxes_02906.png \
+hands_on_faces.png

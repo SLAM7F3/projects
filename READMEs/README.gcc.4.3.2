@@ -1,0 +1,33 @@
+============================================================================
+Notes on migrating C++ codes from gcc 4.2 to gcc 4.3.2
+============================================================================
+Last updated on 9/3/09
+============================================================================
+
+
+find, for_each, sort  				<algorithm>
+ostream_iterator, istream_iterator 		<iterator>
+auto_ptr 					<memory>
+typeid 						<typeinfo>
+isalnum, toupper 				<cctype>
+INT_MIN, INT_MAX, RAND_MAX, UINT_MAX 		<climits>
+printf 						<cstdio>
+
+
+int64_t, uint8_t		<cstdint> [<stdint.h> for Ubuntu 8.04]
+
+
+abs, atoi, atof, malloc, free, rand, exit , getenv
+EXIT_FAILURE 				
+
+
+#include <cstdlib>
+
+============================================================================
+
+
+strncmp, strdup, strcpy, memcpy , memset, strstr, strlen, strtoul,
+strerror	
+
+#include <cstring>
+

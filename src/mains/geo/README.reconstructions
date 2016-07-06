@@ -1,0 +1,758 @@
+============================================================================
+Multi-GEO passes reconstruction notes
+=============================================================================
+Last updated on 9/14/13; 9/15/13; 9/16/13
+=============================================================================
+
+GOOGLE EARTH 
+
+FF "2nd" vent Easting =   312031
+FF "2nd" vent Northing = 4703905
+
+   ALIRT HAFB minimap:  312027.1, 4703906.6, 31.71 - 11.44 = 20.27 meters
+
+
+Steeple easting = 312726.5
+Steeple northing = 4725696.7
+
+Large hanger south-east corner UTM coordinates from GE:
+
+Easting = 311743
+Northing = 4703595
+
+  ALIRT HAFB minimap:  311742.2, 4703596.4, 21.11 - 10.65 = 10.46 meters
+
+
+=============================================================================
+*.  20110728_0905_minimal.tgz  
+
+Asymmetric orbit around HAFB hangars
+
+  Reasonable reconstruction & dense point cloud
+  INTERESTING DEMO EXAMPLE
+
+  GE Easting = 311743
+  GE Northing = 4703595
+  ALIRT height above ground = 10.5 meters
+
+i.   
+  Calculated target easting = 311734.0 		delta_easting = -9 m
+  Calculated target northing = 4703578.4 	delta_northing = -16.6 m
+						delta_rho = 18.9 m
+  Calculated height above ground = 10.6		delta_altitude =  0.1 m
+  Processing time = 111 secs
+
+ii.   
+  Calculated target easting = 311747.5 		delta_easting =  4.5 m
+  Calculated target northing = 4703564.2	delta_northing =  30.8 m
+						delta_rho =  31.1 m
+  Calculated height above ground = 7.9		delta_altitude =  -2.6 m
+  Processing time = 110 secs 
+
+iii.
+  Calculated target easting = 311740; 		delta_easting = -3 m
+  Calculated target northing = 4703571; 	delta_northing = -24 m
+						delta_rho = 24.2 m
+  Calculated height above ground = 10.3 meters	delta_altitude = -0.2 m
+  Processing time = 109 secs
+
+iv. 
+  Calculated target easting = 311742; 		delta_easting = -1 m
+  Calculated target northing = 4703570; 	delta_northing = -25 m
+						delta_rho = 25.0 m
+  Calculated height above ground = 8.4 meters	delta_altitude = -2.1 m
+  Processing time = 109 secs
+
+v.
+  Calculated target easting = 311748		delta_easting = 5 m
+  Calculated target northing = 4703568		delta_northing = -27 m
+						delta_rho = 27.5 m
+  Calculated height above ground = 7.6 meters	delta_altitude = -2.9 m
+  Processing time = 109 secs
+
+
+  d rho = 25.3 +/- 4.0 meters
+  d_alt = -1.5 +/- 1.2 meters
+  LOS range = 5.28556 +/- 1.29108 kms
+  camera elevation angle = -27.1693948276 +/- 6.97765048995
+  Pointing vectors' azimuthal coverage fraction = 1.0
+  59 images in 109.6 +/- 0.8 secs
+
+
+-----------------------------------------------------------------------------
+*.  20110728_1026_minimal.tgz  
+
+  Descending spiral around Grace Bible Church of Dracut (east of Lowell)
+  Several frames covered by clouds
+
+  Poor reconstruction & poor 3D point cloud
+
+  GE steeple easting = 312726.5
+  GE steeple northing = 4725696.7
+
+i.
+  Calculated target easting = 312707.1		delta_easting =  -19.4 m
+  Calculated target northing = 4725712.1	delta_northing = 15.4 m
+						delta_rho =  24.5 m
+  Calculated height above ground = 4.0		delta_altitude = ?
+  Processing time = 104 secs
+
+ii.
+  Calculated target easting = 312713.4		delta_easting =  -13.1 m
+  Calculated target northing = 4725687.7	delta_northing =  -9 m
+						delta_rho =  15.9 m
+  Calculated height above ground = 4.7		delta_altitude = ?
+  Processing time = 104 secs
+
+iii.
+  Calculated target easting = 312691.8; 	delta_easting = -28.1 m
+  Calculated target northing = 4725709.9	delta_northing = 13.2 m
+						delta_rho = 31.0 m
+  Calculated height above ground = 12.0		delta_altitude = ?
+  Processing time = 103 secs
+
+iv.
+  Calculated target easting = 312698.4; 	delta_easting = -34.7 m
+  Calculated target northing = 4725715.9	delta_northing = 19.2 m
+						delta_rho =  39.7 m
+  Calculated height above ground = 0.6		delta_altitude = ?
+  Processing time = 103 secs
+
+v. 
+  Calculated target easting = 312723		delta_easting = - 3.5 m
+  Calculated target northing = 4725700		delta_northing = 3.3 m
+						delta_rho = 4.8 m
+  Calculated height above ground = -2.1 meters	delta_altitude = ?
+  Processing time =  102 secs
+
+
+  rho = 23.2 +/- 12.1 meters
+  LOS range = 3.09646 +/- 0.424477 kms
+  camera elevation angle = -41.3464148936 +/- 6.46892082238
+  Pointing vectors' azimuthal coverage fraction = 1.0
+  48 images in 103.2 +/- 0.7 secs
+
+-----------------------------------------------------------------------------
+*.  20110728_1509_minimal.tgz  
+
+  Two parallel flybys of Grace Bible Church of Dracut (east of Lowell)
+  1 minute, 38 secs
+  Good reconstruction & dense cloud  (INTERESTING DEMO EXAMPLE!)
+
+  GE steeple easting = 312726.5
+  GE steeple northing = 4725696.7
+
+i.
+  Calculated target easting = 312729.7		delta_easting =  3.2 m
+  Calculated target northing = 4725710.8	delta_northing =  14.1 m
+						delta_rho = 14.5 m
+  Calculated height above ground = 10.7		delta_altitude =  m
+  Processing time = 121 secs
+
+ii.
+  Calculated target easting = 312738.1		delta_easting =  11.6 m
+  Calculated target northing = 4725716.9	delta_northing =  20.2 m
+						delta_rho =  23.3 m
+  Calculated height above ground = 5.7		delta_altitude =  m
+  Processing time = 123 secs
+
+iii.
+  Calculated target easting = 312723.9; 	delta_easting = -2.6 m
+  Calculated target northing =	4725705.1	delta_northing = -8.4 m
+						delta_rho = 8.8 m
+  Calculated height above ground = 11.5 meters	delta_altitude = ?
+  Processing time =  123 secs
+
+iv.
+  Calculated target easting = 312741.3; 	delta_easting = 14.8 m
+  Calculated target northing = 4725712.0	delta_northing = 15.3 m
+						delta_rho =  21.3 m
+  Calculated height above ground = 10.0 meters	delta_altitude = ?
+  Processing time = 123 secs
+
+v.
+  Calculated target easting = 312716; 		delta_easting = -10.5 m
+  Calculated target northing = 4725710		delta_northing = 13.3 m
+						delta_rho = 16.9 m
+  Calculated height above ground = 11 meters	delta_altitude = ?
+  Processing time = 123 secs
+
+  rho = 17.0 +/- 5.1 meters
+  LOS range = 4.11153 +/- 1.59638 kms
+  camera elevation angle = -14.6124944444 +/- 6.36571077953
+  Pointing vectors' azimuthal coverage fraction = 0.561644
+  64 images in 122.6 +/- 0.8 secs
+
+-----------------------------------------------------------------------------
+*.  20110730_1303_minimal.tgz  
+
+    Potato orbit around large hangar
+    Seemingly reasonable reconstruction; poor dense cloud
+
+  GE Easting = 311743
+  GE Northing = 4703595
+  ALIRT height above ground = 10.5 m
+
+i.
+  Calculated target easting = 311638.2		delta_easting =  -104.8 m
+  Calculated target northing = 4703696.4	delta_northing =  101.4 m
+						delta_rho = 145.9  m
+  Calculated height above ground = 16.8		delta_altitude =  6.3 m
+  Processing time = 113 secs
+
+ii.
+  Calculated target easting = 311676.9		delta_easting =  -66.1 m
+  Calculated target northing = 4703663.8	delta_northing =  68.8 m
+						delta_rho =  95.4 m
+  Calculated height above ground = 10.4		delta_altitude =  -0.1 m
+  Processing time = 114 secs
+
+iii.
+  Calculated target easting = 311685.7		delta_easting = -57.3 m
+  Calculated target northing = 	4703735.3	delta_northing = 140.3 m
+						delta_rho =  151.5 m
+  height above ground =  14.6 meters		delta_altitude = 4.1 m
+  Processing time = 113 secs
+
+iv.
+  Calculated target easting = 311643.3		delta_easting = 99.7 m
+  Calculated target northing = 4703674.8	delta_northing = 79.8 m
+						delta_rho =  162.0 m
+  height above ground = 16.9 meters		delta_altitude = 6.4 m
+  Processing time = 112 secs
+
+v.
+  Calculated target easting = 311767; 		delta_easting = 24 m
+  Calculated target northing = 4703610		delta_northing = 15 m
+						delta_rho =  28.3 m
+  height above ground = 10.6 meters		delta_altitude = 0.1 m
+  Processing time = 109 secs
+
+  d_rho = 116.5 +/- 49.7 meters
+  d_alt = 3.4 +/- 2.9 meters
+  LOS range = 3.70191 +/- 1.40438 kms
+  camera elevation angle = -16.6312581967 +/- 4.43442829016
+  Pointing vectors' azimuthal coverage fraction = 1
+  62 images in 112.2 +/- 1.7 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1036_minimal.tgz  
+
+Horribly saturated imagery!  Feature extraction and matching fails!
+
+Circle around FF
+
+  Calculated target easting = 
+  Calculated target northing = 
+
+  LOS range = 7.52719 +/- 2.14779 kms
+
+-----------------------------------------------------------------------------
+*.  20120105_1054_minimal.tgz  
+
+   Circular orbit around FF
+   Good reconstruction near start, but rather poor at end; good dense cloud
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312028.2		delta_easting =  -2.8 m
+  Calculated target northing = 4703913.7	delta_northing = 8.7 m
+						delta_rho =  9.1 m
+  Calculated height above ground = 15.9		delta_altitude = -4.4 m
+  Processing time = 105 secs
+
+ii.
+  Calculated target easting = 312033.7		delta_easting =  2.7 m
+  Calculated target northing = 4703914.2	delta_northing =  9.2 m
+						delta_rho = 9.6 m
+  Calculated height above ground = 19.0		delta_altitude = -1.3 m
+  Processing time = 103 secs
+
+iii.
+  Calculated target easting = 312057.3;	 	delta_easting = 26.3 m
+  Calculated target northing = 4703914.2;	delta_northing = 9.2 m
+						delta_rho =  27.9 m
+  height above ground = 13.1 meters		delta_altitude = -7.2 m
+  Processing time = 105 secs
+
+iv.
+  Calculated target easting = 312045; 		delta_easting = 14 m
+  Calculated target northing = 4703909.8	delta_northing = 4.8 m
+						delta_rho = 14.8 m
+  height above ground = 15.8 meters		delta_altitude = -4.5 m
+  Processing time = 103 secs
+
+v.
+  Calculated target easting = 312015; 		delta_easting = -16 m
+  Calculated target northing = 4703920		delta_northing = 15 m
+						delta_rho = 21.9 m
+  height above ground = 18.4 meters		delta_altitude = -1.9 m
+  Processing time = 104 secs
+
+  d_rho = 16.7 +/- 7.3 meters
+  d_alt = -3.9 +/- 2.1 meters
+  LOS range = 3.15012 +/- 0.0633384 kms
+  camera elevation angle = -12.4789790164 +/- 1.34338579643
+  Pointing vectors' azimuthal coverage fraction = 1
+  62 images in 104 +/- 0.9 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1127_minimal.tgz  
+
+  Circular orbit around FF
+  Pretty good reconstruction; good dense point cloud
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312011.5		delta_easting = -19.5 m
+  Calculated target northing = 4703947.9	delta_northing = 42.9 m
+						delta_rho = 47.1 m
+  Calculated height above ground = 18.8		delta_altitude = -1.5 m
+  Processing time = 94 secs
+
+ii.
+  Calculated target easting = 312024.4		delta_easting =  -6.6 m
+  Calculated target northing = 4703923.5	delta_northing =  18.5 m
+						delta_rho =  19.6 m
+  Calculated height above ground = 18.1		delta_altitude =  -2.2 m
+  Processing time = 92 secs
+
+iii.
+  Calculated target easting = 312016.9 		delta_easting = -14.1 m
+  Calculated target northing = 4703928.9	delta_northing = 23.9 m
+						delta_rho =  27.7 m
+  height above ground = 19.2  			delta_altitude = -1.1 m
+  Processing time = 93 secs
+
+iv.
+  Calculated target easting = 312020		delta_easting = -11 m
+  Calculated target northing = 4703934		delta_northing = 29 m
+						delta_rho = 31.0 m
+  height above ground = 18.7			delta_altitude = -1.6 m
+  Processing time =  94 secs
+
+v.
+  Calculated target easting = 312027		delta_easting = -4 m
+  Calculated target northing = 4703935		delta_northing = 30 m
+						delta_rho = 30.2 m
+  height above ground = 21.1 meters		delta_altitude = 0.8 m
+  Processing time =  94 secs
+
+  d_rho = 31.1 +/- 8.9 meters
+  d_alt = -1.1 +/- 1.0 meters
+  LOS range = 2.34308 +/- 0.0889949 kms
+  camera elevation angle = -16.4370041379 +/- 0.63426015935
+  Pointing vectors' azimuthal coverage fraction = 1
+  59 images in 93.4 +/- 0.8 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1130_minimal.tgz  
+
+  Circular orbit around FF
+  Good reconstruction; good dense cloud; Very similar to 20120105_1402 imagery
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+0.
+  Calculated target easting = 312036.6		delta_easting =  5.6 m
+  Calculated target northing = 4703864.2	delta_northing =  -40.8 m
+						delta_rho = 41.2 m
+  Calculated height above ground = 18.3		delta_altitude =  -2 m
+  Processing time = 111 secs
+
+i.
+  Calculated target easting = 312040.7		delta_easting =   9.7 m
+  Calculated target northing = 4703868.1	delta_northing =  -36.9 m
+						delta_rho = 38.2 m
+  Calculated height above ground = 16.6		delta_altitude =  -3.7 m
+  Processing time = 111 secs
+
+ii.
+  Calculated target easting = 312009.6		delta_easting =  -21.4 m
+  Calculated target northing = 4703909.4	delta_northing =  4.4 m
+						delta_rho =  21.8 m
+  Calculated height above ground = 20.3		delta_altitude =  0 m
+  Processing time = 113 secs
+
+iii.
+  Calculated target easting = 312036.6; 	delta_easting = 5.6 m
+  Calculated target northing = 4703912.3 	delta_northing = 7.3 m
+						delta_rho =  9.2 m
+  height above ground = 19.4			delta_altitude = -0.9 m
+  Processing time = 110 secs
+
+iv.
+  Calculated target easting = 312039.9; 	delta_easting = 16 m
+  Calculated target northing = 4703887.5 	delta_northing = -17.5 m
+						delta_rho = 23.7 m
+  height above ground = 19.8			delta_altitude = -0.5 m
+  Processing time = 111 secs
+
+v.
+  Calculated target easting = 312023.9; 	delta_easting = -7.1 m
+  Calculated target northing =  4703911.0	delta_northing = 6 m
+						delta_rho = 9.3 m
+  height above ground = 19.0			delta_altitude = -1.3 m
+  Processing time =  110 secs
+
+  d_rho = 23.9 +/- 12.5 meters
+  d_alt = -1.6 +/- 1.2 meters
+  LOS range = 2.43144 +/- 0.247868 kms
+  camera elevation angle = -16.1349262319 +/- 0.797445746224
+  Pointing vectors' azimuthal coverage fraction = 1
+  70 images in 111.2 +/- 1.0 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1402_minimal.tgz  
+
+Circle around FF
+Pretty good reconstruction; good dense point cloud
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312022.8		delta_easting =  -8.2 m
+  Calculated target northing = 4703906.2	delta_northing =  1.2 m
+						delta_rho =  8.3 m
+  Calculated height above ground = 19.0		delta_altitude =  -1.3 m
+  Processing time = 132 secs
+
+ii.
+  Calculated target easting = 312030.4		delta_easting =  -0.6 m
+  Calculated target northing = 4703916.9	delta_northing =  11.9 m
+						delta_rho =  11.9 m
+  Calculated height above ground = 18.9 	delta_altitude =  -1.4 m
+  Processing time = 130 secs
+
+iii.
+  Calculated target easting = 312019.7; 	delta_easting = -11.3 m
+  Calculated target northing = 4703903.1	delta_northing = -1.9 m
+						delta_rho = 11.5 m
+  height above ground = 19.3			delta_altitude = -1 m
+  Processing time = 132 secs
+
+iv.
+  Calculated target easting = 312032.8; 	delta_easting = 1.8 m
+  Calculated target northing = 4703914.9	delta_northing = 9.9 m
+						delta_rho = 10.1 m
+  height above ground = 18.8			delta_altitude = -1.5 m
+  Processing time = 131 secs
+
+v.
+  Calculated target easting = 312016.9; 	delta_easting = -14.1 m
+  Calculated target northing = 4703911.5	delta_northing = 6.5 m
+						delta_rho = 15.5 m
+  height above ground = 20.5			delta_altitude = 0.2 m
+  Processing time = 132 secs
+
+  d_rho = 11.5 +/- 2.4 meters
+  d_alt = -1.0 +/- 0.6 meters
+  LOS range = 2.46163 +/- 0.246818 kms
+  camera elevation angle = -15.795262029 +/- 1.0124445257
+  Pointing vectors' azimuthal coverage fraction = 1.0
+  70 images in 131.4 +/- 0.8 secs
+
+
+-----------------------------------------------------------------------------
+*.  20120105_1427_minimal.tgz
+
+    Flyby of FF
+    50 secs
+    Rather mediocre reconstruction
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+  Dense reconstruction of FF itself looks reasonable. But global
+geogregistration significantly off.  Dense cloud's ground plane does not
+correspond to a zplane!
+
+  Processing time = 61 secs
+
+  Dense reconstruction of FF itself looks reasonable. But global
+geogregistration failed!
+
+  Calculated target easting = 312064
+  Calculated target northing = 4704715
+  height above ground = 11.1
+
+
+  LOS range = 5.04179 +/- 1.38899 kms
+
+-----------------------------------------------------------------------------
+*.  20120105_1438_minimal.tgz
+
+  Part ellipse-part circle around FF
+  Seemingly reasonable reconstruction;  good dense point cloud
+  INTERESTING,FAST DEMO EXAMPLE!
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312044.1		delta_easting =  13.1 m
+  Calculated target northing = 4703891.5	delta_northing =  -13.5 m
+						delta_rho = 18.8 m
+  Calculated height above ground = 19.0		delta_altitude =  -1.3 m
+  Processing time = 88 secs
+
+ii.
+  Calculated target easting = 312035.8		delta_easting =  4.8 m
+  Calculated target northing = 4703891.3	delta_northing =  -13.7 m
+						delta_rho =  14.5 m
+  Calculated height above ground = 18.0		delta_altitude =  -2.3 m
+  Processing time = 86 secs
+
+iii.
+  Calculated target easting = 312029.5; 	delta_easting = -1.5 m
+  Calculated target northing = 4703893.8	delta_northing = -11.2 m
+						delta_rho = 11.3 m
+  height above ground = 18.5 meters		delta_altitude = -1.8 m
+  Processing time = 87 secs
+
+iv.
+  Calculated target easting = 312032.4; 	delta_easting = 1.4 m
+  Calculated target northing = 4703890.2	delta_northing = -14.8 m
+						delta_rho = 14.9 m
+  height above ground =  18.5 meters		delta_altitude = -1.8 m
+  Processing time = 87 secs
+
+v.
+  Calculated target easting = 312018; 		delta_easting = -13 m
+  Calculated target northing = 4703891		delta_northing = -14 m
+						delta_rho = 14.5 m
+  height above ground = 18.0 meters		delta_altitude = -2.3 m
+  Processing time =  87 secs
+
+  d_rho = 14.8 +/- 2.4 meters 
+  d_alt = -1.9 +/- 0.4 meters
+  LOS range = 5.17874 +/- 2.184 kms
+  camera elevation angle = -22.8344014815 +/- 4.53803499288
+  Pointing vectors' azimuthal coverage fraction = 0.931507
+  55 images in 87 +/- 0.6 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1442_minimal.tgz
+
+Circular orbit around FF
+Reasonable reconstruction; good dense point cloud
+Fog present in early video frames
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312014.4		delta_easting =  -16.6 m
+  Calculated target northing = 4703908.1	delta_northing =  3.1 m
+						delta_rho =  16.9 m
+  Calculated height above ground = 19.9		delta_altitude =  -0.4 m
+  Processing time = 95 secs
+
+ii.
+  Calculated target easting = 312037.7		delta_easting =  6.7 m
+    312037.3
+  Calculated target northing = 4703874.9	delta_northing =  -30.1 m
+    4703874.5	
+						delta_rho = 30.8 m
+  Calculated height above ground = 17.3		delta_altitude =  -3 m
+    17.2
+  Processing time = 94 secs
+
+iii.
+  Calculated target easting = 312026.1; 	delta_easting = -4.9 m
+  Calculated target northing = 4703894.9	delta_northing = -10.1 m
+						delta_rho = 11.2 m
+  Height above ground = 18.1			delta_altitude = -2.2 m
+  Processing time = 94 secs
+
+iv.
+  Calculated target easting = 312016.8; 	delta_easting = -14.2 m
+  Calculated target northing = 4703901.3	delta_northing = -3.7 m
+						delta_rho = 14.7 m
+  Height above ground = 18.8			delta_altitude = -1.5 m
+  Processing time = 95 secs
+
+v.
+  Calculated target easting = 312005.6; 	delta_easting = -25.4 m
+  Calculated target northing = 4703893		delta_northing = -12 m
+						delta_rho = 28.1 m
+  Height above ground = 18.6			delta_altitude = -1.7 m
+  Processing time =  92 secs
+
+  d_rho = 20.3 +/- 7.7 meters
+  d_alt = -1.8 +/- 0.9 meters
+  LOS range = 3.3724 +/- 0.153007 kms
+  camera elevation angle = -25.2160042857 +/- 1.20117661445
+  Pointing vectors' azimuthal coverage fraction = 1
+  57 images in 94 +/- 1.1 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1443_minimal.tgz
+
+Circular orbit around FF
+Good reconstruction; good dense point cloud
+GOOD EXAMPLE FOR DEMO
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312022.8		delta_easting =  -8.2 m
+  Calculated target northing = 4703897.7	delta_northing =  -7.3 m
+						delta_rho =  11.0 m
+  Calculated height above ground = 18.6		delta_altitude = -1.7 m
+  Processing time = 96 secs
+
+ii.
+  Calculated target easting = 312031.6		delta_easting =  0.6 m
+  Calculated target northing = 4703894.0	delta_northing =  -11 m
+						delta_rho =  11 m
+  Calculated height above ground = 19.0		delta_altitude =  -1.3 m
+  Processing time = 96 secs
+
+iii.
+  Calculated target easting = 312029.4		delta_easting = -1.6 m
+  Calculated target northing = 4703890.3	delta_northing = -14.7 m
+						delta_rho = 14.8 m
+  Height above ground = 18.8			delta_altitude = -1.5 m
+  Processing time = 96 secs
+
+iv.
+  Calculated target easting = 312023.2	 	delta_easting = -7.8 m
+  Calculated target northing = 4703902.5	delta_northing = -3 m
+						delta_rho = 8.4 m
+  Height above ground = 19.5			delta_altitude = -0.8 m
+  Processing time = 95 secs
+
+v.
+  Calculated target easting = 312028.4; 	delta_easting = -2.6 m
+  Calculated target northing = 4703895.1	delta_northing = -9.9 m
+						delta_rho = 10.2 m
+  Height above ground = 17.8			delta_altitude = -2.5 m
+  Processing time = 95 secs
+
+  d_rho = 11.1 +/- 2.1 meters
+  d_alt = -1.6 +/- 0.6 meters
+  LOS range = 3.35546 +/- 0.174467 kms
+  camera elevation angle = -22.74028 +/- 4.58086017341
+  Pointing vectors' azimuthal coverage fraction = 1
+  58 images in 95.6 +/- 0.5 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1456_minimal.tgz
+
+Quarter ellipse around FF
+Seemingly quasi-decent reconstruction, but actually far off from truth
+  Reasonable dense point cloud
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 311970		delta_easting =  -61 m
+  Calculated target northing = 4703778.6	delta_northing =  -126.4 m
+						delta_rho =  140.3 m
+  Calculated height above ground = 25.2		delta_altitude =  4.9 m
+  Processing time = 63 secs
+
+ii.
+  Calculated target easting = 311884.3		delta_easting =  -146.7 m
+  Calculated target northing = 4703906.2	delta_northing =  1.2 m
+						delta_rho =  146.7 m
+  Calculated height above ground = 15.3		delta_altitude =  -5 m
+  Processing time = 61 secs
+
+iii.
+  Calculated target easting = 311962.8 ; 	delta_easting = -68.2 m
+  Calculated target northing = 4703815.6	delta_northing = -89.4 m
+						delta_rho = 112.4 m
+  Height above ground =  24.6 meters		delta_altitude = 4.3 m
+  Processing time = 63 secs
+
+iv.
+  Calculated target easting = 311963.9; 	delta_easting = -67.1 m
+  Calculated target northing = 4703772.0	delta_northing = -133 m
+						delta_rho = 149.0 m
+  Height above ground =  20.2 meters		delta_altitude = 0.1 m
+  Processing time = 63 secs
+
+v.
+  Calculated target easting = 311857; 		delta_easting = -174 m
+  Calculated target northing = 4703996		delta_northing = 91 m
+						delta_rho = 196 m
+  Height above ground = 14.0 meters		delta_altitude = -6.3 m
+  Processing time = 62 secs
+
+  d_rho = 148.9 +/- 26.9 meters
+  d_alt = -0.4 +/- 4.6 meters
+  LOS range = 4.87577 +/- 0.375743 kms
+  camera elevation angle = -13.2114072727 +/- 3.82493524763
+  Pointing vectors' azimuthal coverage fraction = 0.383562
+  23 images in 62.4 +/- 0.8 secs
+
+-----------------------------------------------------------------------------
+*.  20120105_1524_minimal.tgz
+
+Half-circle around FF
+Fairly poor reconstruction; dense point cloud generation fails!
+
+   GE easting =  312031
+   GE northing = 4703905
+   ALIRT height above ground = 20.3 m
+
+i.
+  Calculated target easting = 312011.3		delta_easting =  -19.7 m
+  Calculated target northing = 4703936.2	delta_northing =  31.2 m
+						delta_rho =  36.9 m
+  Calculated height above ground = 26.1		delta_altitude =  5.8 m
+  Processing time = 88 secs 
+
+ii.
+  Calculated target easting = 312000.8		delta_easting =  -30.2 m
+  Calculated target northing = 4703883.0	delta_northing =  -22 m
+						delta_rho =  37.4 m
+  Calculated height above ground = 20.6		delta_altitude =  0.3 m
+  Processing time = 92 secs
+
+iii.
+  Calculated target easting = 312058.8	 	delta_easting = 27.8 m
+  Calculated target northing = 4703947.7	delta_northing = 42.7 m
+						delta_rho = 50.9 m
+  Height above ground = 13.6			delta_altitude = -6.7 m
+  Processing time = 97 secs
+
+iv.
+  Calculated target easting = 312074.6	 	delta_easting = 43.6 m
+  Calculated target northing = 4703951.3	delta_northing = 46.3 m
+						delta_rho = 63.6 m
+  Height above ground = 23.5			delta_altitude = 3.2 m
+  Processing time = 111 secs
+
+v.
+  Calculated target easting = 312048; 		delta_easting = 17 m
+  Calculated target northing = 4703913		delta_northing = 8 m
+						delta_rho = 18.8 m
+  Height above ground = 10			delta_altitude = -10.3
+  Processing time =  secs
+
+  d_rho = 41.5 +/- 15.0 meters
+  d_alt = -1.5 +/- 6.1 meters
+  LOS range = 4.82333 +/- 0.166871 kms
+  camera elevation angle = -8.96471097561 +/- 1.94099231488
+  Pointing vectors' azimuthal coverage fraction = 0.671233
+  images

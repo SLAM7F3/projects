@@ -1,0 +1,147 @@
+=============================================================================
+Running/monitoring jobs on GPU cluster notes
+=============================================================================
+Last updated on 11/3/15; 12/2/15; 12/11/15
+=============================================================================
+
+*.  In order to check on status of gpu cluster, ssh into distrib.  Press
+"3" then "c" for cluster management, and then "l" for listing all cluster
+nodes.  GPU nodes are listed at the end.
+
+.
+.
+.
+cn1504: 66:24:0   cn1505: 66:24:0   cn1506: 66:24:0   cn1507: 66:24:0P  cn1508: 66:24:0   cn1509: 51:23:1   
+cn1510: 66:24:0   cn1511: 66:24:0   cn1512: 66:24:0   cn1513: 51:23:1   cn1514: 66:24:0   cn1515: 51:23:1   
+cn1516: 51:23:1   cn1517: 66:24:0   cn1518: 51:23:1   cn1519: 51:23:1   cn1520: 66:24:0   gpu0001: 26: 0:8  
+gpu0002:186:32:0P gpu0003:186:32:0P gpu0004: 26: 0:8  gpu0005: 26: 0:8  gpu0006:186:32:0P gpu0007: 26: 0:8  
+gpu0008: 26: 0:8  gpu0009: 26: 0:8  gpu0010: 26: 0:8  gpu0011: 26: 0:8  gpu0012: 26: 0:8  gpu0013:186:32:0P 
+gpu0014: 26: 0:8  gpu0015: 26: 0:8  gpu0016: 26: 0:8  gpu0017: 26: 0:8  gpu0018: 26: 0:8  gpu0019: 26: 0:8  
+gpu0020:186:32:0P gpu0021: 26: 0:8  gpu0022: 26: 0:8  gpu0023:186:32:0P gpu0024: 26: 0:8  gpu0025: 26: 0:8  
+.
+.
+.
+
+Final m:n:p (e.g. 26:0:8) appearing after a gpu node name indicates that m
+memory is in use, n threads are free and p GPU cards are busy.  As of Nov
+2015, each GPU node contains 8 GPU cards.
+
+When no distrib jobs are running on a GPU node (e.g. gpu0095), its listing
+looks like
+
+		gpu0095:186:32:0
+
+If a "P" appears at the end (e.g. gpu0095:186:32:0P), then the GPU node is
+paused.  Be sure to unpause a GPU node when we're finished with it!
+
+*.  GPU nodes are not good at running jobs in parallel.  So if we want to
+explicitly work on a GPU node, we need to pause its jobs.  Press "p" when
+ssh'd into distrib. 
+
+
+Enter name of nodes to pause, separated with spaces (ALL = pause all): gpu0095
+Enter reason for pause: debugging
+
+
+We must then wait for at least one of the GPU node's GPU cards to become
+free.
+
+*.  After sshing into distrib and having pressed "3" and then "c" for
+cluster management, output of help appears as
+
+[Cluster@st21f01ls-fly0001.st.geo.apple.com] Enter command: (h for help) h
+Usage:
+q  Quit to main menu
+a  Add node
+r  Remove node
+l  List nodes
+k  List inactive nodes
+!  List nodes extended
+L  List nodes (filtered)
+t  List nodes by runtime
+s  Strict capacity matching
+i  Import nodes
+x  Export nodes
+f  Force remove node
+p  pause node
+P  un-pause node
+{  un-pause paused
+}  un-pause by reason
+c  pause 100 nodes
+C  un-pause 100 nodes
+R  remove 100 nodes
+d  down node
+n  rename node
+#  clean up
+m  Modify requirements
+w  Add global cap.
+W  Remove global cap.
+*  Cancel node activity
+1  Echo off
+2  Echo on
+3  Echo local
+4  Echo color
+
+*.  In order to ssh into a GPU node, first ssh into launchpad.  Then chant
+something like
+
+	ssh gpu0095
+
+On a GPU node, we should be able to chant "watch nvidia-smi" in order to
+monitor status of GPU cards on that node.
+
+*.  Run 3 rdn_build jobs on the paused GPU node by chanting the following
+pwin commands.  Be sure to include --vv flag in order to see verbose and
+spam log output:
+
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_rdn_ortho_logos_1/pwin_07b7fc_gpu -nowin -do1 'rdn_build -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote_151102_120828.xml -prj dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote --input_lev 16 --version 1306 --image_chips_subdir /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/ --output_images_subdir /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/ortho_images/ -area 13 41 2259 3633 -as 78.79.7A.7B.6C.6D.7C.7D.86.87.96.97.88.89.98.99.A6.A7.B6.B7.A8.A9.B8.B9.8A.8B.9A.9B.8C.8D.9C.9D.AA.AB.BA.BB.AC.AD.BC.BD' 
+
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_rdn_ortho_logos_1/pwin_07b7fc_gpu -nowin -do1 'rdn_build -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote_151102_120828.xml -prj dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote --input_lev 16 --version 1306 --image_chips_subdir /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/ --output_images_subdir /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/ortho_images/ -area 13 30 2258 3640 -as 78.87.88.79.7A.89.8A.7B.8B.97.98.A7.A8.99.9A.A9.AA.B7.B8.C7.C8.B9.BA.C9.CA.9B.AB.BB.CB' 
+
+umask 2 ; /startown-gpfs/sputnik01/supersize/bin/pwin/pwin_rdn_ortho_logos_1/pwin_07b7fc_gpu -nowin -do1 'rdn_build -prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote_151102_120828.xml -prj dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote --input_lev 16 --version 1306 --image_chips_subdir /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/ --output_images_subdir /startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/ortho_images/ -area 13 41 2272 3616 -as 78.87.88.79.7A.89.8A.97.98.A7.A8.99.9A.A9.AA.7B.7C.8B.8C.7D.7E.8D.8E.9B.9C.AB.AC.9D.B7.B8.C7.C8.B9.BA.C9.CA.D7.D8.D9.BB' 
+
+Then bottom part of nvidia-smi shows that 3 GPU cards are in fact in use
+(even though top part of nvidia-smi output may show very little
+inbstantaneous activity for all 8 cards:
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID  Type  Process name                               Usage      |
+|=============================================================================|
+|    0     65058    C   ...in/pwin_rdn_ortho_logos_1/pwin_07b7fc_gpu  3346MiB |
+|    2     64844    C   ...in/pwin_rdn_ortho_logos_1/pwin_07b7fc_gpu  3346MiB |
+|    3     65022    C   ...in/pwin_rdn_ortho_logos_1/pwin_07b7fc_gpu  3346MiB |
++-----------------------------------------------------------------------------+
+
+*.  On 12/11/15, John Wood showed us how to login to the new GPU cluster's
+"launchpad" node:
+
+	ssh pv40a00ls-launchpad0001.geo.apple.com
+
+*.  We need to install the following .bashrc onto the gpu002 node within
+the new GPU cluster:
+
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific aliases and functions
+export PATH=/opt/geo/ext/cuda-7.0/bin:/opt/geo/ext/protobuf-2.6.1/bin:$PATH
+export LD_LIBRARY_PATH=/opt/geo/ext/cuda-7.0/lib64:/opt/geo/ext/glog-0.3.3/lib:/opt/geo/ext/protobuf-2.6.1/lib:/opt/geo/
+ext/opencv-2.4.10/lib/:/opt/geo/ext/boost-1.48.0/lib:$LD_LIBRARY_PATH
+
+
+*.  Then build caffe on gpu002 of the new GPU cluster (since this machine
+has all library dependencies on it) by running the pv_cluster_build.sh
+script.
+
+*.  Transfer image data to some other cluster node which is not busy (John
+suggested working on gpu nodes 20 or higher).  Create a tarball on startown
+of imagery data and place a copy into an appropriate subfolder of
+/startown-gpfs/sputnik03/supersize/devdata/dl/datasets/ . Then sftp tarball
+to Thinkmate.  Then sftp tarball from Thinkmate to new /tmp on GPU cluster
+node.
+

@@ -1,0 +1,77 @@
+==========================================================================
+AIPR 11 figure captions
+==========================================================================
+Last updated on 10/5/11; 10/6/11
+==========================================================================
+
+{
+1.  30 representative thumbnails from a set of 30K+ photos shot around MIT
+in July 2009.
+}
+
+2.  54 SIFT feature matches found between two photos shot around MIT.
+
+3.  Synchronized web browser and graph viewer displays of 30K+ photos shot
+around MIT.  (a) Nodes within the SIFT graph on the right are
+hierarchically clustered and colored to reveal communities of
+similar-looking photos.  (b) When we pick one node within a cluster in the
+graph viewer, the corresponding image is displayed within the web browser.
+The coloring of its edges to neighboring nodes correlates with their SIFT
+feature overlap.  (c) Nodes automatically turn into thumbnails when the
+graph viewer is zoomed-in far enough.  The web browser's carousel displays
+thumbnails belonging to the same cluster as the currently selected node.
+
+{
+4.  3D structure recovery from multiple, overlapping 2D views.
+}
+
+5.  Incremental bundle adjustment results for 2317 MIT photos.  (a)
+Recovered point cloud representing static scene 3D structure.  (b)
+White-colored frusta depict relative position and pose for reconstructed
+photos.
+
+6.  Reconstructed photos georegistered with a ladar map of greater Boston.
+Only a small fraction of all reconstructed frusta are displayed.
+
+7.  (a) A representative reconstructed photo viewed within the 3D viewer
+from the calculated position and orientation of its camera.  (b) Camera's
+view of Boston ladar points when the photo in the image plane is faded
+away.
+
+8.  Synchronized Google Map and 3D viewer displays of reconstructed,
+georegistered ground photos.  Camera geolocation and geoorientation
+information are displayed within the web browser when a user clicks on its
+colored dot.
+
+9.  The Google Map interface provides a simple way for a user to select a
+path through reconstructed ground photos.  After he presses the play button
+in the web browser, the OpenSceneGraph viewer conducts a virtual 3D tour
+through the photos which generally point in the forward direction along the
+specified path.
+
+10.  Radian sailplane, Canon powershot camera and Garmin GPS hardware for
+an aerial glider system fielded during Lincoln Lab's 2010 Technology
+Challenge.
+
+11.  Two frames snapped by the Canon digital camera onboard the aerial
+glider which flew up to 430 meters above ground.
+
+12.  3D imagery reconstruction from aerial data gathered over a rural
+environment.  (a) 74 of approximately 1500 camera frusta exhibited on a
+longitude-latitude grid.  The continuous curve colored according to height
+represents the glider's GPS track.  (b) Zoomed view of some camera frusta
+and the dense terrain cloud.
+
+13.  Dense point cloud representation for rural terrain colored according
+to (a) digital camera's RGB values and (b) height above sea level.
+
+14.  Two reconstructed aerial video frames backprojected onto a ground
+Z-plane and displayed against a georegistered Google Map image.
+
+15.  GEOINT propagation.  (a) Pixels selected in video frame #46 are
+annotated with range and altitude metadata derived from counter part voxels
+in the dense terrain point cloud.  (b) Locations of pixels in video frame
+#92 corresponding to those in frame #46.
+
+
+

@@ -1,0 +1,33 @@
+========================================================================
+RAVEN video processing notes
+========================================================================
+Last updated on 10/28/11; 1/17/12
+========================================================================
+
+On 10/28/11, Keith Piwowarski from G107 copied 4 MPEG RAVEN movies which
+had been captured in flight on 10/21/11 at Fort Devens.  These movies were
+stored on a Tough Book which is part of the RAVEN system.  We copied these
+movies onto the 300 GB VFAT orange disk while over at LL's flight facility.
+
+Keith later gave us a copy of proprietary software (non-transferable
+outside LL!) which can extract metadata embedded within the MPEG movies.
+Here is the procedure which Keith followed in order to extract the RAVEN
+metadata:
+
+1.  Copy Raven DDL files into folder holding AVMessageExtractorBatch and
+Bin2LogBatch executables on windows machine
+
+2.  Open command window (start button followed by chanting cmd within small
+menu cell).  Then cd to Raven DDL folder
+
+3.  Within command window, chant AVMessageExtractorBatch.exe . AV Message
+Extractor GUI should pop open.  Click on "Input 'mpg' File" Button in order
+to specify Raven DDL mpg file to parse.  Then press "Begin" button to
+initiate decoding.
+
+4.  Within command window, chant Bin_To_Log.bat in order to convert binary
+output from AV message extraction into output tab-separated text files.
+Text files may be viewed within Excel.
+
+5.  On 1/17/12, Keith told us to look in C:\RPUAV for mpg video clips plus
+metadata files on the Raven laptop.

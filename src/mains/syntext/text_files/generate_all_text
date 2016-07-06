@@ -1,0 +1,11 @@
+/bin/rm ./all_text.txt
+/bin/rm ./shuffled_all_text.txt
+
+cat shuffled_company_names.txt shuffled_comp_news.txt \
+shuffled_full_names.txt shuffled_stories.txt shuffled_reuters.txt \
+shuffled_science.txt 10K_housenumbers.txt phone_numbers.txt \
+decimal_numbers.txt single_chars.txt > all_text.txt
+
+# shuf all_text.txt > shuffled_all_text.txt
+
+echo "Now run program CLEAN_INPUT_TEXT on all_text.txt!"

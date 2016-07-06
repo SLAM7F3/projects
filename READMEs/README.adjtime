@@ -1,0 +1,220 @@
+
+====================
+Peter's notes:
+
+kermie.sllan:cho# hwclock --set --date="5/14/02 5:32:00" --utc
+kermie.sllan:cho# hwclock --set --date="5/14/02 5:32:00" --localtime
+kermie.sllan:cho# hwclock --hctosys --localtime
+kermie.sllan:cho# date
+Tue May 14 09:37:37 EDT 2002
+kermie.sllan:cho# hwclock --show --localtime
+Tue May 14 09:38:18 2002  -0.686492 seconds
+
+Set SYSTEM clock (which is different from HARDWARE clock) using date
+command:
+
+kermie.sllan:cho# date -s "7/26/02 10:09:00"
+
+====================
+
+Wed Feb 18 13:38:44 EST 1998
+hardware clock not working.  /sbin/clock now is link to hwclock.
+man hwclock gives us the poop.  Don't seem to be doing anything
+with this on startup in rc.d/*/*
+
+hwclock --show --utc shows that we are on UTC all right.  Put
+hwclock --hctosys --utc into rc.lqocal, run first to test.
+
+Then try --set --date="2/18/98 14:08:55" --utc
+This changes /etc/adjtime to a -4 secs/day correction.  This is
+probably not right, so change back to 0.0.  Hopefully we can get
+in the correct adjustment next time we change it.  May want to
+set up a clock adjustment with cron since we never reboot.
+
+root           98 Feb 26 10:16 /etc/cron.daily/setclock
+
+date >>/tmp/clock.log; hwclock --utc >>/tmp/clock.log
+hwclock --hctosys --utc
+date >>/tmp/clock.log; hwclock --utc >>/tmp/clock.log
+
+Mon Mar 23 10:37:51 EST 1998
+Set hardware clock with:
+hwclock --utc --set --date="3/23/98 10:37:00"
+and got /etc/adjtime of:
+
+0.357101 890667420 0.000000
+890667420
+Add a hwclock --adjust to the cron file
+
+Thu Mar 26 12:04:58 EST 1998
+Everything is working fine, but we have that crazy loss of 25 secs/day
+of the Linux software clock!  One thing to do would be to reset it
+at 8am instead of 1am, but maybe better to just set it hourly!
+that would amount to one second each time, and maybe wouldn't mess
+up anything.
+
+Thu May 14 15:24:21 EDT 1998
+Currently have /etc/adjtime of:
+
+0.357101 895122122 0.000000
+890667420
+
+Things seemed to be fast about 7 seconds; trying command:
+  hwclock --utc --set --date="5/14/98 15:25:45"
+we got a /etc/adjtime of:
+
+0.184552 895173945 0.000000
+895173945
+
+Whoa, that seemed to be too much of a change.  Let's see what it does
+
+Tue Sep  8 17:59:59 EDT 1998
+clock is around 32 seconds slow.  Try setting date again with 
+hwclock --utc --set --date="9/8/98 18:02:30"
+That gives an adjtime file of:
+0.466342 905292150 0.000000 which seems to be a bit of a jump.
+Is this right?  5/14 is daynum 135, and 9/8 is daynum 251, so 116 days,
+and 32 seconds, gives an increase of 0.28 which is what we got.
+See how things go.  (This is now with Redhat 5.1).
+
+
+Fri Nov 13 14:04:09 EST 1998
+Now have 2.1.126 kernel (and 2.1.127 available).  See if SMP fixes fix
+clock problem.  Right now we're about 20 secs slow on the computer with
+first line of /etc/adjtime:
+0.466342 905292150 0.000000
+
+set hwclock, let next hourly update occur, then comment out execution
+of /etc/cron.hourly/setclock
+
+Fri Feb 12 13:45:05 EST 1999
+Redhat 5.2 was installed recently, and /etc/adjtime is all zeros now!
+Date on file is Oct 15, but that's no doubt from the distribution.
+Looks like maybe 12 Feb was last time old system was booted; so maybe
+have about 12 days, and lost 31 seconds.  Reset date with:
+hwclock --utc --set --date="2/12/99 13:50"
+
+No, actually probably last fix was on 9/8/98 above, so get 157 days,
+so would use correction of around 0.20 plus what it was before.
+Try changing first line of /etc/adjtime to use 0.50 and see how it works.
+
+Fri May  7 14:09:09 EDT 1999
+Seems to be around 27 secs slow now:
+
+0.500 918845400 0.000000
+918845400
+
+hwclock --utc --set --date="5/7/99 14:11"
+hwclock --hctosys --utc
+
+0.809625 926100660 0.000000
+926100660
+
+Fri Jul  9 15:43:03 EDT 1999
+Seems to be around 17 seconds slow now.
+Whoops, blew it on hwclock command, calculate by hand.
+63 days, 17 secs, so should be .26984 more, or about 1.08
+
+1.08 931549620 0.000000
+931549620
+
+Fri Aug 27 13:43:54 EDT 1999
+Whoops, up 65 days, 21:46 and never set adjust for hwclock.
+Since we never reboot, need to periodically do a hwclock --adjust.
+How about putting one in cron.daily?  First let's see what it does
+here.  /etc/adjtime is as above.  do 
+  hwclock --utc --adjust
+
+Results are:
+% date; hwclock --utc
+Fri Aug 27 13:46:07 EDT 1999
+Fri Aug 27 13:47:00 1999  -0.160021 seconds
+% cat /etc/adjtime
+1.080000 935775986 0.000000
+931549620
+
+So for 49 days we jumped way ahead, about a minute (52 secs)
+Looks like hwclock is never adjusted, but system time is set from it
+periodically.  So it looks like I never should have added all that
+time in July.  Let's set it:
+  hwclock --utc --set --date="8/27/99 14:00"
+That wipes seconds adjustment to 0.36, so move it to 0.80 and try
+again.  (Seems like we're one second fast)  Set system clock with
+hwclock --hctosys --utc, and put the script:
+  hwclock --utc --adjust
+in /etc/cron.daily and we should be all set.
+
+Go convert a seconds to a date, run tclsh and use the command
+% clock format 935775986
+or whatever.
+
+hwclock gained a ton.
+
+
+Wed Oct  6 16:25:43 EDT 1999
+
+We're now 29 seconds fast, just about the 0.8 per day that we used!
+So if we used 0, we'd be ahead!  Use:
+hwclock --utc --set --date="10/6/99 16:27"
+and it resets adjtime to:
+0.051916 939241620 0.000000
+939241620
+
+Fri Jun  9 10:23:07 EDT 2000
+-rw-r--r--   1 root     root           15 Dec  3  1999 adjtime
+0.051916 0 0
+0
+
+We're totally off on the clock; at 10:10:30 I get:
+
+Fri Jun  9 10:23:39 EDT 2000
+
+So 13 minutes and 9 seconds!  Try the usual fix and see what it does
+to adjtime...maybe we need the adjtime stuff in the rc.local or a cron job.
+How is that done...should try to do it first.
+
+Whoa, we've been up 32 days, and the hwclock is only behind 72 seconds.
+Big discrepancy between the system clock and the hwclock; I have always
+had problems with this motherboard...need to fix the hwclock first,
+then maybe try adjtimex to keep system clock working.
+
+Try basic hwclock command:
+hwclock --utc --set --date="06/9/00 10:18"
+
+Hey, we might be zeroing in on just the right thing!  adjtime now:
+0.058482 960560280 0.000000
+960560280
+
+Wed Aug 30 12:05:22 EDT 2000
+Wed Aug 30 11:50:15 2000  -0.420978 seconds
+Whoops, we're off 15 minutes now!  actual time is about 15 secs after hwclock
+time, but Linux sys clock is pathetic.  System has been up 37 days.
+in /etc/cron.daily, have clockadjust script which just adjust hw clock.
+Really need to set sys clock from that too, so add
+  hwclock --hctosys --utc
+to the existing
+  hwclock --utc --adjust
+(afterwards)
+
+Mon May 14 10:16:52 EDT 2001
+0.058482 988531295 0.000000
+960560280
+We're 61 seconds slow now, after about 9 months.  But why, after manually
+doing the two hwclock commands above, doesn't /etc/adjtime change?
+960560280 above represents June 9, and August date should be 967651522
+(in tclsh, try clock scan "Wed Aug 30 12:05:22 EDT 2000")
+988531295 is Sun Apr 29 04:01:35 EDT 2001.
+
+0.058482 988531295 0.000000
+960560280
+
+Try hwclock --utc --set --date="05/14/01 11:52"
+
+Now have adjtime:
+0.238389 989855520 0.000000
+989855520
+
+
+
+
+

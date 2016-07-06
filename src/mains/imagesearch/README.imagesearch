@@ -1,0 +1,479 @@
+========================================================================
+Image Search database population and image graph construction 'cheat sheet'
+========================================================================
+Last updated 12/31/13; 1/6/14; 1/8/14
+========================================================================
+
+This README is located in
+~/programs/c++/svn/projects/src/mains/imagesearch/README.imagesearch.
+
+
+In this README, we define the following root directory
+
+	$root= ~/programs/c++/svn/projects/src/mains/photosynth/
+
+We'll work with the "kermit" photos as a representative set of input
+images and define
+
+		$bundler_IO_subdir = $root/bundler/kermit
+
+
+*. Note: You may find it helpful to open THREE windows before performing
+the steps below.  One window can be opened to the "/data/ImageEngine/"
+subdirectory.  Another can be opened to the "bundler/" subdirectory.  And
+the 3rd can be opened to the "$root" subdirectory.
+
+========================================================================
+I. IMAGERY INITIALIZATION
+========================================================================
+
+*. Create an appropriately named new subdirectory of /data/ImageEngine/
+
+e.g.		 	mkdir /data/ImageEngine/kermit
+
+Also create $bundler_IO_subdir:
+
+   e.g.    cd ~/programs/c++/svn/projects/src/mains/photosynth/bundler/
+	   mkdir kermit
+
+$bundler_IO_subdir will hold many input and output image search files.
+Allow all users to read & write files in $bundler_IO_subdir via a "change
+mode" command like
+
+   chmod a+rw ~/programs/c++/svn/projects/src/mains/photosynth/bundler/kermit
+
+
+*.  Remove Duplicates: 
+On ubuntu: Applications>>Graphics>>gThumb
+Edit>>Find Duplicates
+
+Can remove manually or all but most/least recent duplicates after searching. 
+
+
+*.  If initial imagery corpus has wildly irregular filenames (e.g. a flickr
+internet photo set with lots of weird filenames), it's generally useful to
+homogenize the input image filenames.  Following program can be used to
+homogenize input filenames:
+
+mains/imagesearch/LINK_RENAME_IMAGES imports a set of raw image
+filenames from a specified subdirectory.  It first alphabetically sorts the
+input image filenames.  It next wraps the the filenames in double quotes to
+shield subsequent link commands from white spaces.  After querying the user
+to enter the first image's ID, LINK_RENAME_IMAGES generates an executable
+script which links the input raw filenames to homogenized and ordered
+output filenames.
+
+
+*. List contents of /data/ImageEngine/ subdirectory (via 'ls' command) to
+make sure that images (and not soft links to images) are stored therein.
+
+*.  From within $bundler_IO_subdir, create an images subdirectory:
+
+			mkdir images 
+
+Then link all image files in /data/ImageEngine/ subdirectory to
+$bundler_IO_subdir/images/ :
+
+	e.g.	images% ln -s /data/ImageEngine/kermit/*.jpg .
+
+Change directory back to $root.
+
+*.  From within $root, run GENERATE_PETER_INPUTS program via following
+command:
+
+			generate_peter_inputs 
+
+Program GENERATE_PETER_INPUTS queries the user to enter a subdirectory of
+./bundler/ in which some set of images and metadata reside.  It expects to
+find "list_tmp.txt" sitting in bundler_IO_subdir.  If no "bundle.out" file
+resides in bundler_IO_subdir, GENERATE_PETER_INPUTS creates a trivial
+version.  It next generates an images_list.dat file containing renamed
+versions of the input images.  This program then creates a packages subdir
+of bundler_IO_subdir and generates a peter_inputs.pkg file containing names
+for various input parameters.  Finally, GENERATE_PETER_INPUTS writes out
+executable scripts for the several programs which must be run in order to
+produce thumbnails, construct SIFT graphs and visualize reconstructed
+points clouds and frusta in Peter's 3D viewer.
+
+========================================================================
+II.  IMAGE DOWNSIZING & THUMBNAIL GENERATION 
+========================================================================
+
+*.  Execute the auto-generated run_downsize_images script OR
+run_photo_sizes script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_downsize_images
+
+  OR
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_photo_sizes
+
+Run latter script only if all input images have pixel widths and lengths
+less than 2400.  Otherwise, execute run_downsize_images.
+
+Program DOWNSIZE_IMAGES scans through images within
+$bundler_IO_subdir/images.  It downsamples any which are larger than
+max_xdim,max_ydim in pixel size.  Oversized original images are moved into
+a separate subdirectory, and their place within the images subdir is taken
+by their downsized counterparts.  Original or downsampled image size
+results are saved into output text file bundler_IO_subdir/image_sizes.dat.
+
+Program PHOTO_SIZES reads in a set of photo image filenames.  It calls
+ImageMagick's ping command to extract image width and height measured in
+pixels.  Image size results are saved into output text file
+$bundler_IO_subdir/image_sizes.dat.
+
+This expensive operation should only be performed once!
+
+*.  Execute the auto-generated run_thumbnails script: 
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_thumbnails
+
+Program THUMBNAILS generates subsampled versions of input photos within
+$bundler_IO_subdir/images/thumbnails/.  This expensive operation should
+only be performed once!
+
+Make thumbnail image files readable & writeable by all users:
+
+  e.g.  From within /data/bundler/kermit/images/, chant
+
+			 chmod a+rw thumbnails
+
+Move entire thumbnails directory to subdirectory of /data/ImageEngine/:
+
+  e.g.	images% mv thumbnails /data/ImageEngine/kermit
+
+Then relink thumbnails/ subdirectory in /data/ImageEngine/ to
+$bundler_IO_subdir/images/ :
+
+  e.g. 	images% ln -s /data/ImageEngine/kermit/thumbnails .
+
+========================================================================
+III. DATABASE UPDATING
+========================================================================
+
+*.  Using PGADMIN3, enter new Campaign and Mission entries into IMAGERY
+database.
+
+*.  Execute the auto-generated run_load_image_metadata script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_load_image_metadata
+
+mains/imagesearch/LOAD_IMAGE_METADATA queries the user to enter campaign
+and mission IDs for a set of images to be loaded into the images table of
+the IMAGERY database.  It also requests a subdirectory of
+/data/ImageEngine/ where a set of image and thumbnail files must already
+exist.  LOAD_IMAGE_METADATA then inserts metadata for images within
+image_list_filename into the images database table.
+
+*.  Execute the auto-generated run_update_picture_times script:
+
+  ~/programs/c++/svn/projects/src/mains/photosynth/run_update_picture_times
+
+This script runs UPDATE_PICTURE_TIMES queries the user to enter campaign
+and mission IDs for some set of images already loaded into the images table
+of the IMAGERY database.  We assume that the input images are *stills* and
+not video frames nor Reuters news articles. UPDATE_PICTURE_TIMES retrieves
+the UTM zonenumber corresponding to a set of images residing within
+/data/ImageEngine/ from the world_regions table of the IMAGERY database.
+
+UPDATE_PICTURE_TIMES tries to extract local image times from exif metadata
+tags.  If unsuccessful, a time based upon the image file's access,
+modification or change times is assigned to the photo.  (If an exif time
+precedes 1 Jan 1990, we also replace its value with that coming from an
+image file time.)  UPDATE_PICTURE_TIMES subsequently converts local image
+times to UTC and exports a SQL script which updates timing columns within
+the images table of the IMAGERY database.
+
+UPDATE_PICTURE_TIMES does NOT depend upon any SIFT graph
+information.  So it can be run immediately after LOAD_IMAGE_METADATA.
+
+========================================================================
+IV. SIFT FEATURE MATCHING ON LLGRID 
+========================================================================
+
+*.  In January 2014, we empirically found that it's necessary to copy
+~/cho/.bashrc to other users' TX2500 accounts in order for them to be able
+to run Noah Snavely's bundler codes on TX2500.
+
+
+*.  Chant "tx2500" to log into TX2500 grid cluster.  Then cd to
+
+	~/bundler_shared/Bundler4-distr/
+
+Make a new directory on LLGrid for the new image files.
+
+*.  UPLOAD the pictures using secure file transfer protocol 
+
+   a) chant ifconfig in LLGRID TERMINAL to determine machine's IP address
+
+   b) On local machine, cd to subdirectory of /data/ImageEngine/
+      containing the image files.  Then chant "sftp username@IP" 
+
+	e.g.  sftp CO24681@172.23.140.23
+
+     cd to destination directory on LLGrid
+
+e.g. /home/gridsan/co24681/bundler_shared/Bundler4-distr/ColleenRock/baseball
+
+   c)  Upload image files from /data/ImageEngine/ to LLGrid machine via
+       sftp's mput command:
+
+ 	mput *.jpg
+
+   d) Within LLGRID terminal, make sure image files were actually uploaded
+      via "ls" command
+
+*.  Inside the LLGrid directory containing the jpg files, chant
+
+		run_bundler
+
+Bundler will do its thing.  Check on status of big bundler jobs by
+chanting LLGrid_myjobs, LLGrid_status.
+
+-Output from bundler will be directed to a new (log) file called "nohup.out"
+
+-Early on in its number crunching, bundler will generate a new file
+called "list_tmp.txt" .
+
+-For image matching purposes, the important output from bundler is
+contained within a newly created subdirectory called matches_buildpair/
+
+-In this subdirectory, you should hopefully find a bunch of text files of
+the form match-AAA-BBB.txt where AAA = index for first picture and BBB =
+index for second picture
+
+-Within match-AAA-BBB.txt, the first line indicates the number of SIFT
+pairs that were found between pictures AAA & BBB.
+
+*. Within an LLGrid terminal,
+
+   a) Tar up contents of matches_buildpair/ via command
+
+	tar cvzf  matches_buildpair.tgz ./matches_buildpair
+
+   b) Copy tarball to top-level LLGrid home directory = ~ :
+
+	cp ./matches_buildpair.tgz ~
+
+*. On local machine, transfer copy of tarball back from LLGrid:
+
+   a) sftp co24681@something like 172.23.140.25  
+	(use ifconfig on LLGrid machine to determine this IP)
+
+   b) Within sftp, in order to transfer tarball from LLGrid machine 
+      to touchy2, chant
+
+		mget matches_buildpair.tgz
+
+    c) quit sftp
+
+    d) On local machine, extract tarball's contents via 
+
+		tar xvzf ./matches_buildpair.tgz
+
+   e)  Move matches_buildpair/ subdirectory to $bundler_IO_subdir.
+
+*. Within $root on local machine, execute the auto-generated
+run_sift_parser
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_sift_parser
+
+Program SIFT_PARSER reads in sift keyfiles generated by Noah Snavely's
+BUNDLER processing pipeline from bundler_IO_subdir/matches_buildpair.  It
+extracts sift matches from BUNDLER output. SIFT_PARSER outputs an edge list
+text file for the sift graph to bundler_IO_subdir/graphs/sift_edgelist.dat.
+
+========================================================================
+V. non-SIFT IMAGE GRAPH CONSTRUCTION 
+========================================================================
+
+*.  The programs below expect to find a node-node-edgeweight text file
+sitting at bundler_IO_subdir/graphs/sift_edgelist.dat.  So if any other
+form of image matching is performed besides SIFT feature pairing, it's
+necessary to supply some edgelist text file and create a link from
+bundler_IO_subdir/graphs/sift_edgelist.dat to it.  
+
+========================================================================
+VI. IMAGE GRAPH CONSTRUCTION and IMAGERY DATABASE POPULATION
+========================================================================
+
+*.  Note:  This next program is not very important and can be skipped.
+
+mains/imagesearch/COUNT_CCS imports a user-specified edge list for some
+SIFT, GIST, color, etc graph.  It also queries the user to enter an edge
+weight threshold.  COUNT_CCS scans through the edge list and enters each
+node into a map_unionfind data structure.  Nodes connected by an edge are
+linked within the map_unionfind.  COUNT_CCS exports a list of connected
+components sorted by the number of nodes they contain to an output text
+file.
+
+*.  Execute the auto-generated run_OGDF_layout script:
+
+	~/programs/c++/svn/projects/src/mains/photosynth/run_OGDF_layout
+
+	INPUT: Enter edge weight threshold: ~25
+
+Program OGDF_LAYOUT parses the sift_edgelist text file 
+generated program SIFT_PARSER.  It queries the user to set a
+minimum edge weight threshold.  [By convention, maximum edge weight
+equals 100 while mininum edge weight equals 0.]  
+
+It next calls a graphical layout algorithm within the C++ Open Graph
+Drawing Framework (OGDF) library.  As of 9/1/09, we have found that only
+the Fast Multipole Multilevel layout algorithm can handle the 25K connected
+graph coming from the July 2009 MIT photo collect.  This program outputs
+the OGDF layout as a Graph Modeling Language (GML) text file which can be
+viewed using the yEd java graph tool.
+
+
+*. Execute the auto-generated run_extract_OGDF_layout script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_extract_OGDF_layout
+
+Program EXTRACT_OGDF_LAYOUT reads in a Graph Modeling Language (GML) file
+generated by OGDF_LAYOUT.  For each node within the GML file,
+EXTRACT_OGDF_LAYOUT recovers its ID as well as its 2D X and Y positions
+calculated by OGDF.  This program generates text file
+"graph_XY_coords.fm3_layout" containing these outputs normalized to range
+within [0,1] which can be read in by GRAPHJSON.
+
+
+*. This next step assumes that we are working with photo stills rather
+than video frames: 
+
+Execute the auto-generated run_kmeans_clusters script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_kmeans_clusters
+
+INPUT: Enter desired number (>= 2) of evenly-spaced levels within graph hierarchy pyramid:
+*IMPORTANT: n_photos = # photos in largest cluster, not total # photos ran in bundler
+levels ~= log_10(n_photos)+1.  		
+O(100) 	photos should have 3 levels
+O(1000)	photos should have 4 levels
+
+
+Program KMEANS_CLUSTERS reads in the gx-gy layout for a SIFT graph
+generated by program EXTRACT_OGDF_LAYOUT and the edge list generated by
+program SIFT_PARSER.  It first modifies the layout by migrating nodes
+towards each other depending upon their SIFT edge weight.  The modified
+gx-gy node coordinates are written out to
+"graph_XY_coords.modified_fm3_layout".  
+
+KMEANS_CLUSTERS next computes the minimum number of nodes which should
+appear in the highest level of a graph hierarchy pyramid.  It queries the
+user to enter the desired number of levels within the pyramid.
+KMEANS_CLUSTERS then uses the K-means++ algorithm of David Arthur from
+Stanford to compute a uniform sequence of parent, grandparent,
+great-grandparent, etc nodes for the specified number of pyramid levels.
+It exports pyramided clustering results to level_0l_clusters.dat text
+files.
+
+*.	Execute the auto-generated run_generate_ccs script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_generate_ccs
+
+Program GENERATE_CCS reads in the graph edge list generated by SIFT_PARSER
+which establishes links between two photos if they share SIFT features in
+common.  It also reads in hierarchical graph clustering information
+generated by the Markov Cluster Algorithm or K-means algorithm.
+
+GENERATE_CCS exports text files containing image URLs versus node IDs for
+each connected component.  It also writes out SQL scripts which load
+metadata into the graph_hierarchies and connected_components tables of the
+imagery database.
+
+
+*.  We can manually execute the SQL commands containined within scripts
+output by GENERATE_CCS by first chanting
+
+			psql -d imagery
+
+which should open an "imagery=#" database prompt.  Then chant
+
+			\i insert_graph_hierarchy.sql 
+
+in order to import and execute the commands contained within the SQL
+script.  Similarly chant 
+
+			\i insert_all_ccs.sql 
+
+Finally, chant 
+
+			\q 
+
+to quit the psql prompt.
+
+
+*. Alternatively, PGADMIN3 can be used to execute SQL scripts output by
+GENERATE_CCS program to alter the database on the LOCAL machine.  (As of
+1/8/14, we do not know how to use PGADMIN3 to execute SQL scripts on a
+remote machine.)  Within PGADMIN3, click the button that looks like a
+magnifying glass "execute arbitrary SQL queries"
+
+Open the following from $root/bundler/kermit/graphs: 
+
+a) insert_graph_hierarchy.sql, run it (by clicking green arrow) 
+b) insert_all_ccs.sql, run it
+
+
+*.  Execute the auto-generated run_fill_photo_hierarchy script:
+
+~/programs/c++/svn/projects/src/mains/photosynth/run_fill_photo_hierarchy
+
+Program FILL_PHOTO_HIERARCHY reads in the graph edge list generated by
+SIFT_PARSER which establishes links between two photos if they share SIFT
+features in common.  It also reads in hierarchical graph clustering
+information generated by the Markov Cluster Algorithm or K-means algorithm.
+FILL_PHOTO_HIERARCHY writes out a set of SQL script files which populate
+the graphs, nodes, links and graph_annotations tables in the imagery
+database.  Each level within the graph pyramid contains node, edge and
+connected component information which can be parsed and visualized by
+Michael Yee's graph viewer.
+
+
+*.  Using PGADMIN3, click the button that looks like a magnifying glass
+"execute arbitrary SQL queries"
+
+Open the following from /data/bundler/kermit/graphs: 
+
+a) insert_all_graphs, run it (by clicking green arrow), 
+b) insert_all_nodes, run it, 
+c) insert_all_links, run it, 
+d) insert_cc_annotations, run it
+
+========================================================================
+VI. IMAGE GRAPH VIEWING
+========================================================================
+
+*.  To run the image server on a local machine, click on PHOTOSERVER
+Desktop icon.  To run the image server on a remote machine, chant
+
+   ~/programs/c++/svn/projects/src/mains/photosynth/Qt/run_photoserver
+
+*. To launch image search webbrowser and graph viewer clients on the same
+machine which hosts the image server, click on IMAGESEARCH Desktop icon.
+
+
+*.  To run an image search browser on a local machine and have it
+communicate with the image server on a remote machine, enter a URL into the
+browser like
+
+		155.34.162.55:8080/image/image.html
+
+where 155.34.162.55 = IP for machine on which image server resides.
+
+*.  On linux machines, Michael Yee's graph viewer client expects to find
+the image server operating on the machine specified in the configuration
+file
+
+~/programs/c++/svn/projects/src/mains/graphs/ScalableGraphVisualization/latest_version/config/viewer.properties
+
+To manually start Michael's graph viewer on a linux machine, chant
+
+~/programs/c++/svn/projects/src/mains/graphs/ScalableGraphVisualization/latest_version/run_linux.sh
+
+*.  The "JMS topic" field appearing on both the image search browser and
+graph viewer windows is set, by default, to equal the IP of the machine(s)
+on which they are launched.  The IP values in the JMS topic field does NOT
+correspond to that of the image server.  

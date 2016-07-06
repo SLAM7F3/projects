@@ -1,0 +1,13 @@
+/bin/rm ./consolidate
+/bin/rm ./flightpath_sender
+/bin/rm ./homo
+/bin/rm ./hummerheight
+/bin/rm ./LiMIT_orbit
+/bin/rm ./ll2utm
+/bin/rm ./message_receiver
+/bin/rm ./message_sender
+/bin/rm ./people
+/bin/rm ./satcomm
+/bin/rm ./transform_coords
+/bin/rm ./transform_points
+/bin/rm ./utm2ll

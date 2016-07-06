@@ -1,0 +1,8 @@
+~/bin/MAKE program=calib_flirtime
+~/bin/MAKE program=dbsauron
+~/bin/MAKE program=GPS2KML
+~/bin/MAKE program=flirsim
+~/bin/MAKE program=gridcomp
+~/bin/MAKE program=sauron
+~/bin/MAKE program=sauron_client
+~/bin/MAKE program=store_FLIR_metadata

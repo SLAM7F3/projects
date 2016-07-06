@@ -1,0 +1,17 @@
+/bin/rm ./coarse2filled
+/bin/rm ./color_dists
+/bin/rm ./deeplab_accuracy
+/bin/rm ./extremal_numbers
+/bin/rm ./extremal_regions
+/bin/rm ./floodfill
+/bin/rm ./generate_ers
+/bin/rm ./random_image_subset
+/bin/rm ./recolor_deeplab_masks
+/bin/rm ./rename_thumbnails
+/bin/rm ./resize_images
+/bin/rm ./roadsign_thumbnails
+/bin/rm ./rotate_pngs
+/bin/rm ./shape2polylines
+/bin/rm ./truth_vs_c3view
+
+

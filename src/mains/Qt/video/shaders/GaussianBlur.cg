@@ -1,0 +1,122 @@
+/*
+void downsample( uniform samplerRECT inputSampler,
+				uniform float sigma,
+				
+				float2 xy : WPOS,
+				
+				out float4 colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	float2 texCoord = sigma * floor( xy ) + sigma * halfdxdy;
+	colorOut = texRECT( inputSampler, texCoord );
+}
+
+void blur( uniform samplerRECT inputSampler,
+		  uniform float4 delta_twoDelta,
+		  
+		  float2 xy : WPOS,
+		  
+		  out float4 colorOut : COLOR )
+{
+	float2 delta = delta_twoDelta.xy;
+	float2 twoDelta = delta_twoDelta.zw;
+
+	float4 d0 = texRECT( inputSampler, xy - twoDelta );
+	float4 d1 = texRECT( inputSampler, xy - delta );
+	float4 d2 = texRECT( inputSampler, xy );
+	float4 d3 = texRECT( inputSampler, xy + delta );
+	float4 d4 = texRECT( inputSampler, xy + twoDelta );
+	
+	const float k0 = 0.054488684549642;
+	const float k1 = 0.244201342003233;
+	const float k2 = 0.402619946894249;
+	
+	colorOut = k0 * ( d0 + d4 ) + k1 * ( d1 + d3 ) + k2 * d3;
+}
+
+void upsample( uniform samplerRECT inputSampler,
+			  uniform samplerRECT downsampledSampler,
+			  uniform float sigma,
+			  
+			  float2 xy : WPOS,
+					   
+			  out float4 colorOut : COLOR )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	// float2 downsampledTexCoord = floor( xy ) / sigma + halfdxdy;
+	float2 downsampledTexCoord = floor( xy ) / sigma + halfdxdy / sigma;
+	float4 blurred = texRECT( downsampledSampler, downsampledTexCoord );
+	
+	colorOut = blurred;
+}
+*/
+
+void gaussianBlur( uniform samplerRECT inputSampler,
+				  uniform float2 delta,
+				  uniform float2 sigmaTwoSigmaSquared,
+				  
+				  float2 xy : WPOS,
+				  
+				  out float4 colorOut : COLOR )
+{
+	float sigma = sigmaTwoSigmaSquared.x;	
+	float twoSigmaSquared = sigmaTwoSigmaSquared.y;
+
+	float4 center = texRECT( inputSampler, xy );
+	float4 sum = center;
+	float normalization = 1;
+
+	float halfWidth = float( 2 * sigma );
+
+	for( float d = 1; d <= halfWidth; ++d )
+	{
+		float dSquared = d * d;
+		float kernel = exp( -dSquared / twoSigmaSquared );
+		normalization += 2 * kernel;
+		
+		float4 L0 = texRECT( inputSampler, xy - d * delta );
+		float4 L1 = texRECT( inputSampler, xy + d * delta );
+		sum += kernel * ( L0 + L1 );
+	}
+	
+	colorOut = sum / normalization;
+}
+
+void absHighPass( uniform samplerRECT inputSampler,
+				  uniform samplerRECT blurredOnceSampler,
+				  uniform float2 delta,
+				  uniform float2 sigmaTwoSigmaSquared,
+				  
+				  float2 xy : WPOS,
+					  
+				  out float4 colorOut : COLOR )
+{
+	float sigma = sigmaTwoSigmaSquared.x;	
+	float twoSigmaSquared = sigmaTwoSigmaSquared.y;
+
+	float4 center = texRECT( blurredOnceSampler, xy );
+	float4 sum = center;
+	float normalization = 1;
+
+	float halfWidth = float( 2 * sigma );
+
+	for( float d = 1; d <= halfWidth; ++d )
+	{
+		float dSquared = d * d;
+		float kernel = exp( -dSquared / twoSigmaSquared );
+		normalization += 2 * kernel;
+		
+		float4 L0 = texRECT( blurredOnceSampler, xy - d * delta );
+		float4 L1 = texRECT( blurredOnceSampler, xy + d * delta );
+		sum += kernel * ( L0 + L1 );
+	}
+	
+	float4 blurred = sum / normalization;
+	
+	float4 input = texRECT( inputSampler, xy );
+	float4 highPass = input - blurred;
+	
+	colorOut = abs( highPass );
+}

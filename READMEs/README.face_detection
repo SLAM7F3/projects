@@ -1,0 +1,43 @@
+===========================================================================
+Face detection notes
+===========================================================================
+Last updated on 8/27/12; 8/30/12
+===========================================================================
+
+*.  On 8/26/12, we attempted to build Xiangxin Zhu's face detection
+algorithms which had been coded up in C++ by H. Bristow at Willow garage.
+In order to do so, we had to install Cmake-2.8.9, OpenCV-2.4.2 and
+Boost_1_51_0.
+
+*.  We ran into Boost library linking problems with the original
+distribution.  Asking asking for help, Dave Ceddia figured out that we
+needed to make the following line additions within the top-level
+CMakeLists.txt file:
+
+
+# find the dependencies
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(OpenCV REQUIRED)
+
+===>>>
+
+# find the dependencies
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED OFF)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(OpenCV REQUIRED)
+
+We did NOT attempt to compile Boost with multithreading enabled.  So we
+must explicitly tell Cmake for Zhu's C++ codes to not look for
+multithreaded boost libraries.
+
+*.  We need to add following lines to our .cshrc file:
+
+# Need CMAKE_PREFIX_PATH env var to build C++ version of PartsBasedDetector
+# for human faces:
+
+setenv CMAKE_PREFIX_PATH /usr/local/OpenCV/share/OpenCV  
+
+
+*.  After making these changes, compilation and linking of H. Bristow's C++
+codes seem to run fine.

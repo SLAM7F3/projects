@@ -1,0 +1,32 @@
+=============================================================================
+Pano notes
+=============================================================================
+Last updated on 7/21/15; 7/22/15
+=============================================================================
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -do "pano_gui \
+-prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_kittyhawk_1b_remaining_150323_080958.xml \
+-prj kittyhawk_1b_remaining \
+--cardinal_dirs \
+-sres /startown-gpfs/sputnik02/supersize/copyprocess/resource/bay_area/bay_area-s10-20141104_154105-q15-imdata"
+
+
+*.  Within initial map display, double click on some white dot (rig) to
+load its data
+
+[if you have an imdata id you can load that data from load_rig_from_id and get the resource from this tool:
+
+curl -s https://flyover-api.geo.apple.com/imdata/lookup/OBJECT_ID_HERE | python -m json.tool
+
+]
+
+*.  After data is loaded, press 'b' to build the pano.
+
+*.  In order to export a panoram to a output jpeg, chant
+
+esc-x save_pano pano_name.jpg
+
+
+
+*.  
+

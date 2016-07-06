@@ -1,0 +1,41 @@
+# ========================================================================
+# After speaking with Iva Mooney on 4/24/00, we realized that we would have
+# to include the following dumb cluge into our metafile output in order to
+# circumvent a limitation of the metafile plotting program.  The lines
+# below draw a colorbar legend which includes no white space.  Recall that
+# white regions within footprints represent zones where a missile cannot
+# intercept a target.  Since the miss distance in such zones is effectively
+# infinite, there should be no white appearing within the miss distance
+# colorbar legend.  We need to incorporate a separate colortable after this
+# section of metafile code which does include white RGB values so that
+# portions of the footprint itself can be colored white in the appropriate
+# dead zones.  But we cannot use that 2nd colortable for the color legend
+# bar, for some white will inevitably appear within the legend.
+# ========================================================================
+
+title ''
+size 0 0
+x axis min -100 max -99
+y axis min -100 max -99
+legend ''
+image -100 -100 -99 -99 1 1
+
+image_legend
+   min 0
+   max 60
+   height 4.0
+   width 0.15
+   label 'Detection Probability'
+   legloc 4 2
+   reverse_colors
+
+colortable
+# index	red	green 	blue	interpolations  label
+
+0.025     0       0       0       2
+0.99    255     255     255       5       '1'
+999     255     0       0       2
+1000    255     255     255     2
+
+data 0
+# ========================================================================

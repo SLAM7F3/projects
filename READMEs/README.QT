@@ -1,0 +1,15 @@
+==========================================================================
+Qt notes
+==========================================================================
+Last updated on 7/23/07; 4/28/08; 1/25/11
+==========================================================================
+
+1.  Qmake can take arguments that indicate which main program it should
+compile.
+
+	 	qmake bluelogic.pro -o makefile
+
+2.  icons can be found in /usr/share/icons/
+
+3.  Chant "assistant &" in order to bring up Qt Assistant help UI,
+

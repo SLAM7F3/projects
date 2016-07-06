@@ -1,0 +1,166 @@
+<!-- ===================================================================== -->
+<!-- Video player control buttons 		        		   -->
+<!-- ===================================================================== -->
+<!-- Last updated on 5/11/08; 6/7/08				   	   -->
+<!-- ===================================================================== -->
+
+<html>
+
+<!--
+
+Notes : 
+
+- http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=2326407&SiteID=1
+  - can change location of object or iframe by just changing innerHTML of parent div!
+
+- http://www.webmasterworld.com/forum21/6539.htm
+  - can get at iframes/objects through window.frames[]
+  - pretty sneaky...
+
+-->
+
+
+<head>
+
+  <title>Video Buttons</title>
+
+  <script type="text/javascript">
+
+    function makeRequest(url)
+    {
+    var divID = "div1";
+    var e = document.getElementById(divID);
+    e.innerHTML = "<object name='object1' type='text/html' data='" + url + "'></object>";
+    }
+
+    // -----------------------------------------------------------------------
+    // preload images
+
+    var playDS = new Image();
+    playDS.src = "videoplayer_icons/playDS.jpg";
+
+    var cplayDS = new Image();
+    cplayDS.src = "videoplayer_icons/cplayDS.jpg";
+
+    var pauseDS = new Image();
+    pauseDS.src = "videoplayer_icons/pauseDS.jpg";
+
+    var cpauseDS = new Image();
+    cpauseDS.src = "videoplayer_icons/cpauseDS.jpg";
+
+    var forwardDS = new Image();
+    forwardDS.src = "videoplayer_icons/forwardDS.jpg";
+
+    var cforwardDS = new Image();
+    cforwardDS.src = "videoplayer_icons/cforwardDS.jpg";
+
+    var startDS = new Image();
+    startDS.src = "videoplayer_icons/startDS.jpg";
+
+    var cstartDS = new Image();
+    cstartDS.src = "videoplayer_icons/cstartDS.jpg";
+
+    var isPlayButton = true;
+
+    // -----------------------------------------------------------------------
+
+    function hoverPlayPause()
+    {
+    document.images["playPause"].src = isPlayButton ? cplayDS.src : cpauseDS.src;
+    }
+
+    function restorePlayPause()
+    {
+    document.images["playPause"].src = isPlayButton ? playDS.src : pauseDS.src;
+    }
+
+    function hoverForward()
+    {
+    document.images["forward"].src = cforwardDS.src;
+    }
+
+    function restoreForward()
+    {
+    document.images["forward"].src = forwardDS.src;
+    }
+
+    function hoverStart()
+    {
+    document.images["start"].src = cstartDS.src;
+    }
+
+    function restoreStart()
+    {
+    document.images["start"].src = startDS.src;
+    }
+
+    function makePlayPauseRequest()
+    {
+    if (isPlayButton)
+    {
+    // play
+    makeRequest('http://127.0.0.1:4041/PLAY_MOVIE/');
+    }
+    else
+    {
+    // pause
+    makeRequest('http://127.0.0.1:4041/PAUSE_MOVIE/');
+    }
+    
+    isPlayButton = !isPlayButton;
+    restorePlayPause();
+    }
+
+    function makeForwardRequest()
+    {
+    // forward
+    makeRequest('http://127.0.0.1:4041/FAST_FORWARD_MOVIE/');
+    }
+
+    function makeStartRequest()
+    {
+    // reset to start
+    makeRequest('http://127.0.0.1:4041/RESTART_MOVIE/');
+    }
+
+    // -----------------------------------------------------------------------
+
+  </script>
+
+</head>
+
+<body>
+
+  <div style="">
+
+    <img id="start" name="start"
+         src="videoplayer_icons/startDS.jpg" 
+         onmousedown="hoverStart();" 
+         onmouseout="restoreStart();"
+         onclick="restoreStart(); makeStartRequest();"
+         style="vertical-align: middle;"/>
+
+    <img id="playPause" name="playPause"
+         src="videoplayer_icons/playDS.jpg" 
+         onmousedown="hoverPlayPause();" 
+         onmouseout="restorePlayPause();"
+         onclick="restorePlayPause(); makePlayPauseRequest();"
+         style="vertical-align: middle;"/>
+    
+    <img id="forward" name="forward"
+         src="videoplayer_icons/forwardDS.jpg" 
+         onmousedown="hoverForward();" 
+         onmouseout="restoreForward();" 
+         onclick="restoreForward(); makeForwardRequest()"
+         style="vertical-align: middle;"/>
+
+  </div>
+
+  <div id="div1" name="div1" style="width: 0px; height: 0px; overflow: hidden;">test1</div>
+
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,108 @@
+===========================================================================
+Allie Hoch's notes about geoWebCache
+===========================================================================
+Last updated on 7/30/10
+===========================================================================
+
+	I set up geoWebCache on the robots application with the hope that
+it would speed up the performance of the 2D thin client map when satellite
+imagery is displayed.  The idea of GeoWebCache is that for each zoom level
+a bunch of tiles are saved that will be displayed at this zoom level ahead
+of time. This is done by pre seeding from the web interface
+http://localhost:8080/geowebcache/demo.  (Click "Seed this Layer", the
+username = 'geowebcache' and password = 'secured' .  Choose Grid Set:
+EPSG:4326 for seeding for the robots app or EPSG:900913 for seeding for
+bluetracker. The number of threads should be equal to the number of
+processors. On the lost machines this means 4 threads. Also choose Format:
+image/png. The choose start and end zoom levels. For the robot app the last
+zoom level is artifically set in the javascript code to be 19) With all the
+tiles seeded, there is no need for the mapserver to compute projections or
+subsample the original images whenever the map is moved or a new zoom level
+is chosen. In addition this actually uses less memory because instead of
+saving GeoTiff's we are saving png files. If only some of the layers were
+preseeded (it can take a long time, on the order of days or even weeks)
+then whenever you zoom to a location that was not preseeded the tiles that
+are generated are saved.  This means that the next time you zoom to this
+location it should be much faster. I discovered one bug with the preseeding
+process: sometimes the tiles for very low zoom levels (very zoomed out)
+won't be preseeded. If this happens just open your application and on each
+level wait a minute while the tiles are computed. They will be saved and
+you won't have to do this again. The geowebcache files are saved in
+/usr/local/apache-tomcat/webapps/geowebcache.  The file that was changed to
+make it work this all work is
+/usr/local/apache-tomcat/webapps/geowebcache/WEB-INF/geowebcache-servlet.xml.
+There is documentation online explaining this file. Finally all the tiles
+are saved in /data_second_disk/geowebcache/blobstore.
+
+	The first Geowebcache attempt I made used the original 24-bit color
+tif files (just MrSID files with no preprocessing done on them) downloaded
+from the MassGIS website for eastern Massachusetts. (See README.MassGIS for
+instructions on converting from MrSID to 24bit or 8bit GeoTifs).  We
+decided that these files took up too much disk space (230GB) and decided to
+go with the 8-bit color tiles (79GB). To make this all work for the 8-bit
+color tiles I had to recompute them since I had not only converted the
+original tiles from 24-bit to 8-bit but also used gdaladdo and
+gdal_translate to internally pyramid and tile the 8-bit tiles. (Again see
+README.MassGIS) This messed things up for GeoWebCache so I needed tiles
+that were only different from the 24-bit tiles in that they had GDAL's
+rgb2pct.py run on them to convert to 8bit color.  Also, I found that when
+creating tile_index.shp (with gdaltindex) a few tiles were reported as
+being corrupted or having errors in them. Don't ignore these errors! This
+meant that any GeoWebCache metatiles containing the corrupted files were
+not generated.
+
+A few steps that I had to take to set up this to all work are described on 
+this webpage: http://linfiniti.com/2009/07/tilecaching-mapserver-with-
+geowebcache-and-tilecache-on-ubuntu/ and also on the geoWebCache website.
+
+Follow these steps to get GeoWebCache working on a new machine:
+
+1. Go to http://java.sun.com/ and download the latest Java SE. This might not 
+be necessary on the LOST laptops since they should have a pretty up to date 
+version of java, but to be safe I did this.
+
+2. run "sudo apt-get install libtomcat6-java tomcat6-admin tomcat6-common". The
+LOST laptops may have some of these libraries, but just to be safe make sure
+they're all there. There are probably some missing.
+
+3. edit /etc/default/tomcat6 and add the following two lines at the bottom of 
+the file. These instructions came from the website above.
+
+# Added by Allison Hoch
+JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+# Disabled by Allie  based on http://jira.codehaus.org/browse/GEOS-1567
+TOMCAT6_SECURITY=no
+
+4. Edit /etc/tomcat6/tomcat-users.xml. Just copy this file from a computer
+which has geowebcache working since extra spaces will actually cause problems!
+
+5. Copy all the files and directories in 
+/usr/local/apache-tomcat/webapps/geowebcache from a machine with geowebcache working.
+
+6. run "sudo chown -R tomcat6 
+/usr/local/apache-tomcat/webapps/geowebcache/WEB-INF/*"
+
+7. Copy all these files: 
+/data_second_disk/MassGIS/coq08_30cm_*[0-9].8bit.sid.tif from a machine with 
+working geowebcache. These are the 8bit tiles without internal tiling or 
+pyramiding.
+
+8. Create a new tile_index:
+sudo rm tile_index.*
+sudo gdaltindex tile_index.shp /data_second_disk/MassGIS/coq08_30cm_*[0-9].8bit.sid.tif
+
+9. Make sure these folders exist and are created and owned by root:
+/data_second_disk/geowebcache
+/data_second_disk/geowebcache/blobstore
+/data_second_disk/geowebcache/metastore
+To be safe make sure these folders have the same permissions as the folders on
+a machine with working geowebcache.
+
+10. Finally once you starting generating .png tiles you will run out of space on
+/data_second_disk/ so it would be a good idea to delete:
+sudo rm /data_second_disk/MassGIS/*tiled.8bit.sid.tif.
+
+11. If you run into any problems check the geoWebCache log in 
+/tmp/geowebcache.log
+Once all this is set up make sure to restart tomcat with the command 
+"/etc/init.d/tomcat restart" and clear firefox's cache.

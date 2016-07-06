@@ -1,0 +1,135 @@
+#include "ColorSpaceUtils.cgh"
+
+// cosine
+float4 getColorForDetail( float detail )
+{
+	const float w = 3.141592653589793 / 2;
+
+	float alpha;
+	float4 output;
+	
+	if( detail < ( 1.0 / 3.0 ) )
+	{
+		alpha = 1 - cos( w * ( 3 * detail ) );
+		output = lerp( float4( 1, 1, 1, 1 ), float4( 1, 0, 0, 1 ), alpha );
+	}
+	else if( detail < ( 2.0 / 3.0 ) )
+	{
+		alpha = 1 - cos( w * ( 3 * ( detail - ( 1.0 / 3.0 ) ) ) );
+		output = lerp( float4( 1, 0, 0, 1 ), float4( 0, 1, 0, 1 ), alpha );
+	}
+	else
+	{
+		alpha = 1 - cos( w * ( 3 * ( detail - ( 2.0 / 3.0 ) ) ) );
+		output = lerp( float4( 0, 1, 0, 1 ), float4( 0, 0, 1, 1 ), alpha );
+	}
+
+	return output;
+}
+
+void combineBFOutputs( uniform samplerRECT inputRGBASampler,
+					  uniform samplerRECT bf0Sampler,
+					  uniform samplerRECT bf1Sampler,
+					  uniform samplerRECT bf2Sampler,
+					  uniform samplerRECT detailMapSampler,
+					  
+					  float2 xyIn : WPOS,
+					  
+					  out float4 output : COLOR )
+{
+	const float w = 3.141592653589793 / 2;
+	float detail = texRECT( detailMapSampler, xyIn ).x;
+
+	float alpha;
+
+	// cosine
+	if( detail < ( 1.0 / 3.0 ) )
+	{
+		alpha = 1 - cos( w * ( 3 * detail ) );
+		
+		float4 inputRGBA = texRECT( inputRGBASampler, xyIn );
+		float4 inputLabA = rgba2laba( inputRGBA );
+		float4 bf0 = texRECT( bf0Sampler, xyIn );
+		
+		output = lerp( inputLabA, bf0, alpha );
+	}
+	else if( detail < ( 2.0 / 3.0 ) )
+	{
+		alpha = 1 - cos( w * ( 3 * ( detail - ( 1.0 / 3.0 ) ) ) );
+		
+		float4 bf0 = texRECT( bf0Sampler, xyIn );
+		float4 bf1 = texRECT( bf1Sampler, xyIn );
+				
+		output = lerp( bf0, bf1, alpha );
+	}
+	else
+	{
+		alpha = 1 - cos( w * ( 3 * ( detail - ( 2.0 / 3.0 ) ) ) );
+		
+		float4 bf1 = texRECT( bf1Sampler, xyIn );
+		float4 bf2 = texRECT( bf2Sampler, xyIn );
+				
+		output = lerp( bf1, bf2, alpha );
+	}
+
+	// works
+	// output = rgba2laba( texRECT( inputRGBASampler, xyIn ) );
+	
+	// also works!
+	// output = texRECT( bf0Sampler, xyIn );
+
+	/* // linear
+	if( detail < 0.25 )
+	{
+		alpha = 4 * detail;
+		float4 bf0 = texRECT( bf0Sampler, xyIn );
+		float4 bf1 = texRECT( bf1Sampler, xyIn );
+		
+		output = lerp( bf0, bf1, alpha );
+	}
+	else if( detail < 0.5 )
+	{
+		alpha = 4 * ( detail - 0.25 );
+		float4 bf1 = texRECT( bf1Sampler, xyIn );
+		float4 bf2 = texRECT( bf2Sampler, xyIn );
+		
+		output = lerp( bf1, bf2, alpha );
+	}
+	else if( detail < 0.75 )
+	{
+		alpha = 4 * ( detail - 0.5 );
+		float4 bf2 = texRECT( bf2Sampler, xyIn );
+		float4 bf3 = texRECT( bf3Sampler, xyIn );
+		
+		output = lerp( bf2, bf3, alpha );
+	}
+	else
+	{
+		alpha = 4 * ( detail - 0.75 );
+		float4 bf3 = texRECT( bf3Sampler, xyIn );
+		float4 originalLab = texRECT( originalLabSampler, xyIn );
+				
+		output = lerp( bf3, originalLab, alpha );
+	}
+	*/
+}
+
+void overlayDetailMapOverOriginal( uniform samplerRECT inputRGBASampler,
+								  uniform samplerRECT detailMapSampler,
+								  
+								  uniform float detailOverlayAlpha,
+								  
+								  float2 xyIn : WPOS,
+								  
+								  out float4 output : COLOR )
+{
+	float4 inputRGBA = texRECT( inputRGBASampler, xyIn );
+	
+	float detail = texRECT( detailMapSampler, xyIn ).x;
+	float4 detailMapColor = getColorForDetail( detail );
+	
+	output = float4
+	(
+		lerp( detailMapColor.rgb, inputRGBA.rgb, detailOverlayAlpha ), 1
+	);
+}

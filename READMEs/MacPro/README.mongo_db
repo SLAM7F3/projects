@@ -1,0 +1,1053 @@
+===================================================================================
+Mongo database notes
+===================================================================================
+Last updated on 2/9/15; 4/1/15; 10/21/15; 5/5/16
+===================================================================================
+
+On 5/27/14, Erik Soderval told us to install the following aliases within
+/home/pcho/.ssh/config:
+
+	Host st21
+	  Hostname st21a01ls-launchpad0001.st.geo.apple.com
+	  ForwardAgent yes
+
+	Host rd38
+	  Hostname rd17d01ls-geo0838.rd.geo.apple.com
+	  ForwardAgent yes
+
+	Host rd39
+	  Hostname rd17d01ls-geo0839.rd.geo.apple.com
+	  ForwardAgent yes
+
+	Host geomanifest
+	  Hostname rd12d02ls-vm0067.geo.apple.com
+	  ForwardAgent yes
+
+	Host copy1
+	  Hostname cc02l00ls-copy0001.geo.apple.com
+	  ForwardAgent yes
+
+	Host copy2
+	  Hostname cc02l00ls-copy0002.geo.apple.com
+	  ForwardAgent yes
+
+
+We can then simply ssh into the startown machine by chanting
+
+	ssh st21
+
+Alternatively, we can just ssh into launchpad via our ssh_laundpad script.
+In either case, starship enterprise ascii-art should then appear.
+
+
+pcho-MacPro:pcho% ssh st21
+pcho@st21a01ls-launchpad0001.st.geo.apple.com's password: 
+Last login: Mon May 19 14:17:09 2014 from 17.212.143.146
+----------------------------------------------------
+
+               _____.-._____                                    
+ ______.------'-------------`------.______                      
+'=========================================`                     
+     ((__`----._____________.----'__))                          
+      `---'         |-|         `---'                           
+        |         __|o|__         |     
+        |       .' _---_ `.       |   
+        \______| .'  _  `. |______/                             
+               | |  (_)  | |                
+                \ \     / /                                     
+                 `-=====-'                                      
+
+ 
+ GEO base image 1.3      OEL 6.3  - 2/21/13 eaw
+Image: prod_oel6.3 Disk Layout: raid1
+----------------------------------------------------
+
+
+Once we're logged into st21, ssh into fly4 for machine detections and fly3
+for human annotations
+
+	ssh st21f01ls-fly0003.st.geo.apple.com 
+
+
+	ssh st21f01ls-fly0004.st.geo.apple.com 
+
+in order access mongo databases directly.  Mongo database lives on this
+particular machine.  (See pr/db_server entry within flyover-eufori.dcfg
+file)
+
+
+[pcho@st21a01ls-launchpad0001 ~]$ ssh st21f01ls-fly0004.st.geo.apple.com
+The authenticity of host 'st21f01ls-fly0004.st.geo.apple.com (10.182.128.76)' can't be established.
+RSA key fingerprint is dd:22:f0:d3:e8:ff:7f:0b:83:31:35:9f:cc:a3:0a:47.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'st21f01ls-fly0004.st.geo.apple.com,10.182.128.76' (RSA) to the list of known hosts.
+pcho@st21f01ls-fly0004.st.geo.apple.com's password: 
+----------------------------------------------------
+
+               _____.-._____                                    
+ ______.------'-------------`------.______                      
+'=========================================`                     
+     ((__`----._____________.----'__))                          
+      `---'         |-|         `---'                           
+        |         __|o|__         |     
+        |       .' _---_ `.       |   
+        \______| .'  _  `. |______/                             
+               | |  (_)  | |                
+                \ \     / /                                     
+                 `-=====-'                                      
+
+ 
+ GEO base image 1.3      OEL 6.3  - 2/21/13 eaw
+Image: prod_oel6.3 Disk Layout: raid1
+----------------------------------------------------
+chown: changing ownership of `/home/pcho': Operation not permitted
+
+
+* Once sshed into st21f01ls-fly0004, next chant
+
+	mongo prjdb 
+
+where prjdb = name of database in order to communicate directly with a
+mongo database.  We should see a ">" prompt from the mongo database.
+
+[pcho@st21f01ls-fly0004 ~]$ mongo prjdb
+MongoDB shell version: 1.8.2
+connecting to: prjdb
+
+
+*.  Chant db.help() to see list of available mongo interface commands:
+
+> db.help()
+DB methods:
+	db.addUser(username, password[, readOnly=false])
+	db.auth(username, password)
+	db.cloneDatabase(fromhost)
+	db.commandHelp(name) returns the help for the command
+	db.copyDatabase(fromdb, todb, fromhost)
+	db.createCollection(name, { size : ..., capped : ..., max : ... } )
+	db.currentOp() displays the current operation in the db
+	db.dropDatabase()
+	db.eval(func, args) run code server-side
+	db.getCollection(cname) same as db['cname'] or db.cname
+	db.getCollectionNames()
+	db.getLastError() - just returns the err msg string
+	db.getLastErrorObj() - return full status object
+	db.getMongo() get the server connection object
+	db.getMongo().setSlaveOk() allow this connection to read from the nonmaster member of a replica pair
+	db.getName()
+	db.getPrevError()
+	db.getProfilingLevel() - deprecated
+	db.getProfilingStatus() - returns if profiling is on and slow threshold 
+	db.getReplicationInfo()
+	db.getSiblingDB(name) get the db at the same server as this one
+	db.isMaster() check replica primary status
+	db.killOp(opid) kills the current operation in the db
+	db.listCommands() lists all the db commands
+	db.printCollectionStats()
+	db.printReplicationInfo()
+	db.printSlaveReplicationInfo()
+	db.printShardingStatus()
+	db.removeUser(username)
+	db.repairDatabase()
+	db.resetError()
+	db.runCommand(cmdObj) run a database command.  if cmdObj is a string, turns it into { cmdObj : 1 }
+	db.serverStatus()
+	db.setProfilingLevel(level,<slowms>) 0=off 1=slow 2=all
+	db.shutdownServer()
+	db.stats()
+	db.version() current version of the server
+	db.getMongo().setSlaveOk() allow queries on a replication slave server
+> 
+
+*.  For example, chant "db.getCollectionNames()" at the mongo prompt to see a
+listing of all Mongo collections ( which are analogous to SQL tables).
+
+> db.getCollectionNames()
+[
+	"delivery_targets",
+	"detection",
+	"detection_old",
+	"detection_old2",
+	"detection_tmp",
+	"enhancement",
+	"export_project",
+	"export_report",
+	"group",
+	"polaris",
+	"project",
+	"region",
+	"resource",
+	"setting",
+	"system.indexes",
+	"system.profile",
+	"user"
+]
+
+So we see that "detection" is the name of a mongo database table.
+
+
+*.  If the "detection" collection ( = SQL table) didn't already exist, we
+can chant
+
+		db.createCollection("detection")
+
+to create this collection ( = SQL table).  According to Gustav Hanning,
+Mongo collections should automatically be created by pwin code, and we
+should not need to manually create such tables.
+
+
+*.  In order to see specific help information for the "detection" table,
+chant db.detection.help().
+
+*. At mongo prompt, chant "db.detection.findOne()" to see a representative
+entry within the detection table:
+
+> db.detection.findOne()
+{
+	"_id" : ObjectId("528192d184bfa74b99b36fb6"),
+	"image_path" : "/startown-gpfs/sputnik01/supersize/resource/voyager_oahu/voyager_oahu-oahu_kahalu-20131026_200647-q1//oahu_kahalu/1//006585-002564-20131026_202539_5690-Cam1.jpg",
+	"image_xsize" : 5112,
+	"image_ysize" : 3832,
+	"upside_down" : 0,
+	"camera_position" : {
+		"x" : 2373255.4326618966,
+		"y" : 619632.7640137823,
+		"z" : -21.702847175041825,
+		"yaw" : -1.7538346360030317,
+		"pitch" : -0.03305442066087396,
+		"roll" : 0.007314513019207921
+	},
+	"camera_projection" : {
+		"type" : 0,
+		"fov_s" : 1.1328426029212115,
+		"fov_h" : 0.8896693688993456,
+		"k2" : -0.07398,
+		"k3" : 0,
+		"k4" : 0.0662,
+		"cx" : -0.00056,
+		"cy" : -0.00921,
+		"lx" : -0.00039,
+		"ly" : -0.00249
+	},
+	"position" : {
+		"x" : -5500299.839043787,
+		"y" : -2239525.8613476167,
+		"z" : 2318642.8158399
+	},
+	"position_type" : 2,
+	"loc" : {
+		"lng" : -157.84560024273654,
+		"lat" : 21.457665589764407
+	},
+	"height" : -23.217145783442977,
+	"heading" : -105.27701796366425,
+	"type" : 11,
+	"class" : 8,
+	"score" : 1.5,
+	"label" : "One Way",
+	"state" : 4,
+	"duplicate" : 1,
+	"bounding_box" : {
+		"xmin" : 683.5910351425741,
+		"xmax" : 837.9672667845659,
+		"ymin" : 1451.4901663369365,
+		"ymax" : 1504.615200249065
+	},
+	"detector_version" : 142,
+	"pwin_revision" : "cdcac071051c3d02eb01bfceb387a22f2211c74d",
+	"pwin_args" : "/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_cdcac0 -nowin -do1 pr classify -dver 142 -zbufpos -mongodb -rot -nochk -prjdb /startown-gpfs/sputnik01/supersize/conf/prjdb_voyager.xml -prj oahu_eastern -sno 600 -sst 7",
+	"created" : ISODate("2013-11-12T02:30:41Z")
+}
+
+
+
+*.  To see help information for finding particular entries within the
+detection table, chant
+
+
+> db.detection.find().help()
+find() modifiers
+	.sort( {...} )
+	.limit( n )
+	.skip( n )
+	.count() - total # of objects matching query, ignores skip,limit
+	.size() - total # of objects cursor would return, honors skip,limit
+	.explain([verbose])
+	.hint(...)
+	.showDiskLoc() - adds a $diskLoc field to each returned object
+
+Cursor methods
+	.forEach( func )
+	.print() - output to console in full pretty format
+	.map( func )
+	.hasNext()
+	.next()
+
+
+*.  Example of a mongo query which is analogous to a nontrivial SQL query:
+
+db.detection.find({"image_path":"/startown-gpfs/sputnik01/supersize/resource/voyager_oahu/voyager_oahu-oahu_kahalu-20131026_200647-q1//oahu_kahalu/1//006585-002564-20131026_202539_5690-Cam1.jpg"}).toArray()
+
+Note: Mongo database output is essentially JSON in format.  In order to see
+a human-readable version of the output JSON, be sure to add the
+".toArray()" at the end of any mongo find query:
+
+*.  Pressing "control-c" exits from mongo database interface.
+
+*.  Mongo vs postgres :
+
+mongo database <--> postgres schema
+
+mongo collection <--> postgres table
+
+mongo "document" <--> postgres table row
+
+
+*.  In order to export an entire mongo database table to JSON output, chant
+something like
+
+
+mongoexport -d prjdb -c detection --jsonArray | gzip > /tmp/topeter.json.gz
+
+
+mongoimport -d prjdb -c detection --file mongo_export_Jul8_2014.json --jsonArray
+
+
+mongoexport -d prjdb -c fly4_detection -q '{detector_version:23, state:2}'
+--jsonArray | gzip > /tmp/fly4_det23.json.gz
+
+mongoimport -d prjdb -c junk --file fly4_det23.json --jsonArray
+
+
+*.  The above procedure for transfering the detection collection from the
+main mongo server on startown to a local copy on our ubuntu machine failed
+due to the json file being too large.  But we can instead use
+mongodump/mongorestore instead to create and populate a local mongo database:
+
+	mongodump --collection detection --db prjdb
+	mongodump --collection markup_unrect_object --db prjdb
+
+Mongo dump contents can be restricted via a json query.  For example
+
+	mongodump --db prjdb --collection fly4_detection -q '{detector_version:23, state:2}' 
+
+	mongodump --db prjdb --collection detection -q '{detector_version:1200}' 
+
+	mongodump --db prjdb --collection markup_unrect_object -q '{created: {"$gte": ISODate("2014-09-01T00:00:00.000Z")} }'
+
+	mongodump --db prjdb --collection detection -q '{created:{$gte:ISODate("2015-01-01T00:00:00.000Z")} }'
+
+
+
+
+Transfer tarball containing mongo detection table from st21f01ls-fly0004 to
+our local MacPro via 
+
+		sftp pcho@17.212.143.146
+
+Move the transfered tarball into /home/pcho/sputnik/peter_stuff/mongo_db on
+our local MacPro.
+
+*.  In order to drop the "detection" collection ( = table ) on local
+MacPro, chant from within mongo at the mongo prompt
+
+		     > db.detection.drop()
+		     > db.markup_unrect_object.drop()
+		     > db.markup_object.drop()
+
+*.  Restore detection table within local mongo database by chanting from
+outside of mongo something like
+
+	mongorestore --db prjdb --collection detection dump_072414_064400/prjdb/detection.bson
+
+	mongorestore --db prjdb --collection markup_unrect_object dump_072414_064400/prjdb/markup_unrect_object.bson
+
+
+*.  On 5/27/14, Erik Soderval recommended checking out the following binary
+data handling software:
+
+1.  Apache Thrift
+
+2.  Apache Avro
+
+3.  Protobuf  
+
+He thought that choosing binary data software which supports indexing would
+be a good idea for handling huge numbers of feature descriptors.
+
+*.  On 7/1/14, Abhishek Sharma taught us that the following configuration
+file
+
+	/startown-gpfs/ssdws03/conf/flyover-eufori.dcfg
+
+contains key-value pairs holding hardwired values for monogo database
+hostname, mongo table names, etc.  This is actually a soft link to the
+actual configuration file
+
+	/startown-gpfs/ssdws01/conf/flyover-eufori.dcfg
+
+On 5/5/16, we couldn't edit this file on our local Thinkmate machine.  But
+we could edit it if we logged into a distrib cluster node.  
+
+*.  On 2/9/14, we temporarily reset the link from
+/startown-gpfs/ssdws03/conf/flyover-eufori.dcfg to
+
+/startown-gpfs/ssdws02/conf/flyover-eufori.dcfg since
+ssdws01 had run out of disk space
+
+
+*. On 1/6/15, Erik Soderval taught us that the following entry within
+flyover-eufori.dcfg can be used to enable pwin connections with the mongo
+server on fly6:
+
+pr/imdata_db_server   mongodb://kitty_read:Elsie208.Lesley@st21f01ls-fly0006.st.geo.apple.com/prjdb?replicaset=flyover0
+
+Here kitty_read = username and Elsie208.Lesley = password for a read-only
+mongo account
+
+
+> db.detection.count()
+
+Returns number of documents ( = rows) within detection collection ( =
+table)
+
+> db.detection.count( {detector_version: {$in: [100] } } )
+
+Returns number of documents ( = rows) within detection collection ( =
+table) which have detector_version == 100
+
+> db.detection.find({"image_path":"/startown-gpfs/sputnik01/supersize/resource/voyager_oahu/voyager_oahu-oahu_kahalu-20131026_200647-q1//oahu_kahalu/1//006585-002564-20131026_202539_5690-Cam1.jpg"}).toArray()
+
+
+*.  In order to find results corresponding to our HouseNumber detector
+version 1004, chant
+
+> db.detection.find({detector_version:1004}).toArray()
+
+OR
+
+> db.detection.find({"detector_version":1004}).toArray()
+
+*.  In order to find results corresponding to Sign detector version 100,
+chant
+
+> db.detection.find({"detector_version":100}).toArray()
+
+*.  In order to find results corresponding to a particular image basename,
+chant
+
+db.detection.find({"image_fn":"000179-000175-20140305_190245_656-Cam02_2645D_07046.jpg"}).toArray()
+
+db.detection.find({"image_fn":"000254-000250-20140305_190328_649-Cam02_2645D_07060.jpg"}).toArray()
+  [ Image with two 25 mph speed limit signs ]
+
+.
+.
+.
+
+	{
+		"_id" : ObjectId("53bae282619f3727b343be8d"),
+		"image_path" : "/startown-gpfs/sputnik02/supersize/devtest/g3d/imdata/j125/j125-testdrive-20140305_000000-q2//../../../images/j125/j125-testdrive-20140305_000000-q2/capture/none-ground-20140305_190114-poc1//unplanned-20140305_190119/02-2645D-07060/0k/000254-000250-20140305_190328_649-Cam02_2645D_07060.jpg",
+		"project_name" : "los_angeles_drive"
+		"image_fn" : "000254-000250-20140305_190328_649-Cam02_2645D_07060.jpg",
+		"image_xsize" : 5112,
+		"image_ysize" : 3832,
+		"upside_down" : 0,
+		"camera_position" : {
+			"x" : 4136259.456625371,
+			"y" : 590076.8514878231,
+			"z" : -16.667260295769665,
+			"yaw" : -2.062401585756645,
+			"pitch" : 0.23592221337378866,
+			"roll" : -1.4246197340488167
+		},
+		"camera_projection" : {
+			"type" : 0,
+			"fov_s" : 1.6344554659321378,
+			"fov_h" : 1.348156891422744,
+			"k2" : -0.02481,
+			"k3" : 0.00981,
+			"k4" : -0.0007,
+			"cx" : -0.00182,
+			"cy" : -0.00383,
+			"lx" : 0.01096,
+			"ly" : 0.02885
+		},
+		"position" : {
+			"x" : 0,
+			"y" : 0,
+			"z" : 0
+		},
+		"position_type" : 0,
+		"loc" : {
+			"lng" : 0,
+			"lat" : 89.99999866260445
+		},
+		"height" : 6356765.92016819,
+		"type" : 11,
+		"class" : 24,
+		"score" : 1.2999999523162842,
+		"label" : "speed limit 25",
+		"state" : 0,
+		"duplicate" : 0,
+		"bounding_box" : {
+			"xmin" : 2675.020751953125,
+			"xmax" : 2987.020751953125,
+			"ymin" : 1496.039794921875,
+			"ymax" : 1854.039794921875
+		},
+		"unrectified_quadrilateral" : {
+			"top_left_x" : 2500.0451300698674,
+			"top_left_y" : 2083.7703374075368,
+			"top_right_x" : 2544.970248342095,
+			"top_right_y" : 2386.7090828149753,
+			"bottom_right_x" : 2193.9185340818867,
+			"bottom_right_y" : 2452.1862158680083,
+			"bottom_left_x" : 2147.4165772213123,
+			"bottom_left_y" : 2138.9147207649416
+		},
+		"detector_version" : 100,
+		"pwin_revision" : "f68233a759bd79c2f0648905d8a6d4b96de79e38",
+		"pwin_args" : "/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_f68233 -nowin -do1 pr classify -dver 100 -oc1c6 -rect -mongodb -nochk -prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml -prj 20140305_v4_lidar_v2 -sno 200 -sst 49",
+		"created" : ISODate("2014-07-07T18:10:10Z")
+	}
+]
+
+
+db.detection.find( {"detector_version": 1004} ).toArray()
+
+
+*.  On 7/7/14, we learned from Gustav that we can install a local mongo
+database (via sudo apt-get install mongo) and export/import a mongo
+database/collection to/from JSON.
+
+*.  Query for documents ( = rows) within detection collection ( = table)
+
+> db.detection.find({"created": {"$gte": ISODate("2014-07-07T00:00:00.000Z")} }).count()
+
+> db.detection.find({"created": {"$gte": ISODate("2014-07-07T00:00:00.000Z")} }).count()
+
+> db.detection.find({"created":{"$gte":ISODate("2014-07-07T00:00:00.000Z")} }).toArray()
+
+> db.detection.find({"created": {"$gte":ISODate("2014-07-08T15:00:00.000Z")} }).count()
+
+> db.detection.find({detector_version: 101, created: {"$gte":ISODate("2014-07-22T20:00:00.000Z")}}).count()
+
+> db.detection.find({"project_name":"los_angeles_drive"}).count()
+
+> db.detection.find({"project_name":"20140305_v4_lidar_medium"}).count()
+
+> db.detection.find({"project_name":"20140305_v4_lidar_medium", "detector_version": 100}).count()
+
+> db.detection.find({"project_name":"20140305_v4_lidar_medium", "detector_version": 101}).count()
+
+
+*.  Query for documents ( = rows) within detection collection ( = table)
+which contain "image_fn" field:
+
+db.detection.find( {image_fn: {$exists: true} }).count()
+
+db.detection.find( {"detector_version": 1004, image_fn: {$exists: true}}).count()
+
+
+db.detection.find({ image_fn: "001369-000587-20140305_204220_895-Cam02_2645D_07046.jpg"}).toArray()
+
+db.detection.find( {detector_version: 1004, created: {"$gte":ISODate("2014-07-08T20:00:00.000Z")} }).count()
+
+
+db.detection.find( {created: {"$lte":ISODate("2014-07-08T20:00:00.000Z")}}).count()
+
+db.detection.findOne({"project_name":"la_downtown_small4_test1"})
+{
+	"_id" : ObjectId("53ee3c43619f3727b3494434"),
+	"project_name" : "la_downtown_small4_test1",
+	"image_path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg///unplanned-20140611_210356/02-2645D-07487/2k/002925-002924-20140611_215806_895-Cam02_2645D_07487.jpg",
+	"image_fn" : "002925-002924-20140611_215806_895-Cam02_2645D_07487.jpg",
+	"image_xsize" : 5120,
+	"image_ysize" : 3840,
+	"upside_down" : 0,
+	"camera_position" : {
+		"x" : -60.37234238288023,
+		"y" : -59.951594278177225,
+		"z" : 4.047375007114007,
+		"yaw" : 0.6082071382175919,
+		"pitch" : 0.026039202751483363,
+		"roll" : 0.00446436378813971
+	},
+	"camera_projection" : {
+		"type" : 0,
+		"fov_s" : 1.1353210000004865,
+		"fov_h" : 0.8917969999995066,
+		"k2" : -0.07454,
+		"k3" : 0,
+		"k4" : 0.064,
+		"cx" : 0.0013,
+		"cy" : 0.00463,
+		"lx" : 0.00296,
+		"ly" : -0.00524
+	},
+	"gnd" : {
+		"x" : -2504655.9356705,
+		"y" : -4660663.2272724025,
+		"z" : 3549808.9447405227,
+		"yaw" : 0.2845417208031356,
+		"pitch" : -0.09975714554641253,
+		"roll" : 0.48204010391456975,
+		"w" : 0.40852411443536596,
+		"h" : 0.2426948821631143
+	},
+	"tile_id" : {
+		"lev" : 14,
+		"x" : 1732,
+		"y" : 10061
+	},
+	"utm_zone" : 0,
+	"position_type" : 0,
+	"loc" : {
+		"lng" : 0,
+		"lat" : 89.99999866260445
+	},
+	"height" : 6356765.92016819,
+	"type" : 8,
+	"class" : 515,
+	"score" : 10,
+	"label" : "515",
+	"state" : 0,
+	"duplicate" : 0,
+	"bounding_box" : {
+		"xmin" : 4014.928,
+		"xmax" : 4225.072,
+		"ymin" : 1390.5120000000002,
+		"ymax" : 1487.4879999999998
+	},
+	"unrectified_quadrilateral" : {
+		"top_left_x" : 4009.1709339250942,
+		"top_left_y" : 1488.9638309847628,
+		"top_right_x" : 4218.691955707357,
+		"top_right_y" : 1487.8118479278407,
+		"bottom_right_x" : 4220.045513079571,
+		"bottom_right_y" : 1584.3376086174976,
+		"bottom_left_x" : 4010.3973559715596,
+		"bottom_left_y" : 1585.4990369909135
+	},
+	"detector_version" : 1104,
+	"pwin_revision" : "7bb5d68afbd6b142752dc826d00ad81fbbc47a87",
+	"pwin_args" : "/startown-gpfs/sputnik01/supersize/bin/pwin/pwin_master/pwin_7bb5d6 -nowin -do1 pr build detect -dver 1104 -org -mongodb -resume -prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml -prj la_downtown_small4_test1 -nochk -area 14 1 1732 10061",
+	"created" : ISODate("2014-08-15T16:58:43Z")
+}
+
+
+
+*.  Delete all documents ( = rows ) in detection collection ( = table)
+created before July 8 at UTC = 20 hours
+
+db.detection.remove( {created: {"$lte":ISODate("2014-07-08T20:00:00.000Z")} })
+
+
+*.  Delete all documents ( = rows) in detection collection ( = table)
+which contain field image_fn:
+
+db.detection.remove( {image_fn: {$exists: true} })
+
+*.  Delete all documents ( = rows) in detection collection ( = table)
+which contain field image_fn and detector_version 1004:
+
+db.detection.remove( {detector_version: 1004, image_fn: {$exists: true} })
+
+db.detection.remove( {project_name: "20140305_v4_lidar_medium"})
+
+
+
+
+db.detection.find({ image_fn: "006462-005583-20140305_223337_566-Cam02_2645D_07060.jpg"}).toArray()
+
+
+db.detection.find( {"detector_version": 2020, image_fn: {$exists:true}}).count()
+
+db.detection.remove( {detector_version: 2020, image_fn: {$exists: true} })
+
+
+db.detection.find( {"detector_version": 2020, image_fn: {$exists: true}}).toArray()
+
+
+db.detection.find({ image_fn: "001393-000611-20140305_204232_806-Cam02_2645D_07060.jpg"}).toArray()
+
+
+
+*.  To start the mongo server on our local MacPro, chant
+
+	mongod &
+
+*.  Never use kill -9 to terminate a mongod instance.  Instead chant
+
+		sudo kill <mongod process ID>
+
+*.  In July 2014, Viktor Kolbe enabled tunnels to be established between
+local MacPros and the primary mongo database on
+st21f01ls-fly0004.st.geo.apple.com.  In order to use such a tunnel, we
+first need to kill the local version of mongo running on our MacPro.  Then
+login to st21f01ls-fly0004.st.geo.apple.com via launchpad.  Then chant
+
+
+		ssh -f -N -R 27017:localhost:27017 YOUR_IP
+
+		ssh -f -N -R 27017:localhost:27017 17.212.143.146
+
+
+Once we no longer need to access the tunnel, we need to explicitly kill
+the tunnel "ssh" job running on the remote machine:
+
+[pcho@st21f01ls-fly0004 ~]$ ps -ef | grep ssh
+root       914     1  0  2014 ?        00:00:00 /usr/sbin/sshd
+pcho      1438     1  0 14:29 ?        00:00:00 ssh -f -N -R 27017:localhost:27017 17.212.143.146
+root      3242   914  0 14:55 ?        00:00:00 sshd: pcho [priv]
+pcho      3252  3242  0 14:55 ?        00:00:00 sshd: pcho@pts/7 
+pcho      3282  3253  0 14:55 pts/7    00:00:00 grep ssh
+
+[pcho@st21f01ls-fly0004 ~]$ kill 1438
+
+
+
+
+*.  Markup object query examples
+
+db.markup_object.find({"location":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam2/004994-004993-20140611_224531_423-Cam02_2645D_07392_rect.jpg"}).toArray()
+
+This first example is missing actual house number entries within the "desc"
+field as of 8/19/14!
+
+
+db.markup_object.find({"location":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam4/003256-003255-20140611_220520_024-Cam02_2645D_07362_rect.jpg"}).toArray()
+
+
+
+db.markup_object.find({"location":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam5/003430-003429-20140611_221025_085-Cam02_2645D_07487_rect.jpg"}).toArray()
+
+
+[
+	{
+		"_id" : ObjectId("53ea4ad89616540f8ff28de3"),
+		"location" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam5/003430-003429-20140611_221025_085-Cam02_2645D_07487_rect.jpg",
+		"markups" : [
+			{
+				"bbox" : {
+					"topleft_x" : 0.4658266750194676,
+					"topleft_y" : 0.3662225479712213,
+					"bottomright_x" : 0.4988449078569137,
+					"bottomright_y" : 0.3866806609711144
+				},
+				"markup_type" : "house-numbers",
+				"markup_class" : "",
+				"desc" : "103",
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70"),
+				"timestamp" : ISODate("2014-08-15T10:21:21.254Z")
+			},
+			{
+				"bbox" : {
+					"topleft_x" : 0.8341810782866184,
+					"topleft_y" : 0.3642588491391323,
+					"bottomright_x" : 0.8502488138592296,
+					"bottomright_y" : 0.376665796927461
+				},
+				"markup_type" : "house-numbers",
+				"markup_class" : "",
+				"desc" : "1147",
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70"),
+				"timestamp" : ISODate("2014-08-15T10:21:21.254Z")
+			},
+			{
+				"bbox" : {
+					"topleft_x" : 0.4088280506117409,
+					"topleft_y" : 0.3935149406621312,
+					"bottomright_x" : 0.4284168492440437,
+					"bottomright_y" : 0.4172116461974082
+				},
+				"markup_type" : "house-numbers",
+				"markup_class" : "",
+				"desc" : "1155",
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70"),
+				"timestamp" : ISODate("2014-08-15T10:21:21.255Z")
+			}
+		],
+		"state" : {
+			"state" : "SUBMITTED",
+			"timestamp" : ISODate("2014-08-15T10:21:21.255Z"),
+			"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+		},
+		"prev_states" : [
+			{
+				"state" : "NEW",
+				"timestamp" : ISODate("2014-08-12T10:11:52.699Z")
+			},
+			{
+				"state" : "DISTRIBUTED",
+				"timestamp" : ISODate("2014-08-15T10:17:57.142Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			},
+			{
+				"state" : "SUBMITTED",
+				"timestamp" : ISODate("2014-08-15T10:18:58.980Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			},
+			{
+				"state" : "SUBMITTED",
+				"timestamp" : ISODate("2014-08-15T10:19:00.067Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			},
+			{
+				"state" : "SUBMITTED",
+				"timestamp" : ISODate("2014-08-15T10:19:07.821Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			},
+			{
+				"state" : "SUBMITTED",
+				"timestamp" : ISODate("2014-08-15T10:19:09.007Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			},
+			{
+				"state" : "SUBMITTED",
+				"timestamp" : ISODate("2014-08-15T10:19:24.753Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			},
+			{
+				"state" : "SUBMITTED",
+				"timestamp" : ISODate("2014-08-15T10:19:25.920Z"),
+				"markup_user" : ObjectId("53ea2df89616540f8ff25a70")
+			}
+		]
+	},
+	{
+		"_id" : ObjectId("53ea4c7e9616540f8ff346a6"),
+		"location" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam5/003430-003429-20140611_221025_085-Cam02_2645D_07487_rect.jpg",
+		"markups" : [ ],
+		"state" : {
+			"state" : "NEW",
+			"timestamp" : ISODate("2014-08-12T10:18:54.303Z")
+		},
+		"prev_states" : [ ]
+	},
+	{
+		"_id" : ObjectId("53ea4f6d9616540f8ff42477"),
+		"location" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam5/003430-003429-20140611_221025_085-Cam02_2645D_07487_rect.jpg",
+		"markups" : [ ],
+		"state" : {
+			"state" : "NEW",
+			"timestamp" : ISODate("2014-08-12T10:31:25.926Z")
+		},
+		"prev_states" : [ ]
+	},
+	{
+		"_id" : ObjectId("53ea5c129616540f8ff4dd4f"),
+		"location" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam5/003430-003429-20140611_221025_085-Cam02_2645D_07487_rect.jpg",
+		"markups" : [ ],
+		"state" : {
+			"state" : "NEW",
+			"timestamp" : ISODate("2014-08-12T11:25:22.682Z")
+		},
+		"prev_states" : [ ]
+	}
+]
+
+*.  In order to count all entries within the markup_object collection which
+have at least one "marker_type" == "house-numbers" within the "markups"
+array, chant
+
+
+ db.markup_object.count()  --> 617963
+
+ db.markup_object.find( {"markups" : {$exists: true}  }).count()  --> 617118
+
+ db.markup_object.find( {"markups" : {$elemMatch: {"markup_type":"house-numbers"}} } ).count()  --> 23412
+
+ db.markup_object.find( {"state.timestamp": {"$gte": ISODate("2014-08-11T00:00:00.000Z")} }).count()
+
+
+*.  In order to potentially dramatically speed up mongo database retrieval,
+it's useful to explicitly create indices.  See
+http://docs.mongodb.org/manual/tutorial/create-an-index/
+
+db.markup_object.ensureIndex({location : 1 })
+
+db.markup_unrect_object.ensureIndex({imagefn : 1})
+
+db.detection.ensureIndex({imagefn : 1})
+
+db.detection.ensureIndex({project_name : 1})
+
+db.imdata_point.ensureIndex({imdata_id : 1})  
+
+db.detection.ensureIndex({run_id : 1})  
+
+
+
+7.3M entries in imdata_point collection
+
+*.  Chant db.detection.stats() in order to see list of fields within
+detection which have indices.
+
+
+
+*.  
+
+db.markup_unrect_object.count()
+
+db.markup_unrect_object.toArray()
+
+
+db.markup_unrect_object.find({"type":2}, {"label": {$exists: true}} ).count()
+
+db.markup_object.find({"location":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam1/000023-000022-20140611_210546_794-Cam02_2645D_07447_rect.jpg"}).toArray()
+
+
+
+
+"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam1/000023-000022-20140611_210546_794-Cam02_2645D_07447_rect.jpg"}).toArray()
+
+
+db.markup_unrect_object.find({ "label":{$exists: true}, "type": 1 }).count()
+
+
+db.markup_object.find({"location":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg/unplanned-20140611_210356/rectified_images/cam2/000261-000260-20140611_210943_485-Cam02_2645D_07392_rect.jpg"}).toArray()
+14928
+
+
+db.detection.find({project_name:"los_angeles_drive", detector_version: 3,"created": {"$gte": ISODate("2014-08-20T00:00:00.000Z")} }).count()
+
+
+db.markup_unrect_object.find({"image_fn":
+"001280-001279-20140611_212912_329-Cam02_2645D_07447.jpg"  }).toArray()
+
+ERBOSE: i = 1185  afi->filename = 001211-001210-20140611_212826_794-Cam02_2645D_07447_rect.jpg 
+VERBOSE: annotations.size = 4 
+VERBOSE: im_fn = 001211-001210-20140611_212826_794-Cam02_2645D_07447.jpg 
+VERBOSE: n_retrieve_annots = 0 
+
+
+
+db.markup_unrect_object.find({"image_fn":"001211-001210-20140611_212826_794-Cam02_2645D_07447.jpg"  }).toArray()
+
+db.markup_unrect_object.find({"image_fn": "005163-005162-20140611_224931_088-Cam02_2645D_07392.jpg"  }).toArray()
+
+
+db.markup_unrect_object.find({"image_fn": "000005-000004-20140611_210530_814-Cam02_2645D_07392.jpg"  }).toArray()
+
+db.markup_unrect_object.find({"image_fn":
+"000006-000005-20140611_210534_894-Cam02_2645D_07392.jpg" }).toArray()
+
+
+db.markup_unrect_object.find({"image_fn": "000145-000144-20140611_210742_936-Cam02_2645D_07392.jpg" }).toArray()
+
+
+db.markup_unrect_object.find({"image_fn": "004928-004927-20140611_224420_257-Cam02_2645D_07487.jpg" }).toArray()
+
+
+
+db.detection.find({detector_version: 1104, project_name: "los_angeles_drive"}).count()
+
+
+* Converting Hawaii multi-digit number annotations into machine-extracted
+digits:
+
+
+db.markup_unrect_object.find({"created": {"$gte": ISODate("2014-09-07T00:00:00.000Z")} }).count()
+
+db.markup_unrect_object.find({"created": {"$gte": ISODate("2014-09-07T00:00:00.000Z")}, class:6271 }).toArray()
+
+
+db.fly4_detection.find({detector_version:23, state:2, upside_down:0, pwin_args: /oahu_the_rest4/}).count()
+
+db.fly4_detection.find({detector_version:23, state:2 }).count()
+
+
+db.detection.find({"created": {"$gte": ISODate("2014-09-10T00:00:00.000Z")} }).count()
+
+db.detection.find({detector_version:23, state:2, upside_down:0 }).count()
+
+
+*.  As of 9/30/14, we believe that the detection collection on fly6 is
+periodically copied over to the detection collection on fly4
+
+As of 10/15/14, we believe that the detection collection on fly6 is
+periodically copied over to the detection collection on fly3 and not fly4.
+
+
+*.  As of Oct 2014, number detection results are stored in mongo detection
+collection on fly3 when we run detector version 1105 on the distrib
+cluster.
+
+*. On 10/13/14, Abhishek taught us that we can specify a small number of
+mongo results to be displayed (i.e. essentially generalize findOne()
+command):
+
+db.detection.find({detector_version: 1105, gnd:{$exists:true}, project_name:"la_downtown","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } }).limit(3).toArray()
+
+
+*.  Find entries in detection collection with det_ver = 1105 and project
+name NOT EQUAL to los_angeles_drive or la_downtown:
+
+db.detection.find({detector_version: 1105, project_name: {$nin:[ "los_angeles_drive", "la_downtown"]} }).limit(5).toArray()
+
+
+
+
+db.detection.find({detector_version: 1105, project_name:"los_angeles_drive","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } }).count()
+
+
+db.detection.remove({detector_version: 1105, project_name:"los_angeles_drive","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } })
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"los_angeles_drive"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"la_downtown"}' 
+
+mongodump --db prjdb --collection detection -q '{detector_version:1105, project_name:"chicago_mercury_v1"}' 
+
+mongorestore --db prjdb --collection detection dump_100314_1/prjdb/detection.bson
+
+
+
+db.detection.find({detector_version: 1105, project_name:"la_downtown","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } }).count()
+
+db.detection.find({detector_version: 1105, gnd:{$exists:true}, project_name:"la_downtown","created": {"$gte":ISODate("2014-09-23T00:00:00.000Z") } }).count()
+
+db.detection.find({detector_version: 1105, project_name: {$nin:[ "los_angeles_drive", "la_downtown"]} }).count()
+
+
+db.detection.remove({detector_version: 1105, project_name:"la_downtown"  })
+
+db.detection.find({detector_version: 1105, project_name:"la_downtown"  }).count()
+
+
+
+*.  Searching mongo with regular expressions:
+
+
+
+db.markup_object.find({"markup_count":{"$gte":1}, "location":{$regex: "/sputnik03/supersize/labeling_resources/san_jose-rainbow_west-20141011_155507-q6-imdata/cam2/"}}).count()
+
+
+
+db.markup_object.find({"location":{$regex:"sputnik01/supersize/mercury/collections/20130512-SanFrancisco"} }).count()
+
+
+
+
+db.markup_object.find({"location":{$regex: "032998-000001-20130513-004433-0520-Cam2.jpg"} }).toArray()
+
+
+db.markup_object.find({"location":{$regex:"/sputnik01/supersize/mercury/collections/20130512-SanFrancisco/capture/2_jpg/5th/032998-000001-20130513-004433-0520-Cam2.jpg"} }).toArray()
+
+	  1	    2         3         4         5         6         7         8
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234
+/startown-gpfs/sputnik01/supersize/mercury/collections/20130512-SanFrancisco/capture/
+
+/2_jpg/5th/032998-000001-20130513-004433-0520-Cam2.jpg
+
+
+
+db.markup_object.find({"location":{$regex:"sputnik03/supersize/labeling_resources/san_jose-rainbow_west"} }).count()
+
+
+
+*.  Importing json file into a new database collection:
+
+mongoimport --db <db-name> --collection <coll-name> --type json --file seed.json --jsonArray

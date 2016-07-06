@@ -1,0 +1,90 @@
+===========================================================================================
+House numbers notes
+===========================================================================================
+Last updated on 6/3/16; 6/7/16; 6/9/16
+===========================================================================================
+
+*.  Weiyu suggests limiting rig loading via a bounding box wrapped around
+an input specified shape
+
+  prj->par.no_prj_check = 1;
+  prj_load(prj, PRJ_LOAD_ALL_SHAPES, NULL);
+
+See tcd_gui_load_rigs_conv_cs().
+
+ m2d_shape_t *prj_shape;                  // Project shape
+
+  if(tcd_gui->prj_shape && !m2d_shape_empty(tcd_gui->prj_shape)){
+    shape_bbox.min_pos.x = tcd_gui->prj_shape->bbox[0][0];
+    shape_bbox.min_pos.y = tcd_gui->prj_shape->bbox[1][0];
+    shape_bbox.min_pos.z = -10000;
+    shape_bbox.max_pos.x = tcd_gui->prj_shape->bbox[0][1];
+    shape_bbox.max_pos.y = tcd_gui->prj_shape->bbox[1][1];
+    shape_bbox.max_pos.z = 10000;
+  }
+
+  prj_load_data(prj, PRJ_LOAD_ALL, &shape_bbox, &tcd_gui->cs);
+  tcd_gui->resource_list = &prj->model.resources;
+
+*.  Some random sacramento imdata files
+
+20150923_145346-H79
+20150925_164001-H79
+20150919_142946-H79
+
+*.  Some hopefully small KH sacramento resources
+
+kh_sacramento_test2
+kh_sacramento_test3
+kh_sacramento_test4
+
+*.  Some hopefully small KH sacramento projects
+
+kh_sacramento_test2
+kh_sacramento_test3
+kh_sacramento_test4
+
+*.  KH sacramento resources for 4 km**2 square region:
+
+INFO   : Loaded: 12608 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150915_143811/20150915_143811-H74-imdata/
+
+INFO   : Loaded: 17824 rigs with  6 cameras and 2 lidars and 2 videos from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20151018_145150/20151018_145150-H74-imdata/
+
+INFO   : Loaded: 16917 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150915_195002/20150915_195002-H74-imdata/
+
+INFO   : Loaded: 26111 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150916_143259/20150916_143259-H74-imdata/
+
+INFO   : Loaded: 27520 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150918_143703/20150918_143703-H74-imdata/
+
+INFO   : Loaded: 23593 rigs with  6 cameras and 2 lidars and 2 videos from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20151012_144433/20151012_144433-H74-imdata/
+
+INFO   : Loaded: 24220 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150922_143416/20150922_143416-H74-imdata/
+
+INFO   : Loaded: 28215 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150917_144901/20150917_144901-H74-imdata/
+
+INFO   : Loaded: 26919 rigs with  6 cameras and 2 lidars from /startown-gpfs/sputnik04/supersize/copyprocess/resource/20150921_160759/20150921_160759-H74-imdata/
+
+VERBOSE: imdata_bvh_size: 20.62 mb
+INFO   : Loaded 242 resources containing 203927 rigs
+VERBOSE: n_resources = 242 
+VERBOSE: n_rigs = 195013 
+
+Imdata full path = 
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20151012_144433/20151012_144433-H74-imdata
+
+Resource basename = 20151012_144433-H74-imdata
+
+*.  Rectified 1169622 images for all 6 cameras from all rigs sitting inside
+a (2 km)**2 region in Sacramento on 6/9/15.  The rectified images are
+sitting in subdirs of
+/startown-gpfs/sputnik03/supersize/labeling_resources/kh_sacramento_4sqkms
+
+*.  On 6/9/15, Weiyu strongly advised us to not generate annotation
+projects with more than 50K images to mark up!  He also thinks that working
+with shapes coming from individual resources is better than compact regions
+such as (2 km)**2 squares.  Weiyu showed us that he had montaged together
+the 4 forward+backward facing camera photos into a single downsampled
+image.
+
+*.  1 square km bbox in Sacramento contains n_rigs = 71623.  
+    (600 m)**2 bbox in Sacramento contains n_rigs = 51770

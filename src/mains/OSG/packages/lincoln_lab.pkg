@@ -1,0 +1,5 @@
+/data/alirt2/Boston_2007/osga_files/lincoln_lab_filled.osga 
+--height_colormap 8	# wrap1 colormap
+--prob_colormap 6 
+--height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.0 --max_threshold_frac 0.9999

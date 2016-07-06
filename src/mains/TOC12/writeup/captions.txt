@@ -1,0 +1,98 @@
+============================================================================
+Figure captions and references for TOC12 sign recognition writeup
+============================================================================
+Last updated on 12/5/12; 12/6/12
+============================================================================
+
+1.  Seven colored plus two black-and-white signs which were to be
+recognized by robots as they moved around the Tech Challenge maze.  We
+refer to these nine signs as "stop", "biohazard", "yellow radiation",
+"water", "gas", "blue radiation", "start", "skull" and "eating utensils".
+
+2.  Basic algorithm flow for detecting and recognizing the Tech Challenge
+signs.
+
+3.  A two-dimensional slice through HSV color space corresponding to hue=0.
+Saturation and value coordinates range from 0 to 100 along the horizontal
+and vertical axes.  For each of 7 quantized hues, four subregions
+(e.g. "red", "light red", "dark red" and "grey-red") are defined within the
+SV plane.  "Grey" and "black" regions also correspond to color space points
+with relatively low saturations and low values.
+
+4.  General color quantization.  (a) One representative video frame shot
+outside Lincoln Lab's library containing four TOC12 signs.  (b)
+Color-quantized result after replacing every pixel's RGB values with one of
+33 discrete triples.
+
+5. Color quantization results for the "stop" sign.  All pixels in figure 4b
+whose quantized colors do not correspond to red or light-red are replaced
+by a purple coloring.  The machine ignores all purple pixels when it
+continues to search for a "stop" symbol in figure 4a.
+
+6.  Connected components within a binary version of figure 5 are color
+coded here.  Note that the TOC12 "stop" sign corresponds to a single
+connected component in this last view.
+
+7.  Purple coloring indicates strong edge contents for connected components
+in figure 5b that border upon regions with white or light grey quantized
+colors.  Note that such edges occur on the TOC12 "stop" sign.
+
+8.  Orange, red and green bounding boxes mark candidate regions possibly
+containing the TOC12 "stop" sign which satisfy the symbol's basic color,
+edge and shape properties.
+
+9.  Basic procedure for training a classifier to recognize different
+instances of the TOC12 "stop" sign.  Thousands of synthesized variations of
+the symbol are first used to generate a feature dictionary via unsupervised
+learning.  The dictionary subsequently becomes an input to an encoder which
+converts pixel patches into high-dimensional feature vectors.  Such feature
+vectors along with "stop sign" or "non-stop sign" labels are used to train
+a linear Support Vector Machine.  Once trained, the SVM can classify new
+pixel patches whose labels are a priori unknown.  This figure is adapted
+from ref [3].
+
+10.  Synthetically generated views of the TOC12 "stop" sign.
+
+11.  8x8 pixel patch elements from the "stop" sign dictionary generated via
+unsupervised feature learning.
+
+12.  The trained SVM correctly classifies one of the three candidate
+regions in figure 7 as corresponding to the TOC12 "stop" sign and rejects
+the other two.
+
+13.  Representative examples of successful TOC12 sign recognition from the
+algorithm flow of figure 2.  Video frames were collected around S-lab as
+well as within the tennis bubble on HAFB. 
+
+ Bounding boxes colored green,
+cyan, blue, yellow, white, purple, brick red and cream correspond to the
+stop sign, biohazard sign, yellow radiation sign, water sign, gas sign,
+blue radiation sign, start sign, skull sign and eating utensils sign.  A
+number of missed detections are also evident in these results.
+
+14.  Representative examples of sign recognition failures include incorrect
+classifications and false alarms.
+
+
+
+
+References
+
+1.  L. Neumann and J. Matas, "Real-time scene text localization and
+recognition", CVPR 2012.
+
+2.  A. Coates, "Demystifying unsupervised feature learning", Stanford
+University Ph.D. thesis, 2012.
+
+3.  New York Times, "Great Strides for Deep Learning", 26 Nov 2012.
+
+4.  A. Coates, B. Carpenter, C. Case, S. Satheesh, B. Suresh, T. Wang,
+D. Wu, and A. Ng, "Text detection and character recognition in scene images
+with unsupervised feature learning", ICDAR 2011.
+
+5.  A. Coates, H. Lee and A. Ng, "An analysis of single-layer netowrks in
+unsupervised feature learning", AISTATS 14, 2011.
+
+6.  D. King, "dlib C++ library", http://dlib.net/ml.html.
+
+

@@ -1,0 +1,16 @@
+~/bin/MAKE program=bbox_stats
+~/bin/MAKE program=bbox_prec_recall
+~/bin/MAKE program=consolidate_components
+~/bin/MAKE program=consolidate_pyramid_segmentations
+~/bin/MAKE program=downsize_images
+~/bin/MAKE program=generate_deeplab_inputs
+~/bin/MAKE program=generate_image_tiles
+~/bin/MAKE program=pngtest
+~/bin/MAKE program=prec_recall
+~/bin/MAKE program=pyramid_testing_images
+~/bin/MAKE program=recolor_deeplab_masks
+~/bin/MAKE program=recombine_segmented_tiles
+~/bin/MAKE program=reorder_bbox_images
+~/bin/MAKE program=segment_images
+~/bin/MAKE program=textdb_truth
+~/bin/MAKE program=training_performance

@@ -1,0 +1,141 @@
+
+1.  Enter into g_view3d_init_ex().  By default, s->delta_pos = s->pos ???
+	
+  Experiment with resetting delta_pos orientation angles to zero:
+
+  s->delta_pos.yaw = 0;
+  s->delta_pos.pitch = 0;
+  s->delta_pos.roll = 0;
+  enter_continue_char();
+
+2.  Enter into gui_set_vieww_from_bbox().
+
+3.  Enter into g_looknadir()  
+
+z_hat.x = 0.000000  z_hat.y = 0.000000  z_hat.z = 1.000000 
+VERBOSE: r_hat.x = -0.393750  r_hat.y = -0.731060  r_hat.z = 0.557236 
+VERBOSE: e_hat.x = 0.880420  e_hat.y = -0.474195  e_hat.z = 0.000000 
+VERBOSE: n_hat.x = 0.264239  n_hat.y = 0.490602  n_hat.z = 0.830354 
+VERBOSE: r_hat.e_hat = 0.000000 
+VERBOSE: e_hat.n_hat = 0.000000 
+VERBOSE: n_hat.r_hat = 0.000000 
+VERBOSE: yaw = 61.693053  pitch = 33.864895  roll = 180.000000 
+
+4.  At end of gui_set_view_from_bbox() 
+cam_pos.yaw = 61.693053  cam_pos.pitch = 33.864895  cam_pos.roll = 180.000000 
+
+
+5.  Enter into gui_interact() with no intentional movement of mouse:
+
+VERBOSE: inside gui_interact() 
+VERBOSE: view3d.pos.yaw = 61.693053 view3d.pos.pitch = 33.864895  view3d.pos.roll = 180.000000 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+VERBOSE: Before call to g_pos_conv() 
+VERBOSE: s->pos.yaw = 61.693053 s->pos.pitch = 33.864895  s->pos.roll = 180.000000 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+VERBOSE: Before call to g_view3d_animate_update() 
+VERBOSE: s->pos.yaw = 12.780575 s->pos.pitch = -14.080907  s->pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+Enter any character to continue: 
+VERBOSE: inside gui_interact() 
+VERBOSE: view3d.pos.yaw = 12.780575 view3d.pos.pitch = -14.080907  view3d.pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+VERBOSE: Before call to g_pos_conv() 
+VERBOSE: s->pos.yaw = 12.780575 s->pos.pitch = -14.080907  s->pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+VERBOSE: Before call to g_view3d_animate_update() 
+VERBOSE: s->pos.yaw = 12.780575 s->pos.pitch = -14.080907  s->pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+Enter any character to continue: 
+
+At time this (second!) enter char to continue is encountered at end of g_view3d(), LA map
+appears in nadir configuration!  First enter char to continue is jumped
+over for some reason which we don't understand.
+
+
+6. But next time break point is encountered with no intentional movement of
+mouse at end of g_view3d(), LA map is twisted:
+
+VERBOSE: inside gui_interact() 
+VERBOSE: view3d.pos.yaw = 12.780575 view3d.pos.pitch = -14.080907  view3d.pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+VERBOSE: Before call to g_pos_conv() 
+VERBOSE: s->pos.yaw = 12.780575 s->pos.pitch = -14.080907  s->pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+
+VERBOSE: Before call to g_view3d_animate_update() 
+VERBOSE: s->pos.yaw = 12.780575 s->pos.pitch = -14.080907  s->pos.roll = 149.615544 
+VERBOSE: view3d.delta_pos.yaw = 61.693053 view3d.delta_pos.pitch = 33.864895  view3d.delta_pos.roll = 0.000000 
+Enter any character to continue: 
+
+
+
+
+
+
+
+
+============================
+
+g_view3d_ctrl() inside gview3d.c is called by gui_interact() inside gui.c
+gui_interact() inside gui.c is called by rig_gui_3d_mode_update() inside rig_gui.c
+rig_gui_add_app() inside ? calls rig_gui_3d_mode_update() inside rig_gui.c
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Eclipse questions:
+
+1.  Can we add \ within arguments window to indicate line continuation
+
+2.  Do we ever need to compile with OpenCV flag enabled
+
+3.  How do I perform a trace on methods that are called
+(e.g. g_view3d_ctrl() is called by gui_interact() which is called by
+rig_gui_3d_mode_update() which is called by ?)
+
+
+
+
+To change build parameteres, check out project->properties->c/c++ build
+window
+
+and then see "build" field
+
+
+
+*.  cntrl-shift-r to search for files
+
+*  cntrol-shift-t to search for methods, structs, defines, cstuff
+
+*.    Then right click on the method of interest  --> open call hierarchy
+
+to see methoeds which called the method right clicked.
+
+
+*.  F5 to go into a method
+
+*.  F6 to step after a break point has been encountered.
+
+*.  F7 to finish executing current method and then stops execution.
+
+

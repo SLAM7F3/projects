@@ -1,0 +1,8 @@
+/bin/rm ./consolidate
+/bin/rm ./georegister_video
+/bin/rm ./median_fill
+/bin/rm ./tile_fuse
+/bin/rm ./tile_neighbors
+/bin/rm ./tile_transform
+/bin/rm ./videocities
+/bin/rm ./videotexture

@@ -1,0 +1,123 @@
+===================================================================================
+BSON parsing notes
+===================================================================================
+Last updated on 1/8/15
+===================================================================================
+
+*.  Parsing entries in imdata_point collection on fly6:
+
+
+db.imdata_point.find({imdata_id: NumberLong("8490256479909342346") }).toArray()
+[
+	{
+		"_id" : ObjectId("545ad85c961654b65703fda5"),
+		"imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b")),
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				-122.02410706167879,
+				37.31663846021635
+			]
+		},
+		"imdata_id" : NumberLong("8490256479909342346"),
+		"time" : 1413060258.954997,
+		"pos" : {
+			"x" : -2693163.77428137,
+			"y" : -4305930.495974842,
+			"z" : 3845420.953111798,
+			"yaw" : 1.293265266,
+			"pitch" : -0.862973342,
+			"roll" : 2.937094949
+		},
+...	
+
+
+
+  pa_create(&retrieved_docs);
+  if(mongoc_read_limited_batch(host, collection_name, &query, NULL, max_docs_to_return, &retrieved_docs)) goto cleanup;
+
+  curr_retrieved_doc = pa_get(&retrieved_docs, 0);
+
+
+  double time;
+  READ_BSON_DOUBLE(curr_retrieved_doc, &it, "time", time);
+  log_verbose("time = %lf \n", time);
+
+
+  if(bson_iter_init_find(&it, curr_retrieved_doc, "pos")){
+    bson_t b_sub;
+    bson_iter_t sub_it;
+    double x,y;
+
+    log_verbose("**************    Trying to parse pos object  ****************  \n");
+    mongoc_read_bson_object(curr_retrieved_doc, &it, "pos", &b_sub);
+    READ_BSON_DOUBLE(&b_sub, &sub_it, "x", x);
+    READ_BSON_DOUBLE(&b_sub, &sub_it, "y", y);
+    log_verbose("x = %lf  y = %lf  \n", x, y);
+  }
+
+
+*.  Parsing entries in imdata collection on fly6:
+
+
+db.imdata.find({"_id" : ObjectId("543fe38896165458d8d3e07b")}).toArray()
+[
+	{
+		"_id" : ObjectId("543fe38896165458d8d3e07b"),
+		"category" : "ground",
+		"created" : ISODate("2014-10-16T08:26:00.927Z"),
+		"hidden" : false,
+		"archives" : [ ],
+		"from_imdata" : false,
+		"name" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6-imdata",
+		"metro" : "san_jose",
+		"short_name" : "san_jose-rainbow_west-20141011_155507-q6",
+		"collected_timestamp" : ISODate("2014-10-11T15:55:07Z"),
+		"length" : 51800.95576885958,
+		"line_string_path" : {
+			"type" : "MultiLineString",
+			"coordinates" : [
+				[
+					[
+						-122.03315471428385,
+						37.317740465044196
+					],
+...
+					[
+						-122.02134164870724,
+						-121.99633473023108,
+						37.380052469719736
+					]
+				]
+			]
+		},
+		"imdata_ingested" : true,
+		"camera" : [
+			{
+				"camera_number" : 0,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07448",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+...
+
+
+  pa_create(&retrieved_docs);
+  if(mongoc_read_limited_batch(host, collection_name, &query, NULL, max_docs_to_return, &retrieved_docs)) goto cleanup;
+  curr_retrieved_doc = pa_get(&retrieved_docs, 0);
+
+
+  if (bson_iter_init(&iter2, curr_retrieved_doc) &&
+    bson_iter_find_descendant(&iter2, "camera.0.path", &sub_iter2)){
+  log_verbose("bson_iter_type for sub_iter2 = %d \n", bson_iter_type(&sub_iter2));
+  strcpy(path, bson_iter_utf8(&sub_iter2, 0));
+  log_verbose("path = %s \n", path);
+
+
+Note:  camera.0.path --> path subdocument member of zeroth array element within camera document

@@ -1,0 +1,12 @@
+============================================================================
+Notes for running RCO SAM demo in G104 conference room
+============================================================================
+Last updated on 3/31/08; 4/28/08
+============================================================================
+
+1.  Make sure TOMCAT is running on ISDS3D
+
+2.  SAM postgres database is called test_dsa.  Be sure to fire up postgres
+as the postgres user in order to select contents from this database:
+
+		psql -d test_dsa -U postgres

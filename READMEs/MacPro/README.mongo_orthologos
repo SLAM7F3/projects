@@ -1,0 +1,467 @@
+===========================================================================================
+Mongo database notes for ortho logos
+===========================================================================================
+Last updated on 12/8/15; 12/11/15; 1/7/16; 1/26/16
+===========================================================================================
+
+*.  SSH into mongo on fly14 by chanting "fly14_mongo"
+
+> db.detection.find({"detector_version" : 1306}).count()
+
+run_id = "ortho_logos_run"
+detector_version = 1306
+type = "rdn_seg"
+sub_type = "logo"
+
+> db.detection.remove({"detector_version" : 1306})
+
+> db.detection.find({"detector_version" : 1307}).count()
+4695
+
+> db.detection.find({"detector_version" : 1308}).count()   [ "Tho-net" with large FOV and no CRF]
+6608 (Nov 10)
+6634 (Nov 16)  
+2554 (Nov 17)
+
+> db.detection.find({"detector_version" : 1309}).count()   [ "Baseline deeplab" with no CRF]
+1855 (Nov 17)
+1795 (Nov 19; 5 km stretch of Hwy 280, run_id = "ortho_logos_run")
+
+> db.detection.find({"detector_version" : 1309,
+"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151119_140021.xml"}).count()   
+
+85024
+					[ "Baseline deeplab" with no CRF run on 650K project]
+
+650K Bay area [as of Tuesday, 12/8/15]
+-------------------------------------
+
+> db.detection.count({"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+84967
+
+> db.detection.count({"detector_version" : 1310, run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+84967
+
+> db.detection.count({"detector_version" : 1310,run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml",patch_path:{$exists:false}})
+0
+
+> db.detection.find({patch_path:{$exists:false}, "detector_version" : 1310, project_name:"M5"}).count()  
+255
+
+> db.detection.remove({patch_path:{$exists:false}, "detector_version" : 1310, project_name:"M5"})
+
+> db.detection.find({"detector_version" : 1310, project_name:"M5",run_id:{$nin:["/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"]}}).count()  
+1886
+
+> db.detection.remove({"detector_version" : 1310, project_name:"M5",run_id:{$nin:["/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"]}})
+
+> db.detection.count({"detector_version" : 1310,run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml",patch_path:{$exists:false}})
+
+After performing all of the above queries on Tuesday, 12/8/15, we
+explicitly removed any entry within the detection collection which had no
+patch ID.  We also removed any entry which did NOT correspond to run_id =
+/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml.
+So as of 9 am on Tuesday, 12/8/15, there are precisely 84967 entries in
+mongo corresponding to this run ID, project = M5 and which all have
+corresponding patch_path fields!
+
+Total number of image chips sitting in
+/startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/det_1310/ortho_chips
+ = 85702
+
+Total number of image chips sitting in
+/startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/det_1310/cropped_rot_ortho_chips
+ = 74343
+
+
+*.  On 1/26/16, we dumped the 84967 entries within the Mongo collection on
+fly14 corresponding to the M5 project.  
+
+mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"}'
+
+We then restored this collection into Mongo on ThinkMate.  As of 1/25/16,
+it looks like we had NO mongo collections in either db = pr or db = prjdb
+on ThinkMate.
+
+mongorestore --db pr --collection detection ./dump/pr/detection.bson
+
+> db.detection.count({"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+84967
+
+On 1/26/16, we extracted tile coords from each detection's image chip
+basename.  We then explicitly added tile ID info to each detection entry
+stored in Mongo:
+
+> db.detection.count({tile_id:{$exists:true}, "detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+84967
+
+=============================================================================================================
+
+
+db.detection.distinct("sub_type",{"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+
+[
+	"logo",
+	"wrong_type",
+	"turn_right",
+	"turn_left",
+	"straight_arrow",
+	"STOP",
+	"misc",
+        "misc_sign",
+	"unknown",
+	"ONLY",
+	"AHEAD",
+	"merge_arrow",
+	"PED",
+	"XING",
+	"HOV_diamond",
+	"LANE",
+	"speed_limit",
+	"BUS",
+	"SLOW",
+	"KEEP",
+	"CLEAR",
+	"SCHOOL",
+	"YIELD",
+	"MPH",
+	"MERGE"
+]
+
+
+Total number of orthologo entries to be refined: 84967
+	
+   Refined orthologos breakdown:
+
+db.detection.count({sub_type:"logo", "detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 0 as of 2 pm on Thurs, Jan 7, 2016
+
+db.detection.count({"sub_type":{$nin:["logo"]},"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+
+> 84967 as of 2 pm on Thurs, Jan 7, 2016
+
+db.detection.count({"sub_type":{$in:["logo","misc","wrong_type","unknown"]},"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+
+> 42579 as of 2 pm on Thurs, Jan 7, 2016
+
+db.detection.count({"sub_type":{$nin:["logo","misc","wrong_type","unknown"]},"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+
+> 42388 as of 2 pm on Thurs, Jan 7, 2016
+
+BAD:
+
+db.detection.count({"sub_type":"wrong_type","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 16077 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"misc","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 21802 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"misc_sign","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 1806 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"unknown","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 4700 as of Thurs, Jan 7
+
+
+SYMBOLS:
+
+db.detection.count({"sub_type":"HOV_diamond","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 7024 as of 2 pm on Thurs, Jan 7
+
+
+db.detection.count({"sub_type":{$nin:["logo","misc","wrong_type","unknown","HOV_diamond"]},"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 35364
+
+
+db.detection.distinct("sub_type",{$nin:["logo","misc","wrong_type","unknown","HOV_diamond"],"detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+
+
+ARROWS:
+
+
+db.detection.count({"sub_type":"merge_arrow","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 2087 as of 2 pm on Thurs, Jan 7
+
+db.detection.count({"sub_type":"straight_arrow","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 10512 as of 2 pm on Thurs, Jan 7
+
+db.detection.count({"sub_type":"turn_left","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 6818 as of 2 pm on Thurs, Jan 7
+
+db.detection.count({"sub_type":"turn_right","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 3606 as of 2 pm on Thurs, Jan 7
+
+
+TEXT:
+
+
+db.detection.count({"sub_type":"AHEAD","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 1100 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"BUS","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 144 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"CLEAR","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 231 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"KEEP","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 315 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"LANE","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 517 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"MERGE","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 17 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"MPH","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 15 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"ONLY","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 754 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"PED","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 326 as of Thurs, Jan 7
+
+
+db.detection.count({"sub_type":"SCHOOL","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 67 as of Thurs, Jan 7
+
+db.detection.count({"sub_type":"SLOW","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 178 as of Thurs, Jan 7
+
+
+db.detection.count({"sub_type":"STOP","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 5420 as of Thurs, Jan 7
+
+
+db.detection.count({"sub_type":"XING","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 400 as of Thurs Jan 7
+
+db.detection.count({"sub_type":"YIELD","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 219 as of Thurs Jan 7
+
+
+db.detection.count({"sub_type":"speed_limit","detector_version" : 1310, project_name:"M5", run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151207_125746.xml"})
+> 832 as of Thurs Jan 7
+
+
+=============================================================================================================
+
+
+
+5K stretch along Hwy 280:
+------------------------
+
+> db.detection.count({"detector_version" : 1310, project_name:"dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote"})
+1758   [True as of 12/7/15]
+
+Total number of image chips sitting in
+/startown-gpfs/sputnik03/supersize/labeling_resources/project_imagechips/logo_chips/Dec4_5K_trial2/det_1310/ortho_chips
+ = 1759
+
+
+*.  On 11/9/15, we dumped the contents of mongo on fly14 containing results
+for detectors 1307 (w crf) and 1308 (wo crf).  Dump results are sitting in
+subdirs of /data/peter_stuff/mongo_db/2015/Nov/Nov9/ :
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1307}'
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1308}'
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1310, project_name:"M5"}'
+
+*.  It looks like we created a dump of mongo orthologo results for detector
+1310 running on 5K stretch of Hwy 280 on Dec 4 within
+/data/peter_stuff/mongo_db/2015/Dec/Dec4/det_1310_Hwy280_5K :
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1310, project_name:"dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote"}'
+
+
+*.  On 12/8/15, we dumped the contents of mongo on fly14 containing orthologo results for
+detector 1310 for the 650K project:
+
+  mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1310, project_name:"M5"}'
+
+*.  On 1/7/16, we dumped the contents of mongo on fly14 containing ortholog
+results for detector 1310 for the 650K project.  They should contain Ninja
+refinement results for 84K+ of the 85K candidate orthologos nominated via
+semantic segmentation:
+
+
+ mongodump -h flyover1/10.182.141.180,10.182.141.181,10.182.141.182 -u 'pr' -p 'rind451,jute' -d pr -c detection -q '{detector_version:1310, project_name:"M5"}'
+
+Jan 7, 2016 mongo dump of 650K orthologo results are sitting on Thinkmate
+in /data/peter_stuff/mongo_db/2016/Jan/650K/dump/
+
+
+*.  Manually append project_name onto mongo entries corresponding to
+det_ver 1307 and 1308 within detection collection on fly14:
+
+db.detection.update(
+  {"detector_version": 1307},
+  {$set: { project_name: "dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote" }},
+  {multi: true}
+)
+
+db.detection.update(
+  {"detector_version": 1308},
+  {$set: { project_name: "dev_highway_5k_imusba_151014_110838_rdn_rdn_coyote" }},
+  {multi: true}
+)
+
+*.  On 11/10/15, Hamid showed us that the thumbs up/down tool results are
+stored within the "verification_value" field of a detection mongo entry.
+This key can take 3 values : "correct", "incorrect" and "undetermined".
+
+
+> db.detection.find({"detector_version" : 1307, verification_value:"correct"}).count()
+1222
+
+> db.detection.find({"detector_version" : 1307, verification_value:"incorrect"}).count()
+3305
+
+> db.detection.find({"detector_version" : 1307, verification_value:"undetermined"}).count()
+128
+
+
+Base precision (1307) = 1222/(1222+3305) = 27.0%
+With aspect ratio and min area constraints,
+n_correct = 1219, n_incorrect = 1257, n_undetermined = 119
+Precision = 1219 / (1219+1257) = 49.2%
+
+
+> db.detection.find({"detector_version" : 1308, verification_value:"correct"}).count()
+1272
+
+> db.detection.find({"detector_version" : 1308, verification_value:"incorrect"}).count()
+5170
+
+> db.detection.find({"detector_version" : 1308, verification_value:"undetermined"}).count()
+166
+
+Base precision (1308) = 1272/(1272+5170) = 19.7%
+With aspect ratio and min area constraints,
+n_correct = 1272   n_incorrect = 1752   n_undetermined = 147  
+Precision = 1272 / (1272 + 1752) = 42.1%
+
+*.  We should perform an aspect-ratio sanity check on extracted ortho
+logos.  Eliminate any candidate orthologo if its aspect-ratio deviates too
+far from unity!  Perhaps also eliminate any candidate orthologo if its bbox
+area is too small.
+
+
+*.  As of 12:30 pm on Mon, Dec 7, 2015, one example of many 650K orthologo
+detections which are missing image chips !
+
+
+> db.detection.find({"_id": ObjectId("5660db5a2fa9103e39155ac8"), "detector_version" : 1310, run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151203_154331.xml"}).toArray()
+
+[
+	{
+		"_id" : ObjectId("5660db5a2fa9103e39155ac8"),
+		"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_M5_151203_154331.xml",
+		"imdata_id" : "0",
+		"cam_id" : -1,
+		"image_size" : {
+			"xsize" : 3872,
+			"ysize" : 9424
+		},
+		"gnd" : {
+			"x" : -2703995.215406199,
+			"y" : -4288608.003695808,
+			"z" : 3857024.1915863734,
+			"yaw" : -2.4695790737601375,
+			"pitch" : 0.8723870206116631,
+			"roll" : 2.8740065288963845,
+			"w" : 0.65,
+			"h" : 1.55
+		},
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				-122.23169770836212,
+				37.448450677556174
+			]
+		},
+		"loc_z" : -1.080111083574593,
+		"project_name" : "M5",
+		"detection_polygon" : {
+			"type" : "Polygon",
+			"coordinates" : [
+				[
+					[
+						1311.5,
+						6218
+					],
+					[
+						1311.5,
+						6227
+					],
+					[
+						1309.5,
+						6237
+					],
+					[
+						1304.5,
+						6248
+					],
+					[
+						1301.5,
+						6266
+					],
+					[
+						1297,
+						6273.5
+					],
+					[
+						1287.5,
+						6257
+					],
+					[
+						1286.5,
+						6253
+					],
+					[
+						1287.5,
+						6244
+					],
+					[
+						1296.5,
+						6216
+					],
+					[
+						1307,
+						6212.5
+					],
+					[
+						1311.5,
+						6218
+					]
+				]
+			]
+		},
+		"type" : "rdn_seg",
+		"sub_type" : "logo",
+		"description" : "",
+		"attribute" : "23",
+		"confidence" : 0,
+		"detector_version" : 1310,
+		"refine_state" : {
+			"state" : 1,
+			"user" : ObjectId("514134209616543898d61efb"),
+			"created" : ISODate("2015-12-04T17:17:52.110Z")
+		}
+	}
+]
+> 
+
+
+*.  As of Jan 2016, we are starting to use RDN detector version 1320 which
+performs both semantic segmentation as well as secondary orthologo
+classification.
+
+
+> db.detection.find({"detector_version" : 1320}).limit(10).toArray()
+
+> db.detection.count({"detector_version" : 1320, "sub_type": "HOV_diamond"})
+

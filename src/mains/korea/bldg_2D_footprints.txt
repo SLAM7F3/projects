@@ -1,0 +1,15 @@
+# Time   PolyLine_ID   Passnumber   Easting Northing Altitude
+
+# Bldg with center courtyard hole
+
+# 0  0  0  738298.9   4322670.3   47
+# 0  0  0  738365.4   4322657.0   47
+# 0  0  0  738381.8   4322737.4   47
+# 0  0  0  738316.7   4322749.7   47
+
+0  0  0  738300.4917 4322670.24  	47	# corner 0
+0  0  0  738365.4    4322657		47	# corner 1
+0  0  0  738381.6083 4322736.46 	47	# corner 2
+0  0  0  738316.7    4322749.7  	47	# corner 3
+
+

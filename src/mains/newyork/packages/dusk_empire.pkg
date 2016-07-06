@@ -1,0 +1,9 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/dusk2.jpg
+# --downrange_distance 75
+# --downrange_distance 150
+--downrange_distance 300
+--projection_matrix
+
+3.316009314e-07 -3.973590953e-08        -3.010567503e-08        -0.01493147478
+7.414941703e-08 1.388682065e-07 2.793603811e-07 -0.670000064
+8.545103236e-08 1.534314379e-07 -4.534901242e-08        -0.7422108631

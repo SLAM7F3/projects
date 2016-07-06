@@ -1,0 +1,30 @@
+========================================================================
+VMWare notes
+========================================================================
+Last updated on 7/11/13
+========================================================================
+
+*.  With lots of help from Brendan Edwards, we installed vnc4server on
+COMPVISION via a sudo-apt get command.
+
+*.  In ~/.vnc/xstartup file, make sure following two lines are UNcommented:
+
+
+# Uncomment the following two lines for normal desktop:
+unset SESSION_MANAGER
+exec /etc/X11/xinit/xinitrc
+
+*.  In order to run VNCserver on COMPVISION, chant
+
+vnc4server -geometry 1920x1280
+
+*.  In order to kill a running VNCserver on COMPVISION, chant
+
+vnc4server -kill :1
+
+*.  In order to see COMPVISION desktop appearing on BEAST, chant on BEAST
+
+	vncviewer 155.34.162.200:1
+
+*.  COMPVISION's desktop should then appear over the network on BEAST's
+monitor

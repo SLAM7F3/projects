@@ -1,0 +1,95 @@
+========================================================================
+Peter's programs for viewing 3D graphics
+(Cheat sheet #3 for plume reconstruction project)
+========================================================================
+Last updated on 6/14/12
+========================================================================
+
+1a.  Program VIEWPOINTS is a basic 3D viewer which can be used to look at
+point cloud output.  The OpenSceneGraph files it wants to ingest usually
+end with a ".osga" suffix.
+
+For this cheat sheet, we'll work with a small ALIRT ladar point cloud file
+called lowell.osga which sits in the main plume subdirectory:
+
+	cd ~/programs/c++/svn/projects/src/mains/plume/
+
+In order to fire up the 3D point cloud viewer, chant
+
+		viewpoints lowell.osga
+
+------------------------------------------------------------------------
+1b.  You'll need to use a 3-button mouse in order to work with my viewers:
+
+Left mouse button:  Hold down and drag mouse in order to translate 3D point
+cloud in horizontal U and vertical V screen coordinates.
+
+Middle mouse wheel: Hold down and drag mouse horizontally in order to
+azimuthally spin about point cloud's Z axis.  Or hold down mouse wheel and
+drag mouse vertically to rotate about point cloud's Y axis.  
+
+Right button: Hold down and drag mouse in order to zoom 3D point cloud in
+or out.  (Zooming can also be performed by spinning the middle mouse wheel.)
+
+------------------------------------------------------------------------
+1c.  Points within a ladar cloud (or bundler reconstructed cloud) can be
+made larger [ smaller ] by pressing the "=" [ "-"] keys.
+
+------------------------------------------------------------------------
+1d.  Press spacebar on keyboard in order to reset 3D viewer to its
+starting nadir orientation.
+
+
+========================================================================
+
+2a.  Program VIEWBUNDLER is a variant of VIEWPOINTS which can be used to
+look at reconstructed camera frusta within a 3D point cloud.   Most
+commands which work for VIEWPOINTS also work for VIEWBUNDLER.
+
+------------------------------------------------------------------------
+2b.  VIEWBUNDLER needs to import several input parameters at startup.  So
+VIEWBUNDLER should be run by calling the auto-generated "run_viewbundler"
+script.  (See step 4C in cheat sheet #1).
+
+	cd ~/programs/c++/svn/projects/src/mains/photosynth/
+
+	run_viewbundler
+
+------------------------------------------------------------------------
+2c.  Basic mouse button control for VIEWBUNDLER is the same as that
+VIEWPOINTS.
+
+------------------------------------------------------------------------
+2d.  In order to select some particular frustum, double click inside the
+frustum near its apex location.  The viewer should then zoom its virtual
+camera so that it assumes the same position and orientation as the selected
+frustum.  
+
+------------------------------------------------------------------------
+2e.  Press the down arrow in order to fade away the selected frustum's
+image.  You should then see 3D content located behind the image plane.
+Press the up arrow in order to restore the selected frustum's image to full
+opacity.  
+
+------------------------------------------------------------------------
+2f.  In order to zoom out from a selected frustum and return to the
+original view of the entire point cloud and all frusta, hold down the right
+mouse button and move the mouse vertically upwards.  
+
+Note:  If you zoom out from a selected frustum and do NOT see all other
+frusta reappear, the viewer has gotten confused and still thinks it's in
+"single frustum viewing mode".  You'll need to reselect the single visible
+frustum by double clicking near its apex.  Then try again to zoom out from
+that frustum in order to return to viewing all frusta simultaneously.
+
+------------------------------------------------------------------------
+2g.  In order to change from the default "Manipulate Fused Data Mode" to
+"View Data Mode", press "V" on the keyboard.  In order to return to
+"Manipulate Fused Data Mode", press "U" twice on the keyboard.  3D points
+can be enlarged/shrunk only in View Data Mode (by pressing the "-"/"="
+keys.  Frusta can be selected and alpha-blended only in Manipulate Fused
+Data Mode.
+
+
+
+

@@ -1,0 +1,3 @@
+./eovsir \
+--GIS_layer ./packages/imagery_metadata.pkg 
+

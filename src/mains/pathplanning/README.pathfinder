@@ -1,0 +1,68 @@
+===========================================================================
+README for running PATHFINDER program on Tony Lapadula's VM
+===========================================================================
+Last updated on 2/1/13
+===========================================================================
+
+Program PATHFINDER reads in some set of DTED geotif tiles.  It asks the
+user to enter relative weights for terms within a footpath construction
+cost function.  PATHFINDER performs an A* search for the best path between
+user-specified start and stop points within the 3D terrain.
+
+On Tony's VM, first change directory to
+
+/data_second_disk/TOC11/FOB_Blessing/FOB_Blessing_tiles/z_tif_tiles/tiles/filtered_Z_tiles/osga
+
+Then to run PATHFINDER program, chant
+
+  ~/programs/c++/svn/projects/src/mains/pathplanning/pathfinder *.osga
+
+Alternatively, run the executable script 
+
+			~/run_pathfinder
+
+to fire up PATHFINDER.
+
+
+Press "A" to change from VIEW DATA mode to INSERT ANNOTATION mode.
+Within INSERT ANNOTATION mode, press shift and left-mouse click
+within 3D viewer window in order to pick a starting point for a
+footpath.  Enter a label such as "start" within the terminal window
+when queried to "Enter new text label for SignPost".  Repeat this
+procedure to enter a stopping point for the footpath.
+
+Press "A" twice in order to change from VIEW data to
+MANIPULATE_ANNOTATION mode.  Then 'a' key to compute Astar path
+between starting and stopping locations.  Enter relative weights
+for terms within the footpath cost function in the terminal window
+when queried.  PATHFINDER program will then take several seconds to
+minutes to compute and display the A* path between the starting and
+stopping points.
+
+Once a path has been found, press L twice to enter into
+MANIPULATE_POLYLINE mode.  Then press 'e' to export the A* path to
+an output text file.  The exported path may subsequently be
+imported into program QTTOC11 for red actor path network discovery.
+
+Notes: 
+
+1.  The "root" directory for Peter's C++ tree is
+
+	$ROOT=~/programs/c++/svn/projects
+
+2.  The full path to the main pathplanning program is
+
+	$ROOT/src/mains/pathplanning
+
+This README file sits in 
+
+	$ROOT/src/mains/pathplanning/README.pathfinder
+
+3.  Nearly all of the source for Peter's 3D OpenSceneGraph classes sits in
+subdirectories of $ROOT/src/osg
+
+4.  The footpath cost function is specified within our
+MapSearchNode::GetCost() member function in
+$ROOT/src/image/MapSearchNode.cc.  As of 2011, it contains 3 terms.  The
+first two cost function terms are generic for all footpaths.  In contrast,
+the 3rd term is specialized for the TOC11 project...

@@ -1,0 +1,33 @@
+==============================================================================
+Basic commands for running NYC touchtable demo:
+==============================================================================
+Last updated on 10/23/07; 10/25/07; 1/27/08
+==============================================================================
+
+0.  Hit escape key to quit out of program if it's already running and some
+disaster necessitates restarting the entire program.
+
+1.  Chant 'run_nyc_demo' within /home/cho/ to start initialization script.
+
+2.  Translate, rotate and zoom NYC map using Google Earth gestures.
+Double-tap on base arrowheads of signposts in order to select them and
+bring up their corresponding Wiki page.
+
+3.  If you want to show 3D view frusta for 2D digital photos, press ","
+(comma) once to toggle colormap to greyscale.  [It's easier to see colored
+photos against a grey point cloud rather than a colored cloud.]  Then,
+press '1', '2', '3', '4', '5' , '6' or '7' keys on right-hand side keypad
+to bring up various combinations of view frusta.
+
+4.  Double-tap near apex of any view frustum in order to select it and
+automatically fly virtual camera towards real camera's location.  [Be
+careful not to double-tap near some SignPost arrow head if you're trying to
+select an Observation Frustum!]  Up and down arrow keys change photos'
+alpha-blending.  Rotation and zooming outwards work via Google Earth
+gestures.
+
+5.  Return to original setup by pressing "t" twice to toggle off all
+Observation frusta.  Then press "," [comma] twice until coloring scheme
+returns to original.
+
+

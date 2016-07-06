@@ -1,0 +1,29 @@
+~/bin/MAKE program=compute_shape_descriptors
+~/bin/MAKE program=dt
+~/bin/MAKE program=detect_corrupted
+~/bin/MAKE program=floodfill
+~/bin/MAKE program=generate_symbol_images
+~/bin/MAKE program=image_filler
+~/bin/MAKE program=image_reader
+~/bin/MAKE program=letters2pngs
+~/bin/MAKE program=locate_symbols
+~/bin/MAKE program=Ng_tester
+~/bin/MAKE program=quantize_colornames
+~/bin/MAKE program=quantized_lookup
+~/bin/MAKE program=pg_recog
+~/bin/MAKE program=pg_recog_processor
+~/bin/MAKE program=pool_symbol_features
+~/bin/MAKE program=resize_images
+~/bin/MAKE program=svm_shape
+~/bin/MAKE program=svm_symbol
+~/bin/MAKE program=symbol_descriptors
+~/bin/MAKE program=symbol_dictionary
+~/bin/MAKE program=tank_signs
+~/bin/MAKE program=tanksign_processor
+~/bin/MAKE program=undistort
+~/bin/MAKE program=whiten_symbol_descriptors
+
+
+
+
+

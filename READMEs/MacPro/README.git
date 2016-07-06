@@ -1,0 +1,752 @@
+=============================================================================
+GIT notes
+=============================================================================
+Last updated on 5/13/16; 5/31/16; 6/7/16; 6/17/16
+=============================================================================
+
+*.  Procedure to follow in order to sync our local copy of pwin and the
+master server version:
+
+	0.  Chant git status .  Alternatively, chant "git gui" to see
+	    changes.  Old [New] code lines are marked in red [green].
+
+	1. Add all new or modified files to local git via 
+
+		git add "filename"
+
+	   To find out which files need to be addedin to local git, chant
+	   git status
+
+	   a.  To "unmodify" a modified file p_image.h , chant
+
+		git checkout -- p_image.h
+
+           b.  To delete a modified file (e.g. im_imagefuncs.h), chant
+
+		git rm -f im_imagefuncs.h
+
+	2. Commit all recently added ("staged") files to local git
+		
+		git commit
+
+
+	3. Update our local version of pwin with most recent master server version:
+
+		git pull --rebase
+
+	   On 10/19/15, Gustav Hanning told us that we should generally
+	   git pull --rebase whenever we need to update branches other than master.
+
+	   If a "no tracking information for current branch" error message
+	   occurs, try chanting something like
+
+		git branch --set-upstream-to=origin/rdn_dump_dnn rdn_dump_dnn
+
+	4. Chant "make clean" from within /home/pcho/sputnik/pwin/build/linux64
+	   Then rebuild main programs via makepwin from within app/lab/lab_pcho
+	   Make sure no warnings or error messages occur
+
+	5. Rerun at least lab_kbdapp and MST water programs and make sure
+	   they execute OK.
+
+		cd /home/pcho/sputnik/pwin/app/lab/lab_pcho
+
+		A.  run_reduced_boston
+
+		B.  run_mst
+			Press ";" and then "l" in order to start flood-filling.
+			Then after aerial images appear within main window,
+			press 'q' multiple times to see Sam's coarse contours, 
+			candidate specular regions, and flood-filling results.
+
+		cd /home/pcho/sputnik/peter_stuff/text_in_wild/scripts
+
+		C.  run_demo
+			Press "l" to load version 1004.  Then press "m" to
+			perform end-to-end house number recognition for the 
+			current image.  Alternatively, press "n" multiple
+			times in order to step through each stage of the
+			text-in-wild processing pipeline
+
+		cd /home/pcho/sputnik/peter_stuff/street_signs/scripts
+
+		D.  run_ver_102 (Street sign recognition)
+			
+		   - Advance to some gross set of ground images of interest
+		     by pressing right arrow key.  Then change
+		     image step from starting value 25 down to 1 via esc-x followed by im_step 1.
+		     Select some particular image of interest.
+
+		   - Press "cntrl-r" to rectify van image so that it looks as if camera had
+		     a horizontal U axis and a vertical V axis.  
+
+		   - Press "l" to load detector engine 100 which looks for various signs
+		     (e.g. speed limits, stop signs, business logos, etc)
+
+		   - Press "m" to run engine 100 on current, rectified image.  Detected
+		     signs are indicated by red bounding boxes.
+
+		   - Press "cntrl-t" to unrectify current image back to camera's original
+		     angular orientation.  Any sign detection bounding boxes are also
+		     unrectified into purple quadrilaterals.
+
+		cd /data/peter_stuff/text_in_wild/scripts/Cupertino/eval
+
+		E.  run_Cupertino_mongo  (Fails around bson_iter_next() inside 
+		    pr_mongo_bson_to_detection_ebbox() as of 4/14/15)
+
+		    - Press "r" to enable automatic image rectification 
+
+		    - Press "cntrl-y" to jump to next image containing some
+		      detection
+
+		    - Press "cntrl-r" to view rectified image and rectified
+		      bounding boxes.  Press "cntrl-t" to view unrectified
+		      image and unrectified quadrilaterals.
+
+		    - Press "cntrl-x" and then enter "det_ver 1110" in
+		      order to restrict detections of interest to house
+		      numbers
+
+			(100 = traffic signs, 101 = logos)
+
+		    - Press "cntrl-x" and then enter "classfilter 9" in 
+		      order to restrict detections of interest to stop signs
+
+		cd /home/pcho/sputnik/peter_stuff/g3d/scripts
+
+		F.  run_pr_g3d_LA (3D terrain manipulator)  (Fails around
+			pr_utm_convert_conventional_utm_vector() as of 4/14/15)
+
+
+		   - While pressing "s" key down, double click on some
+		     random frustum w/in larger connected component of Mar
+		     5 San Francisco data set
+
+		   - Press "L" to load lidar data 
+
+	 	   - Press "l" to toggle lidar data display on/off
+
+		cd /home/pcho/sputnik/peter_stuff/pr_map_gui
+
+		G.  run_map_kh1b_remaining2_roadsigns
+
+		   - Press "down" arrow in order to display mouse 2D
+		     position in UTM, WGS84 and tile geocoordinates
+
+		   - Click on center of a roadsign icon in order to pop
+		     open a secondary window in which a corresponding image
+		     chip should be displayed.
+	
+		
+	6. Upload our clean modifications from local git to master server
+
+		git push
+
+	7.  If everything has worked OK, then we should see the green "master"
+	and "remotes/origin/master" matching up when we chant
+
+		gitk --all
+
+	8.  If we're in the middle of making changes which we don't want to
+	commit, we can "stash" them onto a stack.  We can then pull, make
+	changes and/or push before popping the changes we didn't want to commit
+
+		git stash
+		git pull --rebase
+		git push
+		git stash pop
+
+in order to send local commited changes to master GIT server
+
+*.  git gui is useful for committing changes to GIT
+
+*.  "gitk --all" fires up a Tcl/Tk program which acts as a visual git log tool
+
+
+
+*.  On 3/18/14, Viktor taught us that a green "master" box within the upper
+left window pane of gitk shows the current state of our local master
+version.  On the other hand, a beige/green "remotes/origin/master" box
+within the same upper left window pane shows the current state of the
+server's repository.  If the two are linked together, then our local master
+version is in sync with the server repository's.  Other branches on the
+server's repository are indicated by beige/green boxes such as
+"remotes/origin/v3.5-beta2".  
+
+Viktor also said that the Flyover group follows the custom of forking
+branches which are stable and should remain untouched except for bug fixes.
+In contrast, the master branch on the server is the current "working"
+version.
+
+
+*.  In order to check out an old version of a file stored in the git
+repository:
+
+  0.  Create a local copy of whatever file we're going to overwrite 
+  with an older version.
+
+  1.  chant "gitk path_to_filename"
+
+  e.g. 
+
+  gitk ./feat_mser.c
+
+  Versions of the file which were altered upon checkin are then displayed
+  within top left pane of gitk display.
+  
+
+  2.  Click on particular dated version of file which we want to check out
+  A very long hash ID is then displayed within the SHA1 ID box.  
+
+  Then to overwrite the latest version of the file with the older one, chant
+  "git checkout hash_number path_to_filename"
+
+  e.g.
+
+  git checkout 34242d4 feat_mser.c
+
+
+*.  On 8/18/15, Tom Annen explained to us that github can be used to
+solicit code review prior to code changes being submitted to the master
+branch.  The submitter (e.g. ghanning) creates a tentative branch on github
+(e.g. png_cleanup).  Within the email message from github, we can click on
+the "Files changed" tab followed by the "Split" button on the extreme LHS
+in order to see "before" and "after" views of the proposed code changes.
+
+If we want to locally test the proposed changes before they are merged into
+master, we can chant
+
+	git checkout png_cleanup
+
+This then pulls the proposed changes to our local machine and locally
+resets our working branch to png_cleanup.  We can then build the new branch
+locally and test it.  
+
+Send reply to submitter (e.g. ghanning) indicating if proposed changes are
+good.  If so, ask submitter to merge proposed changes with master and to
+close issue.
+
+*.  In order to find out who last altered some particular file such as
+pr_classifier.c, chant
+
+		git blame ./pr_classifer.c 
+
+*.  To remove a file foo.junk from the git repository, chant
+
+		git rm foo.junk
+
+
+*.  In order to find git hashtags corresponding to git commit comments,
+chant
+
+		git log --oneline
+
+Here is example output from this git log command:
+
+ca80a20 PR engine 1105 is working again as it has over the past several months! 
+ceb6344 freeing bug
+edca48e small bugfix
+a683475 populate build_ver_loaded
+0c903b4 more changes to support pr build versions, tele 3d estimate
+4b37614 flag retroreflective house numbers, introduce pr_build_versions
+c06e3cd rig_gui: fix
+c46ae42 lba_versions: 67: increased sdev on prior bs
+0c29c41 lba: limit updated pos when doing iterative matching
+3da1dae lba_world: better use of threads in tracking, abort if image is not load
+da76d4c rig_gui: changed color-scheme for rigs and made them clickable
+d197f25 f3d - Only load resources for the area around the tiles to build
+f37ee48 build_job - Extract bbox for entire build_job
+e2ed0c2 prj - Update prj_load_data to take a bbox for what area to load
+4fab9ee Speed up raster_preprocess_tile by not calling geo_conv3 on each pixel. 
+4af1e9e Added lots of consts to geo library.
+
+Note 910cb7b is the first part of SHA1 ID 910cb7b12fcc9c58bb.....
+
+*.  On 11/2/14, Viktor taught us that we can get gitk to show us the
+commit history for individual files by chanting something like
+
+	gitk master -- pr_house_numbers.c pr_versions.c
+
+*.  On 6/17/16, Tho showed us that we can chant 
+
+	gitk -- ./pwin.mak
+
+in order to see changes made recently to pwin.mak.
+
+*.  To reset working directory to state it was in for 71a8953, chant
+
+git checkout 71a8953
+
+Note: checking out '71a8953'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b new_branch_name
+
+HEAD is now at 71a8953... uncomment call to pr_gui_visualize_annotations() inside conditional and comment call outside conditional in pr_gui.c
+
+*.  On 5/12/15, Fredrik Larsson showed us that we can perform a hard reset
+of our local directory to some previous checked in version within the gitk
+gui.  Right click on some checked-in version.  Then choose "Reset master
+branch to here".  Then choose "Hard: Reset working tree and index (discard
+ALL local changes)".
+
+
+*.  To return to latest version in master branch
+
+git checkout master
+
+*.  In order to create a brand new git branch named "pr_v1.0", chant
+
+	git checkout -b pr_v1.0
+
+Then to checkin src contents on local MacPro into new pr_v1.0 branch,
+simply chant
+
+	git push
+
+*.  In order to assign a tag to the new pr_v1.0 branch, Viktor recommended
+on 11/11/14 that we use the distrib deploy script with the following tag
+modification:
+
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/  -tag pr_v1.0.0 -latest -pwin -par OPENCV=1
+
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/  -tag pr_polaris_110714 -latest -pwin -par OPENCV=1
+	(created on afternoon of Weds, Nov 12)
+
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/  -tag pr_110714_polaris -latest -pwin -par OPENCV=1
+	(created on Thurs Nov 13 at 6:40 am)
+
+
+make -C /home/pcho/sputnik/pwin/build/linux64 clean
+make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/  -tag pr_120514_polaris_b -latest -pwin -par DNN=1
+	(created on Mon Dec 8, 2014 at 10:40 am)
+
+make -C /home/pcho/sputnik/pwin/build/linux64 clean
+make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/  -tag pr_042215_KH1B_hns -latest -pwin -par -pr
+	(created on Weds Apr 22, 2015 at 11:20 am)
+
+Viktor also told us that tags and branches should NOT have the same names!
+When this modified distrib command is executed, we will be queried to enter
+our password 5 rather than the usual 4 times.
+
+After new branches are deployed, they may be found within 
+/startown-gpfs/sputnik01/supersize/bin/pwin/
+
+After creating and populating a GIT snapshot branch, be sure to switch back
+to the master branch !!!
+
+
+git checkout master
+
+*.  In order to delete a tag name called "pr_v1.0.0", chant
+
+git tag -d pr_v1.0.0
+
+
+
+* GIT branches
+
+Chant "git branch -vv" in order to see list of git branches on our local macpro:
+
+master
+polaris_delivery_110714  (accidentally continued development in this
+		snapshot branch on afternoon of Weds, Nov 12)
+polaris_110714_delivery  (created on Thurs Nov 13 at 6:39 am)
+polaris_delivery_120514_a
+polaris_delivery_120514_b  ("final" version corresponding to actual delivery made to Polaris group on 12/5/14)
+
+*.  To delete a local branch, chant
+
+   git branch -d the_local_branch_name
+
+*. In order to forcibly delete a branch, chant
+
+   git branch -D <branch name>
+
+
+*.  To delete a remote branch, chant
+
+   git push origin --delete <remoteBranchName>
+
+*.  On 2/12/15, Viktor told us to chant the following command in order to
+revert our local copy to the latest, stable checked in:
+
+git reset --hard HEAD
+
+This should delete all local file changes made after the latest, stable
+check-in.  
+
+
+
+*.  On 1/12/15, Tho taught us that we need to perform the following steps
+in order to recompile pwin code with an older version of caffe:
+
+1.  gitk --author="huytho_ho@apple.com"
+
+   Look for 12/16/2014 version before "add new functionalities to caffee":
+hashtag = c38304...
+
+2.  Delete everything in pwin/contrib/dnn/caffe/
+
+3.  git checkout c38304 -- ./contrib/dnn/caffe
+
+will checkout just contents of /contrib/dnn/caffe corresponding to Dec 16,
+2014 hashtag..
+
+make -C /home/pcho/sputnik/pwin/build/linux64 clean
+make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+
+4.  In order to restore latest version of caffe, find hashtag
+corresponding to latest build which was checked in.  Then repeat above
+steps with that latest hash tag.
+
+
+*.  On 1/12/15, Tho showed us that we can add files to
+/home/pcho/sputnik/.gitignore which we want git to ignore.  Here is the
+contents of .gitignore as of 1/13/15:
+
+.reviewboardrc
+.settings
+.pydevproject
+pwin/.settings
+*/octave-core
+pwin/build/**/*.o
+pwin/build/**/*.a
+pwin/build/**/*.lib
+pwin/build/**/.nfs*
+pwin/build/**/pwin
+pwin/doc/*
+*.orig
+.project
+.cproject
+**/.cproject
+**/.project
+pwin/tools/auto_test/view_*
+*.mex
+*.swp
+*.pyc
+cscope.out
+tags
+TAGS
+*~
+bundles
+pwin/contrib/dnn/caffe/build
+pwin/contrib/dnn/caffe/.build_release/**/*
+pwin/contrib/dnn/caffe/.build_debug/**/*
+pwin/app/*/build
+pwin/lib/*/build
+pwin/contrib/*/build
+pwin/app/lab/lab_pcho
+
+
+*.  On 7/10/15, we learned from Viktor that within each local "root"
+subdirectory for a copy of a git repository lies a .git/config file.  This
+file contains the url for the git server.  For example,
+/home/pcho/sputnik/.git/config contains the following content:
+
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+[remote "origin"]
+        url = git@github.geo.apple.com:geo-flyover/sputnik.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+        remote = origin
+        merge = refs/heads/master
+[push]
+        default = current
+[gui]
+        wmstate = normal
+        geometry = 1306x1198+73+2 514 623
+config (END)
+
+
+*.  On 8/12/15, we experienced a bad git crash which occured due to a power
+failure taking place right as we were in the middle of performing a git
+commit.  We ended up following Nathan Van's detailed discussion within the
+following webpage:
+
+http://stackoverflow.com/questions/11706215/how-to-fix-git-error-object-file-is-empty
+
+We've saved these notes within git_crash_repair_0X.png where X = 1,2,3.
+
+
+*.  On 9/3/15, Tho helped us clone his caffee_custom git repository on git
+hub using the following command:
+
+ git clone git@github.geo.apple.com:huytho-ho/caffe_custom.git
+
+Our cloned copy sits in /home/pcho/software/caffe_custom/ on our local
+MacPro.  
+
+git branch -vv
+git checkout caffe_train
+
+We then created the new subdir software/caffe_custom/training_scripts/ .
+Tho asked us to put all deeplab scripts into this new subdir.
+
+*.  On 9/8/15, Tho asked us to create a new git branch called
+"rdn_barriers" on our local machines for code review purposes.
+
+On gpu box titan1, rdn_barriers is the active git branch as of Weds, Sep 9,
+2015 at 8:52 am.
+
+
+https://github.geo.apple.com/geo-flyover/sputnik/pull/86
+
+ -  After performing git add and git commit (do NOT use emacs window 
+    for git commit on titan1!), chant git push to upload rdn_barriers
+    branch changes to github.   Then refresh webpage 
+    https://github.geo.apple.com/geo-flyover/sputnik/pull/86 . 
+
+ -  After pushing rdn_barriers changes, we should merge any changes
+    within master branch to our local rdn_barriers branch:
+
+   i.  git checkout master
+   ii. git pull --rebase
+   iii.  git checkout rdn_barriers
+   iv.  git merge master
+
+*.  On 9/29/15, Viktor recommended that we create a new branch to be used
+by the production team for KH deliveries:
+
+	git checkout -b KH_v1.0
+
+Viktor taught us that tags can be used for refined versioning.  (Tags
+essentially correspond to user-friendly aliases for long, ugly git
+hashtags.)  
+
+For example every time there is a bug fix, a new tag is assigned to a
+corrected pwin binary for production.  But a new git branch is NOT created
+for every bug fix.  Viktor thought that this tag bookkeeping is probably
+overkill for KH production codes.
+
+Viktor further said that the master branch is generally NOT ever merged
+into a production branch in order to avoid introducing bugs/backward
+incompatibilities/etc into code run by the production team.  On the other
+hand, bug-fix changes made in the production branch can/should be merged
+back into the master branch.
+
+*.  On 1/28/16, Erik Soderval reminded us that we must have both a public
+and private ID_RSA key sitting within ~/.ssh/id_rsa (private) and
+~/.ssh/id_rsa.pub( public) .  They both are generated by chanting
+"ssh-keygen".  Accept the default location (~/.ssh/id_rsa) for the keys.
+Erik also recommends entering a password.  On our MacBook, Erik said that
+the password for our public key will be stored in a "keychain" so that we
+won't have to remember our password in the future.  
+
+For github.geo.apple.com, click on avatar icon located near upper right
+corner of browser.  Then click "Your profile".  Next click "Edit profile"
+button.  Then select "SSH keys" located on left hand side menu.  Add the
+contents of ~/.ssh/id_rsa.pub as a new SSH key stored on Apple's Github
+server.
+
+*.  Tutorials on GitHub flow:
+
+https://guides.github.com/introduction/flow/
+http://scottchacon.com/2011/08/31/github-flow.html
+
+Tutorial on git branches:
+
+https://www.atlassian.com/git/tutorials/using-branches
+
+
+*.  Github work flow
+
+ - Sync local master branch with latest remote master branch
+   
+ - Create a new git branch on our local machine which 
+   starts with same file content as master:
+
+   git checkout -b rdn_build_load_detections_fromdb
+
+   Alternatively, we can create a new branch on our local machine which
+starts with same file content as some other branch :
+
+e.g. 
+
+   git checkout branch1
+   git checkout -b subbranch_of_b1  branch1
+
+
+
+ - Make various file changes within the new branch.  Then chant
+   git add and git commit for the new branch just as we would do
+   in the past for the master branch.
+
+
+ - Apple github server needs to be made aware of the existence
+   of our new local branch.  First chant
+
+    git fetch origin 
+
+    to refresh branches from server known to our local client matchine. Next chant
+
+    git branch -r
+
+   to see list of all remote branches within github server.
+   Then chant
+
+    git push origin rdn_build_load_detections_fromdb   
+
+   in order to add our local branch to the github server and push local 
+   changes to this new remote branch.  [Note: Chanting just "git push" 
+   appears to effectively force the github server recognize a new local
+   branch.]  If we chant again "git branch -r", we should see
+
+       origin/rdn_build_load_detections_fromdb
+
+   among the list of remote branches.
+
+ - In order to delete a remote branch, chant
+    
+    git push origin --delete branch_name
+
+    e.g. git push origin --delete pr_tesseract_cleanup
+
+ - Goto Apple's github webpage  (https://github.geo.apple.com)  
+   We created a bookmark for this website in our Apple bookmarks firefox
+   submenu
+
+ - Click on "geo-flyover/sputnik" repository located on RHS
+
+ - Click on blue "Pull requests" located on LHS of geo-flyover/sputnik webpage
+ 
+ - Click on green "New pull request" button.  We should see base = master
+   as the destination for our local branch's file changes and set
+   compare = rdn_build_load_detections_fromdb. 
+
+ - Press green "view pull request" button located near RHS.  Can then write
+   a descriptive message about proposed modifications to be merged with
+   master branch.
+
+ - Press green "Create pull request" button to send message to flyover group.
+   Specifically add names of people after "@" for those who would be
+   especially interested in commenting on our local changes.
+  
+ - If other people suggest changes, make those changes to the local
+   branch, add and commit them.  Be sure to push the changes to the
+   remote branch!  Simply chant
+
+	   git push 
+
+   from within local branch.
+
+ -  Be sure to perform a make clean and complete recompile before 
+    merging remote branch with remote master!
+
+ -  Merge remote branch with remote master.
+
+*.  In order to keep a local branch in sync with master on the server, 
+
+1.  Switch from local branch to local master (chant "git checkout master")
+2.  Pull --rebase remote master to local master (chant "git pull --rebase")
+3.  Switch back from local master to local branch
+4.  Merge local master into local branch by chanting "git merge master"
+
+*.  On 12/4/15, Weiyu showed us how to disable "automatic watching" of
+github repositories which we don't generally care about.  Mouse click on
+the light blue "handle" icon located near the upper right corner of the top
+github toolbar.  Then click on the "Watching" tab located near the top
+left.  Press the "Change notification settings" button located near the top
+right.  Disable the "Automatically watch repositories" check box.
+
+*.  On 1/5/16, we found online the following command which lists local git
+branches in reverse chronological order:
+
+for k in `git branch|perl -pe s/^..//`;do echo -e `git show --pretty=format:"%Cgreen%ci %Cblue%cr%Creset" $k|head -n 1`\\t$k;done|sort -r
+
+This command is helpful for figuring out which local branches are stale and
+can be safely deleted.  On 4/22/16, we placed this command into executable
+script ls_local_git_branches within our ~/bin/ subdir.
+
+
+
+*.  Procedure for ping-ponging between two development branches:
+
+1.  We have a branch pr_cluster_chips1 which has been checked into the
+remote github server and for which we are waiting on a pull request.
+
+2.  While we're waiting for others to respond to the pull request, we'd
+like to continue developing.  But we don't want to make more changes to the
+pr_cluster_chips1 branch.
+
+3.  So checkout a new local branch from master called pr_cluster_chips2:
+
+git checkout master
+git checkout -b pr_cluster_chips2
+git checkout pr_cluster_chips2
+
+4.  Merge the contents of branch pr_cluster_chips1 into pr_cluster_chips2:
+
+git merge pr_cluster_chips1
+
+5.  Continue working on branch pr_cluster_chips2 while we're waiting for PR
+feedback.
+
+*.  As of Mar 2016, in order to build a binary with DNN=1 parameter flag
+set, we need to include the "-pr " flag rather than explicitly specifying
+-par DNN = 1:
+
+make -C /home/pcho/sputnik/pwin/build/linux64 clean
+make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
+/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -pr -pwin -par LAPACK=1
+
+
+*.  On 3/29/16, Tiago told us about git bisect which can be used to
+efficiently search for bug(s) in commits made between known good and known
+bad branch commits.
+
+*.  On 4/4/16, John Wood told us about git cherry-pick which can be used to
+merge particular commits from one branch into another branch.  He also
+highly recommended using GitHub Desktop which we downloaded onto our
+MacBook in order to see the entire history for a branch.  (As of April
+2016, GitHub Desktop is only available for Mac and Windows, not for Linux
+according to John.)  
+
+
+git checkout -b pr_cleanup_w_tests
+
+git cherry-pick 2c0a249
+git cherry-pick fc74969
+
+
+*.  When you are in the middle of something, your boss comes in and demands
+that you fix something immediately:
+
+# ... hack hack hack ...
+$ git stash
+$ edit emergency fix
+$ git commit -a -m "Fix in a hurry"
+$ git stash pop
+# ... continue hacking ...
+
+
+*.  In order to sync Peter's tiger branch with the "mini-master" branch
+consisting of both Peter and Weiyu's tiger branches, chant
+
+git fetch
+git merge origin/tiger_dev
+
+
+*.  In order to force a local branch to track a remote branch, chant
+something like
+
+ubuntu:pwin% git branch --set-upstream-to=origin/sns_hns_May20 sns_hns_May20
+Branch sns_hns_May20 set up to track remote branch sns_hns_May20 from origin.
+
+We can then update local branch against remote branch:
+
+ubuntu:pwin% git pull --rebase
+First, rewinding head to replay your work on top of it...

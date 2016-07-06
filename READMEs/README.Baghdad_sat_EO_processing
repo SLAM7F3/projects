@@ -1,0 +1,17 @@
+============================================================================
+Processing notes for Baghdad satellite EO imagery
+============================================================================
+Last updated on 5/3/07; 5/7/07
+============================================================================
+
+*.  Run mains/video/image2vid to convert Baghdad TIF files into .vid files
+
+*.  Create new TIF file containing multiple levels of detail:
+
+gdaladdo -r average Baghdad_2006_R3C1.TIF 2 4 8 16 32 64 128 256
+
+Rename output multi-resolution TIF file as multires_r3c2.tif.
+
+*.  Generate multi-resolution surface using OSGDEM:
+
+osgdem -t multires_r3c1.tif -l 8 -o r3c1.ive -a r3c1_l8.osga

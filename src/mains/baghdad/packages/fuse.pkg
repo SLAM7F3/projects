@@ -1,0 +1,25 @@
+# /data3/video/Iraq/baghdad/Baghdad_2006_R2C1.vid 
+# /data3/video/Iraq/baghdad/Baghdad_2006_R2C2.vid 
+# /data3/video/Iraq/baghdad/Baghdad_2006_R2C3.vid 
+# /data3/video/Iraq/baghdad/Baghdad_2006_R3C1.vid 
+# /data3/video/Iraq/baghdad/Baghdad_2006_R3C2.vid 
+
+ /data3/video/Iraq/baghdad/Baghdad_2006_R3C3.vid 
+
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r2.c1_a.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r2.c1_b.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r2.c2_a.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r2.c2_b.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r2.c3_a.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r2.c3_b.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r3.c1_a.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r3.c1_b.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r3.c2_a.tdp
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r3.c2_b.tdp
+
+/home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r3.c3_a.tdp
+
+# /home/cho/programs/c++/svn/projects/src/mains/baghdad/tdp_files/lfit_tdpfiles/retiled/subtiles/tile.r3.c3_b.tdp
+
+--height_colormap 12 --prob_colormap 6 --height_cyclic_frac_offset 0.0625
+--min_threshold_frac 0.001 --max_threshold_frac 0.999

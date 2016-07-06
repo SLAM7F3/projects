@@ -1,0 +1,17 @@
+var dialog = new Dialog;
+dialog.caption = "Name reading dialog";
+dialog.okButtonText = "Done"
+dialog.cancelButtonText = "Abort";
+
+var first = new LineEdit;
+first.label = "First name: ";
+dialog.add( first );
+
+var last = new LineEdit;
+last.label = "Last name: ";
+dialog.add( last );
+
+if( dialog.exec() ) {
+    var fullName = last.text + ", " + first.text;
+    print( "Full name is: " + fullName );
+}

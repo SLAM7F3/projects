@@ -1,0 +1,1 @@
+../../src/osg/Custom2DManipulator.h

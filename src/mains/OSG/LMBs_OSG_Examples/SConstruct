@@ -1,0 +1,32 @@
+#
+# SConstruct for LMB's OSG Examples
+# By Leandro Motta Barros
+#
+
+import os
+env = Environment(ENV = os.environ,
+                  CC = 'g++',
+                  CCFLAGS = '-Wall',
+                  LIBS=["osgProducer", "png", "z"])
+
+particleEnv = env.Copy (LIBS=["osgParticle", "osgProducer", "png", "z"])
+
+
+env.Program ("01_SimpleViewer", "Sources/01_SimpleViewer.cpp")
+env.Program ("02_EventHandling", "Sources/02_EventHandling.cpp")
+env.Program ("03_GeometryFromCode", "Sources/03_GeometryFromCode.cpp")
+env.Program ("04_HUD", "Sources/04_HUD.cpp")
+env.Program ("05_TextAndHUD", "Sources/05_TextAndHUD.cpp")
+env.Program ("06_Picking", "Sources/06_Picking.cpp")
+env.Program ("07_TextureFromCode", "Sources/07_TextureFromCode.cpp")
+env.Program ("08_TextureWrapping", "Sources/08_TextureWrapping.cpp")
+env.Program ("09_Multitexturing", "Sources/09_Multitexturing.cpp")
+env.Program ("10_StateSets", "Sources/10_StateSets.cpp")
+env.Program ("11_NodeVisitor", "Sources/11_NodeVisitor.cpp")
+env.Program ("12_CustomDrawable", "Sources/12_CustomDrawable.cpp")
+env.Program ("13_FragmentShader", "Sources/13_FragmentShader.cpp")
+env.Program ("14_ShadersAndUniforms", "Sources/14_ShadersAndUniforms.cpp")
+env.Program ("15_ShadersAttributesTextures", "Sources/15_ShadersAttributesTextures.cpp")
+particleEnv.Program ("16_ParticleSystem", "Sources/16_ParticleSystem.cpp")
+env.Program ("17_RenderToTexture", "Sources/17_RenderToTexture.cpp")
+env.Program ("18_FindingTriangles", "Sources/18_FindingTriangles.cpp")

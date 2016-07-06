@@ -1,0 +1,28 @@
+
+After lots of struggling on 4/27/07, we learned (with lots of help from
+Dave Ceddia) that we needed to add /usr/local/Trolltech/Qt-4.2.1 to the
+QT_SEARCH line below in order for configure to work correctly:
+
+
+Then chant ./configure --prefix=/usr/local/qgis
+
+
+
+echo "$as_me:$LINENO: checking QTDIR" >&5
+echo $ECHO_N "checking QTDIR... $ECHO_C" >&6
+
+# Check whether --with-qtdir or --without-qtdir was given.
+if test "${with_qtdir+set}" = set; then
+  withval="$with_qtdir"
+  QTDIR=$withval
+fi;
+# Check that QTDIR is defined or that --with-qtdir given
+if test x$QTDIR = x ; then
+  QT_SEARCH=" /usr/lib/qt31 /usr/lib64/qt31 /usr/local/qt31 /usr/lib/qt3 /usr/lib64/qt3 /usr/local/qt3 /usr/lib/qt2 /usr/lib64/qt2 /usr/local/qt2 /usr/lib/qt /usr/lib64/qt /usr/local/qt /usr /usr/local /usr/local/Trolltech/Qt-4.2.1"
+  for i in $QT_SEARCH; do
+    if test x$QTDIR = x; then
+      if test -f $i/include/qt/qglobal.h -o -f $i/include/qglobal.h -o -f $i/include/qt3/qglobal.h; then
+        QTDIR=$i
+      fi
+    fi
+  done

@@ -1,0 +1,3 @@
+cd ~/programs/c++/svn/projects/src/mains/thunderstorm/Qt
+./qtVideoOnDemand \
+--GIS_layer ./packages/flir_metadata.pkg

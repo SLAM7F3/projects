@@ -1,0 +1,234 @@
+<html>
+
+<head>
+
+<title>SAM Client</title>
+
+<!-- ================================================================   -->
+
+<style type="text/css">
+
+tr {
+   background-color: #F0F0F0;
+   bottom-margin: 1px;
+}
+
+td {
+   padding: 4px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================================================================   -->
+
+<h2>SAM Systems</h2>
+
+<!-- form action="http://155.34.125.216:4040/SAM_systems/" method="GET" -->
+<!-- form action="http://155.34.162.78:4040/SAM_systems/" method="GET" -->
+<!-- form action="http://155.34.135.239:4040/SAM_systems/" method="GET" -->
+<form action="http://155.34.162.160:4040/SAM_systems/" method="GET">
+<!-- form action="http://155.34.125.200:4040/SAM_systems/" method="GET" -->
+<!-- form action="http://127.0.0.1:4040/SAM_systems/" method="GET" -->
+
+<table>
+
+  <tr>
+    <td align="left">Missile type</td>
+    <td>
+      <select id="sam_type" name="sam_type" style="width: 200px;">
+        <option value="Unspecified">Unspecified</option>
+        <option value="SA-2">SA-2</option>
+        <option value="SA-3">SA-3</option>
+        <option value="SA-4">SA-4</option>
+        <option value="SA-5">SA-5</option>
+        <option value="SA-6">SA-6</option>
+        <option value="SA-8">SA-8</option>
+        <option value="SA-10">SA-10</option>
+        <option value="SA-11">SA-11</option>
+        <option value="SA-12">SA-12</option>
+        <option value="SA-13">SA-13</option>
+        <option value="SA-14">SA-14</option>
+        <option value="SA-15">SA-15</option>
+        <option value="SA-16">SA-16</option>
+        <option value="SA-18">SA-18</option>
+        <option value="FT-2000">FT-2000</option>
+        <option value="FM-90">FM-90</option>
+        <option value="HQ-2">HQ-2</option>
+        <option value="Pegasus">Pegasus</option>
+      </select>
+    </td>
+  </tr>
+
+</table>
+
+<br/>
+
+<input type="submit" name="command" value="getSamSystem"/>
+
+</form>
+
+<!-- ================================================================   -->
+
+<h2>Countries' SAMs</h2>
+
+<!-- form action="http://155.34.125.216:4040/Countries/" method="GET" -->
+<!-- form action="http://155.34.162.78:4040/Countries/" method="GET" -->
+<!-- form action="http://155.34.135.239:4040/Countries/" method="GET" -->
+<form action="http://155.34.162.160:4040/Countries/" method="GET">
+<!-- form action="http://155.34.125.200:4040/Countries/" method="GET" -->
+<!-- form action="http://127.0.0.1:4040/Countries/" method="GET" -->
+
+<table>
+
+  <tr>
+    <td align="left" width="200px">Country name</td>
+    <td>
+      <select id="country" name="country" style="width: 200px;">
+        <option value="Unspecified">Unspecified</option>
+        <option value="Russia">Russia</option>
+        <option value="China">China</option>
+        <option value="North Korea">North Korea</option>
+        <option value="South Korea">South Korea</option>
+        <option value="Syria">Syria</option>
+        <option value="Iran">Iran</option>
+      </select>
+    </td>
+  </tr>
+
+</table>
+
+<br/>
+
+<input type="submit" name="command" value="getCountrySAMs"/>
+
+</form>
+
+<!-- ================================================================   -->
+
+<h2>SAM Specifications</h2>
+
+<!-- form action="http://155.34.125.216:4040/SAM_specifications/"
+method="GET" -->
+<!-- form action="http://155.34.162.78:4040/SAM_specifications/"
+method="GET" -->
+<!-- form action="http://155.34.135.239:4040/SAM_specifications/" method="GET" -->
+<form action="http://155.34.162.160:4040/SAM_specifications/" method="GET">
+<!-- form action="http://155.34.125.200:4040/SAM_specifications/"
+method="GET" -->
+<!-- form action="http://127.0.0.1:4040/SAM_specifications/" method="GET" -->
+
+<table>
+
+  <tr>
+    <td align="left">Maximum range</td>
+    <td>
+      <select id="range" name="range" style="width: 200px;">
+        <option value="Unspecified">Unspecified </option>
+        <option value="2">&gt;2 kms </option>
+        <option value="10">&gt;10 kms </option>
+        <option value="25">&gt;25 kms </option>
+        <option value="50">&gt;50 kms </option>
+        <option value="100">&gt;100 kms </option>
+        <option value="200">&gt;200 kms </option>
+      </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left">Maximum altitude</td>
+    <td>
+      <select id="altitude" name="altitude" style="width: 200px;">
+        <option value="Unspecified">Unspecified </option>
+        <option value="2">&gt;2 km </option>
+        <option value="4">&gt;4 kms </option>
+        <option value="8">&gt;8 kms </option>
+        <option value="16">&gt;16 kms </option>
+        <option value="32">&gt;32 kms </option>
+      </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="left">Initial Operational Capability (year)</td>
+    <td>
+      <select id="ioc" name="ioc" style="width: 200px;">
+        <option value="Unspecified">Unspecified</option>
+        <option value="1950">&gt;1950</option>
+        <option value="1960">&gt;1960</option>
+        <option value="1970">&gt;1970</option>
+        <option value="1980">&gt;1980</option>
+        <option value="1990">&gt;1990</option>
+        <option value="2000">&gt;2000</option>
+      </select>
+    </td>
+  </tr>
+
+</table>
+
+<br/>
+
+<input type="submit" name="command" value="getMatchingSAMs"/>
+
+</form>
+
+<!-- ================================================================   -->
+
+<h2>Individual SAM Sites</h2>
+
+<!-- form action="http://155.34.125.216:4040/SAM_sites/" method="GET" -->
+<!-- form action="http://155.34.162.78:4040/SAM_sites/" method="GET" -->
+<!-- form action="http://155.34.135.239:4040/SAM_sites/" method="GET" -->
+<form action="http://155.34.162.160:4040/SAM_sites/" method="GET">
+<!-- form action="http://155.34.125.200:4040/SAM_sites/" method="GET" -->
+<!-- form action="http://127.0.0.1:4040/SAM_sites/" method="GET" -->
+
+<table>
+  <tr>
+    <td align="left" width="200px">Site ID</td>
+    <td>
+      <input type="text" id="siteID" name="siteID" style="width: 200px;"></input>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<input type="submit" name="command" value="getSiteInfo"/>
+
+</form>
+
+<!-- ================================================================   -->
+
+<h2>Flight Path</h2>
+
+<!-- form action="http://155.34.125.216:4040/flightpath/" method="POST" -->
+<!-- form action="http://155.34.162.78:4040/flightpath/" method="POST" -->
+<!-- form action="http://155.34.135.239:4040/flightpath/" method="POST" -->
+<form action="http://155.34.162.160:4040/flightpath/" method="POST">
+<!-- form action="http://155.34.125.200:4040/flightpath/" method="POST" -->
+<!-- form action="http://127.0.0.1:4040/fligthpath/" method="POST" -->
+
+<table>
+  <tr>
+    <td align="left" width="200px">Flight path XML</td>
+    <td>
+      <input type="textarea" id="flightPath" name="FlightPath" style="width: 400px;"></input>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<input type="submit" name="command" value="postPath"/>
+
+</form>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,4 @@
+cd /home/cho/programs/c++/svn/projects/src/mains/falconI/Qt
+
+./qtmacheteserver \
+--GIS_layer ../packages/machete_metadata.pkg

@@ -1,0 +1,28 @@
+
+
+Query1:  Retrieve all attributes for all SAMs
+
+http://touchy:8080/SKSDataServer/query?type=sam&attrib=*/*
+
+
+Query2:  Retrieve all attributes for SA-4's
+
+
+http://touchy:8080/SKSDataServer/query?type=sam&attrib=*/*&filter=sam/name='SA-4'
+
+Query3: Retrieve all SAMs with ranges greater than 100
+
+
+==========================================================================
+
+Changes for Dave to implement:
+
+1.  Rename "IOC" as "ioc" 
+
+2.  Do not put in missing attributes with "-1".  Instead, just don't enter
+it at all into database
+
+3.  Don't add dates if they are not applicable (i.e. SAM coverages should have
+only geometries but no date info)
+
+4. Fix latitudes = 90 which must be wrong within touchy's database

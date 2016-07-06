@@ -1,0 +1,5 @@
+~/bin/MAKE program=exifprint
+~/bin/MAKE program=photo_metadata
+~/bin/MAKE program=photos2d
+~/bin/MAKE program=photos3d
+~/bin/MAKE program=timeprint

@@ -1,0 +1,17 @@
+=============================================================================
+MAC notes
+=============================================================================
+Last updated on 5/13/14; 7/15/14
+=============================================================================
+
+*.  In order to manipulate MacPro output on two Mac screens, chant
+
+amdcccle
+
+*.  In order to print hardcopies on Apple's copier machine (e.g. Jet Blue
+boarding passes), we first need to physically plug an ethernet connection
+into our Mac laptop's thunderbolt converter.  Do not attempt to print while
+Mac laptop is on WIFI.  Then double click on some PDF file located on
+desktop.  Click on File -> Print.  Copier machine's IP of 17.212.140.83
+should be hardwired.  Press on "Print" button.  Pick up hard copy output on
+Xerox machine located near men's bathroom outside Flyover secure area.

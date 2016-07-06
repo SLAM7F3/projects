@@ -1,0 +1,12 @@
+<response>
+  <success>true</success>
+  <message><![CDATA[Found 1 object(s)]]></message>
+  <content>
+    <entityList>
+      <entity id="5d8f1366-f968-4287-88a9-3b1f56a58e76" type="sam">
+        <attribute name="name" value="Russia" fullname="{country|country:owns(this)}/name[f941e15e-e805-4b12-b8fc-f9fcfcbcd6bf]"/>
+        <attribute name="name" value="Iran" fullname="{country|country:owns(this)}/name[f6d3af6a-060d-49ad-b07e-d8f1430e8cbc]"/>
+      </entity>
+    </entityList>
+  </content>
+</response>

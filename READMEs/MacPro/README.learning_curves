@@ -1,0 +1,21 @@
+=================================================================
+Caffe learning curve notes
+=================================================================
+Last updated on 10/20/15; 10/21/15
+=================================================================
+
+*.  Learning rate experiments with barriers_a training set
+
+  1.  base learning rate = 0.001	OK validation results
+      base learning rate = 0.002	OK validation results
+      base learning rate = 0.0033	Poor training and validation results
+
+So "optimal" learning rate appears to be around 0.002
+
+*.  Optimizer solver experiments with barriers_a training set
+
+  -  SGD	Default (?)
+  -  Nestorov	No discernible difference in validation results from SGD
+  -  AdaDelta	Not supported by old version of caffe bundled with deeplab
+  -  ADAGRAD	Significantly worse training and validation results than SGD/Nesterov
+  -  ADAM	Not supported by old version of caffe bundled with deeplab

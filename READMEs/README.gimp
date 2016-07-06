@@ -1,0 +1,12 @@
+===========================================================================
+GIMP nodes
+===========================================================================
+Last updated on 9/1/12
+===========================================================================
+
+*.  As of Sept 2012, we are running GIMP 2.6.8 on ROBOT laptop.
+
+*.  In order to see RGB values associated with individual pixels, first
+select "eyedropper" icon = color picker tool.  Then select "pick only"
+radio button.  Finally, check "Use info window" box.  Color picker
+information will then be displayed within a separate pop-up window.

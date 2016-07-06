@@ -1,0 +1,286 @@
+==========================================================================
+Integrated demo script
+==========================================================================
+Last updated on 2/16/09; 3/8/14; 4/26/14; 5/27/14
+==========================================================================
+
+Preliminaries checklist:
+
+0.  On 1st desktop, open vertically short window on RHS for conducting demo.
+
+1.  On 2nd desktop, display full-sized version of copley.jpg:
+
+      view /home/cho/programs/c++/svn/projects/src/mains/OSG/copley.jpg
+
+2.  On 3rd desktop, display 1/2-sized versions of copley.jpg and
+    copley_north.jpg:
+
+   view /home/cho/programs/c++/svn/projects/src/mains/OSG/copley.jpg
+   view /home/cho/programs/c++/svn/projects/src/mains/OSG/copley_north.jpg
+
+3.  On 4th desktop, display alpha-blended images
+
+  view /data/video/Boston/web_photos/copley_proj_intersection.png
+  view /data/video/Boston/web_photos/copley_north_proj_intersection.png
+
+4. Make sure all Cambridge signposts from SKS database have been erased
+(none on Draper and none near Kresge)
+
+Single urban environment:
+-------------------------
+
+ cd /home/cho/programs/c++/svn/projects/src/mains/OSG
+ viewcities --region_filename ./packages/boston.pkg --GIS_layer ./packages/boston_GIS.pkg --region_filename ./packages/copley.pkg --region_filename ./packages/copley_north.pkg
+
+
+Horizontally resize window so that it fills entire laptop screen (and
+projector screen)
+
+  Refer to Cambridge EO image which should be up on side monitors
+
+  Press "A" to insert signposts into ISDS_DEV database.  Transfer
+	signpost information (nominations) from 3D <--> 2D.  
+
+	Place signpost on top of Draper lab
+	Delsey should place signpost on top of Kresge auditorium
+
+  Press "A" to enter into MANIPULATE_ANNOTATION mode followed by "r"
+	to read info from MassGIS databases.
+
+*.  Switch to 2nd desktop to view copley.jpg.  Then switch back to 1st
+desktop.
+
+   - Press "U" twice to enter MANIPULATE FUSED DATA mode
+   - Press "c" once to display Copley image ObsFrustum
+   - Press "f" to fly camera from current location to first ObsFrustum's 
+     vertex
+   - Press up and down arrows to change alpha blending of Copley image
+
+*.  Switch to 3rd desktop to view both copley.jpg & copley_north.jpg.  Ask how
+much overlap exists between two photos.  
+   
+   - Press "c" again to display two Copley image ObsFrusta
+   - Click mouse near 2nd ObsFrustum's vertex to select it and deselect
+     first one
+   - Press "f" to fly camera to 2nd ObsFrustum's vertex
+   - Zoom out from 2nd ObsFrustum.  Double click away from both ObsFrusta
+     vertices in order to display both ObsFrusta simultaneously .
+   - Press "i" to display intersection sub-volume between both ObsFrusta.
+
+   - Next explain we're really interested in intersection region's overlap
+     with world-scene point cloud.  But as a simplifying approximation,
+     we'll look at just the red sub-volume's overlap with the ground plane.
+     Press "d" to look at ground-plane intersection region.
+
+*.  Switch to 4th desktop to view ground plane triangle region's projection
+    into both image planes.  Note correspondence between Boston Public
+    library as well as buildings along street corner & park across from
+    buildings.
+
+
+NYC
+---
+
+From within mains/OSG subdir, chant "nyroads" which is a script containing
+the following two lines:
+
+cd /home/cho/programs/c++/svn/projects/src/mains/neweyork
+/home/cho/programs/c++/svn/projects/src/mains/OSG/testcities \
+--region_filename ./packages/nyc_rtv_EO.pkg \
+--region_filename ./packages/empire.pkg \
+--region_filename ./packages/rockefeller_east_crop.pkg \
+--region_filename ./packages/empire4_crop.pkg \
+--region_filename ./packages/night_empire.pkg \
+--region_filename ./packages/piers1.pkg \
+--region_filename ./packages/piers2.pkg \
+--region_filename ./packages/piers3.pkg \
+--region_filename ./packages/piers4.pkg \
+--region_filename ./packages/empire_cars.pkg \
+--GIS_layer ./packages/nyc_landmarks.pkg \
+--ActiveMQ_hostname tcp://155.34.125.216:61616 \
+--initial_mode Manipulate_Fused_Data_Mode 
+
+*.  Zoom down into Financial district nearby Wall Street.  Press 'L' to
+toggle off purple latitude/longitude grid lines.  Then press '=' once to
+increase point size.  Then observe wall content within the RTV NYC data.
+Translate virtual viewfrustum north towards Brooklyn Bridge.  Rotate around
+bridge & check out its cables.
+
+*.  Translate west away from Brooklyn Bridge.  Once well inside Manhattan
+island, press 'L' twice to enter into MANIPULATE LINE mode.  Then press 't'
+to toggle roadways on.  Press 'V' to reenter VIEW DATA mode.  Then press
+'-' several times (twice) in order to minimize point size.  White roadways
+can then be seen peeking through NYC point cloud.  
+
+*.  Translate east back torwards Brooklyn Bridge & observe complicated,
+spiraling offramp structure for Brooklyn Bridge freeway.  Translate north.
+Zoom out to see most of island and Central Park region.  Press 'L' twice
+followed by 't' to toggle off roadways.  
+
+*.  Press 'V' to reenter VIEW DATA MODE.  Then press ',' to change color
+map to grey.  Press 'U' twice to enter into MANIPULATE FUSED DATA MODE.
+Then press 't' to toggle on 2 colored ObsFrusta for photos taken atop
+Rockefeller Center.
+
+*.  Select the blue ObsFrustum with the mouse.  Then Press 'f' to fly to
+camera's position on top of Rockefeller Center.  Press up/down arrow keys
+several times to compare photo with point cloud background.
+
+*.  Zoom a little bit back from blue photo.  Click with mouse near red
+ObsFrustum to see red photo by itself.  Then click back and forth to see
+blue and red photos toggling back and forth.  Finally click away from both
+to see two photos simultaneously.
+
+
+Global situational awareness:
+----------------------------
+
+After previous nyroads script is terminated, we should still be within the
+mains/OSG subdir.
+
+
+On VISION laptop, chant
+
+
+cd /home/cho/programs/c++/svn/projects/src/mains/OSG 
+earth --GIS_layer ./packages/world_GIS.pkg  \
+--region_filename ./packages/baghdad_vision.pkg  \
+--newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid \
+--surface_texture ./packages/sanclemente_EO.pkg \
+--GIS_layer ./packages/SKS_GIS.pkg \
+--initial_mode Manipulate_Earth_Mode
+
+
+If USBdisk #1 is plugged into laptop, we can view preliminary fused EO/3D
+Baghdad data set by chanting
+
+
+cd /media/usbdisk/baghdad/osga/fused_sat_eo
+viewcities *.osga
+
+
+If USBdisk #1 is plugged into laptop, we can view preliminary ground mask
+for Baghdad data set by chanting
+
+
+Note added on 9/13/07:  
+
+p-data in ground_mask files needs to be transfered out of
+SecondaryColorArray into FogCoordArray !!!
+
+cd /media/usbdisk/baghdad/osga/ground_mask
+viewpoints --region_filename ./packages/ground.pkg
+
+
+ earth --region_filename ./packages/boston.pkg --region_filename ./packages//home/cho/programs/c++/svn/projects/src/mains/newyork/nyc_rtv.pkg --region_filename ./packages/baghdad.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid --surface_texture sanclemente_EO.pkg
+
+
+ earth --region_filename ./packages//home/cho/programs/c++/svn/projects/src/mains/newyork/nyc_rtv.pkg --region_filename ./packages/baghdad.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid --surface_texture sanclemente_EO.pkg
+
+ earth --region_filename ./packages/boston.pkg --region_filename ./packages/baghdad.pkg --surface_texture sanclemente_EO.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid 
+
+
+*.  Mention that we're not using Google Earth.  Mention 3 good reasons why
+we're not using Google Earth.
+
+*.  Press "f", enter "boston".  Translate over to Massachusetts state house
+area.  Google Earth cannot display true 3D ladar imagery.  Discuss paging
+in of tiles and real-time interaction with data.
+
+*.  Press "f", enter "san clemente".
+
+  - Press "A" twice to enter into "MANIPULATE ANNOTATION" mode followed by
+   "r" to read in signposts.  Then press ">" multiple times in order to see
+   nominations on San Clemente entered earlier in the demo.
+
+  - Press "J" twice followed by "m" twice to display LiMIT model, its
+    field-of-regard ObsFrustum and its instantaneous field-of-view ObsFrustum.
+    Explain that GMTI dwells are constrained to target nomination sites when
+    they're in view of the sensor.
+
+  - Press "R" to enter into "RUN MOVIE MODE" followed by "p" to begin
+    animation of LiMIT circling around San Clemente in racetrack orbit. 
+
+  - Press "J" twice followed by "m" once to display Predator model flying
+    over island.
+
+
+*.  Press "E" to return to MANIPULATE EARTH MODE.  Then press "f" followed
+    by "baghdad" to fly camera to baghdad.  ( Can toggle between forced
+    display/ non-forced display of lat/long grid lines by pressing 'd'.
+    Can toggle off sun lighting by pressing "s" within MANIPULATE EARTH MODE.)
+
+  - Press "B" to enter INSERT BOX MODE.  Pick some location in Baghdad map
+    with mouse.  Enter "1" for Army symbol identifier.  Press "B" to
+    enter MANIPULATE BOX MODE.  Move symbol around with mouse.  Insert
+    another red army symbol.
+  - Press "H" to insert IED bomb blast nearby some big building
+  - Manually move camera over to airport area and view HAFB video.
+
+*.  Zoom out from Baghdad.  Indicate that 0D points, 1D curves and 2D
+    nadir photos are handled very well by Google Earth.  But in order to 
+    store and manipulate 3D static ladar data and 4D videos, we need a more
+    powerful system such as the one we're developing.
+
+
+MIT demo:
+--------
+
+Make sure orange disk #9 is mounted before running SIFT demo program.
+
+cd /home/cho/programs/c++/svn/projects/src/mains/sift
+/home/cho/programs/c++/svn/projects/src/mains/sift/pancities \
+--region_filename ../mit/packages/mit.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8268.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8270.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8271.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8272.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8274.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8276.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8278.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8279.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8280.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8282.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8284.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8286.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8288.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/pan_stills/rescaled_rotated_georegistered/dscf8290.pkg \
+--region_filename ./packages/Lobby7_Jan6_2009/georegistered_lobby7_clip_one/lobby7_clip_one.pkg \
+--virtual_horiz_FOV 80 --initial_mode Manipulate_Fused_Data_Mode 
+
+
+*.  Press k/j to increase/decrease radius of panorama stills relative to
+camera tripod location
+
+*.  Press g to fly virtual camera into instantaneous location of video
+camera
+
+*.  Press down/up arrows to fade video down/up.
+
+*.  Press right/left arrows to zoom virtual camera in/out.
+
+*.  Change To View Data Mode by pressing 'V'.  Then press =/- keys to 
+increase/decrease size of ladar data points  Return to Manipulate Fused
+Data Mode by pressing 'U' twice.
+
+*.  Press 'R' to switch to "Run Movie Mode".  Then press p to play video
+sequence.
+
+*.  Change to Manipulate Annotation Mode by pressing 'A' twice.  Then press
+'4' on regular keyboard to display SignPosts. Press '>' or '<' keys to
+increase or decrease the SignPosts size.
+
+*.  Change back to Manipulate Fused Data Mode by pressing 'U' twice.  Then
+press s to project SignPosts from 3D onto panorama stills.
+
+Bluegrass video georegistration:
+--------------------------------
+
+Make sure orange disk #9 is mounted
+
+cd /home/cho/programs/c++/svn/projects/src/mains/bluegrass
+/home/cho/programs/c++/svn/projects/src/mains/bluegrass/videocities \
+--region_filename ./packages/lubbock_fused.pkg \
+--surface_texture ./packages/ar1_texture_frames.pkg \
+--GIS_layer ./packages/lubbock_landmarks.pkg 
+

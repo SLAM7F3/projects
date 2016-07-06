@@ -1,0 +1,29 @@
+===================================================================
+MST water region flood filling procedure
+===================================================================
+Last updated on 3/11/14; 3/12/14
+===================================================================
+
+*.  From within /home/pcho/sputnik/pwin/app/lab/lab_pcho/, chant run_mst  
+which executes following pwin command:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -v \
+-do "mst gui -mst /hypersonic/devtest/sfriedman/watertest2" 
+
+*.  Press ";" in order to execute "whint" command 
+
+*.  To run Sam's training method, chant Esc-x .  Then enter "train" at 
+the command prompt
+
+
+*.  Press "l" in order to execute "flood fill" command
+
+Should then see tri-fold water region image appear in pwin display
+
+*.  Press "q" to quit out of c3 debug view of input color image
+
+Should then see coarse binary mask corresponding to tri-fold water region
+image
+
+*.  Press "q" to quit out of c3 debug view of coarse water mask
+

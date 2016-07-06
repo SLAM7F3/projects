@@ -1,0 +1,100 @@
+============================================================================
+GEO passes notes
+============================================================================
+Last updated on 9/8/11; 9/9/11; 1/7/12
+============================================================================
+
+Tarmac around July 2011 GEO target lies around z=37.8 meters = 124 ft above
+sea level.
+
+
+July 30, 2011 = GPS week 1646, GPS day 6
+Midnight on July 30, 2011 = 518400 seconds
+
+****************************************************************************
+
+Pass 4 contains good 5 degree imagery in its 2nd half
+	15:01 - 15:11 on July 30, 2011 
+
+
+============================================================================
+30 DEG FOV:
+
+Start frame number = 1  15:01:42   GPS secs = 572502     1312038087
+Stop frame number = 223	15:05:23   GPS secs = 572723	 1312038308
+
+============================================================================
+5 DEG FOV:
+
+	15:00 on this day = 572400 GPS secs
+	15:01 = 572460 GPS secs
+	15:11 = 573060 GPS secs
+
+Frame 224 : 15:05:24	1312038324   GPS_secs = 572739
+Frame 225 : 15:05:25	1312038325
+Frame 226 : 15:05:26	1312038326
+Frame 227 : 15:05:27	1312038327
+
+Frame 532: 15:10:32	1312038632
+Frame 533: 15:10:33	1312038633
+Frame 534: 15:10:34	1312038634
+Frame 535: 15:10:35	1312038635   GPS_secs = 573050
+
+Start frame number = 224
+Stop frame number = 535
+
+Hi defn frame 0239 corresponds reasonably well with analog frame 
+20110730_110714.193.jpg.  Horizontal FOV in hi and lo defn frames match
+reasonably well.  But hi-defn frame's vertical FOV appears to be cut off at
+top and bottom by metadata bars.
+
+Pass #4 at 5 degs basically executes only a semi-circle around a HAFB
+hangar.
+
+************************************************************************
+Pass 15 contains good 5 degree imagery in after 33% point. But wheel blocks
+few frames.
+
+
+============================================================================
+
+30 DEG FOV:
+
+Start frame number = 1   16:58:48   GPS_secs = 579543   1312045128
+Stop frame number = 158	 17:01:24   GPS_secs = 579699   1312045269
+
+============================================================================
+
+
+5 DEG FOV:
+
+	16:58 - 17:08 on July 30, 2011
+
+	16:58 = 579480 GPS secs
+        17:08 = 580080 GPS secs
+        17:09 = 580140 GPS secs
+
+	17:30 pm on July 30, 2011 corresponds to 581400 GPS secs
+
+Frame 159: 17:01:25	1312045285   GPS_secs = 579700  (double checked)
+Frame 160: 17:01:26	1312045286
+Frame 161: 17:01:27	1312045287
+Frame 162: 17:01:28	1312045288
+
+Frame 560: 17:08:06	1312045686	
+Frame 561: 17:08:07	1312045687
+Frame 562: 17:08:08	1312045688
+Frame 563: 17:08:09	1312045689  GPS_secs = 580104   (double checked)
+
+
+Start frame number = 159
+Stop frame number = 572	  580113
+
+
+Pass #15 at 5 degs basically executes a complete orbit around the HAFB
+hangar and ends heading northward on a relatively long leg.
+
+
+========================================================================
+
+Pass 16 contains good 30 degree imagery

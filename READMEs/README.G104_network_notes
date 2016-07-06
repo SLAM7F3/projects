@@ -1,0 +1,67 @@
+============================================================================
+Group 104 network notes
+============================================================================
+Last updated on 1/9/07; 3/22/07; 3/21/08
+============================================================================
+
+All machines on Group 104's network apparently require static IP
+addresses.  Travis Riley indicated that he has a pool of temporary IP's
+that can be borrowed.
+
+To change our ISDS3D laptop's IP assignment from its default dynamic state
+to static, we need to chant (as root) 
+
+			system-config-network
+
+.  This brings up a GUI.  Click on the "Devices" tab and double-click on
+the eth0 line.  Then change the radial button on the subsequent menu from
+"Automatically obtain IP address settings with dhcp" to "Statically set IP
+addresses".
+
+Address = 155.34.135.74	  (new IP obtained by Delsey for ISDS3D laptop)
+#	Address = 155.34.135.24 	(one of Delsey's IPs)
+Subnet mask = 255.255.255.0
+Default gateway address: 155.34.135.1
+
+Primary DNS = 155.34.3.8
+Secondary DNS = 155.34.3.22
+
+Then click on the Activate button (with the green check mark).
+
+Once we move off of the Group 104 network, we need to go back to the DHCP
+setting.
+
+Recall that we can check ETH0's settings via an /sbin/ifconfig command.
+
+
+Kevin Ingersoll observed that we do not currently have a default route set
+up.  So after making the above changes in the Group 104 area and returning
+back to our S3-300 office, we could no longer ping any machines besides
+fusion1 and photon.  Kevin manually chanted
+
+route add default gw 155.34.162.1  (On 8/22/08, we had to manually chant
+this line within the G104 conference room)
+
+
+But this command should go into some startup script...
+
+Need to comment out any non-162 subnet entries within
+/etc/sysconfig/network-scripts/ifcfg-eth0 in order to default route to be
+set.
+
+
+G104 Conf 1 machine onto which Delsey installed tomcat and Michael Yee's
+launcher utility on 3/21/08:  155.34.135.97
+
+
+Travis Riley's temporary G104 IP addresses:
+
+155.34.135.236 (flaky) 
+155.34.135.237
+155.34.135.238
+155.34.135.239
+
+155.34.135.181
+155.34.135.182
+
+

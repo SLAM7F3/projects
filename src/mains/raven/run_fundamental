@@ -1,0 +1,22 @@
+/home/cho/programs/c++/svn/projects/src/mains/raven/fundamental \
+--newpass ./images/fundamental_testing/redbldg1.jpg \
+--newpass ./images/fundamental_testing/redbldg2.jpg 
+
+--newpass ./images/ts.jpg \
+--newpass ./images/tower_pushcart.jpg
+
+
+
+
+# --region_filename ./bundler/kermit/packages/photo_0000.pkg \
+# --region_filename ./bundler/kermit/packages/photo_0002.pkg 
+
+
+# --newpass ./images/tower1.jpg \
+# --newpass ./images/tower2.jpg 
+
+
+# --newpass ./images/kermit002.rd.jpg \
+# --newpass ./images/kermit005.rd.jpg 
+# --newpass ./images/mini_IMG_2950.jpg \
+# --newpass ./images/mini_IMG_3000.jpg 

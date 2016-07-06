@@ -1,0 +1,969 @@
+===========================================================================
+More PostGIS database notes (primarily about manipulating NYC streets
+table)
+===========================================================================
+Last updated on 9/13/13; 10/31/13; 11/1/13; 12/8/13; 11/11/15
+===========================================================================
+
+isds_gis=> select feat_code, feat_desc, count(*) from nyc_streets group by feat_code, feat_desc;
+
+ feat_code |      feat_desc       | count  
+-----------+----------------------+--------
+      2255 | Wooden Boardwalk     |      6
+      2900 | Paved Road           | 101186
+      2910 | Unpaved Road         |    318
+      2245 | Concrete Boardwalk   |     19
+      2901 | Hidden Paved Road    |   6837
+      2265 | Park Path            |  10201
+      2920 | Alley                |   4787
+      2911 | Hidden Unpaved Road  |      8
+      2275 | Bike Pedestrian Path |    470
+      2921 | Hidden Alley         |     34
+(10 rows)
+
+===========================================================================
+
+isds_gis=> select feat_code, feat_desc, count(distinct name) from
+nyc_streets group by feat_code,feat_desc;
+
+ feat_code |      feat_desc       | count 
+-----------+----------------------+-------
+      2245 | Concrete Boardwalk   |     1
+      2255 | Wooden Boardwalk     |     4
+      2265 | Park Path            |     2
+      2275 | Bike Pedestrian Path |     1
+      2900 | Paved Road           |  8132
+      2901 | Hidden Paved Road    |  1604
+      2910 | Unpaved Road         |    87
+      2911 | Hidden Unpaved Road  |     2
+      2920 | Alley                |   440
+      2921 | Hidden Alley         |    16
+(10 rows)
+===========================================================================
+
+isds_gis=> select name, count(*) from nyc_streets group by name order by count desc;
+          name           | count 
+-------------------------+-------
+ NO NAME                 | 18533
+ BROADWAY                |   702
+ LINDEN BL               |   534
+ QUEENS BL               |   488
+ 3 AV                    |   476
+ 
+===========================================================================
+
+isds_gis=> select borough, name, sum(length(the_geom)) from nyc_streets
+group by borough, name order by sum desc;
+
+Note: Unit for the_geom with SRID=4326 is degrees.  So length(the_geom)
+returns results measured in degrees.
+
+
+    borough    |          name           |         sum          
+---------------+-------------------------+----------------------
+ Queens        | NO NAME                 |     4.77010670151052
+ Manhattan     | NO NAME                 |     2.57281821860881
+ Brooklyn      | NO NAME                 |     2.35441397386371
+ The Bronx     | NO NAME                 |     2.07632248033336
+ Staten Island | NO NAME                 |     1.34902699825624
+ No Name       | NO NAME                 |      1.0898272509293
+ Queens        | QUEENS BL               |    0.482450474512822
+ Queens        | GRAND CENTRAL PY        |    0.472152486471684
+ Queens        | UNION TP                |    0.363034611587761
+ Queens        | LONG ISLAND EP          |    0.352801508509227
+ Brooklyn      | LEIF ERICSON DR         |    0.340801091659582
+ Queens        | CROSS ISLAND PY         |    0.334889244056753
+ Staten Island | HYLAN BL                |    0.332653563012866
+ Brooklyn      | LINDEN BL               |    0.329880072706898
+
+===========================================================================
+
+ isds_gis=> select borough, name, sum(length(the_geom))*60*5280 as sum from
+nyc_streets group by borough, name order by sum desc;
+
+Note:  "60" is an approximate conversion factor which relates numbers of
+miles on earth's surface to number of long/lat degrees.
+
+  borough    |          name           |       sum        
+---------------+-------------------------+------------------
+ Queens        | NO NAME                 | 1511169.80303853
+ Manhattan     | NO NAME                 | 815068.811655272
+ Brooklyn      | NO NAME                 | 745878.346920023
+ The Bronx     | NO NAME                 | 657778.961769608
+ Staten Island | NO NAME                 | 427371.753047578
+ No Name       | NO NAME                 | 345257.273094402
+ Queens        | QUEENS BL               | 152840.310325662
+ Queens        | GRAND CENTRAL PY        | 149577.907714229
+ Queens        | UNION TP                | 115009.364951003
+ Queens        | LONG ISLAND EP          | 111767.517895723
+ Brooklyn      | LEIF ERICSON DR         | 107965.785837756
+ Queens        | CROSS ISLAND PY         | 106092.912517179
+ Staten Island | HYLAN BL                | 105384.648762476
+ Brooklyn      | LINDEN BL               | 104506.007033545
+ The Bronx     | BRUCKNER BL             |  100633.77894428
+ Queens        | FRANCIS LEWIS BL        | 99319.5583638998
+ Queens        | VAN WYCK EP             | 99213.8195650028
+ Manhattan     | BROADWAY                | 98238.0549215688
+ The Bronx     | MAJOR DEEGAN EP
+
+===========================================================================
+
+
+> alter table nyc_streets add column class int;
+ALTER TABL
+
+isds_gis=> select borough||' '|| name, sum(length(the_geom))*60*5280 as sum
+from nyc_streets group by borough, name order by sum desc;
+
+Note:  || indicates concatenation of strings within postgres.  It is not to
+be confused with postgres OR command.
+
+
+ Queens NO NAME                     | 1511169.80303853
+ Manhattan NO NAME                  | 815068.811655272
+ Brooklyn NO NAME                   | 745878.346920023
+ The Bronx NO NAME                  | 657778.961769608
+ Staten Island NO NAME              | 427371.753047578
+ No Name NO NAME                    | 345257.273094402
+ Queens QUEENS BL                   | 152840.310325662
+ Queens GRAND CENTRAL PY            | 149577.907714229
+ Queens UNION TP                    | 115009.364951003
+ Queens LONG ISLAND EP              | 111767.517895723
+ Brooklyn LEIF ERICSON DR           | 107965.785837756
+ Queens CROSS ISLAND PY             | 106092.912517179
+ Staten Island HYLAN BL             | 105384.648762476
+ Brooklyn LINDEN BL                 | 104506.007033545
+ The Bronx BRUCKNER BL              |  100633.77894428
+ Queens FRANCIS LEWIS BL            | 99319.5583638998
+ Queens VAN WYCK EP                 | 99213.8195650028
+ Manhattan BROADWAY                 | 98238.0549215688
+ The Bronx MAJOR DEEGAN EP          |  95023.601976978
+ Manhattan F D R DR                 | 91523.2770626617
+ Queens J F K ACCESS RD             | 87530.7461414421
+ Br
+
+===========================================================================
+
+ update nyc_streets set class = 0 where borough||' '||name in (select
+borough||' '|| name from nyc_streets group by borough, name having
+sum(length(the_geom))*60*5280 between 50000 and 200000);
+
+
+ select distinct name from nyc_streets where class = 0;
+
+        name        
+--------------------
+ AMBOY RD
+ ATLANTIC AV
+ BEACH CHANNEL DR
+ BROADWAY
+ BRONX RVR PY
+ BRUCKNER BL
+ BRUCKNER EP
+ CROSS BAY BL
+ CROSS BRONX EP
+ CROSS ISLAND PY
+ F D R DR
+ FLATBUSH AV
+ FRANCIS LEWIS BL
+ GRAND CENTRAL PY
+ GRAND CONCOURSE
+ HENRY HUDSON PY
+ HILLSIDE AV
+ HUTCHINSON RVR PY
+
+Candidate breakdown of streets into classes:
+
+Class	Integrated street length	# distinct street names
+
+0	50 K - 200 K			44
+1	12.5 K - 50 K			599
+2	3 K - 12.5K			2103
+3	0 - 3 K				6214
+
+===========================================================================
+
+> select count(*) from nyc_streets where class is null;
+
+ count  
+
+
+--------
+ 115095
+(1 row)
+
+===========================================================================
+
+alter table nyc_streets add column alts float[];
+
+
+insert into testarray values ('{1.1,1.2,1.3}');
+
+===========================================================================
+
+When setting up postgres on any new LL computer, we need to alter the last
+lines within /etc/postgresql/8.4/main/pg_hba.conf
+[/usr/local/pgsql/data/pg_hba.conf for version 8.3] in order to allow any
+LL machine to access the database from the LLAN as well as any machine on
+the same private network as the database:
+
+Be sure to add the following lines
+
+host    all         all         155.34.0.0/16         trust
+host    all         all         192.168.0.0/16         trust
+
+to the end of this file.  It says that any machine whose IP address begins
+with 155.34.  and 192.168. and can have any final two integers in its IP
+address can access our database.
+
+On 8/29/10, we also learned the hard way that the line
+
+		listen_addresses = '*' 
+
+needs to be added to /etc/postgresql/8.4/main/postgresql.conf.  This line
+indicates that the postgres server will listen to all IP addresses.
+
+===========================================================================
+How to clone postgres databases
+
+From:
+"Sherrill, Delsey" <dsherrill@ll.mit.edu>
+Date:
+Tue, 1 Jul 2008 14:37:22 -0400
+To:
+"Cho, Peter" <cho@ll.mit.edu>
+
+1) Run command to backup existing database:
+
+C:\Program Files\PostgreSQL\8.2\bin\pg_dump.exe -i -h localhost -p 5433 -U postgres -F c -b -v -f "C:\Documents and Settings\dsherrill\Desktop\bluegrass_20080211_20080701.backup" bluegrass_20080211
+
+2) Create new database from empty template (usually template0, which is NOT postgis enabled)
+
+3) Run command to restore to new database:
+
+C:\Program Files\PostgreSQL\8.2\bin\pg_restore.exe -i -h 155.34.162.199 -p 5432 -U postgres -d bluegrass -v "C:\Documents and Settings\dsherrill\Desktop\bluegrass_20080211_20080701.backup"
+
+
+Under Ubuntu (rather than Windows), follow these templates to create binary
+database backup files:
+
+
+pg_dump -i -h localhost -U postgres -F c -b -v -f "baghdad.backup" baghdad
+pg_dump -i -h localhost -U postgres -F c -b -v -f "bluegrass_dsa2.backup" bluegrass_dsa2 
+pg_dump -i -h localhost -U postgres -F c -b -v -f "bluegrass_gis.backup" bluegrass_gis
+pg_dump -i -h localhost -U postgres -F c -b -v -f "flir.backup" flir
+
+pg_dump -i -h localhost -U postgres -F c -b -v -f "imagery.backup" imagery
+
+pg_dump -i -h localhost -U postgres -F c -b -v -f "isds_gis.backup" isds_gis
+
+
+pg_dump -i -h localhost -U postgres -F c -b -v -f "lubbock.backup" lubbock
+pg_dump -i -h localhost -U postgres -F c -b -v -f "mapserv.backup" mapserv
+pg_dump -i -h localhost -U postgres -F c -b -v -f "mit2317.backup" mit2317
+pg_dump -i -h localhost -U postgres -F c -b -v -f "nycity.backup" nycity
+
+pg_dump -i -h localhost -U postgres -F c -b -v -f "plume.backup" plume
+pg_dump -i -h localhost -U postgres -F c -b -v -f "TOC.backup" TOC
+pg_dump -i -h localhost -U postgres -F c -b -v -f "Tstorm.backup" Tstorm
+
+Under Ubuntu (rather than Windows), follow these templates to restore
+databases from backup files:
+
+
+pg_restore -i -h 127.0.0.1 -U postgres -d baghdad -v "baghdad.backup"
+pg_restore -i -h 127.0.0.1 -U postgres -d bluegrass_dsa2 -v "bluegrass_dsa2.backup" 
+pg_restore -i -h 127.0.0.1 -U postgres -d bluegrass_gis -v "bluegrass_gis.backup"
+pg_restore -i -h 127.0.0.1 -U postgres -d flir -v "flir.backup"
+
+pg_restore -i -h 127.0.0.1 -U postgres -d imagery -v "imagery.backup"
+
+pg_restore -i -h 127.0.0.1 -U postgres -d isds_gis -v "isds_gis.backup" 
+pg_restore -i -h 127.0.0.1 -U postgres -d lubbock -v "lubbock.backup" 
+pg_restore -i -h 127.0.0.1 -U postgres -d mapserv -v "mapserv.backup"
+pg_restore -i -h 127.0.0.1 -U postgres -d mit2317 -v "mit2317.backup"
+pg_restore -i -h 127.0.0.1 -U postgres -d nycity -v "nycity.backup"
+
+
+pg_restore -i -h 127.0.0.1 -U postgres -d plume -v "plume.backup"
+pg_restore -i -h 127.0.0.1 -U postgres -d TOC -v "TOC.backup"
+pg_restore -i -h 127.0.0.1 -U postgres -d TOC -v "Tstorm.backup"
+
+
+
+vision:cho% psql -U postgres template1
+Welcome to psql 8.2.7, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+template1=# \dt
+              List of relations
+ Schema |       Name       | Type  |  Owner   
+--------+------------------+-------+----------
+ public | geometry_columns | table | postgres
+ public | spatial_ref_sys  | table | postgres
+(2 rows)
+
+template1=# \q
+
+In order to generate a blank, postgis-enabled database, we need to perform
+the following operations:
+
+
+vision:cho% psql -U postgres
+Welcome to psql 8.2.7, the PostgreSQL interactive terminal.
+
+Type:  \copyright for distribution terms
+       \h for help with SQL commands
+       \? for help with psql commands
+       \g or terminate with semicolon to execute query
+       \q to quit
+
+postgres=# \dt
+No relations found.
+postgres=# create database dummy_db;
+CREATE DATABASE
+postgres=# \c dummy_db;  (connect to dummy_db)
+
+You are now connected to database "dummy_db".
+
+dummy_db=# \d 
+              List of relations
+ Schema |       Name       | Type  |  Owner   
+--------+------------------+-------+----------
+ public | geometry_columns | table | postgres
+ public | spatial_ref_sys  | table | postgres
+(2 rows)
+
+dummy_db=# 
+
+===========================================================================
+On touchy2, we need to first sudo su postgres.  Then to create a new
+database, chant
+
+psql postgres
+
+Once inside postgres at its command line, chant
+
+create database data_network;
+\q
+
+Return to user cho.  Then execute psql -l and see data_network owned by
+postgres listed as new database.
+
+
+===========================================================================
+How to install postgres/postgis onto a new machine:
+
+
+Hi Peter,
+
+Postgres and postgis are set up on the laptop now. I modified the steps 
+somewhat to use apt-get as much as possible and avoid compiling things 
+from source, and I've attached the steps I went through. Let me know if 
+it's all working ok.
+
+-Dave
+
+
+As root (or sudo) ...
+    1. Install postgresql-8.3 (apt-get install postgresql-8.3)
+
+        1a. You may want to update the pg_hba.conf file to allow
+	     connections from anywhere in LL.
+
+            Edit /etc/postgresql/8.3/main/pg_hba.conf and add this line:
+                host    all         all         155.34.0.0/16         trust
+        1b. You may want to change the port that postgres runs on
+            Edit /etc/postgresql/8.3/main/postgresql.conf and change this 
+	    line:
+                port = 5433
+            to this:
+                port = 5432
+    2. Download, build, and install proj4:   http://trac.osgeo.org/proj/
+    3. Install libgeos (apt-get install libgeos*)
+    4. Install postgis (apt-get install postgis postgresql-8.3-postgis)
+
+    4.a In September 2009, we ran intro trouble trying to start postgresql
+on PHOTON.  We needed to up the memory size within /proc/sys/kernel/shmmax
+from 32 Mbytes to 64.  Then postgresql daemon started OK.  To make this
+change, chant
+
+	sudo sh -c "echo 67108864 > /proc/sys/kernel/shmmax"
+
+    5. Become the postgres user (su - postgres)
+As postgres ...
+    6. Make sure this command works:
+            psql
+
+       It should start up without any errors. Moreover, this command should
+work as well:
+
+            psql template1
+    7. Once those work, run these commands to set up postgis:
+        createlang plpgsql template1
+        psql template1 < /usr/share/postgresql-8.3-postgis/lwpostgis.sql
+        psql template1 < /usr/share/postgresql-8.3-postgis/lwpostgis_upgrade.sql
+        psql template1 < /usr/share/postgresql-8.3-postgis/spatial_ref_sys.sql
+
+Note added on 5/24/10:  
+
+	For postgresql-8.4, the locations and names of the above SQL files
+have changed.  
+
+        psql template1 < /usr/share/postgresql/8.4/contrib/postgis.sql
+        psql template1 < /usr/share/postgresql/8.4/contrib/postgis_upgrade.sql
+        psql template1 < /usr/share/postgresql/8.4/contrib/spatial_ref_sys.sql
+
+8.  Be sure to sudo apt-get install the following additional packages:
+
+postgresql-server-dev-8.3 
+libpgtypes3 
+libecpg-dev
+
+8a.  Explicitly set the postgres password as postgres:
+
+sudo su - postgres
+psql 
+
+ALTER USER Postgres WITH PASSWORD 'postgres';
+
+9.  Chant sudo su postgres to become postgres user.  Then cd to
+/etc/postgresql/8.3/main.  In this subdir, change final field entry to
+"trust" in last 4 rows of file pg_hba.conf.  This should enable arbitrary
+users to access postgres databases and not just the postgres user.
+
+10.  While as user postgres, add cho "role" via createuser command line
+tool.
+
+	createuser cho  (or createuser pcho on Thinkmate)
+
+11.  Add databases explicitly owned by postgres user via command like 
+
+		sudo su - postgres
+
+		createdb  -U postgres new_database_name
+
+	        createdb -U postgres baghdad
+	        createdb -U postgres bluegrass_dsa2
+	        createdb -U postgres bluegrass_gis
+	        createdb -U postgres data_network
+	        createdb -U postgres flir
+	        createdb -U postgres isds_gis
+	        createdb -U postgres lubbock
+	        createdb -U postgres mapserv
+	        createdb -U postgres nycity
+
+
+12.  In order to remove any postgresql-8.2 files which are used to start
+[stop] the postgres-8.2 daemon at boot [shut down] time, chant
+
+	sudo update-rc.d -f postgresql-8.2 remove
+
+===========================================================================
+Tim Schreiner's notes on how to add new satellite EO data into the
+LOST Afghanistan/Pakistan mapserver database:
+
+*.  On the LOST laptops, the EO geotif files reside in /data/AfghanPak15Meter
+
+*.  In order to add new geotifs into the mapserver database, first rm
+tile_index.shp (and presumably tile_index.dbf and tile_index.shx) from
+/data/AfghanPak15Meter.
+
+*.  Recreate the tile_index shape file by the command
+
+	 gdaltindex tile_index.shp /data/AfghanPak15Meter/*.tif
+
+*.  Drop the old imagery table in the LOST mapserver database
+(afghanpak15meter)
+
+*.  Insert the new table (afghanpak15meter) into the mapserver database via
+the command
+
+shp2pgsql -s 4326 -c tile_index.shp afghanpak15meter | psql -d
+   mapserverDatabaseName -h localhost -U postgres
+
+--------------------------------------------------------------------------
+
+In PGADMIN3, open new window by pressing folder icon in upper left.  Then
+chant 
+
+select x(xy_posn) from photo; 
+
+or
+
+select y(xy_posn) from photo;
+
+to see longitude and latitude coordinates for reconstructed photos.
+
+Finally, enter "cntrl-e" to execute these SQL queries.
+
+
+--------------------------------------------------------------------------
+Delsey's select command for extracting correlated metadata from TOC
+database (Aug 2010):
+
+SELECT (to_char(ftime, 'Dy Mon DD') || ': ' || label) AS fieldtest_label, 
+	(to_char(mtime, 'Dy Mon DD HH:MI PM') || ': ' || mission_id) 
+	AS mission_label, * 
+FROM (
+	SELECT f.label,	t.fieldtest_id, f.start_time_stamp AS ftime, 
+		t.mission_id, m.start_time_stamp AS mtime, 
+		p.description AS platform_label, t.platform_id, 
+		s.description AS sensor_label, t.sensor_id
+	FROM track_points AS t, fieldtests AS f, missions AS m, 
+	platforms AS p, sensors AS s 
+	WHERE f.id = t.fieldtest_id
+	AND m.id = t.mission_id
+	AND p.id = t.platform_id
+	AND s.id = t.sensor_id
+	GROUP BY f.label, t.fieldtest_id, f.start_time_stamp, 
+		t.mission_id, m.start_time_stamp,
+		p.description, t.platform_id, 
+		s.description, t.sensor_id
+	ORDER BY t.fieldtest_id, t.mission_id, p.description, s.description
+) as foo
+
+
+SELECT (
+	label || ': ' || to_char(ftime, 'Dy Mon DD') ) AS fieldtest_label, 
+	fieldtest_id,
+	( '#' || mission_id || '  '||  to_char(mtime, 'HH:MI PM') ) 
+	AS mission_label, mission_id,
+	platform_label,platform_id,sensor_label,sensor_id
+FROM (
+	SELECT f.label,	t.fieldtest_id, f.start_time_stamp AS ftime, 
+		t.mission_id, m.start_time_stamp AS mtime, 
+		p.description AS platform_label, t.platform_id, 
+		s.description AS sensor_label, t.sensor_id
+	FROM track_points AS t, fieldtests AS f, missions AS m, 
+	platforms AS p, sensors AS s 
+	WHERE f.id = t.fieldtest_id
+	AND m.id = t.mission_id
+	AND p.id = t.platform_id
+	AND s.id = t.sensor_id
+	GROUP BY f.label, t.fieldtest_id, f.start_time_stamp, 
+		t.mission_id, m.start_time_stamp,
+		p.description, t.platform_id, 
+		s.description, t.sensor_id
+	ORDER BY t.fieldtest_id, t.mission_id, p.description, s.description
+) as foo
+
+
+
+--------------------------------------------------------------------------
+SELECT (
+	label || ': ' || to_char(ftime, 'Dy Mon DD') ) AS fieldtest_label, 
+	fieldtest_id,
+	( '#' || mission_id || '  '||  to_char(mtime, 'HH:MI PM') ) 
+		AS mission_label, 
+	mission_id
+FROM (
+	SELECT f.label,	f.id AS fieldtest_id, f.start_time_stamp AS ftime, 
+		m.id as mission_id, m.start_time_stamp AS mtime 
+	FROM fieldtests AS f, missions AS m
+	WHERE f.id = m.fieldtest_id
+	ORDER BY f.id, m.id
+) as foo
+
+
+--------------------------------------------------------------------------
+
+SELECT (
+	label || ': ' || to_char(ftime, 'Dy Mon DD') ) AS fieldtest_label, 
+	fieldtest_id
+	
+FROM (
+	SELECT f.label,	f.id AS fieldtest_id, f.start_time_stamp AS ftime 
+	FROM fieldtests AS f
+	ORDER BY f.id
+) as foo
+
+
+--------------------------------------------------------------------------
+More SQL commands for manipulating contents of TOC database tables:
+
+
+delete from track_points where mission_id=3;
+
+update track_points set sensor_id=4 where mission_id=1;
+
+update track_points set fieldtest_id=22 where mission_id=28;
+
+delete from track_points where fieldtest_id=21 AND mission_id=3;
+
+To change schema for a table (e.g. dropping an unnecessary column), use
+alter command:
+
+		alter table nodes drop column level;
+
+To change graph_IDs in nodes table so that they are all unique, we chanted
+
+	update nodes 
+	set graph_id=1
+	where graph_hierarchy_id=0 and graph_id=0
+
+But there is probably a better way to force the graph_ID in the nodes table
+to equal the primary key in the graphs table...
+
+
+--------------------------------------------------------------------------
+SELECT (label || ': ' || to_char(ftime, 'Dy Mon DD') ) AS fieldtest_label,
+      fieldtest_id,
+         ('#' || mission_id || '  ' || to_char(mtime, 'HH:MI PM') ) 
+      AS mission_label,
+      mission_id,
+         platform_label,platform_id,sensor_label,sensor_id 
+      FROM (
+         SELECT f.label,t.fieldtest_id, f.start_time_stamp AS ftime,
+      t.mission_id, m.start_time_stamp AS mtime, 
+      p.description AS platform_label, t.platform_id, 
+      s.description AS sensor_label, t.sensor_id 
+         FROM track_points AS t, fieldtests AS f, missions AS m, 
+      platforms AS p, sensors AS s 
+      WHERE f.id = t.fieldtest_id 
+      AND m.id = t.mission_id 
+      AND p.id = t.platform_id 
+      AND s.id = t.sensor_id 
+         GROUP BY f.label, t.fieldtest_id, f.start_time_stamp, 
+       t.mission_id, m.start_time_stamp,
+      p.description, t.platform_id, 
+      s.description, t.sensor_id 
+         ORDER BY f.start_time_stamp, t.mission_id, p.description, s.description
+      ) as foo
+
+--------------------------------------------------------------------------
+
+On 2/7/11, we converted the contents of the lubbock_streets table within
+the bluegrass database on ROBOT from WGS84 lon-lat geocoordinates into UTM
+zone 14 geocoordinates via the following command:
+
+ogr2ogr -s_srs EPSG:4326 -t_srs '+proj=utm +zone=14 +dataum=WGS84' lubbock_streets_UTM.shp lubbock_streets.shp
+
+-----------------------------------------------------------------------
+
+To change the owner of a postgres table to postgres from some other user
+name, chant 
+
+psql -d mapserv
+
+\dt
+
+alter table country_borders owner to postgres
+
+-----------------------------------------------------------------------
+
+alter table nodes add column label text;
+
+On 12/27/12, Delsey taught us that we can use PGADMIN3 to add columns to
+already-existing database tables:
+
+  1.  Right click on table to be altered and select properties within PGADMIN3.
+
+  2.  Click on "Columns" tab within Table menu
+
+  3.  Click "Add" button
+
+-----------------------------------------------------------------------
+Examples of inner join SQL commands which we wrote on 7/26/11 in order to
+retrieve photo metadata for a particular graph:
+
+select photo_counter,time_stamp,url,npx,npy,thumbnail_url,thumbnail_npx,thumbnail_npy,importance,photo_counter from photos 
+inner join nodes
+on photos.id=nodes.data_id
+where nodes.graph_id=3
+order by photo_counter
+
+select data_id from photos 
+inner join nodes
+on photos.id=nodes.data_id
+where nodes.graph_id=1
+order by data_id
+
+select data_id,time_stamp,url,npx,npy,thumbnail_url,thumbnail_npx,thumbnail_npx,importance,photo_counter from photos 
+inner join nodes
+on photos.id=nodes.data_id
+where nodes.graph_id=1
+order by data_id
+
+
+Example of joining 3 tables (nodes, images, videos) within IMAGES database:
+
+SELECT
+nodes.node_id,images.id,images.image_id,videos.image_id,videos.keyframe_id
+FROM nodes INNER JOIN images
+  ON nodes.data_id=images.id
+INNER JOIN videos
+  ON images.image_id=videos.image_id
+WHERE graph_hierarchy_id=21
+ORDER BY nodes.node_id
+   
+===========================================================================
+Brendan Edwards' notes for how create postgis template database (6/27/13):
+
+Peter,
+
+Here are the steps I usually use for creating a template database with the
+PostGIS extension: (as postgres)
+
+$ createdb postgis_template
+$ createlang plpgsql postgis_template
+$ psql –d postgis_template –f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+$ psql –d postgis_template –f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+
+Then, to create a database from the newly made template:
+(as postgres)
+$ createdb –T postgis_template <db_name>
+
+OR
+CREATE DATABASE <db_name> TEMPLATE postgis_template;
+
+Best,
+Brendan
+
+===========================================================================
+On 7/21/13, we successfully followed a set of blog notes entitled "How to
+compile PostGIS2 on Ubuntu Server 12.04".  Getting PostGIS to work under
+ubuntu 12.4 turns out to be much more tricky than we anticipated.  But
+after following these instructions (which are now stored within
+READMEs/postgis_on_ubuntu12_4.png), we were able to import the isds_gis
+database onto touchy2 and the biglaptop databases.
+
+See /home/cho/gis/restore_isdsgis and /home/cho/gis/restore_mapserv
+
+On 11/11/15, we followed George MacKerron's updated blog notes "How to
+compile PostGIS 2.1 on Ubuntu Server 12.04+" [
+http://blog.mackerron.com/2012/06/01/postgis-2-ubuntu-12-04/ ] on our
+Thinkmate machine running ubuntu 14.4 .  In the section which downloads and
+compiles postgis, we had to change the following line (which did not work)
+
+	sudo checkinstall  # uninstall with: sudo dpkg -r postgis
+ 
+to
+
+	sudo make install
+
+in order to install postgis-2.1.
+
+
+===========================================================================
+GEOMETRY_COLUMNS table
+***** It seems that this is no longer necessary as a table in Postgres 9.1. 
+Instead, it is a view. 
+For more information, see: http://trac.osgeo.org/postgis/ticket/944, 
+http://comments.gmane.org/gmane.comp.gis.postgis/10814
+
+GEOMETRY_COLUMNS table definition 
+-- Table: geometry_columnsc
+
+DROP TABLE geometry_columns;
+
+CREATE TABLE geometry_columns
+(
+  f_table_catalog character varying(256) NOT NULL,
+  f_table_schema character varying(256) NOT NULL,
+  f_table_name character varying(256) NOT NULL,
+  f_geometry_column character varying(256) NOT NULL,
+  coord_dimension integer NOT NULL,
+  srid integer NOT NULL,
+  type character varying(30) NOT NULL,
+  CONSTRAINT geometry_columns_pk PRIMARY KEY (f_table_catalog, f_table_schema, f_table_name, f_geometry_column)
+)
+WITH (
+  OIDS=TRUE
+);
+ALTER TABLE geometry_columns
+  OWNER TO postgres;
+
+============================================================================
+-- Table: graph_geometries
+-- DROP TABLE graph_geometries;
+
+CREATE TABLE graph_geometries
+(
+  id serial NOT NULL,
+  graph_hierarchy_id integer,
+  geometry_type text,
+  geometry_label text,
+  the_geom geometry,
+  color text,
+  CONSTRAINT graph_geometries_pkey PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE graph_geometries
+  OWNER TO postgres;
+
+
+INSERT INTO graph_geometries 
+(graph_hierarchy_id,geometry_type,geometry_label,the_geom,color)
+VALUES
+ (0,'Polygon','box1','POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))','82ff00');
+
+
+INSERT INTO graph_geometries 
+(graph_hierarchy_id,geometry_type,geometry_label,the_geom,color)
+VALUES
+ (0,'Polygon','box2','POLYGON((0.5 0.3, 0.8 0.2, 0.9 0.8, 0.2 0.9, 0.5 0.3))','2800ff');
+
+
+INSERT INTO geometries VALUES
+  ('Point', 'POINT(0 0)'),
+  ('Linestring', 'LINESTRING(0 0, 1 1, 2 1, 2 2)'),
+  ('Polygon', 'POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'),
+  ('PolygonWithHole', 'POLYGON((0 0, 10 0, 10 10, 0 10, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1))'),
+  ('Collection', 'GEOMETRYCOLLECTION(POINT(2 0),POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)))');
+
+==============================================================================
+Add a Geometry Column to a table: 
+-use the addgeometrycolumn function (schema, table_name, column_name, srid, type, dimentions);
+
+ex.
+SELECT "addgeometrycolumn"('public', 'images', 'the_geom', 4326, 'GEOMETRY',  2);
+
+==============================================================================
+
+Postgis functions and st functions: 
+see: http://postgis.refractions.net/documentation/manual-1.3SVN/ch06.html
+
+st = spatial type 
+
+prefix on new functions. When given the option, use the st function. 
+
+==============================================================================
+
+
+Colleen Rock's recommendations for implementing SQL constraints:
+
+For example within campaigns table, unique_campaign_id constraint forces
+all entries within campaign_id column to be unique
+
+-- Table: campaigns
+
+-- DROP TABLE campaigns;
+
+CREATE TABLE campaigns
+(
+  id serial NOT NULL,
+  campaign_id integer,
+  name text,
+  description text,
+  world_region_id integer,
+  start_utc timestamp without time zone,
+  start_epoch double precision,
+  stop_utc timestamp without time zone,
+  stop_epoch double precision,
+  CONSTRAINT campaigns_pkey PRIMARY KEY (id),
+  CONSTRAINT unique_campaign_id UNIQUE (campaign_id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE campaigns
+  OWNER TO postgres;
+
+
+ 
+For example, to enforce foreign key constraint within missions table
+on campaign_id in campaigns table, chant
+
+
+ALTER TABLE missions
+  ADD CONSTRAINT campaign_id_exists FOREIGN KEY (campaign_id)
+      REFERENCES campaigns (campaign_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+*. In order to add uniqueness constraint on platforms table for
+platform_id, right-click
+
+platforms -> New Object -> New Unique Constraint 
+
+Under properties tab of New Unique Constraint, add name =
+unique_platform_id.
+
+Under columns tab of New Unique Constraint, select
+platform_id entry within Column drop down menu.  Press Add button.
+Then press "OK" button.  The unique_platform_id constraint is then added
+to the platforms table schema:
+
+CREATE TABLE platforms
+(
+  id serial NOT NULL,
+  platform_id integer,
+  name text,
+  description text,
+  CONSTRAINT platforms_pkey PRIMARY KEY (id),
+  CONSTRAINT unique_platform_id UNIQUE (platform_id)
+)
+
+
+*.  In order to add foreign key constraint to platform_metadata table
+requiring platform_id to actually exist within platforms table,
+right-click
+
+platform_metadata -> New Object -> New Foreign Key
+
+Under Properties tab of New Forein Key, add name = 
+platform_id_exists.
+
+Under Columns tab of new Foreign Key, select platforms within References
+drop down menu.  Select platform_id under Local column drop down menu.
+Select platform_id under Referencing drop down menu.  Then press Add
+button.
+
+Under Action tab of New Foreign Key, select RESTRICT under On Update 
+and CASCADE under On Delete.  Then press OK button.
+
+The platform_id_exists foreign key constraint then appears within the
+platform_metadata table as follows:
+
+CREATE TABLE platform_metadata
+(
+  id serial NOT NULL,
+  campaign_id integer,
+  mission_id integer,
+  platform_id integer,
+  metadata_id integer,
+  image_id integer,
+  image_prefix text,
+  utc timestamp without time zone,
+  epoch double precision,
+  longitude double precision,
+  latitude double precision,
+  altitude double precision,
+  yaw double precision,
+  pitch double precision,
+  roll double precision,
+  CONSTRAINT platform_metadata_pkey PRIMARY KEY (id),
+  CONSTRAINT platform_id_exists FOREIGN KEY (platform_id)
+      REFERENCES platforms (platform_id) MATCH SIMPLE
+      ON UPDATE RESTRICT ON DELETE CASCADE
+)
+
+
+*.  In order to add constraint on nodes table that hierarchy, graph and
+node id combination must be unique, right-click
+
+nodes -> new object -> new unique constraint
+
+Assign New Unique Constraint the name
+
+ "unique_hierarchy_graph_node_combo"
+
+Under Columns tab of New Unique Constraint, select graph_hierarchy_id from
+"Column" drop down list.  Press Add button.  Select graph_id from "Column"
+drop down list.  Press Add button.  Sekect node_id from "Column" drop down
+list.  Press Add button.  Then press OK.  Conflicts within nodes table
+actually appear and need to be eliminated before this constraint can be
+installed.
+
+
+*.  In order to null an entire column (e.g. keyframe_id) within an SQL
+table (e.g. videos), chant
+
+		update videos set keyframe_id=NULL

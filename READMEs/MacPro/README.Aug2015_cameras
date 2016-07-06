@@ -1,0 +1,65 @@
+=================================================================
+Mapping of image filenames to camera orientations and 
+focal lengths for Aug 2015 ground camera system
+=================================================================
+Last updated on 8/27/15
+=================================================================
+
+*.  Can chant "exiftool filename.dng" to find out focal length
+info for a particular dng image file.
+
+Backward-facing:
+000057-000051-20150825_202900_018-Cam02_2645D_07002.dng
+Focal length = 18 mm
+
+Backward-facing:
+000060-000054-20150825_202902_205-Cam02_2645D_07095.dng
+Focal length = 15 mm
+
+Right side-facing (towards front):
+000904-000898-20150825_204633_649-Cam05_1095A_08440.dng
+Focal length = 21 mm
+
+Right side-facing (towards rear):
+000990-000986-20150825_214911_687-Cam05_1095A_08442.dng
+Focal length = 21 mm
+
+Left side-facing (towards rear):
+000996-000992-20150825_214913_486-Cam05_1095A_08462.dng
+Focal length = 21 mm
+
+Forward-facing:
+000991-000987-20150825_214911_986-Cam05_1095A_08463.dng
+Focal length = 15 mm 
+
+Left side-facing (towards front):
+000997-000993-20150825_214913_699-Cam05_1095A_08495.dng
+Focal length = 21 mm
+
+Forward-facing:
+000400-000395-20150825_182753_839-Cam05_1095A_08503.dng
+Focal Length = 18 mm
+
+
+*.  DNG images from Aug 2015 camera system are sitting in the following
+startown subdirs:
+
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_213011/20150825_213011-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_213011/20150825_213011-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_213011/20150825_213011-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_213011/20150825_213011-T1
+
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_173256/20150825_173256-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_173256/20150825_173256-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_173256/20150825_173256-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_173256/20150825_173256-T1
+
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_191101/20150825_191101-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_191101/20150825_191101-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_191101/20150825_191101-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_191101/20150825_191101-T1
+
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_202459/20150825_202459-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_202459/20150825_202459-T1
+/startown-gpfs/sputnik04/supersize/copyprocess/resource/20150825_202459/20150825_202459-T1
+

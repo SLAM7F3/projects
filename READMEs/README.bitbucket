@@ -1,0 +1,27 @@
+=============================================================================
+BitBucket notes
+=============================================================================
+Last updated on 9/2/15; 6/6/16
+=============================================================================
+
+Username = PeterLCho		@George12 (reset on 9/2/15)
+email = peter.leslie.cho@gmail.com
+
+
+*.  We added public keys from our Apple MacPro and Titan 1 GPU box on
+9/2/15.  
+
+From https://bitbucket.org/deeplab/deeplab-public/, click on avatar button
+located near upper right.  Then click on "Manage account".  Choose "SSH
+keys" from menu on LHS.  Press blue "Add key" button.  Then copy contents
+of ~/.ssh/id_rsa.pub into box being careful to not introduce extra white
+space.
+
+
+*.  After ssh key is added, we can clone deeplab repository via following
+terminal command:
+
+git clone git@bitbucket.org:aquariusjay/deeplab-public-ver2.git  
+	(updated 6/6/16)
+
+git clone git@bitbucket.org:deeplab/deeplab-public.git

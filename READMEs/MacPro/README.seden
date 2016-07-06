@@ -1,0 +1,15 @@
+===========================================================================================
+SEDEN notes 
+===========================================================================================
+Last updated on 9/24/15
+===========================================================================================
+
+*.  Pressing "R" toggles on/off rays between 2D pixels and 3D voxels
+
+*.  Click on some location within 3D map and press "s" to select closest
+frustum.  Closest frustum turns red.
+
+*.  Press "2" to enter into mode where we see selected frustum's image
+plane.  Segmented regions are displayed as polygons within image plane.
+
+

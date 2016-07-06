@@ -1,0 +1,235 @@
+==========================================================================
+WISP panorama generation and manipulation notes
+==========================================================================
+Last updated on 3/21/13; 4/22/13; 4/24/13
+==========================================================================
+
+*.  With lots of help from Gary Long, we compiled a version of the G99
+program Wisp360CalAssistant on our Ubuntu 10.4 box in February 2013.  
+We needed to make some modifications to the condor codes in order to
+compile them:
+
+   - Commented out every "ADD_SUBDIRECTORY" in Condor/CMakeLists.txt 
+except for src and test_bench/Wisp360CalAssistant (see attached 
+CMakeLists.txt).
+
+   - Installed Boost version 1.46.1 on our Ubuntu 10.4 box into /opt/boost
+
+   - Installed Intel libraries which Gary Long supplied into 
+	/opt/intel/ipp/6.0.2.076/
+
+   - Updated the CMAKE_PREFIX_PATH environmental variable in our .cshrc file:
+
+setenv CMAKE_PREFIX_PATH /usr/local/OpenCV/share/OpenCV:/opt/local/OpenCV:/opt/local/OpenCV/lib:/opt/ros/fuerte/share/catkin/cmake/Modules:/opt/ros/fuerte:/opt/intel:/usr/local/kakadu:/opt/boost/boost
+
+   - Also added a CMAKE_FIND_ROOT_PATH environmental variable to .cshrc:
+
+setenv CMAKE_FIND_ROOT_PATH /usr/local/kakadu:/opt/boost/boost
+
+   - After poking around the latest Condor version that Gary supplied, I
+	found that the opencv_highgui library was given a specific name in
+	/ps_core/cmake/FindOpenCV.cmake .
+
+     Changed a few lines in this file so that they read
+
+	FIND_LIBRARY(OPENCV_HIGHGUI_LIBRARY
+	NAMES opencv_highgui highgui
+	PATHS ${OPEN_CV_SEARCH_PATHS}
+	PATH_SUFFIXES lib
+	)
+
+	cmake then successfully ran to completion on my Ubuntu 10.4 machine.
+
+
+==============================================================================
+LOST-ubuntu:build% cmake ..
+-- Found IPP Version 6.0
+-- Boost version: 1.46.1
+-- Found the following Boost libraries:
+--   system
+--   thread
+--   filesystem
+--   date_time
+--   serialization
+--   program_options
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing:  CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) (Required is at least version "4.0")
+-- Couldn't find optional package CUDA.  Continuing without it.
+-- TAU_LIBRARY-NOTFOUNDTAU_INCLUDE_DIR-NOTFOUND
+-- Could not find TAU, continuing
+-- Could not find NVTX, continuing
+-- Could NOT find Boost
+-- Boost version: 1.46.1
+-- Found the following Boost libraries:
+--   system
+--   thread
+--   filesystem
+--   date_time
+--   serialization
+--   program_options
+-- TAU_LIBRARY-NOTFOUNDTAU_INCLUDE_DIR-NOTFOUND
+-- Could not find TAU, continuing
+-- Could not find NVTX, continuing
+StatusTHIS IS THE VIDEO LIBS/opt/ros/fuerte/lib/libopencv_video.so
+OpenCV dir /opt/ros/fuerte/include;/opt/ros/fuerte/include/opencv2 /opt/ros/fuerte/lib/libopencv_imgproc.so
+-- Found OpenCV 2.4
+-- Could not find GeoDSDK, continuing
+Kakadu: IF(/usr/local/kakadu/lib/Linux-x86-64-gcc/libkdu.a /usr/local/kakadu/lib/Linux-x86-64-gcc/libkdu_aux.a /usr/local/kakadu/lib/Linux-x86-64-gcc/libkdu_v63R.so /usr/local/kakadu/lib/Linux-x86-64-gcc/libkdu_a63R.so /usr/local/kakadu/managed/all_includes
+-- Found Kakadu: /usr/local/kakadu/lib/Linux-x86-64-gcc/libkdu.a
+-- Found IPP Version 6.0
+-- Could not find SQLite, continuing
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing:  CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) (Required is at least version "4.0")
+-- Couldn't find optional package CUDA.  Continuing without it.
+-- SiftGPU: CUDA is not found
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /data_third_disk/DIME/Condor_gary/build
+==============================================================================
+
+   - Followed Gary's advice and simply commented out all lines within 
+	src/util/DetectionAndTracking.h which made any reference to 
+	boost::function .   make then finished to completion:
+
+LOST-ubuntu:build% make
+[  4%] Built target levmar
+[ 12%] Built target siftgpu
+[ 13%] Built target awapss-xref-extract
+[ 21%] Built target udt
+[ 23%] Built target condorcal
+[ 36%] Built target ps_core
+[ 97%] Built target condor
+[ 97%] Built target simple_example
+[ 98%] Built target Wisp360OrientationCal
+[ 98%] Built target Wisp360CalAssistant
+[100%] Built target masivs-extract
+
+*.  Wisp4 sensor data collected on LL's roof in November 2012 needs to be
+processed with the calibration parameters contained in
+sensors/Wisp360/CalibrationFiles/WispSensor4Cal.txt
+
+*.  calib.w360 = example configuration file which must be passed to
+Wisp360CalAssistant in order to extract panoramas from raw .img wisp data:
+
+calib.w360 contents:
+
+W3601.0
+LIVE:0
+TIVO:0
+CAM1: ./wisp4-raw-5min-20121116.img 
+CAL: ./WispSensor4Cal.txt
+NUC:1
+
+*.  See test_bench/Wisp360Calibration/matlab/write_panorama_to_file.m for
+examples of how to call Wisp360CalAssistant.  The following command line
+pulls out one full-resolution panorama from wisp4-raw-5min-20121116.img and
+outputs a PGM image:
+
+	./Wisp360CalAssistant calib.w360 -Panoramic 1 0 wisp_res0.pgm
+
+*.  Full resolution 40Kx2.2K 80 Mbyte WISP panorama PGM files are too large
+to fully viewed within Ubuntu's built-in viewer.  But they can successfully
+opened in GIMP.  Medium resolution 20Kx1.1K PGM files take up 21 Mbyte.
+(Medium res 100% quality jpegs take up 5.1M).
+
+-------------------------------------------------------------------------
+Data storage space requirements for May 2013 fieldtest:
+
+*.  Assuming full WISP pano is collected once every 2 seconds, data file
+generated by WISP sensor for 1 minute of raw imagery is 9 Gbytes in size.
+
+*.  Full resolution (40K x 2.2K ) PGM wisp files generated by
+Wisp360CalAssistant are 84 Mbytes in size on average.
+
+*.  Full resolution (4K x 2.2K) "panel" PNG files are 1.74 Mbytes in size
+on average.  Ten "panel" PNG files correspond to one full WISP pano.
+
+*.  30 full resolution PGM and 300 panel PNG files are generated for every
+minute of data collection.  So required disk space = 9 Gbytes + 30*84
+Mbytes + 300*1.74 Mbytes = 12.04 Gbytes / minute of raw WISP data.
+
+*.  5 hours of raw WISP data would require 5*60*12.04 Gbytes = 3.6 Tbytes of
+disk storage.
+
+-------------------------------------------------------------------------
+
+Use "Places" -> "connect to server" -> "windows share" to access the G99
+server "wisp-archive-1" which holds Deer Island raw imagery.  
+
+Samba server = smb://wisp-archive-1
+Subfolder holding Deer Island data = wisprawdata
+
+-------------------------------------------------------------------------
+Mar 2013 version of Condor code needed to generate WISP images sits on G99
+server called "dev99".  
+
+svn checkout svn://dev99/svn/ps/ps_orthorect/branches/WispRDC_version100/
+
+It needs to be compiled against boost_1_46_1 and NOT boost_1_53_0.
+
+-------------------------------------------------------------------------
+On 3/21/13, Gary Long supplied an updated version of the bad Pixels file
+for Wisp 8.  Gary told us to copy that bad pixels file into 
+
+/WispRDC_version100/sensors/Wisp360/BadPixelFiles/badPixWisp8.txt
+
+In /WispRDC_version100/src/camera/wisp/WispReader.cpp, we changed the 
+hardwired location for this bad pixels file to point to the file above.
+
+-------------------------------------------------------------------------
+Chant following command in order to find out number of frames and swaths
+within a raw .img file:
+
+/data_third_disk/DIME/Condor_March2013/WispRDC_version100/bin/Wisp360CalAssistant\
+ /data_third_disk/DIME/Condor_March2013/WispRDC_version100/bin/calib.w360 -Info info.txt
+
+For 124 Gbyte wisp8-spin-.5hz-ocean.img file:
+
+Num Frames: 429 in 826 secs ( = 13.7666 mins)
+Num Swaths: 17129
+Revolution period = 1.92541 secs 
+
+Deer Island (and future May fieldtest) imagery collected by Wisp sensor #8
+
+lightHouse(i).date = '14-Feb-2013';
+lightHouse(i).startEST = 
+	['12:55:44';'13:14:57';'14:04:37';'14:29:43';'14:35:56'];
+lightHouse(i).stopEST = 
+	['13:09:30';'13:21:49';'14:10:01';'14:30:41';'14:49:54'];
+lightHouse(i).frameHz = [0.5,0.5,0.25,0.5,0.1];
+
+start = 12 hours 55.733 minutes (local time) = 17  hours 55.733 mins (UTC)
+Start UTC = 2013-02-14 17:55:44.00
+elapsed_secs = 1360864544.000021
+
+
+stop = 13 hours 9.5 minutes = 12 hours 69.5 minutes = 18 hours 9.5 mins (UTC)
+
+-------------
+
+LLrooftop imagery collected by Wisp sensor #4 on April 8, 2013
+
+2013.04.08-wisp3-raw-1hr.img
+
+Num Frames: 801
+Num Swaths: 32034
+
+------------- 
+
+On 4/8/13, Gary Long discovered that raw Wisp pano pixels are NOT square:
+
+width = 10000*4;
+height = 548*4;
+
+rad_per_pixel_x = (360*pi/180)/width;
+rad_per_pixel_y = (30*pi/180)/height;
+
+I found this in the render code... Running the numbers the totally agree
+with Allyn's fit:
+
+(360*pi/180)/(10000*4) = 0.00015707963267949 = 1.57e-4
+(30*pi/180)/(548*4) = 0.000238868054561268 = 2.38e-4
+
+In the top of Wisp360CalAssistant, the fovYdeg = 30.  (line 70) This was
+set to see the entire vertical panorama and not clip, but it needs to be
+taken into account when computing IFOV.

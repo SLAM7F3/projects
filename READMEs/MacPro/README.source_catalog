@@ -1,0 +1,18 @@
+===============================================================================
+Apple maps source catalog notes
+===============================================================================
+Last updated on 6/15/16
+===============================================================================
+
+*.  Point a browser towards https://source-catalog.geo.apple.com
+
+*.  Under Search tab located near upper left, select "Find Resources".
+Then enter a search ID such as Core Logic parcels 648594934267379713
+into the Top search field on the LHS:
+
+*.  We then see "Parel Polygons" appear in column on RHS.  
+Click on yellow "PENDING LEGAL" link.  
+
+*.  Click on blue "Files" link.  We should then see blue "Download all
+files" appearing on RHS of next menu.  Click on this link in order to
+download all parcel info for Boston.

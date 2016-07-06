@@ -1,0 +1,18 @@
+===========================================================================
+GDAL nodes
+===========================================================================
+Last updated on 3/28/07
+===========================================================================
+
+On 3/28/07, Ross Anderson taught us that the Baghdad Geotiff files have
+grey scale height values stored as floats rather than as integers.  Gimp,
+XV and ImageMagick's Display utilities are expecting output as the latter
+rather than the former.  So we need to perform the following conversion
+before we can easily see the Baghdad Geotiff's using standard 2D viewer
+tools:
+
+gdal_translate -ot Uint16 -scale 27 42 0 65535 ~ross/iraq_tiles/part1/dem_1m_a1_baghdad_tile37.tif test.tiff
+
+
+The scale command maps (min_z,max_z) onto (0,2**16-1).  GDAL can report the
+min and max grey scale values within the single banded Baghdad tiles.

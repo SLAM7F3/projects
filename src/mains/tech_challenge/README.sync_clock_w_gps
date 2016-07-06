@@ -1,0 +1,30 @@
+// ======================================================================
+// Procedure for synchronizing laptop clocks to GPS time
+// ======================================================================
+
+0.  Make sure GPS unit is plugged into laptop USB port.  On netbooks, try
+using the USB port located on the LEFT hand side.
+
+1.  Open a terminal by clicking the terminal icon on the bottom grey bar.
+Inside the opened terminal, type "sudo su root".  When prompted for a
+password, enter "anddogs".
+
+2.  Inside the terminal, type "/bin/tcsh" (to change shell from bash to tcsh)
+
+3.  Type "source /home/cho/.cshrc"  (to load Peter's environment variables)
+
+   Prompt should now end with a "%" rather than a "#" (e.g. Belka-19:root% )
+
+4.  Type "sync_clock_w_gps" to start the clock synchronization program.
+
+  (If no satellite connection is established within a few seconds of
+entering the above command, exit program by pressing control-c.  Often need
+to re-run this command multiple times before connection with GPS satellites
+is established!)
+
+5.  Type "exit" (to leave tcsh to bash.  Terminal prompt character changes
+form % to #)
+
+6.  Type "exit"  (to quit out of sudo)
+
+7.  Type "whoami" (to be sure that root has been succcessfully exited)

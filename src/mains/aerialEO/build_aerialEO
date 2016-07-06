@@ -1,0 +1,3 @@
+~/bin/MAKE program=eocities
+~/bin/MAKE program=nfov_sender
+~/bin/MAKE program=racetrack_sender

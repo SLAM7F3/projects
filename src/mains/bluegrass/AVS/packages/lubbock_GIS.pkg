@@ -1,0 +1,13 @@
+--PostGIS_hostname localhost
+--PostGIS_database_name bluegrass_gis
+--PostGIS_username postgres
+--gispoints_tablename loi
+--gislines_tablename lubbock_streets_UTM
+
+# --gislines_tablename ar1_streets
+
+
+
+
+
+

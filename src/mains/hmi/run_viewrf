@@ -1,0 +1,6 @@
+~/programs/c++/svn/projects/src/mains/hmi/viewrf \
+--surface_texture ./packages/pavilion_new.pkg \
+--initial_mode Manipulate_Fused_Data_Mode
+
+
+# --surface_texture ./FtDevens/ftdevens.pkg \

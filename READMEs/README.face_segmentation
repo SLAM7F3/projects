@@ -1,0 +1,600 @@
+========================================================================
+Face detection via deeplab image segmentation
+========================================================================
+Last updated 6/27/16; 6/29/16; 7/4/16; 7/5/16
+========================================================================
+
+TODO:
+
+*.  Generalize /machine_learning/deeplab/GENERATE_IMAGE_TILES s.t. it
+doesn't break apart doublesized images which are too large or halfsized
+images which are too small.
+
+*.  Parallelize PYRAMID_TRAINING_IMAGES.  
+rm:  cannot remove 'tmp/file.dat': no such file or directory
+
+*.  Generalize REORDER_CONSOLIDATE_IMAGES so that order for images with
+same pixel dimensions is unique
+
+*.  Classify face bboxes as good, partial, somewhat obscure, totally
+obscure, etc....
+
+*.  Experiment with resnet vs vgg16.
+
+DONE:
+
+*.  Try downsizing by 2 images containing only large face bboxes (with
+widths > 50 pixels) as augmented data
+
+*.  Label hands within training, validation and testing images.
+
+*.  Generate training image tiles which are quasi-centered around bboxes.
+Choose full-sized, double-sized or half-sized version of training image
+based upon bbox size relative to receptive field.  
+
+*.  Develop vertical and horizontal face masks
+
+*.  Add border buffer around test image tiles whose mask segmentation
+values are discarded.  Perhaps could help reduce edge effects.
+
+*.  Try adding gaussian noise and/or blur to all training images containing
+only large face bboxes (with widths > 50 pixels) as augmented data
+
+*.  Try adding in more negative examples (coming from syntext backgrounds)
+
+*.  Compute precision and recall based upon consolidated face segmentation
+results vs truth bboxes.
+
+*.  Consolidate binary face segmentation results from full-sized,
+half-sized and double-sized masks.
+
+*.  Try to significantly enlarge pixel size for test image tiles beyond
+1Kx1K.  
+
+*.  Perform left-right parity flip of images containing hands in order to
+augment training data.
+
+*.  Within prepare_deeplab_inputs.cc, export reduced XML file containing
+bboxes for just testing imagery subset.
+
+*.  Generate list of soft links for testing images which are ordered by
+pixel size from smallest to largest.  
+
+
+===================================================
+
+Data locations on TM:
+
+*.  As of 5/9/16, O(20) subdirs containing manually annotated face images
+are sitting in /data/peter_stuff/imagery/faces/,
+
+*.  As of 5/18/16, 7726 annotated, homogenized and consolidated images
+(image_00000.jpg - image_07734.jpg with a few missing in between) are
+sitting in /macpro_4GB_disk/data/TrainingImagery/faces/images/ on
+Thinkmate.  Roughly 6K of these contain face content.
+
+/macpro_4GB_disk/data/TrainingImagery/faces/images/all_labeled_images.xml
+points to XML file containing face bbox annotations for all these jpg
+images.
+
+*.  As of 5/22/16, testing images for multiple Titan runs (e.g. faces_05,
+faces_06, faces_07_{a,b,c,d,e,f} are sitting in subdirs of 
+/data/TrainingImagery/faces/labeled_data/
+
+
+gimages_20:    image_05480 - image_05925
+not_faces_01:  image_05927 - image_06420
+not_faces_02:  image_06421 - image_06578
+not_faces_03:  image_06579 - image_07423
+not_faces_04:  image_07424 - image_07640
+not_faces_05:  image_07641 - image_07734   Good Weds, May 18 run results
+
+not_faces_06:  image_07735 - image_07954
+not_faces_07:  image_07955 - image_08218
+
+not_faces_08:  image_08219 - image_08413
+not_faces_09:  image_08414 - image_08685   Good Thurs, May 19 run results
+
+===================================================
+
+In this README, we define the following root directories:
+
+  $faces_root= ~/programs/c++/svn/projects/src/mains/faces
+  $deeplab_root= ~/programs/c++/svn/projects/src/mains/machine_learning/deeplab
+
+*.  Program $faces_root/HOMOGENIZE_IMAGES imports a set of raw image
+filenames from a specified subdirectory.  It first alphabetically sorts the
+input image filenames.  It next wraps the the filenames in double quotes to
+shield subsequent link commands from white spaces.  After querying the user
+to enter the first image's ID, HOMOGENIZE_IMAGES generates an executable
+script which links (or copies) the input raw filenames to homogenized and
+ordered output filenames.
+
+*.  Program $faces_root/DOWNSIZE_IMAGES imports all images within a
+specified input subdirectory.  It then downsizes any image within the input
+folder whose horizontal or vertical pixel dimensions exceeds max_xdim /
+max_ydim.
+
+*.  Program $faces_root/CLEAN_IMAGES scans through all images within a
+specified subdirectory.  It first converts any PNG files into JPG images to
+avoid alpha-channel headaches.  It then explicitly checks the number of
+color channels within the JPG files.  CLEAN_IMAGES deletes any JPG file
+which doesn't have exactly 3 color channels.
+
+We wrote this utility in order to homogenize highly-variable internet
+imagery.
+
+*.  Working with homogenized and downsized images, use Davis King's very
+nice IMGLAB webtool to draw bounding boxes around faces within all
+downsized images.  (See README.davis_HOG).  IGMLAB exports an XML file
+containing relative image paths, bbox pixel coordinates and bbox labels.
+
+*.  Program $faces_root/BBOX_WIDTHS imports the XML file generated by Davis
+King's IMGLAB tool.  It generates density and cumulative distributions for
+the labeled image's bbox widths and aspect ratios.  It also reports the
+10%, 20%, ..., 90% percentile pixel widths from the cumulative width
+distribution.
+
+      		bbox_widths all_labeled_images.xml
+
+*.  Program $faces_root/PARTITION_LABELED_IMGS imports the XML file
+generated by Davis King's IMGLAB tool.  It splits this file's entire set of
+labeled images into training, validation and testing subsets.  New
+training, validation and testing XML files are exported to subdirectories
+containing soft links to the training, validation and testing images.
+
+           partition_labeled_imgs all_labeled_images.xml
+
+*.  Program $faces_root/PYRAMID_TRAINING_IMAGES imports all training images
+and object bounding boxes specified within an input XML file created by
+Davis King's IMGLAB tool.  If user explicitly requests image resizing be
+performed, this program downsizes by a factor of 2 each image within the
+input folder. It downsizes by a factor of 2 each image within the input
+folder.  It also upsamples by a factor of 2 each input image.
+PYRAMID_TRAINING_IMAGES exports new XML files for the downsized and upsized
+images.
+
+		         pyramid_training_images
+
+
+*.  Program $faces_root/GENERATE_BBOX_TILES imports an XML file generated
+by Davis King's IMGLAB program that contains bounding boxes around objects
+(e.g. human faces) for some set of trained images.  Given an input image,
+the median pixel width is first calculated for all its bboxes.  If the
+median bbox width < 27 { > 54 } pixels, we work with a double-sized
+{half-sized} version of the input image and rescale its bounding boxes by a
+factor of two.
+
+Each bounding box becomes a seed for an image tile with pixel dimensions
+deeplab_tile_size x deeplab_tile_size.  If the bbox has pixel dimensions
+less than deeplab_tile_size x deeplab_tile_size, the tile is randomly
+positioned so as to include the entire bbox.  Otherwise, the tile contains
+some random part of the bbox contents.  The user is initially queried to
+enter the number of image tiles to generate per bounding box.  The user
+also supplies the number of deeplab tiles to generate for images containing
+zero bounding boxes.
+
+For each deeplab tile, a mask written to an 8-bit greyscale PNG file is
+created whose background value = 0 and foreground value = 1 [, 2, 3, 4...].
+Exported image tiles become inputs to Deeplab's DNN, while the masks become
+inputs to Deeplab's loss function.
+
+GENERATE_BBOX_TILES also writes out text files containing associations
+between image tiles and masks.  It randomly shuffles the associations and
+then splits them into training, validation and testing sets.
+
+                      ./generate_bbox_tiles
+
+=======================
+Image segmentation training
+=======================
+
+*.  Create deeplab_inputs tarball on ThinkMate.  After ftping to a Titan
+GPU machine, unpack deeplab_inputs tarball within /data/imagery/faces/ .
+Rename deeplab_inputs subdirectory within this folder as something like
+May8_faces_deeplab/ .
+
+Make sure that some file is linked to object_names.classes within the dated
+subfolder!
+
+*.  Within /data/imagery/faces/, relink train.txt and validation.txt to
+something like May8_faces_deeplab/shuffled_images_training.txt and
+May8_faces_deeplab/shuffled_images_validation.txt.
+
+*.  Within $deeplab/experiments/faces, unpack new_faces_expt.tgz.
+Then mv the unpacked "new_faces_expt/" subdir into to a new subfolder of
+$deeplab/experiments/faces containing a date in its name:
+
+		e.g. mv new_faces_expt ./faces/May8_faces
+
+*.  Change as necessary the test_iter and base learning rate parameters in
+$deeplab/experiments/DATED_FACES_DIR/config/vgg128_large_fov/solver_base.prototxt. 
+
+Also we've empirically found that validation testing should never be
+performed for less than every 400th training iteration.  Also export
+trained caffemodels no more frequently than every 1000th training
+iteration.
+
+*. Make sure $deeplab/experiments/DATED_FACES_DIR/list/train.txt and
+test.txt links point to /data/imagery/faces/train.txt and validation.txt .
+
+*.  Create a new deeplab run script within $deeplab/experiments/:
+
+		e.g. copy run_May6_faces run_May8_faces
+
+Be sure to alter its DATE_ROOT and EXP lines.  For example:
+
+DATA_ROOT=/data/imagery/faces/May8_faces_deeplab
+EXP=faces/May8_faces_strings
+
+*.  Following Tho's advice, be sure to have a "screen" session running
+BEFORE we start a long deeplab training session.  Chant "screen -ls" to see
+if current window is within a screen.  If not, chant "screen" followed by
+spacebar to start a screen session.
+
+*.  From within $deeplab/experiments, chant
+
+	run_May8_faces
+
+in order to start finetuning neural network.  Deeplab log file is written
+to /tmp/caffe.bin.INFO.
+
+*.  After caffe finetuning has essentially finished, ftp
+/tmp/caffe.bin.INFO from Titan GPU machine back to Thinkmate.  Place
+caffe.bin.INFO into /data/deeplab/faces/caffe.bin.INFO_MMDDYYYYY_TN.
+Relink /data/deeplab/caffe.bin.INFO to this latest caffe.bin.INFO file.
+
+Program $root/machine_learning/deeplab/TRAINING_PERFORMANCE imports a
+caffe.bin.INFO file generated by Deeplab caffe run on a GPU machine.  It
+plots the 3 accuracy values and loss as functions of training epoch number
+for the training set.  It further plots 3 accuracy values as functions of
+training epoch number for the validation set.
+
+
+*.  After a series of DeepLab experiments performed in Jan 2016, we believe
+learning rate = 0.0005 is optimal.
+
+On 1/14/16, we experimented with running the NESTEROV solver.  With a
+learning rate of 0.0005, we found no significant difference between
+pixel-level face detection performance for the SGD vs NESTEROV solvers.
+
+On 1/15/16, we experimented with running the ADAGRAD solver.  With a
+learning rate of 0.0005, we found that the asymptotic values for training
+loss and validation accuracy were nearly identical to those for SGD and
+NESTEROV.  But ADAGRAD appears to take more training epochs in order to
+reach those asymptotic values than SGD & NESTEROV.
+
+=======================
+Inference
+=======================
+
+*.  Inside /data/TrainingImagery/faces/labeled_data/faces_05/, unpack
+testing_images_orig_imageIDs.tgz.  Rename newly created
+testing_images_orig/ as something like testing_images_nofaces3/.  Then
+relink testing_images to ./testing_images_nofaces3/.
+
+*.  Copy fine tuned caffe model from a subdir such as
+$deeplab/experiments/faces/May8_faces/model/vgg128_large_fov/ into
+/data/deeplab/faces_deploy/.  Give it a name which includes a time stamp
+such as
+
+        train_iter_40000_05062016_T1.caffemodel
+
+*.  Program $root/machine_learning/deeplab/PYRAMID_TESTING_IMAGES imports
+all images within a specified input subdirectory.  It downsizes by a
+factors of 2 and 4 each image within the input folder. It also upsamples by
+a factor of 2 each input image.
+
+*.  Program $root/machine_learning/deeplab/GENERATE_IMAGE_TILES imports all
+pyramided image files exported by PYRAMID_TESTING_IMAGES from a specified
+input subdirectory.  It breaks apart each input image into a set of square
+tiles whose pixel size is set by image_tile_size.  Adjacent image tiles
+generally overlap their neighbors by tile_border pixels.  The image tiles
+are exported as jpeg files to a specified output subdirectory.
+
+                    ./generate_image_tiles
+
+*.  Program $root/machine_learning/deeplab/SEGMENT_IMAGES imports a caffe
+model finetuned via deeplab, its test.prototxt file, a text file containing
+class labels and another text file containing mean BGR values.  It
+instantiates a caffe_classifier from these inputs.  SEGMENT_IMAGES then
+loops over all image tiles within a specified subdirectory and performs
+semantic segmentation on each one.  Image tile segmentation labels and
+scores are exported as to files whose names end with "_segmented.jpg" and
+"_score.jpg".
+
+From within /src/mains/machine_learning/deeplab/scripts_faces/, chant
+
+../segment_images \
+/data/deeplab/faces_deploy/test.prototxt_1500x1500 \
+/data/deeplab/faces_deploy/train_iter_40000_05102016_T1.caffemodel \
+/data/deeplab/faces_deploy/fcn.pixel_mean \
+/data/deeplab/faces_deploy/object_names.classes \
+../images/faces/testing_images_05/fullsized
+
+  Important notes:
+
+  1.  Make sure name for fc8 layer within
+  /data/deeplab/faces_deploy/test.prototxt agrees with fc8 layer name as it
+  appears within /config/vgg128_large_fov/train.prototxt on GPU Titan
+  machine!
+
+  2.  Make sure width and height dimensions at top of
+  /data/deeplab/faces_deploy/test.prototxt agree with those for tiles to be
+  segmented by this program.  
+
+  3.  Make sure object_names.classes within /data/deeplab/faces_deploy/ has
+  the correct number of object labels.  Similarly make sure final num_outputs
+  appearing in bottom layer = fc7 --> top layer = fc8_faces/... equals the
+  correct number of classes.
+
+  4.  On 5/10/16, we empirically observed that caffe does not appear
+      to accept any input image whose pixel size exceeds 1860x1860.
+      We also empirically found that we ran out of GPU memory on 
+      Thinkmate if the input image had pixel size over 1500x1500.
+
+*.  Program $root/machine_learning/deeplab/RECOMBINE_SEGMENTED_TILES
+imports a list of input image files from a specified subdirectory. It also
+imports all their segmented image tiles from another specified
+subdirectory.  For each input image, RECOMBINE_SEGMENTED_TILES stitches
+together its segmented label and scores tiles into single mosaics.  The
+reconstructed segmentation label and scores images along with their
+montages are exported to specified output subdirectories.
+
+*.  Program $root/machine_learning/deeplab/CONSOLIDATE_COMPONENTS imports
+segmentation masks along with score images generated at half-size,
+full-size and double-size scales.  At each image size scale, connected
+components are formed from semantic segmentation pixels corresponding to
+distinct object classes.  Each CC is assigned a "hue" score which
+corresponds to the "hottest" 20th-percentile among its overlapped score
+pixels.  CCs which are either too large or too small (for a particular
+image scale) are ignored.  CCs which have hue scores that are too low are
+also ignored.  (Score thresholds are more stringent for hands than for
+faces, and these thresholds are most stringent for double-sized images and
+least stringent for half-sized images.)
+
+Pixel connected components are next "flattened" across image pyramid
+scales.  If two CCs at different scales overlap in area by more than 25%,
+the CC with the better score relative to its threshold is retained while
+the other is rejected.
+
+Among all non-rejected pixel CCs, we search for face centers within quad
+segmentation masks.  A small bbox is dragged across each pixel CC bbox.  At
+each candidate face center location, we count the numbers of green [blue]
+(red) {yellow} pixels in the upper left [upper right] (lower left) {lower
+right) of the small bbox.  The location of the small bbox is not allowed to
+overlap any previously-found small bbox location.  Moreover, ratios of
+quadrant pixel contents are required to be reasonably close to unity for
+2nd-best, 3rd-best small bboxes.  All pixels inside each non-rejected pixel
+CC is reassigned to the closest small bbox center (in a similar fashion to
+K-means clustering).
+
+Once the final set of pixel CCs are set, we compute probability densities
+for their horizontal and vertical pixel coordinates.  CC bbox borders are
+set equal to 5% and 95% cumulative value within these probability
+distributions.  Each CC's pixels are tinted according to object class, and
+similarly-colored bounding boxes are drawn around each pixel CC.
+
+*.  Program $root/machine_learning/deeplab/PREC_RECALL imports all testing
+image masks exported by program CONSOLIDATE_COMPONENTS along with their
+ground truth bboxes.  It generates a new set of predominantly greyscale
+masks containing truth bbox annotations.  PREC_RECALL also computes
+pixel-level precision and bbox recall per truth image.  Recall results are
+exported for tiny, medium, medium and large bboxes corresponding to the
+1st, 2nd, 3rd and 4th quartiles of bbox pixel widths. Precision and recall
+probability distributions are written into the same subdirectory as where
+the bbox-annotated masks are written.
+
+*.  Program $root/machine_learning/deeplab/BBOX_PREC_RECALL imports all
+ground-truth and detected face bounding boxes for a testing image set.  For
+each ground-truth bbox within a test image, we search for a detection bbox
+counterpart with maximal intersection-over-union value.  A frequency
+histogram for ground-truth face bbox IoU values is exported. Similarly, for
+each detected face bbox within a test image, we search for a ground-truth
+bbox counterpart with maximal IoU. Another frequency histogram fro detected
+face bbox IoU values is exported.
+
+*.  Program $root/machine_learning/deeplab/REORDER_CONSOLIDATED_IMAGES
+creates a copy of all consolidated image masks.  It assigns new indices to
+the members of the copy based upon their pixel widths.  We wrote this
+utility in order to simply viewing of semantic segmentation inference
+results using our 2D VIEWIMAGES viewer.
+
+Notes added in May 2016:
+
+*.  It looks like we trained our first deeplab face models in Jan 2016
+using 2821 images (most came from google images, but also some from flickr
+as well as the early Sep 2013 NewsHour broadcast).  
+
+*.  As of late Jan 2016, it looks like we had manually labeled a total of
+3412 images.  Google images chunks 9 and 10 looks like they were not
+included within the Jan 2016 Deeplab networks.
+
+
+*.  labels:
+
+Face
+
+*.  Facial clarity (independent of facial orientation relative to camera)
+
+Full face (nearly entire face is clearly visible, unobstructed and in focus)
+Partial face (some part of face is occluded or cropped; visible part of
+              face is clear and in focus)
+Somewhat indistinct face (somewhat blurry, shadowed or distant face)
+Totally indistinct face (very difficult to recognize any facial features;
+                         very distant face, very small face)
+
+*.  Facial orientation relative to camera
+
+Towards camera
+Profile face
+Away from camera
+2D picture face (photo of photo; portrait, line drawing, poster, ad)
+
+*.  Gender
+
+Male
+Female
+Unknown
+
+*.  Age
+
+Baby
+Child
+Young adult
+Middle age adult
+Senior
+Unknown
+
+*.  Intentionally include negative examples of line drawings, oil paintings
+which contain no face content.  Also include negative example pictures of
+cat, dog, monkey, duck, horse faces as well as animal montages into
+training and testing data.
+
+*.  Image Statistics (as of Mon, May 9, 2016):
+
+Number of images: 7414
+Number of different labels: 1
+Number of non-ignored boxes: 25455
+
+Label: face
+   number of images:      5858
+   number of occurrences: 25455
+   min box area:    1
+   max box area:    2.95653e+06
+   mean box area:   10471.3
+   stddev box area: 54457.3
+   mean width/height ratio:   0.776342
+   stddev width/height ratio: 0.240996
+
+*.  May 8, 2016: Exported training, validation and testing image sets to
+/data/TrainingImagery/faces/training_data/faces_02/
+
+n_training = 5770
+n_validation = 300
+n_testing = 500
+
+*. Cumulative distribution for face bbox widths (measured in pixels)
+calculated on May 8, 2016:
+
+0.00000			0.00008
+2.02020			0.00135
+4.04040			0.02137
+6.06061			0.06359
+8.08081			0.11449
+10.10101		0.16857
+12.12121		0.22180
+14.14141		0.27111
+16.16162		0.32058
+18.18182		0.36308
+20.20202		0.40256
+22.22222		0.43849
+24.24242		0.47247
+26.26263		0.50253
+28.28283		0.52928
+30.30303		0.55706
+32.32323		0.58227
+34.34343		0.60641
+36.36364		0.62742
+38.38384		0.64740
+40.40404		0.66535
+42.42424		0.68130
+44.44444		0.69577
+46.46465		0.70997
+48.48485		0.72294
+50.50505		0.73583
+52.52525		0.74855
+54.54545		0.75863
+56.56566		0.77045
+58.58586		0.78000
+60.60606		0.78938
+62.62626		0.79782
+64.64646		0.80720
+66.66667		0.81524
+68.68687		0.82433
+70.70707		0.83253
+72.72727		0.84028
+74.74747		0.84656
+76.76768		0.85350
+78.78788		0.85998
+80.80808		0.86634
+82.82828		0.87156
+84.84848		0.87593
+86.86869		0.88094
+88.88889		0.88572
+90.90909		0.89065
+92.92929		0.89538
+94.94949		0.89962
+96.96970		0.90374
+98.98990		0.90733
+101.01010		0.91272
+103.03030		0.91655
+105.05051		0.92039
+107.07071		0.92365
+109.09091		0.92671
+111.11111		0.93017
+113.13131		0.93352
+115.15152		0.93637
+117.17172		0.93866
+119.19192		0.94106
+121.21212		0.94290
+123.23232		0.94531
+125.25253		0.94751
+127.27273		0.94955
+129.29293		0.95118
+131.31313		0.95285
+133.33333		0.95485
+135.35354		0.95652
+137.37374		0.95864
+139.39394		0.96052
+141.41414		0.96215
+143.43434		0.96390
+145.45455		0.96602
+147.47475		0.96790
+149.49495		0.96970
+151.51515		0.97112
+153.53535		0.97263
+155.55556		0.97390
+157.57576		0.97557
+159.59596		0.97700
+161.61616		0.97810
+163.63636		0.97908
+165.65657		0.98071
+167.67677		0.98181
+169.69697		0.98311
+171.71717		0.98405
+173.73737		0.98540
+175.75758		0.98707
+177.77778		0.98846
+179.79798		0.98919
+181.81818		0.99033
+
+So any face bbox with width <= 10 pixels resides in the smallest 15% of all
+face bboxes.  We can probably label all such small bboxes as "totally
+indistinct".
+
+*.  Spot checked bboxes for "face" labels
+
+gimages_2.xml   all missing "face" label; OK in orig_training_images.xml
+gimages_3.xml   all missing "face" label; OK in orig_training_images.xml
+gimages_4.xml   all missing "face" label; OK in orig_training_images.xml
+gimages_5.xml   all missing "face" label; OK in orig_training_images.xml
+
+gimages_6.xml   all missing "face" label; OK in orig_training_images.xml
+gimages_7.xml   all missing "face" label; OK in orig_training_images.xml
+gimages_8.xml   OK face labels; OK in orig_training_images.xml
+gimages_9.xml   OK face labels; OK in orig_training_images.xml
+gimages_10.xml  OK face labels; OK in orig_training_images.xml
+gimages_11.xml  OK face labels; OK in orig_training_images.xml
+gimages_12.xml  OK face labels; OK in orig_training_images.xml
+gimages_13.xml  OK face labels; OK in orig_training_images.xml
+gimages_14.xml  OK face labels; OK in orig_training_images.xml
+gimages_15.xml  OK face labels; OK in orig_training_images.xml
+gimages_16.xml  OK face labels; OK in orig_training_images.xml
+gimages_17.xml  OK face labels; OK in orig_training_images.xml
+gimages_18.xml  OK face labels; OK in orig_training_images.xml
+gimages_19.xml  OK face labels; OK in orig_training_images.xml
+gimages_20.xml  OK face labels; OK in orig_training_images.xml
+
+
+

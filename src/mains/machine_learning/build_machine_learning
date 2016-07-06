@@ -1,0 +1,7 @@
+~/bin/MAKE program=fanntest
+~/bin/MAKE program=fanntrain
+~/bin/MAKE program=generate_tsne_input
+~/bin/MAKE program=generate_tsne_output
+~/bin/MAKE program=parse_mnist
+~/bin/MAKE program=tsne_2_output
+

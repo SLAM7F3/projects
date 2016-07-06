@@ -1,0 +1,2 @@
+./attribute_images \
+--GIS_layer ./packages/imagery_metadata.pkg 

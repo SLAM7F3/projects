@@ -1,0 +1,9 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/taxis_257.jpg
+# /home/cho/programs/c++/svn/projects/src/mains/newyork/taxis_257.vid 
+--downrange_distance 150
+# --downrange_distance 75
+--projection_matrix
+      -2.646948448e-07  9.746863041e-08  -5.820936091e-08  -0.2846658364
+      -1.38885761e-07  -1.403333099e-07   1.979679024e-07   0.7146080429
+      -1.143967364e-07 -1.267390448e-07  -8.00468256e-08    0.6389841208
+

@@ -1,0 +1,90 @@
+===========================================================================
+Unix find notes
+===========================================================================
+Last updated on 11/6/15; 11/13/15; 11/29/15; 2/12/16
+===========================================================================
+
+*.  Following command 
+
+	find -type f -printf '%T+\t%p\n' | sort -n > files_by_time.dat
+
+generates temporally sorted file output like
+
+2014-02-25+16:28:07.0000000000	./src/video/videofuncs.h
+2014-02-25+20:17:54.0000000000	./src/mains/flyover/oldstuff/sam_masks1.cc
+2014-02-25+20:32:22.0000000000	./src/geometry/polygon.h
+2014-02-26+10:37:24.0000000000	./src/mains/testdir/percentile.cc
+2014-02-26+11:12:48.0000000000	./src/mains/flyover/color_dists.cc
+2014-02-26+12:25:39.0000000000	./src/color/colorfuncs.h
+2014-02-26+13:54:44.0000000000	./src/mains/flyover/sam_masks.cc
+2014-02-26+14:10:36.0000000000	./src/mains/flyover/resize_images.cc
+2014-03-04+11:08:33.0000000000	./src/video/G99VideoDisplay.cc
+2014-03-05+13:42:47.0000000000	./src/geometry/polygon.cc
+2014-03-05+14:02:44.0000000000	./src/math/mathfuncs.cc
+2014-03-05+17:36:51.0000000000	./src/mains/flyover/floodfill.cc
+2014-03-06+10:08:49.0000000000	./src/video/texture_rectangle.h
+2014-03-06+12:12:23.0000000000	./src/video/texture_rectangle.cc
+
+*.  In order to count all files within a directory and all its subdirs,
+chant
+
+	find . -type f | wc -l
+
+To count all jpg files within a subdir tree, chant
+
+	find . -type f -name "*.jpg" | wc -l
+
+*.  In order to change permissions on just directories, chant
+
+find -type d -print0 | xargs -0 chmod a+x
+
+In order to change permissions on just files, chant
+
+find -type f -print0 | xargs -0 chmod a+r
+
+
+*.  In order to recursively change permissions on all files ending with a
+.c suffix, chant
+
+	find . -type f -name "*.c" -print0 | xargs -0 chmod a+rw
+	find . -type f -name "*.h" -print0 | xargs -0 chmod a+rw
+
+*.  In order to find files recently ported from our Mac Pro to our home
+linux laptop, chant
+
+touch --date "2014-02-18" /tmp/start
+
+find . -type f -newer /tmp/start > new_files.dat
+
+
+*.  In order to recursively find all ".svn" folders for eventual removal, chant
+
+    find -type d -name ".svn" -print > rm_dotsvn_folders
+
+*.  Find all files newer than specified date and time:
+
+	find -newermt "nov 06 2015 14:02" -ls
+
+	find ! -newermt "nov 06 2015 14:59" -ls
+
+*.  Find files newer/older than specified date/time and move to a new subdirectory:
+
+	find ! -newermt "nov 06 2015 14:59" -print0 | xargs -0 mv -t ./w_crf/
+
+	find -newermt "nov 06 2015 14:59" -print0 | xargs -0 mv -t ..
+
+
+
+*. In order to recursively replace all instances of "timefunc::print" with
+"outputfunc::print" within all *.cc files, chant
+
+  find . -name "*.cc" -exec sed -i 's/timefunc::print/outputfunc::print/g' {} +
+
+*.  find . -type f -exec sed -i 's/foo/bar/g' {} +
+
+
+*. Find 10 largest files within a source tree:
+
+ find /path/to/search/ -type f -printf '%s %p\n'| sort -nr | head -10
+
+ find . -type f -printf '%s %p\n'| sort -nr | head -10

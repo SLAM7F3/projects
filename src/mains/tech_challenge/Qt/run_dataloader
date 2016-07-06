@@ -1,0 +1,4 @@
+cd ~/programs/c++/svn/projects/src/mains/tech_challenge/Qt
+
+./qtdataloader \
+--GIS_layer ./packages/TOC_metadata.pkg

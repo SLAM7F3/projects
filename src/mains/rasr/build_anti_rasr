@@ -1,0 +1,14 @@
+/bin/rm ./crop_pan
+/bin/rm ./extract_walls
+/bin/rm ./fade
+/bin/rm ./gstreets
+/bin/rm ./ladar2roboworld
+/bin/rm ./pangen
+/bin/rm ./robo2tdp
+/bin/rm ./roboceiling
+/bin/rm ./roboladar
+/bin/rm ./robo_register
+/bin/rm ./simple_floor
+/bin/rm ./viewpanos
+/bin/rm ./viewrasr
+/bin/rm ./wagonwheel

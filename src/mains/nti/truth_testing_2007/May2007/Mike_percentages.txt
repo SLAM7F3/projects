@@ -1,0 +1,6 @@
+# Mike: % time vehicle in track
+
+58.6
+63.3
+
+

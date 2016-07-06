@@ -1,0 +1,1718 @@
+===========================================================================================
+Mongo database notes for street signs
+===========================================================================================
+Last updated on 2/6/15; 2/10/15; 2/18/15; 2/23/15
+===========================================================================================
+
+Weiyu's DNN stop-sign run on Mon, Feb 9:
+
+mongodump --db prjdb --collection detection -q '{"detector_version": 5310}'
+
+mongorestore --db prjdb --collection detection ./
+
+LA_downtown:
+-----------
+
+db.detection.find({"detector_version": 5310, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_la_downtown_pr_150209_213934.xml"}).count()
+>254
+
+db.detection.find({gnd:{$exists:true}, "detector_version": 5310, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_la_downtown_pr_150209_213934.xml"}).count()
+> 254
+
+Cupertino:
+---------
+
+db.detection.find({"detector_version": 5310, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_cupertino_1km_pr_150209_200639.xml"}).count()
+>534
+
+db.detection.find({gnd:{$exists:true}, "detector_version": 5310, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_cupertino_1km_pr_150209_200639.xml"}).count()
+>534
+
+Sat Jan 31 & Sun Feb 1 runs:
+
+LA_downtown:
+-----------
+
+db.detection.find({"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"}).count()
+> 10076
+
+db.detection.find({roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+> 9228
+
+db.detection.find({"duplicate":0, roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+> 2857
+
+db.detection.find({ "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+> 1247
+
+db.detection.find({ "roadsign_data.median_lidar_intensity":{"$gte":30}, "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+> 536
+
+mongodump --db prjdb --collection detection -q '{"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"}'
+
+mongorestore --db prjdb --collection detection ./
+
+Cupertino:
+---------
+
+db.detection.find({"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+> 2352
+
+db.detection.find({roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+> 1986
+
+db.detection.find({"duplicate":0, roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 649
+
+db.detection.find({ "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 298
+
+db.detection.find({ "roadsign_data.median_lidar_intensity":{"$gte":30}, "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true},"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 128
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}'
+
+NYC shape 1 
+-----------
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102434.xml"}).count()
+> 87405
+
+db.detection.find({roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102434.xml"}).count()
+> 73672
+
+db.detection.find({"duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102434.xml"}).count()
+> 22385
+
+db.detection.find({"n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102434.xml"}).count()
+> 10327
+
+db.detection.find({"roadsign_data.median_lidar_intensity":{"$gte":30}, "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102434.xml"}).count()
+> 5543
+
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version": 102,"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102434.xml"}'
+
+
+NYC shape 2 
+-----------
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102338.xml"}).count()
+> 76870
+
+db.detection.find({ roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102338.xml"}).count()
+> 67021
+
+db.detection.find({"duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102338.xml"}).count()
+> 17752
+
+db.detection.find({"n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102338.xml"}).count()
+> 8398
+
+db.detection.find({"roadsign_data.median_lidar_intensity":{"$gte":30}, "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102338.xml"}).count()
+> 5853
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version": 102,"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102338.xml"}'
+
+
+
+NYC shape 3
+-----------
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102126.xml"}).count()
+> 23249
+
+db.detection.find({roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102126.xml"}).count()
+> 15669
+
+db.detection.find({"duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102126.xml"}).count()
+> 5977
+
+db.detection.find({"n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102126.xml"}).count()
+> 2364
+
+db.detection.find({"roadsign_data.median_lidar_intensity":{"$gte":30}, "n_hits":{"$gte":2}, "duplicate":0, roadsign_data:{$exists:true}, gnd:{$exists:true}, "detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102126.xml"}).count()
+> 1245
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version": 102,"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150131_102126.xml"}'
+
+
+
+
+*.  "detection" collection for NYC Kitty Hawk shapes
+
+------------------------------------------------------------------------------------------------------------------
+Fri Jan 30 runs:
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090154.xml"}).count()
+> 23662
+
+db.detection.find({"detector_version":102, "run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090154.xml",gnd:{$exists:true}}).count()
+> 15887
+
+db.detection.find({"duplicate":0, "detector_version":102, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090154.xml",gnd:{$exists:true}}).count()
+> 6046
+
+db.detection.find({"n_hits":{"$gte":2},"duplicate":0, "detector_version":102,"run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090154.xml",gnd:{$exists:true}}).count()
+> 2350
+
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090154.xml"}'
+
+mongorestore --db prjdb --collection detection ./
+
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090010.xml"}).count()
+> 77746
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_090010.xml,gnd:{$exists:true}"}).count()
+> 0
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_085728.xml"}).count()
+> 88000
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150130_085728.xml",gnd:{$exists:true}}).count()
+> 0
+
+
+------------------------------------------------------------------------------------------------------------------
+Thurs, Jan 29 runs:
+
+db.detection.find({"detector_version":102, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_120829.xml"}).count()
+> 179
+
+db.detection.find({"detector_version":102, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_120829.xml",gnd:{$exists:true}}).count()
+> 141
+
+db.detection.find({"duplicate":0, "detector_version":102, "run_id":"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_120829.xml",gnd:{$exists:true}}).count()
+> 0
+
+
+
+db.detection.find({"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071425.xml"}).count()
+> 23662
+
+db.detection.find({"detector_version":102, "run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071425.xml",gnd:{$exists:true}}).count()
+>0
+
+mongodump --db prjdb --collection detection -q '{"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071425.xml"}'
+
+
+
+
+------------------------------------------------------------------------------------------------------------------
+
+db.detection.find({"detector_version":102, "run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071108.xml" }).count()
+> 77580
+
+db.detection.find({"detector_version":102, "run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071108.xml",gnd:{$exists:true} }).count()
+>0
+
+mongodump --db prjdb --collection detection -q '{"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071108.xml"}'
+
+
+------------------------------------------------------------------------------------------------------------------
+
+db.detection.find({"detector_version":102, "run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071321.xml"}).count()
+> 88000
+
+db.detection.find({"detector_version":102, "run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071321.xml",gnd:{$exists:true}}).count()
+> 0
+
+mongodump --db prjdb --collection detection -q '{"detector_version":102, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_pcho-MacPro_new_york_kitty_hawk_150128_071321.xml"}'
+
+
+
+------------------------------------------------------------------------------------------------------------------
+*.  "detection" collection for detector 102 on Cupertino
+
+db.detection.find({"detector_version":102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+> 2352
+
+db.detection.find({"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 2318
+
+db.detection.find({"duplicate":0, "detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 648
+
+db.detection.find({"n_hits":{"$gte":2}, "detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 309
+
+
+db.detection.find({"tile_id.x": 4512, "tile_id.y":7302,
+"detector_version":102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+> 56
+
+
+
+db.markup_unrect_object.find({"tile_id.x": 4511, "tile_id.y":7295,
+"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+
+db.markup_unrect_object.find({"tile_id.x": 4511, "tile_id.y":7295}).count()
+
+db.markup_unrect_object.find().count()
+
+
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version":102, run_id:"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml" }'
+
+mongorestore --db prjdb --collection detection ./
+
+------------------------------------------------------------------------------------------------------------------
+*.  "detection" collection for detector 102 on LA_downtown
+
+db.detection.find({"detector_version":102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"}).count()
+> 10071
+
+db.detection.find({"detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+> 9965
+
+
+> db.detection.find({"duplicate":0, "detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+2855
+
+> db.detection.find({"n_hits":{"$gte":2}, "duplicate":0, "detector_version": 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+1275
+
+
+mongodump --db prjdb --collection detection -q '{"detector_version":102, run_id:"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml" }'
+
+------------------------------------------------------------------------------------------------------------------
+
+*.  "detection" collection for detector 100 on new_york_ground tile 9210,9435
+
+> db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+1717
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 1684
+
+> db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml", description:"STOP"}).count()
+953
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",description:"STOP", gnd:{$exists:true}}).count()
+> 934
+
+
+> db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml", description:"STOP"}).limit(20).toArray()
+
+
+db.detection.find({duplicate:0, "gnd":{$exists:true},"detector_version":100, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+
+> 473
+
+db.detection.find({description:"STOP", duplicate:0, "gnd":{$exists:true},"detector_version":100, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+
+> 247
+
+db.detection.find({n_hits: {"$gte": 2}, description:"STOP", duplicate:0, "gnd":{$exists:true},"detector_version":100, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count()
+
+> 106
+
+
+
+mongodump --db prjdb --collection detection -q '{run_id:"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml" }'
+
+mongorestore --db prjdb --collection detection ./dump_010715_070900_fly3_ladowntown_copy2/prjdb/detection.bson 
+
+
+After Weiyu's refactored pr_build:
+
+
+
+Before Weiyu's refactoring push:
+
+NY_ground:
+
+   db.detection.find({"tile_id.x":9210, "tile_id.y":9435}).count()
+   > 69
+
+   db.detection.find({run_id:"street_signs"}).count()
+   > 19
+
+   db.detection.find({run_id:"street_signs", "tile_id.x": 9210, "tile_id.y": 9435}).count()
+   > 19
+
+   db.detection.find({run_id:{$exists:true}, "tile_id.x": 9210, "tile_id.y": 9435}).count()
+   > 19
+
+
+LA_downtown:
+
+   db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml", "tile_id.x" : 1731, "tile_id.y" : 10056}).count()
+> 10
+
+
+   db.detection.find({detector_version: 102, "run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml", "tile_id.x" : 1731, "tile_id.y" : 10056}).count()
+
+   db.detection.remove({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml", "tile_id.x" : 1731, "tile_id.y" : 10056})
+
+
+
+
+LA_downtown:
+-----------
+
+mongodump --db prjdb --collection detection -q '{run_id:"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml" }'
+
+db.detection.remove({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"})
+
+mongorestore --db prjdb --collection detection ./dump_010715_070900_fly3_ladowntown_copy2/prjdb/detection.bson 
+
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"}).count()
+> 55919
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",gnd:{$exists:true}}).count()
+> 55425
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",duplicate:0 }).count()
+> 10228
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",detection_polygon:{$exists:false}}).count()
+> 0
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"8"}).count()
+> 31304
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"31"}).count()
+> 11937
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"32"}).count()
+> 12678
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"8", gnd:{$exists:false}}).count()
+> 367
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"8", gnd:{$exists:true}}).count()
+> 30937
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"8", gnd:{$exists:false}}).limit(5).toArray()
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml","class":720,"image_path":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg//unplanned-20140611_210356/02-2645D-07392/3k/003753-003752-20140611_221826_243-Cam02_2645D_07392.jpg"}).toArray()
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"8","image_path":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg//unplanned-20140611_210356/02-2645D-07392/3k/003753-003752-20140611_221826_243-Cam02_2645D_07392.jpg"}).count()
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",type:"8","image_path":"/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/la_downtown/la_downtown-ground-20140611_210259-q4-jpg//unplanned-20140611_210356/02-2645D-07392/3k/003753-003752-20140611_221826_243-Cam02_2645D_07392.jpg"}).count()
+
+
+
+db.detection.find({"_id": ObjectId("54b5ab11674d7d7060166612") }).toArray()
+
+db.detection.find({"_id": ObjectId("54b5ab11674d7d7060166623") }).toArray()
+
+
+Cupertino:
+---------
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).count() 
+> 9730
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",gnd:{$exists:true}}).count()
+> 9572
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",duplicate:0 }).count()
+> 6542
+
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml"}).limit(10).toArray()
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml",detection_polygon:{$exists:false}}).count()
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",detection_polygon:{$exists:false}}).count()
+
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",type:"8"}).count()
+> 7814
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",type:"31"}).count()
+> 394
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",type:"32"}).count()
+> 1522
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",type:"8", gnd:{$exists:false}}).count()
+> 129
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",type:"8", gnd:{$exists:true}}).count()
+> 7685
+
+
+mongodump --db prjdb --collection detection -q '{run_id:"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml" }'
+
+db.detection.remove({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"})
+
+mongorestore --db prjdb --collection detection ./dump_010715_071000_fly3_cupertino_copy5/prjdb/detection.bson 
+
+
+db.detection.find({"run_id":"/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml"}).limit(5).toArray() 
+.
+.
+.
+{
+		"_id" : ObjectId("54ab2d1ed0696f3d4e0ad438"),
+		"run_id" : "/startown-gpfs/sputnik02/supersize/devtest/g3d/project_cupertino.xml",
+		"imdata_id" : NumberLong("8490256479913790701"),
+		"image_size" : {
+			"xsize" : 5120,
+			"ysize" : 3840
+		},
+		"tile_id" : {
+			"lev" : 14,
+			"x" : 4528,
+			"y" : 7321
+		},
+		"utm_zone" : 10,
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				0,
+				0,
+				0
+			]
+		},
+		"type" : "8",
+		"class" : 1288,
+		"score" : 0.9992020130157471,
+		"description" : "1288",
+		"detection_polygon" : {
+			"type" : "Polygon",
+			"coordinates" : [
+				[
+					2296.7985701268008,
+					3337.1666469523034
+				],
+				[
+					2279.1983970874585,
+					3337.177605114508
+				],
+				[
+					2296.7395287363674,
+					3232.6679802383987
+				],
+				[
+					2279.139340090417,
+					3232.6789177064147
+				]
+			]
+		},
+		"detector_version" : 1110,
+		"cam_id" : 1
+	}
+]
+
+
+
+> db.detection.find({"run_id":"foobar_Jan"}).toArray()
+[
+	{
+		"_id" : ObjectId("54aac1fa222b496ca43aa772"),
+		"run_id" : "foobar_Jan",
+		"imdata_id" : NumberLong("8490256479908596402"),
+		"image_size" : {
+			"xsize" : 5120,
+			"ysize" : 3840
+		},
+		"tile_id" : {
+			"lev" : 14,
+			"x" : 4511,
+			"y" : 7302
+		},
+		"utm_zone" : 10,
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				0,
+				0,
+				0
+			]
+		},
+		"type" : "8",
+		"class" : 10225,
+		"score" : 0.9998947978019714,
+		"description" : "10225",
+		"detection_polygon" : {
+			"type" : "Polygon",
+			"coordinates" : [
+				[
+					4775.833491612679,
+					3055.744974083295
+				],
+				[
+					4688.96390857929,
+					3058.1364342527804
+				],
+				[
+					4774.928315546652,
+					3022.7574247002376
+				],
+				[
+					4688.058904681254,
+					3025.1490094168166
+				]
+			]
+		},
+		"detector_version" : 1110,
+		"cam_id" : 1
+	}
+]
+
+------------------------------------------------------------------------------
+4.  imdata_point collection on fly6
+
+db.imdata_point.find({imdata_id:NumberLong("7837368413771538299")}).count()
+
+db.imdata_point.find({imdata_id:NumberLong("7837368413771538299")}).toArray()
+
+// Cupertino images
+
+db.imdata_point.find({imdata_id: NumberLong("8490256479909342346") }).toArray()
+
+db.imdata_point.find({imdata_id: NumberLong("8490256479909025359") }).toArray()
+
+db.imdata_point.find({imdata_id: NumberLong("8490256479906538979") }).toArray()
+
+
+ imdata_id = 8490256479909342346   -->	"imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b")),
+
+ imdata_id = 8490256479909025359   --> 	"imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b"))
+
+ imdata_id = 8490256479906538979   -->  "imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b"))
+
+db.imdata_point.find({"imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b")) }).count()
+> 10495
+
+
+
+db.imdata_point.find({imdata_id: NumberLong("8490256479909342346") }).toArray()
+[
+	{
+		"_id" : ObjectId("545ad85c961654b65703fda5"),
+		"imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b")),
+		"loc" : {
+			"type" : "Point",
+			"coordinates" : [
+				-122.02410706167879,
+				37.31663846021635
+			]
+		},
+		"imdata_id" : NumberLong("8490256479909342346"),
+		"time" : 1413060258.954997,
+		"pos" : {
+			"x" : -2693163.77428137,
+			"y" : -4305930.495974842,
+			"z" : 3845420.953111798,
+			"yaw" : 1.293265266,
+			"pitch" : -0.862973342,
+			"roll" : 2.937094949
+		},
+		"org_pos" : {
+			"x" : -2693163.77428137,
+			"y" : -4305930.495974842,
+			"z" : 3845420.953111798,
+			"yaw" : 1.293265266,
+			"pitch" : -0.862973342,
+			"roll" : 2.937094949
+		},
+		"vel" : {
+			"x" : 9.868762315,
+			"y" : -0.064882773,
+			"z" : -0.305513621,
+			"yaw" : -0.058748469,
+			"pitch" : 0.012732787,
+			"roll" : -0.040631
+		},
+		"org_vel" : {
+			"x" : 9.868762315,
+			"y" : -0.064882773,
+			"z" : -0.305513621,
+			"yaw" : -0.058748469,
+			"pitch" : 0.012732787,
+			"roll" : -0.040631
+		},
+		"image" : [
+			{
+				"camera_number" : 0,
+				"filename" : "unplanned-20141011_194607/02-2645D-07448/21k/021737-004232-20141011_204418_955-Cam02_2645D_07448.dng",
+				"iminfo" : {
+					"aver1" : -1,
+					"aver2" : -1,
+					"exp" : 0.000535,
+					"fnum" : 4,
+					"focallength" : 0,
+					"iso" : 100,
+					"lgain1" : 0,
+					"minv1" : -1,
+					"minv2" : -1,
+					"maxv1" : -1,
+					"maxv2" : -1,
+					"md5" : "",
+					"temperature" : 31,
+					"wb_as_shot1" : 0,
+					"wb_as_shot2" : 0,
+					"wb_as_shot3" : 0,
+					"wb_as_shot4" : 0,
+					"wb_daylight1" : 0,
+					"wb_daylight2" : 0,
+					"wb_daylight3" : 0,
+					"wb_daylight4" : 0
+				},
+				"shake" : {
+					"x" : -1e-9,
+					"y" : 1e-9,
+					"z" : 1e-9,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				},
+				"td_offset" : 0,
+				"time" : 1413060258.954997,
+				"valid" : 1,
+				"vel" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			},
+			{
+				"camera_number" : 1,
+				"filename" : "unplanned-20141011_194607/02-2645D-07409/21k/021737-004232-20141011_204418_955-Cam02_2645D_07409.dng",
+				"iminfo" : {
+					"aver1" : -1,
+					"aver2" : -1,
+					"exp" : 0.000535,
+					"fnum" : 4,
+					"focallength" : 0,
+					"iso" : 100,
+					"lgain1" : 0,
+					"minv1" : -1,
+					"minv2" : -1,
+					"maxv1" : -1,
+					"maxv2" : -1,
+					"md5" : "",
+					"temperature" : 31,
+					"wb_as_shot1" : 0,
+					"wb_as_shot2" : 0,
+					"wb_as_shot3" : 0,
+					"wb_as_shot4" : 0,
+					"wb_daylight1" : 0,
+					"wb_daylight2" : 0,
+					"wb_daylight3" : 0,
+					"wb_daylight4" : 0
+				},
+				"shake" : {
+					"x" : 0,
+					"y" : -1e-9,
+					"z" : 2e-9,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				},
+				"td_offset" : 0,
+				"time" : 1413060258.954997,
+				"valid" : 1,
+				"vel" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			},
+			{
+				"camera_number" : 2,
+				"filename" : "unplanned-20141011_194607/02-2645D-07407/21k/021737-004232-20141011_204418_955-Cam02_2645D_07407.dng",
+				"iminfo" : {
+					"aver1" : -1,
+					"aver2" : -1,
+					"exp" : 0.000545,
+					"fnum" : 4,
+					"focallength" : 0,
+					"iso" : 100,
+					"lgain1" : 0,
+					"minv1" : -1,
+					"minv2" : -1,
+					"maxv1" : -1,
+					"maxv2" : -1,
+					"md5" : "",
+					"temperature" : 33,
+					"wb_as_shot1" : 0,
+					"wb_as_shot2" : 0,
+					"wb_as_shot3" : 0,
+					"wb_as_shot4" : 0,
+					"wb_daylight1" : 0,
+					"wb_daylight2" : 0,
+					"wb_daylight3" : 0,
+					"wb_daylight4" : 0
+				},
+				"shake" : {
+					"x" : 1e-9,
+					"y" : 1e-9,
+					"z" : 2e-9,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				},
+				"td_offset" : 0,
+				"time" : 1413060258.954997,
+				"valid" : 1,
+				"vel" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			},
+			{
+				"camera_number" : 3,
+				"filename" : "unplanned-20141011_194607/02-2645D-07385/21k/021737-004232-20141011_204418_955-Cam02_2645D_07385.dng",
+				"iminfo" : {
+					"aver1" : -1,
+					"aver2" : -1,
+					"exp" : 0.000355,
+					"fnum" : 4,
+					"focallength" : 0,
+					"iso" : 100,
+					"lgain1" : 0,
+					"minv1" : -1,
+					"minv2" : -1,
+					"maxv1" : -1,
+					"maxv2" : -1,
+					"md5" : "",
+					"temperature" : 33,
+					"wb_as_shot1" : 0,
+					"wb_as_shot2" : 0,
+					"wb_as_shot3" : 0,
+					"wb_as_shot4" : 0,
+					"wb_daylight1" : 0,
+					"wb_daylight2" : 0,
+					"wb_daylight3" : 0,
+					"wb_daylight4" : 0
+				},
+				"shake" : {
+					"x" : -1e-9,
+					"y" : 1e-9,
+					"z" : -1e-9,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				},
+				"td_offset" : 0,
+				"time" : 1413060258.954997,
+				"valid" : 1,
+				"vel" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			},
+			{
+				"camera_number" : 4,
+				"filename" : "unplanned-20141011_194607/02-2645D-07488/21k/021737-004232-20141011_204418_955-Cam02_2645D_07488.dng",
+				"iminfo" : {
+					"aver1" : -1,
+					"aver2" : -1,
+					"exp" : 0.000605,
+					"fnum" : 4,
+					"focallength" : 0,
+					"iso" : 100,
+					"lgain1" : 0,
+					"minv1" : -1,
+					"minv2" : -1,
+					"maxv1" : -1,
+					"maxv2" : -1,
+					"md5" : "",
+					"temperature" : 31,
+					"wb_as_shot1" : 0,
+					"wb_as_shot2" : 0,
+					"wb_as_shot3" : 0,
+					"wb_as_shot4" : 0,
+					"wb_daylight1" : 0,
+					"wb_daylight2" : 0,
+					"wb_daylight3" : 0,
+					"wb_daylight4" : 0
+				},
+				"shake" : {
+					"x" : -1e-9,
+					"y" : -1e-9,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				},
+				"td_offset" : 0,
+				"time" : 1413060258.954997,
+				"valid" : 1,
+				"vel" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			},
+			{
+				"camera_number" : 5,
+				"filename" : "unplanned-20141011_194607/02-2645D-07476/21k/021737-004232-20141011_204418_955-Cam02_2645D_07476.dng",
+				"iminfo" : {
+					"aver1" : -1,
+					"aver2" : -1,
+					"exp" : 0.000533,
+					"fnum" : 4,
+					"focallength" : 0,
+					"iso" : 100,
+					"lgain1" : 0,
+					"minv1" : -1,
+					"minv2" : -1,
+					"maxv1" : -1,
+					"maxv2" : -1,
+					"md5" : "",
+					"temperature" : 31,
+					"wb_as_shot1" : 0,
+					"wb_as_shot2" : 0,
+					"wb_as_shot3" : 0,
+					"wb_as_shot4" : 0,
+					"wb_daylight1" : 0,
+					"wb_daylight2" : 0,
+					"wb_daylight3" : 0,
+					"wb_daylight4" : 0
+				},
+				"shake" : {
+					"x" : -2e-9,
+					"y" : 1e-9,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				},
+				"td_offset" : 0,
+				"time" : 1413060258.954997,
+				"valid" : 1,
+				"vel" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			}
+		],
+		"lidar" : [
+			{
+				"lidar_number" : 0,
+				"time" : 1413060258.954997,
+				"shake" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			},
+			{
+				"lidar_number" : 1,
+				"time" : 1413060258.954997,
+				"shake" : {
+					"x" : 0,
+					"y" : 0,
+					"z" : 0,
+					"yaw" : 0,
+					"pitch" : 0,
+					"roll" : 0
+				}
+			}
+		]
+	}
+]
+
+------------------------------------------------------------------------------
+5.  Imdata collection on fly6
+
+
+Need to retrieve "imdata" value from "imdata_point" collection for a
+particular image.  
+
+		"imdata" : DBRef("imdata", ObjectId("543fe38896165458d8d3e07b")),
+
+Extract imdata's ObjectID and use it to query for particular imdata
+associated with imdata_point:
+
+
+db.imdata.find({"_id" : ObjectId("543fe38896165458d8d3e07b")}).count()
+> 1
+
+
+
+db.imdata.find({"_id" : ObjectId("543fe38896165458d8d3e07b")}).toArray()
+[
+	{
+		"_id" : ObjectId("543fe38896165458d8d3e07b"),
+		"category" : "ground",
+		"created" : ISODate("2014-10-16T08:26:00.927Z"),
+		"hidden" : false,
+		"archives" : [ ],
+		"from_imdata" : false,
+		"name" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6-imdata",
+		"metro" : "san_jose",
+		"short_name" : "san_jose-rainbow_west-20141011_155507-q6",
+		"collected_timestamp" : ISODate("2014-10-11T15:55:07Z"),
+		"length" : 51800.95576885958,
+		"line_string_path" : {
+			"type" : "MultiLineString",
+			"coordinates" : [
+				[
+					[
+						-122.03315471428385,
+						37.317740465044196
+					],
+
+...
+					[
+						-122.02134164870724,
+						-121.99633473023108,
+						37.380052469719736
+					]
+				]
+			]
+		},
+		"imdata_ingested" : true,
+		"camera" : [
+			{
+				"camera_number" : 0,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07448",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+				"calibration_type" : "manual",
+				"uid" : "e820092c-5c32-4a9a-90bf-c77221ecb066",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"pos" : {
+						"x" : 0.5314,
+						"y" : 0.5135,
+						"z" : -0.0368,
+						"yaw" : 0.832522053,
+						"pitch" : 0.410675973,
+						"roll" : 1.994911335
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				},
+				"org_cal" : {
+					"pos" : {
+						"x" : 0.5314,
+						"y" : 0.5135,
+						"z" : -0.0368,
+						"yaw" : 0.832522053,
+						"pitch" : 0.410675973,
+						"roll" : 1.994911335
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				}
+			},
+			{
+				"camera_number" : 1,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07409",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+				"calibration_type" : "manual",
+				"uid" : "4c1d4804-27f9-473f-a694-9f4f63075242",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"pos" : {
+						"x" : 0.3314,
+						"y" : 0.551,
+						"z" : 0.0132,
+						"yaw" : 1.570796327,
+						"pitch" : -0.174532925,
+						"roll" : 3.141592654
+					},
+					"proj" : {
+						"type" : 0,
+						"fov_s" : 1.133200395,
+						"fov_h" : 0.890404327,
+						"k2" : -0.07487,
+						"k3" : 0,
+						"k4" : 0.0663,
+						"cx" : -0.00351,
+						"cy" : 0.01007,
+						"lx" : -0.00059,
+						"ly" : -0.00132
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				},
+				"org_cal" : {
+					"pos" : {
+						"x" : 0.3314,
+						"y" : 0.551,
+						"z" : 0.0132,
+						"yaw" : 1.570796327,
+						"pitch" : -0.174532925,
+						"roll" : 3.141592654
+					},
+					"proj" : {
+						"type" : 0,
+						"fov_s" : 1.133200395,
+						"fov_h" : 0.890404327,
+						"k2" : -0.07487,
+						"k3" : 0,
+						"k4" : 0.0663,
+						"cx" : -0.00351,
+						"cy" : 0.01007,
+						"lx" : -0.00059,
+						"ly" : -0.00132
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				}
+			},
+			{
+				"camera_number" : 2,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07407",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+				"calibration_type" : "manual",
+				"uid" : "615503de-3337-4a7c-8e97-a3795ec054a7",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"pos" : {
+						"x" : -1.5686,
+						"y" : 0.5135,
+						"z" : -0.0368,
+						"yaw" : 2.3090706,
+						"pitch" : 0.410675973,
+						"roll" : -1.98443936
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				},
+				"org_cal" : {
+					"pos" : {
+						"x" : -1.5686,
+						"y" : 0.5135,
+						"z" : -0.0368,
+						"yaw" : 2.3090706,
+						"pitch" : 0.410675973,
+						"roll" : -1.98443936
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				}
+			},
+			{
+				"camera_number" : 3,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07385",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+				"calibration_type" : "manual",
+				"uid" : "8f6649d5-322d-4140-8a00-74120c7fff3a",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"pos" : {
+						"x" : -1.5686,
+						"y" : -0.6865,
+						"z" : -0.0368,
+						"yaw" : 3.974114707,
+						"pitch" : 0.410675973,
+						"roll" : -1.157153294
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				},
+				"org_cal" : {
+					"pos" : {
+						"x" : -1.5686,
+						"y" : -0.6865,
+						"z" : -0.0368,
+						"yaw" : 3.974114707,
+						"pitch" : 0.410675973,
+						"roll" : -1.157153294
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				}
+			},
+			{
+				"camera_number" : 4,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07488",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+				"calibration_type" : "manual",
+				"uid" : "5553c2ec-1138-42b5-b8ed-8da0b09df36b",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"pos" : {
+						"x" : 0.3314,
+						"y" : -0.724,
+						"z" : 0.0132,
+						"yaw" : 4.71238898,
+						"pitch" : -0.174532925,
+						"roll" : 3.141592654
+					},
+					"proj" : {
+						"type" : 0,
+						"fov_s" : 1.133200395,
+						"fov_h" : 0.890404327,
+						"k2" : -0.07487,
+						"k3" : 0,
+						"k4" : 0.0663,
+						"cx" : -0.00351,
+						"cy" : 0.01007,
+						"lx" : -0.00059,
+						"ly" : -0.00132
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				},
+				"org_cal" : {
+					"pos" : {
+						"x" : 0.3314,
+						"y" : -0.724,
+						"z" : 0.0132,
+						"yaw" : 4.71238898,
+						"pitch" : -0.174532925,
+						"roll" : 3.141592654
+					},
+					"proj" : {
+						"type" : 0,
+						"fov_s" : 1.133200395,
+						"fov_h" : 0.890404327,
+						"k2" : -0.07487,
+						"k3" : 0,
+						"k4" : 0.0663,
+						"cx" : -0.00351,
+						"cy" : 0.01007,
+						"lx" : -0.00059,
+						"ly" : -0.00132
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				}
+			},
+			{
+				"camera_number" : 5,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/resource/san_jose/san_jose-rainbow_west-20141011_155507-q6",
+				"caminfo_version" : 1,
+				"im_preproc_version" : -1,
+				"serial" : "02-2645D-07476",
+				"lens_serial" : "",
+				"model" : "GT5100C (02-2645D)",
+				"maker" : "AVT",
+				"image_xs" : 5120,
+				"image_ys" : 3840,
+				"color_channels" : 3,
+				"calibration_type" : "manual",
+				"uid" : "b8718b0d-c4d5-4eb6-8e91-2f05f19b68b9",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"pos" : {
+						"x" : 0.5314,
+						"y" : -0.6865,
+						"z" : -0.0368,
+						"yaw" : 5.450663254,
+						"pitch" : 0.410675973,
+						"roll" : -1.98443936
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				},
+				"org_cal" : {
+					"pos" : {
+						"x" : 0.5314,
+						"y" : -0.6865,
+						"z" : -0.0368,
+						"yaw" : 5.450663254,
+						"pitch" : 0.410675973,
+						"roll" : -1.98443936
+					},
+					"proj" : {
+						"type" : 3,
+						"fov_s" : 1.627910307,
+						"fov_h" : 1.342412664,
+						"k2" : -0.02721,
+						"k3" : 0,
+						"k4" : -0.00404,
+						"cx" : 0.01823,
+						"cy" : 0.00649,
+						"lx" : 0.00145,
+						"ly" : 0.00001
+					},
+					"td1" : 0,
+					"td2" : 0,
+					"acc" : 0
+				}
+			}
+		],
+		"lidar" : [
+			{
+				"lidar_number" : 0,
+				"lidarinfo_version" : 1,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/div/lidar/20141011_153544-Q6/lidar_processed/1/",
+				"serial" : "Unknown",
+				"model" : "Unknown",
+				"maker" : "Velodyne",
+				"calibration_type" : "manual",
+				"uid" : "fcb915b5-d624-463b-9540-5734d17b2151",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"boresight" : {
+						"x" : 0.7264,
+						"y" : -0.0865,
+						"z" : -0.2879,
+						"yaw" : 1.570796327,
+						"pitch" : 0,
+						"roll" : -0.523598776
+					}
+				},
+				"org_cal" : {
+					"boresight" : {
+						"x" : 0.7264,
+						"y" : -0.0865,
+						"z" : -0.2879,
+						"yaw" : 1.570796327,
+						"pitch" : 0,
+						"roll" : -0.523598776
+					}
+				}
+			},
+			{
+				"lidar_number" : 1,
+				"lidarinfo_version" : 1,
+				"path" : "/startown-gpfs/sputnik03/supersize/copyprocess_beta/div/lidar/20141011_153544-Q6/lidar_processed/2/",
+				"serial" : "Unknown",
+				"model" : "Unknown",
+				"maker" : "Velodyne",
+				"calibration_type" : "manual",
+				"uid" : "2d8c9615-9330-42f3-bd37-1ba44793d345",
+				"parent_uid" : "00000000-0000-0000-0000-000000000000",
+				"original_uid" : "00000000-0000-0000-0000-000000000000",
+				"cal" : {
+					"boresight" : {
+						"x" : -1.7366,
+						"y" : -0.0865,
+						"z" : -0.2879,
+						"yaw" : -1.570796327,
+						"pitch" : 0,
+						"roll" : -0.523598776
+					}
+				},
+				"org_cal" : {
+					"boresight" : {
+						"x" : -1.7366,
+						"y" : -0.0865,
+						"z" : -0.2879,
+						"yaw" : -1.570796327,
+						"pitch" : 0,
+						"roll" : -0.523598776
+					}
+				}
+			}
+		]
+	}
+]
+
+
+Oahu: "detection" collection from fly4
+--------------------------------------
+
+> db.fly4_detection.find().count()
+536443
+
+> db.fly4_detection.find({detector_version:23}).count()	  House numbers
+320161
+
+> db.fly4_detection.find({detector_version:23, state:2}).count()	  Verified correct house numbers 
+66919
+
+
+Traffic signs/logos
+
+> db.fly4_detection.find({detector_version:142}).count()  
+73249
+
+Verified correct traffic signs/logos
+
+> db.fly4_detection.find({detector_version:142, state: 2}).count()       
+66801
+
+Oahu verified correct traffic signs/logos
+> db.fly4_detection.find({image_path: {$regex: "oahu"}, detector_version:142, state: 2}).count()       
+66801
+
+
+Traffic signs/logos
+
+> db.fly4_detection.find({detector_version:143}).count()  
+14003
+
+Verified correct traffic signs/logos
+
+> db.fly4_detection.find({detector_version:143, state: 2}).count()  	
+13750
+
+Oahu verified correct traffic signs/logos
+> db.fly4_detection.find({image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+13750
+
+> db.fly4_detection.find({label:"PED XING", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+3253
+> db.fly4_detection.find({label:"35 mph", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+4940
+> db.fly4_detection.find({label:"25 MPH", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+158
+> db.fly4_detection.find({label:"Keep right", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+1207
+> db.fly4_detection.find({label:"Stop Here On Red", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+2
+> db.fly4_detection.find({label:"Bike lane", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+14
+> db.fly4_detection.find({label:"L. Rail Crossing", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+0
+> db.fly4_detection.find({label:"2-hour parking", image_path: {$regex:"oahu"}, detector_version:143, state: 2}).count()  	
+0
+
+
+> db.fly4_detection.find({label:"STOP", image_path: {$regex:"oahu"}, state: 2}).count()  	
+28244
+> db.fly4_detection.find({label:"do not enter", image_path: {$regex:"oahu"}, state: 2}).count()  	
+977
+
+> db.fly4_detection.find({label:"No left turn", image_path: {$regex:"oahu"}, state: 2}).count()  	
+667
+
+> db.fly4_detection.find({label:"No L or U turn", image_path: {$regex:"oahu"}, state: 2}).count()  	
+1
+
+> db.fly4_detection.find({label:"No right turn", image_path: {$regex:"oahu"}, state: 2}).count()  	
+205
+
+> db.fly4_detection.find({label:"No straight through", image_path: {$regex:"oahu"}, state: 2}).count()  	
+0
+
+> db.fly4_detection.find({label:"No u turn", image_path: {$regex:"oahu"}, state: 2}).count()  	
+1
+
+> db.fly4_detection.find({label:"One Way", image_path: {$regex:"oahu"}, state: 2}).count()  	
+8044
+
+> db.fly4_detection.find({label:"speed limit 5", image_path: {$regex:"oahu"}, state: 2}).count()  	
+404
+
+> db.fly4_detection.find({label:"speed limit 10", image_path: {$regex:"oahu"}, state: 2}).count()  	
+295
+
+> db.fly4_detection.find({label:"speed limit 15", image_path: {$regex:"oahu"}, state: 2}).count()  	
+2205
+
+> db.fly4_detection.find({label:"speed limit 20", image_path: {$regex:"oahu"}, state: 2}).count()  	
+588
+
+> db.fly4_detection.find({label:"speed limit 25", image_path: {$regex:"oahu"}, state: 2}).count()  	
+21503
+
+> db.fly4_detection.find({label:"speed limit 30", image_path: {$regex:"oahu"}, state: 2}).count()  	
+779
+
+> db.fly4_detection.find({label:"speed limit 35", image_path: {$regex:"oahu"}, state: 2}).count()  	
+2185
+
+> db.fly4_detection.find({label:"speed limit 40", image_path: {$regex:"oahu"}, state: 2}).count()  	
+12
+
+> db.fly4_detection.find({label:"speed limit 45", image_path: {$regex:"oahu"}, state: 2}).count()  	
+482
+
+> db.fly4_detection.find({label:"speed limit 50", image_path: {$regex:"oahu"}, state: 2}).count()  	
+0
+
+> db.fly4_detection.find({label:"speed limit 55", image_path: {$regex:"oahu"}, state: 2}).count()  	
+21
+
+> db.fly4_detection.find({label:"speed limit 60", image_path: {$regex:"oahu"}, state: 2}).count()
+14
+
+> db.fly4_detection.find({label:"speed limit 65", image_path: {$regex:"oahu"}, state: 2}).count()
+0
+
+> db.fly4_detection.find({label:"speed limit 70", image_path: {$regex:"oahu"}, state: 2}).count()
+0
+
+> db.fly4_detection.find({label:"speed limit 75", image_path: {$regex:"oahu"}, state: 2}).count()
+5
+
+> db.fly4_detection.find({label:"speed limit 80", image_path: {$regex:"oahu"}, state: 2}).count()
+1
+
+> db.fly4_detection.find({label:"yield", image_path: {$regex:"oahu"}, state: 2}).count()
+168
+
+
+
+
+
+
+
+Oahu: "detection" collection from fly3
+--------------------------------------
+
+> db.markup_object.find({"location":{$regex:"oahu_eastern"} }).count()  
+8246
+
+> db.markup_object.find({"location":{$regex:"oahu_the_rest"} }).count()  
+17283
+
+> db.markup_object.find({"location":{$regex:"oahu_the_rest2"} }).count()  
+8332
+
+db.markup_object.find({"location":{$regex:"oahu_the_rest3"} }).count() 
+> 3816
+
+db.markup_object.find({"location":{$regex:"oahu_the_rest4"} }).count() 
+> 1340
+
+
+
+
+> db.markup_object.find( {"location":{$regex:"oahu"} } ).count()
+38043
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"digit"}} } ).count()
+6991
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"house-numbers"}} } ).count()
+6560
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"street_name"}} } ).count()
+5
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"road"}} } ).count()
+30
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"not-road"}} } ).count()
+28
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"parking-lot"}} } ).count()
+23
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":"traffic_signs"}} } ).count()
+0
+
+
+
+
+> db.markup_object.find( {"location":{$regex:"oahu"}, "markups" : {$elemMatch: {"markup_type":{$nin:["digit","house-numbers"]} }} } ).count()
+35
+
+
+
+db.markup_object.find( {"location":{$regex:"unrecognized"}, "markups" : {$elemMatch: {"markup_type":"digit"}} } ).count()
+6991
+
+
+
+Verified roadsign documents in markup_unrect_object table:
+
+> db.markup_unrect_object.find().count()	  
+435833  (as of 2/19/15)
+
+> db.markup_unrect_object.find({type:"us_road_sign"}).count()	  
+230727  (as of 2/19/15)
+
+> db.markup_unrect_object.find({type:"us_road_sign", state:2}).count()
+// Correctly classified
+19325   (as of 2/20/15)
+
+> db.markup_unrect_object.find({type:"us_road_sign", state:3}).count()	  
+// Incorrectly classified
+11323  (as of 2/20/15)
+
+> db.markup_unrect_object.find({type:"us_road_sign", state:4}).count()	  
+// Unknown classification
+7524   (as of 2/20/15)
+
+
+
+
+
+
+> db.markup_unrect_object.find({rectified_image_path: {$regex:"oahu"}}).count()
+125742
+
+> db.markup_unrect_object.find({rectified_image_path: {$regex:"oahu"}, type:"us_road_sign"}).count()
+63869
+
+
+> db.markup_unrect_object.find({sub_type:"do_not_enter"}).count()
+3187
+
+
+> db.markup_unrect_object.find({rectified_image_path: {$regex:"oahu"}, sub_type:"do_not_enter"}).count()
+977
+
+> db.markup_unrect_object.find({rectified_image_path: {$regex:"san_jose"}, sub_type:"do_not_enter"}).count()
+268
+
+> db.markup_unrect_object.find({rectified_image_path: {$regex:"la_downtown"}, sub_type:"do_not_enter"}).count()
+240
+
+> db.markup_unrect_object.find({rectified_image_path: {$regex:"none-ground-201408"}, sub_type:"do_not_enter"}).count()
+1702
+
+
+
+> db.markup_unrect_object.find({rectified_image_path: "/startown-gpfs/sputnik03/supersize/labeling_resources/san_francisco-b03-20140827_162116-q6-imdata/cam4//images/002397-002388-20140827_175216_234-Cam02_2645D_07385_rect.jpg", sub_type:"no_left_or_u_turn"}).count()
+
+> db.markup_unrect_object.find({patch_path: {$exists:true}}).count()
+
+

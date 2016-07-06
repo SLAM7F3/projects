@@ -1,0 +1,52 @@
+===========================================================================
+Flash installation notes
+===========================================================================
+Last updated on 7/13/10
+===========================================================================
+
+We experienced significant trouble with installing Flash under Ubuntu
+10.04.  After googling around, we found the following recipe which seems to
+work at http://linuxfilesystem.com/uncategorized/installing-flash-10-1-in-64-bit-ubuntu-10-04-lts
+
+
+
+(Make sure you remove any current versions of Flash before continuing)
+
+-Navigate to get.adobe.com and download the tar.gz for Linux. 
+
+-Extract libflashplayer.so to your Desktop 
+
+-Navigate to your terminal and type
+
+cd /home/user_name/Desktop (case sensitive, replace user_name with your
+username) 
+
+Then input the following 4 commands individually: 
+
+sudo mv libflashplayer.so /usr/lib/mozilla/plugins/
+
+sudo nspluginwrapper -i /usr/lib/mozilla/plugins/libflashplayer.so
+
+sudo ln -sf /usr/lib/nspluginwrapper/plugins/npwrapper.libflashplayer.so /usr/lib/mozilla/plugins/ 
+
+sudo ln -sf /usr/lib/nspluginwrapper/plugins/npwrapper.libflashplayer.so /usr/lib/firefox-addons/plugins/ 
+
+And you're done!
+
+
+
+
+
+If you'd like to uninstall, input the following commands in your terminal: 
+
+sudo rm /usr/lib/mozilla/plugins/libflashplayer.so 
+
+sudo rm /usr/lib/nspluginwrapper/plugins/npwrapper.libflashplayer.so
+
+sudo rm /usr/lib/mozilla/plugins/npwrapper.libflashplayer.so 
+
+sudo rm /usr/lib/firefox-addons/plugins/npwrapper.libflashplayer.so 
+
+Links:
+
+ubuntuforums.org

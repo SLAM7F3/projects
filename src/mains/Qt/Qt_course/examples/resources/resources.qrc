@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+        <file>images/bird.png</file>
+        <file>images/dog.png</file>
+        <file>sounds/bird.txt</file>
+        <file>sounds/dog.txt</file>
+        <file alias="translations/resources_da.qm">resources_da.qm</file>
+</qresource>
+
+<qresource lang="da_DK">
+        <file alias="sounds/bird.txt">sounds/bird-da.txt</file>
+        <file alias="sounds/dog.txt">sounds/dog-da.txt</file>
+</qresource>
+
+</RCC>

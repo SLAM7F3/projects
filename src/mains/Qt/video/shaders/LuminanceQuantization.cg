@@ -1,0 +1,60 @@
+void quantizeLuminance( uniform samplerRECT inputLabASampler,
+					   
+					   uniform float nBins,
+					   uniform float binMin,
+					   uniform float binSize,
+					   
+					   uniform float2 sharpnessAB,
+					   
+					   float2 xy : WPOS,
+					   
+					   out float4 colorOut : COLOR )
+{
+	// some constants
+	const float2 dx = float2( 1, 0 );
+	const float2 dy = float2( 0, 1 );
+	float halfBinSize = 0.5 * binSize;
+
+	/* DEBUG: input is in rgb
+	float eastL = 0.01 * rgba2LabA( tex2D( LabAInputSampler, xy + dx ) ).x;
+	float westL = 0.01 * rgba2LabA( tex2D( LabAInputSampler, xy - dx ) ).x;
+	float northL = 0.01 * rgba2LabA( tex2D( LabAInputSampler, xy + dy ) ).x;
+	float southL = 0.01 * rgba2LabA( tex2D( LabAInputSampler, xy - dy ) ).x;
+	float4 center = rgba2LabA( tex2D( LabAInputSampler, xy ) );	
+	*/
+
+	// remap L to [0, 1]
+	float eastL = 0.01 * texRECT( inputLabASampler, xy + dx ).x;
+	float westL = 0.01 * texRECT( inputLabASampler, xy - dx ).x;
+	float northL = 0.01 * texRECT( inputLabASampler, xy + dy ).x;
+	float southL = 0.01 * texRECT( inputLabASampler, xy - dy ).x;
+	float4 center = texRECT( inputLabASampler, xy );	
+	
+	float L = center.x;
+
+	// compute gradient (gx, gy)
+	float2 gradient = 0.5 * float2( eastL - westL, northL - southL ); // between -0.5 and 0.5
+	float magGradient = length( gradient ); // between 0 and ( sqrt(2) / 2 ) = 0.7071
+	magGradient = saturate( 1.41421 * magGradient ); // normalize to [0,1]
+	
+	// compute sharpness based on gradient
+	float phi = sharpnessAB.x * magGradient + sharpnessAB.y;
+	
+	float binFloatIndex = ( L - binMin ) / binSize;
+	float nearestBinIntIndex = round( binFloatIndex );
+	float nearestLuminance = binMin + binSize * nearestBinIntIndex;
+	
+	float normalizedDistanceFromBin = ( L - nearestLuminance ) / binSize; // [-0.5, 0.5]
+	
+	// normalizing factor: tanh( phi * normalizedDistanceFromBin ) is between tanh( 0.5 * phi )
+	// and tanh( -0.5 * phi ) = -tanh( 0.5 * phi )
+	// dividing by tanh( 0.5 * phi ) normalizes it to [-1,1]	
+	float tanhMax = tanh( 0.5 * phi );
+	
+	L = nearestLuminance + halfBinSize * tanh( phi * normalizedDistanceFromBin ) / tanhMax;
+	L = clamp( L, 0, 100 );
+	colorOut = float4( L, center.yzw );
+
+	// DEUBG: output is in RGB
+	// colorOut = LabA2rgba( outputLabA );
+}

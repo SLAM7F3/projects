@@ -1,0 +1,26 @@
+/home/cho/programs/c++/svn/projects/src/mains/newyork/images/piers1.jpg
+--OSGsubPAT_ID 100
+--frustum_sidelength 1500
+# --frustum_sidelength 2000
+# --downrange_distance 75
+--downrange_distance 150
+# --downrange_distance 300
+# --downrange_distance 400
+--projection_matrix
+
+# Compromise fit to match mosaiced piers1 and piers2 images:
+
+1.43589452518   -1.2396006098   -0.0426139261867        4747130.54789
+0.39523562328   0.215280096815  -1.74781149975  	-1201188.41027
+0.860858159183  0.50650115402   -0.0487833039541        -2785935.77551
+
+# Normalization factor rho = 1
+# fu = -1.79636363215 fv = -1.72363636785
+# u0 = 0.610321226453 v0 = 0.534545448221
+# theta = 90.9045454018 degs
+# Camera world X = 584609.3376
+# Camera world Y = 4506746.633
+# Camera world Z = 47.4176545398
+# Camera azimuth = -149.52881838 degs
+# Camera elevation = 2.79618724209 degs
+# Camera roll = 0.494553515981 degs

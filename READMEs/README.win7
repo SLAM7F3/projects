@@ -1,0 +1,18 @@
+===========================================================================
+Windows7 notes
+===========================================================================
+Last updated on 10/14/10
+===========================================================================
+
+Procedure for brining up a command prompt within Win7:
+
+1.  Press control-alt-delete to bring up core computer options
+
+2.  Choose start Task manager from the list of computer options
+
+3.  Select file -> new task within Windows Task Manager menu which pops up
+
+4.  Enter "cmd" in white space field to invoke a command prompt
+
+
+

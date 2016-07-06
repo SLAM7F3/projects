@@ -1,0 +1,305 @@
+============================================================================
+Ubuntu system administration and setup notes
+============================================================================
+Last updated on 12/24/13; 9/2/15; 3/2/16; 6/11/16
+============================================================================
+
+1.  Be sure to add machine name to /etc/hosts to try to avoid long name
+resolution hangup times:
+
+127.0.0.1       localhost vision 
+
+2.  For activemq startup at boottime purposes, we need to define JAVA_HOME
+environmental variable in /root/.bashrc and /etc/profile
+
+export JAVA_HOME=/opt/java/jdk1.5.0_16
+
+3.  lspci lists all PCI devices (hardware on computer)
+
+e.g. From lspci output on touchy2, we learn that touchy2 has an NVIDIA
+Quadro Fx 3500 graphics card
+
+
+08:00.0 PCI bridge: nVidia Corporation Unknown device 01b3 (rev a3)
+08:01.0 PCI bridge: nVidia Corporation Unknown device 01b3 (rev a3)
+09:00.0 VGA compatible controller: nVidia Corporation G71GL [Quadro FX 3500] (rev a1)
+0a:00.0 VGA compatible controller: nVidia Corporation G71GL [Quadro FX 3500] (rev a1)
+0e:00.0 Ethernet controller: Broadcom Corporation NetXtreme BCM5752 Gigabit Ethernet PCI Express (rev 02)
+0f:0a.0 FireWire (IEEE 1394): Texas Instruments TSB43AB22/A IEEE-1394a-2000 Controller (PHY/Link)
+
+4.  When setting up a new Ubuntu box, be sure to remove
+nvidia-kernel-common-package if it was installed prior to installing custom
+nvidia graphics card driver.  
+
+
+		sudo apt-get remove nvidia-kernel-common-package
+
+5.  List of repositories which Ubuntu's package manager searches is
+contained within /etc/apt/sources.list . For Ubuntu 8.04, repositories
+should be named hardy (h = 8).  For Ubuntu 9.04, repositories should be
+named intrepid (i = 9).
+
+After modifying this file, chant "sudo apt-get update" in order to make the
+changes take effect.
+
+6.  On 8/11/10, Dave Ceddia figured out that the environment variables in a
+shell are NOT inherited by default by a "sudoed" shell in Ubuntu 10.04 (at
+least as of Aug 2010).  But http_proxy="http://llproxy:8080/" must be set
+in order for sudo apt-get install commands to work from inside LL.
+
+Dave found that by chanting
+
+sudo visudo
+
+and then changing the line  
+
+Defaults	env_reset
+
+to 
+
+Default		!env_reset
+
+disables this annoying new feature in Ubuntu.  After making this change,
+we're able to sudo apt-get install packages as usual.
+
+6.  To change default OS which grub boots, alter /boot/grub.cfg : 
+
+set default="0"   --> set default="4"
+
+will change the default bootable OS from the zeroth to the fourth OS
+listed.  Note that OS ordering is zero based.
+
+
+7.  With lots of help from Dan Dumanis, we think we found a way on 3/6/13
+to install Intell Math Kernel Libraries (MKL) downloaded from Intel's site
+in RPM form onto our ubuntu boxes:
+
+a.  sudo alien -d intel-mkl-146-11.0-2.x86_64.rpm
+
+b.  sudo dpkg --install --debug=10 intel-mkl-146_11.0-3_amd64.deb
+
+
+8.  Control-alt T opens a new terminal
+
+9.  On 7/21/13, we learned the hard way that we need to make a soft link
+
+	/usr/lib/libpng.so -> /usr/lib/x86_64-linux-gnu/libpng.so
+
+before gdal-1.10.0 can correctly build on Ubuntu 12.4 machines.
+
+10.  To eliminate skinny, dynamic window scrollbars under ubuntu 12.4 and
+replace them with old-fashioned vertical scrollbars on all windows,
+create a file 
+
+	/etc/X11/Xsession.d/99disable-overlay-scrollbars
+
+with the following line
+
+	export LIBOVERLAY_SCROLLBAR=0
+
+11. How can I move ALL window controls(close/min/max) to the right?
+
+http://askubuntu.com/questions/174292/how-can-i-move-all-the-window-controls-to-the-right
+
+You can also download Ubuntu Tweak, which has an easy GUI option to switch
+the window buttons to the right. It's found under the Windows Manager
+Settings option, under the Desktop category. Just select the "Right" radio
+button and you're done.
+
+12.  In order to add icons to task bars as well as alter their placement
+properties, click on task bar, press "alt", right-click button on mouse.
+Should then see menu with "Add to panel, properties, delete this panel, new
+panel" appear. 
+
+Notes for compiling and linking our projects c++ source tree:
+------------------------------------------------------------
+
+13.  Make sure to create soft link between
+/usr/local/include/activemq-cpp-2.0.1 and /usr/local/include/activemq
+
+14.  After unpacking trimesh2-2.11_modified.tgz, copy contents of
+trimesh2_include/ into /usr/local/include/trimesh2
+
+15.  Created libtdp_include.tgz file containing all tdp headers in
+/usr/local/include/tdp . Need to unpack this file on any new ubuntu 12.4
+machine.
+
+16.  Created ffmpeg_include.tgz containing all ffmpeg headers in
+/usr/local/include/ffmpeg.  Need to unpack this file on any new ubuntu 12.4
+machine.
+
+17.  Copy all .a libraries except libANN.a from bundler-v0.4-source/lib/ to
+/usr/local/lib/bundler
+
+18. Build all dlib examples following Davis' instructions:
+
+cd examples
+mkdir build
+cd build
+cmake ..
+cmake --build . --config Release
+
+19.  In order to get wireless connection to work on personal Dell M6700
+laptop, Dan Dumanis told us on 11/25/13 that we need to load a driver for
+the network card.  In particular, our Dell M6700 machine has a broadcom
+bcm43228 card.  When we googled for problems with ubuntu automatically
+detecting this card, we found helpful discussion at 
+
+http://ubuntuforums.org/showthread.php?t=2084508
+
+-------------------------------
+Hi ,
+
+open a terminal and try this (you need an active Internet connection , eg:
+through Ethernet cable) Code:
+
+sudo apt-get install linux-headers-generic
+sudo apt-get install --reinstall bcmwl-kernel-source
+
+Then unplug Ethernet cable and reboot.
+
+Working ?
+
+Thanks 
+
+-------------------------------
+After installing bcmwl-kernel-source package, we can chant iwconfig and see
+that the Dell M6700 wireless card is being detected as eth1.  
+
+Moreover, the MAC address = hardware address for this network card is
+reported via 'ifconfig' as
+
+3c:77:e6:7c:74:fa
+
+20.  Dan Dumanis told us that we can click on 3 button optical mouse to
+wake it up when it's connected to a laptop running on battery and has
+turned its LED off in order to save power.
+
+
+-------------------------------
+Changing hostname under ubuntu 12.4:
+
+1.  edit contents of /etc/hostname
+2.  edit contents of /etc/hosts
+3.  chant "sudo service hostname start" to alter hostname without having to
+reboot
+
+-------------------------------
+Changing face profile picture under ubuntu 12.4:
+
+1.  Create a 96x96 PNG image
+2.  Copy PNG image onto ~/.face
+
+-------------------------------
+Formatting new external hard drive under ubuntu 12.4:
+
+1.  Insert drive into USB port.  But make sure new drive is UNMOUNTED.  
+
+2.  Start Disk Utility via Applications --> Accessories --> Disk Utility.
+
+3.  Should see some information about entire drive at top of Disk Utility
+display.  After clicking on "Format Drive", can erase any original
+partitions which came with new hard drive.
+
+4.  Add new disk volume by pressing on "Format Volume".  Choose EXT4 or
+perhaps NTFS in order to be able to write files whose sizes exceed 4 GB
+onto the new hard drive.  Be sure to specify label for new disk which does
+NOT contain white spaces and is something qualitatively different than
+"LACIE_SHARE".
+
+-------------------------------
+Copying files from one machine to another:
+
+scp source_files destination
+
+e.g. scp -r -v * cho@155.34.162.55:/data/ImageEngine/tidmarsh/
+
+-------------------------------
+Mounting partitions and altering /etc/fstab
+
+See https://help.ubuntu.com/community/AutomaticallyMountPartitions
+
+In order to see long, ugly UUID names which should appear within
+/etc/fstab, chant
+
+	ls -al /dev/disk/by-uuid
+kermie:cho%  ls -al /dev/disk/by-uuid
+total 0
+drwxr-xr-x 2 root root 120 Dec 13 12:45 ./
+drwxr-xr-x 6 root root 120 Dec 13 12:45 ../
+lrwxrwxrwx 1 root root  10 Dec 18  2013 7ae703d1-4f22-44a7-9a45-bb96a288fb39 -> ../../sda5
+lrwxrwxrwx 1 root root  10 Dec 18  2013 a00abc54-771c-46ba-9de4-c2d54daa14d2 -> ../../sda1
+lrwxrwxrwx 1 root root  10 Dec 13 12:45 abfb5a5e-804d-41b4-936d-45c0b323bee7 -> ../../sdb1
+lrwxrwxrwx 1 root root  10 Dec 13 12:45 ccc2a884-0701-402a-a040-464f0bf87d34 -> ../../sdc1
+
+
+We can then manually enter such UUID info into /etc/fstab as follows:
+
+kermie:cho% cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    nodev,noexec,nosuid 0       0
+# / was on /dev/sda1 during installation
+UUID=a00abc54-771c-46ba-9de4-c2d54daa14d2 /               ext4    errors=remount-ro 0       1
+# swap was on /dev/sda5 during installation
+UUID=7ae703d1-4f22-44a7-9a45-bb96a288fb39 none            swap    sw              0       0
+
+# 1 TB data drive on /dev/sdb1
+UUID=abfb5a5e-804d-41b4-936d-45c0b323bee7 /data            ext4    errors=remount-ro 0       1
+
+# 1 TB data drive on /dev/sdc1
+UUID=ccc2a884-0701-402a-a040-464f0bf87d34 /data2            ext4    errors=remount-ro 0       1
+
+-------------------------------
+
+*.  Cntrl-alt-t generally opens a new terminal within ubuntu.
+
+*.  Cntrl-alt-f1 generally opens a console window within linux
+    Cntrl-alt-f7 generally returns to X window within linux
+
+-------------------------------
+*.  On 9/2/15, we learned from John Wood that the "tree" package can be
+downloaded as follows:
+
+  sudo apt-get install tree
+
+Chanting "tree" then displays directory contents in dendrogram format.
+
+-------------------------------
+*.  On 1/17/16, we used the following command issued on TITAN1 from within
+/data/peter_stuff/imagery/syntext/numbers/16/ to pull 500K jpeg files from
+Thinkmate:
+
+ rsync -avzh pcho@17.228.154.239:/data/peter_stuff/imagery/syntext/numbers_Jan16 .
+
+*.  In Mar 2016, our ThinkMate machine frequently stalled for reasons
+unknown.  Looking at top output, we noticed that the "orca" job was running
+which is some sort of handicap feature.  We zapped this utility by
+uninstalling it completely from ThinkMate:
+
+  sudo apt-get remove gnome-orca
+  killall orca
+
+*.  On 6/11/16, we found the following URL for putting GParted Live on a
+USB stick:
+
+http://gparted.org/liveusb.php#linux-setup
+
+We followed the GNU/Linux "manual" method B in this instruction set.  The
+W95 FAT32 file system on Delsey's USB stick turned out to be fine.  We also
+ended up answering "yes" to all the questions which the live USB stick
+application posed.
+
+The live Gparted seemed to work OK on our M6700 Dell laptop.  We had to
+press "F12" rapidly when the M6700 booted in order to be able to trump its
+automatic booting into its hard drive and instead tell the laptop to boot
+off the live USB stick.
+
+*.  On 6/11/16, we followed instructions at the following URL
+https://help.ubuntu.com/community/Installation/FromUSBStick in order to
+generate a bootable USB stick containing Ubuntu 14.4 on it.

@@ -1,0 +1,7 @@
+/bin/rm ./crossentropy
+/bin/rm ./fuse_dted_cib
+/bin/rm ./fuse_dted_truearth
+/bin/rm ./generate_fuse_script
+/bin/rm ./generate_lodtree_script
+/bin/rm ./ll2utm
+/bin/rm ./los

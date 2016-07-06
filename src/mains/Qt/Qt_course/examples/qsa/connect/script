@@ -1,0 +1,24 @@
+function returnPressed() 
+{
+    print("Return Pressed" );
+}
+
+connect( Application.top.edit1, "returnPressed()", returnPressed );
+
+
+class Test {
+    function change( str ) 
+    {
+        print("Change: " + str );
+    }
+    function change2( str ) 
+    {
+        print("This syntax also works: " + str );
+    }
+    
+}
+
+var test = new Test;
+connect( Application.top.edit1, "textChanged( QString )", test.change );
+connect( Application.top.edit1, "textChanged( QString )", test, "change2()" );
+connect( Application.top.edit1, "textChanged( QString )", Application.top.edit2, "setText()" );

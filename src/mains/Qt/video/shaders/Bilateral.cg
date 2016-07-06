@@ -1,0 +1,145 @@
+#include "ColorSpaceUtils.cgh"
+#include "GridUtils.cgh"
+
+const float3 g_f3PaddingXYZ = float3( 3, 3, 3 );
+
+//////////////////////////////////////////////////////////////////////////
+// Point Scatter
+//////////////////////////////////////////////////////////////////////////
+
+// NOTE: xyIn: does NOT have 0.5, incoming xy is a GLShort
+void pointScatterVertex( uniform float4x4 mvp,
+						uniform float3 rcpSigma,
+						uniform float3 gridSize,
+						uniform float inputMin,						
+						uniform samplerRECT inputSampler,
+						
+						float2 xyIn : POSITION,
+ 						
+						out float4 clipSpaceOut : POSITION,
+						out float dataOut : TEXCOORD0 )
+{
+	const float2 halfdxdy = float2( 0.5, 0.5 );
+	
+	float input = texRECT( inputSampler, xyIn + halfdxdy ).x;
+	float3 xyzIn = float3( xyIn, input - inputMin );
+	float3 gridXYZ = gridDownsampleRound( xyzIn, rcpSigma, g_f3PaddingXYZ );
+	
+	clipSpaceOut = gridToClip( gridXYZ, gridSize, mvp );
+	dataOut = input;
+}
+
+void pointScatterFragment( float dataIn : TEXCOORD0,
+						  out float4 dataAndWeight : COLOR )
+{
+	dataAndWeight = float4( dataIn, 1, 1, 1 );
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Gaussian Blur Line
+//////////////////////////////////////////////////////////////////////////
+
+void gaussianBlurLine( uniform samplerRECT gridSampler,
+					  
+					  uniform float2 delta,
+					  uniform float2 twoDelta,
+					  
+					  float2 xy : WPOS,
+							   
+					  out float4 output : COLOR )
+{
+	float4 d0 = texRECT( gridSampler, xy - twoDelta );	
+	float4 d1 = texRECT( gridSampler, xy - delta );
+	float4 d2 = texRECT( gridSampler, xy );
+	float4 d3 = texRECT( gridSampler, xy + delta );
+	float4 d4 = texRECT( gridSampler, xy + twoDelta );
+
+	output =
+	(
+		0.13533528323661 * ( d0 + d4 ) +
+		0.60653065971263 * ( d1 + d3 ) +
+		d2
+	);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Gaussian Blur Z Line, Exponential Decay and Divide
+//////////////////////////////////////////////////////////////////////////
+
+void gaussianBlurZLineExponentialDecayAndDivide( uniform samplerRECT gridSampler,
+												uniform samplerRECT previousGridSampler,
+												
+												uniform float2 delta,
+												uniform float2 twoDelta,
+												uniform float2 temporalDecayLambdaNormalization,
+												
+												float2 xy : WPOS,
+												
+												out float4 output : COLOR )
+{
+	float temporalDecayLambda = temporalDecayLambdaNormalization.x;
+	float normalization = temporalDecayLambdaNormalization.y;
+	
+	float4 d0 = texRECT( gridSampler, xy - twoDelta );
+	float4 d1 = texRECT( gridSampler, xy - delta );
+	float4 d2 = texRECT( gridSampler, xy );
+	float4 d3 = texRECT( gridSampler, xy + delta );
+	float4 d4 = texRECT( gridSampler, xy + twoDelta );
+
+	float4 previousBlurredCenter = texRECT( previousGridSampler, xy );
+	float4 blurredZCenter =
+	(
+		0.13533528323661 * ( d0 + d4 ) +
+		0.60653065971263 * ( d1 + d3 ) +
+		d2
+	);
+	
+	// early division
+	float currentQuotient = ( blurredZCenter.y == 0 ) ? 0 : blurredZCenter.x / blurredZCenter.y;
+	float previousQuotient = previousBlurredCenter.x;
+	float quotient = normalization * ( currentQuotient + temporalDecayLambda * previousQuotient );
+	
+	output = float4( quotient, quotient, quotient, quotient );
+	
+	/*
+	float4 temporallyAveraged = blurredZCenter + temporalDecayLambda * previousBlurredCenter;
+	temporallyAveraged *= normalization;
+	
+	float4 temporallyAveraged = blurredZCenter / 6;
+	
+	float quotient = ( temporallyAveraged.y == 0 ) ?
+		0 :
+		temporallyAveraged.x / temporallyAveraged.y;
+	
+	output = float4
+	(
+		quotient,
+		quotient,
+		quotient,
+		quotient
+	);
+	*/
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Slice
+//////////////////////////////////////////////////////////////////////////
+
+void slice( uniform samplerRECT inputSampler,
+		   uniform samplerRECT quotientGridSampler,
+		   
+		   uniform float3 rcpSigma,
+		   uniform float3 gridSize,
+		   uniform float inputMin,		   
+		   
+		   float2 xy : WPOS,
+		   
+		   out float4 colorOut : COLOR )
+{
+	float4 input = texRECT( inputSampler, xy );
+	float3 xyzIn = float3( floor( xy ), input.x - inputMin );
+	float3 gridXYZ = gridDownsampleFloat( xyzIn, rcpSigma, g_f3PaddingXYZ );
+	float gridValue = texTiledLinear( quotientGridSampler, gridSize, gridXYZ );
+	
+	colorOut = float4( gridValue, input.yzw );
+}

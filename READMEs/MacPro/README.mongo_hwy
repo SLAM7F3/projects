@@ -1,0 +1,229 @@
+===========================================================================================
+Mongo database notes for traffic control devices on highways
+===========================================================================================
+Last updated on 8/7/15; 8/10/15; 8/13/15; 9/17/15
+===========================================================================================
+
+*.  In order to login to new "pr" mongo database on fly14, chant
+
+
+mongo flyover1/10.182.141.180,10.182.141.181,10.182.141.182/pr -u 'pr' -p 'rind451,jute'
+
+On 9/17/15, Weiyu told us that the following run_ID is the one that is
+actually being delivered for road signs for M2:
+
+
+> db.detection.count({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_bay_area_5k-2_150819_111849.xml"})
+2517
+
+> db.detection.count({"run_id" :"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_bay_area_5k-2_150819_111849.xml","verification_value": "correct" })
+482
+
+
+
+
+> db.detection.find({"detector_version": 75601, "project_name":"bay_area_5k_Hwy_87"}).count()
+14618
+
+> db.detection.find({"run_id":
+"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_weiyu-MacPro_bay_area_5k_Hwy_87_150811_201808.xml",
+"detector_version": 75601, "project_name":"bay_area_5k_Hwy_87"}).count()
+
+14618
+
+> db.detection.find({"detector_version": 75601, "project_name":"bay_area_5k_Hwy_87"}).count()
+14618
+
+
+> db.detection.distinct("sub_type",{"detector_version" : 75601, "project_name" : "bay_area_5k_Hwy_280"})
+[
+	"E_exit",
+	"M_plate",
+	"unclassified",
+	"E_destination",
+	"E_interchange",
+	"W_advisory_speed",
+	"E_callbox",
+	"W_merge_right",
+	"R_car_pool",
+	"R_words_4line",
+	"E_adopt",
+	"W_1line",
+	"P_reserved_sign",
+	"R_words_nline",
+	"R_words_3line",
+	"M_route_interstate",
+	"G20_road_work_ahead",
+	"M_arrow",
+	"W_merge_left",
+	"W_4line",
+	"R_no_truck_big",
+	"R_words_arrow",
+	"E_entrance",
+	"P_no_parking",
+	"R_keep_right",
+	"R_do_not_enter",
+	"P_no_parking_sign_bikelane",
+	"P_reserved_plate",
+	"R_speed_limit",
+	"W_plate_2line",
+	"S_school",
+	"OM_marker",
+	"W_chevron_left",
+	"M_route_ca",
+	"W_3line",
+	"W_stop_ahead",
+	"W_low_clearance_plate",
+	"W_arrow_2side",
+	"R_stop",
+	"R_no_right_turn",
+	"W_low_clearance",
+	"G20_workzone_plate",
+	"R_no_u_turn",
+	"R_one_way_left",
+	"R_yield",
+	"W_turn_advisory_speed",
+	"W_turn_right",
+	"R_words_2line",
+	"W_intersection_right",
+	"W_bike",
+	"R_wrong_way",
+	"R_turn_multilane",
+	"R_no_left_turn"
+]
+
+
+*.  To find run_id's for backprojected ninja image chips, chant
+
+db.detection.distinct("run_id", {"detector_version" : 79903})
+
+To find run_id's for Weiyu's sign detection results, chant
+
+  db.detection.distinct("run_id", {"detector_version" : 75802})
+
+  db.detection.distinct("run_id", {"detector_version" : 75601})
+
+
+
+> db.detection.find({"detector_version" : 75600, "project_name": "bay_area_5k_Hwy_280"}).count()
+1024
+
+> db.detection.distinct("sub_type",{"detector_version" : 75600, "project_name" : "bay_area_5k_Hwy_280"})
+[
+	"R_car_pool",
+	"W_4line",
+	"E_callbox",
+	"unclassified",
+	"E_exit",
+	"R_no_truck_big",
+	"W_merge_right",
+	"W_plate_2line",
+	"W_plate_1line",
+	"W_1line",
+	"M_plate",
+	"M_route_interstate",
+	"E_destination",
+	"W_advisory_speed",
+	"E_entrance",
+	"P_reserved_plate",
+	"P_no_parking",
+	"R_do_not_enter",
+	"R_wrong_way",
+	"E_adopt",
+	"E_interchange",
+	"R_words_2line",
+	"R_words_4line",
+	"R_keep_right",
+	"OM_marker",
+	"G20_road_work_ahead",
+	"R_speed_limit",
+	"W_bike",
+	"S_school",
+	"R_words_3line",
+	"W_stop_ahead",
+	"W_3line",
+	"R_words_nline",
+	"G20_workzone_plate",
+	"W_arrow_2side",
+	"R_stop",
+	"M_arrow",
+	"R_one_way_left",
+	"R_no_right_turn",
+	"W_low_clearance_plate",
+	"W_low_clearance",
+	"W_turn_advisory_speed",
+	"R_yield",
+	"R_no_u_turn",
+	"R_one_way_right",
+	"W_turn_left",
+	"W_intersection_right"
+]
+
+
+> db.detection.find({"detector_version": 79903, "project_name":"bay_area_5k_Hwy_280"}).count()
+266
+
+> db.detection.find({gnd:{$exists:true}, "detector_version": 79903, "project_name":"bay_area_5k_Hwy_280"}).count()
+266
+
+
+*. All human results from tagger and refine projects are inserted into
+"detection" collection on fly14.  They are assigned a fictitious
+detector_version = 9901 : 
+
+> db.detection.find({"detector_version": 9901,"project_name":"bay_area_5k_Hwy_280"}).count()
+
+2987
+
+
+*.  In order to find all distinct possible field values within a mongo
+collection, use "distinct".  For example
+
+> db.detection.distinct("sub_type",{"detector_version" : 9901, "project_name" : "bay_area_5k_Hwy_280"})
+[
+	"adopt_highway",
+	"hwy_shield",
+	"unclassified",
+	"misc",
+	"call_box",
+	"interchange",
+	"exit_ramp",
+	"freeway_assist",
+	"bump",
+	"wrong_type",
+	"exit_speed_limit",
+	"right_lane_must_exit",
+	"road_work",
+	"stop_ahead",
+	"brown_landmark",
+	"right_lane_merge",
+	"unknown",
+	"hard_right_turn",
+	"detour_ahead",
+	"seat_belt",
+	"soft_right_turn",
+	"left_lane_merge",
+	"safety_belt_enforced",
+	"no_heavy_trucks",
+	"speed_enforced_by_aircraft",
+	"thru_traffic_merge_left",
+	"no_u_turn",
+	"carpool_persons_per_vehicle",
+	"slower_traffic_keep_right",
+	"stop"
+]
+
+
+
+*.  As of August 2015, we should work with the new "pr" mongo database which
+takes the place of the older "prjdb" database!
+
+> db.detection.find({"detector_version" : 75561, "project_name": "bay_area_5k_Hwy_280"}).count()
+6736
+
+> db.detection.find({"detector_version" : 75561}).limit(10).toArray()
+
+
+mongorestore --db pr --collection detection ./
+
+

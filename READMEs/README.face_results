@@ -1,0 +1,2708 @@
+==========================================================================
+Face detection results
+==========================================================================
+Last updated on 6/21/16; 6/23/16; 6/25/16; 7/2/16
+==========================================================================
+
+*.  May 10 (faces_05)
+
+Titan 1:   Set of 36824 training tiles ( = 6570 training images) 
+(no flips, original scale, no extra noise); 1830 validation tiles ( = 300
+validation images)
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_40000_05102016_T1.caffemodel
+  /data/deeplab/faces/caffe.bin.INFO_05102016_faces_T1
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.151
+  Medium bbox recall = 0.768
+  Large bbox recall = 0.851
+  Total bbox recall = 0.529
+  Pixel precision = 0.738
+
+Titan 3: Augmented set of 72913 training tiles ( = 11438 training images) 
+containing left-right flips, original scale, no extra noise; 1814
+validation tiles ( = 300 validation images)
+
+ MODEL = /data/deeplab/faces_deploy/train_iter_40000_05102016_T3.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.263
+  Medium bbox recall = 0.779
+  Large bbox recall = 0.860
+  Total bbox recall = 0.570
+  Pixel precision = 0.730
+
+-----------------------------------------------------------------------
+*.  Friday, May 13 (faces_05)
+
+Titan 1:  Augmented set with double-sized training images;
+175,992 tiles ( = 12,288 training images) (no flips, double scale, no extra
+noise);  1814 validation tiles (= 300 validation images)
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_40000_05132016_T1.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.097
+  Medium bbox recall = 0.741
+  Large bbox recall = 0.845
+  Total bbox recall = 0.496
+  Pixel precision = 0.723
+
+
+Titan 3:  Augmented set with half-sized training images 
+50123 tiles ( = 12,288 training images) (no flips, half scale, no extra noise); 
+1814 validation tiles ( = 300 validation images)
+
+  /data/deeplab/faces_deploy//train_iter_40000_05132016_T3.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.201
+  Medium bbox recall = 0.779
+  Large bbox recall = 0.857
+  Total bbox recall = 0.556
+  Pixel precision = 0.730
+
+-----------------------------------------------------------------------
+*.  Monday, May 16 (faces_05)
+
+Titan 1: Original set of training images + no_faces_3 coming from text
+backgrounds (74223 tiles = 6566 training images)
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_19000_05162016_T1.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.097
+  Medium bbox recall = 0.740
+  Large bbox recall = 0.832
+  Total bbox recall = 0.467
+  Pixel precision = 0.759
+
+-----------------------------------------------------------------------
+*.  Tuesday, May 17 (faces_05)
+
+Titan 1: Original set of training images with 4 deeplab tiles per bounding
+box and 10 deeplab tiles per image with 0 bboxes
+134297 tiles
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_20000_05172016_T1.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.717
+  Medium bbox recall = 0.909
+  Large bbox recall = 0.940
+  Total bbox recall = 0.822
+  Pixel precision = 0.531
+
+Note:  These results are very likely bogus since we inadvertently trained
+on our testing images in addition to training images  :(
+
+Titan 3: Original set of training images with 3 deeplab tiles per bounding
+box and 10 deeplab tiles per image with 0 bboxes
+100723 tiles
+
+  Tiny bbox recall = 
+  Small bbox recall = 
+  Medium bbox recall = 
+  Large bbox recall = 
+  Total bbox recall = 
+  Pixel precision = 
+
+-----------------------------------------------------------------------
+*.  Wednesday, May 18 (faces_06)
+
+Titan 1: Original set of training images with 4 deeplab tiles per bounding
+box and 10 deeplab tiles per image with 0 bboxes.  No testing images
+included accidentally into training images.  No data color/noise data
+augmentation.
+
+// Almost certainly used gimages1-20_nofaces1-5.xml (agrees with May 18
+// date and with total number of images
+
+n_images =  7125 + 600 testing images = 7725
+n_training_images = 6825
+n_validation_images = 300
+n_testing_images = 600
+n_training_bboxes = 22316
+n_validation_bboxes = 1109
+Number of tile samples per bbox = 4
+Number of tiles sampled from images with no bboxes = 10
+Number of exported training tiles = 154464
+Number of exported validation tiles = 6824
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_18000_05182016_T1.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.722
+  Medium bbox recall = 0.876
+  Large bbox recall = 0.940
+  Total bbox recall = 0.825
+  Pixel precision = 0.559
+
+-----------------------------------------------------------------------
+*.  Thursday, May 19 (faces_07)
+
+Titan 1:  Randomized bbox sampling, color modulation & noise addition
+O(900) negative sample images added to training corpus (faces_07_b)
+Train only on "fullsized" images.  
+
+n_images =  8076
+n_training_images = 7776
+n_validation_images = 300
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+
+Number of tile samples per positive example bbox = 5
+Number of exported training tiles = 141633
+Number of exported validation tiles = 5363
+n_positive_example_tiles = 117390
+n_negative_example_tiles = 29606
+
+/data/deeplab/faces_deploy_train_iter_21000_05192016_T1.caffemodel
+
+  Tiny bbox recall = 0 
+  Small bbox recall = 0.750
+  Medium bbox recall = 0.853
+  Large bbox recall = 0.936
+  Total bbox recall = 0.798
+  Pixel precision = 0.562
+
+Only consolidate half-sized image if full-sized image has xdim >= 1100 ||
+ydim >= 1100; Only consolidate double-sized image if full-sized image has
+xdim <= 550 || ydim <= 550:
+
+Evaluation subdir = /home/pcho/programs/c++/svn/projects/src/mains/machine_learning/deeplab/images/faces/testing_images_07/consolidated/bboxes/evaluation/
+2016-05-26 17:23:13.00 local
+
+Tiny bbox recall = 0 		 492 tiny bboxes
+Small bbox recall = 0.739158 	 341 small bboxes
+Medium bbox recall = 0.827988 	 444 medium bboxes
+Large bbox recall = 0.912245 	 548 large bboxes
+Total bbox recall = 0.763331 	 1825 total bboxes
+Pixel precision = 0.640671
+
+Evaluation subdir = /data/TrainingImagery/faces/labeled_data/faces_07/testing_images/consolidated/bboxes/evaluation/
+2016-05-27 11:44:45.00 local
+
+  Add "foursized" versions of faces_07b testing images along with
+doublesized, fullsized and halfsized.
+
+Tiny bbox recall = 0 		 492 tiny bboxes
+Small bbox recall = 0.741709 	 341 small bboxes
+Medium bbox recall = 0.837585 	 444 medium bboxes
+Large bbox recall = 0.914417 	 548 large bboxes
+Total bbox recall = 0.773206 	 1825 total bboxes
+Pixel precision = 0.563168
+
+   --> Small improvement in recall does not compensate significant 
+       deterioration in precision 
+
+Evaluation subdir = /home/pcho/programs/c++/svn/projects/src/mains/machine_learning/deeplab/images/faces/testing_images_08/consolidated/bboxes/evaluation/
+2016-05-26 17:10:07.00 local
+
+Tiny bbox recall = 0 		 1493 tiny bboxes
+Small bbox recall = 0.187075 	 829 small bboxes
+Medium bbox recall = 0.78458 	 798 medium bboxes
+Large bbox recall = 0.886798 	 619 large bboxes
+Total bbox recall = 0.164153 	 3739 total bboxes
+Pixel precision = 0.675688
+
+Evaluation subdir = /home/pcho/programs/c++/svn/projects/src/mains/machine_learning/deeplab/images/faces/testing_images_09/consolidated/bboxes/evaluation/
+2016-05-26 17:11:24.00 local
+
+Tiny bbox recall = 0 		 2556 tiny bboxes
+Small bbox recall = 0.110544 	 1401 small bboxes
+Medium bbox recall = 0.697427 	 1150 medium bboxes
+Large bbox recall = 0.822041 	 810 large bboxes
+Total bbox recall = 0 		 5917 total bboxes
+Pixel precision = 0.637227
+
+
+AS OF 5/22/16, WE BELIEVE THAT DATA AUGMENTATION + NEGATIVE SAMPLE
+INCORPORATION HELPS OVERALL PERFORMANCE !
+
+***************************************************************
+THIS IS STILL OUR BEST OVERALL PERFORMANCE AS OF WEDS, MAY 25, 2016
+***************************************************************
+
+Titan 3:  Randomized bbox sampling, but no color modulation or noise addition
+More negative sample images added to training corpus (faces_07_a)
+Train only on "fullsized" images.
+
+n_images =  8076
+n_training_images = 7776
+n_validation_images = 300
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+
+Number of tile samples per positive example bbox = 5
+Number of exported training tiles = 178389
+Number of exported validation tiles = 6625
+n_positive_example_tiles = 117390
+n_negative_example_tiles = 67624
+
+   MODEL = /data/deeplab/faces_deploy/train_iter_27000_05192016_T3.caffemodel
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.672 
+  Medium bbox recall = 0.826
+  Large bbox recall = 0.922
+  Total bbox recall = 0.769
+  Pixel precision = 0.610
+
+-----------------------------------------------------------------------
+*.  Friday, May 20 (faces_07_c and faces_07_d)
+
+Titan 1:
+
+n_images =  8076
+n_training_images = 7776
+n_validation_images = 300
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+Vertical half classification
+
+Number of tile samples per positive example bbox = 5
+Number of exported training tiles = 151425
+Number of exported validation tiles = 5673
+n_positive_example_tiles = 117390
+n_negative_example_tiles = 39708
+Augmented data flag = 1
+
+On Sat, May 21, we looked through a few dozen vertical face segmentation
+results.  They look qualitatively encouraging!
+
+As of Sun, May 22, we suspect it may be overkill to perform semantic
+segmentation for doublesized images when the corresponding fullsized image
+is fairly large.
+
+
+Ansatz 1:  Only segment doublesized images if fullsized image has 
+
+xdim < 600 || ydim < 600
+
+
+Ansatz 2a:  Segment doublesized images if fullsized image has
+
+xdim <= 550  OR  ydim <= 550
+
+Ansatz 2b:  Segment halfsized image if fullsized image has 
+
+xdim >= 1100 OR ydim >= 1100
+
+Titan 3:
+
+n_images =  8076
+n_training_images = 7776
+n_validation_images = 300
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+Horizontal half classification
+
+Number of tile samples per positive example bbox = 5
+Number of exported training tiles = 151425
+Number of exported validation tiles = 5673
+n_positive_example_tiles = 117390
+n_negative_example_tiles = 39708
+Augmented data flag = 1
+
+On Sat, May 21, we looked through a few dozen horizontal face segmentation
+results.  They look qualitatively encouraging!
+
+-----------------------------------------------------------------------
+*.  Saturday, May 21 (faces_07_e & faces_07_f)
+Trying to reproduce good results seen from Weds, May 18 run
+
+Titan 1: Enlarged set of training images with 4 deeplab tiles per bounding
+box and 10 deeplab tiles per image with 0 bboxes.  No data color/noise data
+augmentation.
+
+n_images =  8076
+n_training_images = 7776
+n_validation_images = 300
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+Binary classification
+Augmented data flag = 0
+
+Number of tile samples per positive example bbox = 4
+Number of exported training tiles = 115374
+Number of exported validation tiles = 4438
+n_positive_example_tiles = 93912
+n_negative_example_tiles = 25900
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.711
+  Medium bbox recall = 0.853
+  Large bbox recall = 0.932
+  Total bbox recall = 0.790
+  Pixel precision = 0.533
+
+................
+
+Titan 3: Enlarged set of training images with 4 deeplab tiles per bounding
+box and 2 deeplab tiles per image with 0 bboxes.  No data color/noise data
+augmentation.
+
+n_images =  8076
+n_training_images = 7776
+n_validation_images = 300
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+Binary classification
+Augmented data flag = 0
+
+Number of tile samples per positive example bbox = 4
+Number of exported training tiles = 95366
+Number of exported validation tiles = 3726
+n_positive_example_tiles = 93912
+n_negative_example_tiles = 5180
+
+  Tiny bbox recall = 0
+  Small bbox recall = 0.480
+  Medium bbox recall = 0.780
+  Large bbox recall = 0.908
+  Total bbox recall = 0.700
+  Pixel precision = 0.222
+
+-----------------------------------------------------------------------
+*.  Sunday, May 22 (faces_08 and faces_09)
+
+Titan 1: 11.8K total images.  3 deeplab tiles per bounding box.
+Color/noise data augmentation.
+
+/data/TrainingImagery/faces/labeled_data/faces_08/
+2016-05-22 12:43:16.00 local
+
+n_total_images =  11898
+n_training_images = 10898
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 11198
+n_training_bboxes = 59390
+n_validation_bboxes = 2021
+n_testing_bboxes = 3742
+Binary classification
+Augmented data flag = 1
+
+Number of tile samples per positive example bbox = 3
+Number of exported training tiles = 211760
+Number of exported validation tiles = 6879
+n_positive_example_tiles = 183615
+n_negative_example_tiles = 35024
+
+MODEL = /data/deeplab/faces_deploy/train_iter_23000_05222016_T1.caffemodel
+
+  Tiny bbox recall = 0		1493 tiny bboxes
+  Small bbox recall = 0.346      829 small bboxes
+  Medium bbox recall = 0.808     798 medium bboxes
+  Large bbox recall = 0.909      620 large bboxes
+  Total bbox recall = 0.297     3740 total bboxes
+  Pixel precision = 0.633
+
+OVERALL WORSE PERFORMANCE THAN FOR THURSDAY, MAY 19
+
+As of 12:15 pm on Weds May 25, we are trying to evaluate the performance of
+this faces_08 classifier on our baseline set of faces_07 testing images.
+
+  Tiny bbox recall = 0.007	429 tiny bboxes
+  Small bbox recall = 0.706     341 small bboxes
+  Medium bbox recall = 0.802    444 medium bboxes
+  Large bbox recall = 0.909     548 large bboxes
+  Total bbox recall = 0.762     1825 total bboxes
+  Pixel precision = 0.591
+
+OVERALL WORSE PERFORMANCE THAN FOR BEST CASE FROM THURSDAY, MAY 19
+
+................
+
+Titan 3: 24.7K total images.  2 deeplab tiles per bounding box.
+Color/noise data augmentation.
+
+data/TrainingImagery/faces/labeled_data/faces_09/
+2016-05-22 12:47:18.00 local
+
+n_total_images =  24774
+n_training_images = 23674
+n_validation_images = 300
+n_testing_images = 800
+istart = 0 istop = 23974
+n_training_bboxes = 216340
+n_validation_bboxes = 2291
+n_testing_bboxes = 5917
+Binary classification
+Augmented data flag = 1
+
+Number of tile samples per positive example bbox = 1
+Number of exported training tiles = 148480
+Number of exported validation tiles = 1899
+n_positive_example_tiles = 119659
+n_negative_example_tiles = 30720
+
+MODEL = /data/deeplab/faces_deploy/train_iter_21000_05222016_T3.caffemodel
+
+  Tiny bbox recall = 0          2556 tiny bboxes
+  Small bbox recall = 0.175     1401 small bboxes
+  Medium bbox recall = 0.740    1150 medium bboxes
+  Large bbox recall = 0.879      810 large bboxes
+  Total bbox recall = 0         5917 total bboxes
+  Pixel precision = 0.614
+
+As of 2 pm on Weds May 25, we evaluated the performacne of this faces_09
+classifier on our baseline set of faces_07 testing images:
+
+  Tiny bbox recall = 0.000	429 tiny bboxes
+  Small bbox recall = 0.707     341 small bboxes
+  Medium bbox recall = 0.813    444 medium bboxes
+  Large bbox recall = 0.903     548 large bboxes
+  Total bbox recall = 0.755     1825 total bboxes
+  Pixel precision = 0.579
+
+OVERALL WORSE PERFORMANCE THAN FOR BEST CASE FROM THURSDAY, MAY 19
+
+-----------------------------------------------------------------------
+*.  Monday, May 23 (faces_08 and faces_09)
+
+Titan 1: Use double-sized or half-sized versions of training images.  Also
+cap total number of tiles exported per image at 20.
+
+/data/TrainingImagery/faces/labeled_data/faces_08/
+2016-05-23 07:51:13.00 local
+
+n_total_images =  11898
+n_training_images = 10898
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 11198
+n_training_bboxes = 59390
+n_validation_bboxes = 2021
+n_testing_bboxes = 3742
+Binary classification
+Augmented data flag = 1
+
+Number of tile samples per positive example bbox = 3
+Number of exported training tiles = 109668
+Number of exported validation tiles = 2847
+n_positive_example_tiles = 82773
+n_negative_example_tiles = 29742
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_20000_05232016_T1.caffemodel
+
+  Tiny bbox recall = 0            1483 tiny bboxes
+  Small bbox recall = 0.153        892 small bboxes
+  Medium bbox recall = 0.793       798 medium bboxes
+  Large bbox recall = 0.839        620 large bboxes
+  Total bbox recall = 0.089       3740 total bboxes
+  Pixel precision = 0.730
+
+................
+
+Titan 3: Use double-sized or half-sized versions of training images.  Also
+cap total number of tiles exported per image at 20.
+
+/data/TrainingImagery/faces/labeled_data/faces_09/
+2016-05-23 07:48:27.00 local
+
+n_total_images =  24774
+n_training_images = 23674
+n_validation_images = 300
+n_testing_images = 800
+istart = 0 istop = 23974
+n_training_bboxes = 216340
+n_validation_bboxes = 2291
+n_testing_bboxes = 5917
+Binary classification
+Augmented data flag = 1
+
+Number of tile samples per positive example bbox = 1
+Number of exported training tiles = 148646
+Number of exported validation tiles = 1899
+n_positive_example_tiles = 119825
+n_negative_example_tiles = 30720
+
+  Tiny bbox recall = 0          2556 tiny bboxes
+  Small bbox recall = 0.034     1401 small bboxes
+  Medium bbox recall = 0.727    1150 medium bboxes
+  Large bbox recall = 0.846      810 large bboxes
+  Total bbox recall = 0         5917 total bboxes
+  Pixel precision = 0.691
+
+-----------------------------------------------------------------------
+*.  Tuesday, May 24 (faces_07):  Morning ROUND 1
+
+Titan 1: Add double-sized and half-sized training examples into data set
+from Thursday, May 19.  No WIDER imagery.  Binary face segmentation.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-23 15:32:37.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Augmented data flag = 1
+
+Number of tile samples per positive example bbox = 5
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+  MODEL = /data/deeplab/faces_deploy/train_iter_27000_05242016_T1.caffemodel
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.654		341 small bboxes
+  Medium bbox recall = 0.769		444 medium bboxes
+  Large bbox recall = 0.880		548 large bboxes
+  Total bbox recall = 0.683		1825 total bboxes
+  Pixel precision = 0.725
+
+Recall is nontrivially worse than our current "baseline" faces_07_b case of
+Thursday, May 19 faces_07.  Precision is better.  But based upon this
+apples-to-apples comparison, we conclude that adding double-sized and
+half-sized training examples into the data set in place of their full-sized
+progenitors leads to WORSE classifier performance.
+
+
+Titan 3: Add double-sized and half-sized training examples into data set
+from Thursday, May 19.  No WIDER imagery.  Face quadrant segmentation.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-24 06:50:37.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Quadrant classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+
+   /data/TrainingImagery/faces/train_iter_30000_05242016_T3.caffemodel
+
+  Tiny bbox recall = 			tiny bboxes
+  Small bbox recall = 			small bboxes
+  Medium bbox recall = 			medium bboxes
+  Large bbox recall = 			large bboxes
+  Total bbox recall = 			total bboxes
+  Pixel precision =
+
+-----------------------------------------------------------------------
+*.  Tuesday, May 24 (faces_07):  Evening ROUND 2.  Set these jobs running
+on Titan 1 and 3 around 7:30 am of Weds, May 25.  
+
+Titan 1: Vertical half face segmentation. No WIDER imagery.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-24 08:44:31.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Vertical half classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+  Tiny bbox recall = 			tiny bboxes
+  Small bbox recall = 			small bboxes
+  Medium bbox recall = 			medium bboxes
+  Large bbox recall = 			large bboxes
+  Total bbox recall = 			total bboxes
+  Pixel precision =
+
+................
+Titan 3: Horizontal half face segmentation. No WIDER imagery.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-24 11:25:31.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Horizontal half classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+  Tiny bbox recall = 			tiny bboxes
+  Small bbox recall = 			small bboxes
+  Medium bbox recall = 			medium bboxes
+  Large bbox recall = 			large bboxes
+  Total bbox recall = 			total bboxes
+  Pixel precision =
+
+-----------------------------------------------------------------------
+*.  Weds, May 25 (faces_08 and faces_09):  As of 3 pm on Weds May 25, these 
+two quadrant projects are ready to be run on Titan1 and Titan3 once the
+current set of half-face projects finish.  Set both of these projects
+running around 4:30 pm east coast time on Thursday, May 26.  
+
+/data/TrainingImagery/faces/labeled_data/faces_08/
+2016-05-25 09:05:40.00 local
+
+Titan 1:  Quadrant face segmentation. Some WIDER imagery.
+
+n_total_images =  11898
+n_training_images = 10898
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 11198
+n_training_bboxes = 59390
+n_validation_bboxes = 2021
+n_testing_bboxes = 3742
+Quadrant classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 3
+
+Number of exported training tiles = 109668
+Number of exported validation tiles = 2847
+n_positive_example_tiles = 82773
+n_negative_example_tiles = 29742
+
+Titan 3:  Quadrant face segmentation.  More WIDER imagery.
+
+/data/TrainingImagery/faces/labeled_data/faces_09/
+2016-05-25 10:14:29.00 local
+
+n_total_images =  24774
+n_training_images = 23674
+n_validation_images = 300
+n_testing_images = 800
+istart = 0 istop = 23974
+n_training_bboxes = 216340
+n_validation_bboxes = 2291
+n_testing_bboxes = 5917
+Quadrant classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 1
+
+Number of exported training tiles = 148646
+Number of exported validation tiles = 1899
+n_positive_example_tiles = 119825
+n_negative_example_tiles = 30720
+
+-----------------------------------------------------------------------
+*.  Fri, May 27 (faces_07b and faces_08): 
+
+Titan 1: Binary face segmentation - rerun best May 19 results with "final"
+bbox cutoff limit.  Set project running on Titan 1 at 8 am east coast time
+on Fri May 27.  Learning rate = 0.0005
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-27 04:13:10.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+MODEL = /data/deeplab/faces_deploy/train_iter_26000_05272016_T1.caffemodel
+
+  faces_07 training/ faces_07 testing images:
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.655102		341 small bboxes
+  Medium bbox recall = 0.764031		444 medium bboxes
+  Large bbox recall = 0.877551		548 large bboxes
+  Total bbox recall = 0.67551		1825 total bboxes
+  Pixel precision = 0.656284
+  f_value = 0.665
+
+  faces_08 training/ faces_07 testing images:
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.695011		341 small bboxes
+  Medium bbox recall = 0.79774		444 medium bboxes
+  Large bbox recall = 0.885996		548 large bboxes
+  Total bbox recall = 0.733302		1825 total bboxes
+  Pixel precision = 0.614393
+
+Titan 3: Binary face segmentation.  Rerun faces8 training set with exact
+same set of params as that above for the faces7 training set.  Want to
+perform "apples-to-apples" comparison of impact of just adding more
+training data upon classifier performance.  Set project running on Titan 3
+around 8:20 am east coast time on Fri May 27.
+
+/data/TrainingImagery/faces/labeled_data/faces_08/
+2016-05-27 04:14:19.00 local
+
+n_total_images =  11898
+n_training_images = 10898
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 11198
+n_training_bboxes = 59390
+n_validation_bboxes = 2021
+n_testing_bboxes = 3742
+Binary classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 132999
+Number of exported validation tiles = 3525
+n_positive_example_tiles = 106782
+n_negative_example_tiles = 29742
+
+MODEL = /data/deeplab/faces_deploy/train_iter_29000_05272016_T3.caffemodel
+
+  faces_07 training/ faces_08 testing images:
+
+  Tiny bbox recall = 0			 1493 tiny bboxes
+  Small bbox recall = 0.11352 		 829 small bboxes
+  Medium bbox recall = 0.783955		 798 medium bboxes
+  Large bbox recall = 0.852041		 620 large bboxes
+  Total bbox recall = 0.0616497 	 3740 total bboxes
+  Pixel precision = 0.700322	
+
+  faces_08 trainint/ faces_08 testing images:
+
+  Tiny bbox recall = 0			 1493 tiny bboxes
+  Small bbox recall = 0.156122 		 829 small bboxes
+  Medium bbox recall = 0.803207		 798 medium bboxes
+  Large bbox recall = 0.878367 		 620 large bboxes
+  Total bbox recall = 0.106414 		 3740 total bboxes
+  Pixel precision = 0.644249	
+
+-----------------------------------------------------------------------
+*.  Sat, May 28 (faces_07b): 
+
+Titan 1: Binary face segmentation .  Exact same setup as Fri May 27 for
+faces07b.  But set learning rate = 0.00025 = 0.5 * 0.0005 which is a factor
+of two smaller than that used on Fri May 27 on Titan 1.  Set project
+running on Titan 1 at 7:40 am east coast time on Sat, May 28.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-27 04:13:10.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+MODEL = /data/deeplab/faces_deploy/train_iter_iter_25000_05282016_T1_lr0.00025.caffemodel
+
+  faces_07 training; faces_07 testing images:
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.709913		341 small bboxes
+  Medium bbox recall = 0.807256		444 medium bboxes
+  Large bbox recall = 0.887075		548 large bboxes
+  Total bbox recall = 0.72619		1825 total bboxes
+  Pixel precision = 0.628015
+  f_value = 0.673
+
+Learning rate = 0.00025 yields BETTER results than 0.0005.
+
+Titan 3: Binary face segmentation .  Exact same setup as on Titan 1 on Fri
+May 27 for faces07b.  But set learning rate = 0.001 = 2 * 0.0005 which is a
+factor of two larger than that used on Titan1 on Fri May 27.  Set project
+running on Titan 3 at 7:33 am east coast time on Sat, May 28
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-27 04:13:10.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+MODEL = /data/deeplab/faces_deploy/train_iter_30000_05282016_T3_lr0.001.caffemodel
+
+  faces_07 training; faces_07 testing images:
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.554422		341 small bboxes
+  Medium bbox recall = 0.737834		444 medium bboxes
+  Large bbox recall = 0.863946		548 large bboxes
+  Total bbox recall = 0.636395		1825 total bboxes
+  Pixel precision = 0.682216
+  f_value = 0.658
+
+Learning rate = 0.001 yields WORSE results than 0.0005.
+
+-----------------------------------------------------------------------
+*.  Sun, May 29 (faces_07b): 
+
+Titan 1: Binary face segmentation .  Exact same setup as Fri May 27 for
+faces07b.  But set learning rate = 0.000125 = 0.25 * 0.0005 which is a factor
+of four smaller than that used on Fri May 27 on Titan 1.  Set project
+running on Titan 1 at 7:17 am east coast time on Sun, May 29.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-27 04:13:10.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+MODEL = /data/deeplab/faces_deploy/train_iter_27000_05292016_T1_lr0.000125.caffemodel
+
+  faces_07 training; faces_07 testing images:
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.727405		341 small bboxes
+  Medium bbox recall = 0.817602		444 medium bboxes
+  Large bbox recall = 0.881376		548 large bboxes
+  Total bbox recall = 0.742579		1825 total bboxes
+  Pixel precision = 0.617347
+  f_value = 0.674
+
+Learning rate = 0.000125 yields slightly BETTER results than 0.00025
+
+***************************************************************
+AS OF 8 AM ON MON, 5/30/2016, THIS IS OUR BEST PERFORMANCE CASE
+***************************************************************
+
+Titan 3: Binary face segmentation .  Exact same setup as on Titan 1 on Fri
+May 27 for faces07b.  But set learning rate = 0.002 = 4 * 0.0005 which is a
+factor of four larger than that used on Titan1 on Fri May 27.  Set project
+running on Titan 3 at 7:20 am east coast time on Sun, May 29
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-05-27 04:13:10.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+MODEL = /data/deeplab/faces_deploy/train_iter_31000_05292016_T3_lr0.002.caffemodel
+
+
+  faces_07 training; faces_07 testing images:
+
+  Tiny bbox recall = 0			492 tiny bboxes
+  Small bbox recall = 0.415816		341 small bboxes
+  Medium bbox recall = 0.676871		444 medium bboxes
+  Large bbox recall = 0.8252		548 large bboxes
+  Total bbox recall = 0.550454		1825 total bboxes
+  Pixel precision = 0.729796
+  f_value = 0.627
+
+Learning rate = 0.002 yields results which are much worse than those for
+learning rate = 0.000125
+
+-----------------------------------------------------------------------
+*.  Monday, May 30 (faces_07b): 
+
+Titan 1: Binary face segmentation .  Exact same setup as on Titan 1 on Fri
+May 27 for faces07b.  But set learning rate = 0.0000625 = 0.125 * 0.0005
+which is a factor of 8 smaller than that used on Titan1 on Fri May 27.
+Compare results with those from Sun, May 29 from Titan 1.
+
+Tiny bbox recall = 0 			 492 tiny bboxes
+Small bbox recall = 0.757653 		 341 small bboxes
+Medium bbox recall = 0.827131 		 444 medium bboxes
+Large bbox recall = 0.871504 		 548 large bboxes
+Total bbox recall = 0.758309 		 1825 total bboxes
+Pixel precision = 0.595663
+f_value = 2 * prec * recall / (prec + recall) = 0.667217
+
+Learning rate = 0.0000625 yields results which are somewhat worse than
+those for learning rate = 0.000125.
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 1 on Fri
+May 27 for faces07b.  But flip 50% of all training tile/mask pairs.
+Also set learning rate = 0.000125.   So compare results with those from
+Sun, May 29 from Titan 1.
+
+Restarted project running on Titan 3 around 3:20 pm on Monday, May 30.  
+
+  faces_07 training; faces_07 testing images:
+
+Tiny bbox recall = 0	 		 492 tiny bboxes
+Small bbox recall = 0.756122 		 341 small bboxes
+Medium bbox recall = 0.822157 		 444 medium bboxes
+Large bbox recall = 0.870068 		 548 large bboxes
+Total bbox recall = 0.742449 		 1825 total bboxes
+Pixel precision = 0.631453
+f_value = 2 * prec * recall / (prec + recall) = 0.682467
+
+Note: These results correspond to a version of GENERATE_BBOX_TILES which
+definitely had a masking bug!  After fixing this bug, we reran this
+case. So see results from Weds Jun 1 below:
+
+-----------------------------------------------------------------------
+*.  Weds, Jun 1 (faces_07b): 
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 1 on Fri
+May 27 for faces07b.  But flip 50% of all training tile/mask pairs.  Also
+set learning rate = 0.000125.  Fixed bbox mask bug in GENERATE_BBOX_TILES.
+
+Started project running on Titan 3 around 10 am CA time on Weds, Jun 1
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-06-01 09:02:47.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Binary classification
+Use scaled training data flag = 1
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+  faces_07 training; faces_07 testing images:
+
+Tiny bbox recall = 0 		 492 tiny bboxes
+Small bbox recall = 0.760204 	 341 small bboxes
+Medium bbox recall = 0.825603 	 444 medium bboxes
+Large bbox recall = 0.877551 	 548 large bboxes
+Total bbox recall = 0.750612 	 1825 total bboxes
+Pixel precision = 0.612245
+f_value = 2 * prec * recall / (prec + recall) = 0.674405
+
+***************************************************************
+AS OF 9:30 AM ON THURS, 6/2/2016, THIS IS OUR BEST PERFORMANCE CASE
+***************************************************************
+
+-----------------------------------------------------------------------
+*.  Thurs, Jun 2 (faces_07b):  ON FRI JUN 3, WE REALIZED THAT COLOR AND
+NOISE DATA AUGMENTATION WITHIN GENERATE_BBOX_TILES WERE MALFUNCTIONING.
+SO THE RESULTS FROM THURS JUN 2 NEED TO BE DISCARDED.  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 3 on Weds,
+Jun 1 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Fixed bbox mask bug in GENERATE_BBOX_TILES.  But
+do NOT perform double/half scaling of training images:
+
+Started project running on Titan 1 around 9:36 am CA time on Thurs, Jun 2
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-06-02 08:42:59.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+Use scaled training data flag = 0
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91204
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65129
+n_negative_example_tiles = 29606
+
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 3 on Weds,
+Jun 1 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Fixed bbox mask bug in GENERATE_BBOX_TILES.  
+Do perform double/half scaling of training images.  Work with training
+bboxes for all faces and O(2.7K) hands.  
+
+Will start project running on Titan 3 around 1:30 pm CA time on Thurs, Jun 2
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+2016-06-02 12:40:30.00 local
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 30090
+n_validation_bboxes = 1179
+n_testing_bboxes = 2396
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 89994
+Number of exported validation tiles = 3505
+n_positive_example_tiles = 63893
+n_negative_example_tiles = 29606
+
+-----------------------------------------------------------------------
+*.  Fri, Jun 3 (faces_07b):  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 3 on Weds,
+Jun 1 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Fixed bbox mask and color/noise data
+augmentation bus in GENERATE_BBOX_TILES.  RGB --> greyscale enabled for
+small percentage of tiles.  Do perform double/half scaling of training
+images.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Fri Jun  3 08:27:50 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+RGB --> greyscale flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+train_iter_24000_06032016_T1.caffemodel
+
+
+Tiny bbox recall = 0 		 492 tiny bboxes
+Small bbox recall = 0.733236 	 341 small bboxes
+Medium bbox recall = 0.814869 	 444 medium bboxes
+Large bbox recall = 0.868334	 548 large bboxes
+Total bbox recall = 0.733048 	 1825 total bboxes
+Pixel precision = 0.612245
+f_value = 2 * prec * recall / (prec + recall) = 0.667223
+
+These results are slightly worse than our best results from 9:30 am on
+Thurs, 6/2/2016.  But we'll try increasing the max number of tiles per
+image from 20 to 50 and increasing number of tile samples per positive
+example bbox from 5 to 8 can make up the difference.  Also, we'll choose
+bboxes quasi-randomly rather than in order.
+
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 3 on Weds,
+Jun 1 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Fixed bbox mask and color/noise data
+augmentation bus in GENERATE_BBOX_TILES.  RGB --> greyscale enabled for
+small percentage of tiles.  Do NOT perform double/half scaling of training
+images.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Fri Jun  3 10:13:19 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 0
+Augmented data flag = 1
+RGB --> greyscale flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+
+Number of exported training tiles = 91204
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65129
+n_negative_example_tiles = 29606
+
+train_iter_29000_06032016_T3.caffemodel
+
+Tiny bbox recall = 0 		 492 tiny bboxes
+Small bbox recall = 0.229592 	 341 small bboxes
+Medium bbox recall = 0.471429 	 444 medium bboxes
+Large bbox recall = 0.165816	 548 large bboxes
+Total bbox recall = 0.0763265 	 1825 total bboxes
+Pixel precision = 0.614286
+f_value = 2 * prec * recall / (prec + recall) = 0.135782
+
+Conclusion: We DEFINITELY SHOULD RESCALE TRAINING IMAGERY BASED UPON FACE
+BBOX SIZE !!!
+
+-----------------------------------------------------------------------
+*.  Sat, Jun 4 (faces_07b):  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 1 on Fri
+Jun 3 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Fixed bbox mask and color/noise data
+augmentation bus in GENERATE_BBOX_TILES.  RGB --> greyscale enabled for
+small percentage of tiles.  Do perform double/half scaling of training
+images.  Increase max number of tiles exported per image from 20 to 50.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per postiive example bbox
+= 5.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Sat Jun  4 13:03:28 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0
+RGB --> greyscale flag = 1
+Noise threshold = 0.0
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+Max tiles per image = 50
+
+Number of exported training tiles = 140648
+Number of exported validation tiles = 5454
+n_positive_example_tiles = 91500
+n_negative_example_tiles = 54602
+
+   /data/deeplab/faces_deploy/train_iter_21000_06042016_T1.caffemodel
+
+Tiny bbox recall = 0             492 tiny bboxes
+Small bbox recall = 0.727041             341 small bboxes
+Medium bbox recall = 0.809524            444 medium bboxes
+Large bbox recall = 0.855288             548 large bboxes
+Total bbox recall = 0.733794             1825 total bboxes
+Pixel precision = 0.616954
+f_value = 2 * prec * recall / (prec + recall) = 0.670321
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 1 on Fri
+Jun 3 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Fixed bbox mask and color/noise data
+augmentation bus in GENERATE_BBOX_TILES.  RGB --> greyscale enabled for
+small percentage of tiles.  Do perform double/half scaling of training
+images.  Increase max number of tiles exported per image from 20 to 50.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 7.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Sat Jun  4 14:01:14 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0
+RGB --> greyscale flag = 1
+Noise threshold = 0.0
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 7
+Max tiles per image = 50
+
+Number of exported training tiles = 163594
+Number of exported validation tiles = 6434
+n_positive_example_tiles = 115426
+n_negative_example_tiles = 54602
+
+Tiny bbox recall = 0 		 	 492 tiny bboxes
+Small bbox recall = 0.730321 		 341 small bboxes
+Medium bbox recall = 0.809124 		 444 medium bboxes
+Large bbox recall = 0.857993 		 548 large bboxes
+Total bbox recall = 0.731837 		 1825 total bboxes
+Pixel precision = 0.61678
+f_value = 2 * prec * recall / (prec + recall) = 0.6694
+
+Increasing n_tiles/positive example bbox from 5 to 7 leads to slightly
+worse performance (at least when max_tiles/image = 50)!
+
+-----------------------------------------------------------------------
+*.  Sun, Jun 5 (faces_07b):  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 1 on Fri
+Jun 3 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Disable all color/noise data augmentation bus in
+GENERATE_BBOX_TILES.  Perform double/half scaling of training images.  Set
+max number of tiles exported per image back to 20.  Also quasi-randomly
+sample bboxes when generating tiles rather than evaluating them in order.
+Number of tile samples per postiive example bbox = 5.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Sun Jun  5 07:05:18 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 0
+Tinting threshold = 0
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+Max tiles per image = 20
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.387755	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.669388	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.765306	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.795918	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.835601	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.826531	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.879009	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.89168	 	 260 bboxes
+Tiny bbox recall = 0 		 	 498 tiny bboxes
+Small bbox recall = 0.725948 		 344 small bboxes
+Medium bbox recall = 0.823469 		 438 medium bboxes
+Large bbox recall = 0.884454 		 545 large bboxes
+Total bbox recall = 0.751109 		 1825 total bboxes
+Pixel precision = 0.617104
+f_value = 2 * prec * recall / (prec + recall) = 0.677544
+
+We AGAIN find that "no augmentation" (i.e. disable color tinting and
+disable gaussian noise) yields better recall AND precision results than
+color tinting + reduced noise!
+
+***************************************************************
+AS OF SUN 6/5/2016, THIS IS OUR BEST PERFORMANCE CASE
+***************************************************************
+
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 1 on Fri
+Jun 3 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Enable color tinting/noise data augmentation bus
+in GENERATE_BBOX_TILES.  But set noise_threshold = 0.5.  Perform
+double/half scaling of training images.  Set max number of tiles exported
+per image back to 20.  Also quasi-randomly sample bboxes when generating
+tiles rather than evaluating them in order.  Number of tile samples per
+positive example bbox = 5.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Sun Jun  5 07:52:13 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+Max tiles per image = 20
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.428571	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.668367	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.768707	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.811224	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.826531	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.816327	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.860058	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.880102	 260 bboxes
+
+Tiny bbox recall = 0 		 	 498 tiny bboxes
+Small bbox recall = 0.736735 		 344 small bboxes
+Medium bbox recall = 0.816327 		 438 medium bboxes
+Large bbox recall = 0.870439 		 545 large bboxes
+Total bbox recall = 0.742265 		 1825 total bboxes
+Pixel precision = 0.59949
+f_value = 2 * prec * recall / (prec + recall) = 0.663281
+
+-----------------------------------------------------------------------
+*.  Mon Jun 6 (faces_07b):  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 3 on Sun
+Jun 5 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Enable color tinting, but disable noise data
+augmentation bus in GENERATE_BBOX_TILES.  Perform double/half scaling of
+training images.  Set max number of tiles exported per image back to 20.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 5.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Mon Jun  6 06:59:58 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0
+RGB --> greyscale flag = 1
+Noise threshold = 1               Effectively disable all gaussian noise
+Visualize masks flag = 0
+Number of tile samples per positive example bbox = 5
+Max tiles per image = 20
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+Started training on Titan 1 around 7:43 am on Mon, Jun 6
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.336735	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.663265	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.778061	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.816327	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.835459	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.816327	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.868481	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.884754	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.738095 		 344 small bboxes
+Medium bbox recall = 0.819466 		 438 medium bboxes
+Large bbox recall = 0.878827 		 545 large bboxes
+Total bbox recall = 0.744898 		 1825 total bboxes
+Pixel precision = 0.595724
+f_value = 2 * prec * recall / (prec + recall) = 0.662012
+
+Conclusion: Color tinting enabled and gaussian noise completely disabled
+still yields performance in both recall and precision which is somewhat
+worse than having both color tinting and gaussian noise completely
+disabled.  We'll try to next have color tinting but with no RGB -->
+Greyscale conversion.
+
+
+Titan 3: Binary face and hand segmentation .  Baseline setup as on Titan 3
+on Sun Jun 5 for faces07b.  Flip 50% of all training tile/mask pairs.  Also
+set learning rate = 0.000125.  Disable color tinting and disable noise data
+augmentation bus in GENERATE_BBOX_TILES.  Perform double/half scaling of
+training images.  Set max number of tiles exported per image back to 20.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 5.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Mon Jun  6 09:00:24 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 40713
+n_validation_bboxes = 1658
+n_testing_bboxes = 1830
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 0
+Tinting threshold = 0
+RGB --> greyscale flag = 1
+Noise threshold = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 5
+Number of tile samples per positive example #1 (hand) bbox = 3
+Max tiles per image = 20
+
+Number of exported training tiles = 103116
+Number of exported validation tiles = 4023
+n_positive_example_tiles = 82389
+n_negative_example_tiles = 24750
+
+-----------------------------------------------------------------------
+*.  Tues Jun 7 (faces_07b):  
+
+Titan 1: Repeat Sun Jun 5 Titan 1 job (faces with no augmentation) using
+deeplab version 2 with new VGG-16 prototxt file and model.
+
+./train_iter_20000_06072016_T1.caffemodel
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.0459184	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.510204	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.734694	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.742857	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.835034	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.848073	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.902041	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.940287	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.632653 		 344 small bboxes
+Medium bbox recall = 0.810047 		 438 medium bboxes
+Large bbox recall = 0.919195 		 545 large bboxes
+Total bbox recall = 0.724065 		 1825 total bboxes
+Pixel precision = 0.573203
+f_value = 2 * prec * recall / (prec + recall) = 0.639862
+
+// This case has comparable recall to our current best performance case of
+Fri, Jun 10 and much worse precision.
+
+// Consolidate only full-sized images rather than double, half and
+full-sized images:
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.204082	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.555102	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.754174	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.770408	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.862974	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.9087	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0 		 344 small bboxes
+Medium bbox recall = 0.729592 		 438 medium bboxes
+Large bbox recall = 0.880657 		 545 large bboxes
+Total bbox recall = 0.418367 		 1825 total bboxes
+Pixel precision = 0.733766
+f_value = 2 * prec * recall / (prec + recall) = 0.532896
+
+// Consolidate double, half and full-sized images.  But only consolidate
+double-sized images if their original size < 450 pixels rather than 550
+pixels.
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.408163	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.612245	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.653061	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.817784	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.842566	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.881262	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.941915	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.556851 		 344 small bboxes
+Medium bbox recall = 0.797488 		 438 medium bboxes
+Large bbox recall = 0.915121 		 545 large bboxes
+Total bbox recall = 0.683673 		 1825 total bboxes
+Pixel precision = 0.640816
+f_value = 2 * prec * recall / (prec + recall) = 0.661552
+
+
+Conclusion: As of 6/10/16, we are forced to conclude that the VGG-16 model
+running under deeplab version 2 with learning rate = 0.000125 yields WORSE
+performance results than our older VGG-16 model running under deeplab
+version 1 with learning rate = 0.000125.
+
+
+Titan 3: Repeat Mon Jun 6 Titan 3 job (faces and hands) using deeplab
+version 2 with new VGG-16 prototxt file and model.
+
+train_iter_24000_06072016_T3.caffemodel
+
+-----------------------------------------------------------------------
+*.  Weds Jun 8 (faces_07b):  
+
+Titan 1: Repeat Sun Jun 5 Titan 1 job (faces with no augmentation) using
+deeplab version 2 with new RESNET101 prototxt file and model.
+
+Ran for 24 hours and created train_iter_8000_06082016_T1.caffemodel
+
+Titan 3: Repeat Mon Jun 6 Titan 3 job (faces and hands) using deeplab
+version 2 with new RESNET101 prototxt file and model.
+
+-----------------------------------------------------------------------
+*.  Thurs Jun 9 (faces_07b):  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 3 on Sun
+Jun 5 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Enable color tinting but disable noise data
+augmentation bus in GENERATE_BBOX_TILES.  Perform double/half scaling of
+training images.  Set max number of tiles exported per image back to 20.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 5.  Disable RGB --> greyscale.  Deeplab V1.
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Thu Jun  9 06:48:38 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0
+RGB --> greyscale flag = 0
+Noise threshold = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 5
+Number of tile samples per positive example #1 (hand) bbox = 3
+Max tiles per image = 20
+
+Number of exported training tiles = 91235
+Number of exported validation tiles = 3531
+n_positive_example_tiles = 65160
+n_negative_example_tiles = 29606
+
+Started training on Titan1 around 8:10 am on Thurs Jun 9.
+
+./train_iter_26000_06092016_T1.caffemodel
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.261224	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.612245	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.75	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.765306	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.828798	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.82483	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.859184	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.884354	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.69898 		 344 small bboxes
+Medium bbox recall = 0.814757 		 438 medium bboxes
+Large bbox recall = 0.875088 		 545 large bboxes
+Total bbox recall = 0.728458 		 1825 total bboxes
+Pixel precision = 0.682746
+f_value = 2 * prec * recall / (prec + recall) = 0.704862
+
+***************************************************************
+AS OF FRI 6/10/2016, THIS IS OUR BEST PERFORMANCE CASE !
+***************************************************************
+
+Titan 3:  Binary face segmentation .  Baseline setup as on Titan 3 on Sun
+Jun 5 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Reduced color tinting and reduced noise data
+augmentation bus in GENERATE_BBOX_TILES.  Perform double/half scaling of
+training images.  Set max number of tiles exported per image back to 20.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 8.  Less RGB --> greyscale.  Deeplab V1.  
+
+/data/TrainingImagery/faces/labeled_data/faces_07/
+Thu Jun  9 07:43:17 2016
+
+n_total_images =  8676
+n_training_images = 7776
+n_validation_images = 300
+n_testing_images = 600
+istart = 0 istop = 8076
+n_training_bboxes = 22728
+n_validation_bboxes = 897
+n_testing_bboxes = 1830
+Full object classification
+  face
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 3
+Max tiles per image = 20
+
+Number of exported training tiles = 105470
+Number of exported validation tiles = 4086
+n_positive_example_tiles = 79950
+n_negative_example_tiles = 29606
+
+Started training on Titan 3 around 8:38 am on Thurs Jun 9.
+
+./train_iter_29000_06092016_T3.caffemodel
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.244898	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.632653	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.766764	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.789116	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.826531	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.807823	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.861224	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.894558	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.709184 		 344 small bboxes
+Medium bbox recall = 0.811791 		 438 medium bboxes
+Large bbox recall = 0.882189 		 545 large bboxes
+Total bbox recall = 0.735138 		 1825 total bboxes
+Pixel precision = 0.659014
+f_value = 2 * prec * recall / (prec + recall) = 0.694997
+
+***************************************************************
+AS OF TUES 6/14/2016, WE TAKE THIS CASE AS OUR BASELINE
+***************************************************************
+
+-----------------------------------------------------------------------
+*.  Fri Jun 10 (faces_07b):  
+
+Titan 1: Repeat Sun Jun 5 Titan 1 job (faces with no augmentation) using
+deeplab version 2 with new VGG-16 prototxt file and model.  Set learning
+rate = 0.00025
+
+Started training on Titan 1 around 8:38 am on Fri Jun 10
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.316327	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.591837	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.653061	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.809184	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.811224	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.862974	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.92449	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.484694 		 344 small bboxes
+Medium bbox recall = 0.778061 		 438 medium bboxes
+Large bbox recall = 0.893802 		 545 large bboxes
+Total bbox recall = 0.644558 		 1825 total bboxes
+Pixel precision = 0.690962
+f_value = 2 * prec * recall / (prec + recall) = 0.666954
+
+Titan 3: Repeat Sun Jun 5 Titan 1 job (faces with no augmentation) using
+deeplab version 2 with new VGG-16 prototxt file and model.  Set learning
+rate = 0.0005
+
+This case has significantly worse recall than our current best performance case
+of Fri 6/10/2016 and slightly better precision.  
+
+Started training on Titan 3 around 8:42 am on Fri Jun 10
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.306122	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.517007	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.748299	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.758017	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.824263	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.813411	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.864992	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.911565	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.693878 		 344 small bboxes
+Medium bbox recall = 0.797052 		 438 medium bboxes
+Large bbox recall = 0.882653 		 545 large bboxes
+Total bbox recall = 0.715186 		 1825 total bboxes
+Pixel precision = 0.607143
+f_value = 2 * prec * recall / (prec + recall) = 0.656751
+
+This case has slightly worse recall than our current best performance case
+of Fri 6/10/2016 and significantly worse precision.  
+
+-----------------------------------------------------------------------
+*.  Sat Jun 11 (faces_07b):  
+
+Titan 1: Repeat Sun Jun 5 Titan 1 job (faces with no augmentation) using
+deeplab version 2 with new VGG-16 prototxt file and model.  Set learning
+rate = 0.0010
+
+Started training on Titan 1 around 1:16 pm on Sat Jun 11
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.306122	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.561224	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.748299	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.748299	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.837464	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.826531	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.887755	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.94113	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.676385 		 344 small bboxes
+Medium bbox recall = 0.798186 		 438 medium bboxes
+Large bbox recall = 0.914966 		 545 large bboxes
+Total bbox recall = 0.737245 		 1825 total bboxes
+Pixel precision = 0.554209
+f_value = 2 * prec * recall / (prec + recall) = 0.632756
+
+Titan 3: Repeat Sun Jun 5 Titan 1 job (faces with no augmentation) using
+deeplab version 2 with new VGG-16 prototxt file and model.  Set learning
+rate = 0.0000625
+
+Started training on Titan 3 around 1:20 pm on Sat Jun 11
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.183673	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.647959	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.77551	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.765306	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.87415	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.866419	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.897959	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.956122	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.717687 		 344 small bboxes
+Medium bbox recall = 0.84898 		 438 medium bboxes
+Large bbox recall = 0.927806 		 545 large bboxes
+Total bbox recall = 0.772865 		 1825 total bboxes
+Pixel precision = 0.469388
+f_value = 2 * prec * recall / (prec + recall) = 0.584057
+
+
+-----------------------------------------------------------------------
+*.  Mon Jun 13 (faces_07b):  
+
+Titan 1: Binary face segmentation .  Baseline setup as on Titan 3 on Sun
+Jun 5 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Enable color tinting but disable noise data
+augmentation bus in GENERATE_BBOX_TILES.  Perform double/half scaling of
+training images.  Set max number of tiles exported per image back to 20.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 5.  Disable RGB --> greyscale.  Deeplab V1.
+
+Current best case with learning rate = 0.000125
+Set learning rate = 0.0000625
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.290816	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.653061	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.734694	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.77551	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.828231	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.816327	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.849722	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.883673	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.673469 		 344 small bboxes
+Medium bbox recall = 0.805338 		 438 medium bboxes
+Large bbox recall = 0.870408 		 545 large bboxes
+Total bbox recall = 0.728008 		 1825 total bboxes
+Pixel precision = 0.668367
+f_value = 2 * prec * recall / (prec + recall) = 0.696914
+
+
+Started training on Titan 1 at 7:51 am on Mon Jun 13
+
+Titan 3: Binary face segmentation .  Baseline setup as on Titan 3 on Sun
+Jun 5 for faces07b.  Flip 50% of all training tile/mask pairs.  Also set
+learning rate = 0.000125.  Enable color tinting but disable noise data
+augmentation bus in GENERATE_BBOX_TILES.  Perform double/half scaling of
+training images.  Set max number of tiles exported per image back to 20.
+Also quasi-randomly sample bboxes when generating tiles rather than
+evaluating them in order.  Number of tile samples per positive example bbox
+= 5.  Disable RGB --> greyscale.  Deeplab V1.
+
+Current best case with learning rate = 0.000125
+Set learning rate = 0.00025
+
+Started training on Titan 3 at 7:54 am on Mon Jun 13
+
+Decade 0 Bbox width: min=0 max=6	 Recall=0	 153 bboxes
+Decade 1 Bbox width: min=6 max=10	 Recall=0	 179 bboxes
+Decade 2 Bbox width: min=10 max=13	 Recall=0.112245	 162 bboxes
+Decade 3 Bbox width: min=13 max=18	 Recall=0.510204	 150 bboxes
+Decade 4 Bbox width: min=18 max=24	 Recall=0.714286	 136 bboxes
+Decade 5 Bbox width: min=24 max=31	 Recall=0.704082	 166 bboxes
+Decade 6 Bbox width: min=31 max=42	 Recall=0.78863	 203 bboxes
+Decade 7 Bbox width: min=42 max=60	 Recall=0.803571	 198 bboxes
+Decade 8 Bbox width: min=60 max=92	 Recall=0.862974	 218 bboxes
+Decade 9 Bbox width: min=92 max=10000	 Recall=0.892517	 260 bboxes
+Tiny bbox recall = 0 		 498 tiny bboxes
+Small bbox recall = 0.653061 		 344 small bboxes
+Medium bbox recall = 0.778912 		 438 medium bboxes
+Large bbox recall = 0.879431 		 545 large bboxes
+Total bbox recall = 0.691043 		 1825 total bboxes
+Pixel precision = 0.710884
+f_value = 2 * prec * recall / (prec + recall) = 0.700823
+
+-----------------------------------------------------------------------
+*.  Tues Jun 14 (faces_11):  
+
+*.  Titan 1:  10K training images using just faces bboxes:
+
+/data/TrainingImagery/faces/labeled_data/faces_11/
+Tue Jun 14 09:34:13 2016
+
+n_total_images =  11032
+n_training_images = 10032
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 10332
+n_training_bboxes = 56112
+n_validation_bboxes = 1589
+n_testing_bboxes = 3637
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore hands flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 0
+Max tiles per image = 20
+
+Number of exported training tiles = 100510
+Number of exported validation tiles = 3040
+n_positive_example_tiles = 78810
+n_negative_example_tiles = 24740
+
+Training started on Titan 1 at 10:30 am on Tues Jun 14.
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 	 115 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0.153061	 213 bboxes
+Decade 2 Bbox width: min=12 max=17	 Recall=0.602041	 225 bboxes
+Decade 3 Bbox width: min=17 max=24	 Recall=0.727891	 238 bboxes
+Decade 4 Bbox width: min=24 max=30	 Recall=0.887755	 217 bboxes
+Decade 5 Bbox width: min=30 max=38	 Recall=0.897959	 204 bboxes
+Decade 6 Bbox width: min=38 max=49	 Recall=0.867347	 169 bboxes
+Decade 7 Bbox width: min=49 max=67	 Recall=0.882313	 179 bboxes
+Decade 8 Bbox width: min=67 max=99	 Recall=0.901786	 198 bboxes
+Decade 9 Bbox width: min=99 max=10000	 Recall=0.915682	 283 bboxes
+Tiny bbox recall = 0.0335277 		 437 tiny bboxes
+Small bbox recall = 0.811224 		 518 small bboxes
+Medium bbox recall = 0.88322 		 446 medium bboxes
+Large bbox recall = 0.902332 		 640 large bboxes
+Total bbox recall = 0.839123 		 2041 total bboxes
+Pixel precision = 0.615079
+f_value = 2 * prec * recall / (prec + recall) = 0.709842
+
+*.  Titan 3:  10K training images with faces and hands bboxes
+
+/data/TrainingImagery/faces/labeled_data/faces_11/
+Tue Jun 14 10:05:16 2016
+
+n_total_images =  11032
+n_training_images = 10032
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 10332
+n_training_bboxes = 56112
+n_validation_bboxes = 1589
+n_testing_bboxes = 3637
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore hands flag = 0
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 3
+Max tiles per image = 20
+
+Number of exported training tiles = 146686
+Number of exported validation tiles = 4392
+n_positive_example_tiles = 126338
+n_negative_example_tiles = 24740
+
+Training started on Titan 3 at 11:22 am on Tues Jun 14.
+
+-----------------------------------------------------------------------
+*.  Weds Jun 15 (faces_11):  
+
+- Titan 1:  10K training images using face quadrant bboxes:
+
+/data/TrainingImagery/faces/labeled_data/faces_11/
+Wed Jun 15 15:39:06 2016
+
+n_total_images =  11032
+n_training_images = 10032
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 10332
+n_training_bboxes = 56112
+n_validation_bboxes = 1589
+n_testing_bboxes = 3637
+Quadrant object classification
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 0
+Ignore hands flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 0
+Max tiles per image = 20
+
+Number of exported training tiles = 129477
+Number of exported validation tiles = 3908
+n_positive_example_tiles = 105895
+n_negative_example_tiles = 27490
+
+
+- Titan 3:  10K training images using only hand bboxes:
+
+/data/TrainingImagery/faces/labeled_data/faces_11/
+Wed Jun 15 17:16:22 2016
+
+n_total_images =  11032
+n_training_images = 10032
+n_validation_images = 300
+n_testing_images = 700
+istart = 0 istop = 10332
+n_training_bboxes = 56112
+n_validation_bboxes = 1589
+n_testing_bboxes = 3637
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 1
+Ignore hands flag = 0
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 0
+Number of tile samples per positive example #1 (hand) bbox = 5
+Max tiles per image = 20
+
+Number of exported training tiles = 58922
+Number of exported validation tiles = 2117
+n_positive_example_tiles = 27049
+n_negative_example_tiles = 33990
+
+-----------------------------------------------------------------------
+*.  Sat, Jun 18 + Sun, Jun 19 (faces_12):  
+
+- Titan 1:  10K training images using just faces bboxes
+            700 validation images
+	    700 testing images
+
+/data/TrainingImagery/faces/labeled_data/faces_12/
+Sun Jun 19 08:43:35 2016
+
+n_total_images =  11491
+n_training_images = 10091
+n_validation_images = 700
+n_testing_images = 700
+istart = 0 istop = 10093
+n_training_bboxes = 57143
+n_validation_bboxes = 3710
+n_testing_bboxes = 3755
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 0
+Ignore hands flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 0
+Max tiles per image = 20
+
+Number of exported training tiles = 130849
+Number of exported validation tiles = 37
+n_positive_example_tiles = 105046
+n_negative_example_tiles = 25840
+
+Training started on Titan 1 around 12:30 pm on Sun, Jun 19.
+
+VALIDATION SET:
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0.209184	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.783163	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.571429	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.752187	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.860544	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.884045	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.865079	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.883673	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.911224	 318 bboxes
+Tiny bbox recall = 0.0816327 		 374 tiny bboxes
+Small bbox recall = 0.706633 		 371 small bboxes
+Medium bbox recall = 0.87515 		 604 medium bboxes
+Large bbox recall = 0.891545 		 682 large bboxes
+Total bbox recall = 0.82533 		 2031 total bboxes
+Pixel precision = 0.58754
+f_value = 2 * prec * recall / (prec + recall) = 0.686425
+
+Connected component consolidation on only faces validation set (Weds night
+Jun 22, params #3)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.738095	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.62585	 	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.689796	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.793367	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.848397	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.829082	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.812925	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.814626	 318 bboxes
+Tiny bbox recall = 0 		 	 374 tiny bboxes
+Small bbox recall = 0.677843 		 371 small bboxes
+Medium bbox recall = 0.819388 		 604 medium bboxes
+Large bbox recall = 0.807978 		 682 large bboxes
+Total bbox recall = 0.746778 		 2031 total bboxes
+Pixel precision = 0.672078
+f_value = 2 * prec * recall / (prec + recall) = 0.707461
+
+Connected component consolidation on only faces validation set (Thurs pm,
+Jun 23, params #4 with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.728571	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.619048	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.681633	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.793367	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.846939	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.829082	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.812925	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.814626	 318 bboxes
+Tiny bbox recall = 0 		 374 tiny bboxes
+Small bbox recall = 0.665533 		 371 small bboxes
+Medium bbox recall = 0.818367 		 604 medium bboxes
+Large bbox recall = 0.80705 		 682 large bboxes
+Total bbox recall = 0.738279 		 2031 total bboxes
+Pixel precision = 0.757421
+f_value = 2 * prec * recall / (prec + recall) = 0.747728
+
+Connected component consolidation on only faces validation set (Thurs pm,
+Jun 23, params #5 with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.721939	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.612245	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.681633	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.789796	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.846939	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.829082	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.816327	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.836735	 318 bboxes
+Tiny bbox recall = 0 		 374 tiny bboxes
+Small bbox recall = 0.66199 		 371 small bboxes
+Medium bbox recall = 0.819242 		 604 medium bboxes
+Large bbox recall = 0.823748 		 682 large bboxes
+Total bbox recall = 0.748926 		 2031 total bboxes
+Pixel precision = 0.767007
+f_value = 2 * prec * recall / (prec + recall) = 0.757859
+
+
+TEST SET:
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 123 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 212 bboxes
+Decade 2 Bbox width: min=12 max=17	 Recall=0.285714	 192 bboxes
+Decade 3 Bbox width: min=17 max=24	 Recall=0.612245	 230 bboxes
+Decade 4 Bbox width: min=24 max=30	 Recall=0.771684	 215 bboxes
+Decade 5 Bbox width: min=30 max=38	 Recall=0.883382	 210 bboxes
+Decade 6 Bbox width: min=38 max=49	 Recall=0.853061	 214 bboxes
+Decade 7 Bbox width: min=49 max=67	 Recall=0.869615	 225 bboxes
+Decade 8 Bbox width: min=67 max=99	 Recall=0.881633	 190 bboxes
+Decade 9 Bbox width: min=99 max=10000	 Recall=0.925886	 340 bboxes
+Tiny bbox recall = 0 		 427 tiny bboxes
+Small bbox recall = 0.687075 		 500 small bboxes
+Medium bbox recall = 0.862245 		 526 medium bboxes
+Large bbox recall = 0.912034 		 698 large bboxes
+Total bbox recall = 0.792185 		 2151 total bboxes
+Pixel precision = 0.618622
+f_value = 2 * prec * recall / (prec + recall) = 0.694728
+
+Connected component consolidation on only faces testing set (Thurs pm,
+Jun 23, params #4 with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 140 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 213 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0	 204 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.670068	 227 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.680272	 204 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.79932	 207 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.816327	 214 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.820153	 215 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.798469	 191 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.818182	 336 bboxes
+Tiny bbox recall = 0 		 427 tiny bboxes
+Small bbox recall = 0.662338 		 500 small bboxes
+Medium bbox recall = 0.797194 		 526 medium bboxes
+Large bbox recall = 0.809833 		 698 large bboxes
+Total bbox recall = 0.689094 		 2151 total bboxes
+Pixel precision = 0.767065
+f_value = 2 * prec * recall / (prec + recall) = 0.725992
+
+Connected component consolidation on just faces testing set (Sat pm,
+Jun 25, params #6, with quad info)
+
+Evaluation subdir =
+/data/TrainingImagery/faces/labeled_data/faces_12/Jun18_only_faces_testing_images/ccs/consolidated_images/bboxes/evaluation/
+Sat Jun 25 21:30:07 2016
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 140 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 213 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0	 204 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.691327	 227 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.714286	 204 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.817784	 207 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.830904	 214 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.831066	 215 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.826531	 191 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.836735	 336 bboxes
+Tiny bbox recall = 0 		 427 tiny bboxes
+Small bbox recall = 0.688776 		 500 small bboxes
+Medium bbox recall = 0.817401 		 526 medium bboxes
+Large bbox recall = 0.828386 		 698 large bboxes
+Total bbox recall = 0.722997 		 2151 total bboxes
+Pixel precision = 0.773597
+f_value = 2 * prec * recall / (prec + recall) = 0.747441
+
+
+- Titan 3:  10K training images using faces and hands bboxes
+            700 validation images
+            700 testing images
+
+/data/TrainingImagery/faces/labeled_data/faces_12/
+Sun Jun 19 08:42:44 2016
+
+n_total_images =  11491
+n_training_images = 10091
+n_validation_images = 700
+n_testing_images = 700
+istart = 0 istop = 10093
+n_training_bboxes = 57143
+n_validation_bboxes = 3710
+n_testing_bboxes = 3755
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 0
+Ignore hands flag = 0
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 3
+Max tiles per image = 20
+
+Number of exported training tiles = 147984
+Number of exported validation tiles = 38
+n_positive_example_tiles = 124694
+n_negative_example_tiles = 23328
+
+Training started on Titan 3 around 12:30 pm on Sun, Jun 19.
+
+Connected component consolidation on faces/hands validation set:
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.676871	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.5	 	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.665306	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.744898	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.820037	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.791545	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.795918	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.864796	 318 bboxes
+Tiny bbox recall = 0 		 	 374 tiny bboxes
+Small bbox recall = 0.630612 		 371 small bboxes
+Medium bbox recall = 0.783673 		 604 medium bboxes
+Large bbox recall = 0.837245 		 682 large bboxes
+Total bbox recall = 0.734385 		 2031 total bboxes
+Pixel precision = 0.785034
+f_value = 2 * prec * recall / (prec + recall) = 0.758865
+
+Connected component consolidation on faces/hands validation set (params #2):
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.683673	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.510204	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.658163	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.732653	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.821892	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.791545	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.804665	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.855102	 318 bboxes
+Tiny bbox recall = 0 		 	 374 tiny bboxes
+Small bbox recall = 0.622449 		 371 small bboxes
+Medium bbox recall = 0.783029 		 604 medium bboxes
+Large bbox recall = 0.828571 		 682 large bboxes
+Total bbox recall = 0.738549 		 2031 total bboxes
+Pixel precision = 0.784537
+f_value = 2 * prec * recall / (prec + recall) = 0.760849
+
+Connected component consolidation on faces/hands validation set (Weds night
+Jun 22, params #3)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.696429	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.520408	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.665306	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.761224	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.820037	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.78863	 	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.772595	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.802041	 318 bboxes
+Tiny bbox recall = 0 		 374 tiny bboxes
+Small bbox recall = 0.640306 		 371 small bboxes
+Medium bbox recall = 0.79377 		 604 medium bboxes
+Large bbox recall = 0.7884 		 682 large bboxes
+Total bbox recall = 0.724773 		 2031 total bboxes
+Pixel precision = 0.796793
+f_value = 2 * prec * recall / (prec + recall) = 0.759079
+
+Connected component consolidation on faces/hands validation set (Thurs am,
+Jun 23, params #4, with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.678571	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.510204	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.657143	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.753061	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.818182	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.785714	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.772595	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.802041	 318 bboxes
+Tiny bbox recall = 0 			 374 tiny bboxes
+Small bbox recall = 0.630612 		 371 small bboxes
+Medium bbox recall = 0.789474 		 604 medium bboxes
+Large bbox recall = 0.786251 		 682 large bboxes
+Total bbox recall = 0.71516 		 2031 total bboxes
+Pixel precision = 0.832653
+f_value = 2 * prec * recall / (prec + recall) = 0.769447
+
+Connected component consolidation on faces/hands validation set (Thurs pm,
+Jun 23, params #5, with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.678571	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.510204	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.657143	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.757143	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.820037	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.785714	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.769679	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.819048	 318 bboxes
+Tiny bbox recall = 0 		 	 374 tiny bboxes
+Small bbox recall = 0.630612 		 371 small bboxes
+Medium bbox recall = 0.791622 		 604 medium bboxes
+Large bbox recall = 0.794844 		 682 large bboxes
+Total bbox recall = 0.722835 		 2031 total bboxes
+Pixel precision = 0.830049
+f_value = 2 * prec * recall / (prec + recall) = 0.772741
+
+Connected component consolidation on faces/hands validation set (Sat pm,
+Jun 25, params #6, with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 97 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 201 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.72449	 185 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.55102	 158 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.670068	 172 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.774235	 215 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.834184	 276 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.792517	 229 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.77551	 180 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.821036	 318 bboxes
+Tiny bbox recall = 0 		 374 tiny bboxes
+Small bbox recall = 0.660998 		 371 small bboxes
+Medium bbox recall = 0.804082 		 604 medium bboxes
+Large bbox recall = 0.799806 		 682 large bboxes
+Total bbox recall = 0.739484 		 2031 total bboxes
+Pixel precision = 0.855631
+f_value = 2 * prec * recall / (prec + recall) = 0.793329
+
+*******************************************************************
+THIS IS OUR PREFERED SET OF RESULTS AS OF SAT JUN 25 at 6:30 PM
+*******************************************************************
+
+Connected component consolidation on faces/hands test set (params #2):
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0		 140 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0		 213 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0	 	204 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.545918	 227 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.639456	 204 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.729592	 207 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.761905	 214 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.828231	 215 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.818367	 191 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.865646	 336 bboxes
+Tiny bbox recall = 0 		 	 427 tiny bboxes
+Small bbox recall = 0.567347 		 500 small bboxes
+Medium bbox recall = 0.756803 		 526 medium bboxes
+Large bbox recall = 0.840379 		 698 large bboxes
+Total bbox recall = 0.672704 		 2151 total bboxes
+Pixel precision = 0.755639
+f_value = 2 * prec * recall / (prec + recall) = 0.711764
+
+Connected component consolidation on faces/hands testing set (Thurs pm,
+Jun 23, params #4 with quad info)
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 140 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 213 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0	 204 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.5	 227 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.670068	 204 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.765306	 207 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.785714	 214 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.817784	 215 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.78863	 191 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.782931	 336 bboxes
+Tiny bbox recall = 0 		 	 427 tiny bboxes
+Small bbox recall = 0.620991 		 500 small bboxes
+Medium bbox recall = 0.776968 		 526 medium bboxes
+Large bbox recall = 0.783285 		 698 large bboxes
+Total bbox recall = 0.658418 		 2151 total bboxes
+Pixel precision = 0.823869
+f_value = 2 * prec * recall / (prec + recall) = 0.73191
+
+Connected component consolidation on faces/hands validation set (Sat pm,
+Jun 25, params #6, with quad info)
+
+Evaluation subdir = /data/TrainingImagery/faces/labeled_data/faces_12/Jun18_faces_hands_testing_images/ccs/consolidated_images/bboxes/evaluation/
+Sat Jun 25 21:05:43 2016
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 140 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 213 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0	 204 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.602041	 227 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.688047	 204 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.785714	 207 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.803571	 214 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.832362	 215 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.809038	 191 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.807398	 336 bboxes
+Tiny bbox recall = 0 		 	 427 tiny bboxes
+Small bbox recall = 0.642857 		 500 small bboxes
+Medium bbox recall = 0.797052 		 526 medium bboxes
+Large bbox recall = 0.804233 		 698 large bboxes
+Total bbox recall = 0.68629 		 2151 total bboxes
+Pixel precision = 0.835204
+f_value = 2 * prec * recall / (prec + recall) = 0.75346
+
+Connected component consolidation on faces/hands validation set (Sat pm,
+Jul 2, params #6, with quad info); Probably (?) more accurate assessment of 
+bbox pixel widths than that of Sat pm Jun 25
+
+Evaluation subdir = /data/TrainingImagery/faces/labeled_data/faces_12/Jun18_faces_hands_testing_images/ccs/consolidated_images/bboxes/evaluation/
+Sat Jul  2 17:34:55 201:
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	    110 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	    227 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0	    216 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.484694    211 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.709184    218 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.758503    209 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.790816    196 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.840561    217 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.806122    207 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.806803    340 bboxes
+Tiny bbox recall = 0 	     		 454 tiny bboxes
+Small bbox recall = 0.620408 		 500 small bboxes
+Medium bbox recall = 0.791717 		 537 medium bboxes
+Large bbox recall = 0.811429 		 660 large bboxes
+Total bbox recall = 0.68629 		 2151 total bboxes
+Pixel precision = 0.835204
+f_value = 2 * prec * recall / (prec + recall) = 0.75346
+
+-----------------------------------------------------------------------
+*.  Mon, Jun 20 (faces_12):  
+
+- Titan 1:  10K training images using quad faces bboxes
+            700 validation images
+
+/data/TrainingImagery/faces/labeled_data/faces_12/
+Sun Jun 19 12:38:40 2016
+
+n_total_images =  11491
+n_training_images = 10091
+n_validation_images = 700
+n_testing_images = 700
+istart = 0 istop = 10093
+n_training_bboxes = 57143
+n_validation_bboxes = 3710
+n_testing_bboxes = 3755
+Quadrant object classification
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 0
+Ignore hands flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 8
+Number of tile samples per positive example #1 (hand) bbox = 0
+Max tiles per image = 20
+
+Number of exported training tiles = 130849
+Number of exported validation tiles = 37
+n_positive_example_tiles = 105046
+n_negative_example_tiles = 25840
+
+Training started on Titan 1 around 9 am on Mon, Jun 20.
+
+- Titan 3:  10K training images using only hands bboxes
+            700 validation images
+
+
+/data/TrainingImagery/faces/labeled_data/faces_12/
+Sun Jun 19 12:39:01 2016
+
+n_total_images =  11491
+n_training_images = 10091
+n_validation_images = 700
+n_testing_images = 700
+istart = 0 istop = 10093
+n_training_bboxes = 57143
+n_validation_bboxes = 3710
+n_testing_bboxes = 3755
+Full object classification
+  face
+  hand
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 1
+Ignore hands flag = 0
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 0
+Number of tile samples per positive example #1 (hand) bbox = 5
+Max tiles per image = 20
+
+Number of exported training tiles = 58795
+Number of exported validation tiles = 2
+n_positive_example_tiles = 26409
+n_negative_example_tiles = 32388
+
+Training started on Titan 3 around 9:10 am on Mon, Jun 20.
+
+====================================
+
+Deeplab 1 with Jun 9 augmentation
+
+Learning rate = 0.0000625
+Total bbox recall = 0.728008 		 1825 total bboxes
+Pixel precision = 0.668367
+f_value = 2 * prec * recall / (prec + recall) = 0.696914
+
+Learning rate = 0.000125
+Total bbox recall = 0.728458 		 1825 total bboxes
+Pixel precision = 0.682746
+f_value = 2 * prec * recall / (prec + recall) = 0.704862
+
+Learning rate = 0.00025
+Total bbox recall = 0.691043 		 1825 total bboxes
+Pixel precision = 0.710884
+f_value = 2 * prec * recall / (prec + recall) = 0.700823
+
+As of 6/14/2016, learning rate = 0.000125 still appears to be close to
+optimal.
+
+====================================
+
+Deeplab 1 with NO augmentation 
+
+Learning rate = 0.000125
+Total bbox recall = 0.751109 		 1825 total bboxes
+Pixel precision = 0.617104
+f_value = 2 * prec * recall / (prec + recall) = 0.677544
+
+
+Deeplab 2 with NO augmentation
+
+Learning rate = 0.0000625
+Total bbox recall = 0.772865 		 1825 total bboxes
+Pixel precision = 0.469388
+f_value = 2 * prec * recall / (prec + recall) = 0.584057
+
+Learning rate = 0.000125
+Total bbox recall = 0.724065 		 1825 total bboxes
+Pixel precision = 0.573203
+f_value = 2 * prec * recall / (prec + recall) = 0.639862
+
+Learning rate = 0.00025
+Total bbox recall = 0.644558 		 1825 total bboxes
+Pixel precision = 0.690962
+f_value = 2 * prec * recall / (prec + recall) = 0.666954
+
+Learning rate = 0.0005
+Total bbox recall = 0.715186 		 1825 total bboxes
+Pixel precision = 0.607143
+f_value = 2 * prec * recall / (prec + recall) = 0.656751
+
+Learning rate = 0.0010
+Total bbox recall = 0.737245 		 1825 total bboxes
+Pixel precision = 0.554209
+f_value = 2 * prec * recall / (prec + recall) = 0.632756
+
+Conclusion: As of 6/13/16, we cannot find a learning rate for which
+Deeplab-v2 yields overall better performance than Deeplab-v1 when we
+perform NO augmentation
+

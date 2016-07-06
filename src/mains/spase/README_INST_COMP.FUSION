@@ -1,0 +1,80 @@
+==========================================================================
+Instaneous vs composite 3D ISAR imagery fusion procedure
+==========================================================================
+Last updated on 4/7/06
+==========================================================================
+
+"Scintillation" approach to static composite & dynamic instantaneous 3D
+ISAR imagery fusion:
+
+1.  Run program FILTER_PROBS which performs simple gaussian filtering to
+eliminate the worst of temporal noise fluctuations in probability values
+from a sequence of XYZP files.  It takes ./xyzp_files/instant_sunny_00.xyzp
+ files as a command line argument and extracts the assumed static XYZ
+information from that file.  It also reads in all of the p values from
+every instant_sunny_nn.xyzp file and gaussian averages them together.  The
+resultant smoothed p values are written to output
+avgd_instant_sunny_nn.xyzp files.
+
+2.  Run program SCINTILLATE which takes in the composite AK ISAR image in
+AK_isar_probs.xyzp as well as the temporally gaussian filtered
+instantaneous AK images in avgd_instant_sunny_nn.xyzp.  For each voxel,
+this program computes the fraction f=(I/(I+S))^alpha where I [S] denotes
+the instantaneous [static] RCS values and alpha denotes some power ranging
+between 1 and 2.  (alpha=1 appears to be a good choice for this parameter.)
+The fused RCS value is taken to equal a linear combination of the
+instanteous and static values weighted by fraction f.  Fused output is
+written to ./xyzp_files/fused_instant_composite_nn.xyzp.
+
+3.  Run program P2RGBA which reads in the sequence of
+fused_instant_composite_nn.xyzp files and writes them back out as
+fused_instant_composite_nn.xyzrgba files.
+
+4.  Run program RGBA2ARRAY which reads in the sequence of
+fused_instant_composite_nn.xyzrgba files and writes out a single color
+array file for subsequent 4D movie playback via programs SATDRAPE
+
+5.  Run program FOURD to display fused imagery as a 4D movie with time
+dependent imageplanes displayed in 3D.
+
+==========================================================================
+
+Deprecated "Hue + intensity" approach to static composite and dynamic
+instanteous 3D ISAR imagery fusion:
+
+1.  First generate pure intensity (preferably from straight intensity
+rather than gaussian histogram specified with sigma=0.15) composite ISAR
+image:
+
+	- Invoke viewsat program and goto "grey" 3D colormap 
+
+	- Note: We no longer perform this step as of 4/3/06.  Specialize
+	  intensity histogram to a gaussian distribution with
+	  sigma=0.15 by pressing 'e' key in Data Viewing Mode.  Enter 0.0
+	  (?) as threshold value.
+
+	- Save equalized pure hue point cloud as an XYZRGBA file by
+	  pressing 'f' key in Data Viewing Mode.
+	
+	- Rename ./XYZRGBA/output.xyzrgba as 
+	   ./xyzp_files/composite_intensities.xyzrgba
+
+2.  Generate temporal sequence of pure intensity histogram equalized
+instantaneous ISAR images:
+
+	- Chant "viewsat instant_sunny_01.xyzp"
+
+	- Press "Z" to bring model to canonical orientation.  Then press
+	  "1" to terminante animation.
+
+	- Press "N" twice to switch 3D colormap to "pure hue".  Then press
+	  "i" to modify hues so that greens are eliminated.
+
+	- Save equalized pure intensity point cloud as an XYZRGBA file by
+	  pressing 'f' key in Data Viewing Mode.
+
+	- Rename ./XYZRGBA/output.xyzrgba as 
+	   ./xyzp_files/instant01_pure_hues.xyzrgba, etc
+
+3.  Run program mains/spase/isar_isar_fusion.cc to generate a sequence of
+fused instantaneous and time-averaged XYZRGBA files.

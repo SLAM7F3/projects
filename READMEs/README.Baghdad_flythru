@@ -1,0 +1,129 @@
+===========================================================================
+Notes regarding 2nd Baghdad flythrough AVI movie generation
+===========================================================================
+Last updated on 10/4/06; 9/5/07; 11/8/07; 7/14/09; 8/18/09; 3/15/10
+===========================================================================
+
+On Oct 3, 2006, Bob Knowlton requested that we generate a ~1 minute movie
+for his Surface Surveillance Workshop talk.  We choreographed a new
+flythrough of the Boston data set which focuses primarily upon the fused
+Cambridge part of the point cloud.
+
+After spending several hours coming up with a quasi-interpolated flight
+path which was reasonably smooth and which took approximately 1 minute to
+play through on fusion1, we generated a slowed-down version of the flight
+path which plays back at 15X the real-time version.  We then snapped the
+movie at "10 frames per second".  Note that "10 frames per second" snapping
+actually samples the flight trajectory much more rapidly than does "20
+frames per second".
+
+We left the individual RGB frames on fusion1
+within/home/cho/programs/c++/svn/projects/src/mains/isds/quadratic_warp/qfit_thresh_tdps/fusion_osga/recorded_video/flythrough_10fps.
+
+We next changed directories on photon to this mounted location and ran the
+following command:
+
+	mkmpeg4 -v -f 30 -o flythrough_30fps.avi *.rgb
+
+This led to a final 75 second AVI movie which is reasonably smooth and has
+reasonably good coloring.
+
+===========================================================================
+
+On 9/5/07, we recreated the Baghdad flythrough movie sequence using fused
+satellite EO/ladar height tiles on the eastern side of the city and just
+ladar height tiles on the western side.  We worked on FUSION1 and used
+package file fused_baghdad.pkg with the following command
+
+earth --GIS_layer world_GIS.pkg --region_filename fused_baghdad.pkg --newpass /home/cho/programs/c++/svn/projects/src/mains/OSG/HAFB_all.vid --surface_texture sanclemente_EO.pkg
+
+
+We needed to perform the following OSG operations within main program EARTH
+during the course of capturing its screen shots:
+
+1.  Press 'A' twice, 'R' once to read in signposts.  Press '>' once to
+increase signpost size.
+
+2.  Press 'V' to eliminate View Data Mode message.
+
+3.  Start recording movie by pressing 'q'
+
+4.  After initial flyin from outer space to first pause within
+choreographed sequence, press 'E' to enter Manipulate Earth mode.  Then
+press 'L' to toggle off earth grid lines.
+
+5.  About 2/3 into choreographed sequence where camera flies over to
+Baghdad international airport, press 'V' to enter View Data Mode, then
+press '+' to increase point size by one unit.
+
+6.  When zooming out from Baghdad, press 'E' followed by 'L' to toggle on
+earth grid lines.
+
+
+
+We adopted the same animation rate and movie capture parameters as those
+described above for the Oct 2006 2nd Boston flythrough movie.  We also
+slowed down the rate at which the HAFB_AnimationController moves the Cessna
+model and plays the HAFB movie by a factor of 15.
+
+
+We experimented (on FUSION1, not PHOTON!) with many different parameters
+for MKMPEG4 before settling on a reasonable compromise between image
+quality, playback speed and temporal smoothness:
+
+
+	mkmpeg4 -v -f 30 -b 24000000 -o movie.avi *.rgb
+	Powerpoint is overwhelmed by the fast playback speed and 
+	good image quality 
+
+
+	mkmpeg4 -v -f 15 -b 24000000 -o movie.avi odd_images.rgb
+	yields huge AVI movie which plays in ppt (with flickering)
+
+
+	mkmpeg4 -v -f 30 -b 12000000 -o movie.avi all_images.rgb
+	yields less huge AVI movie which plays in ppt (with flickering)
+
+	mkmpeg4 -v -f 30 -b 6000000 -o movie.avi all_images.rgb
+	leads to unacceptable image quality degradation
+
+****************************************************************************
+Final set of parameters which yielded reasonable Baghdad flythrough AVI
+movie (135 Mbytes) [as well as NYC AVI movies in Oct 2007]:
+
+
+	mkmpeg4 -v -f 30 -b 10 000 000 -o movie.avi all_images.rgb
+
+	In order to avoid unacceptable powerpoint hiccuping, we need to
+follow Chet Beals ancient advice to NOT resize the movie within ppt.  We
+trade screen size coverage for temporal smoothness in playback of this
+movie...
+
+Note added on 11/8/07: For the Empire State Building car tracking video
+sequence, we reset fps from 30 down to 15 so that the AVI movie wouldn't
+play too fast.
+
+****************************************************************************
+
+
+
+mencoder "mf://*.jpg" -ovc lavc -lavcopts
+vcodec=msmpeg4v2:vbitrate=24000000 -mf fps=30 -o movie.avi
+
+
+****************************************************************************
+
+Command used on 7/14/09 to generate AVI flythru movie of 1K NYC photo
+reconstruction:
+
+mkmpeg4 -v -f 30 -b 10000000 -o photos_ladar_30fps_1min.avi photos_ladar_*.jpg
+
+
+Command used on 8/18/09 to generate AVI movie of NYC geolocation knowledge
+propagator:
+
+mkmpeg4 -v -f 25 -b 15000000 -o propagator_25fps_90sec.avi  *.jpg
+
+Command used on 3/15/10 to generate AVI movie of Boston TEC 2004 flythrough:
+
+mkmpeg4 -v -f 30 -b 24000000 -o boston_flythru_odd.avi ./*.jpg

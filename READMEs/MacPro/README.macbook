@@ -1,0 +1,42 @@
+===========================================================================================
+Apple MacBook Pro Laptop notes
+===========================================================================================
+Last updated on 1/25/16; 2/1/16; 2/5/16; 2/19/16
+===========================================================================================
+
+*.  As of 1/26/15, we have updated all software on our MacBook.
+
+*.  OS X Yosemite version = 10.10.5
+
+*.  Click on Apple icon on far upper left corner --> About This Mac in
+order to see hardware information about our MacBook laptop.
+
+*.  In order to rename a folder on MacBook, first click on its icon.  Then
+click on "File-->Get Info" in upper menu row .  We should then see a "Name
+& Extension" box within the dropdown menu.  Can enter a new name for the
+folder in this box.
+
+*.  On 1/25/16, we downloaded cmake-3.4.2-Darwin-x86_64.dmg to our MacBook.
+(Note that "dmg" = disk image = precompiled binary).  We used the spotlight
+search tool located in the upper right corner to locate the dmg binary file
+and double clicked on it to begin the installation.  
+
+John Wood showed us that we needed to drag and drop the Cmake binary into
+the adjacent "Applications" folder (link).  We should NOT have
+doubleclicked on the Cmake binary before it was moved into the Applications
+folder.
+
+*.  Press on "F3" key in order to see multiple desktops on MacBook.  Then
+drag windows from current window to another desktop icon in order to move
+those windows to the new desktop.
+
+*.  Press shift-command-4 in order to take a screen capture.  After region
+of screen is selected, screen capture is deposited onto the Desktop.  Press
+shift-command-3 in order to take screen capture of macbook's entire screen.
+Screen capture image is deposited onto the Desktop.
+
+*.  Bash terminal windows on Macbook appear to all access a global history
+of terminal commands.  So when we close one bash xterm window and open
+another, then new window knows about command history previously entered
+into the closed window.
+

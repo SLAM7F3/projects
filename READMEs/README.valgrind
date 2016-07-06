@@ -1,0 +1,47 @@
+===========================================================================
+VALGRIND notes
+===========================================================================
+Last updated on 7/2/08
+===========================================================================
+
+valgrind --verbose --tool=memcheck --log-file=ortho_valgrind ortho t.45-51 &
+
+valgrind --leak-check=full --num-callers=40 --log-file=justearth_valgrind --suppressions=opengl.supp --error-limit=no -v justearth &
+
+valgrind --leak-check=full --num-callers=40 --log-file=viewpoints_valgrind --suppressions=opengl.supp --error-limit=no -v viewpoints quadpoints.xyzp &
+
+valgrind --leak-check=full --num-callers=40 --log-file=video_valgrind --suppressions=opengl.supp --error-limit=no -v vid tiny_pic.vid &
+
+valgrind --leak-check=full --num-callers=40 --log-file=fusion_valgrind --suppressions=opengl.supp --error-limit=no -v fusion quadpoints.xyzp tiny_pic.vid &
+
+valgrind --leak-check=full --num-callers=40 --log-file=viewpoints_valgrind --suppressions=opengl.supp --error-limit=no -v vp quadpoints.xyzp &
+
+valgrind --leak-check=full --num-callers=40 --log-file=justearth_valgrind --suppressions=opengl.supp --error-limit=no -v je &
+
+valgrind --leak-check=full --num-callers=40 --log-file=fusion_valgrind --suppressions=opengl.supp --error-limit=no -v f quadpoints.xyzp tiny_pic.vid &
+
+valgrind --verbose --tool=memcheck --log-file=ortho_valgrind streets
+t.45-51 &
+
+===========================================================================
+
+valgrind --verbose --tool=memcheck --log-file=viewpoints_memcheck viewpoints quadpoints.xyzp &
+
+valgrind --leak-check=full --num-callers=40 --log-file=viewpoints_valgrind --suppressions=opengl.supp --error-limit=no -v viewpoints quadpoints.xyzp 
+
+valgrind --verbose --tool=memcheck --suppressions=opengl.supp --log-file=testcities_memcheck testcities lowell.osga &
+
+valgrind --leak-check=full --num-callers=40 --log-file=testcities_valgrind --suppressions=opengl.supp --error-limit=no -v testcities lowell.osga &
+
+valgrind --db-attach=yes --leak-check=full --num-callers=40 --log-file=testcities_valgrind --suppressions=opengl.supp --error-limit=no -v testcities lowell.osga &
+
+valgrind --db-attach=yes testcities lowell.osga 
+
+======================
+
+valgrind --log-file=/home/pcho/rig_classify.valgrind --leak-check=yes \
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -nowin \
+-cfg /home/pcho/sputnik/peter_stuff/mongo_db/my_mongo.dcfg  \
+-do 'pr rig_classify -dver 1106 -oc2c5 -rect -mongodb -nochk \
+-prjdb /startown-gpfs/sputnik02/supersize/devtest/g3d/project.xml \
+-prj la_downtown_copy7'

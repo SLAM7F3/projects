@@ -1,0 +1,1 @@
+./stop_list_reuters.txt

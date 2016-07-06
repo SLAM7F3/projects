@@ -1,0 +1,11 @@
+
+cd /home/cho/programs/c++/svn/projects/src/mains/mit
+/home/cho/programs/c++/svn/projects/src/mains/mit/mitdemo \
+--region_filename ./packages/mit.pkg \
+--region_filename ./packages/mit_facade.pkg \
+--surface_texture ./packages/yahoo_aerial.pkg \
+--initial_mode Manipulate_Fused_Data_Mode 
+
+# --GIS_layer ./packages/nyc_landmarks.pkg \
+# --ActiveMQ_hostname tcp://155.34.125.216:61616 \
+

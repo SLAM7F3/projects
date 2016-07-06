@@ -1,0 +1,3 @@
+/bin/rm ./eocities
+/bin/rm ./nfov_sender
+/bin/rm ./racetrack_sender

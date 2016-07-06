@@ -1,0 +1,121 @@
+=============================================================================
+Python language notes
+=============================================================================
+Last updated on 10/30/15; 11/19/15; 1/17/16; 3/17/16
+=============================================================================
+
+*.  In order to execute a python script called "python_script.py" from
+inside the python interpreter, chant
+
+>>> execfile("python_script.py")
+
+*.  Chant "sudo apt-get install python-pip" in order to install "pip".
+Then chant 
+
+"sudo pip install mpld3" 
+
+in order to install python's matplotlib to browser package.
+
+"sudo pip install traitlets"
+
+*. In order to interactively import from the python interpreter all function
+definitions from a python script file called char_level_models.py, chant
+
+>>> from char_level_models import *
+
+>>> lm = train_char_lm("shakespeare_input.txt", order=4)
+>>> lm['ello']
+[('!', 0.0068143100511073255), (' ', 0.013628620102214651), ("'", 0.017035775127768313), (',', 0.027257240204429302), ('.', 0.0068143100511073255), ('r', 0.059625212947189095), ('u', 0.03747870528109029), ('w', 0.817717206132879), ('n', 0.0017035775127768314), (':', 0.005110732538330494), ('?', 0.0068143100511073255)]
+
+*.  In order to obtain dimensions for a numpy matrix, call .shape
+
+correct_logprobs = -np.log(probs[range(num_examples), y])
+print correct_logprobs
+print correct_logprobs.shape
+
+*.  In order to download caffe models, we had to install the yaml module
+for python:
+
+sudo apt-get install python-yaml
+
+*.  In order for anaconda's version of python to find installed packages
+(e.g. google-protobuf), we must use anaconda's version of PIP:
+
+	$ANACONDA_HOME/bin/pip install protobuf
+
+*.  In order to see a list of locall installed modules, chant at a command-line
+
+	pydoc modules
+
+Alternatively from a python prompt, chant  
+
+	help('modules')
+ 
+*.  We need to install Anaconda directly within /usr/local/ . So first move
+Anaconda installation script into /usr/local/  .  Then from within
+/usr/local, chant something like
+
+	sudo ./Anaconda2-2.4.1-Linux-x86.64.xh
+
+When queried by script where to install Anaconda, reply something like
+
+	/usr/local/anaconda2-2.4.1
+
+Then create soft link 
+
+	sudo ln -s /usr/local/anaconda2-2.4.1 /usr/local/anaconda
+
+*.  If we include the full path to python in the top of an executable
+python file, the python binary will be started before subsequent python
+commands in the file are read:
+
+#! /usr/local/anaconda/bin/python
+
+print "Hello world";
+
+*.  Complex vars:  j and J both equal sqrt(-1):
+
+c = 2 + 3J
+d = 1 - 2J
+e = c+d
+f = c*d
+
+print c
+print d
+print e
+print f
+
+*.  Python lists:
+
+Lists are the most versatile of Python's compound data types. A list
+contains items separated by commas and enclosed within square brackets
+([]). To some extent, lists are similar to arrays in C. One difference
+between them is that all the items belonging to a list can be of different
+data type.  
+
+The values stored in a list can be accessed using the slice operator ([ ]
+and [:]) with indexes starting at 0 in the beginning of the list and
+working their way to end -1. The plus (+) sign is the list concatenation
+operator, and the asterisk (*) is the repetition operator. For example
+
+*.  Python tuples:
+
+A tuple is another sequence data type that is similar to the list. A tuple
+consists of a number of values separated by commas. Unlike lists, however,
+tuples are enclosed within parentheses.
+
+The main differences between lists and tuples are: Lists are enclosed in
+brackets ( [ ] ) and their elements and size can be changed, while tuples
+are enclosed in parentheses ( ( ) ) and cannot be updated. Tuples can be
+thought of as read-only lists.
+
+*.  Python dictionaries:
+
+Python's dictionaries are kind of hash table type. They work like
+associative arrays or hashes found in Perl and consist of key-value
+pairs. A dictionary key can be almost any Python type, but are usually
+numbers or strings. Values, on the other hand, can be any arbitrary Python
+object.
+
+Dictionaries are enclosed by curly braces ({ }) and values can be assigned
+and accessed using square braces ([]).

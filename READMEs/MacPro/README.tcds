@@ -1,0 +1,28 @@
+=============================================================================
+Traffic control devices notes
+=============================================================================
+Last updated on 6/29/15; 6/30/15; 7/1/15
+=============================================================================
+
+*.  As of 7/1/15, Fredrik wants us to place screen shots within a subdir of
+startown rather than attach them to email messages.  So we've started the
+following subdir on startown:
+
+/startown-gpfs/sputnik03/supersize/devdata/pcho/screen_shots/2015/Jul/Jul1
+
+
+*.  O(5K) image chips from Weiyu's roadsign detection run bv_755620 are
+sitting in
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/20150629_signmask/mathilda_0502-2018/bv_755620
+
+A local copy of this bv_755620/ subdir sits in 
+/cc2-gpfs/storage/dev/users/pcho/roadsigns/n    NOT TRUE !!!
+
+*.  Traffic light chips are sitting on startown in 
+
+/startown-gpfs/sputnik03/supersize/labeling_resources/20150622_trafficlight//mathilda_0502-2018/bv_53250/14_4571_7299/blob4_005367-003017-20150502_170334_697-Cam05_1095A_07670_3252_240_3416_708_traffic_light_3724.jpg 
+
+A local copy of this bv_53250/ subdir sits in 
+/cc2-gpfs/storage/dev/users/pcho/traffic_lights/
+

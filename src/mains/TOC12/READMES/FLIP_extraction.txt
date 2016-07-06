@@ -1,0 +1,78 @@
+=============================================================================
+Extracting individual frames from FLIP video camera movies
+=============================================================================
+Last updated on 8/3/12; 8/6/12
+=============================================================================
+
+1.  Login to "LOST" laptop
+
+	username = bots
+	password = 
+
+2.  Change directory 
+
+cd /data/TOC12/imagery/video/Aug
+
+3.  Create new directory with video's date:
+
+	mkdir Aug3
+
+4.  Insert FLIP video camera into USB port.  Drag new videos to folder
+named like
+
+		/data/TOC12/imagery/video/Aug/Aug3
+
+5.  Break apart each movie via command like
+
+	ffmpeg -i VID00018.MP4 -r 1 -s 640x360 -f image2 frame_%04d.png
+
+google ffmpeg to see what these options mean.
+
+6.  Create new subdir within to /data/TOC12/imagery/video/Aug/Aug3 to hold
+the split video frames:
+
+			 mkdir vid18_frames
+
+Then move all the new PNG files into the new subdirectory
+
+	mv *.png ./vid_18_frames
+
+7.  Create zip files for each set of video frames.  For example, within
+aug3 subdirectory, chant
+
+		zip vid16_frames.zip ./vid16_frames/*.png
+
+
+8.  Repeat steps 5 and 6 for all video movies.
+
+9.  Do not yank FLIP out of USB port.  Instead, need to cleanly unmount
+it.  Chant "mount" to see where FLIP is mounted.  Then chant something like
+
+umount /media/FLIP
+
+
+10.  Upload zip files containing video frames to
+ftp://ftp.ll.mit.edu/outgoing/harsh/
+
+  a.  Open xterminal (chant xterm) from inside aug3 subdirectory 
+
+  b.  Connect to LL's ftp server by chanting  ftp ftp.ll.mit.edu
+
+  c.  Login to ftp server:
+
+      Name = ftp
+      password = harsh.shah@ll.mit.edu
+
+  d.  Change ftp server directory as follows:
+
+      cd outgoing/harsh
+
+  e.  To upload a file from your local (aug3) directory to the remote ftp
+      directory, chant
+
+      mput filename
+
+  f.  To download files from ftp server, simply open a browser window to 
+      ftp://ftp.ll.mit.edu/outgoing/harsh
+
+

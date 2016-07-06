@@ -1,0 +1,6 @@
+./roboladar.osga
+--height_colormap 7 # pure_hue
+--prob_colormap 8 # wrap 1
+--height_cyclic_frac_offset 0.0 
+--min_threshold_frac 0.05
+--max_threshold_frac 1.0

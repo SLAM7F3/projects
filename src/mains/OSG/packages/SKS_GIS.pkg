@@ -1,0 +1,5 @@
+# --PostGIS_hostname blah				#  Real hostname for ISDS demo
+--PostGIS_hostname sks				#  Real hostname for ISDS demo
+--PostGIS_database_name isdsid_stage_sar	#  2/7/07 dry run
+--PostGIS_username sks
+# --gispoints_tablename boston_libraries

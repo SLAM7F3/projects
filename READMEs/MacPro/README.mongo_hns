@@ -1,0 +1,133 @@
+==============================================================================
+Mongo database notes for house numbers
+==============================================================================
+Last updated on 5/16/16; 5/31/16; 6/20/16; 6/21/16
+==============================================================================
+
+
+db.detection.find({detector_version : 1110}).count()
+16655963
+
+> db.detection.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml"}).count()
+2524053
+
+> db.detection.find({sub_type:"house_number", duplicate:0, run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml"}).count()
+2018692
+
+> db.detection.find({sub_type:"house_number", duplicate:0, run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml"}).count()
+1983055
+
+> db.detection.find({duplicate:0, gnd:{$exists:true}, run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml"}).count()
+448413
+
+> db.detection.find({sub_type:"house_number", duplicate:0, gnd:{$exists:true}, run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml"}).count()
+369622
+
+
+detector version = 1110
+project_name = sacramento_benchmark_rdn
+prjdb /startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml
+
+
+> db.run.find({run_id:"/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml"}).toArray()
+
+
+> db.detection.count({ "run_id" : "\/startown-gpfs\/sputnik01\/distrib_batch_prj\/prjdb_ballervm_sacramento_benchmark_rdn_160325_123513.xml", "sub_type" : "house_number", "duplicate" : 0, "gnd" : { "$exists" : true } })
+369622
+
+
+Small test run around Sunnyvale containing just a few hundred house numbers
+---------------------------------------------------------------------------
+
+> db.detection.find({"sub_type":"house_number", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_j125_comparison_area1_160413_093948.xml"}).count()
+564 
+
+Mathilda 1K results from new DNN pipeline
+-----------------------------------------
+
+> db.detection.find({sub_type:"HN" }).count()
+1803
+
+db.detection.find({"run_id" : "http://flyover.geo.apple.com/prjdb/FlightOps/project/mathilda_20151027/xml"}).count()
+1803
+
+
+kh_sacramento
+-------------
+
+Run Id 	/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160502_005745.xml
+Project Name 	kh_sacramento
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160502_005745.xml"}).count()
+134271
+
+> db.detection.find({"detector_version":60200, "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160502_005745.xml"}).count()
+134271
+
+> db.detection.find({"detector_version": 60200, "sub_type":"house_number", "run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160502_005745.xml"}).count()
+134271
+
+detector_version = 60200
+sub_type = house_number
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160523_133847.xml"}).count()
+268887
+
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160618_112837.xml"}).count()
+
+5,894,473
+
+
+> db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160618_112837.xml"}).count()
+
+Entire Sacramento shape:
+
+db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160619_153646.xml"}).count()
+
+2,965,838
+
+After deduping and imposing tight consistency constraint with Core Logic:
+
+db.detection.find({"run_id" :"prjdb_ubuntu_kh_sacramento_160619_153646_deduped.xml"}).count()
+438743
+
+After deduping with 15m query bbox and imposing tight consistency
+constraint with Core Logic:
+
+db.detection.find({"run_id" :"prjdb_ubuntu_kh_sacramento_160619_153646_deduped_2.xml"}).count()
+329954
+
+
+
+
+9-sq km shape:
+
+db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160619_193659.xml"}).count()
+40,600
+
+db.detection.find({"run_id" : "/startown-gpfs/sputnik01/distrib_batch_prj/prjdb_ubuntu_kh_sacramento_160619_193659.xml"}).count()
+
+db.detection.find({"run_id" : "prjdb_ubuntu_kh_sacramento_160619_193659_deduped.xml"}).count()
+9456
+
+db.detection.remove({"run_id" : "prjdb_ubuntu_kh_sacramento_160619_193659_deduped.xml"})
+
+VERBOSE: n_parcels = 428036 
+VERBOSE: n_visited_parcels = 890 
+VERBOSE: n_rigs inside shape = 9012 
+
+
+
+kh_elpaso
+---------
+
+# -prjdb /gpfs/mercury11/distrib_batch_prj/prjdb_ballervm_kh_el_paso_160511_172245.xml \
+# -prj kh_el_paso -run_id /gpfs/mercury11/distrib_batch_prj/prjdb_ballervm_kh_el_paso_160511_172245.xml \
+# -shape /gpfs/mercury11/distrib_batch_shape/shape_bjames3_kh_el_paso_160511_172252.shape"
+
+> db.detection.find({"run_id" :"/gpfs/mercury11/distrib_batch_prj/prjdb_ballervm_kh_el_paso_160511_172245.xml"}).count()
+473136
+
+
+

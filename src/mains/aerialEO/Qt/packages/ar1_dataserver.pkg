@@ -1,0 +1,15 @@
+--longitude_lo -101.97
+--latitude_lo 33.48
+--longitude_hi -101.91
+--latitude_hi 33.53
+--elapsed_secs_since_epoch_lo 1190908800
+# --elapsed_secs_since_epoch_hi 1190909000
+# --elapsed_secs_since_epoch_hi 1190909500
+--elapsed_secs_since_epoch_hi 1190912400
+# --WebServer_URL 127.0.0.1:4040 
+# --WebServer_URL 155.34.162.160:4040 
+# --line_width 2  # for touch table projector
+# --line_width 4  # for ISDS3D laptop
+--animation_times_vs_frames 2
+2007 9 27 16 0 0.0 	0
+2007 9 27 17 0 0.0 	3600

@@ -1,0 +1,3 @@
+./load_photos \
+--GIS_layer ./packages/plume_metadata.pkg \
+--initial_mode Manipulate_Fused_Data_Mode

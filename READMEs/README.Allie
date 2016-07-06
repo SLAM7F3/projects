@@ -1,0 +1,228 @@
+===========================================================================
+Allie Hoch's notes about web, map server & LOST applications
+See the README's README.geoWebCache and README.MassGIS for more of Allie's notes
+===========================================================================
+Last updated on 7/30/10; 2/22/13
+===========================================================================
+
+	This is pretty much just a brain dump and is in no way a
+“tutorial.”  Probably if you read this without any knowledge of javascript,
+openlayers, mapserver, postgreSQL, etc. you will have no idea about most
+of what I am writing. I would suggest if you are in this boat, read this
+and then learn about these topics.  Then read it again and maybe you will
+know what I’m talking about.
+
+	We have set up a few different applications (robot, photo and
+bluetracker) which all build on the general concepts first developed for
+the Line-of-Sight Tool (LOST).  LOST is set up as a “thin” client and a C++
+“thick” client which communicate with each other via message passing. Peter
+works on the thick client which handles all of the heavy mathematical
+computations. The thin client for LOST is where the user sets up the flight
+path and asks the thick client to do these mathematical computations.
+Pretty much all user interaction is done on the thin client. The user only
+uses the thick client to view results in 3D. The thin client code is
+written in HTML and JavaScript. The HTML code creates the webpage GUI, but
+all of the functionality is programmed in javascript. The javascript code
+uses the OpenLayers library to display the map. The Yahoo User Interface
+(YUI) library is also used for the drop down tabs as well as the carousel
+of pictures in the robot and photo applications.
+
+	All of the data appearing on LOST's 2D thin client map comes from a
+“MapServer”. This MapServer is basically a “.map” file which accesses a
+database with vector data (simple lines, points, names, etc.) or raster
+data not in the database (imagery). Most of the vector data in the database
+originated from “shapefiles” whose contents were imported into the database
+via the command shp2pgsql. The “.map” files for LOST are in
+/usr/lib/cgi-bin.  The “.map” files for other similar web applications are
+in the mapFiles folder in their corresponding directory (such as
+/usr/local/apache-tomcat/webapps/robot/mapFiles for the robot application).
+[Note: Latter location is version controlled via SVN; /usr/lib/cgi-bin is
+not version controlled!]  The map file holds a bunch of “layers” that
+openLayers can access (as well as some important header information). The
+javascript code will use OpenLayers to access these layers and put them
+into the 2D thin client map.  (Note: When creating a WMS layer with
+OpenLayers in your javascript file and importing more than one layer from
+the .map file, separate the names with commas but no spaces!)
+
+	Map data can be represented in many different “projections.” The
+most basic projection which is represented by latitude and longitude is
+called epsg:4326.  Another projection you might encounter is epsg:900913
+which is the google maps projection. Many other projections only apply to a
+small area of the globe based on a single Universal Transverse Mercator
+(UTM) zone (google it). When dealing with map data, it is very important to
+pay attention to projections. The command “gdalinfo <name of file such as
+tif or NITF>” displays useful information about the file such as the
+projection and the bounding box of the file. Both mapserver and openlayers
+can deal with many different projections. So you can import a bunch of
+different layers into your .map file with different projections but output
+them all in the same projection. Or you can do the same thing in
+openlayers. You could have a “display projection” but import all your
+layers in various different projections.
+
+   One thing that is tricky is figuring out what coordinate system the files
+in your layer are in. (The lines in each layer that start with "PROJECTION" 
+describe the coordinate system of the files in that layer.) But if you use 
+gdalinfo it can be easy. Run gdalinfo on the file you are interested in. Near 
+the top of the output will be a group of lines that might look something like 
+this: 
+PROJCS["NAD83 / Massachusetts Mainland",
+    GEOGCS["NAD83",
+        DATUM["North_American_Datum_1983",
+            SPHEROID["GRS 1980",6378137,298.2572221010002,
+                AUTHORITY["EPSG","7019"]],
+            AUTHORITY["EPSG","6269"]],
+        PRIMEM["Greenwich",0],
+        UNIT["degree",0.0174532925199433],
+        AUTHORITY["EPSG","4269"]],
+    PROJECTION["Lambert_Conformal_Conic_2SP"],
+    PARAMETER["standard_parallel_1",42.68333333333333],
+    PARAMETER["standard_parallel_2",41.71666666666667],
+    PARAMETER["latitude_of_origin",41],
+    PARAMETER["central_meridian",-71.5],
+    PARAMETER["false_easting",200000],
+    PARAMETER["false_northing",750000],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]],
+    AUTHORITY["EPSG","26986"]]
+
+The last line here, the one that starts with "AUTHORITY" is the line that you 
+are looking for. The coordinate system of the above file would be EPSG:26986. 
+You would put this into your map file layer corresponding to this file.
+
+
+Remember when you are setting up a map file that the order of the layers
+matters. The layers should be entered into the file in the order of
+precedence so that the first layer in the file is the "bottom" layer and
+all other layers will be displayed on top of it. This is why in the
+mass30cm.map files the layer for Lincoln Labs appears at the end of the
+file. This means that it will be displayed on top of the MassGIS data which
+has the lab blurred out.
+
+***** For example, in bluetracker/scripts/map.js here is the chunk of
+javascript code which reads in MassGIS .map info into OpenLayers.  Name of
+layer within Openlayer = MassGIS Satellite Imagery.  Multiple mapserver
+layers in .map file are listed as layers: 'MASSGIS_SATELLITE,...."
+
+
+
+   //MassGIS Satellite imagery
+   var satImg = new OpenLayers.Layer.
+      WMS( "MassGIS Satellite Imagery", 
+	   "http://127.0.0.1/cgi-bin/mapserv?map=/usr/local/apache-tomcat/webapps/bluetracker/mapFiles/mass30cm.map&SERVICE=WMS&VERSION=1.1.1",
+	   {layers: 'MASSGIS_SATELLITE,TEN_METER_MASSGIS_SATELLITE,TWOFIFTY_METER_MASSGIS_SATELLITE,LINCOLN_LABS', transparent: 'true'},
+	   {tileSize: new OpenLayers.Size(512, 512),  buffer: 0,
+	    displayInLayerSwitcher:false});
+   
+   map.addLayers([satImg]);
+
+
+******
+
+In bluetracker/scripts/map.js, output geocoord system must always be
+Google's (EPSG:900913) in order for Google Maps to be successfully
+displayed in OpenLayers.  
+
+ var options = {projection: "EPSG:900913",
+		  displayProjection: new OpenLayers.Projection("EPSG:4326"),
+		  units: "m",
+		  maxResolution: 156543.0339,
+		  maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+						   20037508.34, 20037508.34),
+		  eventListeners: {"changebaselayer": changeBaseLayer,
+				   "zoomend": updateGridVisibility}
+                 };
+
+**** displayProjection line controls mouse-over geocoords (lat-lon) even
+though real projection system is Google's.
+
+
+
+
+	Map files can look up vector data in a database, they can load a
+single raster image (like a GeoTiff or NITF file) and they can also have a
+layer that is a “tileindex”. This is how the massGIS data is set up. One
+layer actually references a bunch of different tif files or “tiles.” The
+layer in the map file actually references a shape file (created with a
+command something like: gdaltindex tile_index.shp /data/MassGIS/*.tif. This
+shape file just has bounding box information for each tile and the location
+of the actual tif file on disk.
+
+	When working with map data, Geospatial Data Abstraction Library
+(“GDAL”) and MapServer tools are very useful. They allow you to do things
+like transform an image from one file format to another, change the
+projection of a raster image, or import a shapefile into a database (check
+out the commands gdalwarp, gdal_translate, gdalinfo, shp2pgsql,
+pgsql2shp). Shp2img is a very useful MapServer utility when creating a new
+mapfile.  It allows you to just test the map file without the openlayers
+and javascript getting in the way. 
+
+------------------------------------------------------------------------
+Note added by Peter: This next set of comments from Allie were important
+when we had multiple, clashing versions of GDAL installed onto LOST laptops
+in the ancient past.  Hopefully, current and future LAPTOPS will always
+have a single, self-consistent set of GDAL codes installed.  So the
+following commands should theoretically never need to be run as of June
+2010:
+
+If you need to install a new version of gdal these commands should do the
+trick assuming the downloaded files are in
+/home/sigma/Desktop/Packages/gdal-1.7.1:
+
+cd /home/sigma/Desktop/Packages/gdal-1.7.1/
+sudo make clean
+cd swig/python
+sudo python setup.py build
+sudo python setup.py install
+sudo python setup.py bdist_egg
+cd ../../
+./configure –prefix=/usr –with-python # Allie says -prefix is really important!
+sudo make
+sudo make install 
+
+------------------------------------------------------------------------
+
+	Cgi files are used throughout these web applications. They are
+basically used to complete some task and then return html code to the
+javascript function which executed the cgi file. It is confusing because
+when the cgi files are executed the path to them is something like
+“../cgi-bin/robot/some_cgi_file.cgi". But the folder they are in would be
+/usr/local/apache-tomcat/webapps/robot/cgi. This is because “../cgi-bin”
+actually goes to /usr/local/apache-tomcat/webapps/ROOT/WEB-INF/cgi and
+looks for the symbolic link for robot. This link should point to
+/usr/local/apache-tomcat/webapps/robot/cgi where the appropriate file is
+actually located.
+
+	Some basic knowledge of PostgresSQL will be necessary for
+understanding the .map files which access the database. When a layer in a
+.map file has a line “CONNECTIONTYPE postgis”, the line “DATA …” will
+basically be a SQL “select” command to get some data out of the database. I
+checked out a book from Lincoln Lab's library on postgreSQL which was
+helpful.
+
+
+*********  For example of postgres database being accessed by Mapserver,
+see bluetracker/mapFiles/WorldVectorLayers.map
+
+
+	Another task that I worked on was creating new maps for LOST. This
+involves taking DTED and satellite imagery and merging them. The DTED data
+is basically information obtained by radar about elevations. In the case of
+Afghanistan and Pakistan this is “DTED 2” data which means that there is a
+data point every 30m. The first step in the merging process is to convert
+DTED data (talk to Bobb Menk in the library to help get the DTED data) to
+TDP format. This can be done using Peter's program
+/home/los/programs/c++/svn/projects/src/mains/mapping/dted2tdp.  Next the
+dted needs to be converted to osga format using
+/home/los/programs/c++/svn/projects/src/mains/mapping/dted2osga.  Also
+necessary is tif which are the satellite imagery of the area, probably
+obtained from a third party. These are very vague instructions – talk to
+Peter for more details.
+ 
+	Firebug is a very useful tool. It is basically the debugger for
+javascript.  To turn it on, go to Tools->Firebug->Open Firebug in New
+Window. The "Net" tab in firebug is useful because it shows all the message
+passing that happens. The Console tab might help you debug typos in your
+javascript. And the Script command can be used like a traditional debugger
+to set breakpoints and step through code.
+
+ 

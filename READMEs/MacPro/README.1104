@@ -1,0 +1,31 @@
+============================================================================
+PR Engine 1104 for house number recognition
+============================================================================
+Last updated on 7/26/14; 7/27/14
+============================================================================
+
+The first 4 stages of PR engine #1104 are
+
+1.  Extremal region nomination and nested bbox elimination 
+
+2.  Gross bbox grouping
+
+3.  Reduced gross bbox grouping based upon strict CNN digit detection in at
+least one bbox per group
+
+4.  Augment # of candidates sent into CNN by slightly expanding surviving
+extremal region bboxes.  Perform more lenient CNN recognition of individual
+characters.  For each augmented set, retain only candidate recognized digit
+with largest matching score.
+
+
+These first 4 stages of PR engine 1104 appear to work quite well as of Sun, 
+July 27, at 4:14 pm
+
+
+Stage 5 should perform a new grouping of bboxes with significant digit
+recognition scores with little regard to gross bbox grouping from stages 2
+and 3.
+
+Stage 6 should perform digits -> numeral detection.
+

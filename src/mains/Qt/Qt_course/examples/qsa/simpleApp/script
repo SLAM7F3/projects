@@ -1,0 +1,9 @@
+Application.button.text = "Hello Class"
+Application.button.resize( 200,100 )
+
+function slotGo() 
+{
+  print("Hello World")
+}
+
+connect( Application.button, "clicked()", slotGo )

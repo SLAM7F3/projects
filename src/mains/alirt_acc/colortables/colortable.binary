@@ -1,0 +1,17 @@
+
+image_legend
+   min 0
+   max 60
+   height 4.0
+   width 0.15
+   label 'Function Value'
+   legloc 7.5 4.5
+   reverse_colors
+
+colortable
+# index	red	green 	blue	interpolations  label
+
+0.025     0       0       0       2
+0.99    255     255     255       5       '1'
+999     255     0       0       2
+1000    255     255     255     2
