@@ -176,53 +176,69 @@ bool PolyLinesKeyHandler::handle(
 //  KEY_KP_7 = 65429
 //  KEY_KP_8 = 65431
 //  KEY_KP_9 = 65434
+         
+         else if (ea.getKey()==65438)
+         {
+            PolyLinesGroup_ptr->set_all_PolyLine_attributes(0);
+            return true;
+         }
+         else if (ea.getKey()==65436)
+         {
+            PolyLinesGroup_ptr->set_all_PolyLine_attributes(1);
+            return true;
+         }
+         else if (ea.getKey()==65433)
+         {
+            PolyLinesGroup_ptr->set_all_PolyLine_attributes(2);
+            return true;
+         }
 
-         else if (ea.getKey()==65438 || ea.getKey() == '0')
+         else if (ea.getKey() == '0' || ea.getKey() == '`')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(0);
             return true;
          }
-         else if (ea.getKey()==65436 || ea.getKey() == '1')
+         else if (ea.getKey() == '1')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(1);
             return true;
          }
-         else if (ea.getKey()==65433 || ea.getKey() == '2')
+         else if (ea.getKey() == '2')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(2);
             return true;
          }
-         else if (ea.getKey()==65435 || ea.getKey() == '3')
+         else if (ea.getKey() == '3')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(3);
             return true;
          }
-         else if (ea.getKey()==65430 || ea.getKey() == '4')
+         else if (ea.getKey() == '4')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(4);
             return true;
          }
-         else if (ea.getKey()==65437 || ea.getKey() == '5')
+         else if (ea.getKey() == '5')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(5);
             return true;
          }
-         else if (ea.getKey()==65432 || ea.getKey() == '6')
+         else if (ea.getKey() == '6')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(6);
             return true;
          }
-         else if (ea.getKey()==65429 || ea.getKey() == '7')
+         else if (ea.getKey() == '7')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(7);
             return true;
          }
-         else if (ea.getKey()==65431 || ea.getKey() == '8')
+         else if (ea.getKey() == '8')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(8);
             return true;
          }
-         else if (ea.getKey()==65434 || ea.getKey() == '9')
+         else if (ea.getKey() == '9')
          {
             PolyLinesGroup_ptr->set_PolyLine_attribute(9);
             return true;

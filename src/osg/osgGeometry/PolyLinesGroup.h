@@ -255,6 +255,7 @@ class PolyLinesGroup : public GeometricalsGroup
    void increment_currimage_PolyLine();
    void decrement_currimage_PolyLine();
    void set_PolyLine_attribute(int attribute_ID);
+   void set_all_PolyLine_attributes(int attribute_ID);
    void display_PolyLine_attribute(
       int PolyLine_ID, std::string attribute_value);
    void write_bboxes_to_file();
@@ -269,6 +270,7 @@ class PolyLinesGroup : public GeometricalsGroup
    bool ID_labels_flag;
    bool variable_Point_size_flag;
    std::string next_PolyLine_label;
+   int secs_since_Y2K;
    int prev_framenumber;
    int currimage_PolyLine_index;
    double skeleton_height,constant_vertices_altitude;

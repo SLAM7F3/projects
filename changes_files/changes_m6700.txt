@@ -4,6 +4,13 @@ Dell M6700 code changes made on Tues, July 5, 2016:
 *.  mains/faces/LABELIMAGES.CC can now display colored bboxes around faces
 and hands within annotated images.
 
+................
+
+*.  LABELIMAGES can now set constant attribute for all face bboxes in an
+image via single key input.
+
+..............
+
 ============================================================================
 Dell M6700 code changes made on Mon, July 4, 2016:
 

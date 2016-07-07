@@ -62,7 +62,6 @@ int main( int argc, char** argv )
    {
       bbox_labels_filename = labeled_faces_subdir+"labeled_face_bboxes.txt";
    }
-   
    filefunc::ReadInfile(bbox_labels_filename);
 
    typedef map<string, vector<bounding_box> > ANNOTATED_BBOXES_MAP;
@@ -84,7 +83,7 @@ int main( int argc, char** argv )
    for(unsigned int i = 0; i < filefunc::text_line.size(); i++)
    {
       string curr_line=filefunc::text_line[i];
-      
+
       vector<string> substrings = stringfunc::decompose_string_into_substrings(
          curr_line);
       if(substrings[0] == "Image:")
@@ -143,6 +142,9 @@ int main( int argc, char** argv )
 
       } // substrings[0] == "Image:" conditional
    } // loop over index i labeling lines in detections text file
+
+   // Save final image info into data structures
+   annotated_bboxes_map[image_ID_str] = annotated_bboxes;
 
 // Use an ArgumentParser object to manage the program arguments:
 
@@ -227,6 +229,7 @@ int main( int argc, char** argv )
       movies_group.generate_new_texture_rectangle(image_filename);
 
    unsigned int curr_width, curr_height;
+/*
    unsigned int max_image_width = 0, max_image_height = 0;
    for (unsigned int i=0; i<image_filenames.size(); i++)
    {
@@ -235,6 +238,9 @@ int main( int argc, char** argv )
       max_image_width = basic_math::max(max_image_width, curr_width);
       max_image_height = basic_math::max(max_image_height, curr_height);
    }
+*/
+   unsigned int max_image_width = 2400;
+   unsigned int max_image_height = 2400;
 
    delete texture_rectangle_ptr;
    texture_rectangle_ptr = new texture_rectangle(
@@ -260,6 +266,8 @@ int main( int argc, char** argv )
    for(int n = AnimationController_ptr->get_first_framenumber(); 
        n <= AnimationController_ptr->get_last_framenumber(); n++)
    {
+      if(n%250 == 0) cout << n << " ";
+
       AnimationController_ptr->set_curr_framenumber(n);
       string curr_image_filename=
          AnimationController_ptr->get_curr_image_filename();
@@ -310,15 +318,6 @@ int main( int argc, char** argv )
                single_polyline_per_geode_flag, n_text_messages);
          int PolyLine_ID = bbox_PolyLine_ptr->get_ID();
 
-         string attribute_key = "gender";
-         string attribute_value = curr_bboxes_ptr->at(b).
-            get_attribute_value(attribute_key);
-         if(attribute_value.size() > 0 && attribute_value != "unknown")
-         {
-            PolyLinesGroup_ptr->display_PolyLine_attribute(
-               PolyLine_ID, attribute_value);
-         }
-
 // Tie together IDs for bounding boxes and their corresponding
 // OSG PolyLines:
 
@@ -331,6 +330,16 @@ int main( int argc, char** argv )
          P.first = image_ID_str;
          P.second = b;
          osg_bboxes_map[PolyLine_ID] = P;
+
+         string attribute_key = "gender";
+         string attribute_value = curr_bboxes_ptr->at(b).
+            get_attribute_value(attribute_key);
+         
+         if(attribute_value.size() > 0 && attribute_value != "unknown")
+         {
+            PolyLinesGroup_ptr->display_PolyLine_attribute(
+               PolyLine_ID, attribute_value);
+         }
 
       } // loop over index b labeling bboxes for curr_image
    } // loop over index n labeling frame numbers

@@ -120,7 +120,7 @@ a separate subdirectory, and their place within the images subdir is taken
 by their downsized counterparts.  Original or downsampled image size
 results are saved into output text file bundler_IO_subdir/image_sizes.dat.
 
-Program PHOTO_SIZES reads inrun_th a set of photo image filenames.  It calls
+Program PHOTO_SIZES reads in a set of photo image filenames.  It calls
 ImageMagick's ping command to extract image width and height measured in
 pixels.  Image size results are saved into output text file
 $bundler_IO_subdir/image_sizes.dat.

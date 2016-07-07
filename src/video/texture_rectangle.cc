@@ -4188,8 +4188,8 @@ bool texture_rectangle::read_next_photo()
    cout << "Displayed image filename = " 
         << filefunc::getbasename(next_photo_filename) << endl;
    cout << "   xdim = " << next_width << " ydim = " << next_height << endl;
-   cout << "   curr_framenumber = " 
-        << AnimationController_ptr->get_curr_framenumber() << endl;
+//   cout << "   curr_framenumber = " 
+//        << AnimationController_ptr->get_curr_framenumber() << endl;
 
    if (panel_number >= 0)
    {

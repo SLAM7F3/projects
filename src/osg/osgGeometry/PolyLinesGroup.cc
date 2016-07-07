@@ -48,6 +48,7 @@ void PolyLinesGroup::initialize_member_objects()
 {
    GraphicalsGroup_name="PolyLinesGroup";
 
+   secs_since_Y2K = timefunc::secs_since_Y2K();
    altitude_dependent_labels_flag=true;
    variable_Point_size_flag=false;
    prev_framenumber=-1;
@@ -2241,6 +2242,11 @@ string PolyLinesGroup::get_image_ID_str()
 void PolyLinesGroup::set_selected_bbox()
 {
    annotated_bboxes_iter = annotated_bboxes_map_ptr->find(get_image_ID_str());
+   if(annotated_bboxes_iter == annotated_bboxes_map_ptr->end())
+   {
+      return;
+   }
+   
    vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
    int selected_PolyLine_ID = 
       curr_bboxes_ptr->at(currimage_PolyLine_index).get_ID();
@@ -2320,8 +2326,8 @@ void PolyLinesGroup::decrement_currimage_PolyLine()
 
 void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
 {
-   cout << "inside set_PolyLine_attribute(), attribute_ID = " << attribute_ID
-        << endl;
+//   cout << "inside set_PolyLine_attribute(), attribute_ID = " << attribute_ID
+//        << endl;
 
    int selected_PolyLine_ID = get_selected_Graphical_ID();
    osg_bboxes_iter = osg_bboxes_map_ptr->find(selected_PolyLine_ID);
@@ -2361,12 +2367,52 @@ void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
 }
 
 // --------------------------------------------------------------------------
+// Member function set_all_PolyLine_attributes()
+
+void PolyLinesGroup::set_all_PolyLine_attributes(int attribute_ID)
+{
+   annotated_bboxes_iter = annotated_bboxes_map_ptr->find(get_image_ID_str());
+   vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
+   
+   for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
+   {
+      bounding_box* bbox_ptr = &curr_bboxes_ptr->at(b);
+      if(bbox_ptr->get_label() != "face") return;
+
+      string attribute_key = "gender";
+      string attribute_value = "unset";
+      if(attribute_ID == 0)
+      {
+         attribute_value = "unknown";
+      }
+      else if(attribute_ID == 1)
+      {
+         attribute_value = "male";
+      }
+      else if(attribute_ID == 2)
+      {
+         attribute_value = "female";
+      }
+      
+      if(attribute_value != "unset")
+      {
+         bbox_ptr->set_attribute_value(attribute_key, attribute_value);
+         display_PolyLine_attribute(bbox_ptr->get_ID(), attribute_value);
+      }
+   } // loop over index b labeling bboxes for curr image
+
+   write_bboxes_to_file();
+}
+
+// --------------------------------------------------------------------------
 // Member function display_PolyLine_attribute()
 
 void PolyLinesGroup::display_PolyLine_attribute(
    int PolyLine_ID, string attribute_value)
 {
    osg_bboxes_iter = osg_bboxes_map_ptr->find(PolyLine_ID);
+   if(osg_bboxes_iter == osg_bboxes_map_ptr->end()) return;
+
    string image_ID_str = osg_bboxes_iter->second.first;
    currimage_PolyLine_index = osg_bboxes_iter->second.second;
    
@@ -2377,7 +2423,7 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
    if(selected_bbox_ptr->get_label() != "face") return;
 
-   if(attribute_value != "unknown")
+//   if(attribute_value != "unknown")
    {
       PolyLine* PolyLine_ptr = get_PolyLine_ptr(PolyLine_ID);
       polygon poly(*PolyLine_ptr->get_polyline_ptr());
@@ -2395,16 +2441,17 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
 void PolyLinesGroup::write_bboxes_to_file()
 {
-   cout << "inside write_bboxes_to_file()" << endl;
+//   cout << "inside write_bboxes_to_file()" << endl;
    
    int curr_framenumber = get_AnimationController_ptr()->
       get_curr_framenumber();
    
 // Export face and hand bounding boxes to output text file:
 
-   string output_filename="./new_labeled_bboxes.txt";
+   string output_filename="./labeled_bboxes_"+
+      stringfunc::number_to_string(secs_since_Y2K)+".txt";
    ofstream outstream;
-   cout << "output_filename = " << output_filename << endl;
+//   cout << "output_filename = " << output_filename << endl;
    filefunc::openfile(output_filename, outstream);
    outstream << "# " << timefunc::getcurrdate() << endl;
    outstream << "# Image: index  ID_str " << endl;
