@@ -2234,8 +2234,6 @@ string PolyLinesGroup::get_image_ID_str()
       stringfunc::decompose_string_into_substrings(
          currimage_filename,"_.");
    string image_ID_str = substrings[1];
-//   cout << "currimage_filename = " << currimage_filename
-//        << " image_ID_str = " << image_ID_str << endl;
    return image_ID_str;
 }
 
@@ -2271,6 +2269,7 @@ void PolyLinesGroup::increment_frame()
 {
 //   cout << "inside PolyLinesGrop::increment_frame()" << endl;
    get_AnimationController_ptr()->increment_frame_counter();
+   generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
 }
@@ -2282,6 +2281,7 @@ void PolyLinesGroup::decrement_frame()
 {
 //   cout << "inside PolyLinesGrop::decrement_frame()" << endl;
    get_AnimationController_ptr()->decrement_frame_counter();
+   generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
 }
@@ -2435,6 +2435,91 @@ void PolyLinesGroup::display_PolyLine_attribute(
 }
 
 // --------------------------------------------------------------------------
+// Member function generate_image_bboxes() loops over all bboxes for
+// image specified by its image_ID_str.  It converts dimensionful bbox
+// pixel coordinates into dimensionless (u,v) coordinates.  It then
+// convert (u,v) coordinates into corresponding (U,V) coordinates
+// corresponding to maximal bbox width and height.
+
+void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
+{
+   int curr_width, curr_height;
+   image_sizes_iter = image_sizes_map_ptr->find(image_ID_str);
+   curr_width = image_sizes_iter->second.first;
+   curr_height = image_sizes_iter->second.second;
+
+   annotated_bboxes_iter = annotated_bboxes_map_ptr->find(image_ID_str);
+   vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
+
+   for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
+   {
+
+// First check if a PolyLine corresponding to curr_bbox[b] has already
+// been generated. If so, curr_bbox should have non-negative ID:
+
+      if(curr_bboxes_ptr->at(b).get_ID() >= 0) continue;
+      
+      double ulo=curr_bboxes_ptr->at(b).get_xmin()/curr_height;
+      double uhi=curr_bboxes_ptr->at(b).get_xmax()/curr_height;
+      double vlo=1 - curr_bboxes_ptr->at(b).get_ymin()/curr_height;
+      double vhi=1 - curr_bboxes_ptr->at(b).get_ymax()/curr_height;
+      
+      double alpha = 0.5 * double(max_image_width-curr_width)/
+         max_image_height;
+      double beta = 0.5 * double(max_image_height-curr_height)/
+         max_image_height;
+      double gamma = double(curr_height)/max_image_height;
+         
+      double Ulo = alpha + gamma * ulo;
+      double Uhi = alpha + gamma * uhi;
+      double Vlo = beta + gamma * vlo;
+      double Vhi = beta + gamma * vhi;
+
+      vector<threevector> bbox_vertices;
+      bbox_vertices.push_back(threevector(Ulo,Vlo));
+      bbox_vertices.push_back(threevector(Uhi,Vlo));
+      bbox_vertices.push_back(threevector(Uhi,Vhi));
+      bbox_vertices.push_back(threevector(Ulo,Vhi));
+      bbox_vertices.push_back(threevector(Ulo,Vlo));
+      osg::Vec4 uniform_color=colorfunc::get_OSG_color(
+         curr_bboxes_ptr->at(b).get_color());
+
+      bool force_display_flag = false;
+      bool single_polyline_per_geode_flag = true;
+      int n_text_messages = 1;
+
+      PolyLine* bbox_PolyLine_ptr = 
+         generate_new_PolyLine(
+            bbox_vertices, uniform_color, force_display_flag, 
+            single_polyline_per_geode_flag, n_text_messages);
+      int PolyLine_ID = bbox_PolyLine_ptr->get_ID();
+
+// Tie together IDs for bounding boxes and their corresponding
+// OSG PolyLines:
+
+      curr_bboxes_ptr->at(b).set_ID(PolyLine_ID);
+
+// Store association between OSG PolyLine ID and (image_ID_str, b)
+// pair:
+
+      pair<string, int> P;
+      P.first = image_ID_str;
+      P.second = b;
+      (*osg_bboxes_map_ptr)[PolyLine_ID] = P;
+
+      string attribute_key = "gender";
+      string attribute_value = curr_bboxes_ptr->at(b).
+         get_attribute_value(attribute_key);
+         
+      if(attribute_value.size() > 0 && attribute_value != "unknown")
+      {
+         display_PolyLine_attribute(PolyLine_ID, attribute_value);
+      }
+   } // loop over index b labeling bboxes for curr_image
+}
+
+
+// --------------------------------------------------------------------------
 // Member function write_bboxes_to_file()
 
 void PolyLinesGroup::write_bboxes_to_file()
@@ -2500,78 +2585,3 @@ void PolyLinesGroup::write_bboxes_to_file()
 
    get_AnimationController_ptr()->set_curr_framenumber(curr_framenumber);
 }
-
-// --------------------------------------------------------------------------
-// Member function generate_image_bboxes()
-
-void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
-{
-   int curr_width, curr_height;
-   image_sizes_iter = image_sizes_map_ptr->find(image_ID_str);
-   curr_width = image_sizes_iter->second.first;
-   curr_height = image_sizes_iter->second.second;
-
-   annotated_bboxes_iter = annotated_bboxes_map_ptr->find(image_ID_str);
-   vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
-
-   for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
-   {
-      double ulo=curr_bboxes_ptr->at(b).get_xmin()/curr_height;
-      double uhi=curr_bboxes_ptr->at(b).get_xmax()/curr_height;
-      double vlo=1 - curr_bboxes_ptr->at(b).get_ymin()/curr_height;
-      double vhi=1 - curr_bboxes_ptr->at(b).get_ymax()/curr_height;
-      
-      double alpha = 0.5 * double(max_image_width-curr_width)/
-         max_image_height;
-      double beta = 0.5 * double(max_image_height-curr_height)/
-         max_image_height;
-      double gamma = double(curr_height)/max_image_height;
-         
-      double Ulo = alpha + gamma * ulo;
-      double Uhi = alpha + gamma * uhi;
-      double Vlo = beta + gamma * vlo;
-      double Vhi = beta + gamma * vhi;
-
-      vector<threevector> bbox_vertices;
-      bbox_vertices.push_back(threevector(Ulo,Vlo));
-      bbox_vertices.push_back(threevector(Uhi,Vlo));
-      bbox_vertices.push_back(threevector(Uhi,Vhi));
-      bbox_vertices.push_back(threevector(Ulo,Vhi));
-      bbox_vertices.push_back(threevector(Ulo,Vlo));
-      osg::Vec4 uniform_color=colorfunc::get_OSG_color(
-         curr_bboxes_ptr->at(b).get_color());
-
-      bool force_display_flag = false;
-      bool single_polyline_per_geode_flag = true;
-      int n_text_messages = 1;
-
-      PolyLine* bbox_PolyLine_ptr = 
-         generate_new_PolyLine(
-            bbox_vertices, uniform_color, force_display_flag, 
-            single_polyline_per_geode_flag, n_text_messages);
-      int PolyLine_ID = bbox_PolyLine_ptr->get_ID();
-
-// Tie together IDs for bounding boxes and their corresponding
-// OSG PolyLines:
-
-      curr_bboxes_ptr->at(b).set_ID(PolyLine_ID);
-
-// Store association between OSG PolyLine ID and (image_ID_str, b)
-// pair:
-
-      pair<string, int> P;
-      P.first = image_ID_str;
-      P.second = b;
-      (*osg_bboxes_map_ptr)[PolyLine_ID] = P;
-
-      string attribute_key = "gender";
-      string attribute_value = curr_bboxes_ptr->at(b).
-         get_attribute_value(attribute_key);
-         
-      if(attribute_value.size() > 0 && attribute_value != "unknown")
-      {
-         display_PolyLine_attribute(PolyLine_ID, attribute_value);
-      }
-   } // loop over index b labeling bboxes for curr_image
-}
-

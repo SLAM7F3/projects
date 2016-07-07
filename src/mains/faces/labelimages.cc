@@ -139,6 +139,12 @@ int main( int argc, char** argv )
             curr_bbox.set_attribute_value(attr_key, attr_value);
          }
 
+// As of 7/7/16, we initialize ID for each new bbox to -1.  When a
+// PolyLine corresponding to a bbox is generated, its ID is reset to
+// the PolyLine's ID:
+
+         curr_bbox.set_ID(-1);
+
          annotated_bboxes.push_back(curr_bbox);
 //         cout << annotated_bboxes.back() << endl;
 
@@ -256,14 +262,6 @@ int main( int argc, char** argv )
    int Nimages=AnimationController_ptr->get_n_ordered_image_filenames();
    cout << "Nimages = " << Nimages << endl;
 
-
-
-//   vector<string> image_filenames =filefunc::image_files_in_subdir(
-//      images_subdir);
-//   string image_filename=AnimationController_ptr->get_curr_image_filename();
-//   cout << "Initial image filename = " << image_filename << endl;
-//   texture_rectangle* texture_rectangle_ptr=
-//      movies_group.generate_new_texture_rectangle(image_filename);
    texture_rectangle *texture_rectangle_ptr = new texture_rectangle(
       max_image_width, max_image_height, 1, 4, AnimationController_ptr);
    Movie* movie_ptr=movies_group.generate_new_Movie(texture_rectangle_ptr);
@@ -278,25 +276,17 @@ int main( int argc, char** argv )
       new MovieKeyHandler(ModeController_ptr,&movies_group);
    window_mgr_ptr->get_EventHandlers_ptr()->push_back(MoviesKeyHandler_ptr);
 
-// Loop over all bboxes for each image.  Convert dimensionful bbox
-// pixel coordinates into dimensionless (u,v) coordinates.  Then
-// convert (u,v) coordinates into corresponding (U,V) coordinates
-// corresponding to maximal bbox width and height:
-
    PolyLinesGroup_ptr->set_erase_Graphicals_except_at_curr_time_flag(true);
-   for(int n = AnimationController_ptr->get_first_framenumber(); 
-       n <= AnimationController_ptr->get_last_framenumber(); n++)
-   {
-      AnimationController_ptr->set_curr_framenumber(n);
-      string curr_image_filename=
-         AnimationController_ptr->get_curr_image_filename();
-      vector<string> substrings = 
-         stringfunc::decompose_string_into_substrings(
-            curr_image_filename,"_.");
-      string image_ID_str = substrings[1];
-      PolyLinesGroup_ptr->generate_image_bboxes(image_ID_str);
-   } // loop over index n labeling frame numbers
-   AnimationController_ptr->set_curr_framenumber(0);
+
+// Generate PolyLines corresponding to bounding boxes in first image:
+
+   string curr_image_filename=
+      AnimationController_ptr->get_curr_image_filename();
+   vector<string> substrings = 
+      stringfunc::decompose_string_into_substrings(
+         curr_image_filename,"_.");
+   image_ID_str = substrings[1];
+   PolyLinesGroup_ptr->generate_image_bboxes(image_ID_str);
 
    cout << endl;
    cout << "******************************************************" << endl;
