@@ -150,3 +150,11 @@ blue links (located on LHS) within
 
 our local-machine and global github servers were then able to 
 find these images and display them in a new blog post.
+
+
+*.  On 7/7/16, we explicitly appended all executable binaries to our
+$GITPROJECTS/.gitignore file by chanting
+
+find . -executable -type f >> .gitignore
+
+
