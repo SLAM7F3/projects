@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
    int n_images = image_filenames.size();
    for(int i = 0; i < n_images; i++)
    {
-      if(i%1000 == 0)
+      if(i%5000 == 0)
       {
          double progress_frac = double(i)/double(n_images);
          outputfunc::print_elapsed_and_remaining_time(progress_frac);

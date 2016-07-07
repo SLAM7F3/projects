@@ -1,3 +1,6 @@
+// NEED TO MAKE SURE WIDER IMAGES ARE LESS THAN 2400x2400 PIXELS IN SIZE !!!
+
+
 // ====================================================================
 // Program WIDER_IMGS imports the XML files for face bboxes within 
 // training and validation WIDER images.  

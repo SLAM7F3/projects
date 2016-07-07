@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for POLYLINESGROUP class
 // ==========================================================================
-// Last modified on 9/15/12; 5/1/14; 1/22/16; 7/6/16
+// Last modified on 5/1/14; 1/22/16; 7/6/16; 7/7/16
 // ==========================================================================
 
 #ifndef POLYLINESGROUP_H
@@ -47,6 +47,10 @@ class PolyLinesGroup : public GeometricalsGroup
    typedef map<int, pair<string, int> > OSG_BBOXES_MAP;
 // independent int: OSG PolyLine ID
 // dependent pair:  string = image_ID_str, int = curr image bbox index
+
+   typedef map<string, pair<int, int> > IMAGE_SIZES_MAP;
+// independent int: image_ID_str
+// dependent pair:  xdim, ydim
 
 
 // Initialization, constructor and destructor functions:
@@ -112,6 +116,7 @@ class PolyLinesGroup : public GeometricalsGroup
    void set_photogroup_ptr(photogroup* pg_ptr);
    void set_annotated_bboxes_map_ptr(ANNOTATED_BBOXES_MAP* abm_ptr);
    void set_osg_bboxes_map_ptr(OSG_BBOXES_MAP* osgm_ptr);
+   void set_image_sizes_map_ptr(IMAGE_SIZES_MAP* ism_ptr);
 
 // PolyLine generation member functions:
 
@@ -259,6 +264,7 @@ class PolyLinesGroup : public GeometricalsGroup
    void display_PolyLine_attribute(
       int PolyLine_ID, std::string attribute_value);
    void write_bboxes_to_file();
+   void generate_image_bboxes(std::string image_ID_str);
 
   protected:
 
@@ -293,6 +299,9 @@ class PolyLinesGroup : public GeometricalsGroup
 
    OSG_BBOXES_MAP* osg_bboxes_map_ptr;
    OSG_BBOXES_MAP::iterator osg_bboxes_iter;
+
+   IMAGE_SIZES_MAP* image_sizes_map_ptr;
+   IMAGE_SIZES_MAP::iterator image_sizes_iter;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -495,6 +504,12 @@ inline void PolyLinesGroup::set_osg_bboxes_map_ptr(
    PolyLinesGroup::OSG_BBOXES_MAP* osgm_ptr)
 {
    osg_bboxes_map_ptr = osgm_ptr;
+}
+
+inline void PolyLinesGroup::set_image_sizes_map_ptr(
+   PolyLinesGroup::IMAGE_SIZES_MAP* ism_ptr)
+{
+   image_sizes_map_ptr = ism_ptr;
 }
 
 #endif // PolyLinesGroup.h
