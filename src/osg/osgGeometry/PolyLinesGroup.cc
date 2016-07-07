@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 4/5/14; 5/1/14; 1/22/16; 7/6/16
+// Last modified on 5/1/14; 1/22/16; 7/6/16; 7/7/16
 // ==========================================================================
 
 #include <iomanip>
@@ -81,6 +81,7 @@ void PolyLinesGroup::initialize_member_objects()
    DataGraph_ptr=NULL;
    annotated_bboxes_map_ptr = NULL;
    osg_bboxes_map_ptr = NULL;
+   max_image_width = max_image_height = -1;
 
    get_OSGgroup_ptr()->setUpdateCallback( 
         new AbstractOSGCallback<PolyLinesGroup>(
@@ -2423,17 +2424,14 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
    if(selected_bbox_ptr->get_label() != "face") return;
 
-//   if(attribute_value != "unknown")
-   {
-      PolyLine* PolyLine_ptr = get_PolyLine_ptr(PolyLine_ID);
-      polygon poly(*PolyLine_ptr->get_polyline_ptr());
-      double polygon_area=poly.compute_area();
-      double text_size=20.0*sqrt(polygon_area)/100.0;
-
-      threevector text_posn = 
-         PolyLine_ptr->get_polyline_ptr()->get_vertex(0);
-      PolyLine_ptr->set_label(attribute_value, text_posn, text_size);
-   }
+   PolyLine* PolyLine_ptr = get_PolyLine_ptr(PolyLine_ID);
+   polygon poly(*PolyLine_ptr->get_polyline_ptr());
+   double polygon_area=poly.compute_area();
+   double text_size=20.0*sqrt(polygon_area)/100.0;
+   
+   threevector text_posn = 
+      PolyLine_ptr->get_polyline_ptr()->get_vertex(0);
+   PolyLine_ptr->set_label(attribute_value, text_posn, text_size);
 }
 
 // --------------------------------------------------------------------------
@@ -2504,18 +2502,15 @@ void PolyLinesGroup::write_bboxes_to_file()
 }
 
 // --------------------------------------------------------------------------
-// Member function write_bboxes_to_file()
+// Member function generate_image_bboxes()
 
 void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 {
-   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
-      
-/*
    int curr_width, curr_height;
    image_sizes_iter = image_sizes_map_ptr->find(image_ID_str);
    curr_width = image_sizes_iter->second.first;
    curr_height = image_sizes_iter->second.second;
-      
+
    annotated_bboxes_iter = annotated_bboxes_map_ptr->find(image_ID_str);
    vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
 
@@ -2550,9 +2545,8 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
       bool single_polyline_per_geode_flag = true;
       int n_text_messages = 1;
 
-
       PolyLine* bbox_PolyLine_ptr = 
-         PolyLinesGroup_ptr->generate_new_PolyLine(
+         generate_new_PolyLine(
             bbox_vertices, uniform_color, force_display_flag, 
             single_polyline_per_geode_flag, n_text_messages);
       int PolyLine_ID = bbox_PolyLine_ptr->get_ID();
@@ -2568,7 +2562,7 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
       pair<string, int> P;
       P.first = image_ID_str;
       P.second = b;
-      osg_bboxes_map[PolyLine_ID] = P;
+      (*osg_bboxes_map_ptr)[PolyLine_ID] = P;
 
       string attribute_key = "gender";
       string attribute_value = curr_bboxes_ptr->at(b).
@@ -2576,12 +2570,8 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
          
       if(attribute_value.size() > 0 && attribute_value != "unknown")
       {
-         PolyLinesGroup_ptr->display_PolyLine_attribute(
-            PolyLine_ID, attribute_value);
+         display_PolyLine_attribute(PolyLine_ID, attribute_value);
       }
-
    } // loop over index b labeling bboxes for curr_image
-*/
-
 }
 

@@ -117,6 +117,7 @@ class PolyLinesGroup : public GeometricalsGroup
    void set_annotated_bboxes_map_ptr(ANNOTATED_BBOXES_MAP* abm_ptr);
    void set_osg_bboxes_map_ptr(OSG_BBOXES_MAP* osgm_ptr);
    void set_image_sizes_map_ptr(IMAGE_SIZES_MAP* ism_ptr);
+   void set_max_image_dims(int max_xdim, int max_ydim);
 
 // PolyLine generation member functions:
 
@@ -279,6 +280,7 @@ class PolyLinesGroup : public GeometricalsGroup
    int secs_since_Y2K;
    int prev_framenumber;
    int currimage_PolyLine_index;
+   int max_image_width, max_image_height;
    double skeleton_height,constant_vertices_altitude;
    double Pointsize_scalefactor,textsize_scalefactor;
    mover* next_PolyLine_mover_ptr;
@@ -511,6 +513,13 @@ inline void PolyLinesGroup::set_image_sizes_map_ptr(
 {
    image_sizes_map_ptr = ism_ptr;
 }
+
+inline void PolyLinesGroup::set_max_image_dims(int max_xdim, int max_ydim)
+{
+   max_image_width = max_xdim;
+   max_image_height = max_ydim;
+}
+
 
 #endif // PolyLinesGroup.h
 

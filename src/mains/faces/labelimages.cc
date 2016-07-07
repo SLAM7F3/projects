@@ -176,17 +176,8 @@ int main( int argc, char** argv )
       P.second = ydim;
       image_sizes_map[image_ID_str] = P;
 
-      if(ydim > max_image_height)
-      {
-         cout << "ydim = " << ydim
-              << " image_basename = " << image_basename << endl;
-      }
-
-
       max_image_width = basic_math::max(max_image_width, xdim);
       max_image_height = basic_math::max(max_image_height, ydim);
-
-      
    }
    cout << "max_image_width = " << max_image_width
         << " max_image_height = " << max_image_height << endl;
@@ -250,6 +241,7 @@ int main( int argc, char** argv )
    PolyLinesGroup_ptr->set_annotated_bboxes_map_ptr(&annotated_bboxes_map);
    PolyLinesGroup_ptr->set_osg_bboxes_map_ptr(&osg_bboxes_map);
    PolyLinesGroup_ptr->set_image_sizes_map_ptr(&image_sizes_map);
+   PolyLinesGroup_ptr->set_max_image_dims(max_image_width, max_image_height);
 
 // Instantiate group to hold movie:
 
@@ -292,18 +284,9 @@ int main( int argc, char** argv )
 // corresponding to maximal bbox width and height:
 
    PolyLinesGroup_ptr->set_erase_Graphicals_except_at_curr_time_flag(true);
-//   for(int n = AnimationController_ptr->get_first_framenumber(); 
-//       n <= AnimationController_ptr->get_last_framenumber(); n++)
    for(int n = AnimationController_ptr->get_first_framenumber(); 
-       n <= 10; n++)
+       n <= AnimationController_ptr->get_last_framenumber(); n++)
    {
-      if(n%10 == 0)
-      {
-         double progress_frac = double(n)/double(
-            AnimationController_ptr->get_last_framenumber());
-         outputfunc::print_elapsed_and_remaining_time(progress_frac);
-      }
-
       AnimationController_ptr->set_curr_framenumber(n);
       string curr_image_filename=
          AnimationController_ptr->get_curr_image_filename();
@@ -311,77 +294,7 @@ int main( int argc, char** argv )
          stringfunc::decompose_string_into_substrings(
             curr_image_filename,"_.");
       string image_ID_str = substrings[1];
-      
-      int curr_width, curr_height;
-      image_sizes_iter = image_sizes_map.find(image_ID_str);
-      curr_width = image_sizes_iter->second.first;
-      curr_height = image_sizes_iter->second.second;
-      
-      annotated_bboxes_iter = annotated_bboxes_map.find(image_ID_str);
-      vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
-
-      for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
-      {
-         double ulo=curr_bboxes_ptr->at(b).get_xmin()/curr_height;
-         double uhi=curr_bboxes_ptr->at(b).get_xmax()/curr_height;
-         double vlo=1 - curr_bboxes_ptr->at(b).get_ymin()/curr_height;
-         double vhi=1 - curr_bboxes_ptr->at(b).get_ymax()/curr_height;
-      
-         double alpha = 0.5 * double(max_image_width-curr_width)/
-            max_image_height;
-         double beta = 0.5 * double(max_image_height-curr_height)/
-            max_image_height;
-         double gamma = double(curr_height)/max_image_height;
-         
-         double Ulo = alpha + gamma * ulo;
-         double Uhi = alpha + gamma * uhi;
-         double Vlo = beta + gamma * vlo;
-         double Vhi = beta + gamma * vhi;
-
-         vector<threevector> bbox_vertices;
-         bbox_vertices.push_back(threevector(Ulo,Vlo));
-         bbox_vertices.push_back(threevector(Uhi,Vlo));
-         bbox_vertices.push_back(threevector(Uhi,Vhi));
-         bbox_vertices.push_back(threevector(Ulo,Vhi));
-         bbox_vertices.push_back(threevector(Ulo,Vlo));
-         osg::Vec4 uniform_color=colorfunc::get_OSG_color(
-            curr_bboxes_ptr->at(b).get_color());
-
-         bool force_display_flag = false;
-         bool single_polyline_per_geode_flag = true;
-         int n_text_messages = 1;
-
-
-         PolyLine* bbox_PolyLine_ptr = 
-            PolyLinesGroup_ptr->generate_new_PolyLine(
-               bbox_vertices, uniform_color, force_display_flag, 
-               single_polyline_per_geode_flag, n_text_messages);
-         int PolyLine_ID = bbox_PolyLine_ptr->get_ID();
-
-// Tie together IDs for bounding boxes and their corresponding
-// OSG PolyLines:
-
-         curr_bboxes_ptr->at(b).set_ID(PolyLine_ID);
-
-// Store association between OSG PolyLine ID and (image_ID_str, b)
-// pair:
-
-         pair<string, int> P;
-         P.first = image_ID_str;
-         P.second = b;
-         osg_bboxes_map[PolyLine_ID] = P;
-
-         string attribute_key = "gender";
-         string attribute_value = curr_bboxes_ptr->at(b).
-            get_attribute_value(attribute_key);
-         
-         if(attribute_value.size() > 0 && attribute_value != "unknown")
-         {
-            PolyLinesGroup_ptr->display_PolyLine_attribute(
-               PolyLine_ID, attribute_value);
-         }
-
-      } // loop over index b labeling bboxes for curr_image
+      PolyLinesGroup_ptr->generate_image_bboxes(image_ID_str);
    } // loop over index n labeling frame numbers
    AnimationController_ptr->set_curr_framenumber(0);
 

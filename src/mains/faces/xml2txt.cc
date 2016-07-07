@@ -46,7 +46,8 @@ int main(int argc, char** argv)
 {  
    timefunc::initialize_timeofday_clock(); 
 
-   bool ignore_hands_flag = true;
+   bool ignore_hands_flag = false;
+//   bool ignore_hands_flag = true;
 
    string faces_rootdir = "/data/TrainingImagery/faces/";
    string labeled_faces_subdir = faces_rootdir + "images/";
