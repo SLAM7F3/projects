@@ -2230,9 +2230,8 @@ string PolyLinesGroup::get_image_ID_str()
    string currimage_filename = get_AnimationController_ptr()->
       get_curr_image_filename();
 
-   vector<string> substrings = 
-      stringfunc::decompose_string_into_substrings(
-         currimage_filename,"_.");
+   vector<string> substrings = stringfunc::decompose_string_into_substrings(
+      currimage_filename,"_.");
    string image_ID_str = substrings[1];
    return image_ID_str;
 }
@@ -2372,6 +2371,8 @@ void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
 
 void PolyLinesGroup::set_all_PolyLine_attributes(int attribute_ID)
 {
+//   cout << "inside PG::set_all_PolyLine_attributes()" << endl;
+
    annotated_bboxes_iter = annotated_bboxes_map_ptr->find(get_image_ID_str());
    vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
    
@@ -2524,7 +2525,7 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 
 void PolyLinesGroup::write_bboxes_to_file()
 {
-//   cout << "inside write_bboxes_to_file()" << endl;
+//    cout << "inside write_bboxes_to_file()" << endl;
    
    int curr_framenumber = get_AnimationController_ptr()->
       get_curr_framenumber();
@@ -2551,6 +2552,11 @@ void PolyLinesGroup::write_bboxes_to_file()
 
       annotated_bboxes_iter = annotated_bboxes_map_ptr->find(
          get_image_ID_str());
+      if(annotated_bboxes_iter == annotated_bboxes_map_ptr->end())
+      {
+         continue;
+      }
+      
       vector<bounding_box> curr_image_bboxes = annotated_bboxes_iter->second;
 
       for(unsigned int b = 0; b < curr_image_bboxes.size(); b++)
