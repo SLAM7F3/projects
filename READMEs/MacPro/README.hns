@@ -1,8 +1,8 @@
-===========================================================================================
+=============================================================================
 House numbers notes
-===========================================================================================
-Last updated on 6/3/16; 6/7/16; 6/9/16
-===========================================================================================
+=============================================================================
+Last updated on 6/3/16; 6/7/16; 6/9/16; 7/8/16
+=============================================================================
 
 *.  Weiyu suggests limiting rig loading via a bounding box wrapped around
 an input specified shape
@@ -88,3 +88,13 @@ image.
 
 *.  1 square km bbox in Sacramento contains n_rigs = 71623.  
     (600 m)**2 bbox in Sacramento contains n_rigs = 51770
+
+*.  On 7/8/16, Tho told us that he stores house number segmentation and
+classification results in 3 stages corresponding to segmentation, faster
+RCNN and classification (?).  In his pr_hn_2d_par_t struct, he's defined
+type = "number" and subtype_initial = "house_number_initial",
+subtype_refine = "house_number_refine" and and subtype_final =
+"house_number".  See pr_hn_2d_par_defaults() inside pr_hn_version.c.
+
+Look at pr_hn_build_isect_load() inside pr_hn_build.c for an example of
+specifying rig_list and retrieving ebboxes containing semseg nominations.
