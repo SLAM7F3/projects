@@ -2396,6 +2396,38 @@ void PolyLinesGroup::decrement_currimage_PolyLine()
 }
 
 // --------------------------------------------------------------------------
+// Member function set_gender_attribute()
+
+void PolyLinesGroup::set_gender_attribute(int attribute_ID, bounding_box *bbox_ptr)
+{
+   attribute_key = "gender";
+   string attribute_value = "unset";
+   colorfunc::Color curr_color;
+   if(attribute_ID == 0)
+   {
+     attribute_value = "unknown";
+     curr_color=colorfunc::yellow;
+   }
+   else if(attribute_ID == 1)
+   {
+     attribute_value = "male";
+     curr_color=colorfunc::cyan;
+   }
+   else if(attribute_ID == 2)
+   {
+     attribute_value = "female";
+     curr_color=colorfunc::purple;
+   }
+   
+   if(attribute_value != "unset")
+   {
+     bbox_ptr->set_attribute_value(attribute_key, attribute_value);
+     bbox_ptr->set_color(curr_color);
+     display_PolyLine_attribute(bbox_ptr->get_ID(), attribute_value);
+   }
+}
+
+// --------------------------------------------------------------------------
 // Member function set_PolyLine_attribute()
 
 void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
@@ -2414,29 +2446,7 @@ void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
       currimage_PolyLine_index);
 
    if(selected_bbox_ptr->get_label() != "face") return;
-
-   attribute_key = "gender";
-   string attribute_value = "unset";
-   if(attribute_ID == 0)
-   {
-      attribute_value = "unknown";
-   }
-   else if(attribute_ID == 1)
-   {
-      attribute_value = "male";
-   }
-   else if(attribute_ID == 2)
-   {
-      attribute_value = "female";
-   }
-
-   if(attribute_value != "unset")
-   {
-//      cout << "Attribute: key = " << attribute_key 
-//           << "  value = " << attribute_value << endl;
-      selected_bbox_ptr->set_attribute_value(attribute_key, attribute_value);
-      display_PolyLine_attribute(selected_PolyLine_ID, attribute_value);
-   }
+   set_gender_attribute(attribute_ID, selected_bbox_ptr);
    write_bboxes_to_file();
 }
 
@@ -2454,27 +2464,7 @@ void PolyLinesGroup::set_all_PolyLine_attributes(int attribute_ID)
    {
       bounding_box* bbox_ptr = &curr_bboxes_ptr->at(b);
       if(bbox_ptr->get_label() != "face") return;
-
-      attribute_key = "gender";
-      string attribute_value = "unset";
-      if(attribute_ID == 0)
-      {
-         attribute_value = "unknown";
-      }
-      else if(attribute_ID == 1)
-      {
-         attribute_value = "male";
-      }
-      else if(attribute_ID == 2)
-      {
-         attribute_value = "female";
-      }
-      
-      if(attribute_value != "unset")
-      {
-         bbox_ptr->set_attribute_value(attribute_key, attribute_value);
-         display_PolyLine_attribute(bbox_ptr->get_ID(), attribute_value);
-      }
+      set_gender_attribute(attribute_ID, bbox_ptr);
    } // loop over index b labeling bboxes for curr image
 
    write_bboxes_to_file();
@@ -2502,7 +2492,7 @@ void PolyLinesGroup::display_PolyLine_attribute(
    PolyLine* PolyLine_ptr = get_PolyLine_ptr(PolyLine_ID);
    polygon poly(*PolyLine_ptr->get_polyline_ptr());
    double polygon_area=poly.compute_area();
-   double text_size=20.0*sqrt(polygon_area)/100.0;
+   double text_size=40.0*sqrt(polygon_area)/100.0;
    
    threevector text_posn = 
       PolyLine_ptr->get_polyline_ptr()->get_vertex(0);
@@ -2682,11 +2672,14 @@ void PolyLinesGroup::change_label_size(double factor)
 //   cout << "inside PolyLinesGroup::change_label_size(), factor = "
 //        << factor << endl;
 
+   double curr_text_size = 1;
    for(unsigned int i = 0; i < get_n_Graphicals(); i++)
    {
       PolyLine* PolyLine_ptr = get_PolyLine_ptr(i);
       PolyLine_ptr->change_text_size(0, factor);
+      curr_text_size = PolyLine_ptr->get_text_size(0);
    }
+   cout << "Current text-label size = " << curr_text_size << endl;
 }
 
    

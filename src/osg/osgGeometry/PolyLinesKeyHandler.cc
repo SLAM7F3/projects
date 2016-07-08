@@ -85,6 +85,11 @@ bool PolyLinesKeyHandler::handle(
             PolyLinesGroup_ptr->jump_forward_frame(100);
             return true;
          }
+         else if (ea.getKey()=='u')
+         {
+            PolyLinesGroup_ptr->jump_forward_frame(1000);
+            return true;
+         }
          else if (ea.getKey()=='k')
          {
             PolyLinesGroup_ptr->jump_backward_frame(10);

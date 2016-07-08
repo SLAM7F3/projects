@@ -326,6 +326,7 @@ class PolyLinesGroup : public GeometricalsGroup
    void set_selected_bbox();
    bounding_box* get_selected_bbox();
    double get_currimage_frame_diag();
+   void set_gender_attribute(int attribute_ID, bounding_box *bbox_ptr);
 };
 
 // ==========================================================================
