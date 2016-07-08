@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for POLYLINESGROUP class
 // ==========================================================================
-// Last modified on 5/1/14; 1/22/16; 7/6/16; 7/7/16
+// Last modified on 1/22/16; 7/6/16; 7/7/16; 7/8/16
 // ==========================================================================
 
 #ifndef POLYLINESGROUP_H
@@ -118,6 +118,8 @@ class PolyLinesGroup : public GeometricalsGroup
    void set_osg_bboxes_map_ptr(OSG_BBOXES_MAP* osgm_ptr);
    void set_image_sizes_map_ptr(IMAGE_SIZES_MAP* ism_ptr);
    void set_max_image_dims(int max_xdim, int max_ydim);
+   void set_bbox_labels_filename(std::string filename);
+   void set_attribute_key(std::string key);
 
 // PolyLine generation member functions:
 
@@ -258,6 +260,8 @@ class PolyLinesGroup : public GeometricalsGroup
 
    void increment_frame();
    void decrement_frame();
+   void jump_forward_frame(int jump);
+   void jump_backward_frame(int jump);
    void increment_currimage_PolyLine();
    void decrement_currimage_PolyLine();
    void set_PolyLine_attribute(int attribute_ID);
@@ -266,6 +270,7 @@ class PolyLinesGroup : public GeometricalsGroup
       int PolyLine_ID, std::string attribute_value);
    void write_bboxes_to_file();
    void generate_image_bboxes(std::string image_ID_str);
+   void change_label_size(double factor);
 
   protected:
 
@@ -305,6 +310,9 @@ class PolyLinesGroup : public GeometricalsGroup
    IMAGE_SIZES_MAP* image_sizes_map_ptr;
    IMAGE_SIZES_MAP::iterator image_sizes_iter;
 
+   std::string bbox_labels_filename;
+   std::string attribute_key;
+
    void allocate_member_objects();
    void initialize_member_objects();
    void docopy(const PolyLinesGroup& f);
@@ -317,6 +325,7 @@ class PolyLinesGroup : public GeometricalsGroup
    std::string get_image_ID_str();
    void set_selected_bbox();
    bounding_box* get_selected_bbox();
+   double get_currimage_frame_diag();
 };
 
 // ==========================================================================
@@ -518,6 +527,16 @@ inline void PolyLinesGroup::set_max_image_dims(int max_xdim, int max_ydim)
 {
    max_image_width = max_xdim;
    max_image_height = max_ydim;
+}
+
+inline void PolyLinesGroup::set_bbox_labels_filename(std::string filename)
+{
+   bbox_labels_filename = filename;
+}
+
+inline void PolyLinesGroup::set_attribute_key(std::string key)
+{
+   attribute_key = key;
 }
 
 

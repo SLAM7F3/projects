@@ -243,11 +243,14 @@ int main( int argc, char** argv )
 
    PolyLinesGroup* PolyLinesGroup_ptr= decorations.add_PolyLines(
       ndims,passes_group.get_pass_ptr(videopass_ID), AnimationController_ptr);
+   PolyLinesGroup_ptr->set_CM_2D_ptr(CM_2D_ptr);
    PolyLinesGroup_ptr->set_erase_Graphicals_except_at_curr_time_flag(true);
    PolyLinesGroup_ptr->set_annotated_bboxes_map_ptr(&annotated_bboxes_map);
    PolyLinesGroup_ptr->set_osg_bboxes_map_ptr(&osg_bboxes_map);
    PolyLinesGroup_ptr->set_image_sizes_map_ptr(&image_sizes_map);
    PolyLinesGroup_ptr->set_max_image_dims(max_image_width, max_image_height);
+   PolyLinesGroup_ptr->set_bbox_labels_filename(bbox_labels_filename);
+   PolyLinesGroup_ptr->set_attribute_key("gender");
 
 // Instantiate group to hold movie:
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // PolyLinesKeyHandler class member function definitions.  
 // ==========================================================================
-// Last modified on 1/15/11; 5/22/11; 12/8/11; 7/6/16
+// Last modified on 5/22/11; 12/8/11; 7/6/16; 7/7/16
 // ==========================================================================
 
 #include <string>
@@ -75,18 +75,32 @@ bool PolyLinesKeyHandler::handle(
             PolyLinesGroup_ptr->reconstruct_polylines_from_file_info();
             return true;
          }
-//         else if (ea.getKey()=='i')
-//         {
-//            PolyLinesGroup_ptr->find_intersection_points();
-//            return true;
-//         }
-         else if (ea.getKey()=='m')
+         else if (ea.getKey()=='j')
          {
-            PolyLinesGroup_ptr->merge_PolyLines(
-               PolyLinesGroup_ptr->get_ID_labeled_PolyLine_ptr(0));
-
+            PolyLinesGroup_ptr->jump_forward_frame(10);
             return true;
          }
+         else if (ea.getKey()=='m')
+         {
+            PolyLinesGroup_ptr->jump_forward_frame(100);
+            return true;
+         }
+         else if (ea.getKey()=='k')
+         {
+            PolyLinesGroup_ptr->jump_backward_frame(10);
+            return true;
+         }
+         else if (ea.getKey()==',')
+         {
+            PolyLinesGroup_ptr->jump_backward_frame(100);
+            return true;
+         }
+//         else if (ea.getKey()=='m')
+//         {
+//            PolyLinesGroup_ptr->merge_PolyLines(
+//               PolyLinesGroup_ptr->get_ID_labeled_PolyLine_ptr(0));
+//            return true;
+//         }
          else if (ea.getKey()=='p')
          {
             PolyLinesGroup_ptr->convert_polylines_to_polygons();
@@ -113,6 +127,19 @@ bool PolyLinesKeyHandler::handle(
          else if (ea.getKey()=='y')
          {
             PolyLinesGroup_ptr->write_OSG_file();            
+            return true;
+         }
+
+// Press ">" ["<"] key to increase [decrease] a PolyLine Bbox label size:
+
+         else if (ea.getKey()=='>')
+         {
+            PolyLinesGroup_ptr->change_label_size(2);
+            return true;
+         }
+         else if (ea.getKey()=='<')
+         {
+            PolyLinesGroup_ptr->change_label_size(0.5);
             return true;
          }
 

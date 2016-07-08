@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 5/1/14; 1/22/16; 7/6/16; 7/7/16
+// Last modified on 1/22/16; 7/6/16; 7/7/16; 7/8/16
 // ==========================================================================
 
 #include <iomanip>
@@ -21,6 +21,7 @@
 #include "osg/osgGeometry/PolyLinesGroup.h"
 #include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
+#include "general/sysfuncs.h"
 #include "time/timefuncs.h"
 
 #include "templates/mytemplates.h"
@@ -82,6 +83,8 @@ void PolyLinesGroup::initialize_member_objects()
    annotated_bboxes_map_ptr = NULL;
    osg_bboxes_map_ptr = NULL;
    max_image_width = max_image_height = -1;
+   bbox_labels_filename="labeled_bboxes.txt";
+   attribute_key = "";
 
    get_OSGgroup_ptr()->setUpdateCallback( 
         new AbstractOSGCallback<PolyLinesGroup>(
@@ -2173,7 +2176,6 @@ bool PolyLinesGroup::project_PolyLines_into_selected_aerial_video_frame(
    return true;
 } 
 
-
 // --------------------------------------------------------------------------
 // Member function convert_polylines_to_polygons()
 
@@ -2227,18 +2229,25 @@ void PolyLinesGroup::convert_polylines_to_polygons()
 // --------------------------------------------------------------------------
 string PolyLinesGroup::get_image_ID_str()
 {
+//   cout << "inside PolyLinesGroup::get_image_ID_str()" << endl;
+   
    string currimage_filename = get_AnimationController_ptr()->
       get_curr_image_filename();
+//   cout << "currimage_filename = " << currimage_filename << endl;
 
    vector<string> substrings = stringfunc::decompose_string_into_substrings(
       currimage_filename,"_.");
    string image_ID_str = substrings[1];
+//   cout << "image_ID_str = " << image_ID_str << endl;
    return image_ID_str;
 }
 
 // --------------------------------------------------------------------------
 void PolyLinesGroup::set_selected_bbox()
 {
+//   cout << "inside PolyLinesGroup::set_selected_bbox()" << endl;
+//   cout << "image_ID_str = " << get_image_ID_str() << endl;
+
    annotated_bboxes_iter = annotated_bboxes_map_ptr->find(get_image_ID_str());
    if(annotated_bboxes_iter == annotated_bboxes_map_ptr->end())
    {
@@ -2246,6 +2255,9 @@ void PolyLinesGroup::set_selected_bbox()
    }
    
    vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
+   if(curr_bboxes_ptr == NULL) return;
+   if(curr_bboxes_ptr->size() == 0) return;
+
    int selected_PolyLine_ID = 
       curr_bboxes_ptr->at(currimage_PolyLine_index).get_ID();
    set_selected_Graphical_ID(selected_PolyLine_ID);
@@ -2262,15 +2274,33 @@ bounding_box* PolyLinesGroup::get_selected_bbox()
 }
 
 // --------------------------------------------------------------------------
+double PolyLinesGroup::get_currimage_frame_diag()
+{
+   image_sizes_iter = image_sizes_map_ptr->find(get_image_ID_str());
+   int curr_xdim = image_sizes_iter->second.first;
+   int curr_ydim = image_sizes_iter->second.second;
+   double curr_diag = sqrt(curr_xdim * curr_ydim);
+   return curr_diag;
+}
+
+// --------------------------------------------------------------------------
 // Member function increment_frame()
 
 void PolyLinesGroup::increment_frame()
 {
-//   cout << "inside PolyLinesGrop::increment_frame()" << endl;
+//  cout << "inside PolyLinesGrop::increment_frame()" << endl;
+
+   double curr_diag = get_currimage_frame_diag();
    get_AnimationController_ptr()->increment_frame_counter();
+   double next_diag = get_currimage_frame_diag();
+
    generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
+
+   double scalefactor = next_diag / curr_diag;
+   get_CM_2D_ptr()->set_eye_to_center_distance(
+      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
 }
 
 // --------------------------------------------------------------------------
@@ -2279,7 +2309,45 @@ void PolyLinesGroup::increment_frame()
 void PolyLinesGroup::decrement_frame()
 {
 //   cout << "inside PolyLinesGrop::decrement_frame()" << endl;
+
+   double curr_diag = get_currimage_frame_diag();
    get_AnimationController_ptr()->decrement_frame_counter();
+   double next_diag = get_currimage_frame_diag();
+
+   generate_image_bboxes(get_image_ID_str());
+   currimage_PolyLine_index = 0;
+   set_selected_bbox();
+
+   double scalefactor = next_diag / curr_diag;
+   get_CM_2D_ptr()->set_eye_to_center_distance(
+      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+}
+
+// --------------------------------------------------------------------------
+// Member function jump_forward_frame()
+
+void PolyLinesGroup::jump_forward_frame(int jump)
+{
+//   cout << "inside PolyLinesGrop::jump_forward_frame()" << endl;
+   int orig_frame_skip = get_AnimationController_ptr()->get_frame_skip();
+   get_AnimationController_ptr()->set_frame_skip(jump);
+   get_AnimationController_ptr()->increment_frame_counter();
+   get_AnimationController_ptr()->set_frame_skip(orig_frame_skip);
+   generate_image_bboxes(get_image_ID_str());
+   currimage_PolyLine_index = 0;
+   set_selected_bbox();
+}
+
+// --------------------------------------------------------------------------
+// Member function jump_backward_frame()
+
+void PolyLinesGroup::jump_backward_frame(int jump)
+{
+//   cout << "inside PolyLinesGrop::jump_backward_frame()" << endl;
+   int orig_frame_skip = get_AnimationController_ptr()->get_frame_skip();
+   get_AnimationController_ptr()->set_frame_skip(jump);
+   get_AnimationController_ptr()->decrement_frame_counter();
+   get_AnimationController_ptr()->set_frame_skip(orig_frame_skip);
    generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
@@ -2301,6 +2369,9 @@ void PolyLinesGroup::increment_currimage_PolyLine()
       currimage_PolyLine_index -= curr_bboxes.size();
    }
    set_selected_bbox();
+   bounding_box selected_bbox = curr_bboxes[currimage_PolyLine_index];
+   cout << attribute_key << " = "  
+        << selected_bbox.get_attribute_value(attribute_key) << endl;
 }
 
 // --------------------------------------------------------------------------
@@ -2319,6 +2390,9 @@ void PolyLinesGroup::decrement_currimage_PolyLine()
       currimage_PolyLine_index += curr_bboxes.size();
    }
    set_selected_bbox();
+   bounding_box selected_bbox = curr_bboxes[currimage_PolyLine_index];
+   cout << attribute_key << " = "  
+        << selected_bbox.get_attribute_value(attribute_key) << endl;
 }
 
 // --------------------------------------------------------------------------
@@ -2341,7 +2415,7 @@ void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
 
    if(selected_bbox_ptr->get_label() != "face") return;
 
-   string attribute_key = "gender";
+   attribute_key = "gender";
    string attribute_value = "unset";
    if(attribute_ID == 0)
    {
@@ -2381,7 +2455,7 @@ void PolyLinesGroup::set_all_PolyLine_attributes(int attribute_ID)
       bounding_box* bbox_ptr = &curr_bboxes_ptr->at(b);
       if(bbox_ptr->get_label() != "face") return;
 
-      string attribute_key = "gender";
+      attribute_key = "gender";
       string attribute_value = "unset";
       if(attribute_ID == 0)
       {
@@ -2444,6 +2518,9 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
 void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 {
+//   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
+//   cout << "image_ID_str = " << image_ID_str << endl;
+
    int curr_width, curr_height;
    image_sizes_iter = image_sizes_map_ptr->find(image_ID_str);
    curr_width = image_sizes_iter->second.first;
@@ -2452,13 +2529,15 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
    annotated_bboxes_iter = annotated_bboxes_map_ptr->find(image_ID_str);
    vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
 
+   destroy_all_PolyLines();
+
    for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
    {
 
 // First check if a PolyLine corresponding to curr_bbox[b] has already
 // been generated. If so, curr_bbox should have non-negative ID:
 
-      if(curr_bboxes_ptr->at(b).get_ID() >= 0) continue;
+//       if(curr_bboxes_ptr->at(b).get_ID() >= 0) continue;
       
       double ulo=curr_bboxes_ptr->at(b).get_xmin()/curr_height;
       double uhi=curr_bboxes_ptr->at(b).get_xmax()/curr_height;
@@ -2508,11 +2587,11 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
       P.second = b;
       (*osg_bboxes_map_ptr)[PolyLine_ID] = P;
 
-      string attribute_key = "gender";
+      attribute_key = "gender";
       string attribute_value = curr_bboxes_ptr->at(b).
          get_attribute_value(attribute_key);
          
-      if(attribute_value.size() > 0 && attribute_value != "unknown")
+      if(attribute_value.size() > 0)
       {
          display_PolyLine_attribute(PolyLine_ID, attribute_value);
       }
@@ -2590,4 +2669,24 @@ void PolyLinesGroup::write_bboxes_to_file()
 // Reset AC's current frame number to its original value:
 
    get_AnimationController_ptr()->set_curr_framenumber(curr_framenumber);
+
+   string unix_cmd="cp "+output_filename+" "+bbox_labels_filename;
+   sysfunc::unix_command(unix_cmd);
 }
+
+// --------------------------------------------------------------------------
+// Member function change_label_size()
+
+void PolyLinesGroup::change_label_size(double factor)
+{
+//   cout << "inside PolyLinesGroup::change_label_size(), factor = "
+//        << factor << endl;
+
+   for(unsigned int i = 0; i < get_n_Graphicals(); i++)
+   {
+      PolyLine* PolyLine_ptr = get_PolyLine_ptr(i);
+      PolyLine_ptr->change_text_size(0, factor);
+   }
+}
+
+   
