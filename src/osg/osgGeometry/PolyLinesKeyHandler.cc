@@ -69,6 +69,11 @@ bool PolyLinesKeyHandler::handle(
             bool flag=PolyLinesGroup_ptr->export_info_to_file();
             return flag;
          }
+         else if (ea.getKey()=='g')
+         {
+            PolyLinesGroup_ptr->goto_frame();
+            return true;
+         }
          else if (ea.getKey()=='i')
          {
             if (!Allow_Insertion_flag) return false;

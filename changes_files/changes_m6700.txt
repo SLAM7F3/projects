@@ -1,10 +1,14 @@
 ============================================================================
+Dell M6700 code changes made on Fri, Jul 8, 2016:
+
+*.  Added goto_frame() method in PolyLinesGroup class.
+
+
+============================================================================
 Dell M6700 code changes made on Thurs, July 7, 2016:
 
 *.  LABELIMAGES now only creates PolyLines for current image's bboxes and
 no other images in order to preserve memory.
-
-..............
 
 ============================================================================
 Dell M6700 code changes made on Tues, July 5, 2016:

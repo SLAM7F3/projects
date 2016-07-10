@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 1/22/16; 7/6/16; 7/7/16; 7/8/16
+// Last modified on 7/6/16; 7/7/16; 7/8/16; 7/9/16
 // ==========================================================================
 
 #include <iomanip>
@@ -2284,6 +2284,31 @@ double PolyLinesGroup::get_currimage_frame_diag()
 }
 
 // --------------------------------------------------------------------------
+// Member function goto_frame()
+
+void PolyLinesGroup::goto_frame()
+{
+//  cout << "inside PolyLinesGrop::goto_frame()" << endl;
+
+   double curr_diag = get_currimage_frame_diag();
+   int frame_number;
+   cout << "Enter framenumber:" << endl;
+   cin >> frame_number;
+   get_AnimationController_ptr()->set_curr_framenumber(frame_number);
+   double next_diag = get_currimage_frame_diag();
+
+
+
+   generate_image_bboxes(get_image_ID_str());
+   currimage_PolyLine_index = 0;
+   set_selected_bbox();
+
+   double scalefactor = next_diag / curr_diag;
+   get_CM_2D_ptr()->set_eye_to_center_distance(
+      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+}
+
+// --------------------------------------------------------------------------
 // Member function increment_frame()
 
 void PolyLinesGroup::increment_frame()
@@ -2400,6 +2425,9 @@ void PolyLinesGroup::decrement_currimage_PolyLine()
 
 void PolyLinesGroup::set_gender_attribute(int attribute_ID, bounding_box *bbox_ptr)
 {
+   cout << "inside PolyLinesGroup::set_gender_attribute(), attribute_ID = "
+        << attribute_ID << " bbox_ptr = " << bbox_ptr << endl;
+   
    attribute_key = "gender";
    string attribute_value = "unset";
    colorfunc::Color curr_color;
@@ -2448,6 +2476,7 @@ void PolyLinesGroup::set_PolyLine_attribute(int attribute_ID)
    if(selected_bbox_ptr->get_label() != "face") return;
    set_gender_attribute(attribute_ID, selected_bbox_ptr);
    write_bboxes_to_file();
+   count_bbox_attributes();
 }
 
 // --------------------------------------------------------------------------
@@ -2464,10 +2493,12 @@ void PolyLinesGroup::set_all_PolyLine_attributes(int attribute_ID)
    {
       bounding_box* bbox_ptr = &curr_bboxes_ptr->at(b);
       if(bbox_ptr->get_label() != "face") return;
+
       set_gender_attribute(attribute_ID, bbox_ptr);
    } // loop over index b labeling bboxes for curr image
 
    write_bboxes_to_file();
+   count_bbox_attributes();
 }
 
 // --------------------------------------------------------------------------
@@ -2508,7 +2539,7 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
 void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 {
-//   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
+   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
 //   cout << "image_ID_str = " << image_ID_str << endl;
 
    int curr_width, curr_height;
@@ -2551,12 +2582,14 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
       bbox_vertices.push_back(threevector(Uhi,Vhi));
       bbox_vertices.push_back(threevector(Ulo,Vhi));
       bbox_vertices.push_back(threevector(Ulo,Vlo));
-      osg::Vec4 uniform_color=colorfunc::get_OSG_color(
-         curr_bboxes_ptr->at(b).get_color());
 
       bool force_display_flag = false;
       bool single_polyline_per_geode_flag = true;
       int n_text_messages = 1;
+
+      color_bbox_by_gender(&curr_bboxes_ptr->at(b));
+      osg::Vec4 uniform_color=colorfunc::get_OSG_color(
+         curr_bboxes_ptr->at(b).get_color());
 
       PolyLine* bbox_PolyLine_ptr = 
          generate_new_PolyLine(
@@ -2586,8 +2619,40 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
          display_PolyLine_attribute(PolyLine_ID, attribute_value);
       }
    } // loop over index b labeling bboxes for curr_image
+
 }
 
+// --------------------------------------------------------------------------
+// Member function color_bbox_by_gender()
+
+void PolyLinesGroup::color_bbox_by_gender(bounding_box *bbox_ptr)
+{
+   cout << "inside color_bbox_by_gender()" << endl;
+   if(bbox_ptr->get_label() != "face") return;
+
+   string attr_key = "gender";
+   string attr_value = bbox_ptr->get_attribute_value(attr_key);
+   int attribute_ID = -1;
+   if(attr_value == "unset")
+   {
+      return;
+   }
+   else if(attr_value == "unknown")
+   {
+      attribute_ID = 0;
+   }
+   else if(attr_value == "male")
+   {
+      attribute_ID = 1;
+   }
+   else if(attr_value == "female")
+   {
+      attribute_ID = 2;
+   }
+   cout << "attribute_ID = " << attribute_ID << endl;
+   set_gender_attribute(attribute_ID, bbox_ptr);
+   cout << "at end of color_bbox_by_gender()" << endl;
+}
 
 // --------------------------------------------------------------------------
 // Member function write_bboxes_to_file()
@@ -2662,6 +2727,86 @@ void PolyLinesGroup::write_bboxes_to_file()
 
    string unix_cmd="cp "+output_filename+" "+bbox_labels_filename;
    sysfunc::unix_command(unix_cmd);
+}
+
+// --------------------------------------------------------------------------
+// Member function count_bbox_attributes()
+
+void PolyLinesGroup::count_bbox_attributes()
+{
+//    cout << "inside count_bbox_attributes()" << endl;
+   
+   int curr_framenumber = get_AnimationController_ptr()->
+      get_curr_framenumber();
+
+   int n_bboxes = 0;
+   int n_male_faces = 0;
+   int n_female_faces = 0;
+   int n_unknown_faces = 0;
+   int n_unset_faces = 0;
+   int n_faces = 0;
+
+   for(int i = get_AnimationController_ptr()->get_first_framenumber(); 
+       i <= get_AnimationController_ptr()->get_last_framenumber(); i++)
+   {
+      get_AnimationController_ptr()->set_curr_framenumber(i);
+
+      annotated_bboxes_iter = annotated_bboxes_map_ptr->find(
+         get_image_ID_str());
+      if(annotated_bboxes_iter == annotated_bboxes_map_ptr->end())
+      {
+         continue;
+      }
+      
+      vector<bounding_box> curr_image_bboxes = annotated_bboxes_iter->second;
+      n_bboxes += curr_image_bboxes.size();
+
+      for(unsigned int b = 0; b < curr_image_bboxes.size(); b++)
+      {
+         bounding_box curr_bbox = curr_image_bboxes[b];
+         if(curr_bbox.get_label() == "face") n_faces++;
+
+         string attr_key="gender";
+         string attr_value = curr_bbox.get_attribute_value(attr_key);
+         if(attr_value == "male")
+         {
+           n_male_faces++;
+         }
+         else if(attr_value == "female")
+         {
+           n_female_faces++;
+         }
+         else if(attr_value == "unknown")
+         {
+           n_unknown_faces++;
+         }
+         else if(attr_value == "unset")
+         {
+           n_unset_faces++;
+         }
+      } // loop over index b labeling bboxes for current image
+   } // loop over index i labeling all input images
+
+   double male_frac = double(n_male_faces) / n_faces;
+   double female_frac = double(n_female_faces) / n_faces;
+   double unknown_frac = double(n_unknown_faces) / n_faces;
+   double unset_frac = double(n_unset_faces) / n_faces;
+
+   cout << "n_faces = " << n_faces
+        << " n_unset_faces = " << n_unset_faces
+        << " n_male_faces = " << n_male_faces
+        << " n_female_faces = " << n_female_faces
+        << " n_unknown_faces = " << n_unknown_faces
+        << endl;
+   cout << "unset_frac = " << unset_frac
+        << " male_frac = " << male_frac
+        << " female_frac = " << female_frac
+        << " unknown_frac = " << unknown_frac
+        << endl;
+
+// Reset AC's current frame number to its original value:
+
+   get_AnimationController_ptr()->set_curr_framenumber(curr_framenumber);
 }
 
 // --------------------------------------------------------------------------
