@@ -216,11 +216,14 @@ int main( int argc, char** argv )
    bool display_movie_number=true;
    bool display_movie_world_time=false;
    bool display_movie_elapsed_time=false;
+   bool hide_Mode_HUD_flag = false;
+   bool display_movie_nframes=true;
 
    Operations operations(
       ndims,window_mgr_ptr,passes_group,display_movie_state,
       display_movie_number,display_movie_world_time,
-      display_movie_elapsed_time);
+      display_movie_elapsed_time, hide_Mode_HUD_flag,
+      display_movie_nframes);
 
    ModeController* ModeController_ptr=operations.get_ModeController_ptr();
 //   ModeController_ptr->setState(ModeController::RUN_MOVIE);

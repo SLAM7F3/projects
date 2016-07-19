@@ -1,7 +1,7 @@
 // ==========================================================================
 // ImageNumberHUD class member function definitions
 // ==========================================================================
-// Last modified on 7/20/10; 7/23/10; 12/31/11; 4/2/14
+// Last modified on 7/23/10; 12/31/11; 4/2/14; 7/19/16
 // ==========================================================================
 
 #include <iostream>
@@ -33,7 +33,8 @@ void ImageNumberHUD::initialize_member_objects()
 ImageNumberHUD::ImageNumberHUD(
    AnimationController* AC_ptr,
    bool display_movie_number,bool display_movie_state,
-   bool display_movie_world_time,bool display_movie_elapsed_time):
+   bool display_movie_world_time,bool display_movie_elapsed_time,
+   bool display_movie_nframes):
    GenericHUD( 0, 1280, 0, 1024 )
 {
    allocate_member_objects();
@@ -44,6 +45,7 @@ ImageNumberHUD::ImageNumberHUD(
    m_display_movie_state=display_movie_state;
    m_display_movie_world_time=display_movie_world_time;
    m_display_movie_elapsed_time=display_movie_elapsed_time;
+   m_display_movie_nframes=display_movie_nframes;
    if (m_display_movie_world_time) m_display_movie_elapsed_time=false;
 
    getProjection()->setUpdateCallback( 
@@ -86,6 +88,12 @@ void ImageNumberHUD::showFrame()
       HUD_string += "Frame "+stringfunc::number_to_string(
          AnimationController_ptr->get_true_framenumber());
    }
+   if (m_display_movie_nframes)
+   {
+      HUD_string += " of "+stringfunc::number_to_string(
+         AnimationController_ptr->get_nframes());
+   }
+   
    setText(HUD_string);
 
    if (m_display_movie_world_time)

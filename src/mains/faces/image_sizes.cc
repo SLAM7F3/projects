@@ -3,8 +3,11 @@
 // calls ImageMagick's ping command to extract image width and height
 // measured in pixels.  Image size results are saved into output text
 // file image_sizes.dat.
+
+//                             ./image_sizes
+
 // ==========================================================================
-// Last updated 7/7/16
+// Last updated 7/7/16; 7/19/16
 // ==========================================================================
 
 #include <iostream>
@@ -56,5 +59,8 @@ int main(int argc, char *argv[])
    }
 
    filefunc::closefile(output_filename, outstream);
+
+   string banner="Exported "+output_filename;
+   outputfunc::write_banner(banner);
 }
 

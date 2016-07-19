@@ -3,6 +3,7 @@
 ~/bin/MAKE program=downsize_images
 ~/bin/MAKE program=generate_bbox_tiles
 ~/bin/MAKE program=homogenize_images
+~/bin/MAKE program=image_sizes
 ~/bin/MAKE program=partition_labeled_imgs
 ~/bin/MAKE program=prepare_deeplab_inputs
 ~/bin/MAKE program=pyramid_training_images

@@ -1,7 +1,7 @@
 ==============================================================================
 Mongo database notes for house numbers
 ==============================================================================
-Last updated on 5/16/16; 5/31/16; 6/20/16; 6/21/16
+Last updated on 5/31/16; 6/20/16; 6/21/16; 7/18/16
 ==============================================================================
 
 
@@ -130,4 +130,16 @@ kh_elpaso
 473136
 
 
+kh_boston
+---------
+
+> db.detection.find({"run_id" : "/gpfs/mercury11/distrib_batch_prj/prjdb_ubuntu_kitty_hawk_boston_160629_142301.xml"}).count()
+
+59191
+
+Project Name 	kitty_hawk_boston
+Shape File 	/gpfs/mercury11/distrib_batch_shape/shape_huytho_ho_kitty_hawk_boston_160629_142309.shape
+
+
+level 11 Boston suburb tile:  x = 1064  y = 1072
 

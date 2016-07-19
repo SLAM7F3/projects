@@ -1,7 +1,7 @@
 =============================================================================
 House numbers notes
 =============================================================================
-Last updated on 6/3/16; 6/7/16; 6/9/16; 7/8/16
+Last updated on 6/7/16; 6/9/16; 7/8/16; 7/19/16
 =============================================================================
 
 *.  Weiyu suggests limiting rig loading via a bounding box wrapped around
@@ -98,3 +98,18 @@ subtype_refine = "house_number_refine" and and subtype_final =
 
 Look at pr_hn_build_isect_load() inside pr_hn_build.c for an example of
 specifying rig_list and retrieving ebboxes containing semseg nominations.
+
+*.  On 7/18/16, Vinay told us to check out the contents of kh_build.c.  In
+particular, he suggested looking into kh_build_metadata_ac() [ written in
+Feb 2016 by Daniel Ragnarsson according to git blame].  Vinay thought this
+method probably exports rig geolocation and camera calibration parameters
+in a format which can be visualized by flyover admin.
+
+*.  On 7/19/16, Fredrik showed us that KH rigs and imagery can be viewed
+within flyover admin --> Projects --> Structured Build .  For example,
+click on following El Paso entry:
+
+	5777e15c1c47d13a00d35f67	AWAITING_VERIFICATION	kittyhawk	kh_el_paso
+
+2D ground imagery view pops up on LHS, while 2D overhead map pops up on
+RHS.  
