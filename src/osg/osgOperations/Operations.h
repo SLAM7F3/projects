@@ -1,8 +1,12 @@
 // ==========================================================================
 // Header file for OPERATIONS class
 // ==========================================================================
-// Last modified on 12/24/10; 10/8/11; 4/3/13; 4/2/14
+// Last modified on 10/8/11; 4/3/13; 4/2/14; 7/19/16
 // ==========================================================================
+
+// Need to swap order of hide_Mode_HUG_flag and display_movie_nframes
+// arguments to Operations constructors !!!
+
 
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
@@ -29,12 +33,14 @@ class Operations
    Operations(
       int ndims,WindowManager* window_mgr_ptr,bool display_movie_state=false,
       bool display_movie_number=false,bool display_movie_world_time=false,
-      bool display_movie_elapsed_time=false,bool hide_Mode_HUD_flag=false);
+      bool display_movie_elapsed_time=false,bool hide_Mode_HUD_flag=false,
+      bool display_movie_nframes=false);
    Operations(
       int ndims,WindowManager* window_mgr_ptr,const PassesGroup& passes_group,
       bool display_movie_state=false,bool display_movie_number=false,
       bool display_movie_world_time=false,
-      bool display_movie_elapsed_time=false,bool hide_Mode_HUD_flag=false);
+      bool display_movie_elapsed_time=false,bool hide_Mode_HUD_flag=false,
+      bool display_movie_nframes=false);
    virtual ~Operations();
    friend std::ostream& operator<< 
       (std::ostream& outstream,const Operations& O);
@@ -85,7 +91,7 @@ class Operations
   private:
 
    bool display_movie_number,display_movie_state,display_movie_world_time;
-   bool display_movie_elapsed_time;
+   bool display_movie_elapsed_time, display_movie_nframes;
    bool hide_Mode_HUD_flag;
    int ndims;
    AnimationController* AnimationController_ptr;

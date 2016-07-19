@@ -1,7 +1,7 @@
 // ==========================================================================
 // OPERATIONS class member function definitions
 // ==========================================================================
-// Last modified on 8/26/11; 10/8/11; 4/3/13; 4/2/14
+// Last modified on 10/8/11; 4/3/13; 4/2/14; 7/19/16
 // ==========================================================================
 
 #include <iostream>
@@ -41,6 +41,7 @@ void Operations::allocate_member_objects()
 //   cout << "display_movie_state = " << display_movie_state << endl;
 //   cout << "display_movie_world_time = " << display_movie_world_time << endl;
 //   cout << "display_movie_elapsed_time = " << display_movie_elapsed_time << endl;
+//   cout << "display_movie_nframes = " << display_movie_nframes << endl;
 
    OSGgroup_refptr=new osg::Group();
    OSGgroup_refptr->setName("Operations");
@@ -59,14 +60,15 @@ void Operations::allocate_member_objects()
 
    ImageNumberHUD_ptr=new ImageNumberHUD(
       AnimationController_ptr,display_movie_number,display_movie_state,
-      display_movie_world_time,display_movie_elapsed_time);
+      display_movie_world_time,display_movie_elapsed_time,
+      display_movie_nframes);
 }		       
 
 Operations::Operations(
    int ndims,WindowManager* window_mgr_ptr,
    bool display_movie_state,bool display_movie_number,
    bool display_movie_world_time,bool display_movie_elapsed_time,
-   bool hide_Mode_HUD_flag)
+   bool hide_Mode_HUD_flag, bool display_movie_nframes)
 {	
 //   cout << "inside Operations constructor #1" << endl;
    
@@ -76,6 +78,7 @@ Operations::Operations(
    this->display_movie_number=display_movie_number;
    this->display_movie_world_time=display_movie_world_time;
    this->display_movie_elapsed_time=display_movie_elapsed_time;
+   this->display_movie_nframes=display_movie_nframes;
    this->hide_Mode_HUD_flag=hide_Mode_HUD_flag;
 
    initialize_member_objects();
@@ -97,7 +100,7 @@ Operations::Operations(
    int ndims,WindowManager* window_mgr_ptr,const PassesGroup& passes_group,
    bool display_movie_state,bool display_movie_number,
    bool display_movie_world_time,bool display_movie_elapsed_time,
-   bool hide_Mode_HUD_flag)
+   bool hide_Mode_HUD_flag, bool display_movie_nframes)
 {	
 //   cout << "inside Operations constructor #2" << endl;
 
@@ -107,6 +110,7 @@ Operations::Operations(
    this->display_movie_number=display_movie_number;
    this->display_movie_world_time=display_movie_world_time;
    this->display_movie_elapsed_time=display_movie_elapsed_time;
+   this->display_movie_nframes=display_movie_nframes;
    this->hide_Mode_HUD_flag=hide_Mode_HUD_flag;
 
    initialize_member_objects();

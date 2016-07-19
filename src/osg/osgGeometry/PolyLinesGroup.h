@@ -329,7 +329,7 @@ class PolyLinesGroup : public GeometricalsGroup
    bounding_box* get_selected_bbox();
    double get_currimage_frame_diag();
    void set_gender_attribute(int attribute_ID, bounding_box *bbox_ptr);
-   void color_bbox_by_gender(bounding_box *bbox_ptr);
+   colorfunc::Color color_bbox_by_gender(bounding_box *bbox_ptr);
 };
 
 // ==========================================================================

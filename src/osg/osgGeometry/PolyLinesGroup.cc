@@ -2297,8 +2297,6 @@ void PolyLinesGroup::goto_frame()
    get_AnimationController_ptr()->set_curr_framenumber(frame_number);
    double next_diag = get_currimage_frame_diag();
 
-
-
    generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
@@ -2425,33 +2423,33 @@ void PolyLinesGroup::decrement_currimage_PolyLine()
 
 void PolyLinesGroup::set_gender_attribute(int attribute_ID, bounding_box *bbox_ptr)
 {
-   cout << "inside PolyLinesGroup::set_gender_attribute(), attribute_ID = "
-        << attribute_ID << " bbox_ptr = " << bbox_ptr << endl;
+//   cout << "inside PolyLinesGroup::set_gender_attribute(), attribute_ID = "
+//        << attribute_ID << " bbox_ptr = " << bbox_ptr << endl;
    
    attribute_key = "gender";
    string attribute_value = "unset";
-   colorfunc::Color curr_color;
    if(attribute_ID == 0)
    {
      attribute_value = "unknown";
-     curr_color=colorfunc::yellow;
    }
    else if(attribute_ID == 1)
    {
      attribute_value = "male";
-     curr_color=colorfunc::cyan;
    }
    else if(attribute_ID == 2)
    {
      attribute_value = "female";
-     curr_color=colorfunc::purple;
    }
    
    if(attribute_value != "unset")
    {
-     bbox_ptr->set_attribute_value(attribute_key, attribute_value);
-     bbox_ptr->set_color(curr_color);
-     display_PolyLine_attribute(bbox_ptr->get_ID(), attribute_value);
+      bbox_ptr->set_attribute_value(attribute_key, attribute_value);
+      colorfunc::Color bbox_color = color_bbox_by_gender(bbox_ptr);
+      if(bbox_color != colorfunc::black)
+      {
+         bbox_ptr->set_color(bbox_color);
+      }
+      display_PolyLine_attribute(bbox_ptr->get_ID(), attribute_value);
    }
 }
 
@@ -2515,18 +2513,19 @@ void PolyLinesGroup::display_PolyLine_attribute(
    
    annotated_bboxes_iter = annotated_bboxes_map_ptr->find(get_image_ID_str());
    vector<bounding_box>* curr_bboxes_ptr = &annotated_bboxes_iter->second;
-   bounding_box* selected_bbox_ptr = &curr_bboxes_ptr->at(
-      currimage_PolyLine_index);
+   bounding_box* bbox_ptr = &curr_bboxes_ptr->at(currimage_PolyLine_index);
 
-   if(selected_bbox_ptr->get_label() != "face") return;
+   if(bbox_ptr->get_label() != "face") return;
 
    PolyLine* PolyLine_ptr = get_PolyLine_ptr(PolyLine_ID);
+   osg::Vec4 curr_color=colorfunc::get_OSG_color(bbox_ptr->get_color());
+   PolyLine_ptr->set_permanent_color(curr_color);
+
    polygon poly(*PolyLine_ptr->get_polyline_ptr());
    double polygon_area=poly.compute_area();
    double text_size=40.0*sqrt(polygon_area)/100.0;
    
-   threevector text_posn = 
-      PolyLine_ptr->get_polyline_ptr()->get_vertex(0);
+   threevector text_posn = PolyLine_ptr->get_polyline_ptr()->get_vertex(0);
    PolyLine_ptr->set_label(attribute_value, text_posn, text_size);
 }
 
@@ -2539,7 +2538,7 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
 void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 {
-   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
+//   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
 //   cout << "image_ID_str = " << image_ID_str << endl;
 
    int curr_width, curr_height;
@@ -2587,7 +2586,12 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
       bool single_polyline_per_geode_flag = true;
       int n_text_messages = 1;
 
-      color_bbox_by_gender(&curr_bboxes_ptr->at(b));
+      colorfunc::Color bbox_color = 
+         color_bbox_by_gender(&curr_bboxes_ptr->at(b));
+      if(bbox_color != colorfunc::black)
+      {
+         curr_bboxes_ptr->at(b).set_color(bbox_color);
+      }
       osg::Vec4 uniform_color=colorfunc::get_OSG_color(
          curr_bboxes_ptr->at(b).get_color());
 
@@ -2625,33 +2629,27 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 // --------------------------------------------------------------------------
 // Member function color_bbox_by_gender()
 
-void PolyLinesGroup::color_bbox_by_gender(bounding_box *bbox_ptr)
+colorfunc::Color PolyLinesGroup::color_bbox_by_gender(bounding_box *bbox_ptr)
 {
-   cout << "inside color_bbox_by_gender()" << endl;
-   if(bbox_ptr->get_label() != "face") return;
+   if(bbox_ptr->get_label() != "face") return colorfunc::black;
 
    string attr_key = "gender";
    string attr_value = bbox_ptr->get_attribute_value(attr_key);
-   int attribute_ID = -1;
-   if(attr_value == "unset")
+   colorfunc::Color curr_color = colorfunc::black;
+   if(attr_value == "unknown")
    {
-      return;
-   }
-   else if(attr_value == "unknown")
-   {
-      attribute_ID = 0;
+      curr_color = colorfunc::yellow;
    }
    else if(attr_value == "male")
    {
-      attribute_ID = 1;
+      curr_color = colorfunc::cyan;
    }
    else if(attr_value == "female")
    {
-      attribute_ID = 2;
+      curr_color = colorfunc::purple;
    }
-   cout << "attribute_ID = " << attribute_ID << endl;
-   set_gender_attribute(attribute_ID, bbox_ptr);
-   cout << "at end of color_bbox_by_gender()" << endl;
+
+   return curr_color;
 }
 
 // --------------------------------------------------------------------------
@@ -2828,3 +2826,4 @@ void PolyLinesGroup::change_label_size(double factor)
 }
 
    
+
