@@ -81,7 +81,6 @@ images.
 faces_06, faces_07_{a,b,c,d,e,f} are sitting in subdirs of 
 /data/TrainingImagery/faces/labeled_data/
 
-
 gimages_20:    image_05480 - image_05925
 not_faces_01:  image_05927 - image_06420
 not_faces_02:  image_06421 - image_06578
@@ -102,6 +101,15 @@ In this README, we define the following root directories:
   $faces_root= ~/programs/c++/svn/projects/src/mains/faces
   $deeplab_root= ~/programs/c++/svn/projects/src/mains/machine_learning/deeplab
 
+*.  Program $faces_root/CLEAN_IMAGES scans through all images within a
+specified subdirectory.  It first converts any PNG files into JPG images to
+avoid alpha-channel headaches.  It then explicitly checks the number of
+color channels within the JPG files.  CLEAN_IMAGES deletes any JPG file
+which doesn't have exactly 3 color channels.
+
+We wrote this utility in order to homogenize highly-variable internet
+imagery.
+
 *.  Program $faces_root/HOMOGENIZE_IMAGES imports a set of raw image
 filenames from a specified subdirectory.  It first alphabetically sorts the
 input image filenames.  It next wraps the the filenames in double quotes to
@@ -115,14 +123,6 @@ specified input subdirectory.  It then downsizes any image within the input
 folder whose horizontal or vertical pixel dimensions exceeds max_xdim /
 max_ydim.
 
-*.  Program $faces_root/CLEAN_IMAGES scans through all images within a
-specified subdirectory.  It first converts any PNG files into JPG images to
-avoid alpha-channel headaches.  It then explicitly checks the number of
-color channels within the JPG files.  CLEAN_IMAGES deletes any JPG file
-which doesn't have exactly 3 color channels.
-
-We wrote this utility in order to homogenize highly-variable internet
-imagery.
 
 *.  Working with homogenized and downsized images, use Davis King's very
 nice IMGLAB webtool to draw bounding boxes around faces within all

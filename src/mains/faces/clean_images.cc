@@ -54,6 +54,12 @@ int main( int argc, char** argv )
    filefunc::add_trailing_dir_slash(input_images_subdir);
    input_images_subdir=root_subdir+input_images_subdir;
 
+   input_images_subdir = 
+      "/media/DataTransfer/faces/google_images/Jul2016/women2/";
+//      "/media/DataTransfer/faces/google_images/Jul2016/nonfaces_10/";
+//      "/media/DataTransfer/faces/google_images/Jul2016/gimages21/";
+   
+
    vector<string> image_filenames=
       filefunc::image_files_in_subdir(input_images_subdir);
    int n_orig_filenames = image_filenames.size();
