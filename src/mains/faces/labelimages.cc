@@ -294,6 +294,8 @@ int main( int argc, char** argv )
    image_ID_str = substrings[1];
    PolyLinesGroup_ptr->generate_image_bboxes(image_ID_str);
 
+   PolyLinesGroup_ptr->count_bbox_attributes();
+
    cout << endl;
    cout << "******************************************************" << endl;
    cout << "Keyboard control notes:" << endl << endl;

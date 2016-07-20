@@ -11,7 +11,7 @@
 //	 		./homogenize_images
 
 // =======================================================================
-// Last updated on 1/2/16; 5/4/16; 5/7/16; 5/9/16
+// Last updated on 5/4/16; 5/7/16; 5/9/16; 7/19/16
 // =======================================================================
 
 #include <algorithm>
@@ -57,10 +57,16 @@ int main( int argc, char** argv )
    cout << "Enter starting image's ID:" << endl;
    cin >> image_ID_offset;
 
-   int homogenized_image_ID = image_ID_offset;
-   for (unsigned int i=0; i<image_filenames.size(); i++)
+   int istart = 0;
+//   int istart = 769;
+   int istop = image_filenames.size();
+
+   int homogenized_image_ID = image_ID_offset + istart;
+
+   for (int i=istart; i<istop; i++)
    {
       string curr_image_filename=image_filenames[i];
+      cout << "i = " << i << endl;
       cout << "curr_image_filename = " << curr_image_filename << endl;
 
 // Search for any white spaces or parentheses within input image
@@ -111,6 +117,7 @@ int main( int argc, char** argv )
             homogenized_image_ID,5)+"."+suffix;
       string unix_cmd="cp \""+curr_image_filename
          +"\" "+homogenized_image_filename;
+      cout << unix_cmd << endl;
       sysfunc::unix_command(unix_cmd);
 
 // As of 4/7/16, we force input images to be in JPG rather than PNG

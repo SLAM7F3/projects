@@ -55,7 +55,7 @@ int main( int argc, char** argv )
    input_images_subdir=root_subdir+input_images_subdir;
 
    input_images_subdir = 
-      "/media/DataTransfer/faces/google_images/Jul2016/women2/";
+      "/media/DataTransfer/faces/google_images/Jul2016/women3/";
 //      "/media/DataTransfer/faces/google_images/Jul2016/nonfaces_10/";
 //      "/media/DataTransfer/faces/google_images/Jul2016/gimages21/";
    
