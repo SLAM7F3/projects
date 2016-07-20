@@ -9,7 +9,7 @@
 //           partition_labeled_imgs all_labeled_images.xml
 
 // ====================================================================
-// Last updated on 5/11/16; 6/7/16; 6/18/16
+// Last updated on 5/11/16; 6/7/16; 6/18/16; 7/20/16
 // ====================================================================
 
 #include <fstream>
@@ -105,19 +105,9 @@ int main(int argc, char** argv)
    vector<int> random_seq = mathfunc::random_sequence(
       istart, istop, istop - istart + 1);
 
-   int n_testing = 600;
-   int n_validation = 300;
+   int n_testing = 1200;
+   int n_validation = 600;
    int n_training = n_images - (n_validation + n_testing);
-   if(n_training > 10000) 
-   {
-      n_testing = 700;
-      n_validation = 700;
-   }
-   if(n_training > 20000) 
-   {
-      n_testing = 800;
-      n_validation = 800;
-   }
    n_training = n_images - (n_validation + n_testing);
 
    cout << "n_training = " << n_training << endl;

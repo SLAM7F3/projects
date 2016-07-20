@@ -30,7 +30,7 @@
 //                       ./generate_bbox_tiles
 
 // ====================================================================
-// Last updated on 6/14/16; 6/15/16; 6/19/16; 6/29/16
+// Last updated on 6/14/16; 6/15/16; 6/19/16; 6/29/16; 7/20/16
 // ====================================================================
 
 #include <fstream>
@@ -160,7 +160,8 @@ int main(int argc, char** argv)
 // requirements:
    
    const int deeplab_tile_size = 321;	
-   const int max_tiles_per_image = 20;
+//   const int max_tiles_per_image = 20;        // default in Jun 2016
+   const int max_tiles_per_image = 40;		// default as of Jul 20, 2016
 //   const int max_tiles_per_image = 50;
 
    string faces_rootdir = "/data/TrainingImagery/faces/";
@@ -180,9 +181,11 @@ int main(int argc, char** argv)
    bool ignore_hands_flag = false;
 
    string input_str;
+/*
    cout << "Enter f to set ignore_faces_flag to true" << endl;
    cin >> input_str;
    if(input_str == "f") ignore_faces_flag = true;
+*/
 
    cout << "Enter h to set ignore_hands_flag to true" << endl;
    cin >> input_str;
@@ -205,11 +208,9 @@ int main(int argc, char** argv)
    }
    
    int n_tile_repetitions_per_negative_example = 2;
-
-//   int n_tiles_per_zero_bbox_image = 2;
 //   cout << "Enter number of tile repetitions to be performed for negative examp images with no bboxes:"
 //        << endl;
-//   cin >> n_tiles_per_zero_bbox_image;
+//   cin >> n_tiles_repetitions_per_negative_example;
 
    string training_images_subdir=faces_subdir+"training_images/";
    string fullsized_training_images_subdir=training_images_subdir

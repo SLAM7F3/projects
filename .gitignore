@@ -2,6 +2,8 @@
 *.a
 *.png
 *.jpg
+*.meta
+*.ps
 .git/hooks/post-update.sample
 .git/hooks/pre-rebase.sample
 .git/hooks/commit-msg.sample
@@ -11,6 +13,7 @@
 .git/hooks/pre-applypatch.sample
 .git/hooks/pre-push.sample
 .git/hooks/update.sample
+src/mains/faces/homogenized_images/*.txt
 src/mains/imagesearch/quantize_image_colors
 src/mains/imagesearch/run_eovsir
 src/mains/imagesearch/hfov_attributes
