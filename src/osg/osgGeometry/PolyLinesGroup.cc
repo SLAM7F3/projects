@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 7/6/16; 7/7/16; 7/8/16; 7/9/16
+// Last modified on 7/7/16; 7/8/16; 7/9/16; 7/21/16
 // ==========================================================================
 
 #include <iomanip>
@@ -80,6 +80,7 @@ void PolyLinesGroup::initialize_member_objects()
    babygis_database_ptr=NULL;
    movers_group_ptr=NULL;
    DataGraph_ptr=NULL;
+   AC_ptr = get_AnimationController_ptr();
    annotated_bboxes_map_ptr = NULL;
    osg_bboxes_map_ptr = NULL;
    max_image_width = max_image_height = -1;
@@ -1927,7 +1928,7 @@ string PolyLinesGroup::reconstruct_polylines_from_file_info(
       if (polyline_ID[i] != curr_polyline_ID || i==polyline_ID.size()-1 ||
           curr_time[i] != curr_t)
       {
-         get_AnimationController_ptr()->set_curr_framenumber(curr_t);
+         AC_ptr->set_curr_framenumber(curr_t);
 
 // First instantiate current PolyLine corresponding to curr_polyline_ID:
             
@@ -2231,7 +2232,7 @@ string PolyLinesGroup::get_image_ID_str()
 {
 //   cout << "inside PolyLinesGroup::get_image_ID_str()" << endl;
    
-   string currimage_filename = get_AnimationController_ptr()->
+   string currimage_filename = AC_ptr->
       get_curr_image_filename();
 //   cout << "currimage_filename = " << currimage_filename << endl;
 
@@ -2288,13 +2289,31 @@ double PolyLinesGroup::get_currimage_frame_diag()
 
 void PolyLinesGroup::goto_frame()
 {
-//  cout << "inside PolyLinesGrop::goto_frame()" << endl;
+   cout << "inside PolyLinesGrop::goto_frame()" << endl;
 
    double curr_diag = get_currimage_frame_diag();
+   int first_framenumber = AC_ptr->
+      get_first_framenumber();
+   int last_framenumber = AC_ptr->
+      get_last_framenumber();
+   
    int frame_number;
    cout << "Enter framenumber:" << endl;
    cin >> frame_number;
-   get_AnimationController_ptr()->set_curr_framenumber(frame_number);
+   if(frame_number < first_framenumber)
+   {
+      cout << "Request is less than first frame number = " 
+           << first_framenumber << endl;
+      return;
+   }
+   else if(frame_number > last_framenumber)
+   {
+      cout << "Request is greater than last frame number = " 
+           << last_framenumber << endl;
+      return;
+   }
+   
+   AC_ptr->set_curr_framenumber(frame_number);
    double next_diag = get_currimage_frame_diag();
 
    generate_image_bboxes(get_image_ID_str());
@@ -2314,7 +2333,7 @@ void PolyLinesGroup::increment_frame()
 //  cout << "inside PolyLinesGrop::increment_frame()" << endl;
 
    double curr_diag = get_currimage_frame_diag();
-   get_AnimationController_ptr()->increment_frame_counter();
+   AC_ptr->increment_frame_counter();
    double next_diag = get_currimage_frame_diag();
 
    generate_image_bboxes(get_image_ID_str());
@@ -2334,7 +2353,7 @@ void PolyLinesGroup::decrement_frame()
 //   cout << "inside PolyLinesGrop::decrement_frame()" << endl;
 
    double curr_diag = get_currimage_frame_diag();
-   get_AnimationController_ptr()->decrement_frame_counter();
+   AC_ptr->decrement_frame_counter();
    double next_diag = get_currimage_frame_diag();
 
    generate_image_bboxes(get_image_ID_str());
@@ -2352,10 +2371,19 @@ void PolyLinesGroup::decrement_frame()
 void PolyLinesGroup::jump_forward_frame(int jump)
 {
 //   cout << "inside PolyLinesGrop::jump_forward_frame()" << endl;
-   int orig_frame_skip = get_AnimationController_ptr()->get_frame_skip();
-   get_AnimationController_ptr()->set_frame_skip(jump);
-   get_AnimationController_ptr()->increment_frame_counter();
-   get_AnimationController_ptr()->set_frame_skip(orig_frame_skip);
+
+   if(AC_ptr->get_curr_framenumber() + jump > 
+      AC_ptr->get_last_framenumber())
+   {
+      cout << "Cannot jump past last framenumber = " 
+           << AC_ptr->get_last_framenumber() << endl;
+      return;
+   }
+
+   int orig_frame_skip = AC_ptr->get_frame_skip();
+   AC_ptr->set_frame_skip(jump);
+   AC_ptr->increment_frame_counter();
+   AC_ptr->set_frame_skip(orig_frame_skip);
    generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
@@ -2367,10 +2395,19 @@ void PolyLinesGroup::jump_forward_frame(int jump)
 void PolyLinesGroup::jump_backward_frame(int jump)
 {
 //   cout << "inside PolyLinesGrop::jump_backward_frame()" << endl;
-   int orig_frame_skip = get_AnimationController_ptr()->get_frame_skip();
-   get_AnimationController_ptr()->set_frame_skip(jump);
-   get_AnimationController_ptr()->decrement_frame_counter();
-   get_AnimationController_ptr()->set_frame_skip(orig_frame_skip);
+
+   if(AC_ptr->get_curr_framenumber() - jump <
+      AC_ptr->get_first_framenumber())
+   {
+      cout << "Cannot jump before first framenumber = " 
+           << AC_ptr->get_first_framenumber() << endl;
+      return;
+   }
+
+   int orig_frame_skip = AC_ptr->get_frame_skip();
+   AC_ptr->set_frame_skip(jump);
+   AC_ptr->decrement_frame_counter();
+   AC_ptr->set_frame_skip(orig_frame_skip);
    generate_image_bboxes(get_image_ID_str());
    currimage_PolyLine_index = 0;
    set_selected_bbox();
@@ -2538,8 +2575,8 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
 void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 {
-//   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
-//   cout << "image_ID_str = " << image_ID_str << endl;
+   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
+   cout << "image_ID_str = " << image_ID_str << endl;
 
    int curr_width, curr_height;
    image_sizes_iter = image_sizes_map_ptr->find(image_ID_str);
@@ -2551,6 +2588,8 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 
    destroy_all_PolyLines();
 
+   cout << "bboxes.size = " << curr_bboxes_ptr->size() << endl;
+   
    for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
    {
 
@@ -2659,7 +2698,7 @@ void PolyLinesGroup::write_bboxes_to_file()
 {
 //    cout << "inside write_bboxes_to_file()" << endl;
    
-   int curr_framenumber = get_AnimationController_ptr()->
+   int curr_framenumber = AC_ptr->
       get_curr_framenumber();
    
 // Export face and hand bounding boxes to output text file:
@@ -2674,10 +2713,10 @@ void PolyLinesGroup::write_bboxes_to_file()
    outstream << "# Bbox_ID  label  xmin  xmax  ymin ymax (attr_key attr_val)"
              << endl << endl;
 
-   for(int i = get_AnimationController_ptr()->get_first_framenumber(); 
-       i <= get_AnimationController_ptr()->get_last_framenumber(); i++)
+   for(int i = AC_ptr->get_first_framenumber(); 
+       i <= AC_ptr->get_last_framenumber(); i++)
    {
-      get_AnimationController_ptr()->set_curr_framenumber(i);
+      AC_ptr->set_curr_framenumber(i);
 
       outstream << "Image: index = " << i 
                 << " ID_str = " << get_image_ID_str() << endl;
@@ -2721,7 +2760,7 @@ void PolyLinesGroup::write_bboxes_to_file()
 
 // Reset AC's current frame number to its original value:
 
-   get_AnimationController_ptr()->set_curr_framenumber(curr_framenumber);
+   AC_ptr->set_curr_framenumber(curr_framenumber);
 
    string unix_cmd="cp "+output_filename+" "+bbox_labels_filename;
    sysfunc::unix_command(unix_cmd);
@@ -2734,7 +2773,7 @@ void PolyLinesGroup::count_bbox_attributes()
 {
 //    cout << "inside count_bbox_attributes()" << endl;
    
-   int curr_framenumber = get_AnimationController_ptr()->
+   int curr_framenumber = AC_ptr->
       get_curr_framenumber();
 
    int n_bboxes = 0;
@@ -2744,10 +2783,10 @@ void PolyLinesGroup::count_bbox_attributes()
    int n_unset_faces = 0;
    int n_faces = 0;
 
-   for(int i = get_AnimationController_ptr()->get_first_framenumber(); 
-       i <= get_AnimationController_ptr()->get_last_framenumber(); i++)
+   for(int i = AC_ptr->get_first_framenumber(); 
+       i <= AC_ptr->get_last_framenumber(); i++)
    {
-      get_AnimationController_ptr()->set_curr_framenumber(i);
+      AC_ptr->set_curr_framenumber(i);
 
       annotated_bboxes_iter = annotated_bboxes_map_ptr->find(
          get_image_ID_str());
@@ -2804,7 +2843,7 @@ void PolyLinesGroup::count_bbox_attributes()
 
 // Reset AC's current frame number to its original value:
 
-   get_AnimationController_ptr()->set_curr_framenumber(curr_framenumber);
+   AC_ptr->set_curr_framenumber(curr_framenumber);
 }
 
 // --------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for POLYLINESGROUP class
 // ==========================================================================
-// Last modified on 7/6/16; 7/7/16; 7/8/16; 7/9/16
+// Last modified on 7/7/16; 7/8/16; 7/9/16; 7/21/16
 // ==========================================================================
 
 #ifndef POLYLINESGROUP_H
@@ -302,7 +302,8 @@ class PolyLinesGroup : public GeometricalsGroup
    osg::ref_ptr<osg::Depth> depth_on_refptr;
    osg::ref_ptr<osg::LineWidth> linewidth_refptr;
    DataGraph* DataGraph_ptr;
-   
+   AnimationController* AC_ptr;
+
    ANNOTATED_BBOXES_MAP* annotated_bboxes_map_ptr;
    ANNOTATED_BBOXES_MAP::iterator annotated_bboxes_iter;
 

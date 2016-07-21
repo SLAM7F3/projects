@@ -43,8 +43,6 @@ int main(int argc, char** argv)
 {  
    timefunc::initialize_timeofday_clock(); 
 
-//    const int scale_pyramid_threshold = 550;	 // pixels
-
    const int tile_border = 100;	 // pixels
 //   int image_tile_size = 1000;
 //   int image_tile_size = 1400;	 
@@ -68,18 +66,15 @@ int main(int argc, char** argv)
    string input_images_subdir = root_subdir+input_images_basedir;
    filefunc::add_trailing_dir_slash(input_images_subdir);
 
-//   string foursized_subdir = input_images_subdir+"foursized/";
    string doublesized_subdir=input_images_subdir+"doublesized/";
    string fullsized_subdir=input_images_subdir+"fullsized/";
    string halfsized_subdir=input_images_subdir+"halfsized/";
 
    vector<string> sized_subdirs;
-//   sized_subdirs.push_back(foursized_subdir);
    sized_subdirs.push_back(doublesized_subdir);
    sized_subdirs.push_back(fullsized_subdir);
    sized_subdirs.push_back(halfsized_subdir);
 
-//   int s_stop = 1;
    int s_stop = sized_subdirs.size();
    for(int s = 0; s < s_stop; s++) 
    {
@@ -172,52 +167,6 @@ int main(int argc, char** argv)
             currjpg_filename,image_xdim, image_ydim);
          int xdim = image_xdim;
          int ydim = image_ydim;
-
-/*
-// Ignore quadruplesized test image if it's too big:
-
-         if(s == 0)
-         {
-            if (xdim <= scale_pyramid_threshold || 
-                ydim <= scale_pyramid_threshold)
-            {
-            }
-            else
-            {
-               continue;
-            }
-         }
-
-
-// Ignore doublesized test image if it's too big:
-
-         if(s == 1)
-         {
-            if (xdim <= scale_pyramid_threshold || 
-                ydim <= scale_pyramid_threshold)
-            {
-            }
-            else
-            {
-               continue;
-            }
-         }
-
-// Ignore halfsized test image if it's too small:
-
-         else if (s == 3)
-         {
-            if (xdim >= 2 * scale_pyramid_threshold ||
-                ydim >= 2 * scale_pyramid_threshold)
-            {
-            }
-            else
-            {
-               continue;
-            }
-         }
-     
-*/
 
          vector<int> px_start, px_stop;
          px_start.push_back(0);

@@ -5,8 +5,13 @@
 // factor of 2 each input image.  Finally, PYRAMID_TESTING_IMAGES
 // moves all the original images into their own "fullsized"
 // subdirectory.
+
+// Run this program on both validation and testing imagery sets.  Then
+// move the pyramided images into their own subdir.  Create softlinks
+// to all pyramided images.  
+
 // ====================================================================
-// Last updated on 5/12/16; 5/13/16; 5/25/16; 6/15/16
+// Last updated on 5/13/16; 5/25/16; 6/15/16; 7/21/16
 // ====================================================================
 
 #include <fstream>
