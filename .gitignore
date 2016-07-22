@@ -86,6 +86,7 @@ src/mains/faces/homogenize_images
 src/mains/faces/xml2txt
 src/mains/faces/clean_images
 src/mains/faces/prepare_deeplab_inputs
+src/mains/faces/updatetxt
 src/mains/pathplanning/pathfinder
 src/mains/korea/orthobldgs
 src/mains/korea/run_view_tel
