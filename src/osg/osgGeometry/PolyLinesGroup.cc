@@ -2289,7 +2289,7 @@ double PolyLinesGroup::get_currimage_frame_diag()
 
 void PolyLinesGroup::goto_frame()
 {
-   cout << "inside PolyLinesGrop::goto_frame()" << endl;
+//   cout << "inside PolyLinesGrop::goto_frame()" << endl;
 
    double curr_diag = get_currimage_frame_diag();
    int first_framenumber = AC_ptr->
@@ -2575,8 +2575,8 @@ void PolyLinesGroup::display_PolyLine_attribute(
 
 void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 {
-   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
-   cout << "image_ID_str = " << image_ID_str << endl;
+//   cout << "inside PolyLinesGroup::generate_image_bboxes()" << endl;
+//   cout << "image_ID_str = " << image_ID_str << endl;
 
    int curr_width, curr_height;
    image_sizes_iter = image_sizes_map_ptr->find(image_ID_str);
@@ -2588,8 +2588,6 @@ void PolyLinesGroup::generate_image_bboxes(string image_ID_str)
 
    destroy_all_PolyLines();
 
-   cout << "bboxes.size = " << curr_bboxes_ptr->size() << endl;
-   
    for(unsigned int b = 0; b < curr_bboxes_ptr->size(); b++)
    {
 
