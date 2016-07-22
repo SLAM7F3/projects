@@ -1,3 +1,4 @@
+~/bin/MAKE program=attribute_images
 ~/bin/MAKE program=bbox_widths
 ~/bin/MAKE program=clean_images
 ~/bin/MAKE program=downsize_images

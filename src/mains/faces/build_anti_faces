@@ -1,3 +1,4 @@
+/bin/rm ./attribute_images
 /bin/rm ./bbox_widths
 /bin/rm ./clean_images
 /bin/rm ./downsize_images

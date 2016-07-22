@@ -1,7 +1,7 @@
 ========================================================================
 Face detection via deeplab image segmentation
 ========================================================================
-Last updated 6/29/16; 7/4/16; 7/5/16; 7/21/16
+Last updated 7/4/16; 7/5/16; 7/21/16; 7/22/16
 ========================================================================
 
 TODO:
@@ -277,21 +277,6 @@ Run this program on both validation and testing imagery sets.  Then move
 the pyramided images into their own subdir.  Create softlinks to all
 pyramided images.
 
-
-
-
-*.  Inside /data/TrainingImagery/faces/labeled_data/faces_05/, unpack
-testing_images_orig_imageIDs.tgz.  Rename newly created
-testing_images_orig/ as something like testing_images_nofaces3/.  Then
-relink testing_images to ./testing_images_nofaces3/.
-
-*.  Copy fine tuned caffe model from a subdir such as
-$deeplab/experiments/faces/May8_faces/model/vgg128_large_fov/ into
-/data/deeplab/faces_deploy/.  Give it a name which includes a time stamp
-such as
-
-        train_iter_40000_05062016_T1.caffemodel
-
 *.  Program $root/machine_learning/deeplab/GENERATE_IMAGE_TILES imports all
 pyramided image files exported by PYRAMID_TESTING_IMAGES from a specified
 input subdirectory.  It breaks apart each input image into a set of square
@@ -300,6 +285,24 @@ generally overlap their neighbors by tile_border pixels.  The image tiles
 are exported as jpeg files to a specified output subdirectory.
 
                     ./generate_image_tiles
+
+*.  Inside
+/data/TrainingImagery/faces/labeled_data/faces_13/faces_13_validation_images/,
+move tiles/ subdirs doublesized/, fullsized/ and halfsized/ containing
+actual jpg files into corresponding doublesized/ fullsized/ and halfsized
+subdirs of
+/data/TrainingImagery/faces/labeled_data/faces_13_validation_images/ . Then
+recreate empty tiles subdirs and fill them with softlinks to the actual jpg
+files.  After faces_13_validation[testing]_images/ subdirs of faces_13/
+contain only soft links, create faces_13_validation_images_links.tgz and
+faces_13_testing_images_links.tgz
+
+*.  Copy fine tuned caffe model from a subdir such as
+$deeplab/experiments/faces/May8_faces/model/vgg128_large_fov/ into
+/data/deeplab/faces_deploy/.  Give it a name which includes a time stamp
+such as
+
+        train_iter_40000_05062016_T1.caffemodel
 
 *.  Program $root/machine_learning/deeplab/SEGMENT_IMAGES imports a caffe
 model finetuned via deeplab, its test.prototxt file, a text file containing
