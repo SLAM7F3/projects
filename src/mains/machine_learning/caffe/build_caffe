@@ -1,8 +1,13 @@
+~/bin/MAKE program=all_lmdb
 ~/bin/MAKE program=caffe_classification
 ~/bin/MAKE program=check_lmdb
 ~/bin/MAKE program=classify_chars
+~/bin/MAKE program=ensemble_chars
+~/bin/MAKE program=extract_features
 ~/bin/MAKE program=finetuned_classify
 ~/bin/MAKE program=generate_file_list
+~/bin/MAKE program=imagenet_classification
 ~/bin/MAKE program=parse_leveldb
 ~/bin/MAKE program=parse_lmdb
+~/bin/MAKE program=relabel_non_chips
 ~/bin/MAKE program=tuning_performance

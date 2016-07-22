@@ -1,8 +1,13 @@
+/bin/rm ./all_lmdb
 /bin/rm ./caffe_classification
 /bin/rm ./check_lmdb
 /bin/rm ./classify_chars
+/bin/rm ./ensemble_chars
+/bin/rm ./extract_features
 /bin/rm ./finetuned_classify
 /bin/rm ./generate_file_list
+/bin/rm ./imagenet_classification
 /bin/rm ./parse_leveldb
 /bin/rm ./parse_lmdb
+/bin/rm ./relabel_non_chips
 /bin/rm ./tuning_performance
