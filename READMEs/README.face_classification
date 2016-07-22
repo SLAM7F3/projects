@@ -1,0 +1,30 @@
+========================================================================
+Face classification
+========================================================================
+Last updated 7/22/16
+========================================================================
+
+
+In this README, we define the following root directories:
+
+  $faces_root= ~/programs/c++/svn/projects/src/mains/faces
+  $deeplab_root= ~/programs/c++/svn/projects/src/mains/machine_learning/deeplab
+
+*.  Program IMAGE_SIZES reads in a set of photo image filenames.  It
+calls ImageMagick's ping command to extract image width and height
+measured in pixels.  Image size results are saved into output text
+file image_sizes.dat.
+
+                             ./image_sizes
+
+
+Program LABELIMAGES is a variant of VIEWIMAGES.  It can be used to scan
+through all image files contained within the present working directory.  If
+all the input image files do not have uniform pixel size, borders will be
+dynamically added as necessary to each input image so that effectively all
+images end up with the same pixel widths and heights.
+
+LABELIMAGES enables users to annotate individual images and export all such
+annotations to CSV text files.
+
+			    ./labelimages
