@@ -21,6 +21,7 @@
 #include "general/sysfuncs.h"
 #include "video/texture_rectangle.h"
 #include "time/timefuncs.h"
+#include "video/videofuncs.h"
 
 // ========================================================================
 int main( int argc, char** argv )
@@ -46,6 +47,7 @@ int main( int argc, char** argv )
    {
       bbox_labels_filename = labeled_faces_subdir+"labeled_face_bboxes.txt";
    }
+   bbox_labels_filename = labeled_faces_subdir+"lb.txt";
    filefunc::ReadInfile(bbox_labels_filename);
 
    typedef map<string, vector<bounding_box> > ANNOTATED_BBOXES_MAP;
@@ -148,6 +150,8 @@ int main( int argc, char** argv )
       for(unsigned int b = 0; b < bboxes.size(); b++)
       {
          bounding_box curr_bbox = bboxes[b];
+         string attr_key = "gender";
+         string attr_value = curr_bbox.get_attribute_value(attr_key);
 
          double mag_factor = 2;
          int px_center = curr_bbox.get_xcenter();
@@ -165,7 +169,8 @@ int main( int argc, char** argv )
          py_stop = basic_math::min(ydim-1, py_stop);
 
          string output_filename=output_chips_subdir+
-            "face_"+stringfunc::integer_to_string(face_ID++,5)+".png";
+            attr_value+"_face_" +stringfunc::integer_to_string(face_ID++,5)
+            +".png";
 //         cout << "image_counter = " << image_counter
 //              << " " << image_filename << endl;
 //         cout << " b = " << b << endl;
@@ -176,6 +181,11 @@ int main( int argc, char** argv )
          
          tr_ptr->write_curr_frame(
             px_start, px_stop, py_start, py_stop, output_filename);
+
+         int max_xdim = 224;
+         int max_ydim = 224;
+         videofunc::downsize_image(output_filename, max_xdim, max_ydim);
+
       } // loop over index b labeling bounding boxes for current image
       image_counter++;
    } // loop over annotated_bboxes_iter
