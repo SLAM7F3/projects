@@ -175,7 +175,7 @@ int main( int argc, char** argv )
 //              << " " << image_filename << endl;
 //         cout << " b = " << b << endl;
 //         cout << " px_start = " << px_start << " px_stop = " << px_stop
-//              << " xdim = " << xdim << endl;
+//              << " xdim = " << xdim < endl;
 //         cout << " py_start = " << py_start << " py_stop = " << py_stop
 //              << " ydim = " << ydim << endl;
          

@@ -1,7 +1,7 @@
 ========================================================================
-Recognizing SVHN and MNIST digits
+Classifying SVHN and MNIST digits via Caffe finetuning of VGG-16 model
 ========================================================================
-Last updated 2/15/16; 2/24/16; 2/29/16; 3/1/16
+Last updated 2/24/16; 2/29/16; 3/1/16; 7/23/16
 ========================================================================
 
 In this README, we define the following root directory
@@ -59,6 +59,10 @@ $root/imagetext/training_data/synthetic_numbers/NNNNN/extended_chips/, move
 all extended chips into a new subdir of $datatext.
 
   e.g. mv ./extended_chips/*.* /data/peter_stuff/imagery/syntext/numbers_Jan16
+
+[ Note added on 7/23/16:  We learned the hard and painful way that the
+default image --> LMDB converter used by Caffe appears to expect JPG rather
+than PNG image chip input!]
 
 *.  Program $root/imagetext/PREPARE_FINETUNING_INPUTS imports a set of text
 and non-text image chips from a specified subdirectory.  It generates a

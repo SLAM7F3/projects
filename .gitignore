@@ -4,6 +4,8 @@
 *.jpg
 *.meta
 *.ps
+*.tgz
+*.*~
 .git/hooks/post-update.sample
 .git/hooks/pre-rebase.sample
 .git/hooks/commit-msg.sample
@@ -88,6 +90,7 @@ src/mains/faces/wider_images
 src/mains/faces/homogenize_images
 src/mains/faces/xml2txt
 src/mains/faces/clean_images
+src/mains/faces/prepare_classification_inputs
 src/mains/faces/prepare_deeplab_inputs
 src/mains/faces/updatetxt
 src/mains/pathplanning/pathfinder
