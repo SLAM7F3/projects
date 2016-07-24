@@ -36,7 +36,7 @@
 // drawn around each pixel CC.
 
 // ==========================================================================
-// Last updated on 6/25/16; 6/27/16; 6/28/16; 7/5/16
+// Last updated on 6/27/16; 6/28/16; 7/5/16; 7/24/16
 // ==========================================================================
 
 #include <iostream>
@@ -118,7 +118,7 @@ int main (int argc, char * argv[])
    std::set_new_handler(sysfunc::out_of_memory);
    timefunc::initialize_timeofday_clock();
 
-   string banner="Starting CONNECT_COMPONENTS program";
+   string banner="Starting CONSOLIDATE_COMPONENTS program";
    outputfunc::write_big_banner(banner);
 
    int n_classes = 2; // faces, hands

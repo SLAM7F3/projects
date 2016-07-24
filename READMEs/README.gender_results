@@ -87,6 +87,27 @@ n_negative_example_tiles = 41716
 
 Finished training
 
+Validation set of 600 images:
+
+Decade 0 Bbox width: min=0 max=7	 Recall=0	 111 bboxes
+Decade 1 Bbox width: min=7 max=12	 Recall=0	 150 bboxes
+Decade 2 Bbox width: min=12 max=18	 Recall=0.295918	 190 bboxes
+Decade 3 Bbox width: min=18 max=24	 Recall=0.598639	 166 bboxes
+Decade 4 Bbox width: min=24 max=31	 Recall=0.738095	 183 bboxes
+Decade 5 Bbox width: min=31 max=39	 Recall=0.792517	 179 bboxes
+Decade 6 Bbox width: min=39 max=50	 Recall=0.84898	 174 bboxes
+Decade 7 Bbox width: min=50 max=67	 Recall=0.82568	 167 bboxes
+Decade 8 Bbox width: min=67 max=100	 Recall=0.846939	 190 bboxes
+Decade 9 Bbox width: min=100 max=10000	 Recall=0.818594	 270 bboxes
+Tiny bbox recall = 0 		 358 tiny bboxes
+Small bbox recall = 0.680758 		 411 small bboxes
+Medium bbox recall = 0.824068 		 472 medium bboxes
+Large bbox recall = 0.837828 		 539 large bboxes
+Total bbox recall = 0.744606 		 1780 total bboxes
+Pixel precision = 0.839711
+f_value = 2 * prec * recall / (prec + recall) = 0.789304
+
+
 *.  Weds July 20, Titan 3:
 
 /data/TrainingImagery/faces/labeled_data/faces_13/

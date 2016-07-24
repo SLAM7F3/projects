@@ -10,7 +10,7 @@
 // into the same subdirectory as where the bbox-annotated masks are
 // written.
 // ==========================================================================
-// Last updated on 6/5/16; 6/15/16; 6/21/16; 7/2/16
+// Last updated on 6/15/16; 6/21/16; 7/2/16; 7/24/16
 // ==========================================================================
 
 #include <iostream>
@@ -117,16 +117,19 @@ int main (int argc, char * argv[])
    vector<double> segmented_pixel_precisions;
 
    vector<double> decade_widths;
+
+// Decade widths updated on 7/24/2016 based upon O(40K) face bboxes:
+
    decade_widths.push_back(0);	 	 // width_0
-   decade_widths.push_back(7.74278);	 // width_10
-   decade_widths.push_back(12.8915);	 // width_20
-   decade_widths.push_back(18.7037);	 // width_30
-   decade_widths.push_back(24.9123);	 // width_40
-   decade_widths.push_back(31.2091);	 // width_50
-   decade_widths.push_back(39.1713);	 // width_60
-   decade_widths.push_back(50.8385);	 // width_70
-   decade_widths.push_back(67.9516);	 // width_80
-   decade_widths.push_back(100.315);	 // width_90
+   decade_widths.push_back(8.02151);     // width_10
+   decade_widths.push_back(13.0974);     // width_20
+   decade_widths.push_back(18.715);      // width_30
+   decade_widths.push_back(24.7056);     // width_40
+   decade_widths.push_back(30.8453);     // width_50
+   decade_widths.push_back(38.583);      // width_60
+   decade_widths.push_back(50.1832);     // width_70
+   decade_widths.push_back(67.3981);     // width_80
+   decade_widths.push_back(99.1431);     // width_90
    decade_widths.push_back(10000.0);	 // width_100
 
    vector< vector<double>* > decade_bbox_recalls;

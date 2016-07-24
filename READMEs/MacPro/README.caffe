@@ -4,6 +4,41 @@ Caffe notes
 Last updated on 2/24/16; 2/29/16; 6/8/16; 7/24/16
 =============================================================================
 
+*.  After lots of hacking, we were able to compile and run caffe_custom on
+Titan1 and Titan3 on 7/24/16.  
+
+*.  Tho's instructions dated 2/22/16 for installing his cudnn libraries:
+
+cp -v /startown-gpfs/ssdws03/devdata/tho/cudnn-7.0-linux-x64-v4.0-prod.tgz ~/Downloads
+cd ~/Downloads
+tar -zxvf cudnn-7.0-linux-x64-v4.0-prod.tgz
+cd cuda
+sudo cp include/cudnn.h /usr/local/cuda/include
+sudo rm -f /usr/local/cuda/lib64/libcudnn.*
+sudo cp lib64/libcudnn_static.a /usr/local/cuda/lib64
+sudo cp lib64/libcudnn.so.4.0.7 /usr/local/cuda/lib64
+sudo ln -s /usr/local/cuda/lib64/libcudnn.so.4.0.7 /usr/local/cuda/lib64/libcudnn.so.4
+sudo ln -s /usr/local/cuda/lib64/libcudnn.so.4 /usr/local/cuda/lib64/libcudnn.so
+
+I have merged cuDNN v4 to pwin. If you are compiling pwin with the flags
+DNN=1 and WITH_GPU=1, please make the following changes in order to compile
+pwin:
+
+1) Remove CUDA 7.0 if necessary. Ignore this step if you have CUDA 7.5 instead of CUDA 7.0:
+sudo rm -rf /usr/local/cuda
+sudo rm -rf /usr/local/cuda-7.0
+
+2) Remove symlink to CUDA 7.0 in /opt/geo/ext:
+sudo rm -rf /opt/geo/ext/cuda-7.0
+
+3) Download and install CUDA 7.5 (http://tinyurl.com/pknol4k) if you are using CUDA 7.0. If NVIDIA driver has already been installed, do not install it here.
+
+4) Create a symlink to the newly installed CUDA 7.5:
+sudo ln -s /usr/local/cuda /opt/geo/ext/cuda-7.5
+
+5) Run installation script to install cuDNN v4. Or use these commands:
+cp -v /startown-gpfs/ssdws03/devdata/tho/cudnn-7.0-linux-x64-v4.0-prod.tgz ~/Downloads
+
 *.  On 7/24/16, we had to install Cuda-7.5 onto Titan 3.  We needed to kill
 the X-server running on Titan 3 before the cuda installation script could
 work.  So we chanted

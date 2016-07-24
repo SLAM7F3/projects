@@ -1,7 +1,7 @@
 ========================================================================
 Contents of orange LACIE "backpack" drives
 ========================================================================
-Last updated on 12/11/15; 1/2/16; 1/7/16; 1/17/16
+Last updated on 1/2/16; 1/7/16; 1/17/16; 7/24/16
 ========================================================================
 
 500 GByte VFAT Drive #1: (last updated on 12/11/12)
@@ -213,16 +213,18 @@ touchy2 was wiped in late April 2013.
 
 --------------------------------------------------------------------------
 Thin 1 TByte EXT4 Drive #12
-(last updated on 12/30/13; 1/5/14; 1/9/14; 11/21/15; 1/2/16)
-136 Gbytes available on 917 Gbyte drive
+(last updated on 1/9/14; 11/21/15; 1/2/16; 7/24/16)
+107 Gbytes available on 917 Gbyte drive
 
 Automounts on Big laptop as /media/DataTransfer/
 
-Beast/                  falcon_laptop/                   lost+found/
-CoarseImageMatchPairs/  fingerprints/                    puget_l1.osga
-DTED/                   HAFB_overlap_corrected_grey.vid  ReutersCorpus/
-earth_bright60.osga     HOG_faces/                       Thinkmate/
-faces/                  ImageEngine/                     VOC/
+Beast/                  falcon_laptop/                   puget_l1.osga
+caffe/                  fingerprints/                    ReutersCorpus/
+CoarseImageMatchPairs/  HAFB_overlap_corrected_grey.vid  Thinkmate/
+DTED/                   HOG_faces/                       VOC/
+earth_bright60.osga     ImageEngine/
+faces/                  lost+found/
+
 
 --------------------------------------------------------------------------
 Thin 1 TByte EXT4 Drive #13
