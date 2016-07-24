@@ -7,7 +7,7 @@
 // ==========================================================================
 // Videofuncs namespace method definitions
 // ==========================================================================
-// Last modified on 2/14/16; 3/13/16; 3/14/16; 3/27/16
+// Last modified on 3/13/16; 3/14/16; 3/27/16; 7/23/16
 // ==========================================================================
 
 #include <iostream>
@@ -3096,10 +3096,9 @@ namespace videofunc
      vector<double> values;
 
      int mask_R, mask_G, mask_B;
-     int img_width = 0, img_height = 0;
+     int img_height = 0;
      if(mask_tr_ptr != NULL)
      {
-        img_width = mask_tr_ptr->getWidth();
         img_height = mask_tr_ptr->getHeight();
      }
 
@@ -3250,5 +3249,169 @@ namespace videofunc
      }
      return flipped_byte_array;
   }
+
+  // ==========================================================================
+  // Focus measure methods
+  // ==========================================================================
+
+  // Method modified_laplacian() implements and RGB generalization of
+  // eqn (13) within "Shape from Focus" by S.K. Nayar and Y. Nakagawa,
+  // PAMI, Vol 16, Aug 1994, pg 824.
+
+  double modified_laplacian(int px, int py, int pstep, 
+                            texture_rectangle* tr_ptr)
+  {
+     int xdim = tr_ptr->getWidth();
+     int ydim = tr_ptr->getHeight();
+     double ml = 0;
+     if(px >= pstep && px <= xdim - 1 - pstep &&
+        py >= pstep && py < ydim - 1 -pstep)
+     {
+/*
+        int Rcenter, Gcenter, Bcenter;
+        int Rright, Gright, Bright;
+        int Rleft, Gleft, Bleft;
+        int Rup, Gup, Bup;
+        int Rdown, Gdown, Bdown;
+        
+        tr_ptr->get_pixel_RGB_values(px, py, Rcenter, Gcenter, Bcenter);
+        tr_ptr->get_pixel_RGB_values(px+pstep, py, Rright, Gright, Bright);
+        tr_ptr->get_pixel_RGB_values(px-pstep, py, Rleft, Gleft, Bleft);
+        tr_ptr->get_pixel_RGB_values(px, py-pstep, Rup, Gup, Bup);
+        tr_ptr->get_pixel_RGB_values(px, py+pstep, Rdown, Gdown, Bdown);
+        ml = fabs(2 * Rcenter - Rright - Rleft) +
+           fabs(2 * Rcenter - Rup - Rdown) + 
+           fabs(2 * Gcenter - Gright - Gleft) + 
+           fabs(2 * Gcenter - Gup - Gdown) +
+           fabs(2 * Bcenter - Bright - Bleft) + 
+           fabs(2 * Bcenter - Bup - Bdown);
+*/
+        double hcenter, scenter, vcenter;
+        double hright, sright, vright;
+        double hleft, sleft, vleft;
+        double hup, sup, vup;
+        double hdown, sdown, vdown;
+        
+        tr_ptr->get_pixel_hsv_values(px, py, hcenter, scenter, vcenter);
+        tr_ptr->get_pixel_hsv_values(px+pstep, py, hright, sright, vright);
+        tr_ptr->get_pixel_hsv_values(px-pstep, py, hleft, sleft, vleft);
+        tr_ptr->get_pixel_hsv_values(px, py-pstep, hup, sup, vup);
+        tr_ptr->get_pixel_hsv_values(px, py+pstep, hdown, sdown, vdown);
+
+        ml = fabs(2 * vcenter - vright - vleft) +
+           fabs(2 * vcenter - vup - vdown);
+     }
+     return ml;
+  }
+  
+  // ---------------------------------------------------------------------
+  double sum_modified_laplacian(int px, int py, int pstep, 
+                                texture_rectangle* tr_ptr)
+  {
+     double focus_measure = 0;
+
+     int N = 1;
+     for(int qy = py - N; qy <= py + N; qy++)
+     {
+        for (int qx = px - N; qx <= px + N; qx++)
+        {
+           focus_measure +=  modified_laplacian(qx, qy, pstep, tr_ptr);
+        } // loop over px index
+     } // loop over py index
+
+//     cout << "px = " << px << " py = " << py 
+//          << " focus_measure = " << focus_measure << endl;
+     return focus_measure;
+  }
+
+  // ---------------------------------------------------------------------
+  // Method avg_modified_laplacian() implements an RGB generalization
+  // of the focus measure presented in "Shape from Focus" by
+  // S.K. Nayar and Y. Nakagawa, PAMI, Vol 16, Aug 1994, pg 824.  
+                                
+  double avg_modified_laplacian(
+     int px_start, int px_stop, int py_start, int py_stop,
+     texture_rectangle* tr_ptr)
+  {
+     int xdim = tr_ptr->getWidth();
+     int ydim = tr_ptr->getHeight();
+     int pstep = 1;
+     double avg_focus_measure = 0;
+     double curr_local_focus_measure;
+//     vector<double> local_focus_measures;
+
+/*
+     texture_rectangle* greyscale_tr_ptr = texture_rectangle_ptr(
+        tr_ptr->getWidth(), tr_ptr->getHeight(), 1, tr_ptr->getNchannels(),
+        NULL);
+     greyscale_tr_ptr->copy_RGB_values(tr_ptr);
+     greyscale_tr_ptr->convert_color_image_to_greyscale();
+*/
+
+     for(int py = py_start; py <= py_stop; py++)
+     {
+        for(int px = px_start; px <= px_stop; px++)
+        {
+           curr_local_focus_measure = 
+              sum_modified_laplacian(px, py, pstep, tr_ptr);
+           avg_focus_measure += curr_local_focus_measure;
+//           local_focus_measures.push_back(sum_modified_laplacian(
+//                                             px, py, pstep, tr_ptr));
+        }
+     }
+//     double median_focus_measure = 
+//        mathfunc::median_value(local_focus_measures);
+//     return median_focus_measure;
+
+
+//     delete greyscale_tr_ptr;
+     
+
+     avg_focus_measure /= ((px_stop-px_start+1)*(py_stop-py_start+1));
+     return avg_focus_measure;
+  }
+
+  // ---------------------------------------------------------------------
+  // Method RGB_variance()
+  
+  double RGB_variance(texture_rectangle* tr_ptr)
+  {
+     int xdim = tr_ptr->getWidth();
+     int ydim = tr_ptr->getHeight();
+
+     int R, G, B;
+     double Rmean, Gmean, Bmean;
+     Rmean = Gmean = Bmean = 0;
+     for(int py = 0; py < ydim; py++)
+     {
+        for(int px = 0; px < xdim; px++)
+        {
+           tr_ptr->get_pixel_RGB_values(px, py, R, G, B);
+           Rmean += R;
+           Gmean += G;
+           Bmean += B;
+        } // loop over px
+     } // loop over py 
+     Rmean /= ( xdim * ydim);
+     Gmean /= ( xdim * ydim);
+     Bmean /= ( xdim * ydim);
+     
+     double Rvar, Gvar, Bvar;
+     Rvar = Gvar = Bvar = 0;
+     for(int py = 0; py < ydim; py++)
+     {
+        for(int px = 0; px < xdim; px++)
+        {
+           tr_ptr->get_pixel_RGB_values(px, py, R, G, B);
+           Rvar += sqr(R - Rmean);
+           Gvar += sqr(G - Gmean);
+           Bvar += sqr(B - Bmean);
+        } // loop over px
+     } // loop over py 
+     double avg_rgb_var = (Rvar + Gvar + Bvar) / (xdim * ydim);
+     return avg_rgb_var;
+  }
+  
+
 
 } // videofunc namespace

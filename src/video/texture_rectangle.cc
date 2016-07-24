@@ -4366,6 +4366,9 @@ double texture_rectangle::compute_image_entropy(
 //   cout << "filter_intensities_flag = " << filter_intensities_flag
 //        << " greyscale_flag = " << greyscale_flag << endl;
 
+   if(pu_stop < pu_start) return 0;
+   if(pv_stop < pv_start) return 0;
+
    int curr_R,curr_G,curr_B;
    double h,s,v;
    vector<int> intensity,filtered_intensity;

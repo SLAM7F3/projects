@@ -1,7 +1,7 @@
 // ========================================================================
-// Program EXTRACT_CHIPS
+// Program AUGMENT_CHIPS
 
-//			./extract_chips
+//			./augment_chips
 
 // ========================================================================
 // Last updated on 7/22/16; 7/23/16
@@ -17,6 +17,7 @@
 #include "geometry/bounding_box.h"
 #include "general/filefuncs.h"
 #include "image/imagefuncs.h"
+#include "numrec/nrfuncs.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
 #include "video/texture_rectangle.h"
@@ -37,19 +38,13 @@ int main( int argc, char** argv )
    timefunc::initialize_timeofday_clock(); 
    std::set_new_handler(sysfunc::out_of_memory);
 
-   bool ignore_hands_flag = true;
+   bool rgb2grey_flag = true;		       // default as of Jun 14
+   double rgb2grey_threshold = 0.2;            // default as of Jun 14
+   double noise_threshold = 0.5;               // default as of Jun 14
 
    string faces_rootdir = "/data/TrainingImagery/faces/";
    string labeled_faces_subdir = faces_rootdir + "images/";
-/*
-   string bbox_labels_filename = labeled_faces_subdir+
-      "labeled_face_hand_bboxes.txt";
-   if(ignore_hands_flag)
-   {
-      bbox_labels_filename = labeled_faces_subdir+"labeled_face_bboxes.txt";
-   }
-*/
-
+//   string bbox_labels_filename = labeled_faces_subdir+"labeled_face_bboxes.txt";
    string bbox_labels_filename = labeled_faces_subdir+
       "labeled_face_bboxes_sans_corrupted_imgs.txt";
    filefunc::ReadInfile(bbox_labels_filename);
@@ -128,12 +123,8 @@ int main( int argc, char** argv )
    annotated_bboxes_map[image_ID_str] = annotated_bboxes;
 
    int face_ID = 0;
-   string output_chips_subdir = "./face_blur_chips/";
-//   string output_chips_subdir = "./face_chips/";
+   string output_chips_subdir = "./augmented_face_chips/";
    filefunc::dircreate(output_chips_subdir);
-   string skinny_chips_subdir = output_chips_subdir+"skinny/";
-   filefunc::dircreate(skinny_chips_subdir);
-   int skinny_px_extent = 15;	 // pixels
 
    int image_counter = 0;
    int n_images = annotated_bboxes_map.size();
@@ -152,7 +143,6 @@ int main( int argc, char** argv )
       string image_filename=labeled_faces_subdir+"image_"+
          image_ID_str+".jpg";
       texture_rectangle* tr_ptr = new texture_rectangle(image_filename, NULL);
-
       int xdim = tr_ptr->getWidth();
       int ydim = tr_ptr->getHeight();
 
@@ -177,48 +167,85 @@ int main( int argc, char** argv )
          py_start = basic_math::max(0, py_start);
          py_stop = basic_math::min(ydim-1, py_stop);
 
-         string output_filename=output_chips_subdir;
+         texture_rectangle* tr2_ptr = new texture_rectangle(
+            xdim, ydim, 1, 3, NULL);
 
-// Segregate image chips whose widths are so small that they are highly 
-// unlikely to be classified correctly:
-
-         if(px_extent <= skinny_px_extent)
+         int n_augmentations_per_chip = 4;
+         for(int a = 0; a < n_augmentations_per_chip; a++)
          {
-            output_filename = skinny_chips_subdir;
-         }
+            tr2_ptr->copy_RGB_values(tr_ptr);
+            
+            int delta_x = 2 * (nrfunc::ran1()-0.5) * 0.25 * px_extent;
 
-         double focus_measure = videofunc::avg_modified_laplacian(
-            px_center - 0.5 * px_extent, px_center + 0.5 * px_extent,
-            py_center - 0.5 * py_extent, py_center + 0.5 * py_extent,
-            tr_ptr);
+// Intentionally bias vertical translation generally in the +gravity
+// direction:
+            int delta_y = (2 * nrfunc::ran1()-1.25) * 0.25 * py_extent;
 
-//         bool filter_intensities_flag = true;
-//         int color_channel_ID = 0;
-//         double entropy = tr_ptr->compute_image_entropy(
-//            px_center - 0.5 * px_extent, px_center + 0.5 * px_extent,
-//            py_center - 0.5 * py_extent, py_center + 0.5 * py_extent,
-//            filter_intensities_flag, color_channel_ID);
-//         double focus_measure = entropy;
+            int qx_start = px_start + delta_x;
+            int qx_stop = px_stop + delta_x;
+            int qy_start = py_start + delta_y;
+            int qy_stop = py_stop + delta_y;
 
-         output_filename = output_filename + 
-            attr_value+"_face_" 
-            +stringfunc::number_to_string(focus_measure)+"_"
-            +stringfunc::integer_to_string(face_ID++,5)
-            +".png";
+            qx_start = basic_math::max(qx_start, 0);
+            qx_stop = basic_math::min(qx_stop, xdim - 1);
+            qy_start = basic_math::max(qy_start, 0);
+            qy_stop = basic_math::min(qy_stop, ydim - 1);
 
-         bool horiz_flipped_flag = false;
-         tr_ptr->write_curr_subframe(
-            px_start, px_stop, py_start, py_stop, output_filename,
-            horiz_flipped_flag);
+            bool horiz_flipped_flag = false;
+            if(a%2==1)
+            {
+               horiz_flipped_flag = true;
+            }
 
-         int max_xdim = 224;
-         int max_ydim = 224;
-         videofunc::downsize_image(output_filename, max_xdim, max_ydim);
+            if(a > 0)
+            {
+               double delta_h = -25 + nrfunc::ran1() * 50;
+               double delta_s = -0.2 + nrfunc::ran1() * 0.4;
+
+// If rgb2grey_flag == true, effectively reset saturation to zero for
+// some relatively small percentage of output tiles:
+
+               if(rgb2grey_flag && nrfunc::ran1() < rgb2grey_threshold)
+               {
+                  delta_s = -1.5;
+               }
+               double delta_v = -0.2 + nrfunc::ran1() * 0.4;
+               
+               tr2_ptr->globally_perturb_hsv(
+                  qx_start, qx_stop, 0, ydim - 1,
+//                   qx_start, qx_stop, qy_start, qy_stop,
+                  delta_h, delta_s, delta_v);
+            }
+
+            if(nrfunc::ran1() >= noise_threshold)
+            {
+               double noise_frac= 0.045 * nrfunc::ran1(); 
+               double sigma = noise_frac * 255;
+               tr2_ptr->add_gaussian_noise(
+                  qx_start, qx_stop, qy_start, qy_stop, sigma);
+            }
+
+            string output_filename=output_chips_subdir + 
+               attr_value+"_face_" 
+               +stringfunc::integer_to_string(face_ID++,5)
+               +".png";
+
+            tr2_ptr->write_curr_subframe(
+               qx_start, qx_stop, qy_start, qy_stop, output_filename,
+               horiz_flipped_flag);
+
+            int max_xdim = 224;
+            int max_ydim = 224;
+            videofunc::downsize_image(output_filename, max_xdim, max_ydim);
+
+         } // loop over index a labeling augmentations
+         delete tr2_ptr;
 
       } // loop over index b labeling bounding boxes for current image
 
       delete tr_ptr;
       image_counter++;
    } // loop over annotated_bboxes_iter
+
 }
 

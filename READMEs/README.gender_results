@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/20/16
+Last updated on 7/20/16; 7/23/16
 ==========================================================================
 
 As of 7/20/16:
@@ -87,3 +87,35 @@ Number of exported validation tiles = 0
 n_positive_example_tiles = 238682
 n_negative_example_tiles = 41716
 
+
+
+Weds July 20, Titan 3:
+
+/data/TrainingImagery/faces/labeled_data/faces_13/
+Wed Jul 20 15:13:08 2016
+
+n_total_images =  13710
+n_training_images = 11910
+n_validation_images = 600
+n_testing_images = 1200
+istart = 0 istop = 11912
+n_training_bboxes = 68108
+n_validation_bboxes = 3271
+n_testing_bboxes = 6979
+Quadrant object classification
+Use scaled training data flag = 1
+Augmented data flag = 1
+Tinting threshold = 0.2
+RGB --> greyscale flag = 1
+Noise threshold = 0.5
+Ignore faces flag = 0
+Ignore hands flag = 1
+Visualize masks flag = 0
+Number of tile samples per positive example #0 (face) bbox = 9
+Number of tile samples per positive example #1 (hand) bbox = 0
+Max tiles per image = 40
+
+Number of exported training tiles = 236576
+Number of exported validation tiles = 0
+n_positive_example_tiles = 192014
+n_negative_example_tiles = 44562

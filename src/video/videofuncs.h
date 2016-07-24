@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for videofunc namespace
 // ==========================================================================
-// Last modified on 1/6/16; 2/14/16; 3/13/16; 3/14/16
+// Last modified on 2/14/16; 3/13/16; 3/14/16; 7/23/16
 // ==========================================================================
 
 #ifndef VIDEOFUNCS_H
@@ -327,7 +327,18 @@ namespace videofunc
       unsigned int px_start, unsigned int px_stop,
       unsigned int py_start, unsigned int py_stop, bool visualize_mask_flag,
       int nontrivial_pixel_value);
-      
+
+// Focus measure methods:
+
+   double modified_laplacian(int px, int py, int pstep, 
+                             texture_rectangle* tr_ptr);
+   double sum_modified_laplacian(int px, int py, int pstep, 
+                                 texture_rectangle* tr_ptr);
+   double avg_modified_laplacian(
+      int px_start, int px_stop, int py_start, int py_stop,
+      texture_rectangle* tr_ptr);
+   double RGB_variance(texture_rectangle* tr_ptr);
+
 // ==========================================================================
 // Inlined methods:
 // ==========================================================================
