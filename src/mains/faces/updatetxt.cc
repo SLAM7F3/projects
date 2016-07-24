@@ -11,7 +11,7 @@
 //                           ./updatetxt
 
 // ====================================================================
-// Last updated on 7/21/16
+// Last updated on 7/21/16; 7/24/16
 // ====================================================================
 
 #include <fstream>
@@ -126,9 +126,9 @@ int main(int argc, char** argv)
    string faces_rootdir = "/data/TrainingImagery/faces/";
    string labeled_faces_subdir = faces_rootdir + "images/";
    string old_bbox_labels_filename = labeled_faces_subdir+
-      "labeled_bboxes_522224137.txt";
+      "labeled_bboxes_522481344.txt";
    string new_bbox_labels_filename = labeled_faces_subdir+
-      "initial_labeled_face_072116_bboxes.txt";
+      "initial_labeled_face_072416_bboxes.txt";
 
    ANNOTATED_BBOXES_MAP old_annotated_bboxes_map, new_annotated_bboxes_map;
    ANNOTATED_BBOXES_MAP::iterator old_annotated_bboxes_iter, 

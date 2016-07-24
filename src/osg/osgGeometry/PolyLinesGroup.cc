@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 7/7/16; 7/8/16; 7/9/16; 7/21/16
+// Last modified on 7/8/16; 7/9/16; 7/21/16; 7/24/16
 // ==========================================================================
 
 #include <iomanip>
@@ -2292,10 +2292,8 @@ void PolyLinesGroup::goto_frame()
 //   cout << "inside PolyLinesGrop::goto_frame()" << endl;
 
    double curr_diag = get_currimage_frame_diag();
-   int first_framenumber = AC_ptr->
-      get_first_framenumber();
-   int last_framenumber = AC_ptr->
-      get_last_framenumber();
+   int first_framenumber = AC_ptr->get_first_framenumber();
+   int last_framenumber = AC_ptr->get_last_framenumber();
    
    int frame_number;
    cout << "Enter framenumber:" << endl;
@@ -2332,6 +2330,13 @@ void PolyLinesGroup::increment_frame()
 {
 //  cout << "inside PolyLinesGrop::increment_frame()" << endl;
 
+   if(AC_ptr->get_curr_framenumber() == AC_ptr->get_last_framenumber())
+   {
+      cout << "Cannot increment frame beyond last framenumber = "
+           << AC_ptr->get_last_framenumber() << endl;
+      return;
+   }
+
    double curr_diag = get_currimage_frame_diag();
    AC_ptr->increment_frame_counter();
    double next_diag = get_currimage_frame_diag();
@@ -2351,6 +2356,13 @@ void PolyLinesGroup::increment_frame()
 void PolyLinesGroup::decrement_frame()
 {
 //   cout << "inside PolyLinesGrop::decrement_frame()" << endl;
+
+   if(AC_ptr->get_curr_framenumber() == AC_ptr->get_first_framenumber())
+   {
+      cout << "Cannot decrement frame before first framenumber = "
+           << AC_ptr->get_first_framenumber() << endl;
+      return;
+   }
 
    double curr_diag = get_currimage_frame_diag();
    AC_ptr->decrement_frame_counter();

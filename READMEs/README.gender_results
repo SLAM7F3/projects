@@ -1,60 +1,58 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/20/16; 7/23/16
+Last updated on 7/20/16; 7/23/16; 7/24/16
 ==========================================================================
 
-As of 7/20/16:
+As of 7/24/16:
 
-imglab --stats all_labeled_face_hand_images.xml
-Number of images: 13710
+ubuntu:images% imglab  --stats alfhi.xml
+Number of images: 13740
 Number of different labels: 2
-Number of non-ignored boxes: 78358
+Number of non-ignored boxes: 78688
 
 Label: face
-   number of images:      10462
-   number of occurrences: 43551
+   number of images:      10492
+   number of occurrences: 43752
    min box area:    1
    max box area:    2.95653e+06
-   mean box area:   11437.7
-   stddev box area: 50742.2
-   mean width/height ratio:   0.786999
-   stddev width/height ratio: 0.23855
+   mean box area:   11387.6
+   stddev box area: 50630.9
+   mean width/height ratio:   0.787305
+   stddev width/height ratio: 0.238317
 
 Label: hand
-   number of images:      8645
-   number of occurrences: 34807
+   number of images:      8671
+   number of occurrences: 34936
    min box area:    1
    max box area:    3.42514e+06
-   mean box area:   6015.9
-   stddev box area: 41774.5
-   mean width/height ratio:   1.06737
-   stddev width/height ratio: 0.523005
+   mean box area:   5994.51
+   stddev box area: 41698.8
+   mean width/height ratio:   1.06864
+   stddev width/height ratio: 0.524913
 
+n_faces = 43730 n_unset_faces = 0 n_male_faces = 20961 n_female_faces = 21050 n_unknown_faces = 1719
+unset_frac = 0 male_frac = 0.479328 female_frac = 0.481363 unknown_frac = 0.0393094
 
-width_10 = 8.01725
-width_20 = 13.1517
-width_25 = 15.9188
-width_30 = 18.824
-width_40 = 24.8387
-width_50 = 30.9734
-width_60 = 38.7591
-width_70 = 50.3642
-width_75 = 57.785
-width_80 = 67.5907
-width_90 = 99.3152
-n_images = 13710
-Number of object bboxes = 43551
+width_10 = 8.02151
+width_20 = 13.0974
+width_25 = 15.8397
+width_30 = 18.715
+width_40 = 24.7056
+width_50 = 30.8453
+width_60 = 38.583
+width_70 = 50.1832
+width_75 = 57.5868
+width_80 = 67.3981
+width_90 = 99.1431
+n_images = 13740
+Number of object bboxes = 43752
 
-
-Face bbox aspect ratio:
-
-mu +/- sigma = 0.773826 +/0 0.212963
-median +/- quartile_width = 0.7443 +/- 0.1054
+Face bbox aspect ratio:  median +/- quartile_width = 0.7447 +/- 0.1054
 
 ===============================================================
 
-Weds Jul 20, Titan 1
+*.  Weds Jul 20, Titan 1
 
 /data/TrainingImagery/faces/labeled_data/faces_13/
 Wed Jul 20 13:38:00 2016
@@ -87,9 +85,7 @@ Number of exported validation tiles = 0
 n_positive_example_tiles = 238682
 n_negative_example_tiles = 41716
 
-
-
-Weds July 20, Titan 3:
+*.  Weds July 20, Titan 3:
 
 /data/TrainingImagery/faces/labeled_data/faces_13/
 Wed Jul 20 15:13:08 2016
@@ -119,3 +115,12 @@ Number of exported training tiles = 236576
 Number of exported validation tiles = 0
 n_positive_example_tiles = 192014
 n_negative_example_tiles = 44562
+
+*.  Sat Jul 23, Titan 1
+
+Gender classification, VGG network, baseline set of O(20K) female + O(20K)
+male faces
+
+  data/caffe/faces/Jul23_vgg_model/train_iter_22126.caffemodel
+
+*.  Sun Jul 24, Titan 1

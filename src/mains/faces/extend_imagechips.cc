@@ -15,7 +15,7 @@
 //                          ./extend_imagechips
 
 // ==========================================================================
-// Last updated on 1/14/16; 1/26/16; 7/23/16
+// Last updated on 1/14/16; 1/26/16; 7/23/16; 7/24/16
 // ==========================================================================
 
 #include <iostream>
@@ -54,16 +54,15 @@ int main(int argc, char *argv[])
    filefunc::dircreate(extended_chips_subdir);
 
    int istart=0;
-//   int istop = 5;
    int istop = image_filenames.size();
    int n_images = istop - istart;
    cout << "n_images within current working subdir = " << n_images << endl;
    
    for(int i = istart; i < istop; i++)
    {
-      outputfunc::update_progress_fraction(i,100,n_images);
+      outputfunc::update_progress_fraction(i,1000,n_images);
 
-      if ((i-istart)%100 == 0)
+      if ((i-istart)%1000 == 0)
       {
          double progress_frac = double(i - istart)/n_images;
          outputfunc::print_elapsed_and_remaining_time(progress_frac);
@@ -71,7 +70,7 @@ int main(int argc, char *argv[])
 
       string basename = filefunc::getbasename(image_filenames[i]);
       string padded_jpg_filename=extended_chips_subdir
-         +stringfunc::prefix(basename)+"_256x256.jpg"
+         +stringfunc::prefix(basename)+"_256x256.jpg";
       string unix_cmd="convert -size 256x256 xc:black ";
       unix_cmd += image_filenames[i];
       unix_cmd += " -gravity center -composite ";

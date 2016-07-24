@@ -1,10 +1,11 @@
-*.o
 *.a
-*.png
+*.o
 *.jpg
 *.meta
+*.png
 *.ps
 *.tgz
+*.xml
 *.*~
 .git/hooks/post-update.sample
 .git/hooks/pre-rebase.sample
