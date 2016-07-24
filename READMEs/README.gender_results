@@ -85,6 +85,8 @@ Number of exported validation tiles = 0
 n_positive_example_tiles = 238682
 n_negative_example_tiles = 41716
 
+Finished training
+
 *.  Weds July 20, Titan 3:
 
 /data/TrainingImagery/faces/labeled_data/faces_13/
@@ -116,11 +118,20 @@ Number of exported validation tiles = 0
 n_positive_example_tiles = 192014
 n_negative_example_tiles = 44562
 
+Finished training
+
 *.  Sat Jul 23, Titan 1
 
 Gender classification, VGG network, baseline set of O(20K) female + O(20K)
 male faces
 
+Finished training
+
   data/caffe/faces/Jul23_vgg_model/train_iter_22126.caffemodel
 
 *.  Sun Jul 24, Titan 1
+
+Gender classification, VGG network, augmented set of O(4 * 20K) female +
+O(4 * 20K) male faces
+
+Started training on Titan 1 around 12:55 pm on Sun, Jul 24.

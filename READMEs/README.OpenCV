@@ -1,8 +1,10 @@
 ========================================================================
 OpenCV installation notes
 ========================================================================
-Last updated on 1/12/16; 1/13/16; 1/20/16; 2/14/16
+Last updated on 1/13/16; 1/20/16; 2/14/16; 7/24/16
 ========================================================================
+
+
 
 Create ./build subdir within original OpenCV directory.  From within this
 build subdir, chant
@@ -19,6 +21,7 @@ cmake -D BUILD_EXAMPLES=ON -D CMAKE_BUILD_TYPE=RELEASE \
 -D CMAKE_C_COMPILER=/usr/bin/gcc \
 -D CMAKE_CXX_COMPILER=/usr/bin/g++ ../
 
+
 In order to build a minimal version of OpenCV-2.4.10 on Thinkmate for
 compatability with Tho's custom version of Caffe, we used the following
 cmake command:
@@ -33,6 +36,9 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
 -D WITH_CUDA=OFF \
 -D CMAKE_C_COMPILER=/usr/bin/gcc \
 -D CMAKE_CXX_COMPILER=/usr/bin/g++ ../
+
+Note: As of 7/24/16, we were able to build opencv-2.4.10 on both Titan1 and
+Titan3 with this above command and no further changes.
 
 We also had to manually edge rgbdodometry.cpp as follows:
 

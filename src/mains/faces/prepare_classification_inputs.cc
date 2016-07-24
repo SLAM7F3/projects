@@ -1,16 +1,15 @@
 // ==========================================================================
-// Program PREPARE_CLASSIFICATION_INPUTS imports a set of text and
-// non-text image chips from a specified subdirectory.  It generates a
+// Program PREPARE_CLASSIFICATION_INPUTS imports a set of face and
+// non-face image chips from a specified subdirectory.  It generates a
 // text file containing the image chip files' full pathnames vs their
-// class IDs.  Upper and lower case letters are assigned the same
-// class IDs.  PREPARE_CLASSIFICATION_INPUTS then shuffles the pairs of
-// pathnames vs class IDs multiple times.  The shuffled text file
-// becomes an input to Caffe fine-tuning of VGG-16/Alexnet networks.
+// class IDs.  PREPARE_CLASSIFICATION_INPUTS then shuffles the pairs
+// of pathnames vs class IDs multiple times.  The shuffled text file
+// becomes an input to Caffe fine-tuning of VGG-16/Resnet networks.
 
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/22/16; 7/23/16
+// Last updated on 7/22/16; 7/23/16; 7/24/16
 // ==========================================================================
 
 #include <iostream>
@@ -44,7 +43,8 @@ int main(int argc, char *argv[])
 
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string dated_subdir = "Jul22_vgg/";
+   string dated_subdir = "Jul24_vgg_augmented/";
+//   string dated_subdir = "Jul22_vgg/";
    string training_images_subdir = face_chips_subdir+dated_subdir;
    cout << "Specified training_images_subdir = " << training_images_subdir
         << endl;
@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
    bool male_female = true;
    if(male_female)
    {
-      unix_cmd="ln -s "+faces_subdir+"male_female.classes "+
-         faces_subdir+"object_names.classes";
+      unix_cmd="ln -s "+faces_subdir+"male_female.classes "
+         +faces_subdir+"object_names.classes";
    }
    sysfunc::unix_command(unix_cmd);
 
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
    unsigned int istart=0;
    unsigned int istop = image_filenames.size();
    
-   string output_subdir="/"+dated_subdir;
+   string output_subdir="/image_chips/"+dated_subdir;
    for(unsigned int i = istart; i < istop; i++)
    {
       string basename = filefunc::getbasename(image_filenames[i]);

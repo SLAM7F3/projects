@@ -1,8 +1,36 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 1/20/16; 2/24/16; 2/29/16; 6/8/16
+Last updated on 2/24/16; 2/29/16; 6/8/16; 7/24/16
 =============================================================================
+
+*.  On 7/24/16, we had to install Cuda-7.5 onto Titan 3.  We needed to kill
+the X-server running on Titan 3 before the cuda installation script could
+work.  So we chanted
+
+	sudo service gdm stop
+
+After cuda 7.5 installed, we started gdm & X again on Titan 3 by chanting
+
+	sudo service gdm start
+
+*.  On 7/24/16, we compiled Tho's latest caffe_custom on our Thinkmate.  We
+had to make the following modifications before caffe_custom would build:
+
+1.  Uncomment out ANACONDA references in Makefile.config
+
+2.  Reset ANACONDA_HOME --> /usr/local/anaconda in Makefile.config
+
+3.  Within caffe's Makefile (not Makefile.config), need to add opencv_imgcodecs
+(Note added on Feb 24, 2016:  We still need to manually add
+opencv_imgcodecs into caffe_custom's Makefile since Tho continues to use
+OpenCV-2.4.10 rather than OpenCV-3.1.0)
+
+
+ifeq ($(USE_OPENCV), 1)
+	LIBRARIES += opencv_core opencv_highgui opencv_imgproc opencv_imgcodecs
+endif
+
 
 *.  On 6/8/16, we compiled Tho's caffe_custom on our Thinkmate after making
 NO changes to his Makefile.config file.  Everything compiled and linked fine!

@@ -86,3 +86,35 @@ chips:
 
                          ./extend_imagechips
 
+
+After extended image chips are created, move them into a new subdir of 
+/data/caffe/faces/image_chips/:
+
+e.g. mv ./extended_chips/*.* /data/caffe/faces/image_chips/Jul24_vgg_augmented/
+
+
+*.  Program $faces_root/PREPARE_CLASSIFICATION_INPUTS imports a set of face
+and non-face image chips from a specified subdirectory.  It generates a
+text file containing the image chip files' full pathnames vs their class
+IDs.  PREPARE_CLASSIFICATION_INPUTS then shuffles the pairs of pathnames vs
+class IDs multiple times.  The shuffled text file becomes an input to Caffe
+fine-tuning of VGG-16/Resnet networks.
+
+                    ./prepare_classification_inputs
+
+--------------------------
+RUNNING CAFFE FINETUNING
+--------------------------
+
+*.  Within $caffe/experiments, unpack new_faces_experiment.tgz.  Then
+rename the unpacked "new_faces/" subdir to a new folder containing today's
+date:
+
+		e.g. mv new_faces ./072416_mf_faces
+
+Be sure $caffe/experiments/DATED_TEXT_DIR/list/VGG16/dataset.txt points to
+LATEST version of shuffled training/validation input imagery text file
+within /data/peter_stuff/imagery/syntext !
+
+*.  Unpack image chips into a dated subdir of
+/data/peter_stuff/imagery/faces/image_chips/
