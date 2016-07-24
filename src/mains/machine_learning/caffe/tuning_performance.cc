@@ -8,7 +8,7 @@
 //			   tuning_performance
 
 // ==========================================================================
-// Last updated on 1/16/15; 1/18/15; 1/19/15
+// Last updated on 1/16/15; 1/18/15; 1/19/15; 7/24/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -57,12 +57,11 @@ int main(int argc, char* argv[])
 // "Batch" size for training data specified within
 // config/vgg128_large_fov/train.prototxt
 
-   int n_images_per_iteration = 30;	
-
+   int n_images_per_iteration = 64;	
    double n_iters_per_epoch = n_images_per_epoch / n_images_per_iteration; 
 					// 66 iters = 1 epoch for 2K images
 
-   double validation_frac = 0.2; //  20% of all labeled images are reserved for validation
+   double validation_frac = 0.1; //  10% of all labeled images are reserved for validation
    int n_training_images = n_images_per_epoch;
    int n_validation_images = validation_frac / (1 - validation_frac) * n_training_images;
 
@@ -72,7 +71,10 @@ int main(int argc, char* argv[])
    cout << "20 epochs = " << 20 * n_iters_per_epoch << " iterations" << endl;
 					// 1333 iters for 2K images
 
-   string log_filename="./caffe.bin.INFO";
+   string faces_data_subdir = "/data/caffe/faces/";
+   string trained_models_subdir = faces_data_subdir+"trained_models/";
+   string dated_subdir = trained_models_subdir+"Jul22_vgg/";
+   string log_filename=dated_subdir+"caffe.bin.INFO";
 //   string log_filename="/data/deeplab/caffe.bin.INFO";
    bool strip_comments_flag = false;
    filefunc::ReadInfile(log_filename, strip_comments_flag);
