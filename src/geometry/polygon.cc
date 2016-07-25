@@ -504,7 +504,6 @@ threevector polygon::compute_COM()
    return COM;
 }
 
-
 threevector polygon::compute_2D_COM()
 {
    cout << "inside polygon::compute_2D_COM()" << endl;
