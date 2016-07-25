@@ -8,7 +8,7 @@
 //			   tuning_performance
 
 // ==========================================================================
-// Last updated on 1/16/15; 1/18/15; 1/19/15; 7/24/16
+// Last updated on 1/18/15; 1/19/15; 7/24/16; 7/25/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -73,9 +73,9 @@ int main(int argc, char* argv[])
 
    string faces_data_subdir = "/data/caffe/faces/";
    string trained_models_subdir = faces_data_subdir+"trained_models/";
-   string dated_subdir = trained_models_subdir+"Jul22_vgg/";
+//   string dated_subdir = trained_models_subdir+"Jul22_43K/";
+   string dated_subdir = trained_models_subdir+"Jul24_174K_augmented/";
    string log_filename=dated_subdir+"caffe.bin.INFO";
-//   string log_filename="/data/deeplab/caffe.bin.INFO";
    bool strip_comments_flag = false;
    filefunc::ReadInfile(log_filename, strip_comments_flag);
    cout << "filefunc::text_line.size() = " << filefunc::text_line.size() 

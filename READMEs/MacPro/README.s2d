@@ -1,0 +1,46 @@
+=============================================================================
+S2D notes
+=============================================================================
+Last updated on 7/25/16
+=============================================================================
+
+*.  S2D build file sits in ~/sputnik/pwin/app/bld/s2d_build.c
+
+*.  Load background aerial raster imagery either via a call to lod-tree or
+else to GDAL.  If latter, must first open raster_t struct via call like
+
+  //get raster image data
+  if (strlen(vrt_file) == 0){
+    if (!prj_get_keypath(prj, "leica", vrt_file)){
+      log_abort("no vrt file specified in commandline or project");
+    }
+    else log_info("retrieved vrt file %s from project", vrt_file);
+  }
+  raster = raster_gdal_open(vrt_file, &prj->model.grid.grid);
+
+
+Later need to free raster_t struct.  
+
+*.  Given a raster_t struct, call to perform actual raster loading is
+something like
+
+ static int s2d_get_ortho_image(raster_gdal_t *raster, int level_in, int xin, int yin,
+                               double margin, p_image_rgb ortho)
+{
+  int retval;
+  raster_tile_t tile = { level_in, xin, yin };
+
+  retval = raster_gdal_read_margin(raster, &tile, ortho, RASTER_CUBIC, margin);
+
+
+*.  Michael's suggested input arguments to a general-purpose 2D raster
+editing method:
+
+project, tile, shape
+
+*.  "Export" and "Repl" filenames for input and output S2D building
+rectangles:
+
+prj_sxd_get_export_filename(prj, "s2d", level, x, y, outputfile);
+
+prj_sxd_get_repl_filename(prj, "s2d", level, x, y, outputfile);

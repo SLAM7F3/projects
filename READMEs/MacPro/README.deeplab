@@ -99,8 +99,6 @@ train.prototxt sets
 We cannot change network architecture (e.g. VGG_16) if we want to
 initialize neural network parameters based upon previous ImageNet training.
 
-
-
 *.  pwin command to run John Wood's image chip + segmentation mask
 generation program (appropriate for relatively localized 2D objects such as
 house numbers & faces)

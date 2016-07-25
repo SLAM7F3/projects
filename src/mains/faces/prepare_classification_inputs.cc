@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/22/16; 7/23/16; 7/24/16
+// Last updated on 7/22/16; 7/23/16; 7/24/16; 7/25/16
 // ==========================================================================
 
 #include <iostream>
@@ -43,8 +43,8 @@ int main(int argc, char *argv[])
 
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string dated_subdir = "Jul24_vgg_augmented/";
-//   string dated_subdir = "Jul22_vgg/";
+   string dated_subdir = "Jul22_43K/";
+//   string dated_subdir = "Jul24_174K_augmented/";
    string training_images_subdir = face_chips_subdir+dated_subdir;
    cout << "Specified training_images_subdir = " << training_images_subdir
         << endl;

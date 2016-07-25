@@ -1,7 +1,7 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 2/24/16; 2/29/16; 6/8/16; 7/24/16
+Last updated on 2/29/16; 6/8/16; 7/24/16; 7/25/16
 =============================================================================
 
 *.  After lots of hacking, we were able to compile and run caffe_custom on
@@ -374,12 +374,13 @@ train/test prototxt files.
 
 *.  Need to copy sub.sed into caffe_custom root dir in order to use John
 Wood's very nice template files for finetuning caffe networks.  Make sure
-sub.sed includes TEST_INTERVAL, TEST_ITER and MAX_ITER vars!
+sub.sed includes TEST_INTERVAL, TEST_ITER, MAX_ITER, TRAIN_BATCH and
+TEST_BATCH vars!
 
 Contents of sub.sed:
 
 
-'s,${DATA_ROOT},'"${DATA_ROOT}"',g;s,${DATA_ROOT1},'"${DATA_ROOT1}"',g;s,${EXP},'"${EXP}"',g;s,${EXP1},'"${EXP1}"',g;s,${TRAIN_SET},'"${TRAIN_SET}"',g;s,${TRAIN_SET1},'"${TRAIN_SET1}"',g;s,${TRAIN_SET1_WEAK},'"${TRAIN_SET1_WEAK}"',g;s,${TRAIN_SET1_STRONG},'"${TRAIN_SET1_STRONG}"',g;s,${TEST_SET},'"${TEST_SET}"',g;s,${NET_ID},'"${NET_ID}"',g;s,${FEATURE_DIR},'"${FEATURE_DIR}"',g;s,${NUM_LABELS},'"${NUM_LABELS}"',g;s,${NUM_LABELS1},'"${NUM_LABELS1}"',g;s,${NUM_LABELS_UNION},'"${NUM_LABELS_UNION}"',g;s,${BG_BIAS},'"${BG_BIAS}"',g;s,${FG_BIAS},'"${FG_BIAS}"',g;s,${TRAIN_SET_STRONG},'"${TRAIN_SET_STRONG}"',g;s,${TRAIN_SET_WEAK},'"${TRAIN_SET_WEAK}"',g;s,${BATCH_SIZE},'"${BATCH_SIZE}"',g;s,${TEST_SET_PREFIX},'"${TEST_SET_PREFIX}"',g;s,${TRAIN_STEP},'"${TRAIN_STEP}"',g;s,${TEST_INTERVAL},'"${TEST_INTERVAL}"',g;s,${TEST_ITER},'"${TEST_ITER}"',g;s,${MAX_ITER},'"${MAX_ITER}"',g'
+'s,${DATA_ROOT},'"${DATA_ROOT}"',g;s,${DATA_ROOT1},'"${DATA_ROOT1}"',g;s,${EXP},'"${EXP}"',g;s,${EXP1},'"${EXP1}"',g;s,${TRAIN_SET},'"${TRAIN_SET}"',g;s,${TRAIN_SET1},'"${TRAIN_SET1}"',g;s,${TRAIN_SET1_WEAK},'"${TRAIN_SET1_WEAK}"',g;s,${TRAIN_SET1_STRONG},'"${TRAIN_SET1_STRONG}"',g;s,${TEST_SET},'"${TEST_SET}"',g;s,${NET_ID},'"${NET_ID}"',g;s,${FEATURE_DIR},'"${FEATURE_DIR}"',g;s,${NUM_LABELS},'"${NUM_LABELS}"',g;s,${NUM_LABELS1},'"${NUM_LABELS1}"',g;s,${NUM_LABELS_UNION},'"${NUM_LABELS_UNION}"',g;s,${BG_BIAS},'"${BG_BIAS}"',g;s,${FG_BIAS},'"${FG_BIAS}"',g;s,${TRAIN_SET_STRONG},'"${TRAIN_SET_STRONG}"',g;s,${TRAIN_SET_WEAK},'"${TRAIN_SET_WEAK}"',g;s,${BATCH_SIZE},'"${BATCH_SIZE}"',g;s,${TEST_SET_PREFIX},'"${TEST_SET_PREFIX}"',g;s,${TRAIN_STEP},'"${TRAIN_STEP}"',g;s,${TEST_INTERVAL},'"${TEST_INTERVAL}"',g;s,${TEST_ITER},'"${TEST_ITER}"',g;s,${MAX_ITER},'"${MAX_ITER}"',g;s,${TRAIN_BATCH},'"${TRAIN_BATCH}"',g;s,${TEST_BATCH},'"${TEST_BATCH}"',g'
 
 
 *.  John's caffe sessions for semantic segmentation and finetuning of HOV's
