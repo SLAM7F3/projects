@@ -514,6 +514,11 @@ flyover website and visualize its network:
 This visualization also helps to uncover syntax errors in the prototxt
 file.
 
+
+Public version: See http://ethereon.github.io/netscope/#/editor
+Press "shift-enter" in order to update network architecture display.
+
+
 *.  On 6/9/16, John Wood helped us convert the original test.prototxt file
 for the Deeplab-ver2 VGG-16 model into a form that we could use with our
 C++ inference codes.  He told us to make the following changes:

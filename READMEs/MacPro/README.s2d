@@ -44,3 +44,30 @@ rectangles:
 prj_sxd_get_export_filename(prj, "s2d", level, x, y, outputfile);
 
 prj_sxd_get_repl_filename(prj, "s2d", level, x, y, outputfile);
+
+
+For example, following file contains rectangles automatically extracted:
+
+/gpfs/mercury11/supersize/data/san_francisco/san_francisco_2015_s2d/s2d/export_footprints/11/609/s2d_609_870.shape
+
+688 UTM10N,EGM96
+poly 4 0 0 prop: no_tilebd_vert 2 prop: height 5.886353 prop: class ROOF prop: class_id 2 prop: spr_type 1 prop: quality 0.918715 prop: geo_id 10330243503483
+4176706.9104003906 543745.2014160156 -12.3846993384
+4176714.5056152344 543744.8278808594 -12.3846993384
+4176715.1281738281 543761.7614746094 -12.3846993384
+4176707.6574707031 543762.0104980469 -12.3846993384
+poly 4 0 1 prop: no_tilebd_vert 0 prop: height 6.725464 prop: class ROOF prop: class_id 2 prop: spr_type 1 prop: quality 0.956976 prop: geo_id 10390243503483
+4176707.6574707031 543720.0500488281 -10.0334136275
+4176708.0310058594 543727.2717285156 -10.0334136275
+4176697.8210449219 543727.6452636719 -10.0334136275
+4176697.4475097656 543720.4235839844 -10.0334136275
+poly 4 0 2 prop: no_tilebd_vert 0 prop: height 8.171387 prop: class ROOF prop: class_id 2 prop: spr_type 1 prop: quality 0.674401 prop: geo_id 10000243603481
+4176936.7590332031 543316.5075683594 -0.8599937558
+4176948.8366699219 543311.9006347656 -0.8599937558
+4176952.6965332031 543321.8615722656 -0.8599937558
+4176940.6188964844 543326.5930175781 -0.8599937558
+
+*.  See sxd_lod_load() within sxd_lod_tree.c for an example of calling
+m2d_shape_read() which Michael says parses his shape files.
+
+

@@ -401,3 +401,16 @@ towards the following fine-tuned AlexNet to use for traffic sign clustering
 based upon global fc7-layer descriptors:
 
 /startown-gpfs/ssdws03/devdata/pr_models/road_sign/20151023_caffenet/20151023_caffenet_c293_caffenet_iter_100000.caffemodel
+
+*.  On 7/25/16, John Wood told us that we need to add "weight_filler" and
+"bias_filler" entries into convolution and fully-connected layers within
+train_base.prototxt in order to control how nodes in these layers are
+randomly initialized.
+
+*.  On 7/25/16, John Wood told us to look for netscope editor online in
+order to generate nice plots of DNN architectures.
+
+*.  On 7/25/16, John Wood told us that for classification rather than image
+segmentation, "type:" = "Data" in the very first data layer definition
+rather than IMAGE_SEG_DATA.  We also should not have a label_type = PIXEL
+entry the data layer definition!
