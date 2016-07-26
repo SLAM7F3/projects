@@ -1,7 +1,7 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 2/29/16; 6/8/16; 7/24/16; 7/25/16
+Last updated on 6/8/16; 7/24/16; 7/25/16; 7/26/16
 =============================================================================
 
 *.  After lots of hacking, we were able to compile and run caffe_custom on
@@ -379,9 +379,7 @@ TEST_BATCH vars!
 
 Contents of sub.sed:
 
-
 's,${DATA_ROOT},'"${DATA_ROOT}"',g;s,${DATA_ROOT1},'"${DATA_ROOT1}"',g;s,${EXP},'"${EXP}"',g;s,${EXP1},'"${EXP1}"',g;s,${TRAIN_SET},'"${TRAIN_SET}"',g;s,${TRAIN_SET1},'"${TRAIN_SET1}"',g;s,${TRAIN_SET1_WEAK},'"${TRAIN_SET1_WEAK}"',g;s,${TRAIN_SET1_STRONG},'"${TRAIN_SET1_STRONG}"',g;s,${TEST_SET},'"${TEST_SET}"',g;s,${NET_ID},'"${NET_ID}"',g;s,${FEATURE_DIR},'"${FEATURE_DIR}"',g;s,${NUM_LABELS},'"${NUM_LABELS}"',g;s,${NUM_LABELS1},'"${NUM_LABELS1}"',g;s,${NUM_LABELS_UNION},'"${NUM_LABELS_UNION}"',g;s,${BG_BIAS},'"${BG_BIAS}"',g;s,${FG_BIAS},'"${FG_BIAS}"',g;s,${TRAIN_SET_STRONG},'"${TRAIN_SET_STRONG}"',g;s,${TRAIN_SET_WEAK},'"${TRAIN_SET_WEAK}"',g;s,${BATCH_SIZE},'"${BATCH_SIZE}"',g;s,${TEST_SET_PREFIX},'"${TEST_SET_PREFIX}"',g;s,${TRAIN_STEP},'"${TRAIN_STEP}"',g;s,${TEST_INTERVAL},'"${TEST_INTERVAL}"',g;s,${TEST_ITER},'"${TEST_ITER}"',g;s,${MAX_ITER},'"${MAX_ITER}"',g;s,${TRAIN_BATCH},'"${TRAIN_BATCH}"',g;s,${TEST_BATCH},'"${TEST_BATCH}"',g'
-
 
 *.  John's caffe sessions for semantic segmentation and finetuning of HOV's
 are sitting in
@@ -393,7 +391,6 @@ explicitly add /opt/boost/include to INCLUDE_DIRS in addition to
 /opt/boost/lit within LIBRARY_DIRS inside the Makefile.config of
 caffe_public.  The public version of caffe then compiled fine on M6700 and
 passed all tests with no problems.
-
 
 *.  Trained caffe models are sitting in subfolders of
 /startown-gpfs/ssdws03/devdata/pr_models/.  On 2/29/16, Weiyu pointed us
@@ -414,3 +411,6 @@ order to generate nice plots of DNN architectures.
 segmentation, "type:" = "Data" in the very first data layer definition
 rather than IMAGE_SEG_DATA.  We also should not have a label_type = PIXEL
 entry the data layer definition!
+
+*.  Make sure to include an accuracy layer with train_base.prototxt for
+BOTH the training and testing phases!

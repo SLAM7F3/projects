@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/20/16; 7/23/16; 7/24/16; 7/25/16
+Last updated on 7/23/16; 7/24/16; 7/25/16; 7/26/16
 ==========================================================================
 
 As of 7/24/16:
@@ -168,11 +168,50 @@ Gender classification, VGG network, baseline set of O(20K) female + O(20K)
 male faces
 
 Finished training
-/data/caffe/faces/Jul23_vgg_model/train_iter_22126.caffemodel
+/data/caffe/faces/trained_models/Jul22_43K_vgg/train_iter_22126.caffemodel
+Learning curve validation accuracy around 82.3%
 
 *.  Sun Jul 24, Titan 1
 
 Gender classification, VGG network, augmented set of O(4 * 20K) female +
 O(4 * 20K) male faces
 
-Started training on Titan 1 around 12:55 pm on Sun, Jul 24.
+Started training on Titan 1 around 12:55 pm on Sun, Jul 24.  This model did
+finish training, but we lost it!  At least we have its tuning performance
+curves.  Learning curve validation accuracy around 84.5%
+
+*.  Mon Jul 25, Titan 3, early afternoon
+
+Gender classification, 6 layer face network following model of Levi and
+Hassner in "Age and Gender Classification using Convolution Neural
+Networks", baseline set of O(20K) female + O(20K) male faces
+
+/data/caffe/faces/trained_models/Jul25_43K_face_6layers_T3/train_iter_13000.caffemodel
+Learning curve validation accuracy around 69.3
+
+*.  Mon Jul 25, Titan 1, early evening
+
+Gender classification, 7 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.001
+
+/data/caffe/faces/trained_models/Jul25_43K_face_7layers_T1/train_iter_31000.caffemodel
+Learning curve validation accuracy around 61.8%
+
+*.  Tues Jul 26, Titan 1, 6:10 am
+
+Gender classification, 7 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.0003, accuracy
+layer added for training phase
+
+Training started around 6:15 am on Tues, July 26
+
+
+*.  Tues Jul 26, Titan 3, 6:30 am
+
+Gender classification, 7 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.0003, accuracy
+layer added for training phase, 512 --> 256 nodes within fc layers.
+
+Training started around 6:30 am on Tues, July 26
+
+
