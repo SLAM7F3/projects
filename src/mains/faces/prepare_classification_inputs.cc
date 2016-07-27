@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string dated_subdir = "Jul22_43K/";
+   string dated_subdir = "Jul27_96x96_41K/";
+//   string dated_subdir = "Jul22_43K/";
 //   string dated_subdir = "Jul24_174K_augmented/";
    string training_images_subdir = face_chips_subdir+dated_subdir;
    cout << "Specified training_images_subdir = " << training_images_subdir
@@ -108,7 +109,8 @@ int main(int argc, char *argv[])
 
    string input_filename = output_filename;
    string tmp_shuffled_filename;
-   int n_shuffles = 10;
+//   int n_shuffles = 50;
+   int n_shuffles = 100;
 
    string shuffled_filename=faces_subdir;
    if(male_female)

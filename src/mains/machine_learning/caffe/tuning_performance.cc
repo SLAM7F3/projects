@@ -57,10 +57,9 @@ int main(int argc, char* argv[])
 // "Batch" size for training data specified within within TRAIN_BATCH
 // variable in our network dated run script:
 
-   int n_training_images_per_iteration = 32;	
+   int n_training_images_per_iteration = 100;	
    double n_iters_per_epoch = 
       n_training_images_per_epoch / n_training_images_per_iteration; 
-   // 1306 iters = 1 epoch for 43K images
 
    double validation_frac = 0.1; //  10% of all labeled images are reserved for validation
    int n_training_images = n_training_images_per_epoch;
@@ -76,7 +75,10 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Jul26_43K_face_13layers_T1/";
+      "Jul27_41K_face_7layers_50dropout_0.01br_T3/";
+//      "Jul27_41K_face_7layers_66dropout_T1/";
+//      "Jul27_41K_face_7layers_T1/";
+//      "Jul26_43K_face_13layers_T1/";
 //      "Jul26_43K_face_7layers_fc512nodes_T1/";
 //   string dated_subdir = trained_models_subdir+"Jul25_43K_face_7layers_T1/";
 //   string dated_subdir = trained_models_subdir+"Jul25_43K_face_6layers_T3/";
