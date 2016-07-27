@@ -201,17 +201,66 @@ Learning curve validation accuracy around 61.8%
 
 Gender classification, 7 layer face network "mini VGG", baseline set of
 O(20K) female + O(20K) male faces, base learning rate = 0.0003, accuracy
-layer added for training phase
+layer added for training phase, 512 nodes within fc layers
 
 Training started around 6:15 am on Tues, July 26
-
 
 *.  Tues Jul 26, Titan 3, 6:30 am
 
 Gender classification, 7 layer face network "mini VGG", baseline set of
 O(20K) female + O(20K) male faces, base learning rate = 0.0003, accuracy
-layer added for training phase, 512 --> 256 nodes within fc layers.
+layer added for training phase, 256 nodes within fc layers.
 
 Training started around 6:30 am on Tues, July 26
 
+We expect training for 10 epochs = 13K iterations should take around 6 hours
 
+Note:  We abandoned both Tues early morning training sessions when we
+realised these models had O(400M) params !
+
+*.  Tues Jul 26, Titan 1, 8:10 am
+
+Gender classification, 13 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.0003, accuracy
+layer added for training phase
+
+Network showed NO signs of training after 20+ epochs!
+Perhaps learning rate is too high.  And maybe O(1M) weights is not enough.
+
+*.  Tues Jul 26, Titan 3, 8:10 am
+
+Gender classification, 13 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.001, accuracy
+layer added for training phase
+
+Ran out of disk space on Titan 3 !!!
+
+*.  Tues Jul 26, Titan 1, 12 pm
+
+Gender classification, 13 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.0001, accuracy
+layer added for training phase
+
+Increase number of weights per layer compared to 8 am test.  
+Results around 5 pm are awful - no better than chance
+
+*.  Tues Jul 26, Titan 3, 12 pm
+
+Gender classification, 13 layer face network "mini VGG", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.001, accuracy
+layer added for training phase
+
+Increase number of weights per layer compared to 8 am test.  
+Results around 5 pm are awful - no better than chance
+
+*.  Tues Jul 26, Titan 1, 5:30 pm
+
+Gender classification, VGG with training from scratch", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.001, accuracy
+layer added for training phase
+
+*.  Tues Jul 26, Titan 3, 5:21 pm
+
+Gender classification, VGG with training from scratch", baseline set of
+O(20K) female + O(20K) male faces, base learning rate = 0.0001, accuracy
+layer added for training phase

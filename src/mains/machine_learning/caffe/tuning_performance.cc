@@ -48,31 +48,36 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-   int n_images_per_epoch = 41821;  // O(43K) unaugmented face gender images 
+   int n_training_images_per_epoch = 41821;  
+                      // O(43K) unaugmented face gender images 
 //   cout << "Enter number of training images per epoch (e.g. 2000 for mini, 20000 for full)"
 //	<< endl;
 //   cin >> n_images_per_epoch;
 
-// "Batch" size for training data specified within
-// config/vgg128_large_fov/train.prototxt
+// "Batch" size for training data specified within within TRAIN_BATCH
+// variable in our network dated run script:
 
-   int n_images_per_iteration = 64;	
-   double n_iters_per_epoch = n_images_per_epoch / n_images_per_iteration; 
-   // 66 iters = 1 epoch for 2K images
+   int n_training_images_per_iteration = 32;	
+   double n_iters_per_epoch = 
+      n_training_images_per_epoch / n_training_images_per_iteration; 
+   // 1306 iters = 1 epoch for 43K images
 
    double validation_frac = 0.1; //  10% of all labeled images are reserved for validation
-   int n_training_images = n_images_per_epoch;
+   int n_training_images = n_training_images_per_epoch;
    int n_validation_images = validation_frac / (1 - validation_frac) * n_training_images;
 
-   cout << "n_images_per_epoch = " << n_images_per_epoch << endl;
-   cout << "n_images_per_iteration = " << n_images_per_iteration << endl;
-   cout << "n_iters_per_epoch = " << n_iters_per_epoch << endl;
+   cout << "n_training_images_per_epoch = " 
+        << n_training_images_per_epoch << endl;
+   cout << "n_training_images_per_iteration = " 
+        << n_training_images_per_iteration << endl;
+   cout << "n_iterations_per_epoch = " << n_iters_per_epoch << endl;
 
    string faces_data_subdir = "/data/caffe/faces/";
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Jul26_43K_face_7layers_fc512nodes_T1/";
+      "Jul26_43K_face_13layers_T1/";
+//      "Jul26_43K_face_7layers_fc512nodes_T1/";
 //   string dated_subdir = trained_models_subdir+"Jul25_43K_face_7layers_T1/";
 //   string dated_subdir = trained_models_subdir+"Jul25_43K_face_6layers_T3/";
 //   string dated_subdir = trained_models_subdir+"Jul24_174K_augmented_vgg/";
@@ -249,12 +254,12 @@ int main(int argc, char* argv[])
    validation_metafile.openmetafile();
    validation_metafile.write_header();
 
-   validation_metafile.set_legendlabel("Validation accuracy");
-   validation_metafile.write_curve(validation_epoch, validation_accuracy_0, 
-                                   colorfunc::red);
    validation_metafile.set_legendlabel("Training accuracy");
    validation_metafile.write_curve(training_epoch, training_accuracy_0, 
                                    colorfunc::blue);
+   validation_metafile.set_legendlabel("Validation accuracy");
+   validation_metafile.write_curve(validation_epoch, validation_accuracy_0, 
+                                   colorfunc::red);
 
    validation_metafile.set_legendlabel("");
 
