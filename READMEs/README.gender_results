@@ -337,6 +337,10 @@ training phase, Dropout added into all layers of network.  Dropout
 probability of node being ignore start small and increase to 0.5 towards
 end of network.
 
+After 100 epochs, we observe that inserting dropout into all layers of the
+face network significantly reduces overfitting.  And asymptotic validation
+accuracy is still around 81%.
+
 *.  Thurs, Jul 28, Titan 3 around 6:07 am
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
@@ -344,3 +348,54 @@ Gender classification, new 7-layer face net, baseline set of O(20K) female
 training phase; Two fully-connected layers dropout node probabilities
 kept at default 0.5 values.  Weight decay regularization coeff increased
 from default 0.0005 to 0.0050.
+
+After 100 epochs, we observe that increasing weight decay definitely
+reduces overfitting.  But it yields an asymptotic validation accuracy
+around 78% whch is less than that for the face model with more dropout but
+lower weight decay.
+
+*.  Thurs Jul 28, Titan 1 around 7:10 am
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Xavier rather than gaussian initialization of node
+weights.
+
+Xavier weight initialization definitely does not work (at least in
+custom-caffe)!  
+
+*.  Thurs Jul 28, Titan 1 around 7:30 am
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.
+
+Increased number of nodes in each layer by 32.
+Weight decay = 0.0005
+Slightly greater overfitting compared to lower-capacity network
+Validation accuracy asymptotes around 81%
+
+*.  Thurs Jul 28, Titan 3 around 7:40 am
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.
+
+Increased number of nodes in each layer by 32.
+Weight decay = 0.0010
+Slightly greater overfitting compared to lower-capacity network.  But
+perhaps somewhat less due than the weight decay = 0.0005 case.
+Validation accuracy asymptotes around 81%
+
+Conclusion:  If we use a higher-capacity network, we should probably
+increase weight decay to partially counter overfitting.
+
+
+
+

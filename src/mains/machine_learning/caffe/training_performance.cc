@@ -76,7 +76,11 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Jul27_41K_face_7layers_80-95dropout/";
+      "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
+//      "Jul28_41K_7layers_AllDrop_more_capacity/";
+//       "Jul28_41K_7layers_0.005wd_T3/";
+//      "Jul28_41K_7layers_AllLayersDropout_T1/";
+//       "Jul27_41K_face_7layers_80-95dropout/";
 //       "Jul27_41K_face_7layers_50dropout_0.01br_T3/";
 //      "Jul27_41K_face_7layers_66dropout_T1/";
 //      "Jul27_41K_face_7layers_T1/";
@@ -96,6 +100,8 @@ int main(int argc, char* argv[])
    int batch_size = -1;
    double curr_epoch, base_learning_rate = -1;
    double weight_decay;
+   double min_time_in_secs = 9.9E32;
+   double max_time_in_secs = -min_time_in_secs;
    vector<double> training_epoch;
    vector<double> validation_iter, validation_epoch;
    vector<double> training_accuracy, smoothed_training_accuracy;
@@ -148,6 +154,17 @@ int main(int argc, char* argv[])
          training_epoch.push_back(curr_epoch);
          double curr_loss = stringfunc::string_to_number(substrings[8]);
          loss.push_back(curr_loss);
+         string timestamp = substrings[1];
+         vector<string> substrings = 
+            stringfunc::decompose_string_into_substrings(timestamp, ":");
+         int hours = stringfunc::string_to_number(substrings[0]);
+         int minutes = stringfunc::string_to_number(substrings[1]);
+         double seconds = stringfunc::string_to_number(substrings[2]);
+         double curr_time_in_secs = hours * 3600 + minutes * 60 + seconds;
+         min_time_in_secs = basic_math::min(
+            min_time_in_secs, curr_time_in_secs);
+         max_time_in_secs = basic_math::max(
+            max_time_in_secs, curr_time_in_secs);
       }
       else if (substrings[4] == "Train" && substrings[5] == "net" 
                && substrings[6] == "output" && substrings[8] == "accuracy")
@@ -177,6 +194,16 @@ int main(int argc, char* argv[])
    cout << "validation_accuracy.size = " << validation_accuracy.size() 
         << endl;
    cout << "loss.sizes = " << loss.size() << endl;
+
+   double elapsed_time_in_secs = max_time_in_secs - min_time_in_secs;
+   double frac_day = elapsed_time_in_secs / (3600*24);
+   int hours, minutes;
+   double secs;
+   timefunc::frac_day_to_hms(frac_day, hours, minutes, secs);
+   string training_time_str = " Training time: "+
+      stringfunc::number_to_string(hours)+" hrs "+
+      stringfunc::number_to_string(minutes)+" mins ";
+   cout << training_time_str << endl;
 
 // Temporally smooth noisy training_accuracy values:
 
@@ -229,7 +256,7 @@ int main(int argc, char* argv[])
    string batch_size_str = "Batch size="+stringfunc::number_to_string(
       batch_size);
    string solver_str = solver_type+" solver";
-   string subtitle = n_images_str + "; "+base_learning_rate_str+"; "
+   string subtitle = training_time_str + "; "+base_learning_rate_str+"; "
       +weight_decay_str+"; "+batch_size_str;
    loss_metafile.set_subtitle(subtitle);
    
@@ -276,7 +303,7 @@ int main(int argc, char* argv[])
 
    n_images_str = stringfunc::number_to_string(n_validation_images)+
       " validation images";
-   subtitle = n_images_str + "; "+base_learning_rate_str+"; "
+   subtitle = training_time_str + "; "+base_learning_rate_str+"; "
       +weight_decay_str+"; "+batch_size_str;
    accuracy_metafile.set_subtitle(subtitle);
 
