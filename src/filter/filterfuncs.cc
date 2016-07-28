@@ -67,7 +67,7 @@ namespace filterfunc
          for (int n=0; n<n_hbins; n++)
          {
             h[n] /= hsum;
-            cout << "n = " << n << " h[n] = " << h[n] << endl;
+//            cout << "n = " << n << " h[n] = " << h[n] << endl;
          }
 //         outputfunc::enter_continue_char();
       }

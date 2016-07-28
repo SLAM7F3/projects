@@ -21,6 +21,7 @@
 
 #include "math/basic_math.h"
 #include "general/filefuncs.h"
+#include "filter/filterfuncs.h"
 #include "plot/metafile.h"
 #include "math/mypolynomial.h"
 #include "math/prob_distribution.h"
@@ -94,9 +95,10 @@ int main(int argc, char* argv[])
    string solver_type="SGD";
    int batch_size = -1;
    double curr_epoch, base_learning_rate = -1;
+   double weight_decay;
    vector<double> training_epoch;
    vector<double> validation_iter, validation_epoch;
-   vector<double> training_accuracy;
+   vector<double> training_accuracy, smoothed_training_accuracy;
    vector<double> validation_accuracy;
    vector<double> loss;
    for(unsigned int i = 0; i < filefunc::text_line.size(); i++)
@@ -129,6 +131,10 @@ int main(int argc, char* argv[])
       else if(substrings[0] == "solver_type:"){
          solver_type = substrings[1];
          cout << "solver_type = " << solver_type << endl;
+      }
+      else if(substrings[0] == "weight_decay:"){
+         weight_decay = stringfunc::string_to_number(substrings[1]);
+         cout << "weight_decay = " << weight_decay << endl;
       }
 
       if(substrings.size() < 8) continue;
@@ -172,6 +178,20 @@ int main(int argc, char* argv[])
         << endl;
    cout << "loss.sizes = " << loss.size() << endl;
 
+// Temporally smooth noisy training_accuracy values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   filterfunc::brute_force_filter(
+      training_accuracy, h, smoothed_training_accuracy, 
+      wrap_around_input_values);
+
    prob_distribution loss_prob(loss,50);
    double almost_max_loss = loss_prob.find_x_corresponding_to_pcum(0.995);
 
@@ -184,24 +204,33 @@ int main(int argc, char* argv[])
    string learning_curves_subdir="./learning_curves/";
    filefunc::dircreate(learning_curves_subdir);
    string lr_str = "_lr_"+stringfunc::number_to_string(base_learning_rate);
+   string wd_str = "_wd_"+stringfunc::number_to_string(weight_decay);
    string training_imgs_str = "_"+stringfunc::number_to_string(n_training_images/1000)+"K_training_imgs";
    string meta_filename=learning_curves_subdir+"loss_function"+training_imgs_str+lr_str+"_"+solver_type;
 
+   string horizontal_label="Training-from-scratch epoch";
+   if(caffe_model_name != "caffe")
+   {
+      horizontal_label = "Fine tuning epoch from pre-trained "+
+         caffe_model_name+" model";
+   }
+   
    loss_metafile.set_parameters(
-      meta_filename,"Fine-tuning loss vs model training",
-      "Fine tuning epoch from pre-trained "+caffe_model_name+" model",
-      "Training metrics",
+      meta_filename,"Loss vs model training",
+      horizontal_label, "Loss function value",
       0, training_epoch.back(), 0.0, almost_max_loss, 0.2, 0.1);
 
    string n_images_str = stringfunc::number_to_string(n_training_images)
       +" training images";
    string base_learning_rate_str = "Base learning rate="
       +stringfunc::number_to_string(base_learning_rate);
+   string weight_decay_str = "Weight decay="
+      +stringfunc::number_to_string(weight_decay);
    string batch_size_str = "Batch size="+stringfunc::number_to_string(
       batch_size);
    string solver_str = solver_type+" solver";
    string subtitle = n_images_str + "; "+base_learning_rate_str+"; "
-      +solver_str+"; "+batch_size_str;
+      +weight_decay_str+"; "+batch_size_str;
    loss_metafile.set_subtitle(subtitle);
    
    loss_metafile.openmetafile();
@@ -241,15 +270,14 @@ int main(int argc, char* argv[])
       validation_imgs_str+lr_str+"_"+solver_type;
 
    accuracy_metafile.set_parameters(
-      meta_filename,"Fine-tuning accuracy vs model training",
-      "Fine tuning epoch from pre-trained "+caffe_model_name+" model",
-      "Validation metrics",
+      meta_filename,"Model accuracy vs model training",
+      horizontal_label, "Model accuracy",
       0, training_epoch.back(), 0.0, 1.0, 0.2, 0.1);
 
    n_images_str = stringfunc::number_to_string(n_validation_images)+
       " validation images";
-   subtitle = n_images_str + "; "+base_learning_rate_str+"; "+solver_str
-      +"; "+batch_size_str;
+   subtitle = n_images_str + "; "+base_learning_rate_str+"; "
+      +weight_decay_str+"; "+batch_size_str;
    accuracy_metafile.set_subtitle(subtitle);
 
    accuracy_metafile.openmetafile();
@@ -258,6 +286,9 @@ int main(int argc, char* argv[])
    accuracy_metafile.set_legendlabel("Training accuracy");
    accuracy_metafile.write_curve(training_epoch, training_accuracy, 
                                    colorfunc::blue);
+   accuracy_metafile.set_legendlabel("Smoothed training accuracy");
+   accuracy_metafile.write_curve(training_epoch, smoothed_training_accuracy, 
+                                   colorfunc::cyan);
    accuracy_metafile.set_legendlabel("Validation accuracy");
    accuracy_metafile.write_curve(validation_epoch, validation_accuracy, 
                                    colorfunc::red);
@@ -274,6 +305,5 @@ int main(int argc, char* argv[])
 
    banner="Exported "+meta_filename+".jpg";
    outputfunc::write_banner(banner);
-
 }
 
