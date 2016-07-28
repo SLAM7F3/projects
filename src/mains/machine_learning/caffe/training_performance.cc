@@ -1,14 +1,14 @@
 // ==========================================================================
-// Program TUNING_PERFORMANCE imports a caffe.bin.INFO file generated
+// Program TRAINING_PERFORMANCE imports a caffe.bin.INFO file generated
 // by caffe finetuning run on a GPU machine.  It plots the loss
 // function as a function of training epoch number for the training
 // set.  It also plots the accuracy value as a function of training
 // epoch number for the training and validation sets.
 
-//			   tuning_performance
+//			   training_performance
 
 // ==========================================================================
-// Last updated on 1/19/16; 7/24/16; 7/25/16; 7/26/16
+// Last updated on 7/24/16; 7/25/16; 7/26/16; 7/28/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -75,7 +75,8 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Jul27_41K_face_7layers_50dropout_0.01br_T3/";
+      "Jul27_41K_face_7layers_80-95dropout/";
+//       "Jul27_41K_face_7layers_50dropout_0.01br_T3/";
 //      "Jul27_41K_face_7layers_66dropout_T1/";
 //      "Jul27_41K_face_7layers_T1/";
 //      "Jul26_43K_face_13layers_T1/";
@@ -95,10 +96,8 @@ int main(int argc, char* argv[])
    double curr_epoch, base_learning_rate = -1;
    vector<double> training_epoch;
    vector<double> validation_iter, validation_epoch;
-   vector<double> training_accuracy_0, training_accuracy_1, 
-      training_accuracy_2;
-   vector<double> validation_accuracy_0, validation_accuracy_1, 
-      validation_accuracy_2;
+   vector<double> training_accuracy;
+   vector<double> validation_accuracy;
    vector<double> loss;
    for(unsigned int i = 0; i < filefunc::text_line.size(); i++)
    {
@@ -150,7 +149,7 @@ int main(int argc, char* argv[])
          double curr_accuracy = stringfunc::string_to_number(substrings[10]);
          if(substrings[7] == "#0:")
          {
-            training_accuracy_0.push_back(curr_accuracy);
+            training_accuracy.push_back(curr_accuracy);
          }
       }
       else if (substrings[4] == "Test" && substrings[5] == "net" 
@@ -159,7 +158,7 @@ int main(int argc, char* argv[])
          double curr_accuracy = stringfunc::string_to_number(substrings[10]);
          if(substrings[7] == "#0:")
          {
-            validation_accuracy_0.push_back(curr_accuracy);
+            validation_accuracy.push_back(curr_accuracy);
             validation_epoch.push_back(curr_epoch);
          }
       }
@@ -167,20 +166,20 @@ int main(int argc, char* argv[])
    } // loop over index i labeling imported logfile text lines
 
    cout << "training_epoch.size = " << training_epoch.size() << endl;
-   cout << "training_accuracy_0.size = " << training_accuracy_0.size() << endl;
+   cout << "training_accuracy.size = " << training_accuracy.size() << endl;
    cout << "validation_epoch.size = " << validation_epoch.size() << endl;
-   cout << "validation_accuracy_0.size = " << validation_accuracy_0.size() 
+   cout << "validation_accuracy.size = " << validation_accuracy.size() 
         << endl;
    cout << "loss.sizes = " << loss.size() << endl;
 
    prob_distribution loss_prob(loss,50);
    double almost_max_loss = loss_prob.find_x_corresponding_to_pcum(0.995);
 
-// Plot training loss versus training epoch number
+// Plot training loss versus epoch number
 
-   metafile training_metafile;
-   training_metafile.set_thickness(2);
-   training_metafile.set_legend_flag(true);
+   metafile loss_metafile;
+   loss_metafile.set_thickness(2);
+   loss_metafile.set_legend_flag(true);
 
    string learning_curves_subdir="./learning_curves/";
    filefunc::dircreate(learning_curves_subdir);
@@ -188,7 +187,7 @@ int main(int argc, char* argv[])
    string training_imgs_str = "_"+stringfunc::number_to_string(n_training_images/1000)+"K_training_imgs";
    string meta_filename=learning_curves_subdir+"loss_function"+training_imgs_str+lr_str+"_"+solver_type;
 
-   training_metafile.set_parameters(
+   loss_metafile.set_parameters(
       meta_filename,"Fine-tuning loss vs model training",
       "Fine tuning epoch from pre-trained "+caffe_model_name+" model",
       "Training metrics",
@@ -203,16 +202,16 @@ int main(int argc, char* argv[])
    string solver_str = solver_type+" solver";
    string subtitle = n_images_str + "; "+base_learning_rate_str+"; "
       +solver_str+"; "+batch_size_str;
-   training_metafile.set_subtitle(subtitle);
+   loss_metafile.set_subtitle(subtitle);
    
-   training_metafile.openmetafile();
-   training_metafile.write_header();
+   loss_metafile.openmetafile();
+   loss_metafile.write_header();
 
-   training_metafile.set_legendlabel("Loss");
-   training_metafile.write_curve(training_epoch, loss, colorfunc::orange);
+   loss_metafile.set_legendlabel("Loss");
+   loss_metafile.write_curve(training_epoch, loss, colorfunc::orange);
 
-   training_metafile.set_legendlabel("");
-   training_metafile.closemetafile();
+   loss_metafile.set_legendlabel("");
+   loss_metafile.closemetafile();
 
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
@@ -223,11 +222,11 @@ int main(int argc, char* argv[])
    banner="Exported "+meta_filename+".jpg";
    outputfunc::write_banner(banner);
 
-// Plot validation accuracies versus training epoch number
+// Plot training and validation accuracies versus epoch number:
 
-   metafile validation_metafile;
-   validation_metafile.set_thickness(2);
-   validation_metafile.set_legend_flag(true);
+   metafile accuracy_metafile;
+   accuracy_metafile.set_thickness(2);
+   accuracy_metafile.set_legend_flag(true);
 
    string validation_imgs_str;
    if(n_validation_images/1000 >= 1){
@@ -241,7 +240,7 @@ int main(int argc, char* argv[])
    meta_filename=learning_curves_subdir+"accuracy"+
       validation_imgs_str+lr_str+"_"+solver_type;
 
-   validation_metafile.set_parameters(
+   accuracy_metafile.set_parameters(
       meta_filename,"Fine-tuning accuracy vs model training",
       "Fine tuning epoch from pre-trained "+caffe_model_name+" model",
       "Validation metrics",
@@ -251,21 +250,21 @@ int main(int argc, char* argv[])
       " validation images";
    subtitle = n_images_str + "; "+base_learning_rate_str+"; "+solver_str
       +"; "+batch_size_str;
-   validation_metafile.set_subtitle(subtitle);
+   accuracy_metafile.set_subtitle(subtitle);
 
-   validation_metafile.openmetafile();
-   validation_metafile.write_header();
+   accuracy_metafile.openmetafile();
+   accuracy_metafile.write_header();
 
-   validation_metafile.set_legendlabel("Training accuracy");
-   validation_metafile.write_curve(training_epoch, training_accuracy_0, 
+   accuracy_metafile.set_legendlabel("Training accuracy");
+   accuracy_metafile.write_curve(training_epoch, training_accuracy, 
                                    colorfunc::blue);
-   validation_metafile.set_legendlabel("Validation accuracy");
-   validation_metafile.write_curve(validation_epoch, validation_accuracy_0, 
+   accuracy_metafile.set_legendlabel("Validation accuracy");
+   accuracy_metafile.write_curve(validation_epoch, validation_accuracy, 
                                    colorfunc::red);
 
-   validation_metafile.set_legendlabel("");
+   accuracy_metafile.set_legendlabel("");
 
-   validation_metafile.closemetafile();
+   accuracy_metafile.closemetafile();
 
    banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);

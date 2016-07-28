@@ -10,4 +10,4 @@
 ~/bin/MAKE program=parse_leveldb
 ~/bin/MAKE program=parse_lmdb
 ~/bin/MAKE program=relabel_non_chips
-~/bin/MAKE program=tuning_performance
+~/bin/MAKE program=training_performance

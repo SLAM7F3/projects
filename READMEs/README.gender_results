@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/24/16; 7/25/16; 7/26/16; 7/27/16
+Last updated on 7/25/16; 7/26/16; 7/27/16; 7/28/16
 ==========================================================================
 
 As of 7/24/16:
@@ -309,18 +309,38 @@ Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces, base learning rate = 0.010, accuracy layer added for
 training phase, Drop ratios retained at default 0.5
 
-validation accuracy asymptotes to 80%.  Converge seems somewhat faster but
+Validation accuracy asymptotes to 80%.  Converge seems somewhat faster but
 not better than previous case where base learning rate = 0.003.
 
 *.  Weds Jul 27, Titan 1 around 3:45 pm
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces, base learning rate = 0.003, accuracy layer added for
-training phase, Two dropout ratios increased to 0.80.
+training phase, Two dropout node probabilities increased to 0.80.
 
+Network takes longer to reach same asymptotic validation accuracy of around
+81%
 
 *.  Weds Jul 27, Titan 3 around noontime
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces, base learning rate = 0.010, accuracy layer added for
-training phase, Two dropout ratios incrased to 0.95
+training phase, Two dropout node probabilities incrased to 0.95.  
+
+Catastrophically bad results for accuracy.  
+
+*.  Thurs Jul 28, Titan 1 around 6 am
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probability of node being ignore start small and increase to 0.5 towards
+end of network.
+
+*.  Thurs, Jul 28, Titan 3 around 6:07 am
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.010, accuracy layer added for
+training phase; Two fully-connected layers dropout node probabilities
+kept at default 0.5 values.  Weight decay regularization coeff increased
+from default 0.0005 to 0.0050.

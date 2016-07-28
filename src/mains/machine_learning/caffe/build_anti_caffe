@@ -10,4 +10,4 @@
 /bin/rm ./parse_leveldb
 /bin/rm ./parse_lmdb
 /bin/rm ./relabel_non_chips
-/bin/rm ./tuning_performance
+/bin/rm ./training_performance
