@@ -1,7 +1,7 @@
 =============================================================================
 PWIN notes
 =============================================================================
-Last updated on 1/17/15; 4/19/16; 6/1/16; 7/22/16
+Last updated on 4/19/16; 6/1/16; 7/22/16; 7/28/16
 =============================================================================
 
 *.  In order to avoid having to chant "c3 lab_pcho" at a pwin command
@@ -799,3 +799,35 @@ STL vector reserve call.  [2] actually populates the da with zero-valued
 entries.  In general, we should ALWAYS call da_create() whenever we have a
 dynamic array as a field inside some struct which we cannot initialize
 using {} as we always do for local-variable da's.  
+
+*.  On 7/28/16, Weiyu showed us that we can use da_add_empty() to
+effectively create and retrieve a pointer from a dynamic array.  We may
+then work with the retrieved pointer by first dynamically allocated any
+memory which the new object needs and then populating its member fields.
+We should NOT destroy any part of the new object when we leave the method
+which created the new pointer.  
+
+For example in m2d_to_polygons() inside s2d_edit_gui.c, 
+
+for(p = 0; p < n_polygons; p++){
+    m2d_poly_t *curr_m2d_polygon = darray_get(&m2d_shape->poly, p);
+    darray_t m2d_vertices = curr_m2d_polygon->vert;
+    int v, n_vertices = darray_size(&m2d_vertices);
+
+    polygon_t *curr_polygon = da_add_empty(&gui_group->polygon_list);
+    g_polygon_initialize(curr_polygon);
+    curr_polygon->n_vertices = n_vertices;
+
+    for(v = 0; v < n_vertices; v++){
+      m2d_vertex_t *curr_m2d_vertex = darray_get(&m2d_vertices, v);
+      g_pos3_t V;
+      g_set3(&V, curr_m2d_vertex->x, curr_m2d_vertex->y, curr_m2d_vertex->z);
+      da_add(&curr_polygon->verts3d, &V);
+    } // loop over index v labeling vertices within curr_m2d_polygon
+
+    curr_polygon->id = p;
+    curr_polygon->z = g_polygon_3d_z(&curr_polygon->verts3d);
+    g_polygon_3d_to_2d(&curr_polygon->verts3d, &curr_polygon->verts2d);
+  } // loop over index p labeling polygons in m2d_shape
+
+
