@@ -1,10 +1,19 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/25/16; 7/26/16; 7/27/16; 7/28/16
+Last updated on 7/26/16; 7/27/16; 7/28/16; 7/29/16
 ==========================================================================
 
-As of 7/24/16:
+As of 7/24/16, ID_strings for corrupted images which OSG cannot import:
+
+ID_str = 00725
+ID_str = 01054
+ID_str = 02762
+ID_str = 03257
+
+We stopped labeling face genders on Sunday, 7/24/16/ using our
+attribute_images tool.  Statistics as of 7/24/16 for our personally
+attributed images:
 
 ubuntu:images% imglab  --stats alfhi.xml
 Number of images: 13740
@@ -33,6 +42,10 @@ Label: hand
 
 n_faces = 43730 n_unset_faces = 0 n_male_faces = 20961 n_female_faces = 21050 n_unknown_faces = 1719
 unset_frac = 0 male_frac = 0.479328 female_frac = 0.481363 unknown_frac = 0.0393094
+
+16933 female + 3937 = 20870 female
+16498 male + 4453 skinny male = 20951 male
+
 
 width_10 = 8.02151
 width_20 = 13.0974
@@ -406,6 +419,9 @@ probabilities of nodes being ignored start small and increase to 0.5 toward
 end of network.  Gaussian initialize of all node weights.
 Weight decay = 0.0005.  4x augmented imagery set.
 
+Validation accuracy asymptotes around 86%
+
+
 *.  Thurs Jul 28, Titan 3 around 2 pm
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
@@ -416,6 +432,5 @@ end of network.  Gaussian initialize of all node weights.  Increased number
 of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
 set.
 
-
-
+Validation accuracy asymptotes around 87%
 

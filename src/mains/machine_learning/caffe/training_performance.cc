@@ -76,7 +76,10 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
+//      "Jul28_174K_7layers_AllDrop_T1/";
+        "Jul28_174K_7layers_AllDrop_morecap_0.001wd_T3/";
+//       "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
+//       "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
 //      "Jul28_41K_7layers_AllDrop_more_capacity/";
 //       "Jul28_41K_7layers_0.005wd_T3/";
 //      "Jul28_41K_7layers_AllLayersDropout_T1/";

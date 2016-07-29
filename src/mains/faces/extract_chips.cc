@@ -1,10 +1,10 @@
 // ========================================================================
-// Program EXTRACT_CHIPS
+// Program EXTRACT_CHIPS 
 
 //			./extract_chips
 
 // ========================================================================
-// Last updated on 7/22/16; 7/23/16
+// Last updated on 7/22/16; 7/23/16; 7/29/16
 // ========================================================================
 
 #include <fstream>
@@ -37,19 +37,8 @@ int main( int argc, char** argv )
    timefunc::initialize_timeofday_clock(); 
    std::set_new_handler(sysfunc::out_of_memory);
 
-   bool ignore_hands_flag = true;
-
    string faces_rootdir = "/data/TrainingImagery/faces/";
    string labeled_faces_subdir = faces_rootdir + "images/";
-/*
-   string bbox_labels_filename = labeled_faces_subdir+
-      "labeled_face_hand_bboxes.txt";
-   if(ignore_hands_flag)
-   {
-      bbox_labels_filename = labeled_faces_subdir+"labeled_face_bboxes.txt";
-   }
-*/
-
    string bbox_labels_filename = labeled_faces_subdir+
       "labeled_face_bboxes_sans_corrupted_imgs.txt";
    filefunc::ReadInfile(bbox_labels_filename);
@@ -101,10 +90,6 @@ int main( int argc, char** argv )
          {
             bbox_color = colorfunc::red;
          }
-         else if(bbox_label == "hand")
-         {
-            bbox_color = colorfunc::cyan;
-         }
 
          curr_bbox.set_label(bbox_label);
          curr_bbox.set_color(bbox_color);
@@ -128,12 +113,16 @@ int main( int argc, char** argv )
    annotated_bboxes_map[image_ID_str] = annotated_bboxes;
 
    int face_ID = 0;
-   string output_chips_subdir = "./face_blur_chips/";
-//   string output_chips_subdir = "./face_chips/";
+//   string output_chips_subdir = "./face_blur_chips/";
+   string output_chips_subdir = "./face_chips/";
    filefunc::dircreate(output_chips_subdir);
-   string skinny_chips_subdir = output_chips_subdir+"skinny/";
-   filefunc::dircreate(skinny_chips_subdir);
-   int skinny_px_extent = 15;	 // pixels
+
+   string female_chips_subdir = output_chips_subdir+"female/";
+   filefunc::dircreate(female_chips_subdir);
+   string male_chips_subdir = output_chips_subdir+"male/";
+   filefunc::dircreate(male_chips_subdir);
+   string unknown_chips_subdir = output_chips_subdir+"unknown/";
+   filefunc::dircreate(unknown_chips_subdir);
 
    int image_counter = 0;
    int n_images = annotated_bboxes_map.size();
@@ -151,13 +140,23 @@ int main( int argc, char** argv )
       vector<bounding_box> bboxes = annotated_bboxes_iter->second;
       string image_filename=labeled_faces_subdir+"image_"+
          image_ID_str+".jpg";
-      texture_rectangle* tr_ptr = new texture_rectangle(image_filename, NULL);
-
-      int xdim = tr_ptr->getWidth();
-      int ydim = tr_ptr->getHeight();
 
       for(unsigned int b = 0; b < bboxes.size(); b++)
       {
+         texture_rectangle* tr_ptr = new texture_rectangle(
+            image_filename, NULL);
+         int xdim = tr_ptr->getWidth();
+         int ydim = tr_ptr->getHeight();
+
+// Black out all face bboxes other than current one within current
+// image:
+
+         for(unsigned int b2 = 0; b2 < bboxes.size(); b2++)
+         {
+            if(b2 == b) continue;
+            tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
+         }
+
          bounding_box curr_bbox = bboxes[b];
          string attr_key = "gender";
          string attr_value = curr_bbox.get_attribute_value(attr_key);
@@ -177,20 +176,10 @@ int main( int argc, char** argv )
          py_start = basic_math::max(0, py_start);
          py_stop = basic_math::min(ydim-1, py_stop);
 
-         string output_filename=output_chips_subdir;
-
-// Segregate image chips whose widths are so small that they are highly 
-// unlikely to be classified correctly:
-
-         if(px_extent <= skinny_px_extent)
-         {
-            output_filename = skinny_chips_subdir;
-         }
-
-         double focus_measure = videofunc::avg_modified_laplacian(
-            px_center - 0.5 * px_extent, px_center + 0.5 * px_extent,
-            py_center - 0.5 * py_extent, py_center + 0.5 * py_extent,
-            tr_ptr);
+//         double focus_measure = videofunc::avg_modified_laplacian(
+//            px_center - 0.5 * px_extent, px_center + 0.5 * px_extent,
+//            py_center - 0.5 * py_extent, py_center + 0.5 * py_extent,
+//            tr_ptr);
 
 //         bool filter_intensities_flag = true;
 //         int color_channel_ID = 0;
@@ -200,9 +189,9 @@ int main( int argc, char** argv )
 //            filter_intensities_flag, color_channel_ID);
 //         double focus_measure = entropy;
 
-         output_filename = output_filename + 
+         string output_filename = output_chips_subdir + attr_value+"/" +
             attr_value+"_face_" 
-            +stringfunc::number_to_string(focus_measure)+"_"
+//            +stringfunc::number_to_string(focus_measure)+"_"
             +stringfunc::integer_to_string(face_ID++,5)
             +".png";
 
@@ -211,13 +200,17 @@ int main( int argc, char** argv )
             px_start, px_stop, py_start, py_stop, output_filename,
             horiz_flipped_flag);
 
-         int max_xdim = 224;
-         int max_ydim = 224;
+         delete tr_ptr;
+
+//         int max_xdim = 224;
+//         int max_ydim = 224;
+         int max_xdim = 96;
+         int max_ydim = 96;
          videofunc::downsize_image(output_filename, max_xdim, max_ydim);
 
       } // loop over index b labeling bounding boxes for current image
 
-      delete tr_ptr;
+
       image_counter++;
    } // loop over annotated_bboxes_iter
 }

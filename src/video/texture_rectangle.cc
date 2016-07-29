@@ -2801,6 +2801,33 @@ void texture_rectangle::draw_pixel_bbox(
    }
 }
 
+void texture_rectangle::fill_pixel_bbox(
+   const bounding_box& bbox,int R, int G, int B)
+{
+   unsigned int px_min=bbox.get_xmin();
+   unsigned int px_max=bbox.get_xmax();
+   unsigned int py_min=bbox.get_ymin();
+   unsigned int py_max=bbox.get_ymax();
+   
+   fill_pixel_bbox(px_min,px_max,py_min,py_max,R,G,B);
+}
+
+void texture_rectangle::fill_pixel_bbox(
+   unsigned int px_min,unsigned int px_max,
+   unsigned int py_min,unsigned int py_max,
+   int R,int G,int B)
+{
+   for(unsigned int py = py_min; py <= py_max; py++)
+   {
+      if(py < 0 || py >= getHeight()) continue;
+      for (unsigned int px=px_min; px<=px_max; px++)
+      {
+         if(px < 0 || px >= getWidth()) continue;
+         set_pixel_RGB_values(px,py,R,G,B);
+      }
+   }
+}
+
 // ========================================================================
 // RGB color to greyscale conversion member functions
 // ========================================================================

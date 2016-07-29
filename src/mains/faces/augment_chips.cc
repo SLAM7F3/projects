@@ -4,7 +4,7 @@
 //			./augment_chips
 
 // ========================================================================
-// Last updated on 7/22/16; 7/23/16
+// Last updated on 7/22/16; 7/23/16; 7/29/16
 // ========================================================================
 
 #include <fstream>
@@ -59,6 +59,14 @@ int main( int argc, char** argv )
    bool first_image_flag = true;
    string image_ID_str = "";
    vector<bounding_box> annotated_bboxes;
+   int n_total_bboxes = 0;
+   int n_female_bboxes = 0;
+   int n_male_bboxes = 0;
+   int n_unknown_bboxes = 0;
+   int n_training_bboxes = 0;
+   int n_validation_bboxes = 0;
+   int n_testing_bboxes = 0;
+
    for(unsigned int i = 0; i < filefunc::text_line.size(); i++)
    {
       string curr_line=filefunc::text_line[i];
@@ -116,15 +124,90 @@ int main( int argc, char** argv )
 
          curr_bbox.set_ID(annotated_bboxes.size());
          annotated_bboxes.push_back(curr_bbox);
+
+         n_total_bboxes++;
+         string gender = curr_bbox.get_attribute_value("gender");
+         if(gender=="female")
+         {
+            n_female_bboxes++;
+         }
+         else if(gender=="male")
+         {
+            n_male_bboxes++;
+         }
+         else if(gender=="unknown")
+         {
+            n_unknown_bboxes++;
+         }
+
+// Reserve 2.5% of all known bboxes for validation and 7.5% for
+// testing.  The remaining 90% of known bboxes are marked for
+// training:
+
+         string attr_key = "classification_type";
+         string attr_value = "training";
+         double tvt = nrfunc::ran1();
+         if(tvt < 0.025)
+         {
+            attr_value = "validation";
+            n_validation_bboxes++;
+         }
+         else if (tvt >= 0.025 && tvt < 0.10)
+         {
+            attr_value = "testing";
+            n_testing_bboxes++;
+         }
+         else
+         {
+            n_training_bboxes++;
+         }
+         
+         curr_bbox.set_attribute_value(attr_key, attr_value);
       } // substrings[0] == "Image:" conditional
    } // loop over index i labeling lines in detections text file
 
    // Save final image info into data structures
    annotated_bboxes_map[image_ID_str] = annotated_bboxes;
 
+   int n_known_bboxes = n_total_bboxes - n_unknown_bboxes;
+   
+   cout << "n_total_bboxes = " << n_total_bboxes << endl;
+   cout << "n_female_bboxes = " << n_female_bboxes << endl;
+   cout << "n_male_bboxes = " << n_male_bboxes << endl;
+   cout << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
+
+   cout << "n_known_bboxes = " << n_known_bboxes << endl;
+   cout << "n_training_bboxes = " << n_training_bboxes << endl;
+   cout << "n_validation_bboxes = " << n_validation_bboxes << endl;
+   cout << "n_testing_bboxes = " << n_testing_bboxes << endl;
+
    int face_ID = 0;
    string output_chips_subdir = "./augmented_face_chips/";
    filefunc::dircreate(output_chips_subdir);
+   string unknown_chips_subdir = output_chips_subdir+"unknown/";
+   filefunc::dircreate(unknown_chips_subdir);
+
+   string training_chips_subdir = output_chips_subdir+"training/";
+   filefunc::dircreate(training_chips_subdir);
+   string validation_chips_subdir = output_chips_subdir+"validation/";
+   filefunc::dircreate(validation_chips_subdir);
+   string testing_chips_subdir = output_chips_subdir+"testing/";
+   filefunc::dircreate(testing_chips_subdir);
+
+   string female_training_chips_subdir = training_chips_subdir+"female/";
+   filefunc::dircreate(female_training_chips_subdir);
+   string male_training_chips_subdir = training_chips_subdir+"male/";
+   filefunc::dircreate(male_training_chips_subdir);
+
+   string female_validation_chips_subdir = validation_chips_subdir+"female/";
+   filefunc::dircreate(female_validation_chips_subdir);
+   string male_validation_chips_subdir = validation_chips_subdir+"male/";
+   filefunc::dircreate(male_validation_chips_subdir);
+
+   string female_testing_chips_subdir = testing_chips_subdir+"female/";
+   filefunc::dircreate(female_testing_chips_subdir);
+   string male_testing_chips_subdir = testing_chips_subdir+"male/";
+   filefunc::dircreate(male_testing_chips_subdir);
 
    int image_counter = 0;
    int n_images = annotated_bboxes_map.size();
@@ -142,15 +225,19 @@ int main( int argc, char** argv )
       vector<bounding_box> bboxes = annotated_bboxes_iter->second;
       string image_filename=labeled_faces_subdir+"image_"+
          image_ID_str+".jpg";
-      texture_rectangle* tr_ptr = new texture_rectangle(image_filename, NULL);
-      int xdim = tr_ptr->getWidth();
-      int ydim = tr_ptr->getHeight();
 
       for(unsigned int b = 0; b < bboxes.size(); b++)
       {
+         texture_rectangle* tr_ptr = new texture_rectangle(
+            image_filename, NULL);
+         int xdim = tr_ptr->getWidth();
+         int ydim = tr_ptr->getHeight();
+
+
          bounding_box curr_bbox = bboxes[b];
-         string attr_key = "gender";
-         string attr_value = curr_bbox.get_attribute_value(attr_key);
+         string gender_value = curr_bbox.get_attribute_value("gender");
+         string classification_value = curr_bbox.get_attribute_value(
+            "classification_type");
 
          double mag_factor = 2;
          int px_center = curr_bbox.get_xcenter();
@@ -170,16 +257,25 @@ int main( int argc, char** argv )
          texture_rectangle* tr2_ptr = new texture_rectangle(
             xdim, ydim, 1, 3, NULL);
 
-         int n_augmentations_per_chip = 4;
+         int n_augmentations_per_chip = 1;
+         if(classification_value == "training")
+         {
+            n_augmentations_per_chip = 5;
+         }
          for(int a = 0; a < n_augmentations_per_chip; a++)
          {
             tr2_ptr->copy_RGB_values(tr_ptr);
             
-            int delta_x = 2 * (nrfunc::ran1()-0.5) * 0.25 * px_extent;
+            int delta_x = 0;
+            int delta_y = 0;
+            if(a > 0)
+            {
+               delta_x = 2 * (nrfunc::ran1()-0.5) * 0.25 * px_extent;
 
 // Intentionally bias vertical translation generally in the +gravity
 // direction:
-            int delta_y = (2 * nrfunc::ran1()-1.25) * 0.25 * py_extent;
+               delta_y = (2 * nrfunc::ran1()-1.25) * 0.25 * py_extent;
+            }
 
             int qx_start = px_start + delta_x;
             int qx_stop = px_stop + delta_x;
@@ -217,7 +313,7 @@ int main( int argc, char** argv )
                   delta_h, delta_s, delta_v);
             }
 
-            if(nrfunc::ran1() >= noise_threshold)
+            if(a > 0 && nrfunc::ran1() >= noise_threshold)
             {
                double noise_frac= 0.045 * nrfunc::ran1(); 
                double sigma = noise_frac * 255;
@@ -225,25 +321,39 @@ int main( int argc, char** argv )
                   qx_start, qx_stop, qy_start, qy_stop, sigma);
             }
 
-            string output_filename=output_chips_subdir + 
-               attr_value+"_face_" 
-               +stringfunc::integer_to_string(face_ID++,5)
-               +".png";
+            string output_subdir=output_chips_subdir;
+            if(gender_value == "unknown")
+            {
+               output_subdir += "unknown/";
+            }
+            else
+            {
+               output_subdir += classification_value+"/";
+            }
+            string output_filename=output_subdir + 
+               gender_value+"_face_" 
+               +stringfunc::integer_to_string(face_ID++,5)+".png";
+
+            cout << "output_filename = " << output_filename << endl;
+            continue;
 
             tr2_ptr->write_curr_subframe(
                qx_start, qx_stop, qy_start, qy_stop, output_filename,
                horiz_flipped_flag);
 
-            int max_xdim = 224;
-            int max_ydim = 224;
+            int max_xdim = 96;
+            int max_ydim = 96;
+//            int max_xdim = 224;
+//            int max_ydim = 224;
             videofunc::downsize_image(output_filename, max_xdim, max_ydim);
 
          } // loop over index a labeling augmentations
          delete tr2_ptr;
 
+         delete tr_ptr;
       } // loop over index b labeling bounding boxes for current image
 
-      delete tr_ptr;
+
       image_counter++;
    } // loop over annotated_bboxes_iter
 
