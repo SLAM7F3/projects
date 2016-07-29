@@ -90,6 +90,7 @@ src/mains/faces/generate_bbox_tiles
 src/mains/faces/partition_labeled_imgs
 src/mains/faces/wider_images
 src/mains/faces/homogenize_images
+src/mains/faces/resize_image_chips
 src/mains/faces/xml2txt
 src/mains/faces/clean_images
 src/mains/faces/prepare_classification_inputs
