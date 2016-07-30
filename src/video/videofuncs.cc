@@ -7,7 +7,7 @@
 // ==========================================================================
 // Videofuncs namespace method definitions
 // ==========================================================================
-// Last modified on 3/13/16; 3/14/16; 3/27/16; 7/23/16
+// Last modified on 3/14/16; 3/27/16; 7/23/16; 7/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -886,8 +886,6 @@ namespace videofunc
     unsigned int orig_xdim,unsigned int orig_ydim,
     unsigned int new_xdim,unsigned int new_ydim)
   {
-    //            cout << "inside videofunc::generate_thumbnail()" << endl;
-
     string thumbnail_filename=videofunc::get_thumbnail_filename(
       input_image_filename);
     if(new_xdim == orig_xdim && new_ydim == orig_ydim)
@@ -911,6 +909,16 @@ namespace videofunc
   // result within the specified output image file.
 
   bool resize_image(
+    string image_filename,
+    unsigned int orig_xdim,unsigned int orig_ydim,
+    unsigned int new_xdim,unsigned int new_ydim)
+  {
+     string resized_image_filename = image_filename;
+     return resize_image(image_filename, orig_xdim, orig_ydim, 
+                         new_xdim, new_ydim, image_filename);
+  }
+
+  bool resize_image(
     string input_image_filename,
     unsigned int orig_xdim,unsigned int orig_ydim,
     unsigned int new_xdim,unsigned int new_ydim,
@@ -922,85 +930,21 @@ namespace videofunc
     //            cout << "new_xdim = " << new_xdim << endl;
     //            cout << " new_ydim = " << new_ydim << endl;
 
-    bool good_thumbnail_flag=true;
     if (!filefunc::fileexist(input_image_filename)) return false;
     if (!imagefunc::valid_image_file(input_image_filename)) return false;
 
-    // On 5/7/12, we discovered the painful way that flickr images whose
-    // horizontal and vertical dimension metadata can be read may still
-    // have corrupted pixel data.  So we include the following try-catch
-    // exception handling to replace corrupted pixel data with blank pixel
-    // data:
-
     Magick::Image curr_image;
-
-    try {
-      // Try reading image file
-      //      curr_image.read("\""+input_image_filename+"\"");
-      curr_image.read(input_image_filename);
-    }
-    catch( Magick::ErrorBlob& error ) 
-    { 
-      // Process Magick++ file open error
-      cout << "ErrorBlob: " << endl;
-      cout << "Error message = " << error.what() << endl;
-      good_thumbnail_flag=false;
-    }
-    catch( Magick::ErrorCoder& error ) 
-    { 
-      // Process Magick++ file open error
-      cout << "ErrorCoder: " << endl;
-      cout << "Error message = " << error.what() << endl;
-      good_thumbnail_flag=false;
-    }
-    catch( Magick::ErrorCorruptImage& error ) 
-    { 
-      // Process Magick++ file open error
-      cout << "ErrorCorruptImage: " << endl;
-      cout << "Error message = " << error.what() << endl;
-      good_thumbnail_flag=false;
-    }
-
-    //            cout << "good_thumbnail_flag = " << good_thumbnail_flag
-    //                 << endl;
-
-    if (!good_thumbnail_flag)
+    if(!import_IM_image(input_image_filename, curr_image))
     {
-      cout << "Cannot resize input image " << input_image_filename
+       cout << "Cannot resize input image " << input_image_filename
            << endl;
-      return good_thumbnail_flag;
-	       
-      /*
-        cout << "Replacing corrupted original image with blank image!"
-        << endl;
-        videofunc::generate_blank_imagefile(
-        orig_xdim,orig_ydim,input_image_filename);
-        sleep(1);
-      */
+       return false;
     }
-    //            cout << "new_xdim = " << new_xdim
-    //                 << " new_ydim = " << new_ydim << endl;
 
     resize_image(curr_image,new_xdim,new_ydim);
-    curr_image.write(resized_image_filename);
-
-    return good_thumbnail_flag;
-  }
-
-  void resize_image(
-    Magick::Image& curr_image,unsigned int new_xdim,unsigned int new_ydim)
-  {
-    //            cout << "inside videofunc::resize_image()" << endl;
-    //            cout << "new_xdim = " << new_xdim << endl;
-    //            cout << " new_ydim = " << new_ydim << endl;
-
-    Magick::Geometry tNailSize(new_xdim,new_ydim);
-    curr_image.zoom(tNailSize);
-  }
-
-  void gaussian_blur_image(Magick::Image& curr_image,double sigma)
-  {
-    curr_image.gaussianBlur(0,sigma);
+    export_IM_image(resized_image_filename, curr_image);
+//     curr_image.write(resized_image_filename);
+    return true;
   }
       
   // -------------------------------------------------------------------------
@@ -3412,6 +3356,87 @@ namespace videofunc
      return avg_rgb_var;
   }
   
+  // ==========================================================================
+  // Image Magick methods
+  // ==========================================================================
 
+  // Method function import_IM_image()
+
+  bool import_IM_image(
+     string input_image_filename, Magick::Image& curr_image)
+  {
+    if (!filefunc::fileexist(input_image_filename)) return false;
+    if (!imagefunc::valid_image_file(input_image_filename)) return false;
+
+    // On 5/7/12, we discovered the painful way that flickr images whose
+    // horizontal and vertical dimension metadata can be read may still
+    // have corrupted pixel data.  So we include the following try-catch
+    // exception handling to replace corrupted pixel data with blank pixel
+    // data:
+
+    try {
+      // Try reading image file
+      //      curr_image.read("\""+input_image_filename+"\"");
+      curr_image.read(input_image_filename);
+    }
+    catch( Magick::ErrorBlob& error ) 
+    { 
+      // Process Magick++ file open error
+      cout << "ErrorBlob: " << endl;
+      cout << "Error message = " << error.what() << endl;
+      return false;
+    }
+    catch( Magick::ErrorCoder& error ) 
+    { 
+      // Process Magick++ file open error
+      cout << "ErrorCoder: " << endl;
+      cout << "Error message = " << error.what() << endl;
+      return false;
+    }
+    catch( Magick::ErrorCorruptImage& error ) 
+    { 
+      // Process Magick++ file open error
+      cout << "ErrorCorruptImage: " << endl;
+      cout << "Error message = " << error.what() << endl;
+      return false;
+    }
+    return true;
+  }
+
+  // ---------------------------------------------------------------------
+  void export_IM_image(
+     string output_image_filename, Magick::Image& curr_image)
+  {
+     curr_image.write(output_image_filename);     
+  }
+
+  // ---------------------------------------------------------------------
+  void resize_image(
+    Magick::Image& curr_image,unsigned int new_xdim,unsigned int new_ydim)
+  {
+    //            cout << "inside videofunc::resize_image()" << endl;
+    //            cout << "new_xdim = " << new_xdim << endl;
+    //            cout << " new_ydim = " << new_ydim << endl;
+
+    Magick::Geometry tNailSize(new_xdim,new_ydim);
+    curr_image.zoom(tNailSize);
+  }
+
+  // ---------------------------------------------------------------------
+  void gaussian_blur_image(Magick::Image& curr_image,double sigma)
+  {
+    curr_image.gaussianBlur(0,sigma);
+  }
+
+  // ---------------------------------------------------------------------
+  // Method rotate_image() rotates the input image counter-clockwise
+  // by angle theta measured in degrees.
+
+  void rotate_image(Magick::Image& curr_image,double theta)
+  {
+    curr_image.rotate(theta);
+  }
 
 } // videofunc namespace
+
+

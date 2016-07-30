@@ -1,14 +1,13 @@
 // ==========================================================================
-// Program POLY is a testing grounds for our new polyhedron class.
+// Program FACETEST
 // ==========================================================================
-// Last updated on 3/2/07
+// Last updated on 7/30/16
 // ==========================================================================
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include "geometry/face.h"
-#include "math/threevector.h"
+#include "video/videofuncs.h"
 
 int main (int argc, char* argv[])
 {
@@ -18,19 +17,21 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
-   vector<threevector> V;
-   V.push_back(threevector(0,0,0));
-   V.push_back(threevector(0.5,0,0));
-   V.push_back(threevector(1,0,0));
-   V.push_back(threevector(1,1,0));
-   V.push_back(threevector(0,1,0));
-   V.push_back(threevector(0,0.5,0));
-
-   face F(V);
-   cout << "F = " << F << endl;
-
-//   F.triangulate_convex_face();
-   F.triangulate();
+   string input_image_filename="test_image.jpg";
+   string output_image_filename="output_image.jpg";
    
+   Magick::Image curr_image;
+   videofunc::import_IM_image(input_image_filename, curr_image);
+
+//   void resize_image(
+//      Magick::Image& curr_image,unsigned int new_xdim,unsigned int new_ydim);
+//   void gaussian_blur_image(Magick::Image& curr_image,double sigma);
+
+   double theta = 45;
+   videofunc::rotate_image(curr_image,theta);
+
+   videofunc::export_IM_image(output_image_filename, curr_image);
+
+
 }
 
