@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for videofunc namespace
 // ==========================================================================
-// Last modified on 2/14/16; 3/13/16; 3/14/16; 7/23/16
+// Last modified on 3/13/16; 3/14/16; 7/23/16; 7/30/16
 // ==========================================================================
 
 #ifndef VIDEOFUNCS_H
@@ -83,9 +83,10 @@ namespace videofunc
       unsigned int orig_xdim,unsigned int orig_ydim,
       unsigned int new_xdim,unsigned int new_ydim,
       std::string resized_image_filename);
-   void resize_image(
-      Magick::Image& curr_image,unsigned int new_xdim,unsigned int new_ydim);
-   void gaussian_blur_image(Magick::Image& curr_image,double sigma);
+   bool resize_image(
+      std::string input_image_filename,
+      unsigned int orig_xdim,unsigned int orig_ydim,
+      unsigned int new_xdim,unsigned int new_ydim);
 
    void downsize_image(
       std::string input_image_filename,
@@ -338,6 +339,16 @@ namespace videofunc
       int px_start, int px_stop, int py_start, int py_stop,
       texture_rectangle* tr_ptr);
    double RGB_variance(texture_rectangle* tr_ptr);
+
+// Image Magick methods:
+
+  bool import_IM_image(
+     std::string input_image_filename, Magick::Image& curr_image);
+  void export_IM_image(
+     std::string output_image_filename, Magick::Image& curr_image);
+   void resize_image(
+      Magick::Image& curr_image,unsigned int new_xdim,unsigned int new_ydim);
+   void gaussian_blur_image(Magick::Image& curr_image,double sigma);
 
 // ==========================================================================
 // Inlined methods:

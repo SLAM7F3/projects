@@ -14,7 +14,7 @@
 //			./augment_chips
 
 // ========================================================================
-// Last updated on 7/22/16; 7/23/16; 7/29/16
+// Last updated on 7/22/16; 7/23/16; 7/29/16; 7/30/16
 // ========================================================================
 
 #include <fstream>
@@ -47,6 +47,11 @@ int main( int argc, char** argv )
 
    timefunc::initialize_timeofday_clock(); 
    std::set_new_handler(sysfunc::out_of_memory);
+
+   int max_xdim = 96;
+   int max_ydim = 96;
+//            int max_xdim = 224;
+//            int max_ydim = 224;
 
    bool rgb2grey_flag = true;		       // default as of Jun 14
    double rgb2grey_threshold = 0.2;            // default as of Jun 14
@@ -357,11 +362,21 @@ int main( int argc, char** argv )
                qx_start, qx_stop, qy_start, qy_stop, output_filename,
                horiz_flipped_flag);
 
-            int max_xdim = 96;
-            int max_ydim = 96;
-//            int max_xdim = 224;
-//            int max_ydim = 224;
-            videofunc::downsize_image(output_filename, max_xdim, max_ydim);
+// As of 7/30/16, we experiment with doubling the size of any image
+// chip whose horizontal pixel size < 0.5 * max_xdim and
+// whose vertical pixel size < 0.5 * max_ydim:
+
+            int qx_extent = qx_stop - qx_start;
+            int qy_extent = qy_stop - qy_start;
+            if(qx_extent < 0.5 * max_xdim && qy_extent < 0.5 * max_ydim)
+            {
+               videofunc::resize_image(output_filename, qx_extent, qy_extent,
+                                       2 * qx_extent, 2 * qy_extent);
+            }
+            else
+            {
+               videofunc::downsize_image(output_filename, max_xdim, max_ydim);
+            }
 
          } // loop over index a labeling augmentations
          delete tr2_ptr;
