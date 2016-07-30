@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 1/20/16; 1/25/16; 4/18/16; 6/16/16
+// Last modified on 1/25/16; 4/18/16; 6/16/16; 7/30/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -24,8 +24,11 @@ class caffe_classifier
 
    caffe_classifier(
       const std::string& deploy_prototxt_filename,
+      const std::string& trained_caffe_model_filename);
+   caffe_classifier(
+      const std::string& deploy_prototxt_filename,
       const std::string& trained_caffe_model_filename,
-      const std::string& mean_rgb_filename,
+      const std::string& mean_bgr_filename,
       const std::string& labels_filename,
       bool imagenet_classification_flag = true);
 
@@ -33,7 +36,11 @@ class caffe_classifier
    friend std::ostream& operator<< 
       (std::ostream& outstream,const caffe_classifier& dt);
 
-   int get_label_result() const;
+   void set_mean_bgr(double bmean, double gmean, double rmean);
+   void add_label(std::string curr_label);
+   std::string get_label_name(int n);
+   int get_classification_result() const;
+   double get_classification_score() const;
    unsigned int get_n_labels() const;
 
    std::vector<std::pair<std::string, float> > Classify(
@@ -68,15 +75,15 @@ class caffe_classifier
    void initialize_member_objects();
    void docopy(const caffe_classifier& C);
 
-
    int num_channels_, datawidth_, dataheight_;
    int input_img_xdim, input_img_ydim;
-   int label_result;
+   int classification_result;
+   double classification_score;
    caffe::shared_ptr<caffe::Net<float> > net_;
    cv::Size input_geometry_;
    cv::Mat mean_;
    std::vector<std::string> labels_;
-   colorfunc::RGB mean_rgb;
+   colorfunc::RGB mean_bgr;
    float *feature_descriptor;
    texture_rectangle *label_tr_ptr, *score_tr_ptr;
    texture_rectangle *cc_tr_ptr;
@@ -86,9 +93,32 @@ class caffe_classifier
 // Inlined methods:
 // ==========================================================================
 
-inline int caffe_classifier::get_label_result() const
+inline void caffe_classifier::set_mean_bgr(
+   double bmean, double gmean, double rmean)
 {
-   return label_result;
+   mean_bgr.first = bmean;
+   mean_bgr.second = gmean;
+   mean_bgr.third = rmean;
+}
+
+inline void caffe_classifier::add_label(std::string curr_label)
+{
+   labels_.push_back(curr_label);
+}
+
+inline std::string caffe_classifier::get_label_name(int n)
+{
+   return labels_.at(n);
+}
+
+inline int caffe_classifier::get_classification_result() const
+{
+   return classification_result;
+}
+
+inline double caffe_classifier::get_classification_score() const
+{
+   return classification_score;
 }
 
 inline unsigned int caffe_classifier::get_n_labels() const

@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 1/20/16; 4/18/16; 6/9/16; 6/16/16
+// Last modified on 4/18/16; 6/9/16; 6/16/16; 7/30/16
 // ==========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -45,17 +45,28 @@ void caffe_classifier::initialize_member_objects()
    cc_tr_ptr = NULL;
 }		       
 
+// ---------------------------------------------------------------------
+caffe_classifier::caffe_classifier(
+   const string& deploy_prototxt_filename,
+   const string& trained_caffe_model_filename)
+{
+   allocate_member_objects();
+   initialize_member_objects();
+
+   load_trained_network(deploy_prototxt_filename, 
+                        trained_caffe_model_filename);
+}
+
+// ---------------------------------------------------------------------
 caffe_classifier::caffe_classifier(
    const string& deploy_prototxt_filename,
    const string& trained_caffe_model_filename,
-   const string& mean_rgb_filename, 
+   const string& mean_bgr_filename, 
    const string& labels_filename,
    bool imagenet_classification_flag)
 {
    allocate_member_objects();
    initialize_member_objects();
-
-   cout << "Loading trained network " << endl;
 
    load_trained_network(deploy_prototxt_filename, 
                         trained_caffe_model_filename);
@@ -74,7 +85,7 @@ caffe_classifier::caffe_classifier(
 
 // Load the binaryproto mean file:
 
-      SetMean(mean_rgb_filename);
+      SetMean(mean_bgr_filename);
 
 // Load labels:
 
@@ -88,18 +99,17 @@ caffe_classifier::caffe_classifier(
    }
    else
    {
-      filefunc::ReadInfile(mean_rgb_filename);
+      filefunc::ReadInfile(mean_bgr_filename);
       vector<double> color_values = 
          stringfunc::string_to_numbers(filefunc::text_line[0]);
-      mean_rgb.first = color_values[0];	// Blue
-      mean_rgb.second = color_values[1];	// Green
-      mean_rgb.third = color_values[2];	// Red
+      mean_bgr.first = color_values[0];	   // Blue
+      mean_bgr.second = color_values[1];   // Green
+      mean_bgr.third = color_values[2];	   // Red
 
-      cout << "mean_rgb.first = " << mean_rgb.first << endl;
-      cout << "mean_rgb.second = " << mean_rgb.second << endl;
-      cout << "mean_rgb.third = " << mean_rgb.third << endl;
+      cout << "mean_bgr.first = " << mean_bgr.first << endl;
+      cout << "mean_bgr.second = " << mean_bgr.second << endl;
+      cout << "mean_bgr.third = " << mean_bgr.third << endl;
    }
-
 }
 
 // ---------------------------------------------------------------------
@@ -163,6 +173,7 @@ static vector<int> Argmax(const vector<float>& v, int N)
 
 vector<Prediction> caffe_classifier::Classify(const cv::Mat& img, int N) 
 {
+   cout << "inside caffe_classifier::Classify()" << endl;
    vector<float> output = Predict(img);
    
    N = std::min<int>(labels_.size(), N);
@@ -184,6 +195,7 @@ void caffe_classifier::load_trained_network(
    const string& deploy_prototxt_filename,
    const string& trained_caffe_model_filename)
 {
+   cout << "Loading trained network " << endl;
 
 #ifdef CPU_ONLY
    Caffe::set_mode(Caffe::CPU);
@@ -251,6 +263,7 @@ void caffe_classifier::SetMean(const string& mean_file)
 
 vector<float> caffe_classifier::Predict(const cv::Mat& img) 
 {
+   cout << "inside caffe_classifier::Predict()" << endl;
    Blob<float>* input_layer = net_->input_blobs()[0];
    input_layer->Reshape(1, num_channels_,
                         input_geometry_.height, input_geometry_.width);
@@ -269,6 +282,8 @@ vector<float> caffe_classifier::Predict(const cv::Mat& img)
    Blob<float>* output_layer = net_->output_blobs()[0];
    const float* begin = output_layer->cpu_data();
    const float* end = begin + output_layer->channels();
+
+   cout << "at end of caffe_classifier::Predict()" << endl;
    return vector<float>(begin, end);
 }
 
@@ -299,6 +314,10 @@ void caffe_classifier::WrapInputLayer(vector<cv::Mat>* input_channels)
 void caffe_classifier::Preprocess(const cv::Mat& img,
                                   vector<cv::Mat>* input_channels) 
 {
+   cout << "inside caffe_classifier::Preprocess()" << endl;
+   cout << "img.channels() = " << img.channels() << endl;
+   cout << "num_channels_ = " << num_channels_ << endl;
+   
    /* Convert the input image to the input image format of the network. */
    cv::Mat sample;
    if (img.channels() == 3 && num_channels_ == 1)
@@ -312,11 +331,16 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
    else
       sample = img;
 
+
    cv::Mat sample_resized;
+
+   cout << "sample.size() = " << sample.size() << endl;
+   
    if (sample.size() != input_geometry_)
       cv::resize(sample, sample_resized, input_geometry_);
    else
       sample_resized = sample;
+
 
    cv::Mat sample_float;
    if (num_channels_ == 3)
@@ -325,6 +349,7 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
       sample_resized.convertTo(sample_float, CV_32FC1);
 
    cv::Mat sample_normalized;
+   cout << "before cv::subtract" << endl;
    cv::subtract(sample_float, mean_, sample_normalized);
 
    // This operation will write the separate BGR planes directly to the
@@ -335,6 +360,8 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
    CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
          == net_->input_blobs()[0]->cpu_data())
       << "Input channels are not wrapping the input layer of the network.";
+
+   cout << "At end of caffe_classifier::Preprocess()" << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -347,7 +374,6 @@ void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
    input_img_ydim = curr_img.getHeight();
    int n_dims = input_img_xdim * input_img_ydim * num_channels_;
    feature_descriptor = new float[n_dims];
-
 
    int R, G, B;
    for(int c = 0; c < 3; c++){
@@ -363,46 +389,22 @@ void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
             float curr_value;
             if(c == 0)   // blue channel first
             {
-               curr_value = B - mean_rgb.first;
+               curr_value = B - mean_bgr.first;
             }
             else if (c == 1) // green channel second
             {
-               curr_value = G - mean_rgb.second;
+               curr_value = G - mean_bgr.second;
             }
             else  // red channel third
             {
-               curr_value = R - mean_rgb.third;
+               curr_value = R - mean_bgr.third;
             }
             
-            feature_descriptor[(c * input_img_ydim + py) * input_img_xdim + px] = 
-               curr_value;
-            
+            feature_descriptor[(c * input_img_ydim + py) * input_img_xdim 
+                               + px] = curr_value;
          } // loop over index px
       } // loop over index py
    } // loop over index c labeling color channels
-
-/*
-  int index = 0;
-  for(int c = 0; c < 3; c++)
-  {
-  for(int py = 0; py < input_img_ydim; py++)
-  {
-  for(int px = 0; px < input_img_xdim; px++)
-  {
-  if(index < 10 || index > n_dims - 10)
-  {
-  cout << "index = " << index 
-  << " c = " << c << " py = " << py << " px = " << px
-  << " feature_vec = " << feature_descriptor[index]
-  << endl;
-  }
-  index++;
-  }
-  }
-  }
-  cout << "ndims = 3*ydim*xdim = " << n_dims << endl;
-*/
-
 }
 
 // ---------------------------------------------------------------------
@@ -485,15 +487,16 @@ void caffe_classifier::export_classification_results(
 //   cout << "result->shape(2) = " << result->shape(2) << endl;
 
    int label_index = argmaxs[0];
-   double label_score = argmaxs[1];
+   classification_score = argmaxs[1];
 
    string curr_label = labels_.at(label_index);
-   cout << "  Label = " << curr_label << " score = " << label_score << endl;
+   cout << "  Label = " << curr_label 
+        << " score = " << classification_score << endl;
 
-   label_result = -1;
+   classification_result = -1;
    if(stringfunc::is_number(curr_label))
    {
-      label_result = stringfunc::string_to_number(curr_label);
+      classification_result = stringfunc::string_to_number(curr_label);
    }
 }
 

@@ -458,6 +458,8 @@ into training, validation and testing subsets.
 
 Validation accuracy asymptotes around 87.1%
 
+
+
 Conclusion: Blacking out 2nd, 3rd,... faces appears to DECREASE
 gender classification performance!
 
