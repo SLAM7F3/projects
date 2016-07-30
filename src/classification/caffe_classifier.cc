@@ -434,7 +434,10 @@ void caffe_classifier::generate_dense_map()
 
 void caffe_classifier::generate_dense_map_data_blob()
 {
-//   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
+   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
+   cout << "num_channels_ = " << num_channels_ << endl;
+   cout << "input_img_xdim = " << input_img_xdim << endl;
+   cout << "input_img_ydim = " << input_img_ydim << endl;
 
 // Create the data blob:
 
@@ -450,7 +453,8 @@ void caffe_classifier::generate_dense_map_data_blob()
 // Copy data into data blob:
 
 //   cout << "Copying data into blob" << endl;
-   memcpy(data, feature_descriptor, 3 * shape[2] * shape[3] * sizeof(float));
+   memcpy(data, feature_descriptor, 
+          shape[0] * shape[1] * shape[2] * shape[3] * sizeof(float));
 
 // Perform the forward pass:
 
@@ -460,7 +464,8 @@ void caffe_classifier::generate_dense_map_data_blob()
    const vector<caffe::Blob<float> *> &result = net_->Forward(input_blobs);
 
    int n_axes = result[0]->num_axes();
-   if(n_axes == 3)
+   cout << "n_axes = " << n_axes << endl;
+   if(n_axes == 2 || n_axes == 3)
    {
       export_classification_results(result[0]);
    }
@@ -476,28 +481,19 @@ void caffe_classifier::generate_dense_map_data_blob()
 void caffe_classifier::export_classification_results(
    const caffe::Blob<float> *result)
 {
-//   cout << "inside caffe_classifier::export_classification_results()"
-//        << endl;
+   cout << "inside caffe_classifier::export_classification_results()"
+        << endl;
 
    const float *argmaxs = result->cpu_data();
 
-//   cout << "result->num_axes() = " << result->num_axes() << endl;
-//   cout << "result->shape(0) = " << result->shape(0) << endl;
-//   cout << "result->shape(1) = " << result->shape(1) << endl;
+   cout << "result->num_axes() = " << result->num_axes() << endl;
+   cout << "result->shape(0) = " << result->shape(0) << endl;
+   cout << "result->shape(1) = " << result->shape(1) << endl;
 //   cout << "result->shape(2) = " << result->shape(2) << endl;
 
-   int label_index = argmaxs[0];
+   classification_result = argmaxs[0];
    classification_score = argmaxs[1];
-
-   string curr_label = labels_.at(label_index);
-   cout << "  Label = " << curr_label 
-        << " score = " << classification_score << endl;
-
-   classification_result = -1;
-   if(stringfunc::is_number(curr_label))
-   {
-      classification_result = stringfunc::string_to_number(curr_label);
-   }
+//   classification_result = labels_.at(label_index);
 }
 
 // ---------------------------------------------------------------------

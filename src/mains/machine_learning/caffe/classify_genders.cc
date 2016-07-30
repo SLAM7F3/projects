@@ -95,7 +95,7 @@ int main(int argc, char** argv)
    int istart=0;
    int istop = n_images;
    int n_correct = 0, n_incorrect = 0;
-   string unix_cmd;
+
 
    int n_classes = classifier.get_n_labels();
    genmatrix confusion_matrix(n_classes,n_classes);
@@ -159,7 +159,10 @@ int main(int argc, char** argv)
       int classification_label = classifier.get_classification_result();
       double classification_score = classifier.get_classification_score();
       cout << "Label:  True = " << true_label 
-           << " Classified = " << classification_label << endl;
+           << " Classified = " << classification_label 
+           << " score = " << classification_score 
+           << endl;
+      string unix_cmd;
       if(classification_label == true_label)
       {
          n_correct++;
@@ -171,6 +174,7 @@ int main(int argc, char** argv)
          unix_cmd = "cp "+orig_image_filename+" "+
             incorrect_chips_subdir;
       }
+      sysfunc::unix_command(unix_cmd);
 
       double frac_correct = double(n_correct)/(n_correct+n_incorrect);
       confusion_matrix.put(
