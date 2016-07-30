@@ -349,6 +349,10 @@ namespace videofunc
    void resize_image(
       Magick::Image& curr_image,unsigned int new_xdim,unsigned int new_ydim);
    void gaussian_blur_image(Magick::Image& curr_image,double sigma);
+   void rotate_image(Magick::Image& curr_image,double theta);
+   void crop_image(Magick::Image& curr_image, int width, int height, 
+                   int xoffset, int yoffset);
+   void crop_rotate_image(Magick::Image& curr_image,double theta);
 
 // ==========================================================================
 // Inlined methods:
