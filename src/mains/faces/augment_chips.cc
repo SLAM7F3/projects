@@ -50,8 +50,8 @@ int main( int argc, char** argv )
 
    int max_xdim = 96;
    int max_ydim = 96;
-//            int max_xdim = 224;
-//            int max_ydim = 224;
+//   int max_xdim = 224;
+//   int max_ydim = 224;
 
    bool rgb2grey_flag = true;		       // default as of Jun 14
    double rgb2grey_threshold = 0.2;            // default as of Jun 14
@@ -249,6 +249,11 @@ int main( int argc, char** argv )
          int xdim = tr_ptr->getWidth();
          int ydim = tr_ptr->getHeight();
 
+/*
+
+// On 7/30/16, we empiricaly found that blacking out other faces
+// appears to DECREASE gender classification performance!
+
 // Black out all face bboxes other than current one within current
 // image:
 
@@ -257,6 +262,7 @@ int main( int argc, char** argv )
             if(b2 == b) continue;
             tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
          }
+*/
 
          bounding_box curr_bbox = bboxes[b];
          string gender_value = curr_bbox.get_attribute_value("gender");
@@ -284,11 +290,15 @@ int main( int argc, char** argv )
          int n_augmentations_per_chip = 1;
          if(gender_value != "unknown" && classification_value == "training")
          {
+//            n_augmentations_per_chip = 1;
             n_augmentations_per_chip = 4;
          }
 
          for(int a = 0; a < n_augmentations_per_chip; a++)
          {
+//            cout << "image_ID_str = " << image_ID_str 
+//                 << " a = " << a << endl;
+
             tr2_ptr->copy_RGB_values(tr_ptr);
             
             int delta_x = 0;
@@ -306,7 +316,6 @@ int main( int argc, char** argv )
             int qx_stop = px_stop + delta_x;
             int qy_start = py_start + delta_y;
             int qy_stop = py_stop + delta_y;
-
             qx_start = basic_math::max(qx_start, 0);
             qx_stop = basic_math::min(qx_stop, xdim - 1);
             qy_start = basic_math::max(qy_start, 0);
@@ -331,7 +340,7 @@ int main( int argc, char** argv )
                   delta_s = -1.5;
                }
                double delta_v = -0.25 + nrfunc::ran1() * 0.5;
-               
+
                tr2_ptr->globally_perturb_hsv(
                   qx_start, qx_stop, 0, ydim - 1,
 //                   qx_start, qx_stop, qy_start, qy_stop,
@@ -356,28 +365,68 @@ int main( int argc, char** argv )
                output_subdir += classification_value+"/"+gender_value+"/";
             }
             string output_filename= output_subdir + 
-               gender_value+"_face_" 
+               gender_value+"_face_"+image_ID_str+"_"
+               +stringfunc::integer_to_string(a,2)+"_"
                +stringfunc::integer_to_string(face_ID++,5)+".png";
 
             tr2_ptr->write_curr_subframe(
                qx_start, qx_stop, qy_start, qy_stop, output_filename,
                horiz_flipped_flag);
 
+            Magick::Image IM_image;
+            IM_image.backgroundColor(Magick::Color(0,0,0));
+            if(!videofunc::import_IM_image(output_filename, IM_image))
+            {
+               cout << "Unable to import " << output_filename << endl;
+               continue;
+            }
+            
 // As of 7/30/16, we experiment with doubling the size of any image
 // chip whose horizontal pixel size < 0.5 * max_xdim and
 // whose vertical pixel size < 0.5 * max_ydim:
 
             int qx_extent = qx_stop - qx_start;
             int qy_extent = qy_stop - qy_start;
+
             if(qx_extent < 0.5 * max_xdim && qy_extent < 0.5 * max_ydim)
             {
-               videofunc::resize_image(output_filename, qx_extent, qy_extent,
-                                       2 * qx_extent, 2 * qy_extent);
+               Magick::Geometry newSize(2 * qx_extent, 2 * qy_extent);
+               IM_image.zoom(newSize);
             }
             else
             {
-               videofunc::downsize_image(output_filename, max_xdim, max_ydim);
+               if(qx_extent > max_xdim || qy_extent > max_ydim)
+               {
+                  double aspect_ratio = double(qx_extent)/double(qy_extent);
+                  double xratio=double(qx_extent)/double(max_xdim);
+                  double yratio=double(qy_extent)/double(max_ydim);
+
+                  int new_xdim, new_ydim;
+                  if (xratio > yratio)
+                  {
+                     new_xdim=max_xdim;
+                     new_ydim=new_xdim/aspect_ratio;
+                  }
+                  else
+                  {
+                     new_ydim=max_ydim;
+                     new_xdim=aspect_ratio*new_ydim;
+                  }
+                  Magick::Geometry newSize(new_xdim, new_ydim);
+                  IM_image.zoom(newSize);
+               }
             }
+
+// Randomly rotate image chip about its center through some relatively
+// small angle theta measured in degs:
+
+            if(a > 0)
+            {
+               double theta = 30 * 2 * (nrfunc::ran1() - 0.5);
+               videofunc::crop_rotate_image(IM_image,theta);
+            }
+            videofunc::export_IM_image(output_filename, IM_image);
+
          } // loop over index a labeling augmentations
          
          delete tr2_ptr;

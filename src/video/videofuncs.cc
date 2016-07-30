@@ -867,7 +867,6 @@ namespace videofunc
     Magick::Image curr_image;
             
     curr_image.ping(input_image_filename);
-
     unsigned int n_columns=curr_image.columns();
     unsigned int n_rows=curr_image.rows();
 
@@ -3277,8 +3276,8 @@ namespace videofunc
      int px_start, int px_stop, int py_start, int py_stop,
      texture_rectangle* tr_ptr)
   {
-     int xdim = tr_ptr->getWidth();
-     int ydim = tr_ptr->getHeight();
+//     int xdim = tr_ptr->getWidth();
+//     int ydim = tr_ptr->getHeight();
      int pstep = 1;
      double avg_focus_measure = 0;
      double curr_local_focus_measure;
@@ -3436,6 +3435,31 @@ namespace videofunc
   {
     curr_image.rotate(theta);
   }
+
+  // ---------------------------------------------------------------------
+  // Method rotate_image() rotates the input image counter-clockwise
+  // by angle theta measured in degrees.
+
+  void crop_image(Magick::Image& curr_image, int width, int height, 
+                  int xoffset, int yoffset)
+  {
+     curr_image.crop(Magick::Geometry(width, height, xoffset, yoffset));
+  }
+
+  // ---------------------------------------------------------------------
+  // Method crop_rotate_image() rotates the input image
+  // counter-clockwise by angle theta measured in degrees.  It then
+  // crops the rotated image so that it has the same pixel size as the
+  // original input image.
+
+  void crop_rotate_image(Magick::Image& curr_image,double theta)
+  {
+     int xdim = curr_image.columns();
+     int ydim = curr_image.rows();
+     curr_image.rotate(theta);
+     videofunc::crop_image(curr_image, xdim, ydim, 0, 0);
+  }
+
 
 } // videofunc namespace
 

@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/26/16; 7/27/16; 7/28/16; 7/29/16
+Last updated on 7/27/16; 7/28/16; 7/29/16; 7/30/16
 ==========================================================================
 
 As of 7/24/16, ID_strings for corrupted images which OSG cannot import:
@@ -430,10 +430,9 @@ end of network.  Gaussian initialize of all node weights.  Increased number
 of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
 set.
 
-Validation accuracy asymptotes around 87%
+Validation accuracy asymptotes around 87.8%
 
-
-*.  Fri Jul 29, Titan 1 around ?
+*.  Fri Jul 29, Titan 1 
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces, base learning rate = 0.003, accuracy layer added for
@@ -444,8 +443,9 @@ Weight decay = 0.0005.  4x augmented imagery set.  2nd, 3rd... faces in
 chips blackened out.  Imagery data broken apart into training, validation
 and testing subsets.
 
+Validation accuracy asymptotes around 85.3%
 
-*.  Fri Jul 29, Titan 3 around ?
+*.  Fri Jul 29, Titan 3 
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces, base learning rate = 0.003, accuracy layer added for
@@ -455,3 +455,42 @@ end of network.  Gaussian initialize of all node weights.  Increased number
 of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
 set. 2nd, 3rd, ... faces in chips blackened out.  Imagery data broken apart
 into training, validation and testing subsets.
+
+Validation accuracy asymptotes around 87.1%
+
+Conclusion: Blacking out 2nd, 3rd,... faces appears to DECREASE
+gender classification performance!
+
+*.  Sat, Jul 30, Titan 1 
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.
+Weight decay = 0.0005.  4x augmented imagery set.  2nd, 3rd... faces in
+chips blackened out.  Imagery data broken apart into training, validation
+and testing subsets.  Image chips smaller than 48x48 doubled in sized.
+
+Training started at 12:06 pm
+
+Validation accuracy asymptotes around 82.3% which is better than the 81%
+found on Thurs Jul 28, Titan 1 around 6 am.
+
+*.  Sat, Jul 30, Titan 3 
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.  Increased number
+of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
+set. 2nd, 3rd, ... faces in chips blackened out.  Imagery data broken apart
+into training, validation and testing subsets.  Image chips smaller than
+48x48 doubled in size.
+
+Validation accuracy asymptotes around 81.6% which is slightly better than
+the 81% found on Thurs Jul 28, Titan 3 around 7:40 am.
+
+Conclusion:  Doubling image chips whose pixel sizes are less than 48x48
+leads to slightly improved gender classification performance.

@@ -16,7 +16,7 @@
 //                          ./resize_imagechips
 
 // ==========================================================================
-// Last updated on 7/23/16; 7/24/16; 7/27/16; 7/28/16
+// Last updated on 7/24/16; 7/27/16; 7/28/16; 7/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -73,15 +73,16 @@ int main(int argc, char *argv[])
          outputfunc::print_elapsed_and_remaining_time(progress_frac);
       }
 
-      string downsized_image_filename="./tmp_downsized.png";
-      videofunc::downsize_image(image_filenames[i], max_xdim, max_ydim,
-                                downsized_image_filename);
+//      string downsized_image_filename="./tmp_downsized.png";
+//      videofunc::downsize_image(image_filenames[i], max_xdim, max_ydim,
+//                                downsized_image_filename);
       string basename = filefunc::getbasename(image_filenames[i]);
       
       string padded_jpg_filename=resized_chips_subdir
          +stringfunc::prefix(basename)+"_106x106.jpg";
       string unix_cmd="convert -size 106x106 xc:black ";
-      unix_cmd += downsized_image_filename;
+//      unix_cmd += downsized_image_filename;
+      unix_cmd += image_filenames[i];
       unix_cmd += " -gravity center -composite ";
       unix_cmd += padded_jpg_filename;
 //      cout << unix_cmd << endl;
