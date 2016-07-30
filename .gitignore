@@ -86,6 +86,7 @@ src/mains/faces/extract_chips
 src/mains/faces/pyramid_training_images
 src/mains/faces/downsize_images
 src/mains/faces/reset_img_numbers
+src/mains/faces/resize_imagechips
 src/mains/faces/generate_bbox_tiles
 src/mains/faces/partition_labeled_imgs
 src/mains/faces/wider_images
@@ -151,6 +152,7 @@ src/mains/TOC12/quantized_lookup
 src/mains/TOC12/tanksign_processor
 src/mains/TOC12/Ng_tester
 src/mains/TOC12/undistort
+src/mains/testdir/facetest
 src/mains/textsearch/parse_doc_topics
 src/mains/textsearch/display_doc_text
 src/mains/textsearch/synthesize_topic_docs
