@@ -282,10 +282,11 @@ int main( int argc, char** argv )
             xdim, ydim, 1, 3, NULL);
 
          int n_augmentations_per_chip = 1;
-         if(classification_value == "training")
+         if(gender_value != "unknown" && classification_value == "training")
          {
             n_augmentations_per_chip = 4;
          }
+
          for(int a = 0; a < n_augmentations_per_chip; a++)
          {
             tr2_ptr->copy_RGB_values(tr_ptr);
@@ -352,9 +353,9 @@ int main( int argc, char** argv )
             }
             else
             {
-               output_subdir += classification_value+"/";
+               output_subdir += classification_value+"/"+gender_value+"/";
             }
-            string output_filename=output_subdir + gender_value+"/" + 
+            string output_filename= output_subdir + 
                gender_value+"_face_" 
                +stringfunc::integer_to_string(face_ID++,5)+".png";
 
@@ -377,10 +378,9 @@ int main( int argc, char** argv )
             {
                videofunc::downsize_image(output_filename, max_xdim, max_ydim);
             }
-
          } // loop over index a labeling augmentations
+         
          delete tr2_ptr;
-
          delete tr_ptr;
       } // loop over index b labeling bounding boxes for current image
 

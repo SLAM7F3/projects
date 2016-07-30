@@ -409,7 +409,6 @@ Validation accuracy asymptotes around 81%
 Conclusion:  If we use a higher-capacity network, we should probably
 increase weight decay to partially counter overfitting.
 
-
 *.  Thurs Jul 28, Titan 1 around 2 pm
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
@@ -420,7 +419,6 @@ end of network.  Gaussian initialize of all node weights.
 Weight decay = 0.0005.  4x augmented imagery set.
 
 Validation accuracy asymptotes around 86%
-
 
 *.  Thurs Jul 28, Titan 3 around 2 pm
 
@@ -434,3 +432,26 @@ set.
 
 Validation accuracy asymptotes around 87%
 
+
+*.  Fri Jul 29, Titan 1 around ?
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.
+Weight decay = 0.0005.  4x augmented imagery set.  2nd, 3rd... faces in
+chips blackened out.  Imagery data broken apart into training, validation
+and testing subsets.
+
+
+*.  Fri Jul 29, Titan 3 around ?
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.  Increased number
+of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
+set. 2nd, 3rd, ... faces in chips blackened out.  Imagery data broken apart
+into training, validation and testing subsets.

@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/23/16; 7/24/16; 7/25/16; 7/28/16
+// Last updated on 7/24/16; 7/25/16; 7/28/16; 7/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -43,7 +43,8 @@ int main(int argc, char *argv[])
 
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string dated_subdir = "Jul28_96x96_174K_augmented/";
+   string dated_subdir = "Jul29_106x106_augmented/";
+//    string dated_subdir = "Jul28_96x96_174K_augmented/";
 //   string dated_subdir = "Jul27_96x96_41K/";
 //   string dated_subdir = "Jul22_43K/";
 //   string dated_subdir = "Jul24_174K_augmented/";
