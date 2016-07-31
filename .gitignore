@@ -1072,13 +1072,14 @@ src/mains/machine_learning/deeplab/pyramid_testing_images
 src/mains/machine_learning/generate_tsne_input
 src/mains/machine_learning/tsne_2_output
 src/mains/machine_learning/caffe/all_lmdb
+src/mains/machine_learning/caffe/classify_genders
 src/mains/machine_learning/caffe/ensemble_chars
 src/mains/machine_learning/caffe/extract_features
 src/mains/machine_learning/caffe/imagenet_classification
 src/mains/machine_learning/caffe/relabel_non_chips
 src/mains/machine_learning/caffe/scripts/
 src/mains/machine_learning/deeplab/screenshots/
-src/mains/machine_learning/caffe/tuning_performance
+src/mains/machine_learning/caffe/training_performance
 src/mains/machine_learning/caffe/classify_chars
 src/mains/machine_learning/caffe/caffe_classification
 src/mains/machine_learning/caffe/run_classify

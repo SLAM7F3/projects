@@ -14,7 +14,7 @@
 //			./augment_chips
 
 // ========================================================================
-// Last updated on 7/22/16; 7/23/16; 7/29/16; 7/30/16
+// Last updated on 7/23/16; 7/29/16; 7/30/16; 7/31/16
 // ========================================================================
 
 #include <fstream>
@@ -186,18 +186,11 @@ int main( int argc, char** argv )
    annotated_bboxes_map[image_ID_str] = annotated_bboxes;
 
    int n_known_bboxes = n_total_bboxes - n_unknown_bboxes;
+
+   int face_ID_start = 0;
+   int face_ID = face_ID_start;
+
    
-   cout << "n_total_bboxes = " << n_total_bboxes << endl;
-   cout << "n_female_bboxes = " << n_female_bboxes << endl;
-   cout << "n_male_bboxes = " << n_male_bboxes << endl;
-   cout << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
-
-   cout << "n_known_bboxes = " << n_known_bboxes << endl;
-   cout << "n_training_bboxes = " << n_training_bboxes << endl;
-   cout << "n_validation_bboxes = " << n_validation_bboxes << endl;
-   cout << "n_testing_bboxes = " << n_testing_bboxes << endl;
-
-   int face_ID = 0;
    string output_chips_subdir = "./augmented_face_chips/";
    filefunc::dircreate(output_chips_subdir);
    string unknown_chips_subdir = output_chips_subdir+"unknown/";
@@ -435,5 +428,20 @@ int main( int argc, char** argv )
 
       image_counter++;
    } // loop over annotated_bboxes_iter
+
+   int face_ID_stop = face_ID;
+   
+   cout << "n_total_bboxes = " << n_total_bboxes << endl;
+   cout << "n_female_bboxes = " << n_female_bboxes << endl;
+   cout << "n_male_bboxes = " << n_male_bboxes << endl;
+   cout << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
+
+   cout << "n_known_bboxes = " << n_known_bboxes << endl;
+   cout << "n_training_bboxes = " << n_training_bboxes << endl;
+   cout << "n_validation_bboxes = " << n_validation_bboxes << endl;
+   cout << "n_testing_bboxes = " << n_testing_bboxes << endl;
+   cout << "Starting face ID = " << face_ID_start << endl;
+   cout << "Stopping face ID = " << face_ID_stop << endl;
+
 }
 
