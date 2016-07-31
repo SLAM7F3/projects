@@ -432,11 +432,15 @@ int main( int argc, char** argv )
    } // loop over annotated_bboxes_iter
 
    int face_ID_stop = face_ID;
+   double female_frac = double(n_female_bboxes) / n_total_bboxes;
+   double male_frac = double(n_male_bboxes) / n_total_bboxes;
    
    cout << "n_total_bboxes = " << n_total_bboxes << endl;
    cout << "n_female_bboxes = " << n_female_bboxes << endl;
    cout << "n_male_bboxes = " << n_male_bboxes << endl;
    cout << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
+   cout << "female_frac = " << female_frac << " male_frac = " << male_frac
+        << endl;
 
    cout << "n_known_bboxes = " << n_known_bboxes << endl;
    cout << "n_training_bboxes = " << n_training_bboxes << endl;
@@ -453,6 +457,8 @@ int main( int argc, char** argv )
    metastream << "n_female_bboxes = " << n_female_bboxes << endl;
    metastream << "n_male_bboxes = " << n_male_bboxes << endl;
    metastream << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
+   metastrea << "female_frac = " << female_frac << " male_frac = " << male_frac
+             << endl;
 
    metastream << "n_known_bboxes = " << n_known_bboxes << endl;
    metastream << "n_training_bboxes = " << n_training_bboxes << endl;

@@ -75,9 +75,12 @@ int main(int argc, char** argv)
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-   double Rmean = 104.008;
+   double Bmean = 104.008;
    double Gmean = 116.669;
-   double Bmean = 122.675;
+   double Rmean = 122.675;
+//   double Rmean = 104.008;
+//   double Gmean = 116.669;
+//   double Bmean = 122.675;
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("background");
