@@ -196,8 +196,8 @@ vector<Prediction> caffe_classifier::Classify(const cv::Mat& img, int N)
 }
 
 // ---------------------------------------------------------------------
-// Member function load_trained_network() imports a deploy.prototxt
-// file as well as a trained caffe model
+// Member function load_trained_network() imports a test.prototxt file
+// as well as a trained caffe model.  
 
 void caffe_classifier::load_trained_network()
 {
@@ -209,28 +209,20 @@ void caffe_classifier::load_trained_network()
    Caffe::set_mode(Caffe::GPU);
 #endif
 
-// Load the network.
+// Load the network and print out its metadata:
+
    net_.reset(new Net<float>(test_prototxt_filename, caffe::TEST));
    net_->CopyTrainedLayersFrom(trained_caffe_model_filename);
-
    print_network_metadata();   
-
-   CHECK_EQ(net_->num_inputs(), 1) << "Network should have exactly one input.";
-   CHECK_EQ(net_->num_outputs(), 1) << "Network should have exactly one output.";
 
    Blob<float>* input_blob = net_->input_blobs()[0];
    num_data_channels_ = input_blob->channels();
-   datawidth_ = input_blob->width();
-   dataheight_ = input_blob->height();
-
    CHECK(num_data_channels_ == 3 || num_data_channels_ == 1)
       << "Input layer should have 1 or 3 color channels.";
-   input_geometry_ = cv::Size(datawidth_, dataheight_);
 
-   cout << "Dimesions for trained network's input data layer: " << endl;
-   cout << "n_channels = " << num_data_channels_ << endl;
-   cout << "width = " << datawidth_ << endl;
-   cout << "height = " << dataheight_ << endl;
+   int datawidth_ = input_blob->width();
+   int dataheight_ = input_blob->height();
+   input_geometry_ = cv::Size(datawidth_, dataheight_);
 }
 
 // ---------------------------------------------------------------------
@@ -254,8 +246,13 @@ void caffe_classifier::print_network_metadata()
 
    int n_input_blobs = net_->input_blobs().size();
    cout << "n_input_blobs = " << n_input_blobs << endl;
+   CHECK_EQ(net_->num_inputs(), 1) 
+      << "Network should have exactly one input blob.";
+
    int n_output_blobs = net_->output_blobs().size();
    cout << "n_output_blobs = " << n_output_blobs << endl;
+   CHECK_EQ(net_->num_outputs(), 1) 
+      << "Network should have exactly one output blob.";
 
    int network_phase = net_->phase();
    cout << "network_phase = " << network_phase << endl;
@@ -285,7 +282,6 @@ void caffe_classifier::print_network_metadata()
    }
 
    cout << "..........................................." << endl;
-   exit(-1);
 }
 
 // ---------------------------------------------------------------------
@@ -428,9 +424,10 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 }
 
 // ---------------------------------------------------------------------
-// Member function rgb_img_to_bgr_fvec() converts RGB values within
-// the two-dimensional RGB image into a one-dimensional feature
-// vector.  The 1D vector looks like
+// Member function rgb_img_to_bgr_fvec() subtracts off mean BGR values
+// from the input RGB image.  It then converts the RGB values within
+// the renormalized two-dimensional RGB image into a one-dimensional
+// feature vector.  The 1D vector looks like
 
 //             B1 B2 B3 .... G1 G2 G3 .... R1 R2 R3...
 
@@ -496,14 +493,18 @@ void caffe_classifier::generate_dense_map()
 }
 
 // ---------------------------------------------------------------------
-// Member function generate_dense_map_data_blob()
+// Member function generate_dense_map_data_blob() reshapes a new data
+// blob based upon input image's number of channels and pixel
+// dimensions.  It then copies vectorized data from the input image
+// into the new data blob.  The data blob is then passed into the
+// trained network.  
 
 void caffe_classifier::generate_dense_map_data_blob()
 {
-   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
-   cout << "num_data_channels_ = " << num_data_channels_ << endl;
-   cout << "input_img_xdim = " << input_img_xdim << endl;
-   cout << "input_img_ydim = " << input_img_ydim << endl;
+//   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
+//   cout << "num_data_channels_ = " << num_data_channels_ << endl;
+//   cout << "input_img_xdim = " << input_img_xdim << endl;
+//   cout << "input_img_ydim = " << input_img_ydim << endl;
 
 // Create the data blob:
 
@@ -518,7 +519,7 @@ void caffe_classifier::generate_dense_map_data_blob()
 
 // Copy new test image data into data blob:
 
-//   cout << "Copying data into blob" << endl;
+//    cout << "Copying data into blob" << endl;
    memcpy(data, feature_descriptor, 
           shape[0] * shape[1] * shape[2] * shape[3] * sizeof(float));
 
@@ -527,7 +528,7 @@ void caffe_classifier::generate_dense_map_data_blob()
 
 // Perform the forward pass:
 
-//   cout << "Performing inference pass" << endl;
+//    cout << "Performing forward inference pass" << endl;
    vector<caffe::Blob<float>*> input_blobs;
    input_blobs.push_back(&data_blob);
    const vector<caffe::Blob<float> *>& result_blobs = 
@@ -544,24 +545,40 @@ void caffe_classifier::generate_dense_map_data_blob()
 }
 
 // ---------------------------------------------------------------------
-// Member function export_classification_results()
+// Member function export_classification_results() extracts n_classes
+// softmax probability values from the result_blob.  It finds the
+// maximum probablity value and returns its class label as the
+// classification result.  The maximal softmax probability is returned
+// as the classification score.
 
 void caffe_classifier::export_classification_results(
    const caffe::Blob<float>* result_blob)
 {
-   cout << "inside caffe_classifier::export_classification_results()"
-        << endl;
+//   cout << "inside caffe_classifier::export_classification_results()"
+//        << endl;
 
-   const float *argmaxs = result_blob->cpu_data();
+// Result blob should have shape = 1 x n_classes :
 
-   cout << "result->num_axes() = " << result_blob->num_axes() << endl;
-   cout << "result->shape(0) = " << result_blob->shape(0) << endl;
-   cout << "result->shape(1) = " << result_blob->shape(1) << endl;
-//   cout << "result->shape(2) = " << result->shape(2) << endl;
+   int n_classes = result_blob->shape(1);
+   const float *class_softmaxes = result_blob->cpu_data();
 
-   classification_result = argmaxs[0];
-   classification_score = argmaxs[1];
-//   classification_result = labels_.at(label_index);
+   vector<float> class_probs;
+   for(int c = 0; c < n_classes; c++)
+   {
+      class_probs.push_back(class_softmaxes[c]);
+   }
+   vector<int> predicted_class_indexes = Argmax(class_probs, n_classes);   
+
+//   for(int c = 0; c < n_classes; c++)
+//   {
+//      cout << "c = " << c 
+//           << " prob = " << class_probs[c] 
+//           << " predicted_class_indexes[c] = " << predicted_class_indexes[c]
+//           << endl;
+//   }
+   
+   classification_result = predicted_class_indexes.front();
+   classification_score = class_probs[classification_result];
 }
 
 // ---------------------------------------------------------------------

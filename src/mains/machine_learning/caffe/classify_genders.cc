@@ -96,7 +96,6 @@ int main(int argc, char** argv)
    int istop = n_images;
    int n_correct = 0, n_incorrect = 0;
 
-
    int n_classes = classifier.get_n_labels();
    genmatrix confusion_matrix(n_classes,n_classes);
    confusion_matrix.clear_matrix_values();
@@ -106,7 +105,7 @@ int main(int argc, char** argv)
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_and_remaining_time(
-         i, 50, (istop-istart));
+         i, 200, (istop-istart));
 
       int image_ID = shuffled_image_indices[i];
       string orig_image_filename = image_filenames[image_ID];
@@ -146,9 +145,8 @@ int main(int argc, char** argv)
       }
       else
       {
-         cout << "input_image_width = " << input_img_width
-              << " input_image_height = " << input_img_height << endl;
-         exit(-1);
+//         cout << "input_image_width = " << input_img_width
+//              << " input_image_height = " << input_img_height << endl;
       }
 
       texture_rectangle curr_image(image_filename, NULL);
@@ -157,37 +155,51 @@ int main(int argc, char** argv)
 
       int classification_label = classifier.get_classification_result();
       double classification_score = classifier.get_classification_score();
-      cout << "Label:  True = " << true_label 
-           << " Classified = " << classification_label 
-           << " score = " << classification_score 
-           << endl;
+//      cout << "Label:  True = " << true_label 
+//           << " Classified = " << classification_label 
+//           << " score = " << classification_score 
+//           << endl;
+
+      string classified_chip_basename=true_gender_label+"_"+
+         stringfunc::number_to_string(classification_score)+".jpg";
+      string classified_chip_imagename;
       string unix_cmd;
       if(classification_label == true_label)
       {
          n_correct++;
-         unix_cmd = "cp "+orig_image_filename+" "+correct_chips_subdir;
+         classified_chip_imagename = correct_chips_subdir+
+            classified_chip_basename;
       }
       else
       {
          n_incorrect++;
-         unix_cmd = "cp "+orig_image_filename+" "+
-            incorrect_chips_subdir;
+         classified_chip_imagename = incorrect_chips_subdir+
+            classified_chip_basename;
       }
+
+      unix_cmd = "cp "+orig_image_filename+" "+classified_chip_imagename;
       sysfunc::unix_command(unix_cmd);
 
-      double frac_correct = double(n_correct)/(n_correct+n_incorrect);
       confusion_matrix.put(
          true_label, classification_label,
          confusion_matrix.get(true_label, classification_label) + 1);
 
-      if(i%50 == 0)
+      if(i%200 == 0)
       {
+         double frac_correct = double(n_correct)/(n_correct+n_incorrect);
          cout << "n_correct = " << n_correct 
               << " n_incorrect = " << n_incorrect 
               << " frac_correct = " << frac_correct
               << endl;
       }
+
    } // loop over index i labeling input image tiles
+
+   double frac_correct = double(n_correct)/(n_correct+n_incorrect);
+   cout << "n_correct = " << n_correct 
+        << " n_incorrect = " << n_incorrect 
+        << " frac_correct = " << frac_correct
+        << endl;
 
    cout << "Confusion matrix:" << endl;
    cout << confusion_matrix << endl << endl;
