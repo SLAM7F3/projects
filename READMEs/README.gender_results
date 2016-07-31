@@ -482,8 +482,6 @@ into training, validation and testing subsets.
 
 Validation accuracy asymptotes around 87.1%
 
-
-
 Conclusion: Blacking out 2nd, 3rd,... faces appears to DECREASE
 gender classification performance!
 
@@ -494,7 +492,7 @@ Gender classification, new 7-layer face net, baseline set of O(20K) female
 training phase, Dropout added into all layers of network.  Dropout
 probabilities of nodes being ignored start small and increase to 0.5 toward
 end of network.  Gaussian initialize of all node weights.
-Weight decay = 0.0005.  4x augmented imagery set.  2nd, 3rd... faces in
+Weight decay = 0.0005.  2nd, 3rd... faces in
 chips blackened out.  Imagery data broken apart into training, validation
 and testing subsets.  Image chips smaller than 48x48 doubled in sized.
 
@@ -510,13 +508,90 @@ Gender classification, new 7-layer face net, baseline set of O(20K) female
 training phase, Dropout added into all layers of network.  Dropout
 probabilities of nodes being ignored start small and increase to 0.5 toward
 end of network.  Gaussian initialize of all node weights.  Increased number
-of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
-set. 2nd, 3rd, ... faces in chips blackened out.  Imagery data broken apart
-into training, validation and testing subsets.  Image chips smaller than
-48x48 doubled in size.
+of nodes in each layer by 32.  Weight decay = 0.0010.  2nd, 3rd, ... faces
+in chips blackened out.  Imagery data broken apart into training,
+validation and testing subsets.  Image chips smaller than 48x48 doubled in
+size.
 
 Validation accuracy asymptotes around 81.6% which is slightly better than
 the 81% found on Thurs Jul 28, Titan 3 around 7:40 am.
 
 Conclusion:  Doubling image chips whose pixel sizes are less than 48x48
 leads to slightly improved gender classification performance.
+
+----------------
+
+*.  Sat, Jul 30, Titan 1 
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.  Weight decay =
+0.0005.  4x augmented imagery set.  Imagery data broken apart into
+training, validation and testing subsets.  Image chips smaller than 48x48
+doubled in size.
+
+Validation accuracy asymptotes around 83.0 which is noticeably worse than
+the 85.3% value found on Fri Jul 29 on Titan1 !!!
+
+*.  Sat, Jul 30, Titan 3 
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.  Increased number
+of nodes in each layer by 32.  Weight decay = 0.0010.  4x augmented imagery
+set.  Imagery data broken apart into training, validation and testing
+subsets.  Image chips smaller than 48x48 doubled in size.
+
+Validation accuracy asymptotes around 83.9% which is much worse than
+the 87.1% value found on Fri Jul 29 on Titan3 !!!
+
+----------------
+
+*.  Sun, Jul 31, Titan 1 
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
+accuracy layer added for training phase, Dropout added into all layers of
+network.  Dropout probabilities of nodes being ignored start small and
+increase to 0.5 toward end of network.  Gaussian initialize of all node
+weights.  Weight decay = 0.0005.  4x augmented imagery set.  Imagery data
+broken apart into training, validation and testing subsets.  Image chips
+smaller than 48x48 doubled in size.
+
+
+
+*.  Sun, Jul 31, Titan 3 
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
+accuracy layer added for training phase, Dropout added into all layers of
+network.  Dropout probabilities of nodes being ignored start small and
+increase to 0.5 toward end of network.  Gaussian initialize of all node
+weights.  Increased number of nodes in each layer by 32.  Weight decay =
+0.0010.  4x augmented imagery set.  Imagery data broken apart into
+training, validation and testing subsets.  Image chips smaller than 48x48
+doubled in size.
+
+
+I0731 12:20:57.632194 11987 solver.cpp:289] Learning Rate Policy: step
+I0731 12:20:57.632738 11987 solver.cpp:341] Iteration 0, Testing net (#0)
+F0731 12:20:58.236258 11994 data_transformer.cpp:232] Check failed: height <= datum_height (96 vs. 80)
+
+*** Check failure stack trace: ***
+    @     0x7fd35a79bdaa  (unknown)
+    @     0x7fd35a79bce4  (unknown)
+    @     0x7fd35a79b6e6  (unknown)
+    @     0x7fd35a79e687  (unknown)
+I0731 12:20:58.264817 11987 blocking_queue.cpp:50] Data layer prefetch queue empty
+    @     0x7fd35ae1fb4f  caffe::DataTransformer<>::Transform()
+    @     0x7fd35af61330  caffe::DataLayer<>::load_batch()
+    @     0x7fd35af7c0fc  caffe::BasePrefetchingDataLayer<>::InternalThreadEntry()
+    @     0x7fd35ae11cf0  caffe::InternalThread::entry()
+    @     0x7fd35243a42f  thread_proxy
+    @     0x7fd34df9a182  start_thread
+    @     0x7fd3595d447d  (unknown)
+    @              (nil)  (unknown)

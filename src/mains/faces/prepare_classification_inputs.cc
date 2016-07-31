@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/25/16; 7/28/16; 7/29/16; 7/30/16
+// Last updated on 7/28/16; 7/29/16; 7/30/16; 7/31/16
 // ==========================================================================
 
 #include <iostream>
@@ -43,14 +43,16 @@ int main(int argc, char *argv[])
 
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string dated_subdir = "Jul30_106x106_150K/";
+   string training_subdir = face_chips_subdir+"training/";
+   string dated_subdir = "Jul30_31_106x106/";
+//    string dated_subdir = "Jul30_106x106_150K/";
 //    string dated_subdir = "Jul30_106x106_37K/";
 //    string dated_subdir = "Jul29_106x106_augmented/";
 //    string dated_subdir = "Jul28_96x96_174K_augmented/";
 //   string dated_subdir = "Jul27_96x96_41K/";
 //   string dated_subdir = "Jul22_43K/";
 //   string dated_subdir = "Jul24_174K_augmented/";
-   string training_images_subdir = face_chips_subdir+dated_subdir;
+   string training_images_subdir = training_subdir+dated_subdir;
    cout << "Specified training_images_subdir = " << training_images_subdir
         << endl;
    cout << "Make sure this subdirectory contains the latest training imagery!"
@@ -71,14 +73,14 @@ int main(int argc, char *argv[])
    vector<string> image_filenames=filefunc::image_files_in_subdir(
      training_images_subdir);
    
-   string output_filename=face_chips_subdir+"all_images_vs_classes.txt";
+   string output_filename=training_subdir+"all_images_vs_classes.txt";
    ofstream output_stream;
    filefunc::openfile(output_filename, output_stream);
 
    unsigned int istart=0;
    unsigned int istop = image_filenames.size();
    
-   string output_subdir="/image_chips/"+dated_subdir;
+   string output_subdir="/image_chips/training/"+dated_subdir;
    for(unsigned int i = istart; i < istop; i++)
    {
       string basename = filefunc::getbasename(image_filenames[i]);
