@@ -1,4 +1,7 @@
+~/bin/MAKE program=adience_images
 ~/bin/MAKE program=attribute_images
+~/bin/MAKE program=augment_chips
+~/bin/MAKE program=augment_adience_chips
 ~/bin/MAKE program=bbox_widths
 ~/bin/MAKE program=clean_images
 ~/bin/MAKE program=downsize_images

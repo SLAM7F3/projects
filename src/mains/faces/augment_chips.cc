@@ -190,7 +190,6 @@ int main( int argc, char** argv )
    int face_ID_start = 0;
    int face_ID = face_ID_start;
 
-   
    string output_chips_subdir = "./augmented_face_chips/";
    filefunc::dircreate(output_chips_subdir);
    string unknown_chips_subdir = output_chips_subdir+"unknown/";
@@ -443,5 +442,21 @@ int main( int argc, char** argv )
    cout << "Starting face ID = " << face_ID_start << endl;
    cout << "Stopping face ID = " << face_ID_stop << endl;
 
+   ofstream metastream;
+   string augmentation_logfilename = "./augmentation.dat";
+   filefunc::openfile(augmentation_logfilename, metastream);
+   metastream << timefunc::getcurrdate() << endl << endl;
+   metastream << "n_total_bboxes = " << n_total_bboxes << endl;
+   metastream << "n_female_bboxes = " << n_female_bboxes << endl;
+   metastream << "n_male_bboxes = " << n_male_bboxes << endl;
+   metastream << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
+
+   metastream << "n_known_bboxes = " << n_known_bboxes << endl;
+   metastream << "n_training_bboxes = " << n_training_bboxes << endl;
+   metastream << "n_validation_bboxes = " << n_validation_bboxes << endl;
+   metastream << "n_testing_bboxes = " << n_testing_bboxes << endl;
+   metastream << "Starting face ID = " << face_ID_start << endl;
+   metastream << "Stopping face ID = " << face_ID_stop << endl;
+   filefunc::closefile(augmentation_logfilename, metastream);
 }
 

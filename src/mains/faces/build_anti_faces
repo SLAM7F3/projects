@@ -1,4 +1,7 @@
+/bin/rm ./adience_images
 /bin/rm ./attribute_images
+/bin/rm ./augment_chips
+/bin/rm ./augment_adience_chips
 /bin/rm ./bbox_widths
 /bin/rm ./clean_images
 /bin/rm ./downsize_images
