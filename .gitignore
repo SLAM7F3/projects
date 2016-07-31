@@ -77,8 +77,10 @@ src/mains/sift/pancities
 src/mains/sift/3dvideo
 src/mains/faces/homogenized_images/
 src/mains/faces/screen_shots/
+src/mains/faces/adience_images
 src/mains/faces/attribute_images
 src/mains/faces/augment_chips
+src/mains/faces/augment_adience_chips
 src/mains/faces/image_sizes
 src/mains/faces/bbox_widths
 src/mains/faces/extend_imagechips

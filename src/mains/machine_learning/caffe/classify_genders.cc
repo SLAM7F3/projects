@@ -154,7 +154,6 @@ int main(int argc, char** argv)
       texture_rectangle curr_image(image_filename, NULL);
       classifier.rgb_img_to_bgr_fvec(curr_image);
       classifier.generate_dense_map();
-      classifier.cleanup_memory();
 
       int classification_label = classifier.get_classification_result();
       double classification_score = classifier.get_classification_score();

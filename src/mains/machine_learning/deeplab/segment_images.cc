@@ -51,7 +51,7 @@ using std::string;
 using std::vector;
 
 // ========================================================================
-// Last updated on 5/13/16; 5/20/16; 5/24/16; 6/16/16
+// Last updated on 5/20/16; 5/24/16; 6/16/16; 7/31/16
 // ========================================================================
 
 int main(int argc, char** argv) 
@@ -99,6 +99,7 @@ int main(int argc, char** argv)
    caffe_classifier classifier(
      deploy_prototxt_filename, trained_caffe_model_filename, 
      mean_rgb_filename, labels_filename, imagenet_classification_flag);
+   classifier.set_segmentation_flag(true);
 
    string input_images_subdir = input_images_basedir;
    string input_tiles_subdir=input_images_subdir+"/tiles/";

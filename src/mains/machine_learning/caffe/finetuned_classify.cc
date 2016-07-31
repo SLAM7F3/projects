@@ -89,7 +89,7 @@ int main(int argc, char** argv)
       classifier.generate_dense_map();
       classifier.cleanup_memory();
 
-      int classified_label = classifier.get_label_result();
+      int classified_label = classifier.get_classification_result();
       cout << "Label:  True = " << true_label 
            << " Classified = " << classified_label << endl;
       if(classified_label == true_label)

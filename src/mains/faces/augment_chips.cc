@@ -41,6 +41,7 @@ int main( int argc, char** argv )
    using std::cout;
    using std::endl;
    using std::map;
+   using std::ofstream;
    using std::pair;
    using std::string;
    using std::vector;
@@ -241,10 +242,13 @@ int main( int argc, char** argv )
          int xdim = tr_ptr->getWidth();
          int ydim = tr_ptr->getHeight();
 
-/*
 
-// On 7/30/16, we empiricaly found that blacking out other faces
+// On 7/30/16, we empirically found that blacking out other faces
 // appears to DECREASE gender classification performance!
+
+// As of 7/31/16, we are unsure if blacking out other faces really
+// hurts or not based upon caffe validation results on O(150K)
+// augmented chips.
 
 // Black out all face bboxes other than current one within current
 // image:
@@ -254,7 +258,6 @@ int main( int argc, char** argv )
             if(b2 == b) continue;
             tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
          }
-*/
 
          bounding_box curr_bbox = bboxes[b];
          string gender_value = curr_bbox.get_attribute_value("gender");

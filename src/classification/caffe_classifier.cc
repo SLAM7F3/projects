@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 4/18/16; 6/9/16; 6/16/16; 7/30/16
+// Last modified on 6/9/16; 6/16/16; 7/30/16; 7/31/16
 // ==========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -19,6 +19,7 @@ using namespace caffe; // NOLINT(build/namespaces)
 using std::cin;
 using std::cout;
 using std::endl;
+using std::flush;
 using std::ifstream;
 using std::ostream;
 using std::pair;
@@ -43,6 +44,11 @@ void caffe_classifier::initialize_member_objects()
    label_tr_ptr = NULL;
    score_tr_ptr = NULL;
    cc_tr_ptr = NULL;
+
+// By default, we assume caffe_classifier object is used for discrete
+// classification rather than semantic segmentation:
+
+   segmentation_flag = false; 
 }		       
 
 // ---------------------------------------------------------------------
@@ -53,8 +59,9 @@ caffe_classifier::caffe_classifier(
    allocate_member_objects();
    initialize_member_objects();
 
-   load_trained_network(deploy_prototxt_filename, 
-                        trained_caffe_model_filename);
+   test_prototxt_filename = deploy_prototxt_filename;
+   this->trained_caffe_model_filename = trained_caffe_model_filename;
+   load_trained_network();
 }
 
 // ---------------------------------------------------------------------
@@ -68,8 +75,9 @@ caffe_classifier::caffe_classifier(
    allocate_member_objects();
    initialize_member_objects();
 
-   load_trained_network(deploy_prototxt_filename, 
-                        trained_caffe_model_filename);
+   test_prototxt_filename = deploy_prototxt_filename;
+   this->trained_caffe_model_filename = trained_caffe_model_filename;
+   load_trained_network();
 
    ifstream labels(labels_filename.c_str());
    CHECK(labels) << "Unable to open labels file " << labels_filename;
@@ -191,11 +199,9 @@ vector<Prediction> caffe_classifier::Classify(const cv::Mat& img, int N)
 // Member function load_trained_network() imports a deploy.prototxt
 // file as well as a trained caffe model
 
-void caffe_classifier::load_trained_network(
-   const string& deploy_prototxt_filename,
-   const string& trained_caffe_model_filename)
+void caffe_classifier::load_trained_network()
 {
-   cout << "Loading trained network " << endl;
+   cout << "Loading trained network:" << endl;
 
 #ifdef CPU_ONLY
    Caffe::set_mode(Caffe::CPU);
@@ -204,25 +210,82 @@ void caffe_classifier::load_trained_network(
 #endif
 
 // Load the network.
-   net_.reset(new Net<float>(deploy_prototxt_filename, caffe::TEST));
+   net_.reset(new Net<float>(test_prototxt_filename, caffe::TEST));
    net_->CopyTrainedLayersFrom(trained_caffe_model_filename);
+
+   print_network_metadata();   
 
    CHECK_EQ(net_->num_inputs(), 1) << "Network should have exactly one input.";
    CHECK_EQ(net_->num_outputs(), 1) << "Network should have exactly one output.";
 
-   Blob<float>* input_layer = net_->input_blobs()[0];
-   num_channels_ = input_layer->channels();
-   datawidth_ = input_layer->width();
-   dataheight_ = input_layer->height();
+   Blob<float>* input_blob = net_->input_blobs()[0];
+   num_data_channels_ = input_blob->channels();
+   datawidth_ = input_blob->width();
+   dataheight_ = input_blob->height();
 
-   CHECK(num_channels_ == 3 || num_channels_ == 1)
+   CHECK(num_data_channels_ == 3 || num_data_channels_ == 1)
       << "Input layer should have 1 or 3 color channels.";
    input_geometry_ = cv::Size(datawidth_, dataheight_);
 
    cout << "Dimesions for trained network's input data layer: " << endl;
-   cout << "n_channels = " << num_channels_ << endl;
+   cout << "n_channels = " << num_data_channels_ << endl;
    cout << "width = " << datawidth_ << endl;
    cout << "height = " << dataheight_ << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function print_network_metadata() prints out metadata for the
+// trained network's layers, blobs, etc.
+
+void caffe_classifier::print_network_metadata()
+{
+   cout << "..........................................." << endl;
+   cout << "Network metadata" << endl;
+   
+   cout << "Trained network name = " << net_->name() << endl;
+   cout << "Trained caffe model filename = "
+        << trained_caffe_model_filename << endl;
+   cout << "Test prototxt filename = " << test_prototxt_filename << endl;
+
+   int n_layers = net_->layer_names().size();
+   cout << "n_layers = " << n_layers << endl;
+   int n_blobs = net_->blob_names().size();
+   cout << "n_blobs = " << n_blobs << endl;
+
+   int n_input_blobs = net_->input_blobs().size();
+   cout << "n_input_blobs = " << n_input_blobs << endl;
+   int n_output_blobs = net_->output_blobs().size();
+   cout << "n_output_blobs = " << n_output_blobs << endl;
+
+   int network_phase = net_->phase();
+   cout << "network_phase = " << network_phase << endl;
+
+   for(int l = 0; l < n_layers; l++)
+   {
+      cout << "Layer l = " << l 
+           << " layer_name = " << net_->layer_names().at(l)
+           << endl;
+   }
+   cout << endl;
+
+   for(int b = 0; b < n_blobs; b++)
+   {
+      cout << "Blob b = " << b
+           << " blob_name = " << net_->blob_names().at(b)
+           << " : " << flush;
+      int num_axes = net_->blobs().at(b)->num_axes();
+
+      for(int a = 0; a < num_axes; a++)
+      {
+         int curr_shape = net_->blobs().at(b)->shape(a);
+         cout << curr_shape << " " << flush;
+         if(a < num_axes - 1) cout << "x " << flush;
+      }
+      cout << endl;
+   }
+
+   cout << "..........................................." << endl;
+   exit(-1);
 }
 
 // ---------------------------------------------------------------------
@@ -236,13 +299,13 @@ void caffe_classifier::SetMean(const string& mean_file)
    // Convert from BlobProto to Blob<float> 
    Blob<float> mean_blob;
    mean_blob.FromProto(blob_proto);
-   CHECK_EQ(mean_blob.channels(), num_channels_)
+   CHECK_EQ(mean_blob.channels(), num_data_channels_)
       << "Number of channels of mean file doesn't match input layer.";
 
    // The format of the mean file is planar 32-bit float BGR or grayscale. 
    vector<cv::Mat> channels;
    float* data = mean_blob.mutable_cpu_data();
-   for (int i = 0; i < num_channels_; ++i) {
+   for (int i = 0; i < num_data_channels_; ++i) {
       // Extract an individual channel. 
       cv::Mat channel(mean_blob.height(), mean_blob.width(), CV_32FC1, data);
       channels.push_back(channel);
@@ -264,8 +327,8 @@ void caffe_classifier::SetMean(const string& mean_file)
 vector<float> caffe_classifier::Predict(const cv::Mat& img) 
 {
    cout << "inside caffe_classifier::Predict()" << endl;
-   Blob<float>* input_layer = net_->input_blobs()[0];
-   input_layer->Reshape(1, num_channels_,
+   Blob<float>* input_blob = net_->input_blobs()[0];
+   input_blob->Reshape(1, num_data_channels_,
                         input_geometry_.height, input_geometry_.width);
 
    // Forward dimension change to all layers
@@ -296,12 +359,12 @@ vector<float> caffe_classifier::Predict(const cv::Mat& img)
 
 void caffe_classifier::WrapInputLayer(vector<cv::Mat>* input_channels) 
 {
-   Blob<float>* input_layer = net_->input_blobs()[0];
+   Blob<float>* input_blob = net_->input_blobs()[0];
 
-   int width = input_layer->width();
-   int height = input_layer->height();
-   float* input_data = input_layer->mutable_cpu_data();
-   for (int i = 0; i < input_layer->channels(); ++i) 
+   int width = input_blob->width();
+   int height = input_blob->height();
+   float* input_data = input_blob->mutable_cpu_data();
+   for (int i = 0; i < input_blob->channels(); ++i) 
    {
       cv::Mat channel(height, width, CV_32FC1, input_data);
       input_channels->push_back(channel);
@@ -316,17 +379,17 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 {
    cout << "inside caffe_classifier::Preprocess()" << endl;
    cout << "img.channels() = " << img.channels() << endl;
-   cout << "num_channels_ = " << num_channels_ << endl;
+   cout << "num_data_channels_ = " << num_data_channels_ << endl;
    
    /* Convert the input image to the input image format of the network. */
    cv::Mat sample;
-   if (img.channels() == 3 && num_channels_ == 1)
+   if (img.channels() == 3 && num_data_channels_ == 1)
       cv::cvtColor(img, sample, CV_BGR2GRAY);
-   else if (img.channels() == 4 && num_channels_ == 1)
+   else if (img.channels() == 4 && num_data_channels_ == 1)
       cv::cvtColor(img, sample, CV_BGRA2GRAY);
-   else if (img.channels() == 4 && num_channels_ == 3)
+   else if (img.channels() == 4 && num_data_channels_ == 3)
       cv::cvtColor(img, sample, CV_BGRA2BGR);
-   else if (img.channels() == 1 && num_channels_ == 3)
+   else if (img.channels() == 1 && num_data_channels_ == 3)
       cv::cvtColor(img, sample, CV_GRAY2BGR);
    else
       sample = img;
@@ -343,7 +406,7 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 
 
    cv::Mat sample_float;
-   if (num_channels_ == 3)
+   if (num_data_channels_ == 3)
       sample_resized.convertTo(sample_float, CV_32FC3);
    else
       sample_resized.convertTo(sample_float, CV_32FC1);
@@ -365,14 +428,17 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 }
 
 // ---------------------------------------------------------------------
-// Member function rgb_img_to_bgr_fvec 
-// B1 B2 B3 .... G1 G2 G3 .... R1 R2 R3...
+// Member function rgb_img_to_bgr_fvec() converts RGB values within
+// the two-dimensional RGB image into a one-dimensional feature
+// vector.  The 1D vector looks like
+
+//             B1 B2 B3 .... G1 G2 G3 .... R1 R2 R3...
 
 void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
 {
    input_img_xdim = curr_img.getWidth();
    input_img_ydim = curr_img.getHeight();
-   int n_dims = input_img_xdim * input_img_ydim * num_channels_;
+   int n_dims = input_img_xdim * input_img_ydim * num_data_channels_;
    feature_descriptor = new float[n_dims];
 
    int R, G, B;
@@ -416,11 +482,11 @@ void caffe_classifier::generate_dense_map()
 {
    if(net_->has_layer("data"))
    {
-      cout << "Network definition has a data layer" << endl;
+      cout << "Testing network has a 'data' layer" << endl;
    }
    else if(net_->has_blob("data"))
    {
-//      cout << "Network definition has a data blob" << endl;
+//      cout << "Testing network has a 'data' blob" << endl;
       generate_dense_map_data_blob();
    }
    else 
@@ -435,7 +501,7 @@ void caffe_classifier::generate_dense_map()
 void caffe_classifier::generate_dense_map_data_blob()
 {
    cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
-   cout << "num_channels_ = " << num_channels_ << endl;
+   cout << "num_data_channels_ = " << num_data_channels_ << endl;
    cout << "input_img_xdim = " << input_img_xdim << endl;
    cout << "input_img_ydim = " << input_img_ydim << endl;
 
@@ -444,34 +510,36 @@ void caffe_classifier::generate_dense_map_data_blob()
    caffe::Blob<float> data_blob;
    vector<int> shape;
    shape.push_back(1);
-   shape.push_back(num_channels_);
+   shape.push_back(num_data_channels_);
    shape.push_back(input_img_ydim);
    shape.push_back(input_img_xdim);
    data_blob.Reshape(shape);
    float *data = data_blob.mutable_cpu_data();
 
-// Copy data into data blob:
+// Copy new test image data into data blob:
 
 //   cout << "Copying data into blob" << endl;
    memcpy(data, feature_descriptor, 
           shape[0] * shape[1] * shape[2] * shape[3] * sizeof(float));
+
+   delete [] feature_descriptor;
+   feature_descriptor=NULL;
 
 // Perform the forward pass:
 
 //   cout << "Performing inference pass" << endl;
    vector<caffe::Blob<float>*> input_blobs;
    input_blobs.push_back(&data_blob);
-   const vector<caffe::Blob<float> *> &result = net_->Forward(input_blobs);
+   const vector<caffe::Blob<float> *>& result_blobs = 
+      net_->Forward(input_blobs);
 
-   int n_axes = result[0]->num_axes();
-   cout << "n_axes = " << n_axes << endl;
-   if(n_axes == 2 || n_axes == 3)
+   if(segmentation_flag)
    {
-      export_classification_results(result[0]);
+      export_segmentation_mask(result_blobs[0]);
    }
-   else if(n_axes == 4)
+   else
    {
-      export_segmentation_mask(result[0]);
+      export_classification_results(result_blobs[0]);
    }
 }
 
@@ -479,16 +547,16 @@ void caffe_classifier::generate_dense_map_data_blob()
 // Member function export_classification_results()
 
 void caffe_classifier::export_classification_results(
-   const caffe::Blob<float> *result)
+   const caffe::Blob<float>* result_blob)
 {
    cout << "inside caffe_classifier::export_classification_results()"
         << endl;
 
-   const float *argmaxs = result->cpu_data();
+   const float *argmaxs = result_blob->cpu_data();
 
-   cout << "result->num_axes() = " << result->num_axes() << endl;
-   cout << "result->shape(0) = " << result->shape(0) << endl;
-   cout << "result->shape(1) = " << result->shape(1) << endl;
+   cout << "result->num_axes() = " << result_blob->num_axes() << endl;
+   cout << "result->shape(0) = " << result_blob->shape(0) << endl;
+   cout << "result->shape(1) = " << result_blob->shape(1) << endl;
 //   cout << "result->shape(2) = " << result->shape(2) << endl;
 
    classification_result = argmaxs[0];
@@ -500,16 +568,16 @@ void caffe_classifier::export_classification_results(
 // Member function export_segmentation_mask()
 
 void caffe_classifier::export_segmentation_mask(
-   const caffe::Blob<float> *result)
+   const caffe::Blob<float>* result_blob)
 {
 //   cout << "inside caffe_classifier::export_segmentation_mask()"
 //        << endl;
 
-   const float *argmaxs = result->cpu_data();
+   const float *argmaxs = result_blob->cpu_data();
 //   cout << "argmaxs = " << argmaxs << endl;
 
-   int height = result->shape(2);
-   int width = result->shape(3);
+   int height = result_blob->shape(2);
+   int width = result_blob->shape(3);
 
    if(height != input_img_ydim || width != input_img_xdim)
    {
@@ -708,15 +776,6 @@ string caffe_classifier::display_vertical_borders(
    curr_img.write_curr_frame(segment_border_filename);
    cout << "Exported " << segment_border_filename << endl;
 
-/*
-   int n_neighbors = 8;
-   int label_offset = 0;
-   graphicsfunc::label_connected_components(
-      n_neighbors, label_offset, binary_twoDarray_ptr, 
-      cc_labels_twoDarray_ptr);
-   cout << "n_CCs = " << n_CCs << endl;
-*/
-
    delete cc_labels_twoDarray_ptr;
    delete binary_twoDarray_ptr;
 
@@ -728,9 +787,6 @@ string caffe_classifier::display_vertical_borders(
 
 void caffe_classifier::cleanup_memory()
 {
-   delete [] feature_descriptor;
-   feature_descriptor=NULL;
-
    delete label_tr_ptr;
    label_tr_ptr = NULL;
 
