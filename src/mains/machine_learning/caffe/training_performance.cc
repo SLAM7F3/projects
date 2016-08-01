@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 7/25/16; 7/26/16; 7/28/16; 7/31/16
+// Last updated on 7/26/16; 7/28/16; 7/31/16; 8/1/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -49,9 +49,10 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-//   int n_training_images_per_epoch = 41821;  
+   int n_training_images_per_epoch = 37500;  
+//    int n_training_images_per_epoch = 41821;  
                       // O(43K) unaugmented face gender images 
-   int n_training_images_per_epoch = 151268;   
+//   int n_training_images_per_epoch = 151268;   
                       // O(170K) augmented gender images
 
 //   cout << "Enter number of training images per epoch (e.g. 2000 for mini, 20000 for full)"
@@ -79,7 +80,8 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Jul30_150K_doublesized_morecapacity_T3/";
+      "Aug1_37K_T3/";
+//       "Jul30_150K_doublesized_morecapacity_T3/";
 //       "Jul30_150K_doublesized_T1/";
 //      "Jul30_41K_doublesized_morecapacity_T3/";
 //      "Jul30_41K_doublesized_T1/";

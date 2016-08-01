@@ -7,7 +7,7 @@
 // correctly and incorrectly classified image chips to separate
 // subfolders.
 // ========================================================================
-// Last updated on 2/11/16; 2/12/16; 2/23/16; 7/30/16
+// Last updated on 2/12/16; 2/23/16; 7/30/16; 8/1/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -75,9 +75,14 @@ int main(int argc, char** argv)
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-   double Bmean = 104.008;
-   double Gmean = 116.669;
-   double Rmean = 122.675;
+   double Bmean = 114.45;
+   double Gmean = 114.45;
+   double Rmean = 114.45;
+
+//   double Bmean = 104.008;
+//   double Gmean = 116.669;
+//   double Rmean = 122.675;
+
 //   double Rmean = 104.008;
 //   double Gmean = 116.669;
 //   double Bmean = 122.675;
@@ -114,6 +119,7 @@ int main(int argc, char** argv)
       string orig_image_filename = image_filenames[image_ID];
       string image_filename = orig_image_filename;
       string image_basename = filefunc::getbasename(image_filename);
+//      cout << "i = " << i << " image_basename = " << image_basename << endl;
       
       vector<string> substrings = 
          stringfunc::decompose_string_into_substrings(image_basename,"_");
@@ -137,6 +143,14 @@ int main(int argc, char** argv)
       imagefunc::get_image_width_height(
          orig_image_filename, input_img_width, input_img_height);
 
+      if(input_img_width != 96 || input_img_height != 96)
+      {
+         cout << "Error" << endl;
+         cout << "input_img_width = " << input_img_width << endl;
+         cout << "input_img_height = " << input_img_height << endl;
+      }
+
+/*
       if(input_img_width > 96 || input_img_height > 96)
       {
          string id_str = stringfunc::integer_to_string(i, 3);
@@ -151,6 +165,7 @@ int main(int argc, char** argv)
 //         cout << "input_image_width = " << input_img_width
 //              << " input_image_height = " << input_img_height << endl;
       }
+*/
 
       texture_rectangle curr_image(image_filename, NULL);
       classifier.rgb_img_to_bgr_fvec(curr_image);

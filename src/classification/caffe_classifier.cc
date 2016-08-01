@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 6/9/16; 6/16/16; 7/30/16; 7/31/16
+// Last modified on 6/16/16; 7/30/16; 7/31/16; 8/1/16
 // ==========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -254,6 +254,9 @@ void caffe_classifier::print_network_metadata()
    CHECK_EQ(net_->num_outputs(), 1) 
       << "Network should have exactly one output blob.";
 
+   // On 8/1/16, we empirically confirmed that caffe::TRAIN = 0 and
+   // caffe::TEST = 1.
+
    int network_phase = net_->phase();
    if(network_phase == caffe::TRAIN)
    {
@@ -348,8 +351,6 @@ vector<float> caffe_classifier::Predict(const cv::Mat& img)
    Blob<float>* output_layer = net_->output_blobs()[0];
    const float* begin = output_layer->cpu_data();
    const float* end = begin + output_layer->channels();
-
-   cout << "at end of caffe_classifier::Predict()" << endl;
    return vector<float>(begin, end);
 }
 
@@ -440,6 +441,8 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 
 void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
 {
+//   cout << "inside caffe_classifier::rgb_img_to_bgr_fvec()" << endl;
+   
    input_img_xdim = curr_img.getWidth();
    input_img_ydim = curr_img.getHeight();
    int n_dims = input_img_xdim * input_img_ydim * num_data_channels_;
@@ -534,30 +537,32 @@ void caffe_classifier::generate_dense_map_data_blob()
 //    cout << "Performing forward inference pass" << endl;
    vector<caffe::Blob<float>*> input_blobs;
    input_blobs.push_back(&data_blob);
+
    const vector<caffe::Blob<float> *>& result_blobs = 
       net_->Forward(input_blobs);
+   const caffe::Blob<float>* result_blob = result_blobs[0];
 
    if(segmentation_flag)
    {
-      export_segmentation_mask(result_blobs[0]);
+      export_segmentation_mask(result_blob);
    }
    else
    {
-      export_classification_results(result_blobs[0]);
+      retrieve_classification_results(result_blob);
    }
 }
 
 // ---------------------------------------------------------------------
-// Member function export_classification_results() extracts n_classes
+// Member function retrieve_classification_results() extracts n_classes
 // softmax probability values from the result_blob.  It finds the
 // maximum probablity value and returns its class label as the
 // classification result.  The maximal softmax probability is returned
 // as the classification score.
 
-void caffe_classifier::export_classification_results(
+void caffe_classifier::retrieve_classification_results(
    const caffe::Blob<float>* result_blob)
 {
-//   cout << "inside caffe_classifier::export_classification_results()"
+//   cout << "inside caffe_classifier::retrieve_classification_results()"
 //        << endl;
 
 // Result blob should have shape = 1 x n_classes :
@@ -582,6 +587,10 @@ void caffe_classifier::export_classification_results(
    
    classification_result = predicted_class_indexes.front();
    classification_score = class_probs[classification_result];
+
+//   cout << "classification_result = " << classification_result
+//        << " classification_score = " << classification_score
+//        << endl << endl;
 }
 
 // ---------------------------------------------------------------------

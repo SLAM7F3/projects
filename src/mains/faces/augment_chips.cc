@@ -14,7 +14,7 @@
 //			./augment_chips
 
 // ========================================================================
-// Last updated on 7/23/16; 7/29/16; 7/30/16; 7/31/16
+// Last updated on 7/29/16; 7/30/16; 7/31/16; 8/1/16
 // ========================================================================
 
 #include <fstream>
@@ -49,10 +49,11 @@ int main( int argc, char** argv )
    timefunc::initialize_timeofday_clock(); 
    std::set_new_handler(sysfunc::out_of_memory);
 
+//   bool force_single_face_per_bbox_flag = true;
+   bool force_single_face_per_bbox_flag = false;
+
    int max_xdim = 96;
    int max_ydim = 96;
-//   int max_xdim = 224;
-//   int max_ydim = 224;
 
    bool rgb2grey_flag = true;		       // default as of Jun 14
    double rgb2grey_threshold = 0.2;            // default as of Jun 14
@@ -79,9 +80,18 @@ int main( int argc, char** argv )
    int n_female_bboxes = 0;
    int n_male_bboxes = 0;
    int n_unknown_bboxes = 0;
+
    int n_training_bboxes = 0;
+   int n_female_training_bboxes = 0;
+   int n_male_training_bboxes = 0;
+
    int n_validation_bboxes = 0;
+   int n_female_validation_bboxes = 0;
+   int n_male_validation_bboxes = 0;
+
    int n_testing_bboxes = 0;
+   int n_female_testing_bboxes = 0;
+   int n_male_testing_bboxes = 0;
 
    for(unsigned int i = 0; i < filefunc::text_line.size(); i++)
    {
@@ -159,22 +169,50 @@ int main( int argc, char** argv )
 // training:
 
          string attr_key = "classification_type";
-         string attr_value = "training";
+         string attr_value = "ignore";
          double tvt = nrfunc::ran1();
-         if(tvt < 0.025)
+         if(gender != "unknown")
          {
-            attr_value = "validation";
-            n_validation_bboxes++;
-         }
-         else if (tvt >= 0.025 && tvt < 0.10)
-         {
-            attr_value = "testing";
-            n_testing_bboxes++;
-         }
-         else
-         {
-            n_training_bboxes++;
-         }
+            if(tvt < 0.025)
+            {
+               attr_value = "validation";
+               n_validation_bboxes++;
+               if(gender=="female")
+               {
+                  n_female_validation_bboxes++;
+               }
+               else if(gender=="male")
+               {
+                  n_male_validation_bboxes++;
+               }
+            }
+            else if (tvt >= 0.025 && tvt < 0.10)
+            {
+               attr_value = "testing";
+               n_testing_bboxes++;
+               if(gender=="female")
+               {
+                  n_female_testing_bboxes++;
+               }
+               else if(gender=="male")
+               {
+                  n_male_testing_bboxes++;
+               }
+            }
+            else
+            {
+               attr_value = "training";
+               n_training_bboxes++;
+               if(gender=="female")
+               {
+                  n_female_training_bboxes++;
+               }
+               else if(gender=="male")
+               {
+                  n_male_training_bboxes++;
+               }
+            }
+         } // gender != unknown conditional
          curr_bbox.set_attribute_value(attr_key, attr_value);
 
          n_total_bboxes++;
@@ -253,10 +291,13 @@ int main( int argc, char** argv )
 // Black out all face bboxes other than current one within current
 // image:
 
-         for(unsigned int b2 = 0; b2 < bboxes.size(); b2++)
+         if(force_single_face_per_bbox_flag)
          {
-            if(b2 == b) continue;
-            tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
+            for(unsigned int b2 = 0; b2 < bboxes.size(); b2++)
+            {
+               if(b2 == b) continue;
+               tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
+            }
          }
 
          bounding_box curr_bbox = bboxes[b];
@@ -285,8 +326,8 @@ int main( int argc, char** argv )
          int n_augmentations_per_chip = 1;
          if(gender_value != "unknown" && classification_value == "training")
          {
-//            n_augmentations_per_chip = 1;
-            n_augmentations_per_chip = 4;
+            n_augmentations_per_chip = 1;
+//            n_augmentations_per_chip = 4;
          }
 
          for(int a = 0; a < n_augmentations_per_chip; a++)
@@ -431,41 +472,54 @@ int main( int argc, char** argv )
       image_counter++;
    } // loop over annotated_bboxes_iter
 
+// Export image chip statistics to output log file:
+
    int face_ID_stop = face_ID;
    double female_frac = double(n_female_bboxes) / n_total_bboxes;
    double male_frac = double(n_male_bboxes) / n_total_bboxes;
-   
-   cout << "n_total_bboxes = " << n_total_bboxes << endl;
-   cout << "n_female_bboxes = " << n_female_bboxes << endl;
-   cout << "n_male_bboxes = " << n_male_bboxes << endl;
-   cout << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
-   cout << "female_frac = " << female_frac << " male_frac = " << male_frac
-        << endl;
-
-   cout << "n_known_bboxes = " << n_known_bboxes << endl;
-   cout << "n_training_bboxes = " << n_training_bboxes << endl;
-   cout << "n_validation_bboxes = " << n_validation_bboxes << endl;
-   cout << "n_testing_bboxes = " << n_testing_bboxes << endl;
-   cout << "Starting face ID = " << face_ID_start << endl;
-   cout << "Stopping face ID = " << face_ID_stop << endl;
 
    ofstream metastream;
    string augmentation_logfilename = "./augmentation.dat";
    filefunc::openfile(augmentation_logfilename, metastream);
    metastream << timefunc::getcurrdate() << endl << endl;
+   metastream << "force_single_face_per_bbox_flag = "
+              << force_single_face_per_bbox_flag << endl;
+   metastream << endl;
+   
    metastream << "n_total_bboxes = " << n_total_bboxes << endl;
+   metastream << "n_unknown_bboxes = " << n_unknown_bboxes << endl;
+   metastream << "n_known_bboxes = " << n_known_bboxes << endl;
    metastream << "n_female_bboxes = " << n_female_bboxes << endl;
    metastream << "n_male_bboxes = " << n_male_bboxes << endl;
-   metastream << "n_unknown_bboxes = " << n_unknown_bboxes << endl << endl;
-   metastrea << "female_frac = " << female_frac << " male_frac = " << male_frac
-             << endl;
+   metastream << "female_frac = " << female_frac 
+              << " male_frac = " << male_frac << endl;
+   metastream << endl;
 
-   metastream << "n_known_bboxes = " << n_known_bboxes << endl;
    metastream << "n_training_bboxes = " << n_training_bboxes << endl;
+   metastream << "  n_female_training_bboxes = " 
+              << n_female_training_bboxes << endl;
+   metastream << "  n_male_training_bboxes = " 
+              << n_male_training_bboxes << endl;
+
    metastream << "n_validation_bboxes = " << n_validation_bboxes << endl;
+   metastream << "  n_female_validation_bboxes = " 
+              << n_female_validation_bboxes << endl;
+   metastream << "  n_male_validation_bboxes = " 
+              << n_male_validation_bboxes << endl;
+
    metastream << "n_testing_bboxes = " << n_testing_bboxes << endl;
+   metastream << "  n_female_testing_bboxes = " 
+              << n_female_testing_bboxes << endl;
+   metastream << "  n_male_testing_bboxes = " 
+              << n_male_testing_bboxes << endl;
+   metastream << endl;
+
    metastream << "Starting face ID = " << face_ID_start << endl;
    metastream << "Stopping face ID = " << face_ID_stop << endl;
    filefunc::closefile(augmentation_logfilename, metastream);
+
+   string banner="Exported image chip statistics to "+
+      augmentation_logfilename;
+   outputfunc::write_banner(banner);
 }
 

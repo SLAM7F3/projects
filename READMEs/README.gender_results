@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/28/16; 7/29/16; 7/30/16; 7/31/16
+Last updated on 7/29/16; 7/30/16; 7/31/16; 8/1/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -562,8 +562,6 @@ weights.  Weight decay = 0.0005.  4x augmented imagery set.  Imagery data
 broken apart into training, validation and testing subsets.  Image chips
 smaller than 48x48 doubled in size.
 
-
-
 *.  Sun, Jul 31, Titan 3 
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
@@ -595,3 +593,20 @@ I0731 12:20:58.264817 11987 blocking_queue.cpp:50] Data layer prefetch queue emp
     @     0x7fd34df9a182  start_thread
     @     0x7fd3595d447d  (unknown)
     @              (nil)  (unknown)
+
+----------------
+*.  Mon, Aug 1, Titan 3
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces, base learning rate = 0.003, accuracy layer added for
+training phase, Dropout added into all layers of network.  Dropout
+probabilities of nodes being ignored start small and increase to 0.5 toward
+end of network.  Gaussian initialize of all node weights.  Weight decay =
+0.0005.  Imagery data broken apart into training, validation and testing
+subsets.  Image chips smaller than 48x48 doubled in size.  
+
+Training, validation and testing images all have pixel size 96x96.  Set
+constant mean RGB color value = 114.45.
+
+Smoothed asymptotic training accuracy around 98.7%
+Asymptotic validation accuracy around 79.6%

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 1/25/16; 4/18/16; 6/16/16; 7/30/16
+// Last modified on 4/18/16; 6/16/16; 7/30/16; 8/1/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -73,7 +73,7 @@ class caffe_classifier
    void WrapInputLayer(std::vector<cv::Mat>* input_channels);
    void Preprocess(const cv::Mat& img,
                    std::vector<cv::Mat>* input_channels);
-   void export_classification_results(const caffe::Blob<float>* result_blob);
+   void retrieve_classification_results(const caffe::Blob<float>* result_blob);
    void export_segmentation_mask(const caffe::Blob<float>* result_blob);
 
    void allocate_member_objects();
