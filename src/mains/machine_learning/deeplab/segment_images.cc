@@ -114,15 +114,6 @@ int main(int argc, char** argv)
 
    int istart=0;
    int istop = n_image_tiles;
-
-//   bool find_text_middle_line_flag = true;
-//   bool find_text_middle_line_flag = false;
-// FAKE FAKE:  Mon Apr 18 at 7:35 am
-//   if(find_text_middle_line_flag)
-//   {
-//      istop = 2;
-//   }
-
    for(int i = istart; i < istop; i++)
    {
       double progress_frac = double(i - istart)/double(istop-istart);
@@ -137,16 +128,6 @@ int main(int argc, char** argv)
       classifier.generate_dense_map();
       classifier.display_segmentation_labels(curr_image,output_subdir);
       classifier.display_segmentation_scores(curr_image,output_subdir);
-/*
-      if(find_text_middle_line_flag)
-      {
-         int lower_label = 2;
-         int upper_label = 1;
-         classifier.display_vertical_borders(curr_image,output_subdir, 
-                                             lower_label, upper_label);
-      }
-*/
-
       classifier.cleanup_memory();
 
    } // loop over index i labeling input image tiles

@@ -2,6 +2,7 @@
 /bin/rm ./caffe_classification
 /bin/rm ./check_lmdb
 /bin/rm ./classify_chars
+/bin/rm ./classify_genders
 /bin/rm ./ensemble_chars
 /bin/rm ./extract_features
 /bin/rm ./finetuned_classify

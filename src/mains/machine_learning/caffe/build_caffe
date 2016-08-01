@@ -2,6 +2,7 @@
 ~/bin/MAKE program=caffe_classification
 ~/bin/MAKE program=check_lmdb
 ~/bin/MAKE program=classify_chars
+~/bin/MAKE program=classify_genders
 ~/bin/MAKE program=ensemble_chars
 ~/bin/MAKE program=extract_features
 ~/bin/MAKE program=finetuned_classify

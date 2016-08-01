@@ -255,8 +255,15 @@ void caffe_classifier::print_network_metadata()
       << "Network should have exactly one output blob.";
 
    int network_phase = net_->phase();
-   cout << "network_phase = " << network_phase << endl;
-
+   if(network_phase == caffe::TRAIN)
+   {
+      cout << "network_phase = caffe::TRAIN" << endl;
+   }
+   else if (network_phase == caffe::TEST)
+   {
+      cout << "network_phase = caffe::TEST" << endl;
+   }
+   
    for(int l = 0; l < n_layers; l++)
    {
       cout << "Layer l = " << l 
@@ -502,10 +509,6 @@ void caffe_classifier::generate_dense_map()
 void caffe_classifier::generate_dense_map_data_blob()
 {
 //   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
-//   cout << "num_data_channels_ = " << num_data_channels_ << endl;
-//   cout << "input_img_xdim = " << input_img_xdim << endl;
-//   cout << "input_img_ydim = " << input_img_ydim << endl;
-
 // Create the data blob:
 
    caffe::Blob<float> data_blob;
@@ -526,7 +529,7 @@ void caffe_classifier::generate_dense_map_data_blob()
    delete [] feature_descriptor;
    feature_descriptor=NULL;
 
-// Perform the forward pass:
+// Perform the forward pass on the data blob:
 
 //    cout << "Performing forward inference pass" << endl;
    vector<caffe::Blob<float>*> input_blobs;
@@ -738,65 +741,6 @@ string caffe_classifier::display_segmentation_scores(
    curr_img.write_curr_frame(score_filename);
    cout << "Exported " << score_filename << endl;
    return score_filename;
-}
-
-// ---------------------------------------------------------------------
-// Member function display_vertical_borders()
-
-string caffe_classifier::display_vertical_borders(
-   texture_rectangle& curr_img, string output_subdir,
-   int lower_label, int upper_label)
-{
-   cout << "inside caffe_classifier::display_vertical_borders()" << endl;
-
-   twoDarray* binary_twoDarray_ptr = new twoDarray(
-      input_img_xdim, input_img_ydim);
-   twoDarray* cc_labels_twoDarray_ptr = new twoDarray(
-      input_img_xdim, input_img_ydim);
-   binary_twoDarray_ptr->clear_values();
-   cc_labels_twoDarray_ptr->clear_values();
-
-   double h, s, v;
-   twoDarray* ptwoDarray_ptr = label_tr_ptr->get_ptwoDarray_ptr();
-   for(unsigned int py = 1; py < ptwoDarray_ptr->get_ydim(); py++)
-   {
-      for(unsigned int px = 0; px < ptwoDarray_ptr->get_xdim(); px++)
-      {
-         curr_img.get_pixel_hsv_values(px, py, h, s, v);
-         if(nearly_equal(ptwoDarray_ptr->get(px, py+1), lower_label) &&
-            nearly_equal(ptwoDarray_ptr->get(px, py), upper_label))
-         {
-            double smin = 0.66;
-            double smax = 1.0;
-            double vmin = 0.5;
-            double vmax = 1.0;
-            h = 300;
-            s = smin + s * (smax - smin);
-            v = vmin + v * (vmax - vmin);
-            binary_twoDarray_ptr->put(px,py,255);
-         }
-         else
-         {
-            s = 0;
-            v *= 0.85;
-         }
-         curr_img.set_pixel_hsv_values(px, py, h, s, v);
-      } // loop over px
-   } // loop over py
-
-   string segmented_filename=curr_img.get_video_filename();
-   string basename = filefunc::getbasename(segmented_filename);
-   string basename_prefix=stringfunc::prefix(basename);
-   string segment_border_filename=output_subdir+basename_prefix
-      +"_segment_borders.png";
-
-   curr_img.write_curr_frame(segment_border_filename);
-   cout << "Exported " << segment_border_filename << endl;
-
-   delete cc_labels_twoDarray_ptr;
-   delete binary_twoDarray_ptr;
-
-   return segment_border_filename;
 }
 
 // ---------------------------------------------------------------------
