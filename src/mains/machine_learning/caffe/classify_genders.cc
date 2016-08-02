@@ -196,7 +196,7 @@ int main(int argc, char** argv)
       }
 
       unix_cmd = "cp "+orig_image_filename+" "+classified_chip_imagename;
-      sysfunc::unix_command(unix_cmd);
+//      sysfunc::unix_command(unix_cmd);
 
       confusion_matrix.put(
          true_label, classification_label,

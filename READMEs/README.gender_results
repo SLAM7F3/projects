@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 7/29/16; 7/30/16; 7/31/16; 8/1/16
+Last updated on 7/30/16; 7/31/16; 8/1/16; 8/2/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -535,6 +535,26 @@ doubled in size.
 Validation accuracy asymptotes around 83.0 which is noticeably worse than
 the 85.3% value found on Fri Jul 29 on Titan1 !!!
 
+train_iter_204244.caffemodel
+
+1036 validation set:
+
+n_correct = 857 n_incorrect = 179 frac_correct = 0.82722
+Confusion matrix:
+
+0	0	0	
+0	432	71	
+0	108	425	
+
+3158 testing set:
+
+n_correct = 2668 n_incorrect = 490 frac_correct = 0.844839
+Confusion matrix:
+
+0	0	0	
+0	1416	165	
+0	325	1252	
+
 *.  Sat, Jul 30, Titan 3 
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
@@ -548,6 +568,27 @@ subsets.  Image chips smaller than 48x48 doubled in size.
 
 Validation accuracy asymptotes around 83.9% which is much worse than
 the 87.1% value found on Fri Jul 29 on Titan3 !!!
+
+train_iter_204145.caffemodel
+
+1036 validation set: 
+
+n_correct = 882 n_incorrect = 154 frac_correct = 0.851351
+Confusion matrix:
+
+0	0	0	
+0	441	62	
+0	92	441	
+
+3158 testing set:
+
+n_correct = 2704 n_incorrect = 454 frac_correct = 0.856238
+Confusion matrix:
+
+0	0	0	
+0	1407	174	
+0	280	1297	
+
 
 ----------------
 
@@ -614,9 +655,14 @@ Asymptotic validation accuracy around 79.6%
 
 
 
-*.  Try running a few test images through pwin's inference engine.  Need
-caffe model, test.prototxt, mean RGB file and names for classes.  Create a
-new dl version.  See John's lab.
+
+TODO:
+
+*.  Break out all Magick++ methods in videofuncs and imagefuncs namespaces
+into new magickfuncs namespace sitting in src/images/
+
+*.  Clean up src/classification/caffe_classifier.c  In particular,
+segregate off deprecated code at end of file and comment it out.
 
 *.  Write C++ code to look at first few weights in each layer after a model
 has been trained.  Also compute mean weight value for each layer.
