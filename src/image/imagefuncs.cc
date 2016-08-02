@@ -1,7 +1,7 @@
 // ==========================================================================
 // IMAGEFUNCS stand-alone methods
 // ==========================================================================
-// Last modified on 3/26/16; 3/31/16; 4/8/16; 6/1/16
+// Last modified on 3/31/16; 4/8/16; 6/1/16; 8/2/16
 // ==========================================================================
 
 #include <algorithm>	
@@ -1986,6 +1986,31 @@ namespace imagefunc
       }
 
       return valid_image_flag;
+   }
+
+// ---------------------------------------------------------------------
+// Method corrupted_jpg_file() calls utility jpeginfo with a "check"
+// flag which looks for input file errors.  If any are found, this
+// boolean method returns true.
+
+   bool corrupted_jpg_file(string jpg_filename)
+   {
+      bool corrupted_file = true;
+
+      string jpg_logfilename="./jpg.log";
+      string unix_cmd = "jpeginfo --check "+jpg_filename+" > "+jpg_logfilename;
+      sysfunc::unix_command(unix_cmd);
+      filefunc::ReadInfile(jpg_logfilename);
+//      cout << filefunc::text_line[0] << endl;
+      vector<string> substrings = stringfunc::decompose_string_into_substrings(
+         filefunc::text_line[0]);
+//      cout << substrings.back() << endl;
+      
+      if(substrings.back() == "[OK]")
+      {
+         corrupted_file = false;
+      }
+      return corrupted_file;
    }
 
 // ---------------------------------------------------------------------

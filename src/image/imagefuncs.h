@@ -1,7 +1,7 @@
 // =========================================================================
 // Header file for stand-alone image functions.
 // =========================================================================
-// Last modified on 3/23/16; 3/24/16; 3/26/16; 4/9/16
+// Last modified on 3/24/16; 3/26/16; 4/9/16; 8/2/16
 // =========================================================================
 
 #ifndef IMAGEFUNCS_H
@@ -209,6 +209,7 @@ namespace imagefunc
 // Image size methods:
 
    bool valid_image_file(std::string image_filename);
+   bool corrupted_jpg_file(std::string jpg_filename);
    bool get_image_width_height(
       std::string image_filename,int& width,int& height);
    bool get_image_width_height(

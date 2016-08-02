@@ -589,6 +589,9 @@ Confusion matrix:
 0	1407	174	
 0	280	1297	
 
+***************************************************************
+As of 8/2/16, this is our BEST gender classification result.
+**************************************************************
 
 ----------------
 
@@ -615,26 +618,6 @@ weights.  Increased number of nodes in each layer by 32.  Weight decay =
 training, validation and testing subsets.  Image chips smaller than 48x48
 doubled in size.
 
-
-I0731 12:20:57.632194 11987 solver.cpp:289] Learning Rate Policy: step
-I0731 12:20:57.632738 11987 solver.cpp:341] Iteration 0, Testing net (#0)
-F0731 12:20:58.236258 11994 data_transformer.cpp:232] Check failed: height <= datum_height (96 vs. 80)
-
-*** Check failure stack trace: ***
-    @     0x7fd35a79bdaa  (unknown)
-    @     0x7fd35a79bce4  (unknown)
-    @     0x7fd35a79b6e6  (unknown)
-    @     0x7fd35a79e687  (unknown)
-I0731 12:20:58.264817 11987 blocking_queue.cpp:50] Data layer prefetch queue empty
-    @     0x7fd35ae1fb4f  caffe::DataTransformer<>::Transform()
-    @     0x7fd35af61330  caffe::DataLayer<>::load_batch()
-    @     0x7fd35af7c0fc  caffe::BasePrefetchingDataLayer<>::InternalThreadEntry()
-    @     0x7fd35ae11cf0  caffe::InternalThread::entry()
-    @     0x7fd35243a42f  thread_proxy
-    @     0x7fd34df9a182  start_thread
-    @     0x7fd3595d447d  (unknown)
-    @              (nil)  (unknown)
-
 ----------------
 *.  Mon, Aug 1, Titan 3
 
@@ -652,8 +635,35 @@ constant mean RGB color value = 114.45.
 Smoothed asymptotic training accuracy around 98.7%
 Asymptotic validation accuracy around 79.6%
 
+----------------
+*.  Tues, Aug 2, Titan 1
 
+184440 combined original + Adience faces used for training.
 
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
+accuracy layer added for training phase, Dropout added into all layers of
+network.  Dropout probabilities of nodes being ignored start small and
+increase to 0.5 toward end of network.  Gaussian initialize of all node
+weights.  Weight decay = 0.0005.  4x augmented imagery set.  Imagery data
+broken apart into training, validation and testing subsets.  Image chips
+smaller than 48x48 doubled in size.
+
+Training started around 8:10 am
+
+*.  Tues, Aug 2, Titan 3
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
+accuracy layer added for training phase, Dropout added into all layers of
+network.  Dropout probabilities of nodes being ignored start small and
+increase to 0.5 toward end of network.  Gaussian initialize of all node
+weights.  Increased number of nodes in each layer by 32.  Weight decay =
+0.0010.  4x augmented imagery set.  Imagery data broken apart into
+training, validation and testing subsets.  Image chips smaller than 48x48
+doubled in size.
+
+Training started around 8:10 am
 
 
 TODO:

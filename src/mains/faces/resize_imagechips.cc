@@ -17,7 +17,7 @@
 //                          ./resize_imagechips
 
 // ==========================================================================
-// Last updated on 7/28/16; 7/30/16; 7/31/16; 8/1/16
+// Last updated on 7/30/16; 7/31/16; 8/1/16; 8/2/16
 // ==========================================================================
 
 #include <iostream>
@@ -56,24 +56,18 @@ int main(int argc, char *argv[])
    string resized_chips_subdir=images_subdir+"resized_chips/";
    filefunc::dircreate(resized_chips_subdir);
 
-//   char training_char;
-//   cout << "Enter 't' if input image chips are to be used for training:"
-//        << endl;
-//   cin >> training_char;
+   char training_char;
+   cout << "Enter 't' if input image chips are to be used for training:"
+        << endl;
+   cin >> training_char;
 
-   int max_xdim = 96;  // Image size for training, validation & testing
-   int max_ydim = 96;  //   chips for FACE01 neural net
-
-/*
-//   int max_xdim = 106;  // Training image chip size 
-//   int max_ydim = 106;  //   for FACE01 neural net
+   int max_xdim = 106;  // Training image chip size 
+   int max_ydim = 106;  //   for FACE01 neural net
    if(training_char != 't')
    {
       max_xdim = 96;  // Validation and testing image chip size 
       max_ydim = 96;  //   for FACE01 neural net
    }
-*/
-
    cout << "max_xdim = " << max_xdim << " max_ydim = " << max_ydim
         << endl;
 

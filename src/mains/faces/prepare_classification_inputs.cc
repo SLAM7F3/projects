@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/29/16; 7/30/16; 7/31/16; 8/1/16
+// Last updated on 7/30/16; 7/31/16; 8/1/16; 8/2/16
 // ==========================================================================
 
 #include <iostream>
@@ -41,24 +41,32 @@ int main(int argc, char *argv[])
    timefunc::initialize_timeofday_clock();
    sysfunc::clearscreen();
 
+   vector<string> training_images_subdirs;
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
    string training_subdir = face_chips_subdir+"training/";
-   string dated_subdir = "Aug1_96x96_37K_nonsinglefaces/";
+
+   string dated_subdir = "Jul30_106x106_150K/";
+//    string dated_subdir = "Aug1_96x96_37K_nonsinglefaces/";
 //    string dated_subdir = "Aug1_96x96_20/";
 //    string dated_subdir = "Aug1_96x96_39K/";
 //    string dated_subdir = "Jul30_31_106x106/";
 //    string dated_subdir = "Jul30_106x106_150K/";
 //    string dated_subdir = "Jul30_106x106_37K/";
-//    string dated_subdir = "Jul29_106x106_augmented/";
-//    string dated_subdir = "Jul28_96x96_174K_augmented/";
-//   string dated_subdir = "Jul27_96x96_41K/";
-//   string dated_subdir = "Jul22_43K/";
-//   string dated_subdir = "Jul24_174K_augmented/";
-   string training_images_subdir = training_subdir+dated_subdir;
-   cout << "Specified training_images_subdir = " << training_images_subdir
-        << endl;
-   cout << "Make sure this subdirectory contains the latest training imagery!"
+
+   string curr_training_images_subdir = training_subdir+dated_subdir;
+   training_images_subdirs.push_back(curr_training_images_subdir);
+
+   dated_subdir = "Jul31_106x106_adience/";
+   curr_training_images_subdir = training_subdir+dated_subdir;
+   training_images_subdirs.push_back(curr_training_images_subdir);
+
+      cout << "Specified training_images_subdirs:" << endl;
+   for(unsigned t = 0; t < training_images_subdirs.size(); t++)
+   {
+      cout << training_images_subdirs[t] << endl;
+   }
+   cout << "Make sure these subdirectories contain the latest training imagery!"
         << endl;
    outputfunc::enter_continue_char();
 
@@ -73,17 +81,25 @@ int main(int argc, char *argv[])
    }
    sysfunc::unix_command(unix_cmd);
 
-   vector<string> image_filenames=filefunc::image_files_in_subdir(
-     training_images_subdir);
-   
+   vector<string> image_filenames;
+   for(unsigned t = 0; t < training_images_subdirs.size(); t++)
+   {
+      vector<string> curr_image_filenames=filefunc::image_files_in_subdir(
+         training_images_subdirs[t]);
+      for(unsigned int i = 0; i < curr_image_filenames.size(); i++)
+      {
+         image_filenames.push_back(curr_image_filenames[i]);
+      }
+   }
+   cout << "Total number of input images = " << image_filenames.size()
+        << endl;
+
    string output_filename=training_subdir+"all_images_vs_classes.txt";
    ofstream output_stream;
    filefunc::openfile(output_filename, output_stream);
 
    unsigned int istart=0;
    unsigned int istop = image_filenames.size();
-   
-   string output_subdir="/image_chips/training/"+dated_subdir;
    for(unsigned int i = istart; i < istop; i++)
    {
       string basename = filefunc::getbasename(image_filenames[i]);
@@ -104,7 +120,11 @@ int main(int argc, char *argv[])
          continue;
       }
 
-      string output_image_filename=output_subdir+basename;
+//      string output_subdir="/image_chips/training/"+dated_subdir;
+      string output_subdir = filefunc::getdirname(image_filenames[i]);
+      string new_subdir = output_subdir.substr(17, output_subdir.size() - 17);
+      string output_image_filename=new_subdir+basename;
+//      string output_image_filename=output_subdir+basename;
       output_stream << output_image_filename << "  " << curr_label << endl;
 
    } // loop over index i 

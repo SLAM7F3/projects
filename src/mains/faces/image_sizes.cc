@@ -30,7 +30,8 @@ int main(int argc, char *argv[])
 // ==========================================================================
 {
    timefunc::initialize_timeofday_clock(); 
-   string input_imagesdir = "./homogenized_images/";
+   string input_imagesdir = "./";
+//   string input_imagesdir = "./homogenized_images/";
 
    vector<string> image_filenames=filefunc::image_files_in_subdir(
       input_imagesdir);
@@ -56,6 +57,25 @@ int main(int argc, char *argv[])
       outstream << filefunc::getbasename(image_filenames[i])
                 << "  " << width
                 << "  " << height << endl;
+
+      if(imagefunc::corrupted_jpg_file(image_filename))
+      {
+         cout << "image_filename = " << image_filename << " is corrupted!"
+              << endl;
+         outputfunc::enter_continue_char();
+      }
+
+      if(width != 106 || height != 106)
+      {
+         cout << "i = " << i 
+              << " image_filename = " << image_filename
+              << " width = " << width
+              << " height = " << height
+              << endl;
+//         filefunc::deletefile(image_filename);
+         outputfunc::enter_continue_char();
+      }
+
    }
 
    filefunc::closefile(output_filename, outstream);
