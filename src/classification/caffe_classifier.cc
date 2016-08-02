@@ -443,7 +443,7 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 
 void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
 {
-  cout << "inside caffe_classifier::rgb_img_to_bgr_fvec()" << endl;
+//  cout << "inside caffe_classifier::rgb_img_to_bgr_fvec()" << endl;
    
    input_img_xdim = curr_img.getWidth();
    input_img_ydim = curr_img.getHeight();
@@ -454,47 +454,55 @@ void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
    int index = 0;
    for(int c = 0; c < num_data_channels_; c++){
       for(int py = 0; py < input_img_ydim; py++){
+
          for(int px = 0; px < input_img_xdim; px++){
 
-            int R = curr_img.fast_get_pixel_R_value(px, py);
-            int G = curr_img.fast_get_pixel_G_value(px, py);
-            int B = curr_img.fast_get_pixel_B_value(px, py);
-            
             float curr_value;
             if(c == 0)   // blue channel first
             {
-               curr_value = curr_img.fast_get_pixel_B_value(px, py)
-                  - mean_bgr.first;
+               if(segmentation_flag)
+               {
+                  B = curr_img.fast_get_pixel_B_value(
+                     px, input_img_ydim - 1 - py);
+               }
+               else
+               {
+                  B = curr_img.fast_get_pixel_B_value(px, py);
+               }
+               curr_value = B - mean_bgr.first;
             }
             else if (c == 1) // green channel second
             {
-               curr_value = curr_img.fast_get_pixel_G_value(px, py)
-                  - mean_bgr.second;
+               if(segmentation_flag)
+               {
+                  G = curr_img.fast_get_pixel_R_value(
+                     px, input_img_ydim - 1 - py);
+               }
+               else
+               {
+                  G = curr_img.fast_get_pixel_G_value(px, py);
+               }
+               curr_value = G - mean_bgr.second;
             }
             else  // red channel third
             {
-               curr_value = curr_img.fast_get_pixel_R_value(px, py)
-                  - mean_bgr.third;
+               if(segmentation_flag)
+               {
+                  R = curr_img.fast_get_pixel_R_value(
+                     px, input_img_ydim - 1 - py);
+               }
+               else
+               {
+                  R = curr_img.fast_get_pixel_R_value(px, py);
+               }
+               curr_value = R - mean_bgr.third;
             }
             
             feature_descriptor[index] = curr_value;
-
-            if(px >= 47 && px <= 49 && py >= 47 && py <= 49){
-               cout << "px = " << px << " py = " << py 
-                    << " index = " << index 
-                    << " R = " << R << " G = " << G << " B = " << B
-                    << " feature_descrip = "
-                    << feature_descriptor[index] << endl;
-            }
-
             index++;
-//            feature_descriptor[(c * input_img_ydim + py) * input_img_xdim 
-//                               + px] = curr_value;
          } // loop over index px
       } // loop over index py
    } // loop over index c labeling color channels
-
-   exit(-1);
 }
 
 // ---------------------------------------------------------------------
@@ -623,6 +631,7 @@ void caffe_classifier::generate_dense_map_data_blob()
    memcpy(data, feature_descriptor, 
           shape[0] * shape[1] * shape[2] * shape[3] * sizeof(float));
 
+/*
    for(int c = 0; c < 3; c++)
    {
       for(int py = 47; py <= 49; py++)
@@ -638,6 +647,7 @@ void caffe_classifier::generate_dense_map_data_blob()
       }
    }
    outputfunc::enter_continue_char();
+*/
 
 
 // Perform the forward pass on the data blob:
@@ -666,11 +676,12 @@ void caffe_classifier::generate_dense_map_data_blob()
 }
 
 // ---------------------------------------------------------------------
-// Member function retrieve_classification_results() extracts n_classes
-// softmax probability values from the result_blob.  It finds the
-// maximum probablity value and returns its class label as the
-// classification result.  The maximal softmax probability is returned
-// as the classification score.
+// Member function retrieve_classification_results() extracts
+// n_classes softmax probability values from the "prob" blob.  The
+// maximal softmax probability is returned as the classification
+// score.  The label corresponding to the class with the highest
+// classification probability is returned as the classification
+// result.
 
 void caffe_classifier::retrieve_classification_results(
    const caffe::Blob<float>* result_blob)
@@ -678,27 +689,24 @@ void caffe_classifier::retrieve_classification_results(
 //   cout << "inside caffe_classifier::retrieve_classification_results()"
 //        << endl;
 
-// Result blob should have shape = 1 x n_classes :
+// Softmax "prob" blob should have shape = 1 x n_classes :
 
-   int n_classes = result_blob->shape(1);
-   const float *class_softmaxes = result_blob->cpu_data();
+   const shared_ptr<const caffe::Blob<float> > probs_blob =
+      net_->blob_by_name("prob");
+
+   int n_classes = probs_blob->shape(1);
+   const float *probs_out = probs_blob->cpu_data();
 
    vector<float> class_probs;
    for(int c = 0; c < n_classes; c++)
    {
-      class_probs.push_back(class_softmaxes[c]);
-   }
-   vector<int> predicted_class_indexes = Argmax(class_probs, n_classes);   
-
-//   for(int c = 0; c < n_classes; c++)
-//   {
-//      cout << "c = " << c 
-//           << " prob = " << class_probs[c] 
-//           << " predicted_class_indexes[c] = " << predicted_class_indexes[c]
+      class_probs.push_back(probs_out[c]);
+//      cout << "c = " << c << " class_probs = " << class_probs.back()
 //           << endl;
-//   }
-   
-   classification_result = predicted_class_indexes.front();
+   }
+
+   const float *class_argmaxes = result_blob->cpu_data();
+   classification_result = class_argmaxes[0];
    classification_score = class_probs[classification_result];
 
 //   cout << "classification_result = " << classification_result

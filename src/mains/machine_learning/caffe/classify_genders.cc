@@ -119,7 +119,7 @@ int main(int argc, char** argv)
       string orig_image_filename = image_filenames[image_ID];
       string image_filename = orig_image_filename;
       string image_basename = filefunc::getbasename(image_filename);
-      cout << "i = " << i << " image_basename = " << image_basename << endl;
+//      cout << "i = " << i << " image_basename = " << image_basename << endl;
       
       vector<string> substrings = 
          stringfunc::decompose_string_into_substrings(image_basename,"_");
