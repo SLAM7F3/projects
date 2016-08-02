@@ -110,9 +110,9 @@ int main(int argc, char** argv)
 
    int istart=0;
    int istop = n_images;
-   int n_correct = 0, n_incorrect = 0;
-
    int n_classes = classifier.get_n_labels();
+   vector<double> correct_scores, incorrect_scores;
+
    genmatrix confusion_matrix(n_classes,n_classes);
    confusion_matrix.clear_matrix_values();
 
@@ -187,19 +187,20 @@ int main(int argc, char** argv)
 //           << endl;
 
       string classified_chip_basename=true_gender_label+"_"+
+         stringfunc::number_to_string(classification_score)+
          stringfunc::integer_to_string(i,5)+"_"+
-         stringfunc::number_to_string(classification_score)+".jpg";
+         ".jpg";
       string classified_chip_imagename;
       string unix_cmd;
       if(classification_label == true_label)
       {
-         n_correct++;
+         correct_scores.push_back(classification_score);
          classified_chip_imagename = correct_chips_subdir+
             classified_chip_basename;
       }
       else
       {
-         n_incorrect++;
+         incorrect_scores.push_back(classification_score);
          classified_chip_imagename = incorrect_chips_subdir+
             classified_chip_basename;
       }
@@ -216,6 +217,8 @@ int main(int argc, char** argv)
 
       if(i%200 == 0)
       {
+         int n_correct = correct_scores.size();
+         int n_incorrect = incorrect_scores.size();
          double frac_correct = double(n_correct)/(n_correct+n_incorrect);
          cout << "n_correct = " << n_correct 
               << " n_incorrect = " << n_incorrect 
@@ -225,6 +228,19 @@ int main(int argc, char** argv)
 
    } // loop over index i labeling input image tiles
 
+   
+   prob_distribution prob_correct(correct_scores, 100, 0);
+   prob_distribution prob_incorrect(correct_scores, 100, 0);
+
+   prob_correct.set_title(
+      "Classification scores for correctly classified genders");
+   prob_incorrect.set_title(
+      "Classification scores for incorrectly classified genders");
+   prob_correct.writeprobdists(false);
+   prob_incorrect.writeprobdists(false);
+
+   int n_correct = correct_scores.size();
+   int n_incorrect = incorrect_scores.size();
    double frac_correct = double(n_correct)/(n_correct+n_incorrect);
    cout << "n_correct = " << n_correct 
         << " n_incorrect = " << n_incorrect 
