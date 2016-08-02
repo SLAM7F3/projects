@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for videofunc namespace
 // ==========================================================================
-// Last modified on 3/13/16; 3/14/16; 7/23/16; 7/30/16
+// Last modified on 3/14/16; 7/23/16; 7/30/16; 8/1/16
 // ==========================================================================
 
 #ifndef VIDEOFUNCS_H
@@ -353,6 +353,8 @@ namespace videofunc
    void crop_image(Magick::Image& curr_image, int width, int height, 
                    int xoffset, int yoffset);
    void crop_rotate_image(Magick::Image& curr_image,double theta);
+   void get_pixel_RGB(Magick::Image& curr_image, 
+                      int px, int py, int& R, int& G, int& B);
 
 // ==========================================================================
 // Inlined methods:

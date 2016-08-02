@@ -610,3 +610,14 @@ constant mean RGB color value = 114.45.
 
 Smoothed asymptotic training accuracy around 98.7%
 Asymptotic validation accuracy around 79.6%
+
+
+
+
+*.  Try running a few test images through pwin's inference engine.  Need
+caffe model, test.prototxt, mean RGB file and names for classes.  Create a
+new dl version.  See John's lab.
+
+*.  Write C++ code to look at first few weights in each layer after a model
+has been trained.  Also compute mean weight value for each layer.
+

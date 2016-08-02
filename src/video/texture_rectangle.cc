@@ -9,7 +9,7 @@
 // ========================================================================
 // texture_rectangle provides functionality for displaying video files.
 // ========================================================================
-// Last updated on 5/30/16; 6/20/16; 6/21/16; 6/25/16
+// Last updated on 6/20/16; 6/21/16; 6/25/16; 8/1/16
 // ========================================================================
 
 #include <iostream>
@@ -2094,6 +2094,27 @@ void texture_rectangle::fast_get_pixel_RGB_values(
    R=image_refptr->data()[i];
    G=image_refptr->data()[i+1];
    B=image_refptr->data()[i+2];
+}
+
+int texture_rectangle::fast_get_pixel_R_value(
+   unsigned int pu,unsigned int pv) const
+{
+   int i=3*(pv*m_VidWidth+pu);
+   return image_refptr->data()[i];
+}
+
+int texture_rectangle::fast_get_pixel_G_value(
+   unsigned int pu,unsigned int pv) const
+{
+   int i=3*(pv*m_VidWidth+pu);
+   return image_refptr->data()[i+1];
+}
+
+int texture_rectangle::fast_get_pixel_B_value(
+   unsigned int pu,unsigned int pv) const
+{
+   int i=3*(pv*m_VidWidth+pu);
+   return image_refptr->data()[i+2];
 }
 
 // ---------------------------------------------------------------------

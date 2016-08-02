@@ -7,7 +7,7 @@
 // ==========================================================================
 // Videofuncs namespace method definitions
 // ==========================================================================
-// Last modified on 3/14/16; 3/27/16; 7/23/16; 7/30/16
+// Last modified on 3/27/16; 7/23/16; 7/30/16; 8/1/16
 // ==========================================================================
 
 #include <iostream>
@@ -3460,6 +3460,31 @@ namespace videofunc
      videofunc::crop_image(curr_image, xdim, ydim, 0, 0);
   }
 
+  // ---------------------------------------------------------------------
+  // Method get_pixel_RGB() uses ImageMagick to obtain the R, G, B
+  // values for a specified pixel.  See
+  // http://stackoverflow.com/questions/28151240/get-rgb-color-with-magick-using-c
+
+  void get_pixel_RGB(Magick::Image& curr_image, 
+                     int px, int py, int& R, int& G, int& B)
+  {
+     int width = curr_image.columns();
+     int height = curr_image.rows();
+
+// Calc what your range is. See
+// http://www.imagemagick.org/Magick++/Color.html There's also other
+// helpful macros, and definitions in ImageMagick's header files
+
+     int range = pow(2, curr_image.modulusDepth());
+
+// Get a "pixel cache" for the specified pixel:
+
+     Magick::PixelPacket *pixels = curr_image.getPixels(px, py, 1, 1);
+     Magick::Color color = pixels[0];
+     R = color.redQuantum() / range;
+     G = color.greenQuantum() / range;
+     B = color.blueQuantum() / range;
+  }
 
 } // videofunc namespace
 

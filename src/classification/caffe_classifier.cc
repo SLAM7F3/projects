@@ -4,9 +4,11 @@
 // Last modified on 6/16/16; 7/30/16; 7/31/16; 8/1/16
 // ==========================================================================
 
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <memory>
 
 #include "classification/caffe_classifier.h"
 #include "image/graphicsfuncs.h"
@@ -441,43 +443,58 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 
 void caffe_classifier::rgb_img_to_bgr_fvec(texture_rectangle& curr_img)
 {
-//   cout << "inside caffe_classifier::rgb_img_to_bgr_fvec()" << endl;
+  cout << "inside caffe_classifier::rgb_img_to_bgr_fvec()" << endl;
    
    input_img_xdim = curr_img.getWidth();
    input_img_ydim = curr_img.getHeight();
-   int n_dims = input_img_xdim * input_img_ydim * num_data_channels_;
+   int n_dims = num_data_channels_ * input_img_ydim * input_img_xdim;
    feature_descriptor = new float[n_dims];
 
    int R, G, B;
-   for(int c = 0; c < 3; c++){
+   int index = 0;
+   for(int c = 0; c < num_data_channels_; c++){
       for(int py = 0; py < input_img_ydim; py++){
          for(int px = 0; px < input_img_xdim; px++){
 
-// Note:  Should call some future fast_get_pixel_R_value()
-// fast_get_pixel_G_value() or fast_get_pixel_B_value()...
-
-            curr_img.fast_get_pixel_RGB_values(
-               px, input_img_ydim - 1 - py, R, G, B);
-
+            int R = curr_img.fast_get_pixel_R_value(px, py);
+            int G = curr_img.fast_get_pixel_G_value(px, py);
+            int B = curr_img.fast_get_pixel_B_value(px, py);
+            
             float curr_value;
             if(c == 0)   // blue channel first
             {
-               curr_value = B - mean_bgr.first;
+               curr_value = curr_img.fast_get_pixel_B_value(px, py)
+                  - mean_bgr.first;
             }
             else if (c == 1) // green channel second
             {
-               curr_value = G - mean_bgr.second;
+               curr_value = curr_img.fast_get_pixel_G_value(px, py)
+                  - mean_bgr.second;
             }
             else  // red channel third
             {
-               curr_value = R - mean_bgr.third;
+               curr_value = curr_img.fast_get_pixel_R_value(px, py)
+                  - mean_bgr.third;
             }
             
-            feature_descriptor[(c * input_img_ydim + py) * input_img_xdim 
-                               + px] = curr_value;
+            feature_descriptor[index] = curr_value;
+
+            if(px >= 47 && px <= 49 && py >= 47 && py <= 49){
+               cout << "px = " << px << " py = " << py 
+                    << " index = " << index 
+                    << " R = " << R << " G = " << G << " B = " << B
+                    << " feature_descrip = "
+                    << feature_descriptor[index] << endl;
+            }
+
+            index++;
+//            feature_descriptor[(c * input_img_ydim + py) * input_img_xdim 
+//                               + px] = curr_value;
          } // loop over index px
       } // loop over index py
    } // loop over index c labeling color channels
+
+   exit(-1);
 }
 
 // ---------------------------------------------------------------------
@@ -502,6 +519,70 @@ void caffe_classifier::generate_dense_map()
    }
 }
 
+
+//**** dl_dnn_classify_prob ***********************************************
+// Description : Classify a feature vector. Return the probability vector of all
+//               classes. Assume that there is a softmax layer called "prob" in
+//               the model definition.
+//
+// Input  : dl_dnn  the deep neural net
+//          feature_vec  the feature vector to be classified
+//          cls  output class
+//         score  array where the i:th element contains the score for the i:th
+//                 class
+//          num_classes  number of classes used in the training
+//          job_tag  tag for logging job performance, NULL for not logging
+//
+// Output : 0 if OK, non-zero otherwise
+
+
+/*
+int dl_dnn_classify_prob(dl_dnn_t *dl_dnn, float *feature_vec, int *cls,
+    float *score, int num_classes, char *job_tag)
+{
+  caffe::Net<float> *net = static_cast<caffe::Net<float> *>(dl_dnn->net);
+  int num_classes_net; // Number of classes used in the net during training
+  const float *argmaxs;
+  int ret = 0;
+
+  // Get the input data layer
+  const shared_ptr<caffe::MemoryDataLayer<float> > memory_data_layer =
+      static_pointer_cast<caffe::MemoryDataLayer<float> >(
+          net->layer_by_name("data"));
+  // Add data to the input layer
+  memory_data_layer->AddRawDataAndLabels(feature_vec, NULL, 1);
+  // Perform the forward pass
+  int64_t t = tic();
+  const vector<caffe::Blob<float> *> &result = net->ForwardPrefilled();
+  if(job_tag){
+    char tag[MAX_PATH];
+    sprintf(tag, "%s_dl_dnn_classify_prob", job_tag);
+    ps_job_stat(tag, (u_timel() - t) / 1000000.0,
+        (ps_flag_t)(PS_MEAN | PS_SUM | PS_COUNT | PS_MIN | PS_MAX));
+  }
+  argmaxs = result[1]->cpu_data();
+  // Get the class
+  *cls = argmaxs[0];
+  // Get the softmax probability array
+  const shared_ptr<const caffe::Blob<float> > probs =
+      net->blob_by_name("prob");
+  // Check if the number of classes is the same as used in training
+  num_classes_net = probs->count() / probs->shape(0);
+  if(num_classes_net != num_classes){
+    log_error("%s Something is wrong. num_classes %i != nr_results %i",
+        __FUNCTION__, num_classes, num_classes_net);
+    ret = 1;
+  }
+  else{
+    // Get the probabilities
+    const float *probs_out = probs->cpu_data();
+    memcpy(score, probs_out, num_classes * sizeof(float));
+  }
+  return ret;
+}
+*/
+
+
 // ---------------------------------------------------------------------
 // Member function generate_dense_map_data_blob() reshapes a new data
 // blob based upon input image's number of channels and pixel
@@ -512,6 +593,20 @@ void caffe_classifier::generate_dense_map()
 void caffe_classifier::generate_dense_map_data_blob()
 {
 //   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
+
+/*
+   // Get the input data layer
+   const shared_ptr<caffe::MemoryDataLayer<float> > memory_data_layer =
+      std::static_pointer_cast<caffe::MemoryDataLayer<float> >(
+         net_->layer_by_name("data"));
+
+   // Add data to the input layer
+   memory_data_layer->AddRawDataAndLabels(feature_descriptor, NULL, 1);
+   // Perform the forward pass
+
+   const vector<caffe::Blob<float> *>& result_blobs = net->ForwardPrefilled();
+*/
+
 // Create the data blob:
 
    caffe::Blob<float> data_blob;
@@ -525,12 +620,25 @@ void caffe_classifier::generate_dense_map_data_blob()
 
 // Copy new test image data into data blob:
 
-//    cout << "Copying data into blob" << endl;
    memcpy(data, feature_descriptor, 
           shape[0] * shape[1] * shape[2] * shape[3] * sizeof(float));
 
-   delete [] feature_descriptor;
-   feature_descriptor=NULL;
+   for(int c = 0; c < 3; c++)
+   {
+      for(int py = 47; py <= 49; py++)
+      {
+         for(int px = 47; px <= 49; px++)
+         {
+            int index = c * input_img_ydim * input_img_xdim + 
+               py * input_img_xdim + px;
+            cout << "c = " << c << " py = " << py << " px = " << px
+                 << " index = " << index
+                 << " data[index] = " << data[index] << endl;
+         }
+      }
+   }
+   outputfunc::enter_continue_char();
+
 
 // Perform the forward pass on the data blob:
 
@@ -540,6 +648,7 @@ void caffe_classifier::generate_dense_map_data_blob()
 
    const vector<caffe::Blob<float> *>& result_blobs = 
       net_->Forward(input_blobs);
+
    const caffe::Blob<float>* result_blob = result_blobs[0];
 
    if(segmentation_flag)
@@ -550,6 +659,10 @@ void caffe_classifier::generate_dense_map_data_blob()
    {
       retrieve_classification_results(result_blob);
    }
+
+
+   delete [] feature_descriptor;
+   feature_descriptor=NULL;
 }
 
 // ---------------------------------------------------------------------

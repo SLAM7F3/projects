@@ -2,7 +2,7 @@
 // texture_rectangle class provides functionality for displaying
 // images and videos within OSG TextureRectangles.
 // ========================================================================
-// Last updated on 5/30/16; 6/20/16; 6/21/16; 7/29/16
+// Last updated on 6/20/16; 6/21/16; 7/29/16; 8/1/16
 // ========================================================================
 
 #ifndef TEXTURE_RECTANGLE_H
@@ -200,6 +200,10 @@ class texture_rectangle
       unsigned int pu,unsigned int pv,int& R,int& G,int& B) const;
    void fast_get_pixel_RGB_values(
       unsigned int pu,unsigned int pv,int& R,int& G,int& B) const;
+   int fast_get_pixel_R_value(unsigned int pu,unsigned int pv) const;
+   int fast_get_pixel_G_value(unsigned int pu,unsigned int pv) const;
+   int fast_get_pixel_B_value(unsigned int pu,unsigned int pv) const;
+
    void get_pixel_row_RGB_values(
       unsigned int pu,unsigned int pv,unsigned int n_pixels_in_rows,
       int* R, int* G, int* B) const;

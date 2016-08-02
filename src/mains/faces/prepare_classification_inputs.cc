@@ -44,7 +44,8 @@ int main(int argc, char *argv[])
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
    string training_subdir = face_chips_subdir+"training/";
-   string dated_subdir = "Aug1_96x96_20/";
+   string dated_subdir = "Aug1_96x96_37K_nonsinglefaces/";
+//    string dated_subdir = "Aug1_96x96_20/";
 //    string dated_subdir = "Aug1_96x96_39K/";
 //    string dated_subdir = "Jul30_31_106x106/";
 //    string dated_subdir = "Jul30_106x106_150K/";
