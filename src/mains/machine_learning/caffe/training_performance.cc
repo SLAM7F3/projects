@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 7/26/16; 7/28/16; 7/31/16; 8/1/16
+// Last updated on 7/28/16; 7/31/16; 8/1/16; 8/2/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -49,7 +49,8 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-   int n_training_images_per_epoch = 37500;  
+   int n_training_images_per_epoch = 184440;  
+//    int n_training_images_per_epoch = 37500;  
 //    int n_training_images_per_epoch = 41821;  
                       // O(43K) unaugmented face gender images 
 //   int n_training_images_per_epoch = 151268;   
@@ -80,7 +81,9 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Aug1_37K_T3/";
+      "Aug2_184K_T3/";
+//       "Aug2_184K_T1/";
+//       "Aug1_37K_T3/";
 //       "Jul30_150K_doublesized_morecapacity_T3/";
 //       "Jul30_150K_doublesized_T1/";
 //      "Jul30_41K_doublesized_morecapacity_T3/";
@@ -93,17 +96,6 @@ int main(int argc, char* argv[])
 //       "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
 //      "Jul28_41K_7layers_AllDrop_more_capacity/";
 //       "Jul28_41K_7layers_0.005wd_T3/";
-//      "Jul28_41K_7layers_AllLayersDropout_T1/";
-//       "Jul27_41K_face_7layers_80-95dropout/";
-//       "Jul27_41K_face_7layers_50dropout_0.01br_T3/";
-//      "Jul27_41K_face_7layers_66dropout_T1/";
-//      "Jul27_41K_face_7layers_T1/";
-//      "Jul26_43K_face_13layers_T1/";
-//      "Jul26_43K_face_7layers_fc512nodes_T1/";
-//   string dated_subdir = trained_models_subdir+"Jul25_43K_face_7layers_T1/";
-//   string dated_subdir = trained_models_subdir+"Jul25_43K_face_6layers_T3/";
-//   string dated_subdir = trained_models_subdir+"Jul24_174K_augmented_vgg/";
-//   string dated_subdir = trained_models_subdir+"Jul22_43K_vgg/";
 
    string log_filename=dated_subdir+"caffe.bin.INFO";
    bool strip_comments_flag = false;
@@ -242,8 +234,9 @@ int main(int argc, char* argv[])
    loss_metafile.set_thickness(2);
    loss_metafile.set_legend_flag(true);
 
-   string learning_curves_subdir="./learning_curves/";
-   filefunc::dircreate(learning_curves_subdir);
+//   string learning_curves_subdir="./learning_curves/";
+//   filefunc::dircreate(learning_curves_subdir);
+   string learning_curves_subdir = dated_subdir;
    string lr_str = "_lr_"+stringfunc::number_to_string(base_learning_rate);
    string wd_str = "_wd_"+stringfunc::number_to_string(weight_decay);
    string training_imgs_str = "_"+stringfunc::number_to_string(n_training_images/1000)+"K_training_imgs";

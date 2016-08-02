@@ -1,7 +1,7 @@
 ==========================================================================
 Eclipse editing & debugging notes
 ==========================================================================
-Last updated on 5/18/15; 12/1/15; 12/3/15; 7/5/16
+Last updated on 12/1/15; 12/3/15; 7/5/16; 8/2/16
 ==========================================================================
 
 *.  Lowest window in eclipse display actually can toggle through multiple
@@ -161,3 +161,9 @@ arguments such as "RDN=1" to the make command in this field.
 make sure viewer is in "Debug perspective" by pressing "Debug" tab located
 near top RHS.  Then press little "bug" button located on extreme LHS in
 order to see stack trace view appear in upper left sub-window.
+
+*.  On 8/2/16, Fredrik Larsson told us that Eclipse can be used to globally
+rename a method foo() as foobar() throughout a codebase.  Goto the header
+file in which method foo() is declared.  Highlight the method, right mouse
+click, choose refactor --> rename.  Then enter the new method name.
+Eclipse should change foo() --> foobar() everywhere in the code tree.

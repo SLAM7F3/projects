@@ -51,7 +51,7 @@ using std::string;
 using std::vector;
 
 // ========================================================================
-// Last updated on 5/20/16; 5/24/16; 6/16/16; 7/31/16
+// Last updated on 5/24/16; 6/16/16; 7/31/16; 8/2/16
 // ========================================================================
 
 int main(int argc, char** argv) 
@@ -97,9 +97,13 @@ int main(int argc, char** argv)
    }
 
    caffe_classifier classifier(
-     deploy_prototxt_filename, trained_caffe_model_filename, 
-     mean_rgb_filename, labels_filename, imagenet_classification_flag);
+      deploy_prototxt_filename, trained_caffe_model_filename);
    classifier.set_segmentation_flag(true);
+   
+   double Bmean = 104.00;
+   double Gmean = 116.67;
+   double Rmean = 122.68;
+   classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    string input_images_subdir = input_images_basedir;
    string input_tiles_subdir=input_images_subdir+"/tiles/";

@@ -589,10 +589,6 @@ Confusion matrix:
 0	1407	174	
 0	280	1297	
 
-***************************************************************
-As of 8/2/16, this is our BEST gender classification result.
-**************************************************************
-
 ----------------
 
 *.  Sun, Jul 31, Titan 1 
@@ -636,7 +632,7 @@ Smoothed asymptotic training accuracy around 98.7%
 Asymptotic validation accuracy around 79.6%
 
 ----------------
-*.  Tues, Aug 2, Titan 1
+*.  Tues, Aug 2, Titan 1, morning
 
 184440 combined original + Adience faces used for training.
 
@@ -649,9 +645,27 @@ weights.  Weight decay = 0.0005.  4x augmented imagery set.  Imagery data
 broken apart into training, validation and testing subsets.  Image chips
 smaller than 48x48 doubled in size.
 
-Training started around 8:10 am
+Asymptotic validation accuracy around 84.8%
 
-*.  Tues, Aug 2, Titan 3
+1036 validation set:
+
+n_correct = 1063 n_incorrect = 180 frac_correct = 0.855189
+Confusion matrix:
+
+0	0	0	
+0	507	79	
+0	101	556	
+
+3158 testing set:
+
+n_correct = 3286 n_incorrect = 536 frac_correct = 0.859759
+Confusion matrix:
+
+0	0	0	
+0	1666	205	
+0	331	1620	
+
+*.  Tues, Aug 2, Titan 3, morning
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
@@ -663,16 +677,70 @@ weights.  Increased number of nodes in each layer by 32.  Weight decay =
 training, validation and testing subsets.  Image chips smaller than 48x48
 doubled in size.
 
-Training started around 8:10 am
+Asymptotic validation accuracy around 85.0%
+
+1036 validation set:
+
+n_correct = 1065 n_incorrect = 178 frac_correct = 0.856798
+Confusion matrix:
+
+0	0	0	
+0	510	76	
+0	102	555
+
+3158 testing set:
+
+n_correct = 3290 n_incorrect = 532 frac_correct = 0.860806
+Confusion matrix:
+
+0	0	0	
+0	1648	223	
+0	309	1642	
+
+
+***************************************************************
+As of 8/2/16, this is our BEST gender classification result.
+**************************************************************
+
+*.  Tues, Aug 2, Titan 1, afternoon
+
+184440 combined original + Adience faces used for training.
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
+accuracy layer added for training phase, Dropout added into all layers of
+network.  Dropout probabilities of nodes being ignored start small and
+increase to 0.5 toward end of network.  Gaussian initialize of all node
+weights.  Increased number of nodes in each layer approx 64.  Weight decay
+= 0.0010.  4x augmented imagery set.  Imagery data broken apart into
+training, validation and testing subsets.  Image chips smaller than 48x48
+doubled in size.
+
+Training started around 3 pm
+
+
+*.  Tues, Aug 2, Titan 3, afternoon
+
+184440 combined original + Adience faces used for training.
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces, base learning rate = 0.003,
+accuracy layer added for training phase, Dropout added into all layers of
+network.  Dropout probabilities of nodes being ignored start small and
+increase to 0.5 toward end of network.  Gaussian initialize of all node
+weights.  Increased number of nodes in each layer approx 96.  Weight decay
+= 0.0010.  4x augmented imagery set.  Imagery data broken apart into
+training, validation and testing subsets.  Image chips smaller than 48x48
+doubled in size.
+
+Training started around 3 pm
+
 
 
 TODO:
 
 *.  Break out all Magick++ methods in videofuncs and imagefuncs namespaces
 into new magickfuncs namespace sitting in src/images/
-
-*.  Clean up src/classification/caffe_classifier.c  In particular,
-segregate off deprecated code at end of file and comment it out.
 
 *.  Write C++ code to look at first few weights in each layer after a model
 has been trained.  Also compute mean weight value for each layer.

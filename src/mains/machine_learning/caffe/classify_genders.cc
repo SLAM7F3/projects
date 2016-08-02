@@ -7,7 +7,7 @@
 // correctly and incorrectly classified image chips to separate
 // subfolders.
 // ========================================================================
-// Last updated on 2/12/16; 2/23/16; 7/30/16; 8/1/16
+// Last updated on 2/23/16; 7/30/16; 8/1/16; 8/2/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -37,6 +37,9 @@ typedef pair<string, float> Prediction;
 
 int main(int argc, char** argv) 
 {
+   bool copy_image_chips_flag = true;
+//   bool copy_image_chips_flag = false;
+
    if (argc != 4) {
       cerr << "Usage: " << argv[0]
            << " test.prototxt network.caffemodel input_images_subdir"
@@ -68,20 +71,25 @@ int main(int argc, char** argv)
    filefunc::dircreate(classified_chips_subdir);
    string correct_chips_subdir=classified_chips_subdir+"correct/";
    filefunc::dircreate(correct_chips_subdir);
-   filefunc::purge_files_in_subdir(correct_chips_subdir);
+
    string incorrect_chips_subdir=classified_chips_subdir+"incorrect/";
    filefunc::dircreate(incorrect_chips_subdir);
-   filefunc::purge_files_in_subdir(incorrect_chips_subdir);
+
+   if(copy_image_chips_flag)
+   {
+      filefunc::purge_files_in_subdir(correct_chips_subdir);
+      filefunc::purge_files_in_subdir(incorrect_chips_subdir);
+   }
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-   double Bmean = 114.45;
-   double Gmean = 114.45;
-   double Rmean = 114.45;
+//   double Bmean = 114.45;
+//   double Gmean = 114.45;
+//   double Rmean = 114.45;
 
-//   double Bmean = 104.008;
-//   double Gmean = 116.669;
-//   double Rmean = 122.675;
+   double Bmean = 104.008;
+   double Gmean = 116.669;
+   double Rmean = 122.675;
 
 //   double Rmean = 104.008;
 //   double Gmean = 116.669;
@@ -179,6 +187,7 @@ int main(int argc, char** argv)
 //           << endl;
 
       string classified_chip_basename=true_gender_label+"_"+
+         stringfunc::integer_to_string(i,5)+"_"+
          stringfunc::number_to_string(classification_score)+".jpg";
       string classified_chip_imagename;
       string unix_cmd;
@@ -195,9 +204,12 @@ int main(int argc, char** argv)
             classified_chip_basename;
       }
 
-      unix_cmd = "cp "+orig_image_filename+" "+classified_chip_imagename;
-//      sysfunc::unix_command(unix_cmd);
-
+      if(copy_image_chips_flag)
+      {
+         unix_cmd = "cp "+orig_image_filename+" "+classified_chip_imagename;
+         sysfunc::unix_command(unix_cmd);
+      }
+      
       confusion_matrix.put(
          true_label, classification_label,
          confusion_matrix.get(true_label, classification_label) + 1);
