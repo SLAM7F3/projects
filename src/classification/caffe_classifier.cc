@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 6/16/16; 7/30/16; 7/31/16; 8/1/16
+// Last modified on 7/30/16; 7/31/16; 8/1/16; 8/2/16
 // ==========================================================================
 
 
@@ -67,62 +67,6 @@ caffe_classifier::caffe_classifier(
 }
 
 // ---------------------------------------------------------------------
-caffe_classifier::caffe_classifier(
-   const string& deploy_prototxt_filename,
-   const string& trained_caffe_model_filename,
-   const string& mean_bgr_filename, 
-   const string& labels_filename,
-   bool imagenet_classification_flag)
-{
-   allocate_member_objects();
-   initialize_member_objects();
-
-   test_prototxt_filename = deploy_prototxt_filename;
-   this->trained_caffe_model_filename = trained_caffe_model_filename;
-   load_trained_network();
-
-   ifstream labels(labels_filename.c_str());
-   CHECK(labels) << "Unable to open labels file " << labels_filename;
-   string line;
-   while (std::getline(labels, line))
-   {
-      labels_.push_back(string(line));
-      cout << "label = " << labels_.back() << endl;
-   }
-
-   if(imagenet_classification_flag) 
-   {
-
-// Load the binaryproto mean file:
-
-      SetMean(mean_bgr_filename);
-
-// Load labels:
-
-      Blob<float>* output_layer = net_->output_blobs()[0];
-      cout << "labels.size() = " << labels_.size() << endl;
-      cout << "output_layer->channels() = " << output_layer->channels()
-           << endl;
-
-      CHECK_EQ(labels_.size(), output_layer->channels())
-         << "Number of labels is different from the output layer dimension.";
-   }
-   else
-   {
-      filefunc::ReadInfile(mean_bgr_filename);
-      vector<double> color_values = 
-         stringfunc::string_to_numbers(filefunc::text_line[0]);
-      mean_bgr.first = color_values[0];	   // Blue
-      mean_bgr.second = color_values[1];   // Green
-      mean_bgr.third = color_values[2];	   // Red
-
-      cout << "mean_bgr.first = " << mean_bgr.first << endl;
-      cout << "mean_bgr.second = " << mean_bgr.second << endl;
-      cout << "mean_bgr.third = " << mean_bgr.third << endl;
-   }
-}
-
-// ---------------------------------------------------------------------
 caffe_classifier::~caffe_classifier()
 {
    delete [] feature_descriptor;
@@ -154,50 +98,6 @@ caffe_classifier::~caffe_classifier()
 */
 
 // ==========================================================================
-
-static bool PairCompare(const pair<float, int>& lhs,
-                        const pair<float, int>& rhs) 
-{
-   return lhs.first > rhs.first;
-}
-
-// ---------------------------------------------------------------------
-// Method Argmax returns the indices of the top N values of vector v. 
-
-static vector<int> Argmax(const vector<float>& v, int N) 
-{
-   vector<pair<float, int> > pairs;
-   for (size_t i = 0; i < v.size(); ++i)
-      pairs.push_back(std::make_pair(v[i], i));
-   std::partial_sort(pairs.begin(), pairs.begin() + N, pairs.end(), 
-                     PairCompare);
-
-   vector<int> result;
-   for (int i = 0; i < N; ++i)
-      result.push_back(pairs[i].second);
-   return result;
-}
-
-// ---------------------------------------------------------------------
-// Member function Classify returns the top N predictions
-
-vector<Prediction> caffe_classifier::Classify(const cv::Mat& img, int N) 
-{
-   cout << "inside caffe_classifier::Classify()" << endl;
-   vector<float> output = Predict(img);
-   
-   N = std::min<int>(labels_.size(), N);
-   vector<int> maxN = Argmax(output, N);
-   vector<Prediction> predictions;
-   for (int i = 0; i < N; ++i) {
-      int idx = maxN[i];
-      predictions.push_back(std::make_pair(labels_[idx], output[idx]));
-   }
-
-   return predictions;
-}
-
-// ---------------------------------------------------------------------
 // Member function load_trained_network() imports a test.prototxt file
 // as well as a trained caffe model.  
 
@@ -297,143 +197,6 @@ void caffe_classifier::print_network_metadata()
 }
 
 // ---------------------------------------------------------------------
-// Member function SetMean() loads the mean file in binaryproto format
-
-void caffe_classifier::SetMean(const string& mean_file) 
-{
-   BlobProto blob_proto;
-   ReadProtoFromBinaryFileOrDie(mean_file.c_str(), &blob_proto);
-
-   // Convert from BlobProto to Blob<float> 
-   Blob<float> mean_blob;
-   mean_blob.FromProto(blob_proto);
-   CHECK_EQ(mean_blob.channels(), num_data_channels_)
-      << "Number of channels of mean file doesn't match input layer.";
-
-   // The format of the mean file is planar 32-bit float BGR or grayscale. 
-   vector<cv::Mat> channels;
-   float* data = mean_blob.mutable_cpu_data();
-   for (int i = 0; i < num_data_channels_; ++i) {
-      // Extract an individual channel. 
-      cv::Mat channel(mean_blob.height(), mean_blob.width(), CV_32FC1, data);
-      channels.push_back(channel);
-      data += mean_blob.height() * mean_blob.width();
-   }
-
-   // Merge the separate channels into a single image. 
-   cv::Mat mean;
-   cv::merge(channels, mean);
-
-   // Compute the global mean pixel value and create a mean image
-   // filled with this value. 
-   cv::Scalar channel_mean = cv::mean(mean);
-   mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
-}
-
-// ---------------------------------------------------------------------
-
-vector<float> caffe_classifier::Predict(const cv::Mat& img) 
-{
-   cout << "inside caffe_classifier::Predict()" << endl;
-   Blob<float>* input_blob = net_->input_blobs()[0];
-   input_blob->Reshape(1, num_data_channels_,
-                        input_geometry_.height, input_geometry_.width);
-
-   // Forward dimension change to all layers
-   net_->Reshape();
-
-   vector<cv::Mat> input_channels;
-   WrapInputLayer(&input_channels);
-
-   Preprocess(img, &input_channels);
-
-   net_->ForwardPrefilled();
-
-   // Copy the output layer to a vector 
-   Blob<float>* output_layer = net_->output_blobs()[0];
-   const float* begin = output_layer->cpu_data();
-   const float* end = begin + output_layer->channels();
-   return vector<float>(begin, end);
-}
-
-// ---------------------------------------------------------------------
-// Member function WrapInputLayer() wraps the input layer of the
-// network in separate cv::Mat objects (one per channel). This way we
-// save one memcpy operation and we don't need to rely on
-// cudaMemcpy2D. The last preprocessing operation will write the
-// separate channels directly to the input layer.
-
-void caffe_classifier::WrapInputLayer(vector<cv::Mat>* input_channels) 
-{
-   Blob<float>* input_blob = net_->input_blobs()[0];
-
-   int width = input_blob->width();
-   int height = input_blob->height();
-   float* input_data = input_blob->mutable_cpu_data();
-   for (int i = 0; i < input_blob->channels(); ++i) 
-   {
-      cv::Mat channel(height, width, CV_32FC1, input_data);
-      input_channels->push_back(channel);
-      input_data += width * height;
-   }
-}
-
-// ---------------------------------------------------------------------
-
-void caffe_classifier::Preprocess(const cv::Mat& img,
-                                  vector<cv::Mat>* input_channels) 
-{
-   cout << "inside caffe_classifier::Preprocess()" << endl;
-   cout << "img.channels() = " << img.channels() << endl;
-   cout << "num_data_channels_ = " << num_data_channels_ << endl;
-   
-   /* Convert the input image to the input image format of the network. */
-   cv::Mat sample;
-   if (img.channels() == 3 && num_data_channels_ == 1)
-      cv::cvtColor(img, sample, CV_BGR2GRAY);
-   else if (img.channels() == 4 && num_data_channels_ == 1)
-      cv::cvtColor(img, sample, CV_BGRA2GRAY);
-   else if (img.channels() == 4 && num_data_channels_ == 3)
-      cv::cvtColor(img, sample, CV_BGRA2BGR);
-   else if (img.channels() == 1 && num_data_channels_ == 3)
-      cv::cvtColor(img, sample, CV_GRAY2BGR);
-   else
-      sample = img;
-
-
-   cv::Mat sample_resized;
-
-   cout << "sample.size() = " << sample.size() << endl;
-   
-   if (sample.size() != input_geometry_)
-      cv::resize(sample, sample_resized, input_geometry_);
-   else
-      sample_resized = sample;
-
-
-   cv::Mat sample_float;
-   if (num_data_channels_ == 3)
-      sample_resized.convertTo(sample_float, CV_32FC3);
-   else
-      sample_resized.convertTo(sample_float, CV_32FC1);
-
-   cv::Mat sample_normalized;
-   cout << "before cv::subtract" << endl;
-   cv::subtract(sample_float, mean_, sample_normalized);
-
-   // This operation will write the separate BGR planes directly to the
-   // input layer of the network because it is wrapped by the cv::Mat
-   // objects in input_channels. 
-   cv::split(sample_normalized, *input_channels);
-
-   CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
-         == net_->input_blobs()[0]->cpu_data())
-      << "Input channels are not wrapping the input layer of the network.";
-
-   cout << "At end of caffe_classifier::Preprocess()" << endl;
-}
-
-// ---------------------------------------------------------------------
 // Member function rgb_img_to_bgr_fvec() subtracts off mean BGR values
 // from the input RGB image.  It then converts the RGB values within
 // the renormalized two-dimensional RGB image into a one-dimensional
@@ -527,70 +290,6 @@ void caffe_classifier::generate_dense_map()
    }
 }
 
-
-//**** dl_dnn_classify_prob ***********************************************
-// Description : Classify a feature vector. Return the probability vector of all
-//               classes. Assume that there is a softmax layer called "prob" in
-//               the model definition.
-//
-// Input  : dl_dnn  the deep neural net
-//          feature_vec  the feature vector to be classified
-//          cls  output class
-//         score  array where the i:th element contains the score for the i:th
-//                 class
-//          num_classes  number of classes used in the training
-//          job_tag  tag for logging job performance, NULL for not logging
-//
-// Output : 0 if OK, non-zero otherwise
-
-
-/*
-int dl_dnn_classify_prob(dl_dnn_t *dl_dnn, float *feature_vec, int *cls,
-    float *score, int num_classes, char *job_tag)
-{
-  caffe::Net<float> *net = static_cast<caffe::Net<float> *>(dl_dnn->net);
-  int num_classes_net; // Number of classes used in the net during training
-  const float *argmaxs;
-  int ret = 0;
-
-  // Get the input data layer
-  const shared_ptr<caffe::MemoryDataLayer<float> > memory_data_layer =
-      static_pointer_cast<caffe::MemoryDataLayer<float> >(
-          net->layer_by_name("data"));
-  // Add data to the input layer
-  memory_data_layer->AddRawDataAndLabels(feature_vec, NULL, 1);
-  // Perform the forward pass
-  int64_t t = tic();
-  const vector<caffe::Blob<float> *> &result = net->ForwardPrefilled();
-  if(job_tag){
-    char tag[MAX_PATH];
-    sprintf(tag, "%s_dl_dnn_classify_prob", job_tag);
-    ps_job_stat(tag, (u_timel() - t) / 1000000.0,
-        (ps_flag_t)(PS_MEAN | PS_SUM | PS_COUNT | PS_MIN | PS_MAX));
-  }
-  argmaxs = result[1]->cpu_data();
-  // Get the class
-  *cls = argmaxs[0];
-  // Get the softmax probability array
-  const shared_ptr<const caffe::Blob<float> > probs =
-      net->blob_by_name("prob");
-  // Check if the number of classes is the same as used in training
-  num_classes_net = probs->count() / probs->shape(0);
-  if(num_classes_net != num_classes){
-    log_error("%s Something is wrong. num_classes %i != nr_results %i",
-        __FUNCTION__, num_classes, num_classes_net);
-    ret = 1;
-  }
-  else{
-    // Get the probabilities
-    const float *probs_out = probs->cpu_data();
-    memcpy(score, probs_out, num_classes * sizeof(float));
-  }
-  return ret;
-}
-*/
-
-
 // ---------------------------------------------------------------------
 // Member function generate_dense_map_data_blob() reshapes a new data
 // blob based upon input image's number of channels and pixel
@@ -601,19 +300,6 @@ int dl_dnn_classify_prob(dl_dnn_t *dl_dnn, float *feature_vec, int *cls,
 void caffe_classifier::generate_dense_map_data_blob()
 {
 //   cout << "inside caffe_classifier::generate_dense_map_data_blob() " << endl;
-
-/*
-   // Get the input data layer
-   const shared_ptr<caffe::MemoryDataLayer<float> > memory_data_layer =
-      std::static_pointer_cast<caffe::MemoryDataLayer<float> >(
-         net_->layer_by_name("data"));
-
-   // Add data to the input layer
-   memory_data_layer->AddRawDataAndLabels(feature_descriptor, NULL, 1);
-   // Perform the forward pass
-
-   const vector<caffe::Blob<float> *>& result_blobs = net->ForwardPrefilled();
-*/
 
 // Create the data blob:
 
@@ -630,25 +316,6 @@ void caffe_classifier::generate_dense_map_data_blob()
 
    memcpy(data, feature_descriptor, 
           shape[0] * shape[1] * shape[2] * shape[3] * sizeof(float));
-
-/*
-   for(int c = 0; c < 3; c++)
-   {
-      for(int py = 47; py <= 49; py++)
-      {
-         for(int px = 47; px <= 49; px++)
-         {
-            int index = c * input_img_ydim * input_img_xdim + 
-               py * input_img_xdim + px;
-            cout << "c = " << c << " py = " << py << " px = " << px
-                 << " index = " << index
-                 << " data[index] = " << data[index] << endl;
-         }
-      }
-   }
-   outputfunc::enter_continue_char();
-*/
-
 
 // Perform the forward pass on the data blob:
 
@@ -669,7 +336,6 @@ void caffe_classifier::generate_dense_map_data_blob()
    {
       retrieve_classification_results(result_blob);
    }
-
 
    delete [] feature_descriptor;
    feature_descriptor=NULL;
@@ -887,3 +553,191 @@ void caffe_classifier::cleanup_memory()
    delete cc_tr_ptr;
    cc_tr_ptr = NULL;
 }
+
+// ==========================================================================
+// AS OF 8/2/15, THE FOLLOWING CODE METHODS ARE DEPRECATED 
+// ==========================================================================
+
+/*
+static bool PairCompare(const pair<float, int>& lhs,
+                        const pair<float, int>& rhs) 
+{
+   return lhs.first > rhs.first;
+}
+
+// ---------------------------------------------------------------------
+// Method Argmax returns the indices of the top N values of vector v. 
+
+static vector<int> Argmax(const vector<float>& v, int N) 
+{
+   vector<pair<float, int> > pairs;
+   for (size_t i = 0; i < v.size(); ++i)
+      pairs.push_back(std::make_pair(v[i], i));
+   std::partial_sort(pairs.begin(), pairs.begin() + N, pairs.end(), 
+                     PairCompare);
+
+   vector<int> result;
+   for (int i = 0; i < N; ++i)
+      result.push_back(pairs[i].second);
+   return result;
+}
+
+// ---------------------------------------------------------------------
+// Member function Classify returns the top N predictions
+
+vector<Prediction> caffe_classifier::Classify(const cv::Mat& img, int N) 
+{
+   cout << "inside caffe_classifier::Classify()" << endl;
+   vector<float> output = Predict(img);
+   
+   N = std::min<int>(labels_.size(), N);
+   vector<int> maxN = Argmax(output, N);
+   vector<Prediction> predictions;
+   for (int i = 0; i < N; ++i) {
+      int idx = maxN[i];
+      predictions.push_back(std::make_pair(labels_[idx], output[idx]));
+   }
+
+   return predictions;
+}
+
+
+// ---------------------------------------------------------------------
+// Member function SetMean() loads the mean file in binaryproto format
+
+void caffe_classifier::SetMean(const string& mean_file) 
+{
+   BlobProto blob_proto;
+   ReadProtoFromBinaryFileOrDie(mean_file.c_str(), &blob_proto);
+
+   // Convert from BlobProto to Blob<float> 
+   Blob<float> mean_blob;
+   mean_blob.FromProto(blob_proto);
+   CHECK_EQ(mean_blob.channels(), num_data_channels_)
+      << "Number of channels of mean file doesn't match input layer.";
+
+   // The format of the mean file is planar 32-bit float BGR or grayscale. 
+   vector<cv::Mat> channels;
+   float* data = mean_blob.mutable_cpu_data();
+   for (int i = 0; i < num_data_channels_; ++i) {
+      // Extract an individual channel. 
+      cv::Mat channel(mean_blob.height(), mean_blob.width(), CV_32FC1, data);
+      channels.push_back(channel);
+      data += mean_blob.height() * mean_blob.width();
+   }
+
+   // Merge the separate channels into a single image. 
+   cv::Mat mean;
+   cv::merge(channels, mean);
+
+   // Compute the global mean pixel value and create a mean image
+   // filled with this value. 
+   cv::Scalar channel_mean = cv::mean(mean);
+   mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
+}
+
+// ---------------------------------------------------------------------
+
+vector<float> caffe_classifier::Predict(const cv::Mat& img) 
+{
+   cout << "inside caffe_classifier::Predict()" << endl;
+   Blob<float>* input_blob = net_->input_blobs()[0];
+   input_blob->Reshape(1, num_data_channels_,
+                        input_geometry_.height, input_geometry_.width);
+
+   // Forward dimension change to all layers
+   net_->Reshape();
+
+   vector<cv::Mat> input_channels;
+   WrapInputLayer(&input_channels);
+
+   Preprocess(img, &input_channels);
+
+   net_->ForwardPrefilled();
+
+   // Copy the output layer to a vector 
+   Blob<float>* output_layer = net_->output_blobs()[0];
+   const float* begin = output_layer->cpu_data();
+   const float* end = begin + output_layer->channels();
+   return vector<float>(begin, end);
+}
+
+// ---------------------------------------------------------------------
+// Member function WrapInputLayer() wraps the input layer of the
+// network in separate cv::Mat objects (one per channel). This way we
+// save one memcpy operation and we don't need to rely on
+// cudaMemcpy2D. The last preprocessing operation will write the
+// separate channels directly to the input layer.
+
+void caffe_classifier::WrapInputLayer(vector<cv::Mat>* input_channels) 
+{
+   Blob<float>* input_blob = net_->input_blobs()[0];
+
+   int width = input_blob->width();
+   int height = input_blob->height();
+   float* input_data = input_blob->mutable_cpu_data();
+   for (int i = 0; i < input_blob->channels(); ++i) 
+   {
+      cv::Mat channel(height, width, CV_32FC1, input_data);
+      input_channels->push_back(channel);
+      input_data += width * height;
+   }
+}
+
+// ---------------------------------------------------------------------
+
+void caffe_classifier::Preprocess(const cv::Mat& img,
+                                  vector<cv::Mat>* input_channels) 
+{
+   cout << "inside caffe_classifier::Preprocess()" << endl;
+   cout << "img.channels() = " << img.channels() << endl;
+   cout << "num_data_channels_ = " << num_data_channels_ << endl;
+   
+   // Convert the input image to the input image format of the network. 
+   cv::Mat sample;
+   if (img.channels() == 3 && num_data_channels_ == 1)
+      cv::cvtColor(img, sample, CV_BGR2GRAY);
+   else if (img.channels() == 4 && num_data_channels_ == 1)
+      cv::cvtColor(img, sample, CV_BGRA2GRAY);
+   else if (img.channels() == 4 && num_data_channels_ == 3)
+      cv::cvtColor(img, sample, CV_BGRA2BGR);
+   else if (img.channels() == 1 && num_data_channels_ == 3)
+      cv::cvtColor(img, sample, CV_GRAY2BGR);
+   else
+      sample = img;
+
+
+   cv::Mat sample_resized;
+
+   cout << "sample.size() = " << sample.size() << endl;
+   
+   if (sample.size() != input_geometry_)
+      cv::resize(sample, sample_resized, input_geometry_);
+   else
+      sample_resized = sample;
+
+
+   cv::Mat sample_float;
+   if (num_data_channels_ == 3)
+      sample_resized.convertTo(sample_float, CV_32FC3);
+   else
+      sample_resized.convertTo(sample_float, CV_32FC1);
+
+   cv::Mat sample_normalized;
+   cout << "before cv::subtract" << endl;
+   cv::subtract(sample_float, mean_, sample_normalized);
+
+   // This operation will write the separate BGR planes directly to the
+   // input layer of the network because it is wrapped by the cv::Mat
+   // objects in input_channels. 
+   cv::split(sample_normalized, *input_channels);
+
+   CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
+         == net_->input_blobs()[0]->cpu_data())
+      << "Input channels are not wrapping the input layer of the network.";
+
+   cout << "At end of caffe_classifier::Preprocess()" << endl;
+}
+
+
+*/
