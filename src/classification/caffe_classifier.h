@@ -57,10 +57,6 @@ class caffe_classifier
                                            std::string output_subdir);
    std::string display_segmentation_scores(texture_rectangle& curr_img,
                                            std::string output_subdir);
-
-   std::string display_vertical_borders(
-      texture_rectangle& curr_img, std::string output_subdir,
-      int lower_label, int upper_label);
    void cleanup_memory();
 
   private: 
