@@ -30,18 +30,18 @@ using std::vector;
 
 int main(int argc, char** argv)
 {  
-   string input_imagesdir = "./resized_adiencefaces/";
-//   string input_imagesdir = "./homogenized_images/";
+//   string input_imagesdir = "./resized_adiencefaces/";
+   string input_imagesdir = "./homogenized_images/";
 
    vector<string> image_filenames=filefunc::image_files_in_subdir(
       input_imagesdir);
 
    cout << "Imported " << image_filenames.size() << " images" << endl;
 
-   unsigned int max_xdim = 106;
-   unsigned int max_ydim = 106;
-//   unsigned int max_xdim = 2400;
-//   unsigned int max_ydim = 2400;
+//   unsigned int max_xdim = 106;
+//   unsigned int max_ydim = 106;
+   unsigned int max_xdim = 2400;
+   unsigned int max_ydim = 2400;
    for(unsigned int i = 0; i < image_filenames.size(); i++)
    {
       string image_filename=image_filenames[i];

@@ -1,7 +1,7 @@
 ========================================================================
 Face classification
 ========================================================================
-Last updated 7/24/16; 7/25/16; 7/28/16; 7/29/16
+Last updated 7/25/16; 7/28/16; 7/29/16; 8/3/16
 ========================================================================
 
 In this README, we define the following root directories:
@@ -139,3 +139,15 @@ training set.  It also plots the accuracy value as a function of training
 epoch number for the validation set.
 
 			   training_performance
+
+*.  Program $root/machine_learning/caffe/CLASSIFY_GENDERS is a variant of
+the CLASSIFY_CHARS.  It takes in a caffe model trained from scratch along
+with folder containing a set of input test images.  CLASSIFY_GENDERS loops
+over each test image and prints out the label for the top class which the
+trained caffe model predicts for the input image.  It exports correctly and
+incorrectly classified image chips to separate subfolders.
+
+./classify_genders \
+/data/caffe/faces/trained_models/test_96.prototxt                     \
+/data/caffe/faces/trained_models/Aug2_184K_T3/train_iter_200000.caffemodel \
+/data/caffe/faces/image_chips/testing/Jul30_and_31_96x96

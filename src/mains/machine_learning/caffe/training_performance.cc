@@ -81,7 +81,9 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Aug2_184K_T3/";
+      "Aug2_184K_64cap_T1/";
+//       "Aug2_184K_96cap_T3/";
+//       "Aug2_184K_T3/";
 //       "Aug2_184K_T1/";
 //       "Aug1_37K_T3/";
 //       "Jul30_150K_doublesized_morecapacity_T3/";

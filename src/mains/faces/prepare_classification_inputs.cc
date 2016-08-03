@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/30/16; 7/31/16; 8/1/16; 8/2/16
+// Last updated on 7/31/16; 8/1/16; 8/2/16; 8/3/16
 // ==========================================================================
 
 #include <iostream>
@@ -46,22 +46,19 @@ int main(int argc, char *argv[])
    string face_chips_subdir = faces_subdir+"image_chips/";
    string training_subdir = face_chips_subdir+"training/";
 
-   string dated_subdir = "Jul30_106x106_150K/";
-//    string dated_subdir = "Aug1_96x96_37K_nonsinglefaces/";
-//    string dated_subdir = "Aug1_96x96_20/";
-//    string dated_subdir = "Aug1_96x96_39K/";
-//    string dated_subdir = "Jul30_31_106x106/";
-//    string dated_subdir = "Jul30_106x106_150K/";
-//    string dated_subdir = "Jul30_106x106_37K/";
+   vector<string> dated_subdirs;
+   dated_subdirs.push_back("Aug2_female_106x106_augmented/");
+   dated_subdirs.push_back("Aug2_male_106x106_augmented/");
+   dated_subdirs.push_back("Jul31_106x106_adience/");
+   dated_subdirs.push_back("Iran_106x106/");
 
-   string curr_training_images_subdir = training_subdir+dated_subdir;
-   training_images_subdirs.push_back(curr_training_images_subdir);
+   for(unsigned int d = 0; d < dated_subdirs.size(); d++)
+   {
+      string curr_training_images_subdir = training_subdir+dated_subdirs[d];
+      training_images_subdirs.push_back(curr_training_images_subdir);
+   }
 
-   dated_subdir = "Jul31_106x106_adience/";
-   curr_training_images_subdir = training_subdir+dated_subdir;
-   training_images_subdirs.push_back(curr_training_images_subdir);
-
-      cout << "Specified training_images_subdirs:" << endl;
+   cout << "Specified training_images_subdirs:" << endl;
    for(unsigned t = 0; t < training_images_subdirs.size(); t++)
    {
       cout << training_images_subdirs[t] << endl;

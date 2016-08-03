@@ -6,6 +6,12 @@
 // the trained caffe model predicts for the input image.  It exports
 // correctly and incorrectly classified image chips to separate
 // subfolders.
+
+// ./classify_genders 
+// /data/caffe/faces/trained_models/test_96.prototxt                     
+// /data/caffe/faces/trained_models/Aug2_184K_T3/train_iter_200000.caffemodel 
+// /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
+
 // ========================================================================
 // Last updated on 2/23/16; 7/30/16; 8/1/16; 8/2/16
 // ========================================================================
@@ -37,8 +43,8 @@ typedef pair<string, float> Prediction;
 
 int main(int argc, char** argv) 
 {
-   bool copy_image_chips_flag = true;
-//   bool copy_image_chips_flag = false;
+//   bool copy_image_chips_flag = true;
+   bool copy_image_chips_flag = false;
 
    if (argc != 4) {
       cerr << "Usage: " << argv[0]

@@ -1,7 +1,7 @@
 ========================================================================
 Face detection via deeplab image segmentation
 ========================================================================
-Last updated 7/4/16; 7/5/16; 7/21/16; 7/22/16
+Last updated 7/5/16; 7/21/16; 7/22/16; 8/3/16
 ========================================================================
 
 TODO:
@@ -350,6 +350,12 @@ subdirectory.  For each input image, RECOMBINE_SEGMENTED_TILES stitches
 together its segmented label and scores tiles into single mosaics.  The
 reconstructed segmentation label and scores images along with their
 montages are exported to specified output subdirectories.
+
+*.  Run one round of segmentation for faces & hands.  Move output into a
+dated subdirectory named something like Aug3_faces_hands_testing_images/ .
+Run a second round of segmentation for face quadrants.  Move output into
+another dated subdirectory named something like
+Aug3_faces_quads_testing_images/ .
 
 *.  Program $root/machine_learning/deeplab/CONSOLIDATE_COMPONENTS imports
 segmentation masks along with score images generated at half-size,
