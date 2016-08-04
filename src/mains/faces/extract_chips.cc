@@ -205,15 +205,13 @@ int main( int argc, char** argv )
 //            filter_intensities_flag, color_channel_ID);
 //         double focus_measure = entropy;
 
-
          string output_filename;
          if(attr_value.size() == 0)
          {
             output_filename = output_chips_subdir +"/" +
                +"face_"+image_ID_str+"_"
-               +stringfunc::integer_to_string(face_ID++,5)
+               +stringfunc::integer_to_string(b,3)
                +".png";
-
          }
          else
          {
@@ -224,7 +222,6 @@ int main( int argc, char** argv )
                +".png";
          }
          
-
          bool horiz_flipped_flag = false;
          tr_ptr->write_curr_subframe(
             px_start, px_stop, py_start, py_stop, output_filename,
@@ -239,7 +236,6 @@ int main( int argc, char** argv )
          videofunc::downsize_image(output_filename, max_xdim, max_ydim);
 
       } // loop over index b labeling bounding boxes for current image
-
 
       image_counter++;
    } // loop over annotated_bboxes_iter

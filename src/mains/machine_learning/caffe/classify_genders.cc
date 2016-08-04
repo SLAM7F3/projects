@@ -46,11 +46,25 @@ int main(int argc, char** argv)
 //   bool copy_image_chips_flag = true;
    bool copy_image_chips_flag = false;
 
-//   bool truth_known_flag = true;
-   bool truth_known_flag = false;
+   bool truth_known_flag = true;
+//   bool truth_known_flag = false;
+
+   string test_prototxt_filename   = argv[1];
+   string caffe_model_filename = argv[2];
+   string input_images_subdir = argv[3];
+   filefunc::add_trailing_dir_slash(input_images_subdir);
+
+   string output_chips_subdir = input_images_subdir+"classified_genders/";
+   ofstream output_stream;
+   string output_text_filename=output_chips_subdir + "gender.classifications";
+
    if(!truth_known_flag)
    {
+      filefunc::dircreate(output_chips_subdir);
       copy_image_chips_flag = true;
+      filefunc::openfile(output_text_filename, output_stream);
+      output_stream << "# Index   imagefile_basename   gender   score"
+                    << endl << endl;
    }
    
    if (argc != 4) {
@@ -62,17 +76,6 @@ int main(int argc, char** argv)
 
    ::google::InitGoogleLogging(argv[0]);
 
-   string test_prototxt_filename   = argv[1];
-   string caffe_model_filename = argv[2];
-   string input_images_subdir = argv[3];
-   filefunc::add_trailing_dir_slash(input_images_subdir);
-
-   string output_chips_subdir = input_images_subdir+"/classified_genders/";
-   if(!truth_known_flag)
-   {
-      filefunc::dircreate(output_chips_subdir);
-   }
-   
    string cropped_chips_subdir="./cropped_image_chips/";
    filefunc::dircreate(cropped_chips_subdir);
    string classified_chips_subdir="./classified_chips/";
@@ -197,6 +200,12 @@ int main(int argc, char** argv)
             gender+"."+stringfunc::suffix(image_basename);
          classified_chip_imagename = output_chips_subdir+
             classified_chip_basename;
+
+         output_stream << i << "   "
+                       << image_basename << "   "
+                       << gender << "   "
+                       << classification_score 
+                       << endl;
       }
       else
       {
@@ -245,12 +254,23 @@ int main(int argc, char** argv)
    if(truth_known_flag)
    {
       prob_distribution prob_correct(correct_scores, 100, 0);
-      prob_distribution prob_incorrect(correct_scores, 100, 0);
+      prob_distribution prob_incorrect(incorrect_scores, 100, 0);
 
       prob_correct.set_title(
          "Classification scores for correctly classified genders");
       prob_incorrect.set_title(
          "Classification scores for incorrectly classified genders");
+      prob_correct.set_xtic(0.2);
+      prob_correct.set_xsubtic(0.1);
+      prob_correct.set_xlabel("Classification score");
+      prob_incorrect.set_xtic(0.2);
+      prob_incorrect.set_xsubtic(0.1);
+      prob_incorrect.set_xlabel("Classification score");      
+
+      prob_correct.set_densityfilenamestr("correct_dens.meta");
+      prob_incorrect.set_densityfilenamestr("incorrect_dens.meta");
+      prob_correct.set_cumulativefilenamestr("correct_cum.meta");
+      prob_incorrect.set_cumulativefilenamestr("incorrect_cum.meta");
       prob_correct.writeprobdists(false);
       prob_incorrect.writeprobdists(false);
 
@@ -277,7 +297,12 @@ int main(int argc, char** argv)
    }
    else
    {
-      string banner="Exported classified chips to " + output_chips_subdir;
+      filefunc::closefile(output_text_filename, output_stream);
+      string banner="Exported gender classifications to "+
+         output_text_filename;
+      outputfunc::write_banner(banner);
+
+      banner="Exported classified chips to " + output_chips_subdir;
       outputfunc::write_banner(banner);
    }
 }
