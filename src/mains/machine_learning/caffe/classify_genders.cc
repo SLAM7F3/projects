@@ -129,7 +129,7 @@ int main(int argc, char** argv)
    int istart=0;
    int istop = n_images;
    vector<double> correct_male_scores, correct_female_scores, unsure_scores,
-      incorrect_scores;
+      incorrect_male_scores, incorrect_female_scores;
 
    for(int i = istart; i < istop; i++)
    {
@@ -219,7 +219,8 @@ int main(int argc, char** argv)
       }
       else
       {
-         if(classification_label == 1 && 
+         if(true_label == classification_label &&
+            classification_label == 1 && 
             classification_score > male_score_threshold)
          {
             correct_male_scores.push_back(classification_score);
@@ -235,7 +236,8 @@ int main(int argc, char** argv)
                classified_chip_basename;
          }
 
-         else if(classification_label == 2 && 
+         else if(true_label == classification_label &&
+                 classification_label == 2 && 
             classification_score > female_score_threshold)
          {
             correct_female_scores.push_back(classification_score);
@@ -250,9 +252,17 @@ int main(int argc, char** argv)
             classified_chip_imagename = correct_chips_subdir+
                classified_chip_basename;
          }
-         else
+         else if (classification_label == 1 &&
+                  true_label != classification_label)
          {
-            incorrect_scores.push_back(classification_score);
+            incorrect_male_scores.push_back(classification_score);
+            classified_chip_imagename = incorrect_chips_subdir+
+               classified_chip_basename;
+         }
+         else if (classification_label == 2 &&
+                  true_label != classification_label)
+         {
+            incorrect_female_scores.push_back(classification_score);
             classified_chip_imagename = incorrect_chips_subdir+
                classified_chip_basename;
          }
@@ -278,14 +288,18 @@ int main(int argc, char** argv)
    {
       prob_distribution prob_male_correct(correct_male_scores, 100, 0);
       prob_distribution prob_female_correct(correct_female_scores, 100, 0);
-      prob_distribution prob_incorrect(incorrect_scores, 100, 0);
+      prob_distribution prob_male_incorrect(incorrect_male_scores, 100, 0);
+      prob_distribution prob_female_incorrect(incorrect_female_scores, 100, 0);
 
       prob_male_correct.set_title(
          "Classification scores for correctly classified males");
       prob_female_correct.set_title(
          "Classification scores for correctly classified females");
-      prob_incorrect.set_title(
-         "Classification scores for incorrectly classified genders");
+      prob_male_incorrect.set_title(
+         "Classification scores for incorrectly classified males");
+      prob_female_incorrect.set_title(
+         "Classification scores for incorrectly classified females");
+
       prob_male_correct.set_xtic(0.2);
       prob_male_correct.set_xsubtic(0.1);
       prob_male_correct.set_xlabel("Classification score");
@@ -294,27 +308,46 @@ int main(int argc, char** argv)
       prob_female_correct.set_xsubtic(0.1);
       prob_female_correct.set_xlabel("Classification score");
 
-      prob_incorrect.set_xtic(0.2);
-      prob_incorrect.set_xsubtic(0.1);
-      prob_incorrect.set_xlabel("Classification score");      
+      prob_male_incorrect.set_xtic(0.2);
+      prob_male_incorrect.set_xsubtic(0.1);
+      prob_male_incorrect.set_xlabel("Classification score");      
+
+      prob_female_incorrect.set_xtic(0.2);
+      prob_female_incorrect.set_xsubtic(0.1);
+      prob_female_incorrect.set_xlabel("Classification score");      
 
       prob_male_correct.set_densityfilenamestr("correct_male_dens.meta");
       prob_female_correct.set_densityfilenamestr("correct_female_dens.meta");
-      prob_incorrect.set_densityfilenamestr("incorrect_dens.meta");
+      prob_male_incorrect.set_densityfilenamestr("incorrect_male_dens.meta");
+      prob_female_incorrect.set_densityfilenamestr(
+         "incorrect_female_dens.meta");
 
       prob_male_correct.set_cumulativefilenamestr("correct_male_cum.meta");
       prob_female_correct.set_cumulativefilenamestr("correct_female_cum.meta");
-      prob_incorrect.set_cumulativefilenamestr("incorrect_cum.meta");
+      prob_male_incorrect.set_cumulativefilenamestr("incorrect_male_cum.meta");
+      prob_female_incorrect.set_cumulativefilenamestr(
+         "incorrect_female_cum.meta");
 
       prob_male_correct.writeprobdists(false);
       prob_female_correct.writeprobdists(false);
-      prob_incorrect.writeprobdists(false);
+      prob_male_incorrect.writeprobdists(false);
+      prob_female_incorrect.writeprobdists(false);
 
       int n_male_correct = correct_male_scores.size();
       int n_female_correct = correct_female_scores.size();
       int n_correct = n_male_correct + n_female_correct;
       int n_unsure = unsure_scores.size();
-      int n_incorrect = incorrect_scores.size();
+      int n_male_incorrect = incorrect_male_scores.size();
+      int n_female_incorrect = incorrect_female_scores.size();
+      int n_incorrect = n_male_incorrect + n_female_incorrect;
+
+      cout << "n_correct = " << n_correct 
+           << " n_male_correct = " << n_male_correct
+           << " n_female_correct = " << n_female_correct << endl;
+      cout << "n_incorrect = " << n_incorrect 
+           << " n_male_incorrect = " << n_male_incorrect
+           << " n_female_incorrect = " << n_female_incorrect << endl;
+      cout << " n_unsure = " << n_unsure << endl;
 
       double frac_correct = 
          double(n_correct)/(n_correct+n_incorrect+n_unsure);
@@ -323,16 +356,18 @@ int main(int argc, char** argv)
       double frac_incorrect = 
          double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
 
-      cout << "n_correct = " << n_correct 
-           << " n_male_correct = " << n_male_correct
-           << " n_female_correct = " << n_female_correct << endl;
-      cout << " n_unsure = " << n_unsure
-           << " n_incorrect = " << n_incorrect << endl;
-
       cout << "frac_correct = " << frac_correct
            << " frac_unsure = " << frac_unsure 
            << " frac_incorrect = " << frac_incorrect
            << endl;
+
+      double frac_male_correct = double(n_male_correct) / 
+         double (n_male_correct + n_male_incorrect);
+      double frac_female_correct = double(n_female_correct) / 
+         double (n_female_correct + n_female_incorrect);
+
+      cout << "frac_male_correct = " << frac_male_correct
+           << " frac_female_correct = " << frac_female_correct << endl;
 
       cout << "Confusion matrix:" << endl;
       cout << confusion_matrix << endl << endl;
