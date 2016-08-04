@@ -308,18 +308,13 @@ int main(int argc, char** argv)
       double frac_sure_incorrect = 
          double(n_incorrect)/(n_correct+n_incorrect);
 
-      cout << "n_unsure = " << n_unsure
-           << " frac_unsure = " << frac_unsure
-           << " frac_sure = " << frac_sure << endl;
-
       cout << "n_correct = " << n_correct 
+           << " n_unsure = " << n_unsure
            << " n_incorrect = " << n_incorrect << endl;
-      cout << "frac_correct = " << frac_correct
-           << " frac_incorrect = " << frac_incorrect
-           << " frac_sure = " << frac_sure << endl;
 
-      cout << " frac_sure_correct = " << frac_sure_correct
-           << " frac_sure_incorrect = " << frac_sure_incorrect
+      cout << "frac_correct = " << frac_correct
+           << " frac_unsure = " << frac_unsure 
+           << " frac_incorrect = " << frac_incorrect
            << endl;
 
       cout << "Confusion matrix:" << endl;
