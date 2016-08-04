@@ -294,18 +294,32 @@ int main(int argc, char** argv)
       int n_correct = correct_scores.size();
       int n_incorrect = incorrect_scores.size();
       int n_unsure = unsure_scores.size();
+      double frac_unsure = 
+         double(n_unsure)/(n_correct+n_incorrect+n_unsure);
+      double frac_sure = 1 - frac_unsure;
+
       double frac_correct = 
          double(n_correct)/(n_correct+n_incorrect+n_unsure);
       double frac_incorrect = 
          double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
-      double frac_unsure = 
-         double(n_unsure)/(n_correct+n_incorrect+n_unsure);
-      cout << "n_correct = " << n_correct 
-           << " n_incorrect = " << n_incorrect 
-           << " n_unsure = " << n_unsure << endl;
-      cout << " frac_correct = " << frac_correct
-           << " frac_incorrect = " << frac_incorrect
+
+      double frac_sure_correct = 
+         double(n_correct)/(n_correct+n_incorrect);
+      double frac_sure_incorrect = 
+         double(n_incorrect)/(n_correct+n_incorrect);
+
+      cout << "n_unsure = " << n_unsure
            << " frac_unsure = " << frac_unsure
+           << " frac_sure = " << frac_sure << endl;
+
+      cout << "n_correct = " << n_correct 
+           << " n_incorrect = " << n_incorrect << endl;
+      cout << "frac_correct = " << frac_correct
+           << " frac_incorrect = " << frac_incorrect
+           << " frac_sure = " << frac_sure << endl;
+
+      cout << " frac_sure_correct = " << frac_sure_correct
+           << " frac_sure_incorrect = " << frac_sure_incorrect
            << endl;
 
       cout << "Confusion matrix:" << endl;
