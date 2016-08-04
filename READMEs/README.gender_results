@@ -715,7 +715,7 @@ training, validation and testing subsets.  Image chips smaller than 48x48
 doubled in size.
 
 Training started around 3 pm
-
+train_iter_262918.caffemodel
 Asymptotic validation accuracy around 86.5%
 
 1036 validation set:
@@ -755,7 +755,6 @@ doubled in size.
 Training started around 3 pm
 train_iter_262741.caffemodel
 
-
 Asymptotic validation accuracy around 86.1%
 
 1036 validation set:
@@ -767,19 +766,13 @@ Confusion matrix:
 0	521	65	
 0	106	551	
 
-
 3158 testing set:
-
 n_correct = 3323 n_incorrect = 499 frac_correct = 0.86944
 Confusion matrix:
 
 0	0	0	
 0	1681	190	
 0	309	1642	
-
-***************************************************************
-As of 8/3/16, this is our BEST gender classification result.
-**************************************************************
 
 *.  Weds, Aug 3, Titan 1, morning
 
@@ -797,6 +790,44 @@ apart into training, validation and testing subsets.  Image chips smaller
 than 48x48 doubled in size.
 
 Training started around 6:50 am
+train_iter_160000.caffemodel
+Asymptotic validation accuracy around 86.6%
+
+
+1139 validation set:
+
+n_correct + n_incorrect = 1139
+n_correct = 971 n_incorrect = 168 frac_correct = 0.852502
+Confusion matrix:
+
+0	0	0	
+0	502	69	
+0	99	469	
+
+
+3507 testing set:
+n_correct + n_incorrect = 3507
+n_correct = 3004 n_incorrect = 503 frac_correct = 0.856573
+Confusion matrix:
+
+0	0	0	
+0	1635	184	
+0	319	1369	
+
+***************************************************************
+As of 5 pm on 8/3/16, this is our BEST gender classification result.
+**************************************************************
+
+For comparison, results from previous best train_iter_262741.caffemodel for
+this newer, larger and apparently more stressing test set:
+
+n_correct + n_incorrect = 3507
+n_correct = 2969 n_incorrect = 538 frac_correct = 0.846593
+Confusion matrix:
+
+0	0	0	
+0	1610	209	
+0	329	1359	
 
 *.  Weds, Aug 3, Titan 3, morning
 
@@ -814,6 +845,30 @@ apart into training, validation and testing subsets.  Image chips smaller
 than 48x48 doubled in size.
 
 Training started around 6:50 am
+train_iter_200000.caffemodel
+Asymptotic validation accuracy around 84.4
+
+1139 validation set:
+
+n_correct + n_incorrect = 1139
+n_correct = 968 n_incorrect = 171 frac_correct = 0.849868
+Confusion matrix:
+
+0	0	0	
+0	491	80	
+0	91	477	
+
+
+3507 testing set:
+n_correct + n_incorrect = 3507
+n_correct = 2969 n_incorrect = 538 frac_correct = 0.846593
+Confusion matrix:
+
+0	0	0	
+0	1600	219	
+0	319	1369	
+
+
 
 
 TODO:

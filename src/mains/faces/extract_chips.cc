@@ -4,7 +4,7 @@
 //			./extract_chips
 
 // ========================================================================
-// Last updated on 7/22/16; 7/23/16; 7/29/16
+// Last updated on 7/22/16; 7/23/16; 7/29/16; 8/3/16
 // ========================================================================
 
 #include <fstream>
@@ -37,10 +37,22 @@ int main( int argc, char** argv )
    timefunc::initialize_timeofday_clock(); 
    std::set_new_handler(sysfunc::out_of_memory);
 
+//   bool force_single_face_per_bbox_flag = true;
+   bool force_single_face_per_bbox_flag = false;
+
    string faces_rootdir = "/data/TrainingImagery/faces/";
-   string labeled_faces_subdir = faces_rootdir + "images/";
-   string bbox_labels_filename = labeled_faces_subdir+
-      "labeled_face_bboxes_sans_corrupted_imgs.txt";
+//   string face_images_subdir = faces_rootdir + "images/";
+   string face_images_subdir = faces_rootdir + 
+      "labeled_data/faces_14_testing_images/fullsized/";
+//   string bbox_labels_filename = face_images_subdir+
+//      "labeled_face_bboxes_sans_corrupted_imgs.txt";
+
+// FAKE FAKE:  Weds Aug 3 at 1:37 pm
+// Hardwire filename for input bbox labels:
+
+   string bbox_labels_filename = faces_rootdir+"labeled_data/faces_14/"+
+      "Aug3_faces_hands_testing_images_extracted_bboxes.txt";
+
    filefunc::ReadInfile(bbox_labels_filename);
 
    typedef map<string, vector<bounding_box> > ANNOTATED_BBOXES_MAP;
@@ -113,8 +125,9 @@ int main( int argc, char** argv )
    annotated_bboxes_map[image_ID_str] = annotated_bboxes;
 
    int face_ID = 0;
+   string output_chips_subdir = "./faces_14_chips/";
 //   string output_chips_subdir = "./face_blur_chips/";
-   string output_chips_subdir = "./face_chips/";
+//   string output_chips_subdir = "./face_chips/";
    filefunc::dircreate(output_chips_subdir);
 
    string female_chips_subdir = output_chips_subdir+"female/";
@@ -138,7 +151,7 @@ int main( int argc, char** argv )
 
       string image_ID_str = annotated_bboxes_iter->first;
       vector<bounding_box> bboxes = annotated_bboxes_iter->second;
-      string image_filename=labeled_faces_subdir+"image_"+
+      string image_filename=face_images_subdir+"image_"+
          image_ID_str+".jpg";
 
       for(unsigned int b = 0; b < bboxes.size(); b++)
@@ -151,10 +164,13 @@ int main( int argc, char** argv )
 // Black out all face bboxes other than current one within current
 // image:
 
-         for(unsigned int b2 = 0; b2 < bboxes.size(); b2++)
+         if(force_single_face_per_bbox_flag)
          {
-            if(b2 == b) continue;
-            tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
+            for(unsigned int b2 = 0; b2 < bboxes.size(); b2++)
+            {
+               if(b2 == b) continue;
+               tr_ptr->fill_pixel_bbox(bboxes[b2], 0, 0, 0);
+            }
          }
 
          bounding_box curr_bbox = bboxes[b];
@@ -189,11 +205,25 @@ int main( int argc, char** argv )
 //            filter_intensities_flag, color_channel_ID);
 //         double focus_measure = entropy;
 
-         string output_filename = output_chips_subdir + attr_value+"/" +
-            attr_value+"_face_" 
+
+         string output_filename;
+         if(attr_value.size() == 0)
+         {
+            output_filename = output_chips_subdir +"/" +
+               +"face_"+image_ID_str+"_"
+               +stringfunc::integer_to_string(face_ID++,5)
+               +".png";
+
+         }
+         else
+         {
+            output_filename = output_chips_subdir + attr_value+"/" +
+               attr_value+"_face_" 
 //            +stringfunc::number_to_string(focus_measure)+"_"
-            +stringfunc::integer_to_string(face_ID++,5)
-            +".png";
+               +stringfunc::integer_to_string(face_ID++,5)
+               +".png";
+         }
+         
 
          bool horiz_flipped_flag = false;
          tr_ptr->write_curr_subframe(

@@ -49,7 +49,8 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-   int n_training_images_per_epoch = 184440;  
+   int n_training_images_per_epoch = 260788;  
+//    int n_training_images_per_epoch = 184440;  
 //    int n_training_images_per_epoch = 37500;  
 //    int n_training_images_per_epoch = 41821;  
                       // O(43K) unaugmented face gender images 
@@ -81,7 +82,9 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Aug2_184K_64cap_T1/";
+//      "Aug3_260K_96cap_T1/";
+      "Aug3_260K_96cap_T3/";
+//       "Aug2_184K_64cap_T1/";
 //       "Aug2_184K_96cap_T3/";
 //       "Aug2_184K_T3/";
 //       "Aug2_184K_T1/";

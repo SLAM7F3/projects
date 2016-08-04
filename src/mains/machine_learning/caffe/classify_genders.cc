@@ -13,7 +13,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 2/23/16; 7/30/16; 8/1/16; 8/2/16
+// Last updated on 7/30/16; 8/1/16; 8/2/16; 8/3/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -46,6 +46,13 @@ int main(int argc, char** argv)
 //   bool copy_image_chips_flag = true;
    bool copy_image_chips_flag = false;
 
+//   bool truth_known_flag = true;
+   bool truth_known_flag = false;
+   if(!truth_known_flag)
+   {
+      copy_image_chips_flag = true;
+   }
+   
    if (argc != 4) {
       cerr << "Usage: " << argv[0]
            << " test.prototxt network.caffemodel input_images_subdir"
@@ -58,19 +65,14 @@ int main(int argc, char** argv)
    string test_prototxt_filename   = argv[1];
    string caffe_model_filename = argv[2];
    string input_images_subdir = argv[3];
+   filefunc::add_trailing_dir_slash(input_images_subdir);
 
-   cout << "test.prototxt = " << test_prototxt_filename << endl;
-   cout << "trained caffe model = " << caffe_model_filename << endl;
-   cout << "input_images_subdir = " << input_images_subdir << endl;
-
-   string caffe_data_subdir = "/data/caffe/";
-   string faces_subdir = caffe_data_subdir + "faces/";
-   string image_chips_subdir = faces_subdir + "image_chips/";
-   string validation_chips_subdir = image_chips_subdir + "validation/";
-   string testing_chips_subdir = image_chips_subdir + "testing/";
+   string output_chips_subdir = input_images_subdir+"/classified_genders/";
+   if(!truth_known_flag)
+   {
+      filefunc::dircreate(output_chips_subdir);
+   }
    
-   string dated_subdir = image_chips_subdir + "Jul29_106x106_augmented/";
-
    string cropped_chips_subdir="./cropped_image_chips/";
    filefunc::dircreate(cropped_chips_subdir);
    string classified_chips_subdir="./classified_chips/";
@@ -97,16 +99,14 @@ int main(int argc, char** argv)
    double Gmean = 116.669;
    double Rmean = 122.675;
 
-//   double Rmean = 104.008;
-//   double Gmean = 116.669;
-//   double Bmean = 122.675;
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("background");
    classifier.add_label("male");
    classifier.add_label("female");
 
-   bool search_all_children_dirs_flag = true;
+   bool search_all_children_dirs_flag = false;
+//   bool search_all_children_dirs_flag = true;
    vector<string> image_filenames=filefunc::image_files_in_subdir(
       input_images_subdir, search_all_children_dirs_flag);
 
@@ -130,6 +130,8 @@ int main(int argc, char** argv)
          i, 200, (istop-istart));
 
       int image_ID = shuffled_image_indices[i];
+      if(!truth_known_flag) image_ID = i;
+      
       string orig_image_filename = image_filenames[image_ID];
       string image_filename = orig_image_filename;
       string image_basename = filefunc::getbasename(image_filename);
@@ -164,23 +166,7 @@ int main(int argc, char** argv)
          cout << "input_img_height = " << input_img_height << endl;
       }
 
-/*
-      if(input_img_width > 96 || input_img_height > 96)
-      {
-         string id_str = stringfunc::integer_to_string(i, 3);
-         image_filename=cropped_chips_subdir+"cropped_image_"+id_str+".jpg";
-         int xoffset = (input_img_width - 96)/2;
-         int yoffset = (input_img_height - 96)/2;
-         imagefunc::crop_image(
-            orig_image_filename,image_filename, 96, 96, xoffset, yoffset);
-      }
-      else
-      {
-//         cout << "input_image_width = " << input_img_width
-//              << " input_image_height = " << input_img_height << endl;
-      }
-*/
-
+//      cout << "image_filename = " << image_filename << endl;
       texture_rectangle curr_image(image_filename, NULL);
       classifier.rgb_img_to_bgr_fvec(curr_image);
       classifier.generate_dense_map();
@@ -192,75 +178,107 @@ int main(int argc, char** argv)
 //           << " score = " << classification_score 
 //           << endl;
 
+      string classified_chip_imagename;
+      string unix_cmd;
       string classified_chip_basename=true_gender_label+"_"+
          stringfunc::number_to_string(classification_score)+
          stringfunc::integer_to_string(i,5)+"_"+
          ".jpg";
-      string classified_chip_imagename;
-      string unix_cmd;
-      if(classification_label == true_label)
+
+      if(!truth_known_flag)
       {
-         correct_scores.push_back(classification_score);
-         classified_chip_imagename = correct_chips_subdir+
+         string gender="female";
+         if(classification_label == 1)
+         {
+            gender = "male";
+         }
+//         classified_chip_basename=gender+"_"+image_basename;
+         classified_chip_basename=stringfunc::prefix(image_basename)+"_"+
+            gender+"."+stringfunc::suffix(image_basename);
+         classified_chip_imagename = output_chips_subdir+
             classified_chip_basename;
       }
       else
       {
-         incorrect_scores.push_back(classification_score);
-         classified_chip_imagename = incorrect_chips_subdir+
-            classified_chip_basename;
-      }
+         if(classification_label == true_label)
+         {
+            correct_scores.push_back(classification_score);
+            classified_chip_imagename = correct_chips_subdir+
+               classified_chip_basename;
+         }
+         else
+         {
+            incorrect_scores.push_back(classification_score);
+            classified_chip_imagename = incorrect_chips_subdir+
+               classified_chip_basename;
+         }
+      
+         confusion_matrix.put(
+            true_label, classification_label,
+            confusion_matrix.get(true_label, classification_label) + 1);
+
+         if(i%200 == 0)
+         {
+            int n_correct = correct_scores.size();
+            int n_incorrect = incorrect_scores.size();
+            double frac_correct = double(n_correct)/(n_correct+n_incorrect);
+            cout << "n_correct = " << n_correct 
+                 << " n_incorrect = " << n_incorrect 
+                 << " frac_correct = " << frac_correct
+                 << endl;
+         }
+
+      } // truth_known_flag conditional
 
       if(copy_image_chips_flag)
       {
          unix_cmd = "cp "+orig_image_filename+" "+classified_chip_imagename;
          sysfunc::unix_command(unix_cmd);
       }
-      
-      confusion_matrix.put(
-         true_label, classification_label,
-         confusion_matrix.get(true_label, classification_label) + 1);
-
-      if(i%200 == 0)
-      {
-         int n_correct = correct_scores.size();
-         int n_incorrect = incorrect_scores.size();
-         double frac_correct = double(n_correct)/(n_correct+n_incorrect);
-         cout << "n_correct = " << n_correct 
-              << " n_incorrect = " << n_incorrect 
-              << " frac_correct = " << frac_correct
-              << endl;
-      }
 
    } // loop over index i labeling input image tiles
 
-   
-   prob_distribution prob_correct(correct_scores, 100, 0);
-   prob_distribution prob_incorrect(correct_scores, 100, 0);
+   cout << "test.prototxt = " << test_prototxt_filename << endl;
+   cout << "trained caffe model = " << caffe_model_filename << endl;
+   cout << "input_images_subdir = " << input_images_subdir << endl;
 
-   prob_correct.set_title(
-      "Classification scores for correctly classified genders");
-   prob_incorrect.set_title(
-      "Classification scores for incorrectly classified genders");
-   prob_correct.writeprobdists(false);
-   prob_incorrect.writeprobdists(false);
+   if(truth_known_flag)
+   {
+      prob_distribution prob_correct(correct_scores, 100, 0);
+      prob_distribution prob_incorrect(correct_scores, 100, 0);
 
-   int n_correct = correct_scores.size();
-   int n_incorrect = incorrect_scores.size();
-   double frac_correct = double(n_correct)/(n_correct+n_incorrect);
-   cout << "n_correct = " << n_correct 
-        << " n_incorrect = " << n_incorrect 
-        << " frac_correct = " << frac_correct
-        << endl;
+      prob_correct.set_title(
+         "Classification scores for correctly classified genders");
+      prob_incorrect.set_title(
+         "Classification scores for incorrectly classified genders");
+      prob_correct.writeprobdists(false);
+      prob_incorrect.writeprobdists(false);
 
-   cout << "Confusion matrix:" << endl;
-   cout << confusion_matrix << endl << endl;
+      int n_correct = correct_scores.size();
+      int n_incorrect = incorrect_scores.size();
+      double frac_correct = double(n_correct)/(n_correct+n_incorrect);
+      cout << "n_images = " << n_images << endl;
+      cout << "n_correct + n_incorrect = " << n_correct + n_incorrect \
+           << endl;
+      cout << "n_correct = " << n_correct 
+           << " n_incorrect = " << n_incorrect 
+           << " frac_correct = " << frac_correct
+           << endl;
 
-   string banner="Exported correctly classified chips to "+
-      correct_chips_subdir;
-   outputfunc::write_banner(banner);
-   banner="Exported incorrectly classified chips to "+
-      incorrect_chips_subdir;
-   outputfunc::write_banner(banner);
+      cout << "Confusion matrix:" << endl;
+      cout << confusion_matrix << endl << endl;
+
+      string banner="Exported correctly classified chips to "+
+         correct_chips_subdir;
+      outputfunc::write_banner(banner);
+      banner="Exported incorrectly classified chips to "+
+         incorrect_chips_subdir;
+      outputfunc::write_banner(banner);
+   }
+   else
+   {
+      string banner="Exported classified chips to " + output_chips_subdir;
+      outputfunc::write_banner(banner);
+   }
 }
    

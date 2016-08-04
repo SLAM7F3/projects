@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
          outputfunc::enter_continue_char();
       }
 
-      if(width != 106 || height != 106)
+      if(width != 96 || height != 96)
       {
          cout << "i = " << i 
               << " image_filename = " << image_filename
