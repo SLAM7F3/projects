@@ -286,6 +286,49 @@ int main(int argc, char** argv)
 
    if(truth_known_flag)
    {
+      int n_male_correct = correct_male_scores.size();
+      int n_female_correct = correct_female_scores.size();
+      int n_correct = n_male_correct + n_female_correct;
+      int n_unsure = unsure_scores.size();
+      int n_male_incorrect = incorrect_male_scores.size();
+      int n_female_incorrect = incorrect_female_scores.size();
+      int n_incorrect = n_male_incorrect + n_female_incorrect;
+
+      cout << "n_correct = " << n_correct 
+           << " n_male_correct = " << n_male_correct
+           << " n_female_correct = " << n_female_correct << endl;
+      cout << "n_incorrect = " << n_incorrect 
+           << " n_male_incorrect = " << n_male_incorrect
+           << " n_female_incorrect = " << n_female_incorrect << endl;
+      cout << " n_unsure = " << n_unsure << endl;
+
+      double frac_correct = 
+         double(n_correct)/(n_correct+n_incorrect+n_unsure);
+      double frac_unsure = 
+         double(n_unsure)/(n_correct+n_incorrect+n_unsure);
+      double frac_incorrect = 
+         double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
+
+      cout << "frac_correct = " << frac_correct
+           << " frac_unsure = " << frac_unsure 
+           << " frac_incorrect = " << frac_incorrect
+           << endl;
+
+      double frac_male_correct = double(n_male_correct) / 
+         double (n_male_correct + n_male_incorrect);
+      double frac_female_correct = double(n_female_correct) / 
+         double (n_female_correct + n_female_incorrect);
+
+      cout << "frac_male_correct = " << frac_male_correct
+           << " frac_female_correct = " << frac_female_correct << endl;
+
+      cout << "Confusion matrix:" << endl;
+      cout << confusion_matrix << endl << endl;
+
+      cout << "male_score_threshold = " << male_score_threshold
+           << " female_score_threshold = " << female_score_threshold
+           << endl;
+
       prob_distribution prob_male_correct(correct_male_scores, 100, 0);
       prob_distribution prob_female_correct(correct_female_scores, 100, 0);
       prob_distribution prob_male_incorrect(incorrect_male_scores, 100, 0);
@@ -332,49 +375,6 @@ int main(int argc, char** argv)
       prob_female_correct.writeprobdists(false);
       prob_male_incorrect.writeprobdists(false);
       prob_female_incorrect.writeprobdists(false);
-
-      int n_male_correct = correct_male_scores.size();
-      int n_female_correct = correct_female_scores.size();
-      int n_correct = n_male_correct + n_female_correct;
-      int n_unsure = unsure_scores.size();
-      int n_male_incorrect = incorrect_male_scores.size();
-      int n_female_incorrect = incorrect_female_scores.size();
-      int n_incorrect = n_male_incorrect + n_female_incorrect;
-
-      cout << "n_correct = " << n_correct 
-           << " n_male_correct = " << n_male_correct
-           << " n_female_correct = " << n_female_correct << endl;
-      cout << "n_incorrect = " << n_incorrect 
-           << " n_male_incorrect = " << n_male_incorrect
-           << " n_female_incorrect = " << n_female_incorrect << endl;
-      cout << " n_unsure = " << n_unsure << endl;
-
-      double frac_correct = 
-         double(n_correct)/(n_correct+n_incorrect+n_unsure);
-      double frac_unsure = 
-         double(n_unsure)/(n_correct+n_incorrect+n_unsure);
-      double frac_incorrect = 
-         double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
-
-      cout << "frac_correct = " << frac_correct
-           << " frac_unsure = " << frac_unsure 
-           << " frac_incorrect = " << frac_incorrect
-           << endl;
-
-      double frac_male_correct = double(n_male_correct) / 
-         double (n_male_correct + n_male_incorrect);
-      double frac_female_correct = double(n_female_correct) / 
-         double (n_female_correct + n_female_incorrect);
-
-      cout << "frac_male_correct = " << frac_male_correct
-           << " frac_female_correct = " << frac_female_correct << endl;
-
-      cout << "Confusion matrix:" << endl;
-      cout << confusion_matrix << endl << endl;
-
-      cout << "male_score_threshold = " << male_score_threshold
-           << " female_score_threshold = " << female_score_threshold
-           << endl;
 
       string banner="Exported correctly classified chips to "+
          correct_chips_subdir;
