@@ -13,7 +13,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 7/30/16; 8/1/16; 8/2/16; 8/3/16
+// Last updated on 8/1/16; 8/2/16; 8/3/16; 8/4/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -43,6 +43,12 @@ typedef pair<string, float> Prediction;
 
 int main(int argc, char** argv) 
 {
+   double score_threshold = 0.5;
+   cout << "Enter minimal score for a gender classification:" << endl;
+   cin >> score_threshold;
+
+   timefunc::initialize_timeofday_clock();
+
 //   bool copy_image_chips_flag = true;
    bool copy_image_chips_flag = false;
 
@@ -74,39 +80,40 @@ int main(int argc, char** argv)
       return 1;
    }
 
-   ::google::InitGoogleLogging(argv[0]);
+//    ::google::InitGoogleLogging(argv[0]);
 
-   string cropped_chips_subdir="./cropped_image_chips/";
-   filefunc::dircreate(cropped_chips_subdir);
    string classified_chips_subdir="./classified_chips/";
-   filefunc::dircreate(classified_chips_subdir);
    string correct_chips_subdir=classified_chips_subdir+"correct/";
-   filefunc::dircreate(correct_chips_subdir);
-
    string incorrect_chips_subdir=classified_chips_subdir+"incorrect/";
-   filefunc::dircreate(incorrect_chips_subdir);
+   string unsure_chips_subdir=classified_chips_subdir+"unsure/";
 
    if(copy_image_chips_flag)
    {
+      filefunc::dircreate(classified_chips_subdir);
+      filefunc::dircreate(correct_chips_subdir);
+      filefunc::dircreate(incorrect_chips_subdir);
+      filefunc::dircreate(unsure_chips_subdir);
       filefunc::purge_files_in_subdir(correct_chips_subdir);
       filefunc::purge_files_in_subdir(incorrect_chips_subdir);
+      filefunc::purge_files_in_subdir(unsure_chips_subdir);
    }
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-//   double Bmean = 114.45;
-//   double Gmean = 114.45;
-//   double Rmean = 114.45;
-
    double Bmean = 104.008;
    double Gmean = 116.669;
    double Rmean = 122.675;
-
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("background");
    classifier.add_label("male");
    classifier.add_label("female");
+   classifier.add_label("unsure");
+   int unsure_label = classifier.get_n_labels() - 1;
+
+   int n_classes = classifier.get_n_labels();
+   genmatrix confusion_matrix(n_classes,n_classes);
+   confusion_matrix.clear_matrix_values();
 
    bool search_all_children_dirs_flag = false;
 //   bool search_all_children_dirs_flag = true;
@@ -116,16 +123,9 @@ int main(int argc, char** argv)
    int n_images = image_filenames.size();
    cout << "n_images = " << n_images << endl;
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
-
    int istart=0;
    int istop = n_images;
-   int n_classes = classifier.get_n_labels();
-   vector<double> correct_scores, incorrect_scores;
-
-   genmatrix confusion_matrix(n_classes,n_classes);
-   confusion_matrix.clear_matrix_values();
-
-   timefunc::initialize_timeofday_clock();
+   vector<double> correct_scores, incorrect_scores, unsure_scores;
 
    for(int i = istart; i < istop; i++)
    {
@@ -190,12 +190,11 @@ int main(int argc, char** argv)
 
       if(!truth_known_flag)
       {
-         string gender="female";
-         if(classification_label == 1)
+         string gender="unsure";
+         if(classification_score > score_threshold)
          {
-            gender = "male";
+            gender = classifier.get_label_name(1);
          }
-//         classified_chip_basename=gender+"_"+image_basename;
          classified_chip_basename=stringfunc::prefix(image_basename)+"_"+
             gender+"."+stringfunc::suffix(image_basename);
          classified_chip_imagename = output_chips_subdir+
@@ -209,19 +208,29 @@ int main(int argc, char** argv)
       }
       else
       {
-         if(classification_label == true_label)
+         if(classification_score <= score_threshold)
          {
-            correct_scores.push_back(classification_score);
-            classified_chip_imagename = correct_chips_subdir+
+            classification_label = unsure_label;
+            unsure_scores.push_back(classification_score);
+            classified_chip_imagename = unsure_chips_subdir+
                classified_chip_basename;
          }
-         else
+         else // classification_score > score_threshold
          {
-            incorrect_scores.push_back(classification_score);
-            classified_chip_imagename = incorrect_chips_subdir+
-               classified_chip_basename;
+            if(classification_label == true_label)
+            {
+               correct_scores.push_back(classification_score);
+               classified_chip_imagename = correct_chips_subdir+
+                  classified_chip_basename;
+            }
+            else
+            {
+               incorrect_scores.push_back(classification_score);
+               classified_chip_imagename = incorrect_chips_subdir+
+                  classified_chip_basename;
+            }
          }
-      
+         
          confusion_matrix.put(
             true_label, classification_label,
             confusion_matrix.get(true_label, classification_label) + 1);
@@ -230,13 +239,21 @@ int main(int argc, char** argv)
          {
             int n_correct = correct_scores.size();
             int n_incorrect = incorrect_scores.size();
-            double frac_correct = double(n_correct)/(n_correct+n_incorrect);
+            int n_unsure = unsure_scores.size();
+            double frac_correct = 
+               double(n_correct)/(n_correct+n_incorrect+n_unsure);
+            double frac_incorrect = 
+               double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
+            double frac_unsure = 
+               double(n_unsure)/(n_correct+n_incorrect+n_unsure);
             cout << "n_correct = " << n_correct 
                  << " n_incorrect = " << n_incorrect 
-                 << " frac_correct = " << frac_correct
+                 << " n_unsure = " << n_unsure << endl;
+            cout << " frac_correct = " << frac_correct
+                 << " frac_incorrect = " << frac_incorrect
+                 << " frac_unsure = " << frac_unsure
                  << endl;
          }
-
       } // truth_known_flag conditional
 
       if(copy_image_chips_flag)
@@ -276,13 +293,19 @@ int main(int argc, char** argv)
 
       int n_correct = correct_scores.size();
       int n_incorrect = incorrect_scores.size();
-      double frac_correct = double(n_correct)/(n_correct+n_incorrect);
-      cout << "n_images = " << n_images << endl;
-      cout << "n_correct + n_incorrect = " << n_correct + n_incorrect \
-           << endl;
+      int n_unsure = unsure_scores.size();
+      double frac_correct = 
+         double(n_correct)/(n_correct+n_incorrect+n_unsure);
+      double frac_incorrect = 
+         double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
+      double frac_unsure = 
+         double(n_unsure)/(n_correct+n_incorrect+n_unsure);
       cout << "n_correct = " << n_correct 
            << " n_incorrect = " << n_incorrect 
-           << " frac_correct = " << frac_correct
+           << " n_unsure = " << n_unsure << endl;
+      cout << " frac_correct = " << frac_correct
+           << " frac_incorrect = " << frac_incorrect
+           << " frac_unsure = " << frac_unsure
            << endl;
 
       cout << "Confusion matrix:" << endl;
@@ -293,6 +316,8 @@ int main(int argc, char** argv)
       outputfunc::write_banner(banner);
       banner="Exported incorrectly classified chips to "+
          incorrect_chips_subdir;
+      outputfunc::write_banner(banner);
+      banner="Exported unsure chips to "+ unsure_chips_subdir;
       outputfunc::write_banner(banner);
    }
    else
