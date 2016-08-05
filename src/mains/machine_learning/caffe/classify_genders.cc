@@ -50,9 +50,10 @@ int main(int argc, char** argv)
 //   cout << "Enter minimal score for female classification:" << endl;
 //   cin >> female_score_threshold;
 
-   double incorrect_weight;
-   cout << "Enter incorrect weight (relative to unsure score):" << endl;
-   cin >> incorrect_weight;
+   double incorrect_weight_frac;
+   cout << "Enter incorrect weight fraction (relative to unsure score):" 
+        << endl;
+   cin >> incorrect_weight_frac;
    
    // best male_score_threshold = 0.62;
    // best female_score_threshold = 0.66;
@@ -164,7 +165,7 @@ int main(int argc, char** argv)
          for(int i = istart; i < istop; i++)
          {
             outputfunc::update_progress_and_remaining_time(
-               i, 200, (istop-istart));
+               i, 500, (istop-istart));
 
             int image_ID = shuffled_image_indices[i];
             if(!truth_known_flag) image_ID = i;
@@ -419,8 +420,8 @@ int main(int argc, char** argv)
             banner="Exported unsure chips to "+ unsure_chips_subdir;
             outputfunc::write_banner(banner);
 
-            double curr_score = frac_unsure + 
-               incorrect_weight * frac_incorrect;
+            double curr_score = (1 - incorrect_weight_frac) * frac_unsure + 
+               incorrect_weight_frac * frac_incorrect;
             if(curr_score < min_score)
             {
                min_score = curr_score;
@@ -432,7 +433,8 @@ int main(int argc, char** argv)
             }
 
             cout << "min_score = " << min_score << endl;
-            cout << "incorrect_weight = " << incorrect_weight << endl;
+            cout << "incorrect_weight_frac = " << incorrect_weight_frac 
+                 << endl;
             cout << "best_male_score_threshold = " 
                  << best_male_score_threshold
                  << " best_female_score_threshold = " 
