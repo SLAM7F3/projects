@@ -62,7 +62,7 @@ int main(int argc, char** argv)
    double min_female_score_threshold = 0.5;
 //   double max_female_score_threshold = 0.5;
    double max_female_score_threshold = 0.7;
-   double delta_score_threshold = 0.025;
+   double delta_score_threshold = 0.033;
 
    timefunc::initialize_timeofday_clock();
 
@@ -128,7 +128,6 @@ int main(int argc, char** argv)
 
    int n_classes = classifier.get_n_labels();
    genmatrix confusion_matrix(n_classes,n_classes);
-   confusion_matrix.clear_matrix_values();
 
    bool search_all_children_dirs_flag = false;
 //   bool search_all_children_dirs_flag = true;
@@ -139,9 +138,9 @@ int main(int argc, char** argv)
    cout << "n_images = " << n_images << endl;
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
 
-   double min_frac_unsure = 1.0;
    double best_male_score_threshold, best_female_score_threshold;
-   double best_frac_incorrect, best_frac_unsure;
+   double best_frac_correct, best_frac_incorrect, best_frac_unsure;
+   double min_score = 1E10;
 
    for(double male_score_threshold = min_male_score_threshold;
        male_score_threshold <= max_male_score_threshold;
@@ -154,6 +153,8 @@ int main(int argc, char** argv)
          vector<double> correct_male_scores, correct_female_scores;
          vector<double> incorrect_male_scores, incorrect_female_scores;
          vector<double> unsure_scores;
+
+         confusion_matrix.clear_matrix_values();
 
          int istart=0;
          int istop = n_images;
@@ -415,22 +416,26 @@ int main(int argc, char** argv)
             banner="Exported unsure chips to "+ unsure_chips_subdir;
             outputfunc::write_banner(banner);
 
-            if(frac_incorrect < 0.1)
+            double curr_score = frac_unsure + 2 * frac_incorrect;
+            if(curr_score < min_score)
             {
-               if(frac_unsure < min_frac_unsure)
-               {
-                  best_male_score_threshold = male_score_threshold;
-                  best_female_score_threshold = female_score_threshold;
-                  best_frac_incorrect = frac_incorrect;
-                  best_frac_unsure = frac_unsure;
-               }
+               min_score = curr_score;
+               best_male_score_threshold = male_score_threshold;
+               best_female_score_threshold = female_score_threshold;
+               best_frac_correct = frac_correct;
+               best_frac_unsure = frac_unsure;
+               best_frac_incorrect = frac_incorrect;
             }
 
-            cout << "best_male_score_threshold = " << best_male_score_threshold
+            cout << "min_score = " << min_score << endl;
+            cout << "best_male_score_threshold = " 
+                 << best_male_score_threshold
                  << " best_female_score_threshold = " 
                  << best_female_score_threshold << endl;
-            cout << "best_frac_incorrect = " << best_frac_incorrect
-                 << " best_frac_unsure = " << best_frac_unsure << endl;
+            cout << "best_frac_correct = " << best_frac_correct
+                 << " best_frac_unsure = " << best_frac_unsure 
+                 << " best_frac_incorrect = " << best_frac_incorrect
+                 << endl;
          }
          else
          {
