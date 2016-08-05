@@ -62,11 +62,11 @@ int main(int argc, char** argv)
 
    double min_male_score_threshold = 0.5;
 //   double max_male_score_threshold = 0.5;
-   double max_male_score_threshold = 0.7;
+   double max_male_score_threshold = 0.67;
    double min_female_score_threshold = 0.5;
 //   double max_female_score_threshold = 0.5;
-   double max_female_score_threshold = 0.7;
-   double delta_score_threshold = 0.033;
+   double max_female_score_threshold = 0.67;
+   double delta_score_threshold = 0.025;
 
    timefunc::initialize_timeofday_clock();
 
