@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 7/8/16; 7/9/16; 7/21/16; 7/24/16
+// Last modified on 7/8/16; 7/9/16; 7/21/16; 7/24/16; 8/5/16
 // ==========================================================================
 
 #include <iomanip>
@@ -12,6 +12,7 @@
 #include "osg/osgGeometry/ConesGroup.h"
 #include "general/filefuncs.h"
 #include "astro_geo/geopoint.h"
+#include "geometry/geometry_funcs.h"
 #include "track/mover_funcs.h"
 #include "numrec/nrfuncs.h"
 #include "osg/osgGIS/postgis_database.h"
@@ -2232,8 +2233,7 @@ string PolyLinesGroup::get_image_ID_str()
 {
 //   cout << "inside PolyLinesGroup::get_image_ID_str()" << endl;
    
-   string currimage_filename = AC_ptr->
-      get_curr_image_filename();
+   string currimage_filename = AC_ptr->get_curr_image_filename();
 //   cout << "currimage_filename = " << currimage_filename << endl;
 
    vector<string> substrings = stringfunc::decompose_string_into_substrings(
@@ -2708,8 +2708,7 @@ void PolyLinesGroup::write_bboxes_to_file()
 {
 //    cout << "inside write_bboxes_to_file()" << endl;
    
-   int curr_framenumber = AC_ptr->
-      get_curr_framenumber();
+   int curr_framenumber = AC_ptr->get_curr_framenumber();
    
 // Export face and hand bounding boxes to output text file:
 
@@ -2727,7 +2726,6 @@ void PolyLinesGroup::write_bboxes_to_file()
        i <= AC_ptr->get_last_framenumber(); i++)
    {
       AC_ptr->set_curr_framenumber(i);
-
       outstream << "Image: index = " << i 
                 << " ID_str = " << get_image_ID_str() << endl;
 
@@ -2739,33 +2737,7 @@ void PolyLinesGroup::write_bboxes_to_file()
       }
       
       vector<bounding_box> curr_image_bboxes = annotated_bboxes_iter->second;
-
-      for(unsigned int b = 0; b < curr_image_bboxes.size(); b++)
-      {
-         bounding_box curr_bbox = curr_image_bboxes[b];
-
-         outstream << curr_bbox.get_ID() << "  "
-                   << curr_bbox.get_label() << "   "
-                   << curr_bbox.get_xmin() << "  "
-                   << curr_bbox.get_xmax() << "  "
-                   << curr_bbox.get_ymin() << "  "
-                   << curr_bbox.get_ymax() << "  ";
-
-         string attr_key, attr_value;
-         for(curr_bbox.get_attributes_map_iter() = 
-                curr_bbox.get_attributes_map().begin(); 
-             curr_bbox.get_attributes_map_iter() != 
-                curr_bbox.get_attributes_map().end();
-             curr_bbox.get_attributes_map_iter()++)
-         {
-            attr_key = curr_bbox.get_attributes_map_iter()->first;
-            attr_value = curr_bbox.get_attributes_map_iter()->second;
-            
-            outstream << attr_key << "  "  << attr_value << "  ";
-         }
-
-         outstream << endl;
-      } // loop over index b labeling bboxes for current image
+      geometry_func::write_bboxes_to_file(outstream, curr_image_bboxes);
    } // loop over index i labeling all input images
 
 // Reset AC's current frame number to its original value:

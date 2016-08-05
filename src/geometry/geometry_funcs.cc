@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone geometry methods
 // ==========================================================================
-// Last updated on 5/8/13; 5/9/13; 10/18/13; 4/4/14
+// Last updated on 5/8/13; 5/9/13; 10/18/13; 4/4/14; 8/5/16
 // ==========================================================================
 
 #include <iostream>
@@ -2110,6 +2110,40 @@ namespace geometry_func
 
       bbox.recompute_bounding_box(V);
    }
+
+// ---------------------------------------------------------------------
+// Method write_bboxes_to_file() exports a set of bounding box pixel
+// coordinates and string attributes to an output text file.
+
+void write_bboxes_to_file(ofstream& outstream, 
+                          vector<bounding_box>& curr_image_bboxes)
+{
+   for(unsigned int b = 0; b < curr_image_bboxes.size(); b++)
+   {
+      bounding_box curr_bbox = curr_image_bboxes[b];
+      
+      outstream << curr_bbox.get_ID() << "  "
+                << curr_bbox.get_label() << "   "
+                << curr_bbox.get_xmin() << "  "
+                << curr_bbox.get_xmax() << "  "
+                << curr_bbox.get_ymin() << "  "
+                << curr_bbox.get_ymax() << "  ";
+      
+      string attr_key, attr_value;
+      for(curr_bbox.get_attributes_map_iter() = 
+             curr_bbox.get_attributes_map().begin(); 
+          curr_bbox.get_attributes_map_iter() != 
+             curr_bbox.get_attributes_map().end();
+          curr_bbox.get_attributes_map_iter()++)
+      {
+         attr_key = curr_bbox.get_attributes_map_iter()->first;
+         attr_value = curr_bbox.get_attributes_map_iter()->second;
+         outstream << attr_key << "  "  << attr_value << "  ";
+      }
+
+      outstream << endl;
+   } // loop over index b labeling bboxes for current image
+}
 
 // ==========================================================================
 // Convex hull methods

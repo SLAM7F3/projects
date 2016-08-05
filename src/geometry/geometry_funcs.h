@@ -1,12 +1,13 @@
 // ==========================================================================
 // Header file for stand-alone geometry methods
 // ==========================================================================
-// Last updated on 5/9/13; 8/8/13; 10/18/13
+// Last updated on 5/9/13; 8/8/13; 10/18/13; 8/5/16
 // ==========================================================================
 
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#include <iostream>
 #include <set>
 #include <string>
 #include <vector>
@@ -169,6 +170,8 @@ namespace geometry_func
       threevector& sphere_center,double& sphere_radius);
    void compute_bounding_box(
       vertices_handler* vertices_handler_ptr,bounding_box& bbox);
+   void write_bboxes_to_file(std::ofstream& outstream, 
+                             std::vector<bounding_box>& curr_image_bboxes);
 
 // Convex hull methods
 

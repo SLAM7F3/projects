@@ -2,7 +2,7 @@
 // texture_rectangle class provides functionality for displaying
 // images and videos within OSG TextureRectangles.
 // ========================================================================
-// Last updated on 6/20/16; 6/21/16; 7/29/16; 8/1/16
+// Last updated on 6/21/16; 7/29/16; 8/1/16; 8/5/16
 // ========================================================================
 
 #ifndef TEXTURE_RECTANGLE_H
@@ -278,16 +278,18 @@ class texture_rectangle
 // Drawing member functions:
 
    void fill_circle(int pu,int pv,double radius,colorfunc::Color c);
-   void draw_pixel_bbox(const bounding_box& bbox,colorfunc::Color c);
-   void draw_pixel_bbox(const bounding_box& bbox,int R, int G, int B);
+   void draw_pixel_bbox(const bounding_box& bbox,colorfunc::Color c,
+      int thickness = 0);
+   void draw_pixel_bbox(const bounding_box& bbox,int R, int G, int B,
+      int thickness = 0);
    void draw_pixel_bbox(
       unsigned int px_min,unsigned int px_max,
       unsigned int py_min,unsigned int py_max,
-      colorfunc::Color c);
+      colorfunc::Color c, int thickness = 0);
    void draw_pixel_bbox(
       unsigned int px_min,unsigned int px_max,
       unsigned int py_min,unsigned int py_max,
-      int R,int G,int B);
+      int R,int G,int B, int thickness = 0);
 
    void fill_pixel_bbox(
       const bounding_box& bbox,int R, int G, int B);

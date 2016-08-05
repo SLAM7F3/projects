@@ -1,3 +1,4 @@
+/bin/rm ./add_gender_attributes
 /bin/rm ./adience_images
 /bin/rm ./attribute_images
 /bin/rm ./augment_chips
@@ -5,6 +6,7 @@
 /bin/rm ./bbox_widths
 /bin/rm ./clean_images
 /bin/rm ./downsize_images
+/bin/rm ./draw_gender_bboxes
 /bin/rm ./generate_bbox_tiles
 /bin/rm ./homogenize_images
 /bin/rm ./image_sizes

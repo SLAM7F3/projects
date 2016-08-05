@@ -1,3 +1,4 @@
+~/bin/MAKE program=add_gender_attributes
 ~/bin/MAKE program=adience_images
 ~/bin/MAKE program=attribute_images
 ~/bin/MAKE program=augment_chips
@@ -5,6 +6,7 @@
 ~/bin/MAKE program=bbox_widths
 ~/bin/MAKE program=clean_images
 ~/bin/MAKE program=downsize_images
+~/bin/MAKE program=draw_gender_bboxes
 ~/bin/MAKE program=generate_bbox_tiles
 ~/bin/MAKE program=homogenize_images
 ~/bin/MAKE program=image_sizes

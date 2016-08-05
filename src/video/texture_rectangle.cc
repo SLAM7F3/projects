@@ -9,7 +9,7 @@
 // ========================================================================
 // texture_rectangle provides functionality for displaying video files.
 // ========================================================================
-// Last updated on 6/20/16; 6/21/16; 6/25/16; 8/1/16
+// Last updated on 6/21/16; 6/25/16; 8/1/16; 8/5/16
 // ========================================================================
 
 #include <iostream>
@@ -2771,54 +2771,60 @@ void texture_rectangle::fill_circle(
 }
 
 void texture_rectangle::draw_pixel_bbox(
-   const bounding_box& bbox,colorfunc::Color c)
+   const bounding_box& bbox,colorfunc::Color c, int thickness)
 {
    unsigned int px_min=bbox.get_xmin();
    unsigned int px_max=bbox.get_xmax();
    unsigned int py_min=bbox.get_ymin();
    unsigned int py_max=bbox.get_ymax();
    
-   draw_pixel_bbox(px_min,px_max,py_min,py_max,c);
+   draw_pixel_bbox(px_min, px_max, py_min, py_max, c, thickness);
 }
 
 void texture_rectangle::draw_pixel_bbox(
-   const bounding_box& bbox,int R, int G, int B)
+   const bounding_box& bbox,int R, int G, int B, int thickness)
 {
    unsigned int px_min=bbox.get_xmin();
    unsigned int px_max=bbox.get_xmax();
    unsigned int py_min=bbox.get_ymin();
    unsigned int py_max=bbox.get_ymax();
    
-   draw_pixel_bbox(px_min,px_max,py_min,py_max,R,G,B);
+   draw_pixel_bbox(px_min, px_max, py_min, py_max, R, G, B, thickness);
 }
 
 void texture_rectangle::draw_pixel_bbox(
    unsigned int px_min,unsigned int px_max,
    unsigned int py_min,unsigned int py_max,
-   colorfunc::Color c)
+   colorfunc::Color c, int thickness)
 {
    int R,G,B;
    R=G=B=0;
    colorfunc::RGB rgb=colorfunc::get_RGB_values(c);
    colorfunc::rgb_to_RGB(rgb.first,rgb.second,rgb.third,R,G,B);
-   draw_pixel_bbox(px_min,px_max,py_min,py_max,R,G,B);
+   draw_pixel_bbox(px_min, px_max, py_min, py_max, R, G, B, thickness);
 }
 
 void texture_rectangle::draw_pixel_bbox(
    unsigned int px_min,unsigned int px_max,
    unsigned int py_min,unsigned int py_max,
-   int R,int G,int B)
+   int R,int G,int B, int thickness)
 {
    for (unsigned int px=px_min; px<=px_max; px++)
    {
-      set_pixel_RGB_values(px,py_min,R,G,B);
-      set_pixel_RGB_values(px,py_max,R,G,B);
+      for(int t = -thickness; t <= thickness; t++)
+      {
+         set_pixel_RGB_values(px, py_min + t, R, G, B);
+         set_pixel_RGB_values(px, py_max + t, R, G, B);
+      }
    }
    
    for (unsigned int py=py_min; py<=py_max; py++)
    {
-      set_pixel_RGB_values(px_min,py,R,G,B);
-      set_pixel_RGB_values(px_max,py,R,G,B);
+      for(int t = -thickness; t <= thickness; t++)
+      {
+         set_pixel_RGB_values(px_min + t, py, R, G, B);
+         set_pixel_RGB_values(px_max + t, py, R, G, B);
+      }
    }
 }
 
