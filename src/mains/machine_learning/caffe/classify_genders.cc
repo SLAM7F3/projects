@@ -51,9 +51,9 @@ int main(int argc, char** argv)
 //   cin >> female_score_threshold;
 
    double incorrect_weight_frac;
-   cout << "Enter incorrect weight fraction (relative to unsure score):" 
-        << endl;
-   cin >> incorrect_weight_frac;
+//   cout << "Enter incorrect weight fraction (relative to unsure score):" 
+//        << endl;
+//   cin >> incorrect_weight_frac;
    
    // best male_score_threshold = 0.62;
    // best female_score_threshold = 0.66;
@@ -66,7 +66,13 @@ int main(int argc, char** argv)
    double min_female_score_threshold = 0.5;
 //   double max_female_score_threshold = 0.5;
    double max_female_score_threshold = 0.67;
-   double delta_score_threshold = 0.025;
+   double delta_score_threshold = 0.020;
+
+   min_male_score_threshold = 0.625;
+   max_male_score_threshold = 0.625;
+   min_female_score_threshold = 0.525;
+   max_female_score_threshold = 0.525;
+   incorrect_weight_frac = 0.7;
 
    timefunc::initialize_timeofday_clock();
 
