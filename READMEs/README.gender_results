@@ -796,26 +796,41 @@ Asymptotic validation accuracy around 86.6%
 
 1139 validation set:
 
-n_correct + n_incorrect = 1139
-n_correct = 971 n_incorrect = 168 frac_correct = 0.852502
+n_correct = 947  n_male_correct = 484   n_female_correct = 463
+n_incorrect = 132  n_male_incorrect = 43   n_female_incorrect = 89
+n_unsure = 69
+frac_correct = 0.831431  frac_unsure = 0.0526778  frac_incorrect = 0.115891
+frac_male_correct = 0.921147  frac_female_correct = 0.824561
+
 Confusion matrix:
 
-0	0	0	
-0	502	69	
-0	99	469	
+0	0	0	0
+0	484     43      44
+0	89      463     16 
+0       0       0       0
 
+male_score_threshold = 0.625  female_score_threshld = 0.525
+incorrect_weight_frac = 0.7
 
 3507 testing set:
-n_correct + n_incorrect = 3507
-n_correct = 3004 n_incorrect = 503 frac_correct = 0.856573
+n_correct = 2905  n_male_correct = 1542   n_female_correct = 1363
+n_incorrect = 422  n_male_incorrect = 132   n_female_incorrect = 290
+n_unsure = 180
+frac_correct = 0.828343  frac_unsure = 0.0513259  frac_incorrect = 0.120331
+frac_male_correct = 0.921147  frac_female_correct = 0.824561
+
 Confusion matrix:
 
-0	0	0	
-0	1635	184	
-0	319	1369	
+0	0	0	0
+0	1542    132     145
+0	290     1363    35 
+0       0       0       0
+
+male_score_threshold = 0.625  female_score_threshld = 0.525
+incorrect_weight_frac = 0.7
 
 ***************************************************************
-As of 5 pm on 8/3/16, this is our BEST gender classification result.
+As of morning on 8/5/16, this is our BEST gender classification result.
 **************************************************************
 
 For comparison, results from previous best train_iter_262741.caffemodel for
