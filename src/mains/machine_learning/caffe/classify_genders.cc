@@ -13,7 +13,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/1/16; 8/2/16; 8/3/16; 8/4/16
+// Last updated on 8/1/16; 8/2/16; 8/3/16; 8/4/16; 8/5/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -235,10 +235,9 @@ int main(int argc, char** argv)
             classified_chip_imagename = unsure_chips_subdir+
                classified_chip_basename;
          }
-
          else if(true_label == classification_label &&
                  classification_label == 2 && 
-            classification_score > female_score_threshold)
+                 classification_score > female_score_threshold)
          {
             correct_female_scores.push_back(classification_score);
             classified_chip_imagename = correct_chips_subdir+
@@ -252,15 +251,15 @@ int main(int argc, char** argv)
             classified_chip_imagename = correct_chips_subdir+
                classified_chip_basename;
          }
-         else if (classification_label == 1 &&
-                  true_label != classification_label)
+         else if (true_label == 1 &&
+                  classification_label != true_label)
          {
             incorrect_male_scores.push_back(classification_score);
             classified_chip_imagename = incorrect_chips_subdir+
                classified_chip_basename;
          }
-         else if (classification_label == 2 &&
-                  true_label != classification_label)
+         else if (true_label == 2 && 
+                  classification_label != true_label)
          {
             incorrect_female_scores.push_back(classification_score);
             classified_chip_imagename = incorrect_chips_subdir+
