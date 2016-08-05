@@ -50,7 +50,10 @@ int main(int argc, char** argv)
 //   cout << "Enter minimal score for female classification:" << endl;
 //   cin >> female_score_threshold;
 
-
+   double incorrect_weight;
+   cout << "Enter incorrect weight (relative to unsure score):" << endl;
+   cin >> incorrect_weight;
+   
    // best male_score_threshold = 0.62;
    // best female_score_threshold = 0.66;
    // frac correct = 0.798; frac unsure = 0.106; frac incorrect = 0.095
@@ -416,7 +419,8 @@ int main(int argc, char** argv)
             banner="Exported unsure chips to "+ unsure_chips_subdir;
             outputfunc::write_banner(banner);
 
-            double curr_score = frac_unsure + 2 * frac_incorrect;
+            double curr_score = frac_unsure + 
+               incorrect_weight * frac_incorrect;
             if(curr_score < min_score)
             {
                min_score = curr_score;
@@ -428,6 +432,7 @@ int main(int argc, char** argv)
             }
 
             cout << "min_score = " << min_score << endl;
+            cout << "incorrect_weight = " << incorrect_weight << endl;
             cout << "best_male_score_threshold = " 
                  << best_male_score_threshold
                  << " best_female_score_threshold = " 
