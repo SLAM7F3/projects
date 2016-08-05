@@ -79,8 +79,8 @@ int main(int argc, char** argv)
 //   bool copy_image_chips_flag = true;
    bool copy_image_chips_flag = false;
 
-   bool truth_known_flag = true;
-//   bool truth_known_flag = false;
+//   bool truth_known_flag = true;
+   bool truth_known_flag = false;
 
    string test_prototxt_filename   = argv[1];
    string caffe_model_filename = argv[2];
