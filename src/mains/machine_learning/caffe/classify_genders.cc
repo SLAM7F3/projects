@@ -219,50 +219,53 @@ int main(int argc, char** argv)
       }
       else
       {
-         if(true_label == classification_label &&
-            classification_label == 1 && 
-            classification_score > male_score_threshold)
+         if(true_label == 1 &&
+            classification_label == true_label && 
+            classification_score >= male_score_threshold)
          {
             correct_male_scores.push_back(classification_score);
             classified_chip_imagename = correct_chips_subdir+
                classified_chip_basename;
          }
-         else if(classification_label == 1 && 
-                 classification_score <= male_score_threshold)
+         else if (true_label == 1 &&
+                  classification_label != true_label &&
+                  classification_score >= male_score_threshold)
+         {
+            incorrect_male_scores.push_back(classification_score);
+            classified_chip_imagename = incorrect_chips_subdir+
+               classified_chip_basename;
+         }
+         else if(true_label == 1 && 
+                 classification_score < male_score_threshold)
          {
             classification_label = unsure_label;
             unsure_scores.push_back(classification_score);
             classified_chip_imagename = unsure_chips_subdir+
                classified_chip_basename;
          }
-         else if(true_label == classification_label &&
-                 classification_label == 2 && 
-                 classification_score > female_score_threshold)
+
+         else if(true_label == 2 &&
+                 classification_label == true_label && 
+                 classification_score >= female_score_threshold)
          {
             correct_female_scores.push_back(classification_score);
             classified_chip_imagename = correct_chips_subdir+
                classified_chip_basename;
          }
-         else if(classification_label == 2 && 
-                 classification_score <= female_score_threshold)
+         else if (true_label == 2 && 
+                  classification_label != true_label &&
+                  classification_score >= female_score_threshold)
+         {
+            incorrect_female_scores.push_back(classification_score);
+            classified_chip_imagename = incorrect_chips_subdir+
+               classified_chip_basename;
+         }
+         else if(true_label == 2 && 
+                 classification_score < female_score_threshold)
          {
             classification_label = unsure_label;
             unsure_scores.push_back(classification_score);
             classified_chip_imagename = correct_chips_subdir+
-               classified_chip_basename;
-         }
-         else if (true_label == 1 &&
-                  classification_label != true_label)
-         {
-            incorrect_male_scores.push_back(classification_score);
-            classified_chip_imagename = incorrect_chips_subdir+
-               classified_chip_basename;
-         }
-         else if (true_label == 2 && 
-                  classification_label != true_label)
-         {
-            incorrect_female_scores.push_back(classification_score);
-            classified_chip_imagename = incorrect_chips_subdir+
                classified_chip_basename;
          }
 
