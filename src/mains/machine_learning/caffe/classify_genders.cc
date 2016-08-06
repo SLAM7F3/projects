@@ -70,10 +70,10 @@ int main(int argc, char** argv)
    double max_female_score_threshold = 0.67;
    double delta_score_threshold = 0.020;
 
-   min_male_score_threshold = 0.625;
-   max_male_score_threshold = 0.625;
-   min_female_score_threshold = 0.525;
-   max_female_score_threshold = 0.525;
+//   min_male_score_threshold = 0.625;
+//   max_male_score_threshold = 0.625;
+//   min_female_score_threshold = 0.525;
+//   max_female_score_threshold = 0.525;
    incorrect_weight_frac = 0.7;
 
    timefunc::initialize_timeofday_clock();
@@ -181,8 +181,8 @@ int main(int argc, char** argv)
             string orig_image_filename = image_filenames[image_ID];
             string image_filename = orig_image_filename;
             string image_basename = filefunc::getbasename(image_filename);
-            cout << "i = " << i << " image_basename = " << image_basename 
-                 << endl;
+//            cout << "i = " << i << " image_basename = " << image_basename 
+//                 << endl;
       
             vector<string> substrings = 
                stringfunc::decompose_string_into_substrings(image_basename,"_");
