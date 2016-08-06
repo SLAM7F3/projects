@@ -155,6 +155,8 @@ int main(int argc, char** argv)
 
    double best_male_score_threshold, best_female_score_threshold;
    double best_frac_correct, best_frac_incorrect, best_frac_unsure;
+   double best_frac_nonface_correct, best_frac_male_correct,
+      best_frac_female_correct;
    double min_score = 1E10;
 
    for(double male_score_threshold = min_male_score_threshold;
@@ -465,6 +467,10 @@ int main(int argc, char** argv)
                min_score = curr_score;
                best_male_score_threshold = male_score_threshold;
                best_female_score_threshold = female_score_threshold;
+
+               best_frac_nonface_correct = frac_nonface_correct;
+               best_frac_male_correct = frac_male_correct;
+               best_frac_female_correct = frac_female_correct;
                best_frac_correct = frac_correct;
                best_frac_unsure = frac_unsure;
                best_frac_incorrect = frac_incorrect;
@@ -480,6 +486,11 @@ int main(int argc, char** argv)
             cout << "best_frac_correct = " << best_frac_correct
                  << " best_frac_unsure = " << best_frac_unsure 
                  << " best_frac_incorrect = " << best_frac_incorrect
+                 << endl;
+
+            cout << "best_frac_nonface_correct = " << best_frac_nonface_correct
+                 << " best_frac_male_correct = " << best_frac_male_correct
+                 << " best_frac_female_correct = " << best_frac_female_correct
                  << endl;
          }
          else
