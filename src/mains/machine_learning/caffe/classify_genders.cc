@@ -84,8 +84,8 @@ int main(int argc, char** argv)
 //   bool copy_image_chips_flag = true;
    bool copy_image_chips_flag = false;
 
-   bool truth_known_flag = true;
-//   bool truth_known_flag = false;
+//   bool truth_known_flag = true;
+   bool truth_known_flag = false;
 
    string test_prototxt_filename   = argv[1];
    string caffe_model_filename = argv[2];
@@ -193,21 +193,6 @@ int main(int argc, char** argv)
             vector<string> substrings = 
                stringfunc::decompose_string_into_substrings(image_basename,"_");
 
-            int true_label = -1;
-            string true_gender_label = substrings[0];
-            if(true_gender_label == "non")
-            {
-               true_label = 0;
-            }
-            else if(true_gender_label == "male")
-            {
-               true_label = 1;
-            }
-            else if(true_gender_label == "female")
-            {
-               true_label = 2;
-            }
-
             unsigned int input_img_width, input_img_height;
             imagefunc::get_image_width_height(
                orig_image_filename, input_img_width, input_img_height);
@@ -225,23 +210,18 @@ int main(int argc, char** argv)
             classifier.generate_dense_map();
 
             int classification_label = classifier.get_classification_result();
-            double classification_score = classifier.get_classification_score();
-//      cout << "Label:  True = " << true_label 
-//           << " Classified = " << classification_label 
-//           << " score = " << classification_score 
-//           << endl;
-
+            double classification_score=classifier.get_classification_score();
             string classified_chip_imagename;
-            string unix_cmd;
-            string classified_chip_basename=true_gender_label+"_"+
-               stringfunc::number_to_string(classification_score)+
-               stringfunc::integer_to_string(i,5)+"_"+
-               ".jpg";
 
             if(!truth_known_flag)
             {
                string gender="unsure";
-               if(classification_score > male_score_threshold &&
+               if(classification_score > nonface_score_threshold &&
+                  classification_label == 0)
+               {
+                  gender = classifier.get_label_name(0);
+               }
+               else if(classification_score > male_score_threshold &&
                   classification_label == 1)
                {
                   gender = classifier.get_label_name(1);
@@ -252,7 +232,8 @@ int main(int argc, char** argv)
                   gender = classifier.get_label_name(2);
                }
 
-               classified_chip_basename=stringfunc::prefix(image_basename)+"_"+
+               string classified_chip_basename=
+                  stringfunc::prefix(image_basename)+"_"+
                   gender+"."+stringfunc::suffix(image_basename);
                classified_chip_imagename = output_chips_subdir+
                   classified_chip_basename;
@@ -265,6 +246,26 @@ int main(int argc, char** argv)
             }
             else
             {
+               int true_label = -1;
+               string true_gender_label = substrings[0];
+               if(true_gender_label == "non")
+               {
+                  true_label = 0;
+               }
+               else if(true_gender_label == "male")
+               {
+                  true_label = 1;
+               }
+               else if(true_gender_label == "female")
+               {
+                  true_label = 2;
+               }
+
+               string classified_chip_basename=true_gender_label+"_"+
+                  stringfunc::number_to_string(classification_score)+
+                  stringfunc::integer_to_string(i,5)+"_"+
+                  ".jpg";
+               
                if(true_label == 0 &&
                   classification_label == true_label && 
                   classification_score >= nonface_score_threshold)
@@ -339,7 +340,7 @@ int main(int argc, char** argv)
 
             if(copy_image_chips_flag)
             {
-               unix_cmd = "cp "+orig_image_filename+" "+
+               string unix_cmd = "cp "+orig_image_filename+" "+
                   classified_chip_imagename;
                sysfunc::unix_command(unix_cmd);
             }
