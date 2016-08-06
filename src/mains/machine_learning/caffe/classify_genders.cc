@@ -5,7 +5,9 @@
 // each test image and prints out the label for the top class which
 // the trained caffe model predicts for the input image.  It exports
 // correctly and incorrectly classified image chips to separate
-// subfolders.
+// subfolders.  If ground truth is not known, CLASSIFY_GENDERS exports
+// text file gender.classifications which contains gender assignments
+// and classifier scores.  
 
 // ./classify_genders 
 // /data/caffe/faces/trained_models/test_96.prototxt                     
@@ -13,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/1/16; 8/2/16; 8/3/16; 8/4/16; 8/5/16
+// Last updated on 8/3/16; 8/4/16; 8/5/16; 8/6/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>

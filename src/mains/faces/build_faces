@@ -14,5 +14,6 @@
 ~/bin/MAKE program=prepare_deeplab_inputs
 ~/bin/MAKE program=pyramid_training_images
 ~/bin/MAKE program=reset_img_numbers
+~/bin/MAKE program=resize_imagechips
 ~/bin/MAKE program=wider_images
 ~/bin/MAKE program=xml2txt

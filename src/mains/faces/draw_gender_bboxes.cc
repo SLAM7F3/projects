@@ -1,5 +1,10 @@
 // ========================================================================
-// Program DRAW_GENDER_BBOXES
+// Program DRAW_GENDER_BBOXES takes in a text file containing facial
+// bounding box coordinates and gender attributes for some set of
+// images.  It colors the bounding boxes according to gender
+// classification (blue = male, red = female, green = unknown).
+// Images annotated with the colored bboxes are written to an output
+// subdirectory.
 
 //			./draw_gender_bboxes
 
@@ -65,7 +70,6 @@ int main( int argc, char** argv )
 
    for(unsigned int i = 0 ; i < filefunc::text_line.size(); i++)
    {
-      
       string curr_line=filefunc::text_line[i];
 
       vector<string> substrings = stringfunc::decompose_string_into_substrings(

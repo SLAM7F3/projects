@@ -2831,28 +2831,66 @@ void texture_rectangle::draw_pixel_bbox(
 void texture_rectangle::fill_pixel_bbox(
    const bounding_box& bbox,int R, int G, int B)
 {
-   unsigned int px_min=bbox.get_xmin();
-   unsigned int px_max=bbox.get_xmax();
-   unsigned int py_min=bbox.get_ymin();
-   unsigned int py_max=bbox.get_ymax();
+   int px_min=bbox.get_xmin();
+   int px_max=bbox.get_xmax();
+   int py_min=bbox.get_ymin();
+   int py_max=bbox.get_ymax();
    
    fill_pixel_bbox(px_min,px_max,py_min,py_max,R,G,B);
 }
 
 void texture_rectangle::fill_pixel_bbox(
-   unsigned int px_min,unsigned int px_max,
-   unsigned int py_min,unsigned int py_max,
+   int px_min, int px_max, int py_min, int py_max,
    int R,int G,int B)
 {
-   for(unsigned int py = py_min; py <= py_max; py++)
+//   cout << "inside fill_pixel_bbox()" << endl;
+//   cout << "px_min = " << px_min << " px_max = " << px_max << endl;
+//   cout << "py_min = " << py_min << " py_max = " << py_max << endl;
+   
+   for(int py = py_min; py <= py_max; py++)
    {
-      if(py < 0 || py >= getHeight()) continue;
-      for (unsigned int px=px_min; px<=px_max; px++)
+      for (int px=px_min; px<=px_max; px++)
       {
-         if(px < 0 || px >= getWidth()) continue;
          set_pixel_RGB_values(px,py,R,G,B);
       }
    }
+}
+
+// ------------------------------------------------------------------------
+// Member function count_colored_pixels() returns the number of pixels
+// whose RGB values match the input arguments.
+
+int texture_rectangle::count_colored_pixels(
+   int R, int G, int B, double RGB_threshold)
+{
+   int px_min = 0;
+   int px_max = getWidth() - 1;
+   int py_min = 0;
+   int py_max = getHeight() - 1;
+   return count_colored_pixels(px_min, px_max, py_min, py_max, R, G, B,
+                               RGB_threshold);
+}
+
+int texture_rectangle::count_colored_pixels(
+   int px_min, int px_max, int py_min, int py_max, int R, int G, int B,
+   double RGB_threshold)
+{
+   int n_colored_pixels = 0;
+   for(int py = py_min; py <= py_max; py++)
+   {
+      for(int px = px_min; px <= px_max; px++)
+      {
+         int curr_R, curr_G, curr_B;
+         get_pixel_RGB_values(px, py, curr_R, curr_G, curr_B);
+         if(abs(curr_R - R) < RGB_threshold && 
+            abs(curr_G - G) < RGB_threshold && 
+            abs(curr_B - B) < RGB_threshold )
+         {
+            n_colored_pixels++;
+         }
+      }
+   }
+   return n_colored_pixels;
 }
 
 // ========================================================================
@@ -4397,7 +4435,8 @@ void texture_rectangle::check_all_pixel_RGB_values()
 // ln p_i where i ranges over the 256 intensity values for a greyscale
 // image.  It returns a normalized values for S.  S=0 implies
 // intensity is constant across the entire image.  S=1 implies image
-// is "busy", "noisy", "informative".
+// is "busy", "noisy", "informative".  S=-1 indicates image contains
+// no valid intensity content.
 
 double texture_rectangle::compute_image_entropy(
    bool filter_intensities_flag,int color_channel_ID)
@@ -4498,6 +4537,10 @@ double texture_rectangle::compute_image_entropy(
 //        << " filtered_intensity.size() = " << filtered_intensity.size()
 //        << endl;
 
+   if(filtered_intensity.size() == 0)
+   {
+      return -1;
+   }
    prob_distribution filtered_prob(filtered_intensity,n_output_bins,xlo,dx);
 
 //   cout << "prob = " << prob << endl;

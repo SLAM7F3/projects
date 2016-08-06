@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 7/31/16; 8/1/16; 8/2/16; 8/3/16
+// Last updated on 8/1/16; 8/2/16; 8/3/16; 8/6/16
 // ==========================================================================
 
 #include <iostream>
@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
    dated_subdirs.push_back("Aug2_male_106x106_augmented/");
    dated_subdirs.push_back("Jul31_106x106_adience/");
    dated_subdirs.push_back("Iran_106x106/");
+   dated_subdirs.push_back("nonface_106x106/");
 
    for(unsigned int d = 0; d < dated_subdirs.size(); d++)
    {

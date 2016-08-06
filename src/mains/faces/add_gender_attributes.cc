@@ -1,5 +1,11 @@
 // ========================================================================
-// Program ADD_GENDER_ATTRIBUTES
+// Program ADD_GENDER_ATTRIBUTES imports the text file output by
+// program CONSOLIDATE_COMPONENTS which contains bounding boxes for
+// detected faces in some set of images.  It also inputs the text file
+// containing bbox gender classifications exported by
+// CLASSIFY_GENDERS.  ADD_GENDER_ATTRIBUTES appends the gender
+// classifications and scores as attributes to bounding boxes and
+// outputs the updated bboxes to a new text file.
 
 //			./add_gender_attributes
 

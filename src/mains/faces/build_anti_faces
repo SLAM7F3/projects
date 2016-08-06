@@ -14,5 +14,6 @@
 /bin/rm ./prepare_deeplab_inputs
 /bin/rm ./pyramid_training_images
 /bin/rm ./reset_img_numbers
+/bin/rm ./resize_imagechips
 /bin/rm ./wider_images
 /bin/rm ./xml2txt

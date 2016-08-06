@@ -294,9 +294,12 @@ class texture_rectangle
    void fill_pixel_bbox(
       const bounding_box& bbox,int R, int G, int B);
    void fill_pixel_bbox(
-      unsigned int px_min,unsigned int px_max,
-      unsigned int py_min,unsigned int py_max,
+      int px_min, int px_max, int py_min, int py_max,
       int R,int G,int B);
+   int count_colored_pixels(int R,int G,int B, double RGB_threshold);
+   int count_colored_pixels(
+      int px_min, int px_max, int py_min, int py_max, int R, int G, int B,
+      double RGB_threshold);
 
 // RGB color to greyscale conversion member functions:
 
