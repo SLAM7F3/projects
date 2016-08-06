@@ -132,7 +132,7 @@ int main(int argc, char** argv)
    double Rmean = 122.675;
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
-   classifier.add_label("background");
+   classifier.add_label("non");
    classifier.add_label("male");
    classifier.add_label("female");
    classifier.add_label("unsure");
@@ -181,14 +181,15 @@ int main(int argc, char** argv)
             string orig_image_filename = image_filenames[image_ID];
             string image_filename = orig_image_filename;
             string image_basename = filefunc::getbasename(image_filename);
-//      cout << "i = " << i << " image_basename = " << image_basename << endl;
+            cout << "i = " << i << " image_basename = " << image_basename 
+                 << endl;
       
             vector<string> substrings = 
                stringfunc::decompose_string_into_substrings(image_basename,"_");
 
             int true_label = -1;
             string true_gender_label = substrings[0];
-            if(true_gender_label == "background")
+            if(true_gender_label == "non")
             {
                true_label = 0;
             }

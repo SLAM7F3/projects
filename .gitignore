@@ -84,9 +84,11 @@ src/mains/faces/augment_chips
 src/mains/faces/augment_adience_chips
 src/mains/faces/image_sizes
 src/mains/faces/bbox_widths
+src/mains/faces/draw_annotated_bboxes
 src/mains/faces/draw_gender_bboxes
 src/mains/faces/extend_imagechips
 src/mains/faces/extract_chips
+src/mains/faces/imfdb_images
 src/mains/faces/pyramid_training_images
 src/mains/faces/downsize_images
 src/mains/faces/reset_img_numbers
