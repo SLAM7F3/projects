@@ -2,14 +2,14 @@
 // Program DRAW_GENDER_BBOXES takes in a text file containing facial
 // bounding box coordinates and gender attributes for some set of
 // images.  It colors the bounding boxes according to gender
-// classification (blue = male, red = female, green = unknown).
-// Images annotated with the colored bboxes are written to an output
-// subdirectory.
+// classification (grey = nonface, blue = male, red = female, green =
+// unknown gender). Images annotated with the colored bboxes are
+// written to an output subdirectory.
 
 //			./draw_gender_bboxes
 
 // ========================================================================
-// Last updated on 8/5/16
+// Last updated on 8/5/16; 8/6/16
 // ========================================================================
 
 #include <fstream>
@@ -164,10 +164,19 @@ int main( int argc, char** argv )
          string gender = annotated_bboxes[b]. get_attribute_value("gender");
          string score = annotated_bboxes[b]. get_attribute_value("score");
 
-         colorfunc::Color gender_color = colorfunc::red;
-         if(gender == "male")
+         colorfunc::Color gender_color = colorfunc::black;
+         if(gender == "non")
+         {
+//            gender_color = colorfunc::grey;
+            gender_color = colorfunc::white;
+         }
+         else if(gender == "male")
          {
             gender_color = colorfunc::blue;
+         }
+         else if(gender == "female")
+         {
+            gender_color = colorfunc::red;
          }
          else if(gender == "unsure")
          {
