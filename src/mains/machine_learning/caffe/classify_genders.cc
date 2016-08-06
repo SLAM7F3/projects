@@ -62,6 +62,7 @@ int main(int argc, char** argv)
    // frac correct = 0.798; frac unsure = 0.106; frac incorrect = 0.095
    // frac male correct = 0.926; frac female correct = 0.854
 
+   double nonface_score_threshold = 0.5;
    double min_male_score_threshold = 0.5;
 //   double max_male_score_threshold = 0.5;
    double max_male_score_threshold = 0.67;
@@ -74,8 +75,8 @@ int main(int argc, char** argv)
 //   max_male_score_threshold = 0.625;
 //   min_female_score_threshold = 0.525;
 //   max_female_score_threshold = 0.525;
-//   incorrect_weight_frac = 0.5;
-   incorrect_weight_frac = 0.6;
+   incorrect_weight_frac = 0.5;
+//   incorrect_weight_frac = 0.6;
 //   incorrect_weight_frac = 0.7;
 
    timefunc::initialize_timeofday_clock();
@@ -164,6 +165,7 @@ int main(int argc, char** argv)
           female_score_threshold <= max_female_score_threshold;
           female_score_threshold += delta_score_threshold)
       {
+         vector<double> correct_nonface_scores, incorrect_nonface_scores;
          vector<double> correct_male_scores, correct_female_scores;
          vector<double> incorrect_male_scores, incorrect_female_scores;
          vector<double> unsure_scores;
@@ -261,7 +263,23 @@ int main(int argc, char** argv)
             }
             else
             {
-               if(true_label == 1 &&
+               if(true_label == 0 &&
+                  classification_label == true_label && 
+                  classification_score >= nonface_score_threshold)
+               {
+                  correct_nonface_scores.push_back(classification_score);
+                  classified_chip_imagename = correct_chips_subdir+
+                     classified_chip_basename;
+               }
+               else if(true_label == 0 &&
+                       classification_label != true_label && 
+                       classification_score >= nonface_score_threshold)
+               {
+                  incorrect_nonface_scores.push_back(classification_score);
+                  classified_chip_imagename = incorrect_chips_subdir+
+                     classified_chip_basename;
+               }
+               else if(true_label == 1 &&
                   classification_label == true_label && 
                   classification_score >= male_score_threshold)
                {
@@ -277,6 +295,7 @@ int main(int argc, char** argv)
                   classified_chip_imagename = incorrect_chips_subdir+
                      classified_chip_basename;
                }
+
                else if(true_label == 1 && 
                        classification_score < male_score_threshold)
                {
@@ -331,13 +350,18 @@ int main(int argc, char** argv)
 
          if(truth_known_flag)
          {
+            int n_nonface_correct = correct_nonface_scores.size();
+            int n_nonface_incorrect = incorrect_nonface_scores.size();
             int n_male_correct = correct_male_scores.size();
             int n_female_correct = correct_female_scores.size();
-            int n_correct = n_male_correct + n_female_correct;
+
+            int n_correct = n_nonface_correct + 
+               n_male_correct + n_female_correct;
             int n_unsure = unsure_scores.size();
             int n_male_incorrect = incorrect_male_scores.size();
             int n_female_incorrect = incorrect_female_scores.size();
-            int n_incorrect = n_male_incorrect + n_female_incorrect;
+            int n_incorrect = n_nonface_incorrect + n_male_incorrect + 
+               n_female_incorrect;
 
             cout << "n_correct = " << n_correct 
                  << " n_male_correct = " << n_male_correct
@@ -359,12 +383,15 @@ int main(int argc, char** argv)
                  << " frac_incorrect = " << frac_incorrect
                  << endl;
 
+            double frac_nonface_correct = double(n_nonface_correct) / 
+               double(n_nonface_correct + n_nonface_incorrect);
             double frac_male_correct = double(n_male_correct) / 
                double (n_male_correct + n_male_incorrect);
             double frac_female_correct = double(n_female_correct) / 
                double (n_female_correct + n_female_incorrect);
 
-            cout << "frac_male_correct = " << frac_male_correct
+            cout << "frac_nonface_correct = " << frac_nonface_correct
+                 << " frac_male_correct = " << frac_male_correct
                  << " frac_female_correct = " << frac_female_correct << endl;
 
             cout << "Confusion matrix:" << endl;
