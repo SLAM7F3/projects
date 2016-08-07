@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 //   max_male_score_threshold = 0.625;
 //   min_female_score_threshold = 0.525;
 //   max_female_score_threshold = 0.525;
-   incorrect_weight_frac = 0.5;
+   incorrect_weight_frac = 0.80;
 //   incorrect_weight_frac = 0.6;
 //   incorrect_weight_frac = 0.7;
 
