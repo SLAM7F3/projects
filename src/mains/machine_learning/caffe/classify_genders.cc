@@ -71,13 +71,13 @@ int main(int argc, char** argv)
    double max_female_score_threshold = 0.67;
    double delta_score_threshold = 0.020;
 
-//   min_male_score_threshold = 0.625;
-//   max_male_score_threshold = 0.625;
-//   min_female_score_threshold = 0.525;
-//   max_female_score_threshold = 0.525;
-   incorrect_weight_frac = 0.60;
+   min_male_score_threshold = 0.52;
+   max_male_score_threshold = 0.52;
+   min_female_score_threshold = 0.58;
+   max_female_score_threshold = 0.58;
+//   incorrect_weight_frac = 0.50;
 //   incorrect_weight_frac = 0.6;
-//   incorrect_weight_frac = 0.7;
+   incorrect_weight_frac = 0.7;
 
    timefunc::initialize_timeofday_clock();
 
