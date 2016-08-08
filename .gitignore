@@ -82,6 +82,8 @@ src/mains/faces/adience_images
 src/mains/faces/attribute_images
 src/mains/faces/augment_chips
 src/mains/faces/augment_adience_chips
+src/mains/faces/augment_imfdb_chips
+src/mains/faces/augment_iran_chips
 src/mains/faces/image_sizes
 src/mains/faces/bbox_widths
 src/mains/faces/draw_annotated_bboxes
