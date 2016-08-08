@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/3/16; 8/4/16; 8/5/16; 8/6/16
+// Last updated on 8/4/16; 8/5/16; 8/6/16; 8/8/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -81,11 +81,11 @@ int main(int argc, char** argv)
 
    timefunc::initialize_timeofday_clock();
 
-//   bool copy_image_chips_flag = true;
-   bool copy_image_chips_flag = false;
+   bool copy_image_chips_flag = true;
+//   bool copy_image_chips_flag = false;
 
-//   bool truth_known_flag = true;
-   bool truth_known_flag = false;
+   bool truth_known_flag = true;
+//   bool truth_known_flag = false;
 
    string test_prototxt_filename   = argv[1];
    string caffe_model_filename = argv[2];
@@ -262,8 +262,8 @@ int main(int argc, char** argv)
                }
 
                string classified_chip_basename=true_gender_label+"_"+
-                  stringfunc::number_to_string(classification_score)+
-                  stringfunc::integer_to_string(i,5)+"_"+
+                  stringfunc::number_to_string(classification_score)+"_"+
+                  stringfunc::integer_to_string(i,5)+
                   ".jpg";
                
                if(true_label == 0 &&

@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/2/16; 8/3/16; 8/5/16; 8/6/16
+Last updated on 8/3/16; 8/5/16; 8/6/16; 8/8/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -920,6 +920,23 @@ than 48x48 doubled in size.
 Training started around 7 am
 
 
+
+
+input_images_subdir = /data/caffe/faces/image_chips/testing/Aug2_imfdb_Iran_nonface_96x96/
+n_correct = 3808 n_male_correct = 1553 n_female_correct = 1239
+n_incorrect = 461 n_male_incorrect = 210 n_female_incorrect = 241
+ n_unsure = 264
+frac_correct = 0.840062 frac_unsure = 0.0582396 frac_incorrect = 0.101699
+frac_nonface_correct = 0.990253 frac_male_correct = 0.880885 frac_female_correct = 0.837162
+Confusion matrix:
+
+1019	6	4	0	
+51	1553	159	56	
+25	216	1239	208	
+0	0	0	0	
+
+
+male_score_threshold = 0.52 female_score_threshold = 0.58
 
 
 

@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 7/28/16; 7/31/16; 8/1/16; 8/2/16
+// Last updated on 7/31/16; 8/1/16; 8/2/16; 8/8/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-   int n_training_images_per_epoch = 350000;
+   int n_training_images_per_epoch = 359992;
 //   int n_training_images_per_epoch = 260788;  
 //    int n_training_images_per_epoch = 184440;  
 //    int n_training_images_per_epoch = 37500;  

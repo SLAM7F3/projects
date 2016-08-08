@@ -9,7 +9,7 @@
 //			./draw_gender_bboxes
 
 // ========================================================================
-// Last updated on 8/5/16; 8/6/16
+// Last updated on 8/5/16; 8/8/16
 // ========================================================================
 
 #include <fstream>
@@ -44,11 +44,12 @@ int main( int argc, char** argv )
 
    string faces_rootdir = "/data/TrainingImagery/faces/";
    string bbox_labels_filename = faces_rootdir+"labeled_data/faces_14/"+
-      "updated_Aug3_faces_hands_testing_images_extracted_bboxes.txt";
+      "updated_Aug3_faces_testing_images_extracted_bboxes.txt";
    filefunc::ReadInfile(bbox_labels_filename);
 
    string images_subdir = faces_rootdir + 
-      "labeled_data/faces_14/testing_images/";
+      "labeled_data/faces_14/testing_images/fullsized/";
+//       "labeled_data/faces_14/testing_images/";
    string annotated_images_subdir = images_subdir+"annotated_images/";
    filefunc::dircreate(annotated_images_subdir);
    

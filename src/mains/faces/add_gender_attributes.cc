@@ -2,15 +2,15 @@
 // Program ADD_GENDER_ATTRIBUTES imports the text file output by
 // program CONSOLIDATE_COMPONENTS which contains bounding boxes for
 // detected faces in some set of images.  It also inputs the text file
-// containing bbox gender classifications exported by
-// CLASSIFY_GENDERS.  ADD_GENDER_ATTRIBUTES appends the gender
-// classifications and scores as attributes to bounding boxes and
-// outputs the updated bboxes to a new text file.
+// genders.classifications containing bbox gender classifications
+// exported by CLASSIFY_GENDERS.  ADD_GENDER_ATTRIBUTES appends the
+// gender classifications and scores as attributes to bounding boxes
+// and outputs the updated bboxes to a new text file.
 
 //			./add_gender_attributes
 
 // ========================================================================
-// Last updated on 8/5/16
+// Last updated on 8/5/16; 8/8/16
 // ========================================================================
 
 #include <fstream>
@@ -49,7 +49,7 @@ int main( int argc, char** argv )
       faces_rootdir +"labeled_data/faces_14/gender.classifications";
    string updated_bbox_labels_filename = faces_rootdir+
       "labeled_data/faces_14/"+
-      "updated_Aug3_faces_hands_testing_images_extracted_bboxes.txt";
+      "updated_Aug3_faces_testing_images_extracted_bboxes.txt";
    filefunc::ReadInfile(bbox_labels_filename);
 
 // First import face bounding boxes from bbox_labels_filename:
@@ -68,6 +68,7 @@ int main( int argc, char** argv )
    for(unsigned int i = 0; i < filefunc::text_line.size(); i++)
    {
       string curr_line=filefunc::text_line[i];
+      cout << curr_line << endl;
 
       vector<string> substrings = stringfunc::decompose_string_into_substrings(
          curr_line);
@@ -98,13 +99,15 @@ int main( int argc, char** argv )
          bounding_box curr_bbox(px_min, px_max, py_min, py_max);
 
          colorfunc::Color bbox_color = colorfunc::black;
-         if(bbox_label == "face")
+         if(bbox_label == "face" || bbox_label == "1")
          {
             bbox_color = colorfunc::red;
+            bbox_label = "face";
          }
-         else if(bbox_label == "hand")
+         else if(bbox_label == "hand" || bbox_label == "2")
          {
             bbox_color = colorfunc::cyan;
+            bbox_label = "hand";
          }
 
          curr_bbox.set_label(bbox_label);
@@ -153,7 +156,7 @@ int main( int argc, char** argv )
       curr_bbox->set_attribute_value("score", curr_score);
    } // loop over index i labeling lines in gender classifications file
    
-// Export updated bounding boxes to output text file:
+// Export updated face bounding boxes to output text file:
 
    ofstream outstream;
    filefunc::openfile(updated_bbox_labels_filename, outstream);
@@ -171,7 +174,16 @@ int main( int argc, char** argv )
       outstream << "Image: index = " << image_ID++
                 << " ID_str = " << annotated_bboxes_iter->first << endl;
       vector<bounding_box> curr_image_bboxes = annotated_bboxes_iter->second;
-      geometry_func::write_bboxes_to_file(outstream, curr_image_bboxes);
+      vector<bounding_box> face_image_bboxes;
+      for(unsigned int c = 0; c < curr_image_bboxes.size(); c++)
+      {
+         if(curr_image_bboxes[c].get_label() == "face")
+         {
+            face_image_bboxes.push_back(curr_image_bboxes[c]);
+         }
+      }
+      
+      geometry_func::write_bboxes_to_file(outstream, face_image_bboxes);
       outstream << endl;
    } // loop over annotated_bboxes_iter
 
