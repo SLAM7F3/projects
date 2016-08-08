@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 5/13/16; 5/31/16; 6/7/16; 6/17/16
+Last updated on 5/31/16; 6/7/16; 6/17/16; 8/8/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -750,3 +750,19 @@ We can then update local branch against remote branch:
 
 ubuntu:pwin% git pull --rebase
 First, rewinding head to replay your work on top of it...
+
+*.  On 8/8/16, we pulled master, chanted make clean and attempted to
+rebuild master.  But we then saw lots of error messages such as 
+
+In file included from ../../app/bld/kh_io.c:8:0:
+../../app/bld/kh_io.h:51:1: error: unknown type name ‘Kh__Manifest’
+ typedef Kh__Manifest kh_manifest_t;
+ ^
+../../app/bld/kh_io.h:52:1: error: unknown type name ‘Kh__Input’
+ typedef Kh__Input kh_input_t;
+ ^
+../../app/bld/kh_io.h:53:1: error: unknown type name ‘Kh__Output’
+ typedef Kh__Output kh_output_t;
+
+Tiago and Calla told us that we need to chant "git submodule update".  We
+then were able to make clean and build master without problem.

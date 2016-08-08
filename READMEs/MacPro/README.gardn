@@ -1,0 +1,48 @@
+=============================================================================
+GARDN notes
+=============================================================================
+Last updated on 8/8/16
+=============================================================================
+
+*.  Needed to sudo apt-get install libgnome-keyring-dev in order to compile
+pwin with gardn enabled.
+
+*.  Modified 'makepwin' script including GARDN and PWGL flags:
+
+cd /home/pcho/sputnik/pwin/build/linux64/
+make -s -j pwin OPT=3 OPENCL=1 OPENCV=1 DNN=1 LAPACK=1 RDN=1 WITH_GPU=1 GARDN=1 PWGL=1 GDAL=1 GDAL_PATH=/opt/gdal-2.0.1/
+
+
+*.  Jim Zin told us on 8/8/16 that both the eufori.dcfg and egm95.grd files
+should reside in the folder from which we launch gardn via the following
+pwin command:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -nogpfs -cfg ./eufori.dcfg \
+-da gardn
+
+
+*.  Jim Zin told us that we can see "gardn" projects via flyover admin -->
+Fixit --> Binary Build.  .  Look for projects ending with a "_gardn"
+suffix 
+
+e.g.  kh_sacramento-acl-rc2-pass2_gardn
+      kh_el_paso-acl-rc1-gardn-dev2_gardn
+      kh_sacramento-dev2-videdit1_gardn
+
+Enter name of such gardn projects WITHOUT the final "_gardn"
+suffix into the Project line of the initial GARDN Editor screen.
+
+*.  Jim Zin highly recommended that we toggle ON (via a mouse double click)
+the Read Only option that appears at the bottom of the initial GARDN Editor page.
+
+*.  Jim Zin said that the "Windows" key on our keyboard for our linux
+machine is equivalent to the Mac "Command" key on our MacBook laptop.
+
+*.  On 8/8/16, Firefox was able to view the contents of the following XML
+file on Thinkmate: 
+
+https://flyover-api.geo.apple.com/FlightOps/project/kh_el_paso-acl-rc1-gardn-dev2/xml
+
+*.  Jim Zin showed us that the initial overview GARDN page on our MacBook
+shows the project name
+

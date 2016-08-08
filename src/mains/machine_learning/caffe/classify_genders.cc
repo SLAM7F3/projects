@@ -329,7 +329,7 @@ int main(int argc, char** argv)
                {
                   classification_label = unsure_label;
                   unsure_scores.push_back(classification_score);
-                  classified_chip_imagename = correct_chips_subdir+
+                  classified_chip_imagename = unsure_chips_subdir+
                      classified_chip_basename;
                }
 

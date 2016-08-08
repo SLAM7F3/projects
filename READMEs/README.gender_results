@@ -919,24 +919,41 @@ than 48x48 doubled in size.
 
 Training started around 7 am
 
+Validation set results:
 
-
-
-input_images_subdir = /data/caffe/faces/image_chips/testing/Aug2_imfdb_Iran_nonface_96x96/
-n_correct = 3808 n_male_correct = 1553 n_female_correct = 1239
-n_incorrect = 461 n_male_incorrect = 210 n_female_incorrect = 241
- n_unsure = 264
-frac_correct = 0.840062 frac_unsure = 0.0582396 frac_incorrect = 0.101699
-frac_nonface_correct = 0.990253 frac_male_correct = 0.880885 frac_female_correct = 0.837162
+input_images_subdir = /data/caffe/faces/image_chips/validation/Aug2_imfdb_Iran_nonface_96x96/
+n_correct = 1360 n_male_correct = 475 n_female_correct = 416
+n_incorrect = 160 n_male_incorrect = 72 n_female_incorrect = 78
+ n_unsure = 98
+frac_correct = 0.840544 frac_unsure = 0.0605686 frac_incorrect = 0.0988875
+frac_nonface_correct = 0.979123 frac_male_correct = 0.868373 frac_female_correct = 0.842105
 Confusion matrix:
 
-1019	6	4	0	
+469	3	10	0	
+17	475	55	24	
+14	64	416	74	
+0	0	0	0	
+
+male_score_threshold = 0.52 female_score_threshold = 0.58
+
+Testing set results:
+
+input_images_subdir = /data/caffe/faces/image_chips/testing/Aug2_imfdb_Iran_nonface_96x96/
+n_correct = 3792 n_male_correct = 1553 n_female_correct = 1239
+n_incorrect = 476 n_male_incorrect = 210 n_female_incorrect = 241
+ n_unsure = 264
+frac_correct = 0.836717 frac_unsure = 0.0582524 frac_incorrect = 0.105031
+frac_nonface_correct = 0.97561 frac_male_correct = 0.880885 frac_female_correct = 0.837162
+Confusion matrix:
+
+1003	4	22	0	
 51	1553	159	56	
 25	216	1239	208	
 0	0	0	0	
 
 
 male_score_threshold = 0.52 female_score_threshold = 0.58
+
 
 
 
