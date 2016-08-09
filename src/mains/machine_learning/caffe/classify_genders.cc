@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/4/16; 8/5/16; 8/6/16; 8/8/16
+// Last updated on 8/5/16; 8/6/16; 8/8/16; 8/9/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -261,7 +261,26 @@ int main(int argc, char** argv)
                   true_label = 2;
                }
 
-               string classified_chip_basename=true_gender_label+"_"+
+               string classification_gender_label;
+               if(classification_label == 0)
+               {
+                  classification_gender_label = "non";
+               }
+               else if(classification_label == 1)
+               {
+                  classification_gender_label = "male";
+               }
+               else if(classification_label == 2)
+               {
+                  classification_gender_label = "female";
+               }
+
+               string correct_chip_basename=true_gender_label+"_"+
+                  stringfunc::number_to_string(classification_score)+"_"+
+                  stringfunc::integer_to_string(i,5)+
+                  ".jpg";
+               string incorrect_chip_basename=true_gender_label+"_"+
+                  classification_gender_label+"_"+
                   stringfunc::number_to_string(classification_score)+"_"+
                   stringfunc::integer_to_string(i,5)+
                   ".jpg";
@@ -272,7 +291,7 @@ int main(int argc, char** argv)
                {
                   correct_nonface_scores.push_back(classification_score);
                   classified_chip_imagename = correct_chips_subdir+
-                     classified_chip_basename;
+                     correct_chip_basename;
                }
                else if(true_label == 0 &&
                        classification_label != true_label && 
@@ -280,7 +299,7 @@ int main(int argc, char** argv)
                {
                   incorrect_nonface_scores.push_back(classification_score);
                   classified_chip_imagename = incorrect_chips_subdir+
-                     classified_chip_basename;
+                     incorrect_chip_basename;
                }
                else if(true_label == 1 &&
                   classification_label == true_label && 
@@ -288,7 +307,7 @@ int main(int argc, char** argv)
                {
                   correct_male_scores.push_back(classification_score);
                   classified_chip_imagename = correct_chips_subdir+
-                     classified_chip_basename;
+                     correct_chip_basename;
                }
                else if (true_label == 1 &&
                         classification_label != true_label &&
@@ -296,7 +315,7 @@ int main(int argc, char** argv)
                {
                   incorrect_male_scores.push_back(classification_score);
                   classified_chip_imagename = incorrect_chips_subdir+
-                     classified_chip_basename;
+                     incorrect_chip_basename;
                }
 
                else if(true_label == 1 && 
@@ -305,7 +324,7 @@ int main(int argc, char** argv)
                   classification_label = unsure_label;
                   unsure_scores.push_back(classification_score);
                   classified_chip_imagename = unsure_chips_subdir+
-                     classified_chip_basename;
+                     correct_chip_basename;
                }
 
                else if(true_label == 2 &&
@@ -314,7 +333,7 @@ int main(int argc, char** argv)
                {
                   correct_female_scores.push_back(classification_score);
                   classified_chip_imagename = correct_chips_subdir+
-                     classified_chip_basename;
+                     correct_chip_basename;
                }
                else if (true_label == 2 && 
                         classification_label != true_label &&
@@ -322,7 +341,7 @@ int main(int argc, char** argv)
                {
                   incorrect_female_scores.push_back(classification_score);
                   classified_chip_imagename = incorrect_chips_subdir+
-                     classified_chip_basename;
+                     incorrect_chip_basename;
                }
                else if(true_label == 2 && 
                        classification_score < female_score_threshold)
@@ -330,7 +349,7 @@ int main(int argc, char** argv)
                   classification_label = unsure_label;
                   unsure_scores.push_back(classification_score);
                   classified_chip_imagename = unsure_chips_subdir+
-                     classified_chip_basename;
+                     correct_chip_basename;
                }
 
                confusion_matrix.put(

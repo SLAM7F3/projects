@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/3/16; 8/5/16; 8/6/16; 8/8/16
+Last updated on 8/5/16; 8/6/16; 8/8/16; 8/9/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -829,10 +829,6 @@ Confusion matrix:
 male_score_threshold = 0.625  female_score_threshld = 0.525
 incorrect_weight_frac = 0.7
 
-***************************************************************
-As of morning on 8/5/16, this is our BEST gender classification result.
-**************************************************************
-
 For comparison, results from previous best train_iter_262741.caffemodel for
 this newer, larger and apparently more stressing test set:
 
@@ -901,6 +897,40 @@ than 48x48 doubled in size.
 
 Training started around 7 am
 
+Validation set results:
+
+n_correct = 1352 n_male_correct = 470 n_female_correct = 415
+n_incorrect = 179 n_male_incorrect = 79 n_female_incorrect = 86
+ n_unsure = 89
+frac_correct = 0.834568 frac_unsure = 0.0549383 frac_incorrect = 0.110494
+frac_nonface_correct = 0.970894 frac_male_correct = 0.856102 frac_female_correct = 0.828343
+Confusion matrix:
+
+467	14	1	0	
+19	470	60	22	
+11	75	415	67	
+0	0	0	0	
+
+male_score_threshold = 0.52 female_score_threshold = 0.58
+
+Testing set results:
+
+n_correct = 3777 n_male_correct = 1518 n_female_correct = 1254
+n_incorrect = 499 n_male_incorrect = 222 n_female_incorrect = 260
+ n_unsure = 253
+frac_correct = 0.833959 frac_unsure = 0.0558622 frac_incorrect = 0.110179
+frac_nonface_correct = 0.983366 frac_male_correct = 0.872414 frac_female_correct = 0.828269
+Confusion matrix:
+
+1006	22	1	0	
+45	1518	177	79	
+23	237	1254	174	
+0	0	0	0	
+
+
+male_score_threshold = 0.52 female_score_threshold = 0.58
+
+
 
 *.  Sat, Aug 6, Titan 3, morning
 
@@ -939,23 +969,33 @@ male_score_threshold = 0.52 female_score_threshold = 0.58
 Testing set results:
 
 input_images_subdir = /data/caffe/faces/image_chips/testing/Aug2_imfdb_Iran_nonface_96x96/
-n_correct = 3792 n_male_correct = 1553 n_female_correct = 1239
-n_incorrect = 476 n_male_incorrect = 210 n_female_incorrect = 241
+
+n_correct = 3801 n_male_correct = 1553 n_female_correct = 1239
+n_incorrect = 468 n_male_incorrect = 210 n_female_incorrect = 241
  n_unsure = 264
-frac_correct = 0.836717 frac_unsure = 0.0582524 frac_incorrect = 0.105031
-frac_nonface_correct = 0.97561 frac_male_correct = 0.880885 frac_female_correct = 0.837162
+frac_correct = 0.838518 frac_unsure = 0.0582396 frac_incorrect = 0.103243
+frac_nonface_correct = 0.983431 frac_male_correct = 0.880885 frac_female_correct = 0.837162
 Confusion matrix:
 
-1003	4	22	0	
+1029 non-face test chips
+1819 male face test chips
+1688 female face test chips
+
+1012	3	14	0	
 51	1553	159	56	
 25	216	1239	208	
 0	0	0	0	
 
+1.67% of non-face chips are incorrectly classified
+11.54% of male-face chips are incorrectly classified
+14.28% of female-face chips are incorrectly classified
+Weighted average percentage of incorrectly classified chips = 0.1032
 
 male_score_threshold = 0.52 female_score_threshold = 0.58
 
-
-
+***************************************************************
+As of 8/8/16, this is our BEST gender classification result.
+**************************************************************
 
 TODO:
 
