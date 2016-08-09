@@ -1,7 +1,7 @@
 =============================================================================
 PWIN notes
 =============================================================================
-Last updated on 4/19/16; 6/1/16; 7/22/16; 7/28/16
+Last updated on 6/1/16; 7/22/16; 7/28/16; 8/9/16
 =============================================================================
 
 *.  In order to avoid having to chant "c3 lab_pcho" at a pwin command
@@ -831,3 +831,42 @@ for(p = 0; p < n_polygons; p++){
   } // loop over index p labeling polygons in m2d_shape
 
 
+*.  On 8/9/16, Daniel Ragnarsson told us that curl output in pwin can be
+rendered more verbose when an error is encountered inside curl_load()
+within http.c.  In particular, set CURLOPT_VERBOSE and CURLOPT_ERRORBUFFER
+options.  
+
+
+int curl_load(const char *url, mfile_buf_t *data)
+{
+  CURL *curl;
+  long resp = 0;
+  char errbuf[CURL_ERROR_SIZE] = { 0 };
+  CURLcode res;
+
+  printf("inside curl_load(), url = %s \n", url);
+
+  mfile_buf_create(data, 0);
+
+  curl = curl_easy_init();
+  if(curl == NULL){
+    return -1;
+  }
+
+  curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)data);
+
+  if((res = curl_easy_perform(curl)) != CURLE_OK){
+    printf("%s", curl_easy_strerror(res));
+    curl_easy_cleanup(curl);
+    return -1;
+  }
+
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &resp);
+
+  curl_easy_cleanup(curl);
+  return resp / 100 == 2 ? 0 : -1;
+}
