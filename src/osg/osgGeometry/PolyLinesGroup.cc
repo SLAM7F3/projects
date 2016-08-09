@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 7/8/16; 7/9/16; 7/21/16; 7/24/16; 8/5/16
+// Last modified on 7/21/16; 7/24/16; 8/5/16; 8/9/16
 // ==========================================================================
 
 #include <iomanip>
@@ -2318,9 +2318,10 @@ void PolyLinesGroup::goto_frame()
    currimage_PolyLine_index = 0;
    set_selected_bbox();
 
-   double scalefactor = next_diag / curr_diag;
-   get_CM_2D_ptr()->set_eye_to_center_distance(
-      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+//   double scalefactor = next_diag / curr_diag;
+//   get_CM_2D_ptr()->set_eye_to_center_distance(
+//      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+   get_CM_2D_ptr()->maintain_rel_image_size(curr_diag, next_diag);
 }
 
 // --------------------------------------------------------------------------
@@ -2345,9 +2346,10 @@ void PolyLinesGroup::increment_frame()
    currimage_PolyLine_index = 0;
    set_selected_bbox();
 
-   double scalefactor = next_diag / curr_diag;
-   get_CM_2D_ptr()->set_eye_to_center_distance(
-      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+//   double scalefactor = next_diag / curr_diag;
+//   get_CM_2D_ptr()->set_eye_to_center_distance(
+//      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+   get_CM_2D_ptr()->maintain_rel_image_size(curr_diag, next_diag);
 }
 
 // --------------------------------------------------------------------------
@@ -2372,9 +2374,10 @@ void PolyLinesGroup::decrement_frame()
    currimage_PolyLine_index = 0;
    set_selected_bbox();
 
-   double scalefactor = next_diag / curr_diag;
-   get_CM_2D_ptr()->set_eye_to_center_distance(
-      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+//   double scalefactor = next_diag / curr_diag;
+//   get_CM_2D_ptr()->set_eye_to_center_distance(
+//      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+   get_CM_2D_ptr()->maintain_rel_image_size(curr_diag, next_diag);
 }
 
 // --------------------------------------------------------------------------

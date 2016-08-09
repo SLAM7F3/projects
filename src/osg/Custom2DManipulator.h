@@ -1,7 +1,7 @@
 // ========================================================================
 // Header file for Custom2DManipulator class
 // ========================================================================
-// Last updated on 8/19/07; 9/20/07; 9/2/08; 2/28/11
+// Last updated on 8/19/07; 9/20/07; 9/2/08; 2/28/11; 8/9/16
 // ========================================================================
 
 #ifndef OSGGA_CUSTOM2DMANIPULATOR
@@ -22,6 +22,7 @@ namespace osgGA {
          Custom2DManipulator(ModeController* MC_ptr,WindowManager* WM_ptr);
 
          virtual void reset_Manipulator_control();
+         void maintain_rel_image_size(double curr_diag, double next_diag);
 
         protected:
 

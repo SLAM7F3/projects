@@ -56,7 +56,6 @@ int main( int argc, char** argv )
    int videopass_ID=passes_group.get_videopass_ID();
    cout << "videopass_ID = " << videopass_ID << endl;
 
-
 // Construct the viewer and instantiate a ViewerManager:
 
    WindowManager* window_mgr_ptr=new ViewerManager();

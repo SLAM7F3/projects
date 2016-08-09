@@ -2,7 +2,7 @@
 // texture_rectangle class provides functionality for displaying
 // images and videos within OSG TextureRectangles.
 // ========================================================================
-// Last updated on 6/21/16; 7/29/16; 8/1/16; 8/5/16
+// Last updated on 7/29/16; 8/1/16; 8/5/16; 8/9/16
 // ========================================================================
 
 #ifndef TEXTURE_RECTANGLE_H
@@ -93,6 +93,7 @@ class texture_rectangle
    unsigned int getWidth() const;
    void setHeight(unsigned int height);
    unsigned int getHeight() const;
+   double getDiag() const;
 
    unsigned int getNchannels() const;
    ColorMap* get_ColorMap_ptr();
@@ -688,6 +689,11 @@ inline void texture_rectangle::setHeight(unsigned int height)
 inline unsigned int texture_rectangle::getHeight() const
 { 
    return m_VidHeight; 
+}
+
+inline double texture_rectangle::getDiag() const
+{ 
+   return sqrt(m_VidWidth*m_VidWidth + m_VidHeight*m_VidHeight);
 }
 
 inline unsigned int texture_rectangle::getNchannels() const

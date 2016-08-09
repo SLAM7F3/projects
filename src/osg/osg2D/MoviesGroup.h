@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for MOVIESGROUP class
 // ==========================================================================
-// Last modified on 1/16/12; 2/4/12; 4/24/12
+// Last modified on 1/16/12; 2/4/12; 4/24/12; 8/9/16
 // ==========================================================================
 
 #ifndef MOVIESGROUP_H
@@ -149,6 +149,7 @@ class MoviesGroup : public GraphicalsGroup
    int reduced_DTED_scale_factor;
    int prev_extracted_framenumber,first_framenumber_to_extract,
       last_framenumber_to_extract,framenumber_skip;
+   double prev_diag;
    threevector static_camera_posn_offset;
    osgGeometry::PointsGroup* PointsGroup_ptr;
    osgGeometry::PolygonsGroup* PolygonsGroup_ptr;

@@ -2,7 +2,7 @@
 // Custom2DManipulator class member functions handle non-feature
 // manipulation events.
 // =====================================================================
-// Last updated on 1/10/11; 1/12/10; 2/28/11
+// Last updated on 1/10/11; 1/12/10; 2/28/11; 8/9/16
 // =====================================================================
 
 #include <iostream> 
@@ -151,4 +151,17 @@ bool Custom2DManipulator::parse_mouse_events(const GUIEventAdapter& ea)
       } // switch buttommask
    }
    return mousemove;
+}
+
+// ---------------------------------------------------------------------
+// Member function maintain_rel_image_size() takes in the diagonal
+// pixel size for the current and next image frames.  It resets the
+// eye-to-center distance so that the next image fills the OSG window
+// to nearly the same extent as the current image.
+
+void Custom2DManipulator::maintain_rel_image_size(
+   double curr_diag, double next_diag)
+{
+   double scalefactor = next_diag / curr_diag;
+   set_eye_to_center_distance(get_eye_to_center_distance() * scalefactor);
 }

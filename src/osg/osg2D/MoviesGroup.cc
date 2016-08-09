@@ -1,7 +1,7 @@
 // ==========================================================================
 // MOVIESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 4/24/12; 8/6/13; 12/4/13
+// Last modified on 4/24/12; 8/6/13; 12/4/13; 8/9/16
 // ==========================================================================
 
 #include "osg/osgGraphicals/AnimationController.h"
@@ -50,6 +50,7 @@ void MoviesGroup::initialize_member_objects()
    prev_extracted_framenumber=first_framenumber_to_extract=
       last_framenumber_to_extract=-1;
    framenumber_skip=1;
+   prev_diag = -1;
 
    photo_filenames_map_ptr=NULL;
    PointsGroup_ptr=NULL;
@@ -514,13 +515,16 @@ void MoviesGroup::update_display()
          {
             curr_Movie_ptr->import_next_to_latest_photo();
          }
-/*
-         bool prev_number_flag=false;
-         if (AnimationController_ptr->getState()==
-         AnimationController::REVERSE) prev_number_flag=true;
-*/
 
          curr_Movie_ptr->display_current_frame();
+         double curr_diag = curr_Movie_ptr->get_texture_rectangle_ptr()->
+            getDiag();
+         if(!nearly_equal(curr_diag, prev_diag))
+         {
+            cout << "curr_diag = " << curr_diag
+                 << " prev_diag = " << prev_diag << endl;
+            prev_diag = curr_diag;
+         }
       }
    }
    
