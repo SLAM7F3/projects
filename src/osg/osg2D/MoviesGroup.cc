@@ -517,6 +517,7 @@ void MoviesGroup::update_display()
          }
 
          curr_Movie_ptr->display_current_frame();
+/*
          double curr_diag = curr_Movie_ptr->get_texture_rectangle_ptr()->
             getDiag();
          if(!nearly_equal(curr_diag, prev_diag))
@@ -525,7 +526,10 @@ void MoviesGroup::update_display()
                  << " prev_diag = " << prev_diag << endl;
             prev_diag = curr_diag;
          }
-      }
+*/
+
+      } // loop over index n labeling movie Graphicals
+      
    }
    
    if (aerial_video_frame_flag)

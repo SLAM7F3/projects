@@ -93,7 +93,8 @@ class texture_rectangle
    unsigned int getWidth() const;
    void setHeight(unsigned int height);
    unsigned int getHeight() const;
-   double getDiag() const;
+   unsigned int get_next_width() const;
+   unsigned int get_next_height() const;
 
    unsigned int getNchannels() const;
    ColorMap* get_ColorMap_ptr();
@@ -475,6 +476,7 @@ class texture_rectangle
    bool colormap_flag;
    unsigned char *m_image, *m_color_image;
    unsigned int m_VidWidth,m_VidHeight,m_Nchannels;
+   unsigned int next_width, next_height;
    int first_imagenumber,Nimages;
    int first_frame_to_display,last_frame_to_display;
    int image_size_in_bytes,prev_imagenumber;
@@ -691,9 +693,14 @@ inline unsigned int texture_rectangle::getHeight() const
    return m_VidHeight; 
 }
 
-inline double texture_rectangle::getDiag() const
+inline unsigned int texture_rectangle::get_next_width() const
 { 
-   return sqrt(m_VidWidth*m_VidWidth + m_VidHeight*m_VidHeight);
+   return next_width;
+}
+
+inline unsigned int texture_rectangle::get_next_height() const
+{ 
+   return next_height;
 }
 
 inline unsigned int texture_rectangle::getNchannels() const

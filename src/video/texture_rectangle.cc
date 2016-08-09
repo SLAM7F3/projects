@@ -9,7 +9,7 @@
 // ========================================================================
 // texture_rectangle provides functionality for displaying video files.
 // ========================================================================
-// Last updated on 6/21/16; 6/25/16; 8/1/16; 8/5/16
+// Last updated on 6/25/16; 8/1/16; 8/5/16; 8/9/16
 // ========================================================================
 
 #include <iostream>
@@ -96,6 +96,7 @@ void texture_rectangle::initialize_member_objects()
       AnimationController_ptr->set_cumulative_framecounter(0);
    }
 
+   next_width = next_height = 0;
    first_frame_to_display=last_frame_to_display=0;
    image_size_in_bytes=prev_imagenumber=-1;
    set_panel_number(-1);
@@ -4245,7 +4246,7 @@ bool texture_rectangle::read_next_photo()
 //   cout << "next_photo_filename = " << next_photo_filename << endl;
    if (next_photo_filename.size()==0) return false;
 
-   unsigned int next_width,next_height;
+//   unsigned int next_width,next_height;
    imagefunc::get_image_width_height(
       next_photo_filename,next_width,next_height);
 //   cout << "next_width = " << next_width
