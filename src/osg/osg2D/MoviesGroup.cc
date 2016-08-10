@@ -516,6 +516,11 @@ void MoviesGroup::update_display()
             curr_Movie_ptr->import_next_to_latest_photo();
          }
 
+         int curr_width = 
+            curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_width();
+         int curr_height = 
+            curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_height();
+
          curr_Movie_ptr->display_current_frame();
 /*
          double curr_diag = curr_Movie_ptr->get_texture_rectangle_ptr()->
@@ -527,6 +532,19 @@ void MoviesGroup::update_display()
             prev_diag = curr_diag;
          }
 */
+
+         int next_width = 
+            curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_width();
+         int next_height = 
+            curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_height();
+
+         if(curr_width != next_width || curr_height != next_height)
+         {
+         cout << "curr_width = " << curr_width
+              << " curr_height = " << curr_height << endl;
+         cout << " next_width = " << next_width 
+              << " next_height = " << next_height << endl;
+         }
 
       } // loop over index n labeling movie Graphicals
       

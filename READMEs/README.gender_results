@@ -966,35 +966,83 @@ Confusion matrix:
 
 male_score_threshold = 0.52 female_score_threshold = 0.58
 
+
+
+==================================================================
 Testing set results:
 
-input_images_subdir = /data/caffe/faces/image_chips/testing/Aug2_imfdb_Iran_nonface_96x96/
+n_nonface = 1026 n_male = 1819 n_female = 1688
 
-n_correct = 3801 n_male_correct = 1553 n_female_correct = 1239
-n_incorrect = 468 n_male_incorrect = 210 n_female_incorrect = 241
- n_unsure = 264
-frac_correct = 0.838518 frac_unsure = 0.0582396 frac_incorrect = 0.103243
-frac_nonface_correct = 0.983431 frac_male_correct = 0.880885 frac_female_correct = 0.837162
+n_correct = 3810 
+n_nonface_correct = 1018 n_male_correct = 1553 n_female_correct = 1239
+
+n_incorrect = 459 
+n_nonface_incorrect = 8 n_male_incorrect = 210 n_female_incorrect = 241
+
+n_unsure = 264 
+n_male_unsure = 56 n_female_unsure = 208
+
+frac_correct = 0.840503 frac_unsure = 0.0582396 frac_incorrect = 0.101257
+
+frac_nonface_correct = 0.992203 
+frac_nonface_incorrect = 0.00779727 
+
+frac_male_correct = 0.853766 
+frac_male_unsure = 0.0307861 
+frac_male_incorrect = 0.115448 
+
+frac_female_correct = 0.734005
+frac_female_unsure = 0.123223
+frac_female_incorrect = 0.142773
+
 Confusion matrix:
 
-1029 non-face test chips
-1819 male face test chips
-1688 female face test chips
-
-1012	3	14	0	
+1021	1	7	0	
 51	1553	159	56	
 25	216	1239	208	
 0	0	0	0	
 
-1.67% of non-face chips are incorrectly classified
-11.54% of male-face chips are incorrectly classified
-14.28% of female-face chips are incorrectly classified
-Weighted average percentage of incorrectly classified chips = 0.1032
-
 male_score_threshold = 0.52 female_score_threshold = 0.58
 
+-------------------------------
+n_nonface = 1026 n_male = 1819 n_female = 1688
+
+n_correct = 3907
+ n_nonface_correct = 1003 n_male_correct = 1570 n_female_correct = 1334
+
+n_incorrect = 569
+ n_nonface_incorrect = 23 n_male_incorrect = 223 n_female_incorrect = 323
+
+ n_unsure = 57
+ n_male_unsure = 26 n_female_unsure = 31
+
+frac_correct = 0.861902 frac_unsure = 0.0125745 frac_incorrect = 0.125524
+
+frac_nonface_correct = 0.977583
+frac_nonface_incorrect = 0.0224172
+
+frac_male_correct = 0.863112
+frac_male_unsure = 0.0142936
+frac_male_incorrect = 0.122595
+
+frac_female_correct = 0.790284
+frac_female_unsure = 0.0183649
+frac_female_incorrect = 0.191351
+
+Confusion matrix:
+
+1006	10	13	0	
+51	1570	172	26	
+29	294	1334	31	
+0	0	0	0	
+
+
+male_score_threshold = 0.5 female_score_threshold = 0.5
+
+
+
 ***************************************************************
-As of 8/8/16, this is our BEST gender classification result.
+As of 8/10/16, this is our BEST gender classification result.
 **************************************************************
 
 TODO:

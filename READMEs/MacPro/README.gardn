@@ -1,7 +1,7 @@
 =============================================================================
 GARDN notes
 =============================================================================
-Last updated on 8/8/16; 8/9/16
+Last updated on 8/8/16; 8/9/16; 8/10/16
 =============================================================================
 
 *.  Needed to sudo apt-get install libgnome-keyring-dev in order to compile
@@ -56,3 +56,7 @@ Instead, just chant
 	sudo apt-get install libcurl4-openssl-dev
 
 This last command installs libcurl4-openssl and gets rid of libcurl4-gnutls
+
+*.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
+NO GARDN=1 argument 
+

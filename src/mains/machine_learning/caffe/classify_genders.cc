@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/5/16; 8/6/16; 8/8/16; 8/9/16
+// Last updated on 8/6/16; 8/8/16; 8/9/16; 8/10/16
 // ========================================================================
 
 #include <opencv2/highgui/highgui.hpp>
@@ -65,24 +65,33 @@ int main(int argc, char** argv)
    double nonface_score_threshold = 0.5;
    double min_male_score_threshold = 0.5;
 //   double max_male_score_threshold = 0.5;
-   double max_male_score_threshold = 0.67;
+   double max_male_score_threshold = 0.70;
    double min_female_score_threshold = 0.5;
 //   double max_female_score_threshold = 0.5;
-   double max_female_score_threshold = 0.67;
+   double max_female_score_threshold = 0.70;
    double delta_score_threshold = 0.020;
+
+//   min_male_score_threshold = 0.50;
+//   max_male_score_threshold = 0.50;
+//   min_female_score_threshold = 0.50;
+//   max_female_score_threshold = 0.50;
 
    min_male_score_threshold = 0.52;
    max_male_score_threshold = 0.52;
    min_female_score_threshold = 0.58;
    max_female_score_threshold = 0.58;
+
 //   incorrect_weight_frac = 0.50;
 //   incorrect_weight_frac = 0.6;
-   incorrect_weight_frac = 0.7;
+//   incorrect_weight_frac = 0.65;
+   incorrect_weight_frac = 0.6625;
+//    incorrect_weight_frac = 0.675;
+//   incorrect_weight_frac = 0.7;
 
    timefunc::initialize_timeofday_clock();
 
-   bool copy_image_chips_flag = true;
-//   bool copy_image_chips_flag = false;
+//   bool copy_image_chips_flag = true;
+   bool copy_image_chips_flag = false;
 
    bool truth_known_flag = true;
 //   bool truth_known_flag = false;
@@ -170,7 +179,7 @@ int main(int argc, char** argv)
          vector<double> correct_nonface_scores, incorrect_nonface_scores;
          vector<double> correct_male_scores, correct_female_scores;
          vector<double> incorrect_male_scores, incorrect_female_scores;
-         vector<double> unsure_scores;
+         vector<double> unsure_male_scores, unsure_female_scores;
 
          confusion_matrix.clear_matrix_values();
 
@@ -322,7 +331,7 @@ int main(int argc, char** argv)
                        classification_score < male_score_threshold)
                {
                   classification_label = unsure_label;
-                  unsure_scores.push_back(classification_score);
+                  unsure_male_scores.push_back(classification_score);
                   classified_chip_imagename = unsure_chips_subdir+
                      correct_chip_basename;
                }
@@ -347,7 +356,7 @@ int main(int argc, char** argv)
                        classification_score < female_score_threshold)
                {
                   classification_label = unsure_label;
-                  unsure_scores.push_back(classification_score);
+                  unsure_female_scores.push_back(classification_score);
                   classified_chip_imagename = unsure_chips_subdir+
                      correct_chip_basename;
                }
@@ -379,19 +388,40 @@ int main(int argc, char** argv)
 
             int n_correct = n_nonface_correct + 
                n_male_correct + n_female_correct;
-            int n_unsure = unsure_scores.size();
+            int n_male_unsure = unsure_male_scores.size();
+            int n_female_unsure = unsure_female_scores.size();
+            int n_unsure = n_male_unsure + n_female_unsure;
             int n_male_incorrect = incorrect_male_scores.size();
             int n_female_incorrect = incorrect_female_scores.size();
             int n_incorrect = n_nonface_incorrect + n_male_incorrect + 
                n_female_incorrect;
 
-            cout << "n_correct = " << n_correct 
+            int n_nonface = n_nonface_correct + n_nonface_incorrect;
+            int n_male = n_male_correct + n_male_unsure + n_male_incorrect;
+            int n_female = n_female_correct + n_female_unsure + 
+               n_female_incorrect;
+
+            cout << "n_nonface = " << n_nonface
+                 << " n_male = " << n_male 
+                 << " n_female = " << n_female 
+                 << endl << endl;
+
+            cout << "n_correct = " << n_correct << endl;
+            cout << " n_nonface_correct = " << n_nonface_correct
                  << " n_male_correct = " << n_male_correct
-                 << " n_female_correct = " << n_female_correct << endl;
-            cout << "n_incorrect = " << n_incorrect 
+                 << " n_female_correct = " << n_female_correct << endl
+                 << endl << endl;
+
+            cout << "n_incorrect = " << n_incorrect << endl;
+            cout << " n_nonface_incorrect = " << n_nonface_incorrect
                  << " n_male_incorrect = " << n_male_incorrect
-                 << " n_female_incorrect = " << n_female_incorrect << endl;
+                 << " n_female_incorrect = " << n_female_incorrect 
+                 << endl << endl;
+
             cout << " n_unsure = " << n_unsure << endl;
+            cout << " n_male_unsure = " << n_male_unsure 
+                 << " n_female_unsure = " << n_female_unsure 
+                 << endl << endl;
 
             double frac_correct = 
                double(n_correct)/(n_correct+n_incorrect+n_unsure);
@@ -400,21 +430,47 @@ int main(int argc, char** argv)
             double frac_incorrect = 
                double(n_incorrect)/(n_correct+n_incorrect+n_unsure);
 
+
+            double frac_nonface_correct = double(n_nonface_correct) / 
+               double(n_nonface);
+            double frac_male_correct = double(n_male_correct) / 
+               double (n_male);
+            double frac_female_correct = double(n_female_correct) / 
+               double (n_female);
+
+            double frac_male_unsure = double(n_male_unsure) / 
+               double (n_male);
+            double frac_female_unsure = double(n_female_unsure) / 
+               double (n_female);
+
+            double frac_nonface_incorrect = double(n_nonface_incorrect) / 
+               double(n_nonface);
+            double frac_male_incorrect = double(n_male_incorrect) / 
+               double (n_male);
+            double frac_female_incorrect = double(n_female_incorrect) / 
+               double (n_female);
+
             cout << "frac_correct = " << frac_correct
                  << " frac_unsure = " << frac_unsure 
                  << " frac_incorrect = " << frac_incorrect
                  << endl;
+            cout << endl;
 
-            double frac_nonface_correct = double(n_nonface_correct) / 
-               double(n_nonface_correct + n_nonface_incorrect);
-            double frac_male_correct = double(n_male_correct) / 
-               double (n_male_correct + n_male_incorrect);
-            double frac_female_correct = double(n_female_correct) / 
-               double (n_female_correct + n_female_incorrect);
+            cout << "frac_nonface_correct = " << frac_nonface_correct << endl;
+            cout << "frac_nonface_incorrect = " << frac_nonface_incorrect
+                 << endl;
+            cout << endl;
 
-            cout << "frac_nonface_correct = " << frac_nonface_correct
-                 << " frac_male_correct = " << frac_male_correct
-                 << " frac_female_correct = " << frac_female_correct << endl;
+            cout << "frac_male_correct = " << frac_male_correct << endl;
+            cout << "frac_male_unsure = " << frac_male_unsure << endl;
+            cout << "frac_male_incorrect = " << frac_male_incorrect << endl;
+            cout << endl;
+
+            cout << "frac_female_correct = " << frac_female_correct << endl;
+            cout << "frac_female_unsure = " << frac_female_unsure << endl;
+            cout << "frac_female_incorrect = " << frac_female_incorrect 
+                 << endl;
+            cout << endl;
 
             cout << "Confusion matrix:" << endl;
             cout << confusion_matrix << endl << endl;
@@ -480,8 +536,11 @@ int main(int argc, char** argv)
             banner="Exported unsure chips to "+ unsure_chips_subdir;
             outputfunc::write_banner(banner);
 
-            double curr_score = (1 - incorrect_weight_frac) * frac_unsure + 
-               incorrect_weight_frac * frac_incorrect;
+            double curr_score = 
+               (1 - incorrect_weight_frac) * 
+               (frac_male_unsure + frac_female_unsure)
+               + incorrect_weight_frac * 
+               (frac_male_incorrect + frac_female_incorrect);
             if(curr_score < min_score)
             {
                min_score = curr_score;

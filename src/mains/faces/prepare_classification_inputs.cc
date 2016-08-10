@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 8/1/16; 8/2/16; 8/3/16; 8/6/16
+// Last updated on 8/2/16; 8/3/16; 8/6/16; 8/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -52,6 +52,15 @@ int main(int argc, char *argv[])
    dated_subdirs.push_back("Jul31_106x106_adience/");
    dated_subdirs.push_back("Iran_106x106/");
    dated_subdirs.push_back("nonface_106x106/");
+
+//    Aug2 female non-augmented = 18940
+//    Aug2 male non-augmented = 18877
+//    Aug2 female + male non-augmented = 37817
+//    Adience non augmented = 16586
+//    Iran non augmented = 357
+//    Total non augmented faces = 54,760
+//    Total augmented faces = 260,788
+//    Non-face chips = 99204 
 
    for(unsigned int d = 0; d < dated_subdirs.size(); d++)
    {
@@ -96,6 +105,7 @@ int main(int argc, char *argv[])
    ofstream output_stream;
    filefunc::openfile(output_filename, output_stream);
 
+   int n_non_augmented = 0;
    unsigned int istart=0;
    unsigned int istop = image_filenames.size();
    for(unsigned int i = istart; i < istop; i++)
@@ -117,6 +127,8 @@ int main(int argc, char *argv[])
       {
          continue;
       }
+
+      if(substrings[3] == "00") n_non_augmented++;
 
 //      string output_subdir="/image_chips/training/"+dated_subdir;
       string output_subdir = filefunc::getdirname(image_filenames[i]);
@@ -177,6 +189,8 @@ int main(int argc, char *argv[])
    banner="Shuffled image paths vs class labels exported to "+
       shuffled_filename;
    outputfunc::write_banner(banner);
+
+   cout << "n_non_augmented = " << n_non_augmented << endl;
 } 
 
 
