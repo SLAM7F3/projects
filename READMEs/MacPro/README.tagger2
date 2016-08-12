@@ -1,0 +1,86 @@
+=============================================================================
+TAGGER2 notes
+=============================================================================
+Last updated on 8/10/16; 8/11/16
+=============================================================================
+
+*.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
+NO GARDN=1 argument 
+
+*.  Modified 'makepwin' script including GARDN and PWGL flags:
+
+cd /home/pcho/sputnik/pwin/build/linux64/
+make -s -j pwin OPT=3 OPENCL=1 OPENCV=1 DNN=1 LAPACK=1 RDN=1 WITH_GPU=1 PWGL=1 GDAL=1 GDAL_PATH=/opt/gdal-2.0.1/
+
+*.  Command to launch tagger2:
+
+/home/pcho/sputnik/pwin/build/linux64/pwin -vv -nogpfs -cfg ./eufori.dcfg \
+-da tagger2
+
+  This starts with a call to tagger2_cmd() within tagger2_cmd.cpp
+
+*.  Tagger2 work flow:
+
+ - Image manipulation starts with EDITOR in "Overview" mode.  
+
+ -  Zoom into some object of interest by using left-mouse button to drag a
+zoom box around it.  After zooming into the box, EDITOR mode then changes
+to "Edit polyline"
+
+ - Left-mouse click to draw polyline.  Press escape key to terminate and
+discard polyline entry.  Or doubleclick to successfully terminate polyline
+entry.  Polyline then closes into a polygon.
+
+  - Left mouse click on a polygon's perimeter to select it.  Mouse click
+away from polygon to deselect it.
+
+  - Press "delete" key to delete a selected polygon.
+
+  -  Use right mouse button to zoom away from region of interest.  Editor
+mode reverts to Overview.
+
+  -  Press "Command key" + left mouse button to translate 2D window without
+     inputing any polyline metadata while in Edit polyline mode.
+
+  -  Press "Command key" + mouse wheel to zoom in/out of 2D window.
+
+  -  Press "Command key" + Z in order to undo an operation
+
+*.  Browser input = https://flyover-admin.geo.apple.com/annotation/projects
+
+Browser output = list of currently active annotation projects
+
+[{"name": "pwin_dev_test_1", "id": "563aa01e573667b16d194444"}, {"name": "20160127_road_segmentation_sqtenx", "id": "56a959ae26e07d1d23b5a88b"}, {"name": "20160209_sign_mask", "id": "56ba37bf1c47d15d66c56ed2"}, {"name": "2016_05_19_Sacramento_S2D", "id": "573e148d1c47d1632e051661"}, {"name": "20160525_privacy_boston", "id": "5745dd3f1c47d13eaf79c8a1"}, {"name": "20160525_privacy_chicago", "id": "57460ac51c47d14f775b8cb1"}, {"name": "20160610_housenumber_boston2", "id": "575b017b26e07d4d4da56c49"}, {"name": "20160610_housenumber_el_paso", "id": "575b08711c47d14cc103efad"}, {"name": "20160624_s2d_suffolk_sf", "id": "576de8681c47d144cfee5139"}, {"name": "20160809_buildings_benchmark", "id": "57aa6bcd1c47d148314d53e8"}, {"name": "20160809_buildings_benchmark-1", "id": "57aa6e6a1c47d1482e5dbecc"}, {"name": "20160809_buildings_benchmark-2", "id": "57aa6e7d26e07d7cc59092bc"}, {"name": "20160809_lane_markings-2", "id": "57aa76d31c47d148314d5418"}, {"name": "20160809_lane_markings-3", "id": "57aa777d26e07d7cc1b2c3ae"}, {"name": "20160727_lane_markings_benchmark-1", "id": "57ab6b5a1c47d10d7c57e72b"}]
+
+Viktor told us that the browser output is very likely dynamically generated
+json corresponding to some database query.
+
+Carlos showed us on 8/10/16 that how to activate/inactivate annotation
+projects via Flyover Admin.  First select PR -> Annotation Project.  Then
+toggle on the check box located on LHS for some project of interest.  Next
+press the light blue "With selected" button located near upper right of
+Annotation Project List webpage.  Then choose either the Activate of
+Inactivate options within the drop-down menu.
+
+*.  Dynamically generated list of active annotation projects is hardwired
+into TGProject::init_project_list().
+
+
+*.  Infinite "update()" event loop appears to be located within
+TGEditor::update() inside tg_editor.cpp.
+
+*.  In tg_editor.cpp, current mouse position is stored in _mousepos (posn
+of mouse in Tagger2 window coords) and in _mousepos_img (posn of mouse in
+current image pixel coords)
+
+*.  In update() loop, execute command such as 
+key_active(GLFW_KEY_S) to check if user has recently pressed the "s" key.
+
+*.  Polylines appear to be stored within TGImage::polylines which is an STL
+vector of polyline_t.  A polyline_t contains an STL vector g_pos2_t called
+points.
+
+
+=============================
+Q: What is the significance of a grey square near the upper left turning
+red?

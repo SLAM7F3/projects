@@ -1,7 +1,7 @@
 =============================================================================
 C language notes
 =============================================================================
-Last updated on 9/25/15; 10/16/15; 10/29/15; 2/29/16
+Last updated on 10/16/15; 10/29/15; 2/29/16; 8/11/16
 =============================================================================
 
 *.  Casting away constness in C:
@@ -197,3 +197,18 @@ first argument num to 1, while the second size argument equals
 sizeof(object being allocated).
 
   float *output_feature_vec = (float*) calloc(feature_dim, sizeof(float));
+
+*.  On 8/11/16, Joe Wearing told us that C++ generally mangles method names
+INCLUDING those for C functions.  So we must explicitly tell the C++
+compiler to NOT change C method names via an ' extern "C" ' declaration.
+For example, all of the methods within the following C-header files will
+NOT have their names mangled by C++:
+
+extern "C"
+{
+  #include "pwgl.h"
+  #include "arch.h"
+  #include "g_2d_polygon.h"
+}
+
+We can then make calls to the unmangled C methods inside of C++.  

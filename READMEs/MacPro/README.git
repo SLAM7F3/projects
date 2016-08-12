@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 6/7/16; 6/17/16; 8/8/16; 8/10/16
+Last updated on 6/17/16; 8/8/16; 8/10/16; 8/11/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -274,9 +274,15 @@ commit history for individual files by chanting something like
 
 in order to see changes made recently to pwin.mak.
 
-*.  To reset working directory to state it was in for 71a8953, chant
+*.  If we really mess up some local branch, we may want to reset it back to
+the way it was at an earlier time.  Use GitHub Desktop on our MacBook to
+find ID string for an earlier version of the local branch to which we'd
+like to revert (e.g. 71a8953).  Then after commiting any changes within the
+current messed up version, chant
 
-git checkout 71a8953
+	git checkout 71a8953
+
+to reset working directory to state it was in for 71a8953.  
 
 Note: checking out '71a8953'.
 
