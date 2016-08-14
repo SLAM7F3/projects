@@ -1,8 +1,23 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 7/24/16; 7/25/16; 7/26/16; 8/1/16
+Last updated on 7/25/16; 7/26/16; 8/1/16; 8/14/16
 =============================================================================
+
+*.  On 8/14/16, we downloaded the latest public caffe version via
+
+	git clone https://github.com/BVLC/caffe.git
+
+Changes make to Makefile.config:
+
+  - Uncommented the USE_CUDNN = 1 line
+  - Uncomment all lines related to python anaconda
+  - # Whatever else you find you need goes here.
+INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/local/cuda/include /usr/local/OpenCV/include /opt/boost/include
+LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/local/OpenCV/lib /opt/boost/lib
+
+After making these minimal changes, we were able to build caffe_public
+without problems on Thinkmate by chanting make -j all, make test, and make runtest.
 
 *.  After lots of hacking, we were able to compile and run caffe_custom on
 Titan1 and Titan3 on 7/24/16.  
@@ -415,6 +430,14 @@ entry the data layer definition!
 *.  Make sure to include an accuracy layer with train_base.prototxt for
 BOTH the training and testing phases!
 
+*. ~/software/caffe_custom/src/caffe/proto/caffe.proto contains caffe's
+Phase enum type:
+
+enum Phase {
+   TRAIN = 0;
+   TEST = 1;
+}
+
 *.  On 8/1/16, Tho explained to us that there are TWO outputs coming from
 the network defined by the following first data layer.  The ZEROTH result
 corresponds to the top "label" blob which is unaffected by the network.
@@ -453,3 +476,12 @@ layer {
     top_k: 1
   }
 }
+
+*.  On 8/14/16, we looked inside
+~software/caffe_public/src/caffe/proto/caffe.proto and confirmed that
+solver_type key and RMSPROP value are deprecated.  Instead, caffe now
+prefers to find 'type: "RMSProp"' sitting inside solver.prototxt
+
+Known solver types (spelling and capitalization sensitive!):
+
+   AdaDelta, AdaGrad, Adam, Nesterov, RMSProp, SGD

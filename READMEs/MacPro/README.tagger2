@@ -1,7 +1,7 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 8/10/16; 8/11/16
+Last updated on 8/10/16; 8/11/16; 8/12/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
@@ -80,6 +80,14 @@ key_active(GLFW_KEY_S) to check if user has recently pressed the "s" key.
 vector of polyline_t.  A polyline_t contains an STL vector g_pos2_t called
 points.
 
+*.  Tagger 2 window coords:
+
+Upper left corner: x = 0, y = 0
+Upper right corner: x = 1, y = 0
+Lower left corner: x = 0, y = 1
+Lower right corner: x = 1, y = 1
+
+Note ehat_y is oriented in the downward vertical direction!
 
 =============================
 Q: What is the significance of a grey square near the upper left turning

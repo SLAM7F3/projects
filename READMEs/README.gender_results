@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/9/16; 8/11/16; 8/12/16; 8/13/16
+Last updated on 8/9/16; 8/11/16; 8/12/16; 8/14/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -976,7 +976,6 @@ Confusion matrix:
 male_score_threshold = 0.52 female_score_threshold = 0.58
 
 
-
 *.  Sat, Aug 6, Titan 3, morning
 
 350K combined original + Adience + Iranian faces + non-faces used for training.
@@ -1145,6 +1144,44 @@ As of 8/11/16, this is our BEST gender classification result.
 -------------------------------
 
 
+*.  Sun, Aug 14, Titan 1
+
+350K combined original + Adience + Iranian faces + non-faces used for training.
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
+non-faces , base learning rate = 0.01, accuracy layer added for training
+phase, Dropout added into all layers of network.  Dropout probabilities of
+nodes being ignored start small and increase to 0.5 toward end of network.
+Gaussian initialize of all node weights.  Increased number of nodes in each
+layer approx 64.  Weight decay = 0.0010.  6x augmentation of our 40K faces,
+2X augmentation of Adience and Iranian female faces.  Imagery data broken
+apart into training, validation and testing subsets.  Image chips smaller
+than 48x48 doubled in size.  Solver type = RMSProp
+
+Training started around 11:42 am
+
+
+*.  Sun, Aug 14, Titan 3
+
+350K combined original + Adience + Iranian faces + non-faces used for training.
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
+non-faces , base learning rate = 0.01, accuracy layer added for training
+phase, Dropout added into all layers of network.  Dropout probabilities of
+nodes being ignored start small and increase to 0.5 toward end of network.
+Gaussian initialize of all node weights.  Increased number of nodes in each
+layer approx 64.  Weight decay = 0.0010.  6x augmentation of our 40K faces,
+2X augmentation of Adience and Iranian female faces.  Imagery data broken
+apart into training, validation and testing subsets.  Image chips smaller
+than 48x48 doubled in size.  Solver type = Adam
+
+Training started around 11:33 am
+
+
+
+======================================
 TODO:
 
 *.  Break out all Magick++ methods in videofuncs and imagefuncs namespaces
