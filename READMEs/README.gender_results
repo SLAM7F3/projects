@@ -1150,7 +1150,7 @@ As of 8/11/16, this is our BEST gender classification result.
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
-non-faces , base learning rate = 0.01, accuracy layer added for training
+non-faces , base learning rate = 0.001, accuracy layer added for training
 phase, Dropout added into all layers of network.  Dropout probabilities of
 nodes being ignored start small and increase to 0.5 toward end of network.
 Gaussian initialize of all node weights.  Increased number of nodes in each
@@ -1159,8 +1159,10 @@ layer approx 64.  Weight decay = 0.0010.  6x augmentation of our 40K faces,
 apart into training, validation and testing subsets.  Image chips smaller
 than 48x48 doubled in size.  Solver type = RMSProp
 
-Training started around 11:42 am
+Training started around 11:42 am with base learning rate = 0.01.  Slow convergence
+Training restarted around 12:38 with base learning rate = 0.001.  Slow convergence
 
+Training restarted around 1:03 with base learning rate = 0.0001
 
 *.  Sun, Aug 14, Titan 3
 
@@ -1168,7 +1170,7 @@ Training started around 11:42 am
 
 Gender classification, new 7-layer face net, baseline set of O(20K) female
 + O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
-non-faces , base learning rate = 0.01, accuracy layer added for training
+non-faces , base learning rate = 0.001, accuracy layer added for training
 phase, Dropout added into all layers of network.  Dropout probabilities of
 nodes being ignored start small and increase to 0.5 toward end of network.
 Gaussian initialize of all node weights.  Increased number of nodes in each
@@ -1177,8 +1179,8 @@ layer approx 64.  Weight decay = 0.0010.  6x augmentation of our 40K faces,
 apart into training, validation and testing subsets.  Image chips smaller
 than 48x48 doubled in size.  Solver type = Adam
 
-Training started around 11:33 am
-
+Training started around 11:33 am with base learning rate = 0.01.  Slow convergence
+Training restarted around 12:38 with base learning rate = 0.001
 
 
 ======================================

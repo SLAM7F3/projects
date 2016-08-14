@@ -14,7 +14,7 @@
 //			./augment_chips
 
 // ========================================================================
-// Last updated on 7/30/16; 7/31/16; 8/1/16; 8/2/16
+// Last updated on 7/31/16; 8/1/16; 8/2/16; 8/14/16
 // ========================================================================
 
 #include <fstream>
@@ -329,6 +329,15 @@ int main( int argc, char** argv )
 //            n_augmentations_per_chip = 1;
 //            n_augmentations_per_chip = 4;
             n_augmentations_per_chip = 6;
+         }
+
+// As of 8/14/16, we experiment with intentionally augmenting both the
+// validation and testing sets.  At inference time, we'll take some
+// sort of vote to determine an averaged class label:
+
+         else if(gender_value != "unknown")
+         {
+            n_augmentations_per_chip = 5;
          }
 
          for(int a = 0; a < n_augmentations_per_chip; a++)

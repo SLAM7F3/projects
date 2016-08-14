@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 10/30/15; 11/19/15; 1/17/16; 3/17/16
+Last updated on 11/19/15; 1/17/16; 3/17/16; 8/14/16
 =============================================================================
 
 *.  In order to execute a python script called "python_script.py" from
@@ -41,9 +41,14 @@ sudo apt-get install python-yaml
 *.  In order for anaconda's version of python to find installed packages
 (e.g. google-protobuf), we must use anaconda's version of PIP:
 
-	$ANACONDA_HOME/bin/pip install protobuf
 
-*.  In order to see a list of locall installed modules, chant at a command-line
+	sudo $ANACONDA_HOME/bin/pip install protobuf
+
+        sudo /usr/local/anaconda/bin/pip install protobuf
+        sudo /usr/local/anaconda/bin/pip install leveldb
+
+
+*.  In order to see a list of locally installed modules, chant at a command-line
 
 	pydoc modules
 
@@ -119,3 +124,61 @@ object.
 
 Dictionaries are enclosed by curly braces ({ }) and values can be assigned
 and accessed using square braces ([]).
+
+*.  Python versions
+
+Chant 
+
+  python --version 
+
+to see which version of python is being run from the current shell. 
+
+Important note!:
+
+On Thinkmate from within tcsh:
+  python --version   --> Python 2.7.11 :: Anaconda 2.4.1 (64-bit)
+
+On Thinkmate from bash:
+  python --version   --> Python 2.7.6
+
+On Thinkmate from tcsh:
+
+  sudo which python --> /usr/bin/python
+
+*.  In order to install scipy under virtual python environment, we had to
+first download gfortran package onto Thinkmate:
+
+		sudo apt-get install gfortran
+
+*.  For discussion of virtual environments under anaconda, see
+https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/
+
+1.  Chant conda -V
+
+       conda 4.1.11   (as of Aug 2016)
+
+2.  Chant sudo /usr/local/anaconda/bin/conda update conda
+
+3.  Chant conda create -n my_env python=2.7 anaconda
+
+4a.  Chant conda info -e
+Warning: could not import binstar_client ('args' object has no attribute 'site')# conda environments:
+#
+my_env                *  /home/pcho/.conda/envs/my_env
+root                     /usr/local/anaconda2-2.4.1
+
+4b.  Change to bash.  Then chant source activate my_env
+
+pcho@ubuntu:~/software/cnn-vis$ source activate my_env
+(my_env) pcho@ubuntu:~/software/cnn-vis$ 
+
+5.  conda install --file requirements.txt 
+
+*.  In order to see all currently installed anaconda python packages, chant
+
+	conda list
+
+	
+*.  General anaconda info is returned by chanting
+
+	conda info -a

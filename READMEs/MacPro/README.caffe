@@ -88,6 +88,7 @@ NO changes to his Makefile.config file.  Everything compiled and linked fine!
 	make -j all
 	make test or make -j test
 	make runtest
+        make pycaffe
 
 *.  Caffe uses glog to perform macro-level logging.
 
