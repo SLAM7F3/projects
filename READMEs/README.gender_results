@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/8/16; 8/9/16; 8/11/16; 8/12/16
+Last updated on 8/9/16; 8/11/16; 8/12/16; 8/13/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -1128,6 +1128,13 @@ frac_female_correct = 0.7385
 frac_female_unsure = 0.1232
 frac_female_incorrect = 0.1381
 
+Total correct = 1026 + 1559 + 1246 = 3831
+Total uncertain = 56 + 208 = 264
+Total incorrect = 11 + 197 + 233 = 441
+
+Percent total correct = 84.46
+Percent uncertain = 5.82
+Percent incorrect = 9.72
 
 male_score_threshold = 0.52 female_score_threshold = 0.58
 
