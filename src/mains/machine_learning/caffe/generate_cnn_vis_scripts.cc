@@ -49,20 +49,29 @@ int main(int argc, char* argv[])
    filefunc::openfile(all_scripts_filename, all_scripts_stream);
 
    vector<int> n_layer_nodes;
+   n_layer_nodes.push_back(96);
+   n_layer_nodes.push_back(192);
+   n_layer_nodes.push_back(224);
+   n_layer_nodes.push_back(256);
    n_layer_nodes.push_back(256);
    n_layer_nodes.push_back(256);
    n_layer_nodes.push_back(3);
 
    vector<string> layer_names;
+   layer_names.push_back("conv1a");
+   layer_names.push_back("conv2a");
+   layer_names.push_back("conv3a");
+   layer_names.push_back("conv4a");
    layer_names.push_back("fc5");
    layer_names.push_back("fc6");
    layer_names.push_back("fc7_faces");
    
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
-
-   int layer_start = 5;
-   int layer_stop = 7;
+   int layer_start = 1;
+   int layer_stop = 4;
+//   int layer_start = 5;
+//   int layer_stop = 7;
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
       int layer_index = layer - layer_start;
@@ -81,8 +90,12 @@ int main(int argc, char* argv[])
 
          outstream << "/usr/local/anaconda/bin/python \\" << endl;
          outstream << cnn_vis_pathname << " \\" << endl;
+//         outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160_mf.prototxt \\" << endl;
+//         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_260K_96cap_mf_T3/train_iter_100000.caffemodel \\" << endl;
+
          outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160.prototxt \\" << endl;
          outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel \\" << endl;
+
          outstream << "--image_type=amplify_neuron \\" << endl;
          outstream << "--target_layer="+curr_layer_name+" \\" << endl;
          outstream << "--target_neuron="+stringfunc::number_to_string(node)

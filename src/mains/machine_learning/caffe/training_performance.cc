@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 7/31/16; 8/1/16; 8/2/16; 8/8/16
+// Last updated on 8/1/16; 8/2/16; 8/8/16; 8/15/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-   int n_training_images_per_epoch = 359992;
-//   int n_training_images_per_epoch = 260788;  
+//   int n_training_images_per_epoch = 359992;
+   int n_training_images_per_epoch = 260788;  
 //    int n_training_images_per_epoch = 184440;  
 //    int n_training_images_per_epoch = 37500;  
 //    int n_training_images_per_epoch = 41821;  
@@ -83,8 +83,9 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
+      "Aug15_260K_96cap_mf_T3/";
 //        "Aug6_350K_96cap_T1/";
-        "Aug6_350K_96cap_T3/";
+//        "Aug6_350K_96cap_T3/";
 //      "Aug3_260K_96cap_T1/";
 //      "Aug3_260K_96cap_T3/";
 //       "Aug2_184K_64cap_T1/";
