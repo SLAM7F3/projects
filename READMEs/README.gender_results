@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/9/16; 8/11/16; 8/12/16; 8/14/16
+Last updated on 8/11/16; 8/12/16; 8/14/16; 8/15/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -1141,9 +1141,6 @@ male_score_threshold = 0.52 female_score_threshold = 0.58
 As of 8/11/16, this is our BEST gender classification result.
 **************************************************************
 
--------------------------------
-
-
 *.  Sun, Aug 14, Titan 1
 
 350K combined original + Adience + Iranian faces + non-faces used for training.
@@ -1163,6 +1160,8 @@ Training started around 11:42 am with base learning rate = 0.01.  Slow convergen
 Training restarted around 12:38 with base learning rate = 0.001.  Slow convergence
 
 Training restarted around 1:03 with base learning rate = 0.0001
+Asymptotic caffe validation value around 0.75 which is much worse than our
+previous SGD results!
 
 *.  Sun, Aug 14, Titan 3
 
@@ -1181,6 +1180,55 @@ than 48x48 doubled in size.  Solver type = Adam
 
 Training started around 11:33 am with base learning rate = 0.01.  Slow convergence
 Training restarted around 12:38 with base learning rate = 0.001
+Asymptotic caffe validation value around 0.75 which is much worse than our
+previous SGD results!
+
+CONCLUSION:  We see no evidence that working with RMSProp or ADAM solvers
+yields better results than vanilla SGD.
+
+---------------
+
+*.  Mon, Aug 14, Titan 1
+
+360K combined original + Adience + Iranian faces + non-faces used for training.
+
+New 3-class training set to be trained for new augmented validation and
+augmented testing sets.  Want to see if voting among augmented test chips
+yields improved classification performance.
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
+non-faces , base learning rate = 0.01, accuracy layer added for training
+phase, Dropout added into all layers of network.  Dropout probabilities of
+nodes being ignored start small and increase to 0.5 toward end of network.
+Gaussian initialize of all node weights.  Increased number of nodes in each
+layer approx 64.  Weight decay = 0.0010.  6x augmentation of our 40K faces,
+2X augmentation of Adience and Iranian female faces.  Imagery data broken
+apart into training, validation and testing subsets.  Image chips smaller
+than 48x48 doubled in size.  Solver type = SGD
+
+Training started around 7:30 am
+
+*.  Mon, Aug 14, Titan 3
+
+260 combined original + Adience + Iranian faces used for training.  No
+non-faces incorporated into this training set.  We want to end up with a
+model trained on pure face content in the hopes that visualizing it with
+Justin Johnson's cnn-vis python script will be as intuitive as possible.
+
+
+Gender classification, new 7-layer face net, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces + 300 Iranian females , base
+learning rate = 0.01, accuracy layer added for training phase, Dropout
+added into all layers of network.  Dropout probabilities of nodes being
+ignored start small and increase to 0.5 toward end of network.  Gaussian
+initialize of all node weights.  Increased number of nodes in each layer
+approx 64.  Weight decay = 0.0010.  6x augmentation of our 40K faces, 2X
+augmentation of Adience and Iranian female faces.  Imagery data broken
+apart into training, validation and testing subsets.  Image chips smaller
+than 48x48 doubled in size.  Solver type = SGD
+
+Training started around 7:20 am
 
 
 ======================================

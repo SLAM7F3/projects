@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 8/2/16; 8/3/16; 8/6/16; 8/10/16
+// Last updated on 8/3/16; 8/6/16; 8/10/16; 8/15/16
 // ==========================================================================
 
 #include <iostream>
@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
    string training_subdir = face_chips_subdir+"training/";
 
    vector<string> dated_subdirs;
-   dated_subdirs.push_back("Aug2_female_106x106_augmented/");
-   dated_subdirs.push_back("Aug2_male_106x106_augmented/");
+   dated_subdirs.push_back("Aug15_female_106x106_augmented/");
+   dated_subdirs.push_back("Aug15_male_106x106_augmented/");
    dated_subdirs.push_back("Jul31_106x106_adience/");
    dated_subdirs.push_back("Iran_106x106/");
    dated_subdirs.push_back("nonface_106x106/");
@@ -98,8 +98,6 @@ int main(int argc, char *argv[])
          image_filenames.push_back(curr_image_filenames[i]);
       }
    }
-   cout << "Total number of input images = " << image_filenames.size()
-        << endl;
 
    string output_filename=training_subdir+"all_images_vs_classes.txt";
    ofstream output_stream;
@@ -190,7 +188,14 @@ int main(int argc, char *argv[])
       shuffled_filename;
    outputfunc::write_banner(banner);
 
-   cout << "n_non_augmented = " << n_non_augmented << endl;
+   int n_augmented = image_filenames.size() - n_non_augmented;
+   cout << "Total number of input (augmented + non-augmented) images = " 
+        << image_filenames.size() << endl;
+   cout << "Number of non-augmented input images = " 
+        << n_non_augmented << endl;
+   cout << "Number of augmented input images = " 
+        << n_augmented << endl;
+
 } 
 
 
