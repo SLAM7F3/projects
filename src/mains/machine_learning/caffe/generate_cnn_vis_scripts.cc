@@ -4,7 +4,7 @@
 //			   generate_cnn_vis_scripts
 
 // ==========================================================================
-// Last updated on 8/15/16
+// Last updated on 8/15/16; 8/16/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -39,6 +39,8 @@ using std::vector;
 
 int main(int argc, char* argv[])
 {
+   timefunc::initialize_timeofday_clock();
+
    string scripts_subdir="./cnn_vis_scripts/";
    filefunc::dircreate(scripts_subdir);
    string node_images_subdir=scripts_subdir+"node_images/";
@@ -69,58 +71,115 @@ int main(int argc, char* argv[])
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
    int layer_start = 1;
-   int layer_stop = 4;
-//   int layer_start = 5;
-//   int layer_stop = 7;
+   int layer_stop = 7;
+   int final_layer = 7;
+   int n_layers = layer_stop - layer_start + 1;
+
+// For progress reporting purposes, first count total number of nodes
+// whose images will be generated via backprojection:
+
+   int n_total_nodes_to_process = 0;
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
       int layer_index = layer - layer_start;
-      for(int node = 0; node < n_layer_nodes[layer_index]; node++)
+      int max_iters = 1;
+      if(layer == final_layer)
       {
-         string curr_layer_name=layer_names[layer_index];
-         string curr_node_name=stringfunc::integer_to_string(node,3);
-         string curr_script_basename="run_"+
-            curr_layer_name+"_"+curr_node_name;
-         string curr_script_filename=scripts_subdir+curr_script_basename;
-         string curr_node_img_filename="./node_images/"+
-            curr_layer_name+"_"+curr_node_name+".png";
-         ofstream outstream;
+         max_iters = 10;
+      }
+      n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
+   }
+   
+   int node_counter = 0;
+   for(int layer = layer_stop; layer >= layer_start; layer--)
+   {
+      int layer_index = layer - layer_start;
 
-         filefunc::openfile(curr_script_filename, outstream);
+      int max_iters = 1;
+      if(layer == final_layer)
+      {
+         max_iters = 10;
+      }
+      
+      for(int iter = 0; iter < max_iters; iter++)
+      {
+         for(int node = 0; node < n_layer_nodes[layer_index]; node++)
+         {
+            outputfunc::update_progress_and_remaining_time(
+               node_counter++, 10, n_total_nodes_to_process);
 
-         outstream << "/usr/local/anaconda/bin/python \\" << endl;
-         outstream << cnn_vis_pathname << " \\" << endl;
-//         outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160_mf.prototxt \\" << endl;
-//         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_260K_96cap_mf_T3/train_iter_100000.caffemodel \\" << endl;
+            string curr_layer_name=layer_names[layer_index];
+            string curr_node_name=stringfunc::integer_to_string(node,3);
+            string curr_script_basename="run_"+
+               curr_layer_name+"_"+curr_node_name;
+            if(iter > 0)
+            {
+               curr_script_basename += "_"+
+                  stringfunc::integer_to_string(iter,2);
+            }
+            
+            string curr_script_filename=scripts_subdir+curr_script_basename;
+            string curr_img_subdir = node_images_subdir + 
+               layer_names[layer_index]+"/";
+            filefunc::dircreate(curr_img_subdir);
+            curr_img_subdir = "./node_images/"+layer_names[layer_index]+"/";
+            string curr_node_img_basename=
+               curr_layer_name+"_"+curr_node_name;
+            if(iter > 0)
+            {
+               curr_node_img_basename += "_"+
+                  stringfunc::integer_to_string(iter,2);
+            }
+            curr_node_img_basename += ".png";
 
-         outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160.prototxt \\" << endl;
-         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel \\" << endl;
+            string curr_node_img_filename=curr_img_subdir + 
+               curr_node_img_basename;
+            ofstream outstream;
 
-         outstream << "--image_type=amplify_neuron \\" << endl;
-         outstream << "--target_layer="+curr_layer_name+" \\" << endl;
-         outstream << "--target_neuron="+stringfunc::number_to_string(node)
-            +" \\" << endl;
-         outstream << "--output_file="+curr_node_img_filename+" \\" << endl;
-         outstream << "--rescale_image \\" << endl;
-         outstream << "--gpu=0   \\" << endl;
-         outstream << "--num_steps=1000 \\" << endl;
-         outstream << "--batch_size=25 \\" << endl;
-         outstream << "--output_iter=1000 \\" << endl;
-         outstream << "--learning_rate=0.1 \\" << endl;
-         outstream << "--learning_rate_decay_iter=100 \\" << endl;
-         outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
-         outstream << "--decay_rate=0.9 \\" << endl;
-         outstream << "--alpha=2.0 \\" << endl;
-         outstream << "--p_reg=0.0001 \\" << endl;
-         outstream << "--beta=2.5 \\" << endl;
-         outstream << "--tv_reg=0.00001 \\" << endl;
-         outstream << "--num_sizes=1 \\" << endl;
-         outstream << "--iter_behavior=print" << endl;
-         filefunc::closefile(curr_script_filename, outstream);
-         filefunc::make_executable(curr_script_filename);
+            filefunc::openfile(curr_script_filename, outstream);
 
-         all_scripts_stream << "./" << curr_script_basename << endl;
-      } // loop over node index
+            outstream << "/usr/local/anaconda/bin/python \\" << endl;
+            outstream << cnn_vis_pathname << " \\" << endl;
+            outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160.prototxt \\" << endl;
+//         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_360K_96cap_nmf_T1/train_iter_400000.caffemodel \\" << endl;
+//         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_260K_96cap_mf_T3/train_iter_350000.caffemodel \\" << endl;
+            outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel \\" << endl;
+
+            outstream << "--image_type=amplify_neuron \\" << endl;
+            outstream << "--target_layer="+curr_layer_name+" \\" << endl;
+            outstream << "--target_neuron="+stringfunc::number_to_string(node)
+               +" \\" << endl;
+            outstream << "--output_file="+curr_node_img_filename+" \\" << endl;
+            outstream << "--rescale_image \\" << endl;
+            outstream << "--gpu=0   \\" << endl;
+            outstream << "--num_steps=100 \\" << endl;
+					// empirically optimized
+            outstream << "--batch_size=25 \\" << endl;
+            outstream << "--output_iter=100 \\" << endl;
+            outstream << "--learning_rate=0.1 \\" << endl;
+            outstream << "--learning_rate_decay_iter=100 \\" << endl;
+            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
+            outstream << "--decay_rate=0.95 \\" << endl;  
+					// empirically optimized
+            outstream << "--alpha=4.0 \\" << endl;  
+					// empirically optimized
+            outstream << "--p_reg=0.0001 \\" << endl;
+            outstream << "--beta=2.5 \\" << endl;
+            outstream << "--tv_reg=0.00001 \\" << endl;
+					// empirically optimized
+            outstream << "--tv_reg_step_iter=25 \\" << endl;
+					// empirically optimized
+            outstream << "--tv_reg_step=0.00010 \\" << endl;
+					// empirically optimized
+            outstream << "--num_sizes=1 \\" << endl;
+            outstream << "--iter_behavior=print" << endl;
+            filefunc::closefile(curr_script_filename, outstream);
+            filefunc::make_executable(curr_script_filename);
+
+            all_scripts_stream << "./" << curr_script_basename << endl;
+
+         } // loop over node index
+      } // loop over iter index
    } // loop over layer index
 
    filefunc::closefile(all_scripts_filename, all_scripts_stream);

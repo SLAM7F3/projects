@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 8/1/16; 8/2/16; 8/8/16; 8/15/16
+// Last updated on 8/2/16; 8/8/16; 8/15/16; 8/16/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-//   int n_training_images_per_epoch = 359992;
-   int n_training_images_per_epoch = 260788;  
+   int n_training_images_per_epoch = 359992;
+//   int n_training_images_per_epoch = 260788;  
 //    int n_training_images_per_epoch = 184440;  
 //    int n_training_images_per_epoch = 37500;  
 //    int n_training_images_per_epoch = 41821;  
@@ -83,7 +83,8 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Aug15_260K_96cap_mf_T3/";
+      "Aug15_360K_96cap_nmf_T1/";
+//      "Aug15_260K_96cap_mf_T3/";
 //        "Aug6_350K_96cap_T1/";
 //        "Aug6_350K_96cap_T3/";
 //      "Aug3_260K_96cap_T1/";
@@ -99,12 +100,6 @@ int main(int argc, char* argv[])
 //      "Jul30_41K_doublesized_T1/";
 //      "Jul29_150K_7layers_singleface_morecapacity_0.001wd_T3/";
 //       "Jul29_150K_7layers_singleface_T1/";
-//      "Jul28_174K_7layers_AllDrop_T1/";
-//       "Jul28_174K_7layers_AllDrop_morecap_0.001wd_T3/";
-//       "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
-//       "Jul28_41K_7layers_AllDrop_more_capacity_0.001wd_T3/";
-//      "Jul28_41K_7layers_AllDrop_more_capacity/";
-//       "Jul28_41K_7layers_0.005wd_T3/";
 
    string log_filename=dated_subdir+"caffe.bin.INFO";
    bool strip_comments_flag = false;
