@@ -1,7 +1,7 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 7/25/16; 7/26/16; 8/1/16; 8/14/16
+Last updated on 7/26/16; 8/1/16; 8/14/16; 8/16/16
 =============================================================================
 
 *.  On 8/14/16, we downloaded the latest public caffe version via
@@ -486,3 +486,24 @@ prefers to find 'type: "RMSProp"' sitting inside solver.prototxt
 Known solver types (spelling and capitalization sensitive!):
 
    AdaDelta, AdaGrad, Adam, Nesterov, RMSProp, SGD
+
+*.  Trained weights and biases within a caffe::Net<float> object net_ are
+accessible via
+
+   int n_total_params = 0;
+   vector<float> params_lr = net_->params_lr();
+   for(unsigned int p = 0; p < params_lr.size(); p++)
+   {
+      const shared_ptr<const caffe::Blob<float> > param_blob =
+         net_->params().at(p);
+      n_total_params += param_blob->count();
+      cout << "p = " << p 
+           << " param_blob.num_axes() = "
+           << param_blob->num_axes()
+           << " param_blob.shape_string() = "
+           << param_blob->shape_string()
+           << endl;
+   }
+   cout << "Number of total weights + biases = "
+        << n_total_params << endl;
+

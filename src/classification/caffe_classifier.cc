@@ -142,6 +142,26 @@ void caffe_classifier::print_network_metadata()
    int n_blobs = net_->blob_names().size();
    cout << "n_blobs = " << n_blobs << endl;
 
+   int n_params = net_->params().size();
+   cout << "n_params = " << n_params << endl;
+
+   int n_total_params = 0;
+   vector<float> params_lr = net_->params_lr();
+   for(unsigned int p = 0; p < params_lr.size(); p++)
+   {
+      const shared_ptr<const caffe::Blob<float> > param_blob =
+         net_->params().at(p);
+      n_total_params += param_blob->count();
+      cout << "p = " << p 
+           << " param_blob.num_axes() = "
+           << param_blob->num_axes()
+           << " param_blob.shape_string() = "
+           << param_blob->shape_string()
+           << endl;
+   }
+   cout << "Number of total weights + biases = "
+        << n_total_params << endl;
+
    int n_input_blobs = net_->input_blobs().size();
    cout << "n_input_blobs = " << n_input_blobs << endl;
    CHECK_EQ(net_->num_inputs(), 1) 
@@ -190,6 +210,8 @@ void caffe_classifier::print_network_metadata()
    }
 
    cout << "..........................................." << endl;
+
+   outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
