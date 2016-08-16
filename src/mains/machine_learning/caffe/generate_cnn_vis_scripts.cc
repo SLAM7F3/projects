@@ -1,5 +1,17 @@
 // ==========================================================================
-// Program GENERATE_CNN_VIS_SCRIPTS
+// Program GENERATE_CNN_VIS_SCRIPTS loops over all layers and nodes
+// corresponding to some trained Caffe model.  For each node in the
+// network, this program creates an executable script which calls
+// Justin Johnson's "cnn_vis" python script.  We have empirically
+// determined reasonable values for many of the parameters within
+// Johnson's script which generate 96x96 image chips that maximally
+// activate for each neuron in the network.  The image chips are
+// initialized with gaussian noise.  Backprojection is used while
+// holding the weights in the trained model fixed to reconstruct the
+// chip which maximally activates a particular neuron.  All executable
+// scripts which run the python code are exported to an output folder
+// along wiht a single additional script that runs all of the
+// generated scripts.
 
 //			   generate_cnn_vis_scripts
 
@@ -33,7 +45,6 @@ using std::ofstream;
 using std::pair;
 using std::string;
 using std::vector;
-
 
 // ==========================================================================
 
