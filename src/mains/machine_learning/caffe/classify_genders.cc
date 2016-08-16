@@ -15,10 +15,9 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/6/16; 8/8/16; 8/9/16; 8/10/16
+// Last updated on 8/8/16; 8/9/16; 8/10/16; 8/16/16
 // ========================================================================
 
-#include <opencv2/highgui/highgui.hpp>
 #include "classification/caffe_classifier.h"
 #include "general/filefuncs.h"
 #include "math/genmatrix.h"
@@ -38,10 +37,6 @@ using std::ofstream;
 using std::pair;
 using std::string;
 using std::vector;
-
-// Pair (label, confidence) representing a prediction:
-
-typedef pair<string, float> Prediction;
 
 int main(int argc, char** argv) 
 {

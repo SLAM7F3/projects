@@ -6,6 +6,7 @@
 /bin/rm ./ensemble_chars
 /bin/rm ./extract_features
 /bin/rm ./finetuned_classify
+/bin/rm ./generate_cnn_vis_scripts
 /bin/rm ./generate_file_list
 /bin/rm ./imagenet_classification
 /bin/rm ./parse_leveldb

@@ -232,8 +232,6 @@ namespace mathfunc
    void median_value_and_quartile_width(
       const std::vector<double>& A,double& median,double& quartile_width);
    void median_value_and_quartile_width(
-      const std::vector<double>& A,double& median,double& quartile_width);
-   void median_value_and_quartile_width(
       const std::vector<threevector>& RGB,
       threevector& median,threevector& quartile_width);
    double median_value(int nbins,double zarray[]);

@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 7/30/16; 7/31/16; 8/1/16; 8/2/16
+// Last modified on 7/31/16; 8/1/16; 8/2/16; 8/16/16
 // ==========================================================================
 
 
@@ -27,10 +27,6 @@ using std::ostream;
 using std::pair;
 using std::string;
 using std::vector;
-
-// Pair (label, confidence) representing a prediction:
-
-typedef std::pair<string, float> Prediction;
 
 // ---------------------------------------------------------------------
 // Initialization, constructor and destructor functions:
@@ -342,6 +338,103 @@ void caffe_classifier::generate_dense_map_data_blob()
 }
 
 // ---------------------------------------------------------------------
+// Member function retrieve_layer_activations()
+
+void caffe_classifier::retrieve_layer_activations(string blob_name)
+{
+   cout << "inside caffe_classifier::retrieve_layer_activations()"
+        << endl;
+
+   const shared_ptr<const caffe::Blob<float> > curr_blob =
+      net_->blob_by_name(blob_name);
+   const float *blob_data = curr_blob->cpu_data();
+
+   int num_axes = curr_blob->num_axes();
+   for(int a = 0; a < num_axes; a++)
+   {
+      int curr_shape = curr_blob->shape(a);
+      cout << curr_shape << " " << flush;
+      if(a < num_axes - 1) cout << "x " << flush;
+   }
+   cout << endl;
+      
+//   int n_nodes = 3; // fc7_faces
+   int n_nodes = 256; // fc6, fc5
+
+   vector<int> node_IDs;
+   vector<double> node_values;
+   int n_tiny_values = 0;
+   const double TINY = 0.001;
+   for(int n = 0; n < n_nodes; n++)
+   {
+      node_IDs.push_back(n);
+      node_values.push_back(blob_data[n]);
+//      cout << "node ID = " << n 
+//           << " node value = " << blob_data[n] 
+//           << endl;
+      if(fabs(node_values.back()) < TINY)
+      {
+         n_tiny_values++;
+      }
+   }
+   double tiny_value_frac = double(n_tiny_values) / n_nodes;
+
+   double mu_value, sigma_value;
+   mathfunc::mean_and_std_dev(node_values, mu_value, sigma_value);
+   double median_value, quartile_width;
+   mathfunc::median_value_and_quartile_width(
+      node_values, median_value, quartile_width);
+
+   cout << "Node value distribution:" << endl;
+   cout << "  median = " << median_value 
+        << "  quartile_width = " << quartile_width << endl;
+   cout << "  mu = " 
+        << mu_value << " sigma = " << sigma_value << endl;
+   cout << "n_tiny_values = " << n_tiny_values 
+        << " tiny_value_frac = " << tiny_value_frac << endl;
+
+   templatefunc::Quicksort_descending(node_values, node_IDs);
+
+   unsigned int n_max = 10;
+   if(node_IDs.size() < n_max) n_max = node_IDs.size();
+   for(unsigned int n = 0; n < n_max; n++)
+   {
+      cout << "node value = " << node_values[n]
+           << " node ID = " << node_IDs[n]
+           << endl;
+   }
+   cout << "----------------------" << endl;
+   for(unsigned int n = node_IDs.size() - n_max; n < node_IDs.size(); n++)
+   {
+      cout << "node value = " << node_values[n]
+           << " node ID = " << node_IDs[n]
+           << endl;
+   }
+   
+
+
+
+/*
+   int n_classes = probs_blob->shape(1);
+   const float *probs_out = probs_blob->cpu_data();
+
+   vector<float> class_probs;
+   for(int c = 0; c < n_classes; c++)
+   {
+      class_probs.push_back(probs_out[c]);
+//      cout << "c = " << c << " class_probs = " << class_probs.back()
+//           << endl;
+   }
+
+   const float *class_argmaxes = result_blob->cpu_data();
+   classification_result = class_argmaxes[0];
+   classification_score = class_probs[classification_result];
+*/
+
+}
+
+
+// ---------------------------------------------------------------------
 // Member function retrieve_classification_results() extracts
 // n_classes softmax probability values from the "prob" blob.  The
 // maximal softmax probability is returned as the classification
@@ -559,6 +652,12 @@ void caffe_classifier::cleanup_memory()
 // ==========================================================================
 
 /*
+
+// Pair (label, confidence) representing a prediction:
+
+typedef std::pair<string, float> Prediction;
+
+
 static bool PairCompare(const pair<float, int>& lhs,
                         const pair<float, int>& rhs) 
 {
