@@ -507,3 +507,8 @@ accessible via
    cout << "Number of total weights + biases = "
         << n_total_params << endl;
 
+
+*.  On 8/16/16, John Wood recommended both subtracting off mean RGB values
+from input images as well as rescaling all color values down to [-1,1]
+rather than [-255,255].  After doing so, batch normalization apparently
+works much better.
