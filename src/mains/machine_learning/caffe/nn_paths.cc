@@ -36,10 +36,10 @@ int main(int argc, char** argv)
 
    string test_prototxt_filename   = argv[1];
    string caffe_model_filename = argv[2];
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+
    string input_images_subdir = argv[3];
    filefunc::add_trailing_dir_slash(input_images_subdir);
-
-   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
    double Bmean = 104.008;
    double Gmean = 116.669;

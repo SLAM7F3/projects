@@ -13,10 +13,12 @@
 // along wiht a single additional script that runs all of the
 // generated scripts.
 
-//			   generate_cnn_vis_scripts
+//   ./generate_cnn_vis_scripts                      
+//    /data/caffe/faces/trained_models/test_160.prototxt                    
+//    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/15/16; 8/16/16
+// Last updated on 8/15/16; 8/16/16; 8/17/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -28,6 +30,7 @@
 #include  <vector>
 
 #include "math/basic_math.h"
+#include "classification/caffe_classifier.h"
 #include "general/filefuncs.h"
 #include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
@@ -52,6 +55,16 @@ int main(int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
 
+   string test_prototxt_filename = argv[1];
+   string caffe_model_filename = argv[2];
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+
+   bool VGG_flag = false;
+   if(caffe_model_filename == "VGG_ILSVRC_16_layers.caffemodel")
+   {
+      VGG_flag = true;
+   }
+   
    string scripts_subdir="./cnn_vis_scripts/";
    filefunc::dircreate(scripts_subdir);
    string node_images_subdir=scripts_subdir+"node_images/";
@@ -61,30 +74,80 @@ int main(int argc, char* argv[])
    ofstream all_scripts_stream;
    filefunc::openfile(all_scripts_filename, all_scripts_stream);
 
-   vector<int> n_layer_nodes;
-   n_layer_nodes.push_back(96);
-   n_layer_nodes.push_back(192);
-   n_layer_nodes.push_back(224);
-   n_layer_nodes.push_back(256);
-   n_layer_nodes.push_back(256);
-   n_layer_nodes.push_back(256);
-   n_layer_nodes.push_back(3);
+   vector<int> n_layer_nodes = classifier.get_n_param_layer_nodes();
+   for(unsigned int n = 0; n < n_layer_nodes.size(); n++)
+   {
+      cout << "n = " << n << " n_layer_nodes = "
+           << n_layer_nodes[n] << endl;
+   }
 
    vector<string> layer_names;
-   layer_names.push_back("conv1a");
-   layer_names.push_back("conv2a");
-   layer_names.push_back("conv3a");
-   layer_names.push_back("conv4a");
-   layer_names.push_back("fc5");
-   layer_names.push_back("fc6");
-   layer_names.push_back("fc7_faces");
+   if(VGG_flag)
+   {
+      layer_names.push_back("conv1_1");
+      layer_names.push_back("relu1_1");
+      layer_names.push_back("conv1_2");
+      layer_names.push_back("relu1_2");
+      layer_names.push_back("pool1");
+      layer_names.push_back("conv2_1");
+      layer_names.push_back("relu2_1");
+      layer_names.push_back("conv2_2");
+      layer_names.push_back("relu2_2");
+      layer_names.push_back("pool2");
+      layer_names.push_back("conv3_1");
+      layer_names.push_back("relu3_1");
+      layer_names.push_back("conv3_2");
+      layer_names.push_back("relu3_2");
+      layer_names.push_back("conv3_3");
+      layer_names.push_back("relu3_3");
+      layer_names.push_back("pool3");
+      layer_names.push_back("conv4_1");
+      layer_names.push_back("relu4_1");
+      layer_names.push_back("conv4_2");
+      layer_names.push_back("relu4_2");
+      layer_names.push_back("conv4_3");
+      layer_names.push_back("relu4_3");
+      layer_names.push_back("pool4");
+      layer_names.push_back("conv5_1");
+      layer_names.push_back("relu5_1");
+      layer_names.push_back("conv5_2");
+      layer_names.push_back("relu5_2");
+      layer_names.push_back("conv5_3");
+      layer_names.push_back("relu5_3");
+      layer_names.push_back("pool5");
+      layer_names.push_back("fc6");
+      layer_names.push_back("relu6");
+      layer_names.push_back("drop6");
+      layer_names.push_back("fc7");
+      layer_names.push_back("relu7");
+      layer_names.push_back("drop7");
+      layer_names.push_back("fc8");
+      layer_names.push_back("prob");
+   }
+   else
+   {
+      layer_names.push_back("conv1a");
+      layer_names.push_back("conv2a");
+      layer_names.push_back("conv3a");
+      layer_names.push_back("conv4a");
+      layer_names.push_back("fc5");
+      layer_names.push_back("fc6");
+      layer_names.push_back("fc7_faces");
+   }
    
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
-   int layer_start = 1;
-   int layer_stop = 7;
-   int final_layer = 7;
-   int n_layers = layer_stop - layer_start + 1;
+   int layer_start = 1;   // We name very first layer as 1 rather than 0
+   int layer_stop =  1;
+//   int layer_stop = 7;
+
+   int final_layer = 7;  // FACE01 network
+   if(VGG_flag)
+   {
+      final_layer = 16; // VGG network
+   }
+
+//    int n_layers = layer_stop - layer_start + 1;
 
 // For progress reporting purposes, first count total number of nodes
 // whose images will be generated via backprojection:
@@ -151,10 +214,18 @@ int main(int argc, char* argv[])
 
             outstream << "/usr/local/anaconda/bin/python \\" << endl;
             outstream << cnn_vis_pathname << " \\" << endl;
-            outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160.prototxt \\" << endl;
+            outstream << "--deploy_txt=" << test_prototxt_filename 
+                      << " \\" << endl;
+            outstream << "--caffe_model=" << caffe_model_filename 
+                      << " \\" << endl;
+
+/*
+               outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160.prototxt \\" << endl;
 //         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_360K_96cap_nmf_T1/train_iter_400000.caffemodel \\" << endl;
 //         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_260K_96cap_mf_T3/train_iter_350000.caffemodel \\" << endl;
-            outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel \\" << endl;
+               outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel \\" << endl;
+*/
+
 
             outstream << "--image_type=amplify_neuron \\" << endl;
             outstream << "--target_layer="+curr_layer_name+" \\" << endl;

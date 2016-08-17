@@ -8,6 +8,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <map>
 #include <memory>
 
 #include "classification/caffe_classifier.h"
@@ -24,6 +25,7 @@ using std::endl;
 using std::flush;
 using std::ifstream;
 using std::ostream;
+using std::map;
 using std::pair;
 using std::string;
 using std::vector;
@@ -142,6 +144,20 @@ void caffe_classifier::print_network_metadata()
    int n_blobs = net_->blob_names().size();
    cout << "n_blobs = " << n_blobs << endl;
 
+// Q: How are parameter blobs associated with layers?  How do we get a
+// "name" for a parameter blob (e.g. conv1a, conv2a, etc)?
+
+/*
+   vector<int> param_owners = net_->param_owners();
+   vector<int> param_names = net_->param_display_names();
+   for(int p = 0; p < param_owners.size(); p++)
+   {
+      cout << "p = " << p << " param_owners[p] = " << param_owners[p]
+           << endl;
+   }
+*/
+
+
 //   int n_input_blobs = net_->input_blobs().size();
 //   cout << "n_input_blobs = " << n_input_blobs << endl;
    CHECK_EQ(net_->num_inputs(), 1) 
@@ -170,6 +186,9 @@ void caffe_classifier::print_network_metadata()
       cout << "Layer l = " << l 
            << " layer_name = " << net_->layer_names().at(l)
            << endl;
+//      cout << "layer_names.push_back(\""
+//           << net_->layer_names().at(l) << "\");" 
+//           << endl;
    }
    cout << endl;
 
@@ -228,6 +247,9 @@ void caffe_classifier::print_network_metadata()
          net_->params().at(p);
       const shared_ptr<const caffe::Blob<float> > biases_blob =
          net_->params().at(p+1);
+
+      n_param_layer_nodes.push_back(weights_blob->shape(0));
+
       const float *weights_data = weights_blob->cpu_data();
       const float *biases_data = biases_blob->cpu_data();
             vector<double> weights, biases;

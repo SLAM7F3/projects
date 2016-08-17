@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 7/30/16; 8/1/16; 8/2/16; 8/16/16
+// Last modified on 8/1/16; 8/2/16; 8/16/16; 8/17/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -39,6 +39,8 @@ class caffe_classifier
    int get_classification_result() const;
    double get_classification_score() const;
    unsigned int get_n_labels() const;
+   std::vector<int>& get_n_param_layer_nodes();
+   const std::vector<int>& get_n_param_layer_nodes() const;
 
    void rgb_img_to_bgr_fvec(texture_rectangle& curr_img);
    void generate_dense_map();
@@ -52,23 +54,14 @@ class caffe_classifier
 
   private: 
 
-   void load_trained_network();
-   void print_network_metadata();
-
-
-   void retrieve_classification_results(const caffe::Blob<float>* result_blob);
-   void export_segmentation_mask(const caffe::Blob<float>* result_blob);
-
-   void allocate_member_objects();
-   void initialize_member_objects();
-   void docopy(const caffe_classifier& C);
-
    bool segmentation_flag;
    int num_data_channels_;
    int input_img_xdim, input_img_ydim;
    int classification_result;
    double classification_score;
    std::string test_prototxt_filename, trained_caffe_model_filename;
+   std::vector<int> n_param_layer_nodes;
+   std::vector<std::string> n_param_layer_names;
 
    caffe::shared_ptr<caffe::Net<float> > net_;
    cv::Size input_geometry_;
@@ -78,6 +71,18 @@ class caffe_classifier
    float *feature_descriptor;
    texture_rectangle *label_tr_ptr, *score_tr_ptr;
    texture_rectangle *cc_tr_ptr;
+
+
+   void load_trained_network();
+   void print_network_metadata();
+
+   void retrieve_classification_results(const caffe::Blob<float>* result_blob);
+   void export_segmentation_mask(const caffe::Blob<float>* result_blob);
+
+   void allocate_member_objects();
+   void initialize_member_objects();
+   void docopy(const caffe_classifier& C);
+
 
 // Deprecated member functions:
 
@@ -131,6 +136,17 @@ inline unsigned int caffe_classifier::get_n_labels() const
 {
    return labels_.size();
 }
+
+inline std::vector<int>& caffe_classifier::get_n_param_layer_nodes()
+{
+   return n_param_layer_nodes;
+}
+
+inline const std::vector<int>& caffe_classifier::get_n_param_layer_nodes() const
+{
+   return n_param_layer_nodes;
+}
+
 
 
 #endif  // caffe_classifier.h
