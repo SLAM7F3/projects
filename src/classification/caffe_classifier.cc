@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 7/31/16; 8/1/16; 8/2/16; 8/16/16
+// Last modified on 8/1/16; 8/2/16; 8/16/16; 8/17/16
 // ==========================================================================
 
 
@@ -142,33 +142,13 @@ void caffe_classifier::print_network_metadata()
    int n_blobs = net_->blob_names().size();
    cout << "n_blobs = " << n_blobs << endl;
 
-   int n_params = net_->params().size();
-   cout << "n_params = " << n_params << endl;
-
-   int n_total_params = 0;
-   vector<float> params_lr = net_->params_lr();
-   for(unsigned int p = 0; p < params_lr.size(); p++)
-   {
-      const shared_ptr<const caffe::Blob<float> > param_blob =
-         net_->params().at(p);
-      n_total_params += param_blob->count();
-      cout << "p = " << p 
-           << " param_blob.num_axes() = "
-           << param_blob->num_axes()
-           << " param_blob.shape_string() = "
-           << param_blob->shape_string()
-           << endl;
-   }
-   cout << "Number of total weights + biases = "
-        << n_total_params << endl;
-
-   int n_input_blobs = net_->input_blobs().size();
-   cout << "n_input_blobs = " << n_input_blobs << endl;
+//   int n_input_blobs = net_->input_blobs().size();
+//   cout << "n_input_blobs = " << n_input_blobs << endl;
    CHECK_EQ(net_->num_inputs(), 1) 
       << "Network should have exactly one input blob.";
 
-   int n_output_blobs = net_->output_blobs().size();
-   cout << "n_output_blobs = " << n_output_blobs << endl;
+//   int n_output_blobs = net_->output_blobs().size();
+//   cout << "n_output_blobs = " << n_output_blobs << endl;
    CHECK_EQ(net_->num_outputs(), 1) 
       << "Network should have exactly one output blob.";
 
@@ -208,6 +188,146 @@ void caffe_classifier::print_network_metadata()
       }
       cout << endl;
    }
+   cout << endl;
+
+// Extract total number of weights and biases contained within
+// network from all parameter blobs:
+
+   int n_param_layers = net_->params().size();
+   cout << "Number of layers containing weights and biases = " 
+        << n_param_layers/2 << endl;
+
+   int n_total_weights = 0;
+   int n_total_biases = 0;
+   for(int p = 0; p < n_param_layers; p++)
+   {
+      const shared_ptr<const caffe::Blob<float> > param_blob =
+         net_->params().at(p);
+      if(p%2 == 0)
+      {
+         n_total_weights += param_blob->count();
+      }
+      else
+      {
+         n_total_biases += param_blob->count();
+      }
+      cout << "p = " << p 
+           << " param_blob.num_axes() = " << param_blob->num_axes()
+           << " param_blob.shape_string() = " << param_blob->shape_string()
+           << endl;
+   }
+   cout << "n_total_weights = " << n_total_weights
+        << " n_total_biases = " << n_total_biases << endl;
+
+// Compute distribution statistics for trained weights and biases
+// within each layer containing parameters:
+
+   for(int p = 0; p < n_param_layers; p += 2)
+   {
+      const shared_ptr<const caffe::Blob<float> > weights_blob =
+         net_->params().at(p);
+      const shared_ptr<const caffe::Blob<float> > biases_blob =
+         net_->params().at(p+1);
+      const float *weights_data = weights_blob->cpu_data();
+      const float *biases_data = biases_blob->cpu_data();
+            vector<double> weights, biases;
+      
+      for(int i = 0; i < weights_blob->count(); i++)
+      {
+         weights.push_back(weights_data[i]);
+      }
+      for(int i = 0; i < biases_blob->count(); i++)
+      {
+         biases.push_back(biases_data[i]);
+      }
+      
+      double w_mu, w_sigma, b_mu, b_sigma;
+      mathfunc::mean_and_std_dev(weights, w_mu, w_sigma);
+      mathfunc::mean_and_std_dev(biases, b_mu, b_sigma);
+      double w_median, w_quartile_width, b_median, b_quartile_width;
+      mathfunc::median_value_and_quartile_width(
+         weights, w_median, w_quartile_width);
+      mathfunc::median_value_and_quartile_width(
+         biases, b_median, b_quartile_width);
+
+      cout << "Parameter layer p = " << p/2 << endl;
+      cout << "  Weights:  mu = " << w_mu << " sigma = " << w_sigma 
+           << "   median = " << w_median << " quartile_width = "
+           << w_quartile_width << endl;
+      cout << "  Biases:  mu = " << b_mu << " sigma = " << b_sigma 
+           << "   median = " << b_median << " quartile_width = "
+           << b_quartile_width << endl << endl;
+   } // loop over index p labeling parameter layers
+
+/*   
+// Extract trained filters for very first convolutional layer:
+
+   const shared_ptr<const caffe::Blob<float> > weights_blob =
+      net_->params().at(0);
+
+   int n_filters = weights_blob->shape(0);
+   int n_RGB = weights_blob->shape(1);
+   int height = weights_blob->shape(2);
+   int width = weights_blob->shape(3);
+   cout << "Very first convolutional layer:" << endl;
+   cout << " n_filters = " << n_filters << " n_RGB = " << n_RGB
+        << " height = " << height << " width = " << width << endl;
+
+   string filters_subdir="./filters/";
+   filefunc::dircreate(filters_subdir);
+
+   vector<int> index;   
+   texture_rectangle *tr_ptr = new texture_rectangle(width, height, 1, n_RGB,
+                                                     NULL);
+   for(int f = 0; f < n_filters; f++)
+   {
+      for(int py = 0; py < height; py++)
+      {
+         for(int px = 0; px < width; px++)
+         {
+            double r, g, b;
+            for(int c = 0; c < n_RGB; c++)
+            {
+               index.clear();
+               index.push_back(f);
+               index.push_back(c);
+               index.push_back(py);
+               index.push_back(px);
+               double curr_weight = weights_blob->data_at(index);
+               if(c == 0)
+               {
+                  b = 128 + 255 * curr_weight;
+               }
+               else if(c == 1)
+               {
+                  g = 128 + 255 * curr_weight;
+               }
+               if(c == 2)
+               {
+                  r = 128 + 255 * curr_weight;
+               }
+            } // loop over index c labeling filter color channels
+            int R = basic_math::max(0.0, r);
+            int G = basic_math::max(0.0, g);
+            int B = basic_math::max(0.0, b);
+
+//            cout << "f = " << f 
+//                 << " px = " << px << " py = " << py 
+//                 << " R = " << R << " G = " << G << " B = " << B << endl;
+
+            tr_ptr->set_pixel_RGB_values(px,py,R,G,B);
+
+         } // loop over index px 
+      } // loop over index py
+      cout << endl;
+
+      string filter_filename=filters_subdir + 
+         "filter_"+stringfunc::integer_to_string(f,2)+".jpg";
+      tr_ptr->write_curr_frame(filter_filename);
+   } // loop over index f labeling conv1 filters
+   
+   delete tr_ptr;
+*/
 
    cout << "..........................................." << endl;
 
