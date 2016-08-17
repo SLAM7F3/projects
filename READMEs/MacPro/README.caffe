@@ -1,8 +1,13 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 7/26/16; 8/1/16; 8/14/16; 8/16/16
+Last updated on 8/1/16; 8/14/16; 8/16/16; 8/17/16
 =============================================================================
+
+*.  On 8/17/16, we downloaded the latest version of caffe_custom from Tho's
+git repository.  We only had to modify the python lines within
+Makefile.config so that they refered to Anaconda.  Everything seemed to
+build fine on Thinkmate after we made this small modification.
 
 *.  On 8/14/16, we downloaded the latest public caffe version via
 

@@ -4,7 +4,7 @@
 // Last modified on 8/1/16; 8/2/16; 8/16/16; 8/17/16
 // ==========================================================================
 
-
+#include <caffe/net.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
@@ -147,16 +147,7 @@ void caffe_classifier::print_network_metadata()
 // Q: How are parameter blobs associated with layers?  How do we get a
 // "name" for a parameter blob (e.g. conv1a, conv2a, etc)?
 
-/*
-   vector<int> param_owners = net_->param_owners();
-   vector<int> param_names = net_->param_display_names();
-   for(int p = 0; p < param_owners.size(); p++)
-   {
-      cout << "p = " << p << " param_owners[p] = " << param_owners[p]
-           << endl;
-   }
-*/
-
+   vector<string> param_names = net_->param_display_names();
 
 //   int n_input_blobs = net_->input_blobs().size();
 //   cout << "n_input_blobs = " << n_input_blobs << endl;
@@ -574,27 +565,6 @@ void caffe_classifier::retrieve_layer_activations(string blob_name)
            << " node ID = " << node_IDs[n]
            << endl;
    }
-   
-
-
-
-/*
-   int n_classes = probs_blob->shape(1);
-   const float *probs_out = probs_blob->cpu_data();
-
-   vector<float> class_probs;
-   for(int c = 0; c < n_classes; c++)
-   {
-      class_probs.push_back(probs_out[c]);
-//      cout << "c = " << c << " class_probs = " << class_probs.back()
-//           << endl;
-   }
-
-   const float *class_argmaxes = result_blob->cpu_data();
-   classification_result = class_argmaxes[0];
-   classification_score = class_probs[classification_result];
-*/
-
 }
 
 

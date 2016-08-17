@@ -677,8 +677,6 @@ This command is helpful for figuring out which local branches are stale and
 can be safely deleted.  On 4/22/16, we placed this command into executable
 script ls_local_git_branches within our ~/bin/ subdir.
 
-
-
 *.  Procedure for ping-ponging between two development branches:
 
 1.  We have a branch pr_cluster_chips1 which has been checked into the
