@@ -55,16 +55,20 @@ int main(int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
 
+   int max_nodes_per_param_layer = 512;
    string test_prototxt_filename = argv[1];
    string caffe_model_filename = argv[2];
-   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
    bool VGG_flag = false;
-   if(caffe_model_filename == "VGG_ILSVRC_16_layers.caffemodel")
+   if(filefunc::getbasename(caffe_model_filename) == 
+      "VGG_ILSVRC_16_layers.caffemodel")
    {
       VGG_flag = true;
+      max_nodes_per_param_layer = 25;
    }
-   
+
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+
    string scripts_subdir="./cnn_vis_scripts/";
    filefunc::dircreate(scripts_subdir);
    string node_images_subdir=scripts_subdir+"node_images/";
@@ -81,73 +85,48 @@ int main(int argc, char* argv[])
            << n_layer_nodes[n] << endl;
    }
 
-   vector<string> layer_names;
+   vector<string> param_layer_names;
    if(VGG_flag)
    {
-      layer_names.push_back("conv1_1");
-      layer_names.push_back("relu1_1");
-      layer_names.push_back("conv1_2");
-      layer_names.push_back("relu1_2");
-      layer_names.push_back("pool1");
-      layer_names.push_back("conv2_1");
-      layer_names.push_back("relu2_1");
-      layer_names.push_back("conv2_2");
-      layer_names.push_back("relu2_2");
-      layer_names.push_back("pool2");
-      layer_names.push_back("conv3_1");
-      layer_names.push_back("relu3_1");
-      layer_names.push_back("conv3_2");
-      layer_names.push_back("relu3_2");
-      layer_names.push_back("conv3_3");
-      layer_names.push_back("relu3_3");
-      layer_names.push_back("pool3");
-      layer_names.push_back("conv4_1");
-      layer_names.push_back("relu4_1");
-      layer_names.push_back("conv4_2");
-      layer_names.push_back("relu4_2");
-      layer_names.push_back("conv4_3");
-      layer_names.push_back("relu4_3");
-      layer_names.push_back("pool4");
-      layer_names.push_back("conv5_1");
-      layer_names.push_back("relu5_1");
-      layer_names.push_back("conv5_2");
-      layer_names.push_back("relu5_2");
-      layer_names.push_back("conv5_3");
-      layer_names.push_back("relu5_3");
-      layer_names.push_back("pool5");
-      layer_names.push_back("fc6");
-      layer_names.push_back("relu6");
-      layer_names.push_back("drop6");
-      layer_names.push_back("fc7");
-      layer_names.push_back("relu7");
-      layer_names.push_back("drop7");
-      layer_names.push_back("fc8");
-      layer_names.push_back("prob");
+      param_layer_names.push_back("conv1_1");
+      param_layer_names.push_back("conv1_2");
+      param_layer_names.push_back("conv2_1");
+      param_layer_names.push_back("conv2_2");
+      param_layer_names.push_back("conv3_1");
+      param_layer_names.push_back("conv3_2");
+      param_layer_names.push_back("conv3_3");
+      param_layer_names.push_back("conv4_1");
+      param_layer_names.push_back("conv4_2");
+      param_layer_names.push_back("conv4_3");
+      param_layer_names.push_back("conv5_1");
+      param_layer_names.push_back("conv5_2");
+      param_layer_names.push_back("conv5_3");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7");
+      param_layer_names.push_back("fc8");
    }
    else
    {
-      layer_names.push_back("conv1a");
-      layer_names.push_back("conv2a");
-      layer_names.push_back("conv3a");
-      layer_names.push_back("conv4a");
-      layer_names.push_back("fc5");
-      layer_names.push_back("fc6");
-      layer_names.push_back("fc7_faces");
+      param_layer_names.push_back("conv1a");
+      param_layer_names.push_back("conv2a");
+      param_layer_names.push_back("conv3a");
+      param_layer_names.push_back("conv4a");
+      param_layer_names.push_back("fc5");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7_faces");
    }
    
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
    int layer_start = 1;   // We name very first layer as 1 rather than 0
-   int layer_stop =  1;
-//   int layer_stop = 7;
+//   int layer_stop =  1;
 
    int final_layer = 7;  // FACE01 network
    if(VGG_flag)
    {
       final_layer = 16; // VGG network
    }
-
-//    int n_layers = layer_stop - layer_start + 1;
+   int layer_stop = final_layer;
 
 // For progress reporting purposes, first count total number of nodes
 // whose images will be generated via backprojection:
@@ -157,7 +136,7 @@ int main(int argc, char* argv[])
    {
       int layer_index = layer - layer_start;
       int max_iters = 1;
-      if(layer == final_layer)
+      if(layer == final_layer && !VGG_flag)
       {
          max_iters = 10;
       }
@@ -170,7 +149,7 @@ int main(int argc, char* argv[])
       int layer_index = layer - layer_start;
 
       int max_iters = 1;
-      if(layer == final_layer)
+      if(layer == final_layer && !VGG_flag)
       {
          max_iters = 10;
       }
@@ -182,7 +161,9 @@ int main(int argc, char* argv[])
             outputfunc::update_progress_and_remaining_time(
                node_counter++, 10, n_total_nodes_to_process);
 
-            string curr_layer_name=layer_names[layer_index];
+            if(node > max_nodes_per_param_layer) continue;
+
+            string curr_layer_name=param_layer_names[layer_index];
             string curr_node_name=stringfunc::integer_to_string(node,3);
             string curr_script_basename="run_"+
                curr_layer_name+"_"+curr_node_name;
@@ -194,9 +175,10 @@ int main(int argc, char* argv[])
             
             string curr_script_filename=scripts_subdir+curr_script_basename;
             string curr_img_subdir = node_images_subdir + 
-               layer_names[layer_index]+"/";
+               param_layer_names[layer_index]+"/";
             filefunc::dircreate(curr_img_subdir);
-            curr_img_subdir = "./node_images/"+layer_names[layer_index]+"/";
+            curr_img_subdir = "./node_images/"+param_layer_names[
+               layer_index]+"/";
             string curr_node_img_basename=
                curr_layer_name+"_"+curr_node_name;
             if(iter > 0)
@@ -218,15 +200,6 @@ int main(int argc, char* argv[])
                       << " \\" << endl;
             outstream << "--caffe_model=" << caffe_model_filename 
                       << " \\" << endl;
-
-/*
-               outstream << "--deploy_txt=/data/caffe/faces/trained_models/test_160.prototxt \\" << endl;
-//         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_360K_96cap_nmf_T1/train_iter_400000.caffemodel \\" << endl;
-//         outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug15_260K_96cap_mf_T3/train_iter_350000.caffemodel \\" << endl;
-               outstream << "--caffe_model=/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel \\" << endl;
-*/
-
-
             outstream << "--image_type=amplify_neuron \\" << endl;
             outstream << "--target_layer="+curr_layer_name+" \\" << endl;
             outstream << "--target_neuron="+stringfunc::number_to_string(node)
