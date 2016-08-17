@@ -144,11 +144,6 @@ void caffe_classifier::print_network_metadata()
    int n_blobs = net_->blob_names().size();
    cout << "n_blobs = " << n_blobs << endl;
 
-// Q: How are parameter blobs associated with layers?  How do we get a
-// "name" for a parameter blob (e.g. conv1a, conv2a, etc)?
-
-   vector<string> param_names = net_->param_display_names();
-
 //   int n_input_blobs = net_->input_blobs().size();
 //   cout << "n_input_blobs = " << n_input_blobs << endl;
    CHECK_EQ(net_->num_inputs(), 1) 
@@ -182,6 +177,19 @@ void caffe_classifier::print_network_metadata()
 //           << endl;
    }
    cout << endl;
+
+// Q: How are parameter blobs associated with layers?  How do we get a
+// "name" for a parameter blob (e.g. conv1a, conv2a, etc)?  Following
+// call only seems to return bool values which precisely oscillate
+// between true and false and don't obviously correlate with conv/FC
+// layers in VGG/Face01 networks...
+
+   vector<string> param_names = net_->param_display_names();
+//   for(unsigned int p = 0; p < param_names.size(); p++)
+//   {
+//      cout << "p = " << p << " param_names[p] = " << param_names[p]
+//           << endl;
+//   }
 
    for(int b = 0; b < n_blobs; b++)
    {

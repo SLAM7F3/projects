@@ -1,4 +1,4 @@
-7// ====================================================================
+// ====================================================================
 // Program GENERATE_IMAGE_TILES imports all pyramided image files
 // exported by PYRAMID_TESTING_IMAGES from a specified input
 // subdirectory.  It breaks apart each input image into a set of
