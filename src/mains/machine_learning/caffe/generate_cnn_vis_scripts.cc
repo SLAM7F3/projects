@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/15/16; 8/16/16; 8/17/16
+// Last updated on 8/15/16; 8/16/16; 8/17/16; 8/18/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -55,21 +55,63 @@ int main(int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
 
-   int max_nodes_per_param_layer = 512;
    string test_prototxt_filename = argv[1];
    string caffe_model_filename = argv[2];
 
+   bool Alexnet_flag = false;
    bool VGG_flag = false;
-   if(filefunc::getbasename(caffe_model_filename) == 
-      "VGG_ILSVRC_16_layers.caffemodel")
+   bool Resnet50_flag = false;
+   bool Facenet_flag = false;
+   string caffe_model_basename=filefunc::getbasename(caffe_model_filename);
+   int max_nodes_per_param_layer = 25;
+
+   if(caffe_model_basename == "bvlc_reference_caffenet.caffemodel")
+   {
+      Alexnet_flag = true;
+      max_nodes_per_param_layer = 25;
+   }
+   else if(caffe_model_basename == "VGG_ILSVRC_16_layers.caffemodel")
    {
       VGG_flag = true;
       max_nodes_per_param_layer = 25;
    }
+   else if(caffe_model_basename == "ResNet-50-model.caffemodel")
+   {
+      Resnet50_flag = true;
+//      max_nodes_per_param_layer = 50;
+      max_nodes_per_param_layer = 1000;
+   }
+   else 
+   {
+      Facenet_flag = true;
+      max_nodes_per_param_layer = 512;
+   }
+
+   cout << "caffe_model_basename = " << caffe_model_basename << endl;
+   cout << "Alexnet_flag = " << Alexnet_flag << endl;
+   cout << "VGG_flag = " << VGG_flag << endl;
+   cout << "Resnet50_flag = " << Resnet50_flag << endl;
+   cout << "Facenet_flag = " << Facenet_flag << endl;
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-   string scripts_subdir="./cnn_vis_scripts/";
+   string scripts_subdir;
+   if(Alexnet_flag)
+   {
+      scripts_subdir="./vis_alexnet/";
+   }
+   else if(VGG_flag)
+   {
+      scripts_subdir="./vis_VGG/";
+   }
+   else if(Resnet50_flag)
+   {
+      scripts_subdir="./vis_Resnet50/";
+   }
+   else if(Facenet_flag)
+   {
+      scripts_subdir="./vis_facenet/";
+   }
    filefunc::dircreate(scripts_subdir);
    string node_images_subdir=scripts_subdir+"node_images/";
    filefunc::dircreate(node_images_subdir);
@@ -86,7 +128,18 @@ int main(int argc, char* argv[])
    }
 
    vector<string> param_layer_names;
-   if(VGG_flag)
+   if (Alexnet_flag)
+   {
+      param_layer_names.push_back("conv1");
+      param_layer_names.push_back("conv2");
+      param_layer_names.push_back("conv3");
+      param_layer_names.push_back("conv4");
+      param_layer_names.push_back("conv5");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7");
+      param_layer_names.push_back("fc8");
+   }
+   else if(VGG_flag)
    {
       param_layer_names.push_back("conv1_1");
       param_layer_names.push_back("conv1_2");
@@ -105,7 +158,29 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc7");
       param_layer_names.push_back("fc8");
    }
-   else
+   else if (Resnet50_flag)
+   {
+      param_layer_names.push_back("input");
+      param_layer_names.push_back("conv1");
+      param_layer_names.push_back("res2a");
+      param_layer_names.push_back("res2b");
+      param_layer_names.push_back("res2c");
+      param_layer_names.push_back("res3a");
+      param_layer_names.push_back("res3b");
+      param_layer_names.push_back("res3c");
+      param_layer_names.push_back("res3d");
+      param_layer_names.push_back("res4a");
+      param_layer_names.push_back("res4b");
+      param_layer_names.push_back("res4c");
+      param_layer_names.push_back("res4d");
+      param_layer_names.push_back("res4e");
+      param_layer_names.push_back("res4f");
+      param_layer_names.push_back("res5a");
+      param_layer_names.push_back("res5b");
+      param_layer_names.push_back("res5c");
+      param_layer_names.push_back("fc1000");
+   }
+   else if (Facenet_flag)
    {
       param_layer_names.push_back("conv1a");
       param_layer_names.push_back("conv2a");
@@ -115,18 +190,14 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
    }
-   
+
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
    int layer_start = 1;   // We name very first layer as 1 rather than 0
 //   int layer_stop =  1;
-
-   int final_layer = 7;  // FACE01 network
-   if(VGG_flag)
-   {
-      final_layer = 16; // VGG network
-   }
+   int final_layer = param_layer_names.size();
    int layer_stop = final_layer;
+   cout << "layer_stop = " << layer_stop << endl;
 
 // For progress reporting purposes, first count total number of nodes
 // whose images will be generated via backprojection:
@@ -136,7 +207,7 @@ int main(int argc, char* argv[])
    {
       int layer_index = layer - layer_start;
       int max_iters = 1;
-      if(layer == final_layer && !VGG_flag)
+      if(layer == final_layer && Facenet_flag)
       {
          max_iters = 10;
       }
@@ -149,7 +220,7 @@ int main(int argc, char* argv[])
       int layer_index = layer - layer_start;
 
       int max_iters = 1;
-      if(layer == final_layer && !VGG_flag)
+      if(layer == final_layer && Facenet_flag)
       {
          max_iters = 10;
       }
@@ -207,6 +278,38 @@ int main(int argc, char* argv[])
             outstream << "--output_file="+curr_node_img_filename+" \\" << endl;
             outstream << "--rescale_image \\" << endl;
             outstream << "--gpu=0   \\" << endl;
+
+// Aug 18 parameters:
+
+            outstream << "--initialization_scale=50 \\" << endl;
+					// empirically optimized
+            outstream << "--initialization_blur=5 \\" << endl;
+					// empirically optimized
+            outstream << "--num_steps=60 \\" << endl;
+					// empirically optimized
+            outstream << "--batch_size=1 \\" << endl;
+            outstream << "--output_iter=100 \\" << endl;
+            outstream << "--learning_rate=0.4 \\" << endl;
+            outstream << "--learning_rate_decay_iter=20 \\" << endl;
+            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
+            outstream << "--decay_rate=0.95 \\" << endl;  
+					// empirically optimized
+            outstream << "--alpha=4.0 \\" << endl;  
+					// empirically optimized
+            outstream << "--p_reg=0.0001 \\" << endl;
+            outstream << "--beta=2.5 \\" << endl;
+            outstream << "--tv_reg=0.00001 \\" << endl;
+					// empirically optimized
+            outstream << "--tv_reg_step_iter=25 \\" << endl;
+					// empirically optimized
+            outstream << "--tv_reg_step=0.00010 \\" << endl;
+					// empirically optimized
+            outstream << "--num_sizes=1 \\" << endl;
+            outstream << "--iter_behavior=print" << endl;
+
+
+/*
+// Aug 17 parameters:
             outstream << "--num_steps=100 \\" << endl;
 					// empirically optimized
             outstream << "--batch_size=25 \\" << endl;
@@ -228,6 +331,10 @@ int main(int argc, char* argv[])
 					// empirically optimized
             outstream << "--num_sizes=1 \\" << endl;
             outstream << "--iter_behavior=print" << endl;
+*/
+
+
+
             filefunc::closefile(curr_script_filename, outstream);
             filefunc::make_executable(curr_script_filename);
 

@@ -172,7 +172,7 @@ void caffe_classifier::print_network_metadata()
       cout << "Layer l = " << l 
            << " layer_name = " << net_->layer_names().at(l)
            << endl;
-//      cout << "layer_names.push_back(\""
+//      cout << "param_layer_names.push_back(\""
 //           << net_->layer_names().at(l) << "\");" 
 //           << endl;
    }
@@ -212,6 +212,7 @@ void caffe_classifier::print_network_metadata()
 // network from all parameter blobs:
 
    int n_param_layers = net_->params().size();
+   if(n_param_layers%2 != 0) n_param_layers--;  // e.g. ResNet-50
    cout << "Number of layers containing weights and biases = " 
         << n_param_layers/2 << endl;
 
@@ -242,13 +243,17 @@ void caffe_classifier::print_network_metadata()
 
    for(int p = 0; p < n_param_layers; p += 2)
    {
+      cout << "Parameter layer p = " << p/2 << endl;
+      
       const shared_ptr<const caffe::Blob<float> > weights_blob =
          net_->params().at(p);
       const shared_ptr<const caffe::Blob<float> > biases_blob =
          net_->params().at(p+1);
 
       n_param_layer_nodes.push_back(weights_blob->shape(0));
-
+//      cout << "n_param_layer_nodes = "
+//           << n_param_layer_nodes.back() << endl;
+      
       const float *weights_data = weights_blob->cpu_data();
       const float *biases_data = biases_blob->cpu_data();
             vector<double> weights, biases;
@@ -271,7 +276,6 @@ void caffe_classifier::print_network_metadata()
       mathfunc::median_value_and_quartile_width(
          biases, b_median, b_quartile_width);
 
-      cout << "Parameter layer p = " << p/2 << endl;
       cout << "  Weights:  mu = " << w_mu << " sigma = " << w_sigma 
            << "   median = " << w_median << " quartile_width = "
            << w_quartile_width << endl;
@@ -351,8 +355,7 @@ void caffe_classifier::print_network_metadata()
 */
 
    cout << "..........................................." << endl;
-
-   outputfunc::enter_continue_char();
+//    outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
