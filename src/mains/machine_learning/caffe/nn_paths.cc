@@ -135,7 +135,8 @@ int main(int argc, char** argv)
            << " classification score = " << classification_score
            << endl;
 
-      string blob_name = "fc5";
+      string blob_name = "conv4a";
+//      string blob_name = "fc5";
 //      string blob_name = "fc6";
 //      string blob_name = "fc7_faces";
       classifier.retrieve_layer_activations(blob_name);

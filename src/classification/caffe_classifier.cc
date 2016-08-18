@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 8/1/16; 8/2/16; 8/16/16; 8/17/16
+// Last modified on 8/2/16; 8/16/16; 8/17/16; 8/18/16
 // ==========================================================================
 
 #include <caffe/net.hpp>
@@ -196,6 +196,9 @@ void caffe_classifier::print_network_metadata()
       cout << "Blob b = " << b
            << " blob_name = " << net_->blob_names().at(b)
            << " : " << flush;
+      cout << net_->blobs().at(b)->shape_string() << endl;
+      
+/*
       int num_axes = net_->blobs().at(b)->num_axes();
 
       for(int a = 0; a < num_axes; a++)
@@ -205,6 +208,8 @@ void caffe_classifier::print_network_metadata()
          if(a < num_axes - 1) cout << "x " << flush;
       }
       cout << endl;
+*/
+
    }
    cout << endl;
 
@@ -516,6 +521,18 @@ void caffe_classifier::retrieve_layer_activations(string blob_name)
    const float *blob_data = curr_blob->cpu_data();
 
    int num_axes = curr_blob->num_axes();
+   cout << " activations_blob.shape_string() = " << curr_blob->shape_string()
+        << endl;
+
+   int n_filters = curr_blob->shape(1);
+   int filter_width = curr_blob->shape(2);
+   int filter_height = curr_blob->shape(3);
+   
+   cout << "n_filters = " << n_filters
+        << " filter width = " << filter_width
+        << " filter height = " << filter_height
+        << endl;
+
    for(int a = 0; a < num_axes; a++)
    {
       int curr_shape = curr_blob->shape(a);
@@ -525,7 +542,9 @@ void caffe_classifier::retrieve_layer_activations(string blob_name)
    cout << endl;
       
 //   int n_nodes = 3; // fc7_faces
-   int n_nodes = 256; // fc6, fc5
+   int n_nodes = 256; // fc6, fc5, conv4a
+
+   exit(-1);
 
    vector<int> node_IDs;
    vector<double> node_values;

@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
    else if(caffe_model_basename == "ResNet-50-model.caffemodel")
    {
       Resnet50_flag = true;
-//      max_nodes_per_param_layer = 50;
-      max_nodes_per_param_layer = 1000;
+      max_nodes_per_param_layer = 25;
+//      max_nodes_per_param_layer = 1000;
    }
    else 
    {
@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 10;
+         max_iters = 30;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 10;
+         max_iters = 30;
       }
       
       for(int iter = 0; iter < max_iters; iter++)
