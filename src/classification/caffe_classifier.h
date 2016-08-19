@@ -53,7 +53,7 @@ class caffe_classifier
       int input_node_ID, int output_node_ID, int height, int width);
    float get_weight_sum(
       int param_layer_index, int input_node_ID, int output_node_ID);
-   int get_weight_node_ID(int param_layer_index, int node_index);
+   int get_global_weight_node_ID(int param_layer_index, int node_index);
 
    void rgb_img_to_bgr_fvec(texture_rectangle& curr_img);
    void generate_dense_map();
@@ -76,7 +76,7 @@ class caffe_classifier
    std::vector<int> n_param_layer_nodes;
    std::vector<std::string> n_param_layer_names;
 
-   NODE_ID_MAP weight_node_id_map;
+   NODE_ID_MAP global_weight_node_id_map;
 
 
    caffe::shared_ptr<caffe::Net<float> > net_;

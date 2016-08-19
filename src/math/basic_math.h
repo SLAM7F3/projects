@@ -4,7 +4,7 @@
 // does NOT exist a "basic_math.cc" file corresponding to this
 // "basic_math.h" file.
 // ==========================================================================
-// Last updated on 6/23/05; 3/21/08; 9/5/08
+// Last updated on 6/23/05; 3/21/08; 9/5/08; 8/19/16
 // ==========================================================================
 
 #ifndef BASIC_MATH_H
@@ -190,30 +190,28 @@ inline bool is_odd(int n)
 }
 
 // ---------------------------------------------------------------------
-// Method modulo takes returns i mod n provided n > 0.  Unlike C++'s
+// Method modulo returns i mod n provided n > 0.  Unlike C++'s
 // built in remainder function, the output for any positive, negative
 // or zero valued integer i is nonnegative.
 
 inline int modulo(int i,int n)
 {
-   int j;
-   
-   if (n < 0)
+   if (n <= 0)
    {
       std::cout << "Error inside modulo method in basicmath.h !" << std::endl;
       std::cout << "i = " << i << " n = " << n << std::endl;
+      std::cout << "n must be positive!" << std::endl;
       return 0;
    }
    else
    {
       if (i >= 0)
       {
-         return i%n;
+         return i % n;
       }
       else
       {
-         j=i+n*(int(abs(i)/n)+1);
-         return j%n;
+         return n - abs(i) % n;
       }
    }
 }

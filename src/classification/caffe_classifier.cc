@@ -241,10 +241,17 @@ void caffe_classifier::print_network_metadata()
    cout << "n_total_weights = " << n_total_weights
         << " n_total_biases = " << n_total_biases << endl;
 
+
+   int global_weight_node_counter = 0;
+
+   // Layer 0 is defined to hold 3 RGB channels for input image:
+   global_weight_node_id_map[DUPLE(0,0)] = global_weight_node_counter++;
+   global_weight_node_id_map[DUPLE(0,1)] = global_weight_node_counter++;
+   global_weight_node_id_map[DUPLE(0,2)] = global_weight_node_counter++;
+
 // Compute distribution statistics for trained weights and biases
 // within each layer containing parameters:
 
-   int weight_node_counter = 0;
    for(int p = 0; p < n_param_layers; p += 2)
    {
       cout << "Parameter layer p = " << p/2 << endl;
@@ -257,11 +264,18 @@ void caffe_classifier::print_network_metadata()
       n_param_layer_nodes.push_back(weights_blob->shape(0));
 //      cout << "n_param_layer_nodes = "
 //           << n_param_layer_nodes.back() << endl;
+
+      int init_global_weight_node = global_weight_node_counter;
       for(int w = 0; w < n_param_layer_nodes.back(); w++)
       {
-         DUPLE duple(p/2, w);
-         weight_node_id_map[duple] = weight_node_counter++;
+         DUPLE duple(p/2 + 1, w); // layer 0 holds input image
+         global_weight_node_id_map[duple] = global_weight_node_counter++;
       }
+      int final_global_weight_node = global_weight_node_counter - 1;
+      cout << "  Initial global weight node ID = " << init_global_weight_node
+           << endl;
+      cout << "  Final global weight node ID = " << final_global_weight_node
+           << endl;
 
       const float *weights_data = weights_blob->cpu_data();
       const float *biases_data = biases_blob->cpu_data();
@@ -285,12 +299,15 @@ void caffe_classifier::print_network_metadata()
       mathfunc::median_value_and_quartile_width(
          biases, b_median, b_quartile_width);
 
+/*
       cout << "  Weights:  mu = " << w_mu << " sigma = " << w_sigma 
            << "   median = " << w_median << " quartile_width = "
            << w_quartile_width << endl;
       cout << "  Biases:  mu = " << b_mu << " sigma = " << b_sigma 
            << "   median = " << b_median << " quartile_width = "
            << b_quartile_width << endl << endl;
+*/
+
    } // loop over index p labeling parameter layers
 
 /*   
@@ -424,16 +441,27 @@ float caffe_classifier::get_weight_sum(
 }
 
 // ---------------------------------------------------------------------
-// Member function get_weight_node_ID() takes in an index for some
+// Member function get_global_weight_node_ID() takes in an index for some
 // parameter layer as well as an index for some node within that
 // layer.  It returns the global ID for the specified weight node.
 
-int caffe_classifier::get_weight_node_ID(int param_layer_index, int node_index)
+int caffe_classifier::get_global_weight_node_ID(int param_layer_index, int node_index)
 {
    DUPLE duple(param_layer_index, node_index);
-   NODE_ID_MAP::iterator weight_node_id_iter = weight_node_id_map.find(
-      duple);
-   return weight_node_id_iter->second;
+   NODE_ID_MAP::iterator global_weight_node_id_iter = 
+      global_weight_node_id_map.find(duple);
+   if(global_weight_node_id_iter == global_weight_node_id_map.end())
+   {
+      cout << "Error in caffe_classifier::get_global_weight_node_ID()" << endl;
+      cout << "param_layer_index = " << param_layer_index
+           << " node_index = " << node_index << endl;
+      outputfunc::enter_continue_char();
+      return -1;
+   }
+   else
+   {
+      return global_weight_node_id_iter->second;
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -669,7 +697,6 @@ void caffe_classifier::retrieve_layer_activations(string blob_name)
            << endl;
    }
 }
-
 
 // ---------------------------------------------------------------------
 // Member function retrieve_classification_results() extracts
