@@ -392,25 +392,24 @@ float caffe_classifier::get_weight(
 float caffe_classifier::get_weight_sum(
    int param_layer_index, int input_node_ID, int output_node_ID)
 {
-   cout << "inside caffe_classifier::get_weight_sum()" << endl;
-   cout << "param_layer_index = " << param_layer_index
-        << " input_node_ID = " << input_node_ID
-        << " output_node_ID = " << output_node_ID << endl;
+//   cout << "inside caffe_classifier::get_weight_sum()" << endl;
+//   cout << "param_layer_index = " << param_layer_index
+//        << " input_node_ID = " << input_node_ID
+//        << " output_node_ID = " << output_node_ID << endl;
    
    const shared_ptr<const caffe::Blob<float> > weights_blob =
       net_->params().at(2 * param_layer_index);
 
    int height = 1, width = 1;
-   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
-   cout << " weights_blob.shape_string() = " << weights_blob->shape_string()
-        << endl;
+//   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
+//   cout << " weights_blob.shape_string() = " << weights_blob->shape_string()
+//        << endl;
 
    if(weights_blob->num_axes() > 2)
    {
       height = weights_blob->shape(2);
       width = weights_blob->shape(3);
    }
-   cout << "height = " << height << " width = " << width << endl;
 
    float weight_sum = 0;
    for(int h = 0; h < height; h++)

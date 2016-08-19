@@ -24,7 +24,7 @@ class caffe_classifier
 
    typedef std::map<DUPLE, int, ltduple> NODE_ID_MAP;
 // independent DUPLE contains (layer ID, node ID)
-// depedent int contains node_counter
+// dependent int contains node_counter
 
 // Initialization, constructor and destructor functions:
 
