@@ -12,6 +12,7 @@
 ~/bin/MAKE program=imageresize
 ~/bin/MAKE program=JPG2jpg
 ~/bin/MAKE program=justcrop_images
+~/bin/MAKE program=png2jpg
 ~/bin/MAKE program=regularize_image_names
 ~/bin/MAKE program=remove_duplicates
 ~/bin/MAKE program=slowpath

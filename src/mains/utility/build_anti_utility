@@ -11,6 +11,7 @@
 /bin/rm ./hue_colormap
 /bin/rm ./imageresize
 /bin/rm ./JPG2jpg
+/bin/rm ./png2jpg
 /bin/rm ./justcrop_images
 /bin/rm ./regularize_image_names
 /bin/rm ./remove_duplicates

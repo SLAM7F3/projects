@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 8/2/16; 8/16/16; 8/17/16; 8/18/16
+// Last modified on 8/16/16; 8/17/16; 8/18/16; 8/19/16
 // ==========================================================================
 
 #include <caffe/net.hpp>
@@ -184,7 +184,7 @@ void caffe_classifier::print_network_metadata()
 // between true and false and don't obviously correlate with conv/FC
 // layers in VGG/Face01 networks...
 
-   vector<string> param_names = net_->param_display_names();
+//   vector<string> param_names = net_->param_display_names();
 //   for(unsigned int p = 0; p < param_names.size(); p++)
 //   {
 //      cout << "p = " << p << " param_names[p] = " << param_names[p]
@@ -200,7 +200,6 @@ void caffe_classifier::print_network_metadata()
       
 /*
       int num_axes = net_->blobs().at(b)->num_axes();
-
       for(int a = 0; a < num_axes; a++)
       {
          int curr_shape = net_->blobs().at(b)->shape(a);
@@ -209,7 +208,6 @@ void caffe_classifier::print_network_metadata()
       }
       cout << endl;
 */
-
    }
    cout << endl;
 
@@ -246,6 +244,7 @@ void caffe_classifier::print_network_metadata()
 // Compute distribution statistics for trained weights and biases
 // within each layer containing parameters:
 
+   int weight_node_counter = 0;
    for(int p = 0; p < n_param_layers; p += 2)
    {
       cout << "Parameter layer p = " << p/2 << endl;
@@ -258,11 +257,16 @@ void caffe_classifier::print_network_metadata()
       n_param_layer_nodes.push_back(weights_blob->shape(0));
 //      cout << "n_param_layer_nodes = "
 //           << n_param_layer_nodes.back() << endl;
-      
+      for(int w = 0; w < n_param_layer_nodes.back(); w++)
+      {
+         DUPLE duple(p/2, w);
+         weight_node_id_map[duple] = weight_node_counter++;
+      }
+
       const float *weights_data = weights_blob->cpu_data();
       const float *biases_data = biases_blob->cpu_data();
-            vector<double> weights, biases;
-      
+
+      vector<double> weights, biases;
       for(int i = 0; i < weights_blob->count(); i++)
       {
          weights.push_back(weights_data[i]);
@@ -361,6 +365,76 @@ void caffe_classifier::print_network_metadata()
 
    cout << "..........................................." << endl;
 //    outputfunc::enter_continue_char();
+}
+
+// ---------------------------------------------------------------------
+// Member function get_weight() takes in layer_index which labels
+// weights between input layer layer_index+1 and and output layer
+// layer_index+2 (one-based rather than zero-based layer counting).
+// It also takes in the IDs for the nodes within the input and output
+// layers.  For convolutional layers, we must also specify the height
+// and width indices within the convolutional filters.  (For fully
+// connected layers, height = width = 1).  get_weight() then returns
+// the trained scalar weight value for the specified edge in the
+// network.
+
+float caffe_classifier::get_weight(
+   int param_layer_index, 
+   int input_node_ID, int output_node_ID, int height, int width)
+{
+   const shared_ptr<const caffe::Blob<float> > weights_blob =
+      net_->params().at(2 * param_layer_index);
+
+   return weights_blob->data_at(output_node_ID, input_node_ID, height, width);
+}
+
+// ---------------------------------------------------------------------
+float caffe_classifier::get_weight_sum(
+   int param_layer_index, int input_node_ID, int output_node_ID)
+{
+   cout << "inside caffe_classifier::get_weight_sum()" << endl;
+   cout << "param_layer_index = " << param_layer_index
+        << " input_node_ID = " << input_node_ID
+        << " output_node_ID = " << output_node_ID << endl;
+   
+   const shared_ptr<const caffe::Blob<float> > weights_blob =
+      net_->params().at(2 * param_layer_index);
+
+   int height = 1, width = 1;
+   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
+   cout << " weights_blob.shape_string() = " << weights_blob->shape_string()
+        << endl;
+
+   if(weights_blob->num_axes() > 2)
+   {
+      height = weights_blob->shape(2);
+      width = weights_blob->shape(3);
+   }
+   cout << "height = " << height << " width = " << width << endl;
+
+   float weight_sum = 0;
+   for(int h = 0; h < height; h++)
+   {
+      for(int w = 0; w < width; w++)
+      {
+         weight_sum += get_weight(
+            param_layer_index, input_node_ID, output_node_ID, h, w);
+      }
+   }
+   return weight_sum;
+}
+
+// ---------------------------------------------------------------------
+// Member function get_weight_node_ID() takes in an index for some
+// parameter layer as well as an index for some node within that
+// layer.  It returns the global ID for the specified weight node.
+
+int caffe_classifier::get_weight_node_ID(int param_layer_index, int node_index)
+{
+   DUPLE duple(param_layer_index, node_index);
+   NODE_ID_MAP::iterator weight_node_id_iter = weight_node_id_map.find(
+      duple);
+   return weight_node_id_iter->second;
 }
 
 // ---------------------------------------------------------------------

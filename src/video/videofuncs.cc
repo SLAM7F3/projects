@@ -7,7 +7,7 @@
 // ==========================================================================
 // Videofuncs namespace method definitions
 // ==========================================================================
-// Last modified on 3/27/16; 7/23/16; 7/30/16; 8/1/16
+// Last modified on 7/23/16; 7/30/16; 8/1/16; 8/19/16
 // ==========================================================================
 
 #include <iostream>
@@ -800,56 +800,57 @@ namespace videofunc
   // Member function get_thumbnail_dims()
 
   void get_thumbnail_dims(
-    unsigned int xdim,unsigned int ydim,
-    unsigned int& thumbnail_xdim,unsigned int& thumbnail_ydim)
+     unsigned int xdim,unsigned int ydim,
+     unsigned int& thumbnail_xdim,unsigned int& thumbnail_ydim)
   {
-    //   cout << "inside videofunc::get_thumbnail_dims()" << endl;
+     //   cout << "inside videofunc::get_thumbnail_dims()" << endl;
 
-    // As of Nov 2015, we set min_thumbnail_pixel_dim = 230 for caffe
-    // feature extraction purposes:
-     
-    //      const unsigned int max_thumbnail_pixel_dim=200;
-    //      const unsigned int max_thumbnail_pixel_dim=256;
+     const unsigned int max_thumbnail_pixel_dim=200;
+//     const unsigned int max_thumbnail_pixel_dim=256;
+     double aspect_ratio=double(xdim)/double(ydim);
 
-    const unsigned int min_thumbnail_pixel_dim=230;
-
-    double aspect_ratio=double(xdim)/double(ydim);
-    if (xdim <= min_thumbnail_pixel_dim || ydim <= min_thumbnail_pixel_dim)
-    {
-      thumbnail_xdim = xdim;
-      thumbnail_ydim = ydim;
-    }
-    else 
-    {
-      if (xdim < ydim)
-      {
-        thumbnail_xdim=min_thumbnail_pixel_dim;
+     if (xdim <= max_thumbnail_pixel_dim && ydim <= max_thumbnail_pixel_dim)
+     {
+        thumbnail_xdim = xdim;
+        thumbnail_ydim = ydim;
+     }
+     else if (xdim > ydim && xdim > max_thumbnail_pixel_dim)
+     {
+        thumbnail_xdim=max_thumbnail_pixel_dim;
         thumbnail_ydim=thumbnail_xdim/aspect_ratio;
-      }
-      else
-      {
-        thumbnail_ydim=min_thumbnail_pixel_dim;
+     }
+     else if (ydim > max_thumbnail_pixel_dim)
+     {
+        thumbnail_ydim=max_thumbnail_pixel_dim;
         thumbnail_xdim=thumbnail_ydim*aspect_ratio;
-      }
-    }
+     }
 
-    /*
-      if (xdim <= max_thumbnail_pixel_dim && ydim <= max_thumbnail_pixel_dim)
-      {
-      thumbnail_xdim = xdim;
-      thumbnail_ydim = ydim;
-      }
-      else if (xdim > ydim && xdim > max_thumbnail_pixel_dim)
-      {
-      thumbnail_xdim=max_thumbnail_pixel_dim;
-      thumbnail_ydim=thumbnail_xdim/aspect_ratio;
-      }
-      else if (ydim > max_thumbnail_pixel_dim)
-      {
-      thumbnail_ydim=max_thumbnail_pixel_dim;
-      thumbnail_xdim=thumbnail_ydim*aspect_ratio;
-      }
-    */
+/*
+     // As of Nov 2015, we set min_thumbnail_pixel_dim = 230 for caffe
+     // feature extraction purposes:
+
+  const unsigned int min_thumbnail_pixel_dim=230;
+
+  double aspect_ratio=double(xdim)/double(ydim);
+  if (xdim <= min_thumbnail_pixel_dim || ydim <= min_thumbnail_pixel_dim)
+  {
+  thumbnail_xdim = xdim;
+  thumbnail_ydim = ydim;
+  }
+  else 
+  {
+  if (xdim < ydim)
+  {
+  thumbnail_xdim=min_thumbnail_pixel_dim;
+  thumbnail_ydim=thumbnail_xdim/aspect_ratio;
+  }
+  else
+  {
+  thumbnail_ydim=min_thumbnail_pixel_dim;
+  thumbnail_xdim=thumbnail_ydim*aspect_ratio;
+  }
+  }
+*/
 
   }
 

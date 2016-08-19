@@ -1887,6 +1887,7 @@ src/mains/utility/drawplanes
 src/mains/utility/create_anim_script
 src/mains/utility/draw_colorbar
 src/mains/utility/imageresize
+src/mains/utility/png2jpg
 src/mains/utility/smoothpath
 src/mains/utility/regularize_image_names
 src/mains/photosynth/ln_numbered_photos

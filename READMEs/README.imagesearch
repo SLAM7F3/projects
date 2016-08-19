@@ -156,7 +156,8 @@ III. DATABASE UPDATING
 ========================================================================
 
 *.  Using PGADMIN3, enter new Campaign and Mission entries into IMAGERY
-database.
+database.  Click on Databases --> imagery --> Tables  --> campaigns.  Then
+right click on View Data --> View All Rows.
 
 *.  Execute the auto-generated run_load_image_metadata script:
 

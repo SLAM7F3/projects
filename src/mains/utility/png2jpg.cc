@@ -6,7 +6,7 @@
 //				png2jpg
 
 // ========================================================================
-// Last updated on 1/19/12; 1/20/12
+// Last updated on 1/19/12; 1/20/12; 8/19/16
 // ========================================================================
 
 #include <iostream>
@@ -47,13 +47,13 @@ int main( int argc, char** argv )
    ofstream outstream;
    filefunc::openfile(script_filename,outstream);
 
-   for (int i=0; i<png_filenames.size(); i++)
+   for(unsigned int i=0; i<png_filenames.size(); i++)
    {
       string png_filename=png_filenames[i];
       string basename=filefunc::getbasename(png_filename);
       string prefix=stringfunc::prefix(basename);
       string jpg_filename=jpgs_subdir+prefix+".jpg";
-      string unix_command="convert -verbose -quality 99 "+png_filename+" "
+      string unix_command="convert -verbose -quality 100 "+png_filename+" "
          +jpg_filename;
       outstream << unix_command << endl;
    }

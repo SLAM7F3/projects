@@ -46,7 +46,7 @@ namespace imagesdatabasefunc
          imagesdatabasefunc::generate_insert_image_metadata_SQL_command(
             campaign_ID,mission_ID,image_ID,importance,URL,npx,npy,
             thumbnail_URL,thumbnail_npx,thumbnail_npy);
-//      cout << SQL_cmd << endl;
+      cout << SQL_cmd << endl;
     
       vector<string> insert_commands;
       insert_commands.push_back(SQL_cmd);

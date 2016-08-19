@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 8/1/16; 8/2/16; 8/16/16; 8/17/16
+// Last modified on 8/2/16; 8/16/16; 8/17/16; 8/19/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -10,15 +10,21 @@
 #include <caffe/caffe.hpp>
 #include <opencv2/core/core.hpp>
 #include <string>
+#include <map>
 #include <vector>
 
 #include "color/colorfuncs.h"
+#include "math/ltduple.h"
 
 class texture_rectangle;
 
 class caffe_classifier
 {   
   public:
+
+   typedef std::map<DUPLE, int, ltduple> NODE_ID_MAP;
+// independent DUPLE contains (layer ID, node ID)
+// depedent int contains node_counter
 
 // Initialization, constructor and destructor functions:
 
@@ -42,6 +48,13 @@ class caffe_classifier
    std::vector<int>& get_n_param_layer_nodes();
    const std::vector<int>& get_n_param_layer_nodes() const;
 
+   float get_weight(
+      int param_layer_index, 
+      int input_node_ID, int output_node_ID, int height, int width);
+   float get_weight_sum(
+      int param_layer_index, int input_node_ID, int output_node_ID);
+   int get_weight_node_ID(int param_layer_index, int node_index);
+
    void rgb_img_to_bgr_fvec(texture_rectangle& curr_img);
    void generate_dense_map();
    void generate_dense_map_data_blob();
@@ -63,6 +76,9 @@ class caffe_classifier
    std::vector<int> n_param_layer_nodes;
    std::vector<std::string> n_param_layer_names;
 
+   NODE_ID_MAP weight_node_id_map;
+
+
    caffe::shared_ptr<caffe::Net<float> > net_;
    cv::Size input_geometry_;
    cv::Mat mean_;
@@ -71,7 +87,6 @@ class caffe_classifier
    float *feature_descriptor;
    texture_rectangle *label_tr_ptr, *score_tr_ptr;
    texture_rectangle *cc_tr_ptr;
-
 
    void load_trained_network();
    void print_network_metadata();

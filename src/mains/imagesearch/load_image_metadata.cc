@@ -42,7 +42,7 @@ int main( int argc, char** argv )
    osg::ArgumentParser arguments(&argc,argv);
    PassesGroup passes_group(&arguments);
    vector<int> GISlayer_IDs=passes_group.get_GISlayer_IDs();
-//   cout << "GISlayer_IDs.size() = " << GISlayer_IDs.size() << endl;
+   cout << "GISlayer_IDs.size() = " << GISlayer_IDs.size() << endl;
 
    string image_list_filename=passes_group.get_image_list_filename();
    cout << " image_list_filename = " << image_list_filename << endl;
