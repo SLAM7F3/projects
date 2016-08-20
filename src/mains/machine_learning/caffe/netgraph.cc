@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
    }
 
 // Generate layout for network layers and nodes within a 0 <gx <
-// 2*n_layers , 0 < gy < n_layers rectangle.  Export layout to graph
+// n_layers , 0 < gy < 2 * n_layers rectangle.  Export layout to graph
 // layout filename which can be ingested by program
 // mains/photosynth/fill_photo_hierarchy within the IMAGESEARCH
 // pipeline:
@@ -191,30 +191,31 @@ int main(int argc, char* argv[])
       cout << "Network layer = " << n << " has " 
            << n_curr_layer_nodes << " nodes" << endl;
       int start_node_ID = node_counter;
-      double gx = 2 * n;
+      double gy = 2 * (n_layers - n);
       
-      int max_n_nodes_per_column = 64;
-      int n_layer_columns = n_curr_layer_nodes / max_n_nodes_per_column + 1;
+      int max_n_nodes_per_subrow = 52;
+//      int max_n_nodes_per_subrow = 64;
+      int n_layer_columns = n_curr_layer_nodes / max_n_nodes_per_subrow + 1;
       for(int c = 0; c < n_layer_columns - 1; c++)
       {
-         int m_start = -max_n_nodes_per_column / 2;
-         int m_stop = m_start + max_n_nodes_per_column;
+         int m_start = -max_n_nodes_per_subrow / 2;
+         int m_stop = m_start + max_n_nodes_per_subrow;
          for(int m = m_start; m < m_stop; m++)
          {
             double numer = m + (c%2) * 0.5;
-            double gy = n_layers * (0.5 + numer / max_n_nodes_per_column);
-            double gx_prime = gx - 0.1 * (n_layer_columns - 1 - c);
+            double gx = n_layers * (0.5 + numer / max_n_nodes_per_subrow);
+            double gy_prime = gy - 0.25 * (n_layer_columns - 1 - c);
             graph_layout_stream << node_counter++ << "   " 
-                                << gx_prime << "   " << gy << endl;
+                                << gx << "   " << gy_prime << endl;
          } // loop over index m labeling rows within network graph
       }
-      int remaining_column_nodes = n_curr_layer_nodes - max_n_nodes_per_column
+      int remaining_column_nodes = n_curr_layer_nodes - max_n_nodes_per_subrow
          * (n_layer_columns - 1);
       int m_start = -remaining_column_nodes / 2;
       int m_stop = m_start + remaining_column_nodes;
       for(int m = m_start; m < m_stop; m++)
       {
-         double gy = n_layers * (0.5 + double(m) / max_n_nodes_per_column);
+         double gx = n_layers * (0.5 + double(m) / max_n_nodes_per_subrow);
          graph_layout_stream << node_counter++ << "   " 
                              << gx << "   " << gy << endl;
 

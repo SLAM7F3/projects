@@ -1,7 +1,7 @@
 // =========================================================================
 // Graph class member function definitions
 // =========================================================================
-// Last modified on 6/4/13; 6/14/13; 6/20/13; 4/5/14
+// Last modified on 6/14/13; 6/20/13; 4/5/14; 8/20/16
 // =========================================================================
 
 #include <algorithm>
@@ -1205,7 +1205,6 @@ void graph::compute_edge_weights_distribution(
 //              << endl;
       }
    }
-
 }
 
 // ---------------------------------------------------------------------
@@ -1295,6 +1294,40 @@ colorfunc::RGB graph::compute_edge_color(int n_SIFT_matches)
 //        << curr_RGB.second << "  " << curr_RGB.third << endl << endl;
 
    return curr_RGB;
+}
+
+// ---------------------------------------------------------------------
+// This overloaded version of compute_edge_color() sets the hsv
+// coloring of an edge linking one photo to another based upon the
+// edge weight relative to the extremal weight values.  If the weight
+// value lies close to its maximum [minimum], the edge color is set to
+// bright red [blue].  If the weight value lies close to the average
+// of the min & max weights, the edge color is set to a dark grey
+// value.  
+
+// We wrote this method in Aug 2016 in order to accentuate neural
+// network weights which are positively or negatively correlate
+// adjacent layer filters.
+
+colorfunc::RGB graph::compute_edge_color(
+  double weight, double max_weight, double min_weight)
+{
+//   cout << "inside graph::compute_edge_color()" << endl;
+
+   double weight_mean = 0.5 * (max_weight + min_weight);
+   double frac_weight = (weight - weight_mean) / (max_weight - weight_mean);
+   if(frac_weight > 1) frac_weight = 1.0;
+   if(frac_weight < -1) frac_weight = -1.0;
+
+   // frac_weight = 1 --> hue = red     sat = 1     value = 1
+   // frac_weight = 0 --> hue = green,  sat = 0.25  value = 0.25
+   // frac_weight = -1 --> hue = blue   sat = 1     value = 1
+
+   colorfunc::HSV curr_hsv;
+   curr_hsv.first = (1 - frac_weight) * 120;
+   curr_hsv.second = 0.05 + 0.95 * fabs(frac_weight);
+   curr_hsv.third = 0.05 + 0.95 * fabs(frac_weight);
+   return colorfunc::hsv_to_RGB(curr_hsv);
 }
 
 // ---------------------------------------------------------------------
@@ -3571,12 +3604,39 @@ int graph::write_SQL_insert_link_commands(
          node* node1_ptr=graph_edge_ptr->get_node1_ptr();
          node* node2_ptr=graph_edge_ptr->get_node2_ptr();
 
-         colorfunc::RGB edge_RGB=compute_edge_color(curr_matches);
+// FAKE FAKE:  Sat Aut 20, 2016 at 2 pm
+
+// Hardwire new edge coloring algorithm for trained neural network
+// display purposes...
+
+//         colorfunc::RGB edge_RGB=compute_edge_color(curr_matches);
+
+
+         double max_matches = 100;
+         double min_matches = 0;
+         colorfunc::RGB edge_RGB=compute_edge_color(
+            curr_matches, max_matches, min_matches);
+
+// FAKE FAKE:  Sat Aug 20, 2016 at 2:20 pm
+
+         edge_RGB.first = 0.5;
+         edge_RGB.second = 0.5;
+         edge_RGB.third = 0.5;
+         
+
+// FAKE FAKE:  Sat Aug 20, 2016 at 2 pm
+
+// Hardwire edge weight offset for trained neura network display
+// purposes...
+
+         double edge_weight = curr_matches;         
+//         double edge_weight = curr_matches - 0.5*(max_matches + min_matches);
+
          graph_edge_ptr->set_edge_RGB(edge_RGB);
             
          SQL_link_stream << output_link_to_SQL(
             graph_edge_ptr->get_ID(),graph_hierarchy_ID,node1_ptr,node2_ptr,
-            curr_matches,edge_RGB) << endl;
+            edge_weight,edge_RGB) << endl;
 //            curr_matches,graph_edge_ptr->get_edge_RGB()) << endl;
          n_exported_edges++;
       } // curr_matches > 0 conditional

@@ -1,4 +1,4 @@
-cd ~/programs/c++/svn/projects/src/mains/photosynth/Qt
+cd ~/programs/c++/git/projects/src/mains/photosynth/Qt
 
 ./qtphotoserver \
 --GIS_layer ./packages/imagery_metadata.pkg

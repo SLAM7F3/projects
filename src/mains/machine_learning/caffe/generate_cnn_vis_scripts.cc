@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/15/16; 8/16/16; 8/17/16; 8/18/16
+// Last updated on 8/16/16; 8/17/16; 8/18/16; 8/20/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -289,7 +289,8 @@ int main(int argc, char* argv[])
 					// empirically optimized
             outstream << "--batch_size=1 \\" << endl;
             outstream << "--output_iter=100 \\" << endl;
-            outstream << "--learning_rate=0.4 \\" << endl;
+            outstream << "--learning_rate=0.8 \\" << endl;
+			                // empirically optimized
             outstream << "--learning_rate_decay_iter=20 \\" << endl;
             outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
             outstream << "--decay_rate=0.95 \\" << endl;  

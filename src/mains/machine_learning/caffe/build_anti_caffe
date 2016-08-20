@@ -9,6 +9,7 @@
 /bin/rm ./generate_cnn_vis_scripts
 /bin/rm ./generate_file_list
 /bin/rm ./imagenet_classification
+/bin/rm ./netgraph
 /bin/rm ./parse_leveldb
 /bin/rm ./parse_lmdb
 /bin/rm ./relabel_non_chips

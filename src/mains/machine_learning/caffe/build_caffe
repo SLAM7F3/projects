@@ -9,6 +9,7 @@
 ~/bin/MAKE program=generate_file_list
 ~/bin/MAKE program=generate_cnn_vis_scripts
 ~/bin/MAKE program=imagenet_classification
+~/bin/MAKE program=netgraph
 ~/bin/MAKE program=parse_leveldb
 ~/bin/MAKE program=parse_lmdb
 ~/bin/MAKE program=relabel_non_chips
