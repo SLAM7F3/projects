@@ -49,7 +49,7 @@ class cppJSON
 
 // Tree generation and traversing member functions:
 
-   std::string get_JSON_string_from_JSON_file(std::string json_filename);
+//    std::string get_JSON_string_from_JSON_file(std::string json_filename);
    cJSON* parse_json(std::string json_string);
    void print_node(cJSON* node_ptr);
    int get_node_type(cJSON* node_ptr);

@@ -1,8 +1,8 @@
 # =========================================================================
-# Last updated on 5/16/10; 5/18/10; 5/19/10
+# Last updated on 5/16/10; 5/18/10; 5/19/10; 8/19/16
 # =========================================================================
 
-PREFIX = $(HOME)/programs/c++/svn/projects
+PREFIX = $(HOME)/programs/c++/git/projects
 CONFIGDIR = $$PREFIX/config
 WEBDIR = $$PREFIX/src/Qt/web/
 include ($$CONFIGDIR/common.pro)

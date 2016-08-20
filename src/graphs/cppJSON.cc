@@ -102,21 +102,6 @@ void cppJSON::assign_node_ID(cJSON* node_ptr)
    }
 }
 
-// ---------------------------------------------------------------------   
-// Member function get_JSON_string_from_JSON_file()
-
-string cppJSON::get_JSON_string_from_JSON_file(string json_filename)
-{
-   filefunc::ReadInfile(json_filename);
-   string json_string;
-   for (unsigned int i=0; i<filefunc::text_line.size(); i++)
-   {
-      json_string += filefunc::text_line[i];
-   }
-//   cout << "json_string = " << json_string << endl;
-   return json_string;
-}
-
 // ---------------------------------------------------------------------
 cJSON* cppJSON::parse_json(string json_string)
 {

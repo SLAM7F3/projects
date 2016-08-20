@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for graphdbfunc namespace
 // ==========================================================================
-// Last modified on 4/5/14; 11/15/15; 12/1/15; 1/18/16
+// Last modified on 4/5/14; 11/15/15; 12/1/15; 1/18/16; 8/19/16
 // ==========================================================================
 
 #ifndef GRAPHDBFUNCS_H
@@ -177,6 +177,7 @@ namespace graphdbfunc
    void count_nodes_links_in_JSON_file(
       std::string json_filename,std::vector<int>& n_nodes,
       std::vector<int>& n_links);
+   std::string get_JSON_string_from_JSON_file(std::string json_filename);
 
 // Sibling search methods
 

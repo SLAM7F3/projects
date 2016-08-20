@@ -450,7 +450,7 @@ d) insert_cc_annotations, run it
 VI. IMAGE GRAPH VIEWING
 ========================================================================
 
-*.  To run the image server on a local machine, click on PHOTOSERVER
+*.  To run the image server 1n a local machine, click on PHOTOSERVER
 Desktop icon.  To run the image server on a remote machine, chant
 
    ~/programs/c++/svn/projects/src/mains/photosynth/Qt/run_photoserver

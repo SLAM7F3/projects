@@ -1,7 +1,7 @@
 // ==========================================================================
 // Graphdbfuncs namespace method definitions
 // ==========================================================================
-// Last modified on 5/27/14; 11/15/15; 12/1/15; 1/18/16
+// Last modified on 5/27/14; 11/15/15; 12/1/15; 1/18/16; 8/19/16
 // ==========================================================================
 
 #include <iostream>
@@ -1326,8 +1326,7 @@ namespace graphdbfunc
 //      cout << "inside graphdbfunc::count_nodes_links_in_JSON_file()" << endl;
 
       cppJSON* cppJSON_ptr=new cppJSON();
-      string json_string=cppJSON_ptr->get_JSON_string_from_JSON_file(
-         json_filename);
+      string json_string=get_JSON_string_from_JSON_file(json_filename);
       cJSON* root_ptr=cppJSON_ptr->parse_json(json_string);
       cppJSON_ptr->generate_JSON_tree();
       cppJSON_ptr->extract_key_value_pairs(root_ptr);
@@ -1358,6 +1357,21 @@ namespace graphdbfunc
 
 //      cout << "number_nodes = " << number_nodes
 //           << " number_links = " << number_links << endl;
+   }
+
+// ---------------------------------------------------------------------   
+// Method function get_JSON_string_from_JSON_file()
+
+   string get_JSON_string_from_JSON_file(string json_filename)
+   {
+      filefunc::ReadInfile(json_filename);
+      string json_string;
+      for (unsigned int i=0; i<filefunc::text_line.size(); i++)
+      {
+         json_string += filefunc::text_line[i];
+      }
+//   cout << "json_string = " << json_string << endl;
+      return json_string;
    }
 
 // ==========================================================================
