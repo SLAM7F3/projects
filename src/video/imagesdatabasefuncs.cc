@@ -1720,6 +1720,7 @@ std::string generate_update_image_metadata_SQL_command_serialID(
             json_string += "         }";
             if (a<labels.size()-1) json_string += ",";
             json_string += "\n";
+
          } // loop over index a labeling graph annotations
          json_string += "    ]\n";
       }
