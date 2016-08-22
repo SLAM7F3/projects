@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/16/16; 8/17/16; 8/18/16; 8/20/16
+// Last updated on 8/17/16; 8/18/16; 8/20/16; 8/22/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -127,6 +127,7 @@ int main(int argc, char* argv[])
            << n_layer_nodes[n] << endl;
    }
 
+   double init_scale = 50;
    vector<string> param_layer_names;
    if (Alexnet_flag)
    {
@@ -189,6 +190,7 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
+      init_scale = 15; // empirically reduced for 96x96 face images
    }
 
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
@@ -281,7 +283,8 @@ int main(int argc, char* argv[])
 
 // Aug 18 parameters:
 
-            outstream << "--initialization_scale=50 \\" << endl;
+            outstream << "--initialization_scale="
+                      << init_scale << " \\" << endl;
 					// empirically optimized
             outstream << "--initialization_blur=5 \\" << endl;
 					// empirically optimized

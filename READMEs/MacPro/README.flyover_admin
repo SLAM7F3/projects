@@ -1,7 +1,7 @@
 =============================================================================
 Flyover Admin notes
 =============================================================================
-Last updated on 7/27/15; 7/29/15; 4/15/16; 6/7/16
+Last updated on 7/29/15; 4/15/16; 6/7/16; 8/22/16
 =============================================================================
 
 *.  Adding shape files to Flyover admin resource and project lists
@@ -220,4 +220,10 @@ resource name. To get around that, you could create a soft link between the
 bundle_kh_sacramento folder (under the imdata folder) to
 bundle_kh_sacramento_test or whatever you want.
 
-
+*.  On 8/22/16, Carlos Folgar told us that images sitting on the PV40
+cluster which can imported via the "Annotation Path" field within the Edit
+Annotation Project webpage on flyover admin must reside within subdirs of
+/gpfs/mercury13/supersize/labeling_resources/ [ Note: Use /gpfs/ rather
+than /pv40-gpfs/ in the Annotation Path field.]  Press the "Save and
+Continue" and "Import images" buttons located at the bottom of the "Edit
+Annotation Project" webpage after specifying the full path.

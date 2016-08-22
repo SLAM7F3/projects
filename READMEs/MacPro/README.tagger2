@@ -1,13 +1,13 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 8/10/16; 8/11/16; 8/12/16; 8/19/16
+Last updated on 8/11/16; 8/12/16; 8/19/16; 8/22/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
 NO GARDN=1 argument 
 
-*.  Modified 'makepwin' script including GARDN and PWGL flags:
+*.  Modified 'makepwin' script including PWGL flag:
 
 cd /home/pcho/sputnik/pwin/build/linux64/
 make -s -j pwin OPT=3 OPENCL=1 OPENCV=1 DNN=1 LAPACK=1 RDN=1 WITH_GPU=1 PWGL=1 GDAL=1 GDAL_PATH=/opt/gdal-2.0.1/
@@ -94,6 +94,11 @@ within tagger2.
 
 mouse.lclick() == true when user presses down on left mouse button
 !mouse().left == true when user releases left button mouse click
+
+*.  For week of Mon Aug 22, 2016 where startown is inaccessible, we can use
+Carlos Folgar's test_pv40 annotation project which has 33 images sitting
+on the PV40 cluster.  Our gardn_s2d_Aug11 code which worked OK on Fri, Aug
+19, 2016 seems to work OK with this PV40 annotation project.
 
 
 =============================
