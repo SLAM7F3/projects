@@ -2,7 +2,7 @@
 More PostGIS database notes (primarily about manipulating NYC streets
 table)
 ===========================================================================
-Last updated on 9/13/13; 10/31/13; 11/1/13; 12/8/13; 11/11/15
+Last updated on 11/1/13; 12/8/13; 11/11/15; 8/21/16
 ===========================================================================
 
 isds_gis=> select feat_code, feat_desc, count(*) from nyc_streets group by feat_code, feat_desc;
@@ -702,6 +702,12 @@ INNER JOIN videos
 WHERE graph_hierarchy_id=21
 ORDER BY nodes.node_id
    
+
+SELECT campaign_ID,mission_ID FROM images 
+INNER JOIN nodes ON nodes.data_ID=images.ID
+WHERE nodes.graph_hierarchy_ID=47
+
+
 ===========================================================================
 Brendan Edwards' notes for how create postgis template database (6/27/13):
 

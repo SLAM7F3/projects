@@ -125,7 +125,7 @@ class graph
       double minimal_edge_weight_threshold=0);
    colorfunc::RGB compute_edge_color(int n_SIFT_matches);
    colorfunc::RGB compute_edge_color(
-      double weight, double max_weight, double min_weight);
+      double weight, double max_weight=-1, double min_weight=-1);
    void write_graph_json_file(std::string json_filename);
    void write_json_file(const std::string& value);
    void write_json_file(std::string json_filename,const std::string& value);

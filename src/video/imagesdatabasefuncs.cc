@@ -1,7 +1,7 @@
 // ==========================================================================
 // Imagesdatabasefuncs namespace method definitions
 // ==========================================================================
-// Last modified on 8/15/13; 10/29/13; 10/31/13; 4/3/14
+// Last modified on 10/29/13; 10/31/13; 4/3/14; 8/22/16
 // ==========================================================================
 
 #include <iostream>
@@ -1555,11 +1555,12 @@ std::string generate_update_image_metadata_SQL_command_serialID(
       bool get_nodes_flag,bool get_edges_flag,bool get_annotations_flag,
       const vector<int>& incident_node_IDs)
    {
-//      cout << "inside imagesdatabasefunc::write_graph_json_string()" << endl;
-//      cout << "incident_node_IDs.size() = "
-//           << incident_node_IDs.size() << endl;
-//      cout << "graph_ptr = " << graph_ptr << endl;
-//      cout << "graph_ptr->get_ID() = " << graph_ptr->get_ID() << endl;
+      cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+      cout << "inside imagesdatabasefunc::write_graph_json_string()" << endl;
+      cout << "incident_node_IDs.size() = "
+           << incident_node_IDs.size() << endl;
+      cout << "graph_ptr = " << graph_ptr << endl;
+      cout << "graph_ptr->get_ID() = " << graph_ptr->get_ID() << endl;
 
       string edge_default="undirected";
 
@@ -1630,14 +1631,24 @@ std::string generate_update_image_metadata_SQL_command_serialID(
             graph_edge* graph_edge_ptr=graph_edge_ptrs[e];
             int curr_matches=graph_edge_ptr->get_weight();
 
+            double max_weight = 100;
+            double min_weight = 0;
+            int edge_weight = curr_matches - (max_weight+min_weight)/2; 
+            int min_abs_weight = 5;
+
             if (e==graph_edge_ptrs.size()-1) terminal_edge_flag=true;
+
             if (curr_matches > 0)
+//            if (curr_matches > 0 && abs(edge_weight) > min_abs_weight)
             {
                node* node1_ptr=graph_edge_ptr->get_node1_ptr();
                node* node2_ptr=graph_edge_ptr->get_node2_ptr();
          
+// FAKE FAKE:  Mon Aug 22 at 4:30 am
+
                colorfunc::RGB edge_RGB=graph_ptr->
-                  compute_edge_color(curr_matches);
+                  compute_edge_color(curr_matches, max_weight, min_weight);
+//                  compute_edge_color(curr_matches);
 
                double relative_edge_thickness=1;
                if (graph_ptr->get_level()==1)
@@ -1650,7 +1661,9 @@ std::string generate_update_image_metadata_SQL_command_serialID(
                }
                json_string += jsonfunc::write_edge_json_string(
                   9,node1_ptr->get_ID(),node2_ptr->get_ID(),
-                  curr_matches,edge_RGB.first,edge_RGB.second,edge_RGB.third,
+                  curr_matches,
+//                  edge_weight,
+                  edge_RGB.first,edge_RGB.second,edge_RGB.third,
                   relative_edge_thickness,terminal_edge_flag);
             }
          } // loop over index e labeling graph edges

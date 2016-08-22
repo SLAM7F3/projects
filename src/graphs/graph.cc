@@ -1,7 +1,7 @@
 // =========================================================================
 // Graph class member function definitions
 // =========================================================================
-// Last modified on 6/14/13; 6/20/13; 4/5/14; 8/20/16
+// Last modified on 6/20/13; 4/5/14; 8/20/16; 8/22/16
 // =========================================================================
 
 #include <algorithm>
@@ -881,7 +881,7 @@ void graph::recompute_clusters_map_from_graph_nodes()
 
 void graph::write_graph_json_file(string json_filename)
 {
-   cout << "inside graph::write_graph_json_file()" << endl;
+//   cout << "inside graph::write_graph_json_file()" << endl;
 
    string graph_ID="Graph";
    string edge_default="directed";
@@ -944,8 +944,14 @@ void graph::write_graph_json_file(string json_filename)
       {
          node* node1_ptr=graph_edge_ptr->get_node1_ptr();
          node* node2_ptr=graph_edge_ptr->get_node2_ptr();
-         
+  
          colorfunc::RGB edge_RGB=compute_edge_color(curr_matches);
+
+//         double max_matches = 100;
+//         double min_matches = 0;
+//         colorfunc::RGB edge_RGB=compute_edge_color(
+//            curr_matches, max_matches, min_matches);
+
          graph_edge_ptr->set_edge_RGB(edge_RGB);
 
          double relative_edge_thickness=1;
@@ -1306,13 +1312,16 @@ colorfunc::RGB graph::compute_edge_color(int n_SIFT_matches)
 // value.  
 
 // We wrote this method in Aug 2016 in order to accentuate neural
-// network weights which are positively or negatively correlate
+// network weights which are positively or negatively correlated with
 // adjacent layer filters.
 
 colorfunc::RGB graph::compute_edge_color(
   double weight, double max_weight, double min_weight)
 {
-//   cout << "inside graph::compute_edge_color()" << endl;
+   if(nearly_equal(max_weight, -1) && nearly_equal(min_weight, -1))
+   {
+      return compute_edge_color(weight);
+   }
 
    double weight_mean = 0.5 * (max_weight + min_weight);
    double frac_weight = (weight - weight_mean) / (max_weight - weight_mean);
@@ -3611,26 +3620,18 @@ int graph::write_SQL_insert_link_commands(
 
 //         colorfunc::RGB edge_RGB=compute_edge_color(curr_matches);
 
-
          double max_matches = 100;
          double min_matches = 0;
          colorfunc::RGB edge_RGB=compute_edge_color(
             curr_matches, max_matches, min_matches);
-
-// FAKE FAKE:  Sat Aug 20, 2016 at 2:20 pm
-
-         edge_RGB.first = 0.5;
-         edge_RGB.second = 0.5;
-         edge_RGB.third = 0.5;
-         
 
 // FAKE FAKE:  Sat Aug 20, 2016 at 2 pm
 
 // Hardwire edge weight offset for trained neura network display
 // purposes...
 
-         double edge_weight = curr_matches;         
-//         double edge_weight = curr_matches - 0.5*(max_matches + min_matches);
+//         double edge_weight = curr_matches;         
+         double edge_weight = curr_matches - 0.5*(max_matches + min_matches);
 
          graph_edge_ptr->set_edge_RGB(edge_RGB);
             

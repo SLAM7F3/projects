@@ -1,7 +1,7 @@
 // ==========================================================================
 // Jsonfuncs namespace method definitions
 // ==========================================================================
-// Last modified on 10/31/13; 11/3/13; 11/4/13; 4/5/14
+// Last modified on 10/31/13; 11/3/13; 11/4/13; 4/5/14; 8/22/16
 // ==========================================================================
 
 #include <iostream>
@@ -728,7 +728,7 @@ namespace jsonfunc
                   n_indent+2,"thumbnail_Npy",thumbnail_Npy);
             }
 
-            if (edge_weight > 0)
+            if (fabs(edge_weight) > 0)
             {
                json_string += output_key_value_pair(
                   n_indent+2,"edge_weight",edge_weight);

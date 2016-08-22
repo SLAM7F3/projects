@@ -91,6 +91,7 @@ src/mains/faces/draw_gender_bboxes
 src/mains/faces/extend_imagechips
 src/mains/faces/extract_chips
 src/mains/faces/imfdb_images
+src/mains/faces/nonface_chips
 src/mains/faces/pyramid_training_images
 src/mains/faces/downsize_images
 src/mains/faces/reset_img_numbers
@@ -1085,6 +1086,7 @@ src/mains/machine_learning/caffe/ensemble_chars
 src/mains/machine_learning/caffe/extract_features
 src/mains/machine_learning/caffe/generate_cnn_vis_scripts
 src/mains/machine_learning/caffe/imagenet_classification
+src/mains/machine_learning/caffe/netgraph
 src/mains/machine_learning/caffe/nn_paths
 src/mains/machine_learning/caffe/relabel_non_chips
 src/mains/machine_learning/caffe/scripts/

@@ -317,9 +317,10 @@ namespace photodbfunc
                {
                   node* node1_ptr=graph_edge_ptr->get_node1_ptr();
                   node* node2_ptr=graph_edge_ptr->get_node2_ptr();
-         
+
                   colorfunc::RGB edge_RGB=graph_ptr->
                      compute_edge_color(curr_matches);
+//                     compute_edge_color(curr_matches, min_weight, max_weight);
 
                   double relative_edge_thickness=1;
                   if (graph_ptr->get_level()==1)
@@ -1912,6 +1913,7 @@ string generate_insert_photo_SQL_command(
          
                colorfunc::RGB edge_RGB=graph_ptr->
                   compute_edge_color(curr_matches);
+//                  compute_edge_color(curr_matches, min_weight, max_weight);
 
                double relative_edge_thickness=1;
                if (graph_ptr->get_level()==1)

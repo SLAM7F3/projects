@@ -1,7 +1,7 @@
 ========================================================================
 Image Search database population and image graph construction 'cheat sheet'
 ========================================================================
-Last updated 1/8/14; 11/28/15; 12/4/15; 1/5/16
+Last updated 1/8/14; 11/28/15; 12/4/15; 1/5/16; 8/21/16
 ========================================================================
 
 This README is located in
@@ -393,6 +393,7 @@ imagery database.
 output by GENERATE_CCS by first chanting
 
 			psql -d imagery -U postgres
+			psql -d imagery  (on m6700 laptop)
 
 which should open an "imagery=#" database prompt.  Then chant
 
@@ -481,3 +482,32 @@ To manually start Michael's graph viewer on a linux machine, chant
 graph viewer windows is set, by default, to equal the IP of the machine(s)
 on which they are launched.  The IP values in the JMS topic field does NOT
 correspond to that of the image server.  
+
+========================================================================
+VII. MICHAEL YEE'S GRAPH VIEWER
+========================================================================
+
+*.  On 8/21/16, we used jd-gui (http://jd.benow.ca) to decompile the
+contents of the Dec 17, 2013 version of ScalableGraphVisualization.jar.  We
+put the decompiled source files into
+/usr/local/src/ScalableGraphVisualization.src.tgz.
+
+javac  -cp .:lib/*:ScalableGraphVisualization.jar Edge.java
+
+
+javac  -cp .:jms/*:scrap/
+
+
+lib/*:ScalableGraphVisualization.jar Edge.java
+
+
+javac -classpath . Edge.java 
+
+javac -classpath . Edge.java Node.java ./visualization/BasicGraphPanel.java
+
+
+
+
+classes:lib/Banners.jar \
+               src/farewells/GoodBye.java -d classes
+             % ls classes
