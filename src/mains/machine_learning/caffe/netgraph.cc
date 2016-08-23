@@ -13,7 +13,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/19/16; 8/20/16
+// Last updated on 8/19/16; 8/20/16; 8/23/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -29,6 +29,7 @@
 #include "general/filefuncs.h"
 #include "math/mathfuncs.h"
 #include "general/outputfuncs.h"
+#include "math/prob_distribution.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
 #include "time/timefuncs.h"
@@ -240,6 +241,12 @@ int main(int argc, char* argv[])
 
    int layer_start = 0;  
    int layer_stop = n_layer_channels.size() - 1;
+
+//   cout << "Enter layer_start:" << endl;
+//   cin >> layer_start;
+//   cout << "Enter layer_stop:" << endl;
+//   cin >> layer_stop;
+
    cout << "layer_start = " << layer_start
         << " layer_stop = " << layer_stop << endl << endl;
 
@@ -280,6 +287,11 @@ int main(int argc, char* argv[])
       mathfunc::median_value_and_quartile_width(
          weight_sums, median_weight_sum, quartile_width);
 
+      double weight_sum_02, weight_sum_98;
+      mathfunc::lo_hi_values(
+         weight_sums, 0.02, 0.98, weight_sum_02, weight_sum_98);
+      int tic = basic_math::mytruncate(log10(weight_sum_98 - weight_sum_02));
+      
       cout << "layer = " << layer_index
            << " curr_layer_name = " << param_layer_names[layer_index]
            << " next_layer_name = " << param_layer_names[layer_index+1]
@@ -287,17 +299,48 @@ int main(int argc, char* argv[])
            << " quartile_width = " << quartile_width
            << endl;
 
+      cout << "weight_sum_98 = " << weight_sum_98
+           << " weight_sum_02 = " << weight_sum_02 << endl;
+//      cout << "tic = " << tic << endl;
+
+      double min_weight_sum = mathfunc::minimal_value(weight_sums);
+      double max_weight_sum = mathfunc::maximal_value(weight_sums);
+      prob_distribution weights_prob(
+         200, min_weight_sum, max_weight_sum, weight_sums);
+
+//      weights_prob.set_xmin(weight_sum_02);
+//      weights_prob.set_xmax(weight_sum_98);
+//      weights_prob.set_xtic(0.5 * pow(10, tic));
+//      weights_prob.set_xsubtic(0.1 * pow(10, tic));
+
+      weights_prob.set_xmin(-0.05);
+      weights_prob.set_xmax(0.05);
+      weights_prob.set_xtic(0.01);
+      weights_prob.set_xsubtic(0.005);
+
+      weights_prob.set_xlabel("Weight sums");
+      weights_prob.set_color(colorfunc::get_color(layer_index));
+      weights_prob.set_densityfilenamestr(
+         "weights_sum_"+stringfunc::number_to_string(layer_index)+".meta");
+      weights_prob.write_density_dist(false,true);
+
 // Renormalize weights:
 
 // 	median_weight_sum + Z * quartile_width --> Upper value = 90
 // 	median_weight_sum - Z * quartile_width --> Lower value = 10
 
-      int Z = 10;
-      double Upper = 90;
-      double Lower = 10;
-      double beta = 0.5 * (Upper - Lower) / (Z * quartile_width);
-      double alpha = 0.5 * (Upper + Lower) - beta * median_weight_sum;
+//      int Z = 10;
+//      double Upper = 90;
+//      double Lower = 10;
+//      double beta = 0.5 * (Upper - Lower) / (Z * quartile_width);
+//      double alpha = 0.5 * (Upper + Lower) - beta * median_weight_sum;
       
+      double Upper = 95;
+      double Lower = 5;
+      double alpha = 50;
+      double beta = 900;
+
+      vector<double> renorm_weights;
       for(layer_edgelist_iter = layer_edgelist_map.begin();
           layer_edgelist_iter != layer_edgelist_map.end();
           layer_edgelist_iter++)
@@ -306,6 +349,7 @@ int main(int argc, char* argv[])
          int next_node_global_ID = layer_edgelist_iter->first.second;
          double weight_sum = layer_edgelist_iter->second;
          double renorm_weight_sum = alpha + beta * weight_sum;
+         renorm_weights.push_back(renorm_weight_sum);
          edgelist_stream << curr_node_global_ID << "  "
                          << next_node_global_ID << "  "
                          << renorm_weight_sum << endl;
@@ -314,8 +358,14 @@ int main(int argc, char* argv[])
             n_middle++;
          }
          n_total++;
-         
       }
+      
+      double median_renorm_weight;
+      mathfunc::median_value_and_quartile_width(
+         renorm_weights, median_renorm_weight, quartile_width);
+      cout << "median renorm weight = " << median_renorm_weight
+           << " quartile width = " << quartile_width << endl;
+
       double frac_middle = double(n_middle)/n_total;
       cout << "frac_middle = " << frac_middle << endl;
 

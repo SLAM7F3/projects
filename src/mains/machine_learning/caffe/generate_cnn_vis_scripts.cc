@@ -73,7 +73,8 @@ int main(int argc, char* argv[])
    else if(caffe_model_basename == "VGG_ILSVRC_16_layers.caffemodel")
    {
       VGG_flag = true;
-      max_nodes_per_param_layer = 25;
+      max_nodes_per_param_layer = 1000;
+//      max_nodes_per_param_layer = 25;
    }
    else if(caffe_model_basename == "ResNet-50-model.caffemodel")
    {
@@ -198,8 +199,12 @@ int main(int argc, char* argv[])
    int layer_start = 1;   // We name very first layer as 1 rather than 0
 //   int layer_stop =  1;
    int final_layer = param_layer_names.size();
+
    int layer_stop = final_layer;
+   cout << "layer_start = " << layer_start << endl;
    cout << "layer_stop = " << layer_stop << endl;
+
+   outputfunc::enter_continue_char();
 
 // For progress reporting purposes, first count total number of nodes
 // whose images will be generated via backprojection:

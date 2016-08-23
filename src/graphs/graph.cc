@@ -1334,8 +1334,8 @@ colorfunc::RGB graph::compute_edge_color(
 
    colorfunc::HSV curr_hsv;
    curr_hsv.first = (1 - frac_weight) * 120;
-   curr_hsv.second = 0.05 + 0.95 * fabs(frac_weight);
-   curr_hsv.third = 0.05 + 0.95 * fabs(frac_weight);
+   curr_hsv.second = 0.15 + 0.85 * fabs(frac_weight);
+   curr_hsv.third = 0.25 + 0.75 * fabs(frac_weight);
    return colorfunc::hsv_to_RGB(curr_hsv);
 }
 
@@ -3627,11 +3627,11 @@ int graph::write_SQL_insert_link_commands(
 
 // FAKE FAKE:  Sat Aug 20, 2016 at 2 pm
 
-// Hardwire edge weight offset for trained neura network display
+// Hardwire edge weight offset for trained neural network display
 // purposes...
 
-//         double edge_weight = curr_matches;         
-         double edge_weight = curr_matches - 0.5*(max_matches + min_matches);
+         double edge_weight = curr_matches;         
+//         double edge_weight = curr_matches - 0.5*(max_matches + min_matches);
 
          graph_edge_ptr->set_edge_RGB(edge_RGB);
             

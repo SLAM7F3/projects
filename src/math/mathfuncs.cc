@@ -1,7 +1,7 @@
 // ==========================================================================
 // "Primitive" math functions 
 // ==========================================================================
-// Last updated on 6/26/14; 8/10/15; 8/12/15; 2/10/16
+// Last updated on 8/10/15; 8/12/15; 2/10/16; 8/23/16
 // ==========================================================================
 
 #include <algorithm>
@@ -2269,7 +2269,8 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
 // vector.  
 
    void lo_hi_values(
-      const vector<double>& A,double& level_25,double& level_75)
+      const vector<double>& A,double lo_frac, double hi_frac, 
+      double& lo_value,double& hi_value)
    {
       unsigned int nbins=A.size();
       vector<double> Acopy;
@@ -2279,8 +2280,14 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
       }
       std::sort(Acopy.begin(),Acopy.end());
 
-      level_25=Acopy[basic_math::round(0.25*nbins)];
-      level_75=Acopy[basic_math::round(0.75*nbins)];
+      lo_value=Acopy[basic_math::round(lo_frac * nbins)];
+      hi_value=Acopy[basic_math::round(hi_frac * nbins)];
+   }
+
+   void lo_hi_values(
+      const vector<double>& A,double& level_25,double& level_75)
+   {
+      lo_hi_values(A, 0.25, 0.75, level_25, level_75);
    }
    
 // ---------------------------------------------------------------------
