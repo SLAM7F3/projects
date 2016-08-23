@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 8/16/16; 8/17/16; 8/18/16; 8/19/16
+// Last modified on 8/17/16; 8/18/16; 8/19/16; 8/23/16
 // ==========================================================================
 
 #include <caffe/net.hpp>
@@ -610,27 +610,34 @@ void caffe_classifier::generate_dense_map_data_blob()
 }
 
 // ---------------------------------------------------------------------
-// Member function retrieve_layer_activations()
+// Member function retrieve_layer_activations() takes in a data blob
+// for some network layer.  It returns a list of node IDs and which
+// are sorted in descending order according to their activation
+// scores.  This method also returns the total number of nodes in the
+// specified layer whose activations effectively equal zero.
 
-void caffe_classifier::retrieve_layer_activations(string blob_name)
+int caffe_classifier::retrieve_layer_activations(
+   string blob_name, vector<int>& node_IDs, vector<double>& node_activations)
 {
-   cout << "inside caffe_classifier::retrieve_layer_activations()"
-        << endl;
-
    const shared_ptr<const caffe::Blob<float> > curr_blob =
       net_->blob_by_name(blob_name);
    const float *blob_data = curr_blob->cpu_data();
 
    int num_axes = curr_blob->num_axes();
-   cout << " activations_blob.shape_string() = " << curr_blob->shape_string()
-        << endl;
-
    int n_filters = curr_blob->shape(1);
-   int filter_width = curr_blob->shape(2);
-   int filter_height = curr_blob->shape(3);
-   
-   cout << "n_filters = " << n_filters
-        << " filter width = " << filter_width
+   int filter_width = 1;
+   int filter_height = 1;
+
+/*
+   if(num_axes > 2)
+   {
+      filter_width = curr_blob->shape(2);
+      filter_height = curr_blob->shape(3);
+   }
+
+   cout << " curr_blob.shape_string() = " << curr_blob->shape_string() << end//l;
+   cout << "n_filters = " << n_filters << endl;
+   cout << " filter width = " << filter_width
         << " filter height = " << filter_height
         << endl;
 
@@ -641,61 +648,29 @@ void caffe_classifier::retrieve_layer_activations(string blob_name)
       if(a < num_axes - 1) cout << "x " << flush;
    }
    cout << endl;
-      
-//   int n_nodes = 3; // fc7_faces
-   int n_nodes = 256; // fc6, fc5, conv4a
+*/
 
-   exit(-1);
-
-   vector<int> node_IDs;
-   vector<double> node_values;
-   int n_tiny_values = 0;
+   int n_tiny_activations = 0;
    const double TINY = 0.001;
-   for(int n = 0; n < n_nodes; n++)
+   node_IDs.clear();
+   node_activations.clear();
+   for(int n = 0; n < n_filters; n++)
    {
       node_IDs.push_back(n);
-      node_values.push_back(blob_data[n]);
-//      cout << "node ID = " << n 
-//           << " node value = " << blob_data[n] 
-//           << endl;
-      if(fabs(node_values.back()) < TINY)
+      node_activations.push_back(blob_data[n]);
+      if(fabs(node_activations.back()) < TINY)
       {
-         n_tiny_values++;
+         n_tiny_activations++;
       }
    }
-   double tiny_value_frac = double(n_tiny_values) / n_nodes;
+   double tiny_activation_frac = double(n_tiny_activations) / n_filters;
 
-   double mu_value, sigma_value;
-   mathfunc::mean_and_std_dev(node_values, mu_value, sigma_value);
-   double median_value, quartile_width;
-   mathfunc::median_value_and_quartile_width(
-      node_values, median_value, quartile_width);
+//   cout << "n_tiny_activations = " << n_tiny_activations 
+//        << " tiny_activation_frac = " << tiny_activation_frac << endl;
 
-   cout << "Node value distribution:" << endl;
-   cout << "  median = " << median_value 
-        << "  quartile_width = " << quartile_width << endl;
-   cout << "  mu = " 
-        << mu_value << " sigma = " << sigma_value << endl;
-   cout << "n_tiny_values = " << n_tiny_values 
-        << " tiny_value_frac = " << tiny_value_frac << endl;
+   templatefunc::Quicksort_descending(node_activations, node_IDs);
 
-   templatefunc::Quicksort_descending(node_values, node_IDs);
-
-   unsigned int n_max = 10;
-   if(node_IDs.size() < n_max) n_max = node_IDs.size();
-   for(unsigned int n = 0; n < n_max; n++)
-   {
-      cout << "node value = " << node_values[n]
-           << " node ID = " << node_IDs[n]
-           << endl;
-   }
-   cout << "----------------------" << endl;
-   for(unsigned int n = node_IDs.size() - n_max; n < node_IDs.size(); n++)
-   {
-      cout << "node value = " << node_values[n]
-           << " node ID = " << node_IDs[n]
-           << endl;
-   }
+   return n_tiny_activations;
 }
 
 // ---------------------------------------------------------------------
@@ -1104,3 +1079,6 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 
 
 */
+
+
+

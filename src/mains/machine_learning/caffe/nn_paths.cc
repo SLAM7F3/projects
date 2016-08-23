@@ -7,7 +7,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/16/16
+// Last updated on 8/16/16; 8/23/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -60,12 +60,14 @@ int main(int argc, char** argv)
       input_images_subdir, search_all_children_dirs_flag);
 
    int n_images = image_filenames.size();
-   cout << "n_images = " << n_images << endl;
+
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
 
 
    int istart=0;
    int istop = n_images;
+
+   vector<string> no_color_images;
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_and_remaining_time(
@@ -135,15 +137,101 @@ int main(int argc, char** argv)
            << " classification score = " << classification_score
            << endl;
 
-      string blob_name = "conv4a";
+//      string blob_name = "conv1a";
+//      string blob_name = "conv2a";
+//      string blob_name = "conv3a";
+//      string blob_name = "conv4a";
 //      string blob_name = "fc5";
 //      string blob_name = "fc6";
 //      string blob_name = "fc7_faces";
-      classifier.retrieve_layer_activations(blob_name);
 
-      outputfunc::enter_continue_char();
+      vector<string> blob_names;
+      blob_names.push_back("conv1a");
+      blob_names.push_back("conv2a");
+      blob_names.push_back("conv3a");
+      blob_names.push_back("conv4a");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+
+      int n_big_activations = 0;
+      for(int layer = 0; layer < blob_names.size(); layer++)
+      {
+         vector<int> node_IDs;
+         vector<double> node_activations;
+         int n_tiny_values = classifier.retrieve_layer_activations(
+            blob_names[layer], node_IDs, node_activations);
+
+         double denom = 0;
+         for(int n = 0; n < node_activations.size(); n++)
+         {
+            denom += node_activations[n];
+         }
+
+
+         vector<double> renorm_node_activations;
+         for(int n = 0; denom > 0 && n < node_activations.size(); n++)
+         {
+            renorm_node_activations.push_back(node_activations[n] / denom);
+         }
+         
+         cout << "Layer = " << blob_names[layer] << endl;
+         int n_max = 5;
+         if(node_IDs.size() < n_max) n_max = node_IDs.size();
+
+         for(int n = 0; n < n_max; n++)
+         {
+            cout << "     Node ID = " << node_IDs[n]
+                 << " Activation = " << node_activations[n];
+            if(renorm_node_activations.size() > 0)
+            {
+               cout << " Renormalized activation = " 
+                    << renorm_node_activations[n];
+               if(layer < blob_names.size() - 1 &&
+                  renorm_node_activations[n] > 0.2)
+               {
+                  n_big_activations++;
+                  cout << "  Big activation ";
+               }
+            }
+            cout << endl;
+         }
+
+// Compute statistics for current layer's node activations:
+
+         double mu_activation, sigma_activation;
+         mathfunc::mean_and_std_dev(
+            node_activations, mu_activation, sigma_activation);
+         double median_activation, quartile_width;
+         mathfunc::median_value_and_quartile_width(
+            node_activations, median_activation, quartile_width);
+         cout << "     Activations: median=" << median_activation
+              << " quartile_width=" << quartile_width 
+              << "   mu=" << mu_activation 
+              << " sigma=" << sigma_activation << endl;
+
+      } // loop over layer index
+       
+//      if(n_tiny_values == 96)
+//      {
+//         no_color_images.push_back(orig_image_filename);
+//      }
+      
+      if(classification_label == 0) continue;
+      if(classification_score < 0.9) continue;
+
+      if(n_big_activations >= 3)
+      {
+         outputfunc::enter_continue_char();
+      }
+      
+
 
    } // loop over index i labeling input image tiles
+
+   cout << "n_images = " << n_images << endl;  // 4536
+//   cout << "no_color_images.size = " << no_color_images.size()
+//        << endl;  // 3324
 
    cout << "test.prototxt = " << test_prototxt_filename << endl;
    cout << "trained caffe model = " << caffe_model_filename << endl;

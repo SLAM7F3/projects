@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 8/2/16; 8/16/16; 8/17/16; 8/19/16
+// Last modified on 8/16/16; 8/17/16; 8/19/16; 8/23/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -62,7 +62,9 @@ class caffe_classifier
                                            std::string output_subdir);
    std::string display_segmentation_scores(texture_rectangle& curr_img,
                                            std::string output_subdir);
-   void retrieve_layer_activations(std::string blob_name);
+   int retrieve_layer_activations(
+      std::string blob_name, std::vector<int>& node_IDs, 
+      std::vector<double>& node_activations);
    void cleanup_memory();
 
   private: 
