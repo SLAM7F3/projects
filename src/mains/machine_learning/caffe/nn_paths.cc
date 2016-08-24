@@ -7,7 +7,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/16/16; 8/23/16
+// Last updated on 8/16/16; 8/23/16; 8/24/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -25,6 +25,7 @@ using std::cerr;
 using std::cin;
 using std::cout;
 using std::endl;
+using std::map;
 using std::ofstream;
 using std::pair;
 using std::string;
@@ -63,17 +64,34 @@ int main(int argc, char** argv)
 //   bool search_all_children_dirs_flag = true;
    vector<string> image_filenames=filefunc::image_files_in_subdir(
       input_images_subdir, search_all_children_dirs_flag);
-
    int n_images = image_filenames.size();
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
 
    int istart=0;
+//   int istop = 500;
    int istop = n_images;
    string unix_cmd;
+
+   typedef std::map<DUPLE, vector<double>, ltduple> NODE_ACTIVATIONS_MAP;
+// independent DUPLE contains (local ID for node in layer L, layer ID)
+// dependent vector<double> contains node activations for all testing images
+   NODE_ACTIVATIONS_MAP node_activations_map;
+//   NODE_ACTIVATIONS_MAP female_node_activations_map, male_node_activations_map;
+   NODE_ACTIVATIONS_MAP::iterator node_activations_iter;
+
 //   const double strong_activation_threshold = 0.2;
    const double strong_activation_threshold = 0.25;
 
-   vector<string> no_color_images;
+   vector<string> blob_names;
+   blob_names.push_back("conv1a");
+   blob_names.push_back("conv2a");
+   blob_names.push_back("conv3a");
+   blob_names.push_back("conv4a");
+   blob_names.push_back("fc5");
+   blob_names.push_back("fc6");
+   blob_names.push_back("fc7_faces");
+   unsigned int n_layers = blob_names.size();
+
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_and_remaining_time(
@@ -139,36 +157,96 @@ int main(int argc, char** argv)
       }
 
       cout << "true_gender_label = " << true_gender_label << endl;
-      cout << "classification_gender_label = " << classification_gender_label
-           << " classification score = " << classification_score
-           << endl;
-
-      vector<string> blob_names;
-      blob_names.push_back("conv1a");
-      blob_names.push_back("conv2a");
-      blob_names.push_back("conv3a");
-      blob_names.push_back("conv4a");
-      blob_names.push_back("fc5");
-      blob_names.push_back("fc6");
-      blob_names.push_back("fc7_faces");
-
+//      cout << "classification_gender_label = " << classification_gender_label
+//           << " classification score = " << classification_score
+//      << endl;
       int n_strong_activations = 0;
-      unsigned int n_layers = blob_names.size();
+
+// Periodically update median node activation information:
+
+      if(i > istart && i%50 == 0)
+      {
+         string activations_filename=imagechips_subdir+"activations_"
+            +stringfunc::integer_to_string(i,4)+".dat";
+         ofstream activations_stream;
+         filefunc::openfile(activations_filename, activations_stream);
+         activations_stream << 
+            "# layer  node  stim_frac  median  quartile   mean     sigma"
+                            << endl;
+         activations_stream << "n_images = " << i << endl;
+         activations_stream << endl;
+
+         for(node_activations_iter = node_activations_map.begin();
+             node_activations_iter != node_activations_map.end();
+             node_activations_iter++)
+         {
+            DUPLE curr_duple = node_activations_iter->first;
+            vector<double> curr_activations = node_activations_iter->second;
+      
+// Count fraction of test images which fire current node:
+
+            int n_stimulations = 0;
+            for(unsigned int j = 0; j < curr_activations.size(); j++)
+            {
+               if(curr_activations[j] > 0) n_stimulations++;
+            }
+            double stimulation_frac = double(n_stimulations)/(i-istart+1);
+
+            double mu, sigma;
+            mathfunc::mean_and_std_dev(curr_activations, mu, sigma);
+
+            double median, quartile_width;
+            mathfunc::median_value_and_quartile_width(
+               curr_activations, median, quartile_width);
+            activations_stream << curr_duple.first << "   "
+                               << curr_duple.second << "   "
+                               << stimulation_frac << " \t"
+                               << median << " \t\t"
+                               << quartile_width << " \t\t"
+                               << mu << " \t\t"
+                               << sigma << " \t\t"
+                               << endl;
+         } // loop over node activations iterator
+
+         filefunc::closefile(activations_filename, activations_stream);
+         string banner="Exported "+activations_filename;
+         outputfunc::write_banner(banner);
+
+      }
+      
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          vector<int> node_IDs;
          vector<double> node_activations;
          int n_tiny_values = classifier.retrieve_layer_activations(
             blob_names[layer], node_IDs, node_activations);
+         int n_layer_nodes = node_activations.size();
+         for(int n = 0; n < n_layer_nodes; n++)
+         {
+            DUPLE curr_duple(layer, node_IDs[n]);
+            node_activations_iter = node_activations_map.find(curr_duple);
+            if(node_activations_iter == node_activations_map.end())
+            {
+               vector<double> curr_node_activations;
+               curr_node_activations.push_back(node_activations[n]);
+               node_activations_map[curr_duple] = curr_node_activations;
+            }
+            else
+            {
+               node_activations_iter->second.push_back(node_activations[n]);
+            }
+         }
+
+// Convert raw node activations into relative fractions:
 
          double denom = 0;
-         for(unsigned n = 0; n < node_activations.size(); n++)
+         for(int n = 0; n < n_layer_nodes; n++)
          {
             denom += node_activations[n];
          }
 
          vector<double> renorm_node_activations;
-         for(unsigned int n = 0; denom > 0 && n < node_activations.size(); n++)
+         for(int n = 0; denom > 0 && n < n_layer_nodes; n++)
          {
             renorm_node_activations.push_back(node_activations[n] / denom);
          }
@@ -177,11 +255,11 @@ int main(int argc, char** argv)
 //         cout << "Layer = " << layer_name << endl;
 //         unsigned n_max = 4;
          int n_max = 5;
-         if(node_IDs.size() < n_max) n_max = node_IDs.size();
+         if(n_layer_nodes < n_max) n_max = n_layer_nodes;
          if(layer == n_layers - 1) n_max = 1;
 
          unix_cmd = "montage -tile "+stringfunc::number_to_string(n_max)+"x1 ";
-         for(unsigned int n = 0; n < n_max; n++)
+         for(int n = 0; n < n_max; n++)
          {
 //            cout << "     Node ID = " << node_IDs[n]
 //                 << " Activation = " << node_activations[n];
@@ -239,11 +317,6 @@ int main(int argc, char** argv)
 
       } // loop over layer index
        
-//      if(n_tiny_values == 96)
-//      {
-//         no_color_images.push_back(orig_image_filename);
-//      }
-      
       if(classification_label == 0) continue;
       if(classification_score < 0.95) continue;
       if(n_strong_activations < 3) continue;
@@ -253,7 +326,7 @@ int main(int argc, char** argv)
          +" "+image_filename+" ";
 
       vector<string> layer_montage_filenames;
-      for(int layer = 0; layer < n_layers; layer++)
+      for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          layer_montage_filenames.push_back(
             "layer_"+
@@ -276,21 +349,18 @@ int main(int argc, char** argv)
       string banner="Exported "+network_montage_filename;
       outputfunc::write_banner(banner);
 
-      for(int layer = 0; layer < n_layers; layer++)
+      for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          filefunc::deletefile(layer_montage_filenames[layer]);
       }
 
-      
    } // loop over index i labeling input image tiles
 
    cout << "n_images = " << n_images << endl;  // 4536
-//   cout << "no_color_images.size = " << no_color_images.size()
-//        << endl;  // 3324
-
    cout << "test.prototxt = " << test_prototxt_filename << endl;
    cout << "trained caffe model = " << caffe_model_filename << endl;
    cout << "input_images_subdir = " << input_images_subdir << endl;
-         
+   
 }
+
    
