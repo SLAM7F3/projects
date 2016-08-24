@@ -43,7 +43,7 @@ int main(int argc, char** argv)
    filefunc::add_trailing_dir_slash(input_images_subdir);
 
    string imagechips_subdir = "./vis_facenet/node_images/";
-   string subnetwork_subdir = "./vis_facenet/node_images/subnetworks/";
+   string subnetwork_subdir = imagechips_subdir + "subnetworks/";
    filefunc::dircreate(subnetwork_subdir);
    string male_subnetwork_subdir=subnetwork_subdir+"male/";
    string female_subnetwork_subdir=subnetwork_subdir+"female/";
@@ -173,7 +173,7 @@ int main(int argc, char** argv)
          activations_stream << 
             "# layer  node  stim_frac  median  quartile   mean     sigma"
                             << endl;
-         activations_stream << "n_images = " << i << endl;
+         activations_stream << "#  n_images = " << i << endl;
          activations_stream << endl;
 
          for(node_activations_iter = node_activations_map.begin();

@@ -219,7 +219,6 @@ int main(int argc, char* argv[])
          double gx = n_layers * (0.5 + double(m) / max_n_nodes_per_subrow);
          graph_layout_stream << node_counter++ << "   " 
                              << gx << "   " << gy << endl;
-
       }
 
       int stop_node_ID = node_counter - 1;
