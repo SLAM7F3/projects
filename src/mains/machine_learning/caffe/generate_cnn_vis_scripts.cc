@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/17/16; 8/18/16; 8/20/16; 8/22/16
+// Last updated on 8/18/16; 8/20/16; 8/22/16; 8/24/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -59,6 +59,7 @@ int main(int argc, char* argv[])
    string caffe_model_filename = argv[2];
 
    bool Alexnet_flag = false;
+   bool Googlenet_flag = false;
    bool VGG_flag = false;
    bool Resnet50_flag = false;
    bool Facenet_flag = false;
@@ -68,7 +69,13 @@ int main(int argc, char* argv[])
    if(caffe_model_basename == "bvlc_reference_caffenet.caffemodel")
    {
       Alexnet_flag = true;
-      max_nodes_per_param_layer = 25;
+//       max_nodes_per_param_layer = 25;
+      max_nodes_per_param_layer = 1000;
+   }
+   else if(caffe_model_basename == "bvlc_googlenet.caffemodel")
+   {
+      Googlenet_flag = true;
+      max_nodes_per_param_layer = 1000;
    }
    else if(caffe_model_basename == "VGG_ILSVRC_16_layers.caffemodel")
    {
@@ -90,6 +97,7 @@ int main(int argc, char* argv[])
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;
    cout << "Alexnet_flag = " << Alexnet_flag << endl;
+   cout << "Googlenet_flag = " << Googlenet_flag << endl;
    cout << "VGG_flag = " << VGG_flag << endl;
    cout << "Resnet50_flag = " << Resnet50_flag << endl;
    cout << "Facenet_flag = " << Facenet_flag << endl;
@@ -100,6 +108,10 @@ int main(int argc, char* argv[])
    if(Alexnet_flag)
    {
       scripts_subdir="./vis_alexnet/";
+   }
+   else if(Googlenet_flag)
+   {
+      scripts_subdir="./vis_Googlenet/";
    }
    else if(VGG_flag)
    {
@@ -140,6 +152,10 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7");
       param_layer_names.push_back("fc8");
+   }
+   else if (Googlenet_flag)
+   {
+      param_layer_names.push_back("loss3/classifier");
    }
    else if(VGG_flag)
    {
@@ -241,7 +257,10 @@ int main(int argc, char* argv[])
 
             if(node > max_nodes_per_param_layer) continue;
 
-            string curr_layer_name=param_layer_names[layer_index];
+            string orig_layer_name=param_layer_names[layer_index];
+            string curr_layer_name = stringfunc::find_and_replace_char(
+               orig_layer_name, "/", "_");
+            
             string curr_node_name=stringfunc::integer_to_string(node,3);
             string curr_script_basename="run_"+
                curr_layer_name+"_"+curr_node_name;
@@ -253,10 +272,9 @@ int main(int argc, char* argv[])
             
             string curr_script_filename=scripts_subdir+curr_script_basename;
             string curr_img_subdir = node_images_subdir + 
-               param_layer_names[layer_index]+"/";
+               curr_layer_name+"/";
             filefunc::dircreate(curr_img_subdir);
-            curr_img_subdir = "./node_images/"+param_layer_names[
-               layer_index]+"/";
+            curr_img_subdir = "./node_images/"+curr_layer_name+"/";
             string curr_node_img_basename=
                curr_layer_name+"_"+curr_node_name;
             if(iter > 0)
@@ -279,7 +297,7 @@ int main(int argc, char* argv[])
             outstream << "--caffe_model=" << caffe_model_filename 
                       << " \\" << endl;
             outstream << "--image_type=amplify_neuron \\" << endl;
-            outstream << "--target_layer="+curr_layer_name+" \\" << endl;
+            outstream << "--target_layer="+orig_layer_name+" \\" << endl;
             outstream << "--target_neuron="+stringfunc::number_to_string(node)
                +" \\" << endl;
             outstream << "--output_file="+curr_node_img_filename+" \\" << endl;

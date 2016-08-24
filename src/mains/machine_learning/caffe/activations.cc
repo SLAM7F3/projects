@@ -37,7 +37,7 @@ int main(int argc, char** argv)
       vector< vector<double> > row_numbers = 
       filefunc::ReadInRowNumbers(activations_filename);
    int prev_layer = -1;
-   vector<int> node_ID;
+   vector<int> node_ID, new_node_ID;
    vector<double> stimulation_frac, mu_activation, sigma_activation;
 
    outstream << "# ====================================================="
@@ -46,11 +46,12 @@ int main(int argc, char** argv)
              << endl;
    outstream << "# ====================================================="
              << endl;
-   outstream << "# Layer  Local     Global   Stimul  Mu    Sigma" << endl;
-   outstream << "# ID     node ID   node ID  freq    act   act" << endl;
+   outstream << "# Layer  Old local   New local    Global   Stimul  Mu    Sigma" << endl;
+   outstream << "# ID     node ID     node ID      node ID  freq    act   act" << endl;
    outstream << "# ====================================================="
              << endl << endl;
 
+   int local_node_ID = 0;
    int global_node_ID = 0;
    for(unsigned int r = 0; r < row_numbers.size(); r++)
    {
@@ -60,6 +61,7 @@ int main(int argc, char** argv)
 //      }
 
       node_ID.push_back(row_numbers.at(r).at(1));
+      new_node_ID.push_back(local_node_ID++);
       stimulation_frac.push_back(row_numbers.at(r).at(2));
       mu_activation.push_back(row_numbers.at(r).at(5));
       sigma_activation.push_back(row_numbers.at(r).at(6));
@@ -77,6 +79,7 @@ int main(int argc, char** argv)
          {
             outstream << prev_layer+1 << "    "
                       << node_ID[i] << "    "
+                      << new_node_ID[i] << "    "
                       << global_node_ID++ << "    "
                       << stimulation_frac[i] << "    "
                       << mu_activation[i] << "    "
@@ -86,6 +89,8 @@ int main(int argc, char** argv)
 
          stimulation_frac.clear();
          node_ID.clear();
+         new_node_ID.clear();
+         local_node_ID = 0;
          mu_activation.clear();
          sigma_activation.clear();
       }
