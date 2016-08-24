@@ -41,6 +41,14 @@ int main(int argc, char** argv)
    string input_images_subdir = argv[3];
    filefunc::add_trailing_dir_slash(input_images_subdir);
 
+   string imagechips_subdir = "./vis_facenet/node_images/";
+   string subnetwork_subdir = "./vis_facenet/node_images/subnetworks/";
+   filefunc::dircreate(subnetwork_subdir);
+   string male_subnetwork_subdir=subnetwork_subdir+"male/";
+   string female_subnetwork_subdir=subnetwork_subdir+"female/";
+   filefunc::dircreate(male_subnetwork_subdir);
+   filefunc::dircreate(female_subnetwork_subdir);
+
    double Bmean = 104.008;
    double Gmean = 116.669;
    double Rmean = 122.675;
@@ -50,9 +58,6 @@ int main(int argc, char** argv)
    classifier.add_label("male");
    classifier.add_label("female");
    classifier.add_label("unsure");
-   int unsure_label = classifier.get_n_labels() - 1;
-
-   int n_classes = classifier.get_n_labels();
 
    bool search_all_children_dirs_flag = false;
 //   bool search_all_children_dirs_flag = true;
@@ -60,12 +65,13 @@ int main(int argc, char** argv)
       input_images_subdir, search_all_children_dirs_flag);
 
    int n_images = image_filenames.size();
-
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
-
 
    int istart=0;
    int istop = n_images;
+   string unix_cmd;
+//   const double strong_activation_threshold = 0.2;
+   const double strong_activation_threshold = 0.25;
 
    vector<string> no_color_images;
    for(int i = istart; i < istop; i++)
@@ -137,14 +143,6 @@ int main(int argc, char** argv)
            << " classification score = " << classification_score
            << endl;
 
-//      string blob_name = "conv1a";
-//      string blob_name = "conv2a";
-//      string blob_name = "conv3a";
-//      string blob_name = "conv4a";
-//      string blob_name = "fc5";
-//      string blob_name = "fc6";
-//      string blob_name = "fc7_faces";
-
       vector<string> blob_names;
       blob_names.push_back("conv1a");
       blob_names.push_back("conv2a");
@@ -154,8 +152,9 @@ int main(int argc, char** argv)
       blob_names.push_back("fc6");
       blob_names.push_back("fc7_faces");
 
-      int n_big_activations = 0;
-      for(int layer = 0; layer < blob_names.size(); layer++)
+      int n_strong_activations = 0;
+      unsigned int n_layers = blob_names.size();
+      for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          vector<int> node_IDs;
          vector<double> node_activations;
@@ -163,39 +162,61 @@ int main(int argc, char** argv)
             blob_names[layer], node_IDs, node_activations);
 
          double denom = 0;
-         for(int n = 0; n < node_activations.size(); n++)
+         for(unsigned n = 0; n < node_activations.size(); n++)
          {
             denom += node_activations[n];
          }
 
-
          vector<double> renorm_node_activations;
-         for(int n = 0; denom > 0 && n < node_activations.size(); n++)
+         for(unsigned int n = 0; denom > 0 && n < node_activations.size(); n++)
          {
             renorm_node_activations.push_back(node_activations[n] / denom);
          }
          
-         cout << "Layer = " << blob_names[layer] << endl;
+         string layer_name = blob_names[layer];
+//         cout << "Layer = " << layer_name << endl;
+//         unsigned n_max = 4;
          int n_max = 5;
          if(node_IDs.size() < n_max) n_max = node_IDs.size();
+         if(layer == n_layers - 1) n_max = 1;
 
-         for(int n = 0; n < n_max; n++)
+         unix_cmd = "montage -tile "+stringfunc::number_to_string(n_max)+"x1 ";
+         for(unsigned int n = 0; n < n_max; n++)
          {
-            cout << "     Node ID = " << node_IDs[n]
-                 << " Activation = " << node_activations[n];
+//            cout << "     Node ID = " << node_IDs[n]
+//                 << " Activation = " << node_activations[n];
             if(renorm_node_activations.size() > 0)
             {
-               cout << " Renormalized activation = " 
-                    << renorm_node_activations[n];
+//               cout << " Renormalized activation = " 
+//                    << renorm_node_activations[n];
                if(layer < blob_names.size() - 1 &&
-                  renorm_node_activations[n] > 0.2)
+                  renorm_node_activations[n] > strong_activation_threshold)
                {
-                  n_big_activations++;
-                  cout << "  Big activation ";
+                  n_strong_activations++;
+//                  cout << "  Strong activation ";
                }
             }
-            cout << endl;
-         }
+//            cout << endl;
+            string chip_basename = layer_name+"_"+
+               stringfunc::integer_to_string(node_IDs[n],3)+".png";
+            string chip_filename = imagechips_subdir+layer_name+"/"+
+               chip_basename;
+
+            string chiplabel_str = " -label ";
+            if(layer == n_layers - 1)
+            {
+               chiplabel_str += "'"+true_gender_label+" c="+
+                  stringfunc::number_to_string(classification_score,3)+"' ";
+            }
+            else if(renorm_node_activations.size() > 0)
+            {
+               chiplabel_str += "' node "+stringfunc::number_to_string(
+                  node_IDs[n])+"  a="+stringfunc::number_to_string(
+                  renorm_node_activations[n],3)+"' ";
+            }
+            unix_cmd += chiplabel_str+" "+chip_filename+" ";
+         } // loop over index n 
+         
 
 // Compute statistics for current layer's node activations:
 
@@ -205,10 +226,16 @@ int main(int argc, char** argv)
          double median_activation, quartile_width;
          mathfunc::median_value_and_quartile_width(
             node_activations, median_activation, quartile_width);
-         cout << "     Activations: median=" << median_activation
-              << " quartile_width=" << quartile_width 
-              << "   mu=" << mu_activation 
-              << " sigma=" << sigma_activation << endl;
+//         cout << "     Activations: median=" << median_activation
+//              << " quartile_width=" << quartile_width 
+//              << "   mu=" << mu_activation 
+//              << " sigma=" << sigma_activation << endl;
+
+         string montage_filename = "layer_"+
+            stringfunc::integer_to_string(layer+1,3)+".png";
+         unix_cmd += " "+montage_filename;
+//         cout << unix_cmd << endl;
+         sysfunc::unix_command(unix_cmd);
 
       } // loop over layer index
        
@@ -218,15 +245,43 @@ int main(int argc, char** argv)
 //      }
       
       if(classification_label == 0) continue;
-      if(classification_score < 0.9) continue;
+      if(classification_score < 0.95) continue;
+      if(n_strong_activations < 3) continue;
 
-      if(n_big_activations >= 3)
+      unix_cmd = "montage -geometry +2+2 -tile 1x"
+         +stringfunc::number_to_string(n_layers+1)
+         +" "+image_filename+" ";
+
+      vector<string> layer_montage_filenames;
+      for(int layer = 0; layer < n_layers; layer++)
       {
-         outputfunc::enter_continue_char();
+         layer_montage_filenames.push_back(
+            "layer_"+
+            stringfunc::integer_to_string(layer+1,3)+".png");
+         unix_cmd += layer_montage_filenames.back()+" ";
+      }
+
+      string network_montage_filename=male_subnetwork_subdir;
+      if(true_gender_label == "female")
+      {
+         network_montage_filename=female_subnetwork_subdir;
       }
       
+      network_montage_filename += "network_"+
+         stringfunc::integer_to_string(i,4)+".png";
+      unix_cmd += network_montage_filename;
+//      cout << unix_cmd << endl;
+      sysfunc::unix_command(unix_cmd);
 
+      string banner="Exported "+network_montage_filename;
+      outputfunc::write_banner(banner);
 
+      for(int layer = 0; layer < n_layers; layer++)
+      {
+         filefunc::deletefile(layer_montage_filenames[layer]);
+      }
+
+      
    } // loop over index i labeling input image tiles
 
    cout << "n_images = " << n_images << endl;  // 4536
