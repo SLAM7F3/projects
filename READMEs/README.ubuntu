@@ -1,7 +1,7 @@
 ============================================================================
 Ubuntu system administration and setup notes
 ============================================================================
-Last updated on 12/24/13; 9/2/15; 3/2/16; 6/11/16
+Last updated on 9/2/15; 3/2/16; 6/11/16; 8/25/16
 ============================================================================
 
 1.  Be sure to add machine name to /etc/hosts to try to avoid long name
@@ -303,3 +303,7 @@ off the live USB stick.
 *.  On 6/11/16, we followed instructions at the following URL
 https://help.ubuntu.com/community/Installation/FromUSBStick in order to
 generate a bootable USB stick containing Ubuntu 14.4 on it.
+
+*.  Chant "netstat -rn" in order to find router IP information.  In the
+most common home cases, the router will be listed as the gateway for
+0.0.0.0.
