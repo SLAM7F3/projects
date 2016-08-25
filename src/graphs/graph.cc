@@ -3531,7 +3531,7 @@ int graph::write_SQL_insert_node_commands(
 //      }
 
       if (!output_node_to_SQL(graph_hierarchy_ID,connected_component,
-      node_ptr,insert_cmd))
+                              node_ptr,insert_cmd))
          continue;
       
       SQL_node_stream << insert_cmd << endl;

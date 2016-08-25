@@ -84,6 +84,10 @@ int main(int argc, char** argv)
    int istop = n_images;
    string unix_cmd;
 
+   string montage_filename="montage_cmds.dat";
+   ofstream montagestream;
+   filefunc::openfile(montage_filename, montagestream);
+
    typedef std::map<DUPLE, vector<double>, ltduple> NODE_ACTIVATIONS_MAP;
 // independent DUPLE contains (local ID for node in layer L, layer ID)
 // dependent vector<double> contains node activations for all testing images
@@ -240,6 +244,8 @@ int main(int argc, char** argv)
          outputfunc::write_banner(banner);
       } // i conditional
       
+      vector<string> montage_lines;
+      montage_lines.push_back(image_filename);
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          vector<int> node_IDs;
@@ -311,17 +317,26 @@ int main(int argc, char** argv)
             {
                chiplabel_str += "'"+true_gender_label+" c="+
                   stringfunc::number_to_string(classification_score,3)+"' ";
+               string curr_line = stringfunc::number_to_string(layer)+"  "
+                  +true_gender_label+"  "
+                  +stringfunc::number_to_string(classification_score)+"  "
+                  +chip_filename;
+               montage_lines.push_back(curr_line);
             }
             else if(renorm_node_activations.size() > 0)
             {
                chiplabel_str += "' node "+stringfunc::number_to_string(
                   node_IDs[n])+"  a="+stringfunc::number_to_string(
                   renorm_node_activations[n],3)+"' ";
+               string curr_line = stringfunc::number_to_string(layer)+"  "
+                  +stringfunc::number_to_string(node_IDs[n])+"  "
+                  +stringfunc::number_to_string(renorm_node_activations[n])
+                  +"  "+chip_filename;
+               montage_lines.push_back(curr_line);
             }
             unix_cmd += chiplabel_str+" "+chip_filename+" ";
-         } // loop over index n 
+         } // loop over index n labeling activated neurons' image chips
          
-
 // Compute statistics for current layer's node activations:
 
          double mu_activation, sigma_activation;
@@ -338,14 +353,22 @@ int main(int argc, char** argv)
          string montage_filename = "layer_"+
             stringfunc::integer_to_string(layer+1,3)+".png";
          unix_cmd += " "+montage_filename;
-//         cout << unix_cmd << endl;
-         sysfunc::unix_command(unix_cmd);
+         
+//         sysfunc::unix_command(unix_cmd);
 
       } // loop over layer index
        
       if(classification_label == 0) continue;
       if(classification_score < 0.95) continue;
       if(n_strong_activations < 3) continue;
+
+// Generate network montage from individual layer montages:
+
+      for(unsigned int m = 0; m < montage_lines.size(); m++)
+      {
+         montagestream << montage_lines[m] << endl;
+      }
+      montagestream << endl;
 
       unix_cmd = "montage -geometry +2+2 -tile 1x"
          +stringfunc::number_to_string(n_layers+1)
@@ -386,7 +409,10 @@ int main(int argc, char** argv)
    cout << "test.prototxt = " << test_prototxt_filename << endl;
    cout << "trained caffe model = " << caffe_model_filename << endl;
    cout << "input_images_subdir = " << input_images_subdir << endl;
-   
+
+   filefunc::closefile(montage_filename, montagestream);
+   string banner="Exported "+montage_filename;
+   outputfunc::write_banner(banner);
 }
 
    

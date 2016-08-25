@@ -316,17 +316,7 @@ int main(int argc, char* argv[])
             float weight_sum = 
                classifier.get_weight_sum(layer_index,curr_node,next_node);
 
-// Convert from "new" current and next global node IDs to "old"
-// current and next global node IDs:
-
-//            DUPLE duple(curr_node_global_ID, next_node_global_ID);
-
-            activations_iter = activations_map.find(curr_node_global_ID);
-            int old_curr_node_global_ID = activations_iter->second.first;
-            activations_iter = activations_map.find(next_node_global_ID);
-            int old_next_node_global_ID = activations_iter->second.first;
-            
-            DUPLE duple(old_curr_node_global_ID, old_next_node_global_ID);
+            DUPLE duple(curr_node_global_ID, next_node_global_ID);
 
             layer_edgelist_map[duple] = weight_sum;
          } // loop over next_node index
