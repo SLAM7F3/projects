@@ -183,12 +183,15 @@ int main(int argc, char** argv)
             +stringfunc::integer_to_string(i,4)+".dat";
          ofstream activations_stream;
          filefunc::openfile(activations_filename, activations_stream);
-         activations_stream << 
-            "# layer  node  stimulation  median              quartile_width            mean               sigma" << endl;
-         activations_stream << "#  ID     ID   fraction     activation          activation                activation         activation" << endl;
          activations_stream << "#  n_images = " << i << endl;
          activations_stream << endl;
 
+         activations_stream << 
+"# layer  global node  local node  stimulation  median        quartile_width  mean            sigma" << endl;
+         activations_stream << 
+"#  ID       ID            ID      fraction     activation    activation      activation      activation" << endl;
+
+         int global_node_counter = 0;
          for(node_activations_iter = node_activations_map.begin();
              node_activations_iter != node_activations_map.end();
              node_activations_iter++)
@@ -222,6 +225,7 @@ int main(int argc, char** argv)
             }
 
             activations_stream << curr_duple.first << "   "
+                               << global_node_counter++ << "   "
                                << curr_duple.second << "   "
                                << stimulation_frac << " \t"
                                << median << " \t\t"

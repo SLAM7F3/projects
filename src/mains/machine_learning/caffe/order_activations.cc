@@ -38,11 +38,47 @@ int main(int argc, char** argv)
    ofstream outstream;
    filefunc::openfile(ordered_activations_filename, outstream);
 
-      vector< vector<double> > row_numbers = 
+   vector< vector<double> > row_numbers = 
       filefunc::ReadInRowNumbers(activations_filename);
+
+   vector<int> old_global_node_ID, node_ID, new_node_ID;
+   vector<double> stimulation_frac, median_activation, quartile_activation;
+
+// First count total number of nodes and number of nodes per network
+// layer:
+
+   vector<int> n_layer_nodes;
+   n_layer_nodes.push_back(3);  // Zeroth input data layer has 3 RGB channels
+   int n_total_nodes = n_layer_nodes.back();
+
+   cout << "Layer 0 has "
+        << n_layer_nodes.back() << " nodes " << endl;
+
+
    int prev_layer = -1;
-   vector<int> node_ID, new_node_ID;
-   vector<double> stimulation_frac, mu_activation, sigma_activation;
+   int n_nodes_per_layer = 0;
+   for(unsigned int r = 0; r < row_numbers.size(); r++)
+   {
+      int curr_layer = row_numbers.at(r).at(0);
+      if (r > 0)
+      {
+         if(curr_layer != prev_layer)
+         {
+            n_layer_nodes.push_back(n_nodes_per_layer);
+            cout << "Layer " << prev_layer+1
+                 << " has " << n_layer_nodes.back() << " nodes " << endl;
+            n_nodes_per_layer = 0;
+         }
+      }
+      n_nodes_per_layer++;
+      n_total_nodes++;
+      prev_layer = curr_layer;
+   }
+   n_layer_nodes.push_back(n_nodes_per_layer);
+   cout << "Layer = " << prev_layer
+        << " has " << n_layer_nodes.back() << " nodes " << endl;
+   cout << "Total number of network nodes = " << n_total_nodes << endl;
+   
 
    outstream << "# ====================================================="
              << endl;
@@ -50,13 +86,37 @@ int main(int argc, char** argv)
              << endl;
    outstream << "# ====================================================="
              << endl;
-   outstream << "# Layer  Old local   New local    Global   Stimul  Mu    Sigma" << endl;
-   outstream << "# ID     node ID     node ID      node ID  freq    act   act" << endl;
+   outstream << "# Layer  Old local   Old global New local    New global  Stimul  Median  Quartile" << endl;
+   outstream << "# ID     node ID     node ID    node ID      node ID     freq    act     act" << endl;
    outstream << "# ====================================================="
              << endl << endl;
 
+// First print out 3 input RGB channels:
+
+   int n_RGB_channels = 3;
+   prev_layer = -1;
+
+   for(unsigned int i = 0; i < n_RGB_channels; i++)
+   {
+      double stimul_frac = 1.0;
+      double median_activation = 1.0;
+      double quartile_activation = 0.5;
+      outstream << prev_layer+1 << "    "
+                << i << "    "
+                << i << "    "
+                << i << "    "
+                << i << "    "
+                << stimul_frac << "    "
+                << median_activation << "    "
+                << quartile_activation << endl;
+   }
+   outstream << endl;
+
+   prev_layer = 0;
    int local_node_ID = 0;
-   int global_node_ID = 0;
+   int RGB_data_offset = 3;
+   int node_counter = 0 + RGB_data_offset;
+   int new_global_node_ID = 0 + RGB_data_offset;
    for(unsigned int r = 0; r < row_numbers.size(); r++)
    {
 //      for(unsigned int c = 0 ; c < row_numbers.at(r).size(); c++)
@@ -64,11 +124,15 @@ int main(int argc, char** argv)
 //         cout << row_numbers.at(r).at(c) << "  ";
 //      }
 
-      node_ID.push_back(row_numbers.at(r).at(1));
-      new_node_ID.push_back(local_node_ID++);
-      stimulation_frac.push_back(row_numbers.at(r).at(2));
-      mu_activation.push_back(row_numbers.at(r).at(5));
-      sigma_activation.push_back(row_numbers.at(r).at(6));
+      if(r == row_numbers.size() -1)
+      {
+         old_global_node_ID.push_back(node_counter++);
+         node_ID.push_back(row_numbers.at(r).at(1));
+         new_node_ID.push_back(local_node_ID++);
+         stimulation_frac.push_back(row_numbers.at(r).at(2));
+         median_activation.push_back(row_numbers.at(r).at(3));
+         quartile_activation.push_back(row_numbers.at(r).at(4));
+      }
 
       int curr_layer = row_numbers.at(r).at(0);
       if((r > 0 && curr_layer != prev_layer) || r == row_numbers.size() - 1)
@@ -76,29 +140,38 @@ int main(int argc, char** argv)
          outstream << "# ====================================================="
                    << endl << endl;
          templatefunc::Quicksort_descending(
-            stimulation_frac, node_ID, mu_activation, sigma_activation);
-//             mu_activation, node_ID, stimulation_frac, sigma_activation);
+            stimulation_frac, old_global_node_ID, node_ID, 
+            median_activation, quartile_activation);
 
          for(unsigned int i = 0; i < node_ID.size(); i++)
          {
             outstream << prev_layer+1 << "    "
                       << node_ID[i] << "    "
+                      << old_global_node_ID[i] << "    "
                       << new_node_ID[i] << "    "
-                      << global_node_ID++ << "    "
+                      << new_global_node_ID++ << "    "
                       << stimulation_frac[i] << "    "
-                      << mu_activation[i] << "    "
-                      << sigma_activation[i] << endl;
+                      << median_activation[i] << "    "
+                      << quartile_activation[i] << endl;
          }
          outstream << endl;
 
          stimulation_frac.clear();
+         old_global_node_ID.clear();
          node_ID.clear();
          new_node_ID.clear();
          local_node_ID = 0;
-         mu_activation.clear();
-         sigma_activation.clear();
+         median_activation.clear();
+         quartile_activation.clear();
       }
       prev_layer = curr_layer;
+
+      old_global_node_ID.push_back(node_counter++);
+      node_ID.push_back(row_numbers.at(r).at(1));
+      new_node_ID.push_back(local_node_ID++);
+      stimulation_frac.push_back(row_numbers.at(r).at(2));
+      median_activation.push_back(row_numbers.at(r).at(3));
+      quartile_activation.push_back(row_numbers.at(r).at(4));
 
    } // loop over index r labeling rows in activations_filename
 

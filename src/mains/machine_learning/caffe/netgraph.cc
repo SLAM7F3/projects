@@ -13,7 +13,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/19/16; 8/20/16; 8/23/16
+// Last updated on 8/19/16; 8/20/16; 8/23/16; 8/25/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -51,6 +51,10 @@ using std::vector;
 int main(int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
+
+   typedef std::map<int, pair<int,double> > ACTIVATIONS_MAP;
+// independent int contains new global node ID
+// dependent pair contains (old global node ID, mean nonzero activation value)
 
    typedef std::map<DUPLE, float, ltduple> EDGELIST_MAP;
 // independent DUPLE contains (global ID for node in layer L, 
@@ -90,6 +94,30 @@ int main(int argc, char* argv[])
    cout << "Facenet_flag = " << Facenet_flag << endl;
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+
+// Import activations for each FACENET node within each layer order by
+// their stimulation frequencies generated via program
+// ORDER_ACTIVATIONS:
+
+   string imagechips_subdir = "./vis_facenet/node_images/";
+   string activations_subdir = imagechips_subdir + "activations/";
+   string ordered_activations_filename=activations_subdir+
+      "ordered_activations.dat";
+
+   vector< vector<double> > row_numbers = 
+      filefunc::ReadInRowNumbers(ordered_activations_filename);
+
+   ACTIVATIONS_MAP activations_map;
+   ACTIVATIONS_MAP::iterator activations_iter;
+   for(unsigned int r = 0; r < row_numbers.size(); r++)
+   {
+//      int layer = row_numbers.at(r).at(0);
+      int old_global_node_id = row_numbers.at(r).at(2);
+      int new_global_node_id = row_numbers.at(r).at(4);
+      double median_activation = row_numbers.at(r).at(5);
+      pair<int,double> p(old_global_node_id, median_activation);
+      activations_map[new_global_node_id] = p;
+   }
 
    string edgelist_filename="./edgelist.dat";
    ofstream edgelist_stream;
@@ -160,7 +188,7 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc7_faces");
    }
 
-// Generate layout for network layers and nodes within a 0 <gx <
+// Generate layout for network layers and nodes within a 0 < gx <
 // n_layers , 0 < gy < 2 * n_layers rectangle.  Export layout to graph
 // layout filename which can be ingested by program
 // mains/photosynth/fill_photo_hierarchy within the IMAGESEARCH
@@ -184,20 +212,20 @@ int main(int argc, char* argv[])
    filefunc::openfile(graph_layout_filename, graph_layout_stream);
    graph_layout_stream << "# Image_ID  gX       gY  " << endl << endl;
 
-   int node_counter = 0;
+   int new_global_node_ID = 0;
    int n_layers = n_layer_channels.size();
    for(int n = 0; n < n_layers; n++)
    {
       int n_curr_layer_nodes = n_layer_channels[n];
       cout << "Network layer = " << n << " has " 
            << n_curr_layer_nodes << " nodes" << endl;
-      int start_node_ID = node_counter;
-      double gy = 2 * (n_layers - n);
+      int start_node_ID = new_global_node_ID;
+      double gy = 2 * (n_layers - n) + 0.5;
       
       int max_n_nodes_per_subrow = 52;
 //      int max_n_nodes_per_subrow = 64;
-      int n_layer_columns = n_curr_layer_nodes / max_n_nodes_per_subrow + 1;
-      for(int c = 0; c < n_layer_columns - 1; c++)
+      int n_layer_subrows = n_curr_layer_nodes / max_n_nodes_per_subrow + 1;
+      for(int c = 0; c < n_layer_subrows - 1; c++)
       {
          int m_start = -max_n_nodes_per_subrow / 2;
          int m_stop = m_start + max_n_nodes_per_subrow;
@@ -205,27 +233,46 @@ int main(int argc, char* argv[])
          {
             double numer = m + (c%2) * 0.5;
             double gx = n_layers * (0.5 + numer / max_n_nodes_per_subrow);
-            double gy_prime = gy - 0.25 * (n_layer_columns - 1 - c);
-            graph_layout_stream << node_counter++ << "   " 
+            double gy_prime = gy + 0.25 * (n_layer_subrows - 1 - c);
+
+            activations_iter = activations_map.find(new_global_node_ID);
+            int old_global_node_ID = activations_iter->second.first;
+//            graph_layout_stream << new_global_node_ID << "   " 
+            graph_layout_stream << old_global_node_ID << "   " 
                                 << gx << "   " << gy_prime << endl;
-         } // loop over index m labeling rows within network graph
+
+            cout << "new_global_node_ID= " << new_global_node_ID
+                 << " old_global_node_ID = " << old_global_node_ID
+                 << endl;
+            new_global_node_ID++;
+         } // loop over index m labeling subcolumns within network graph
       }
-      int remaining_column_nodes = n_curr_layer_nodes - max_n_nodes_per_subrow
-         * (n_layer_columns - 1);
-      int m_start = -remaining_column_nodes / 2;
-      int m_stop = m_start + remaining_column_nodes;
+      int remaining_subrow_nodes = n_curr_layer_nodes - max_n_nodes_per_subrow
+         * (n_layer_subrows - 1);
+      int m_start = -remaining_subrow_nodes / 2;
+      int m_stop = m_start + remaining_subrow_nodes;
       for(int m = m_start; m < m_stop; m++)
       {
          double gx = n_layers * (0.5 + double(m) / max_n_nodes_per_subrow);
-         graph_layout_stream << node_counter++ << "   " 
+
+         activations_iter = activations_map.find(new_global_node_ID);
+         int old_global_node_ID = activations_iter->second.first;
+//         graph_layout_stream << new_global_node_ID << "   " 
+         graph_layout_stream << old_global_node_ID << "   " 
                              << gx << "   " << gy << endl;
+
+         cout << "new_global_node_id = " << new_global_node_ID
+              << " old_global_node_id = " << old_global_node_ID
+              << endl;
+
+         new_global_node_ID++;
       }
 
-      int stop_node_ID = node_counter - 1;
+      int stop_node_ID = new_global_node_ID - 1;
       cout << "  Node IDs range from " << start_node_ID << " to "
            << stop_node_ID << endl;
 
-   } // loop over index n labeling columns within network graph
+   } // loop over index n labeling layers within network graph
    filefunc::closefile(graph_layout_filename, graph_layout_stream);
 
 // Generate edgelist for neural network graph which can be imported by
@@ -269,7 +316,18 @@ int main(int argc, char* argv[])
             float weight_sum = 
                classifier.get_weight_sum(layer_index,curr_node,next_node);
 
-            DUPLE duple(curr_node_global_ID, next_node_global_ID);
+// Convert from "new" current and next global node IDs to "old"
+// current and next global node IDs:
+
+//            DUPLE duple(curr_node_global_ID, next_node_global_ID);
+
+            activations_iter = activations_map.find(curr_node_global_ID);
+            int old_curr_node_global_ID = activations_iter->second.first;
+            activations_iter = activations_map.find(next_node_global_ID);
+            int old_next_node_global_ID = activations_iter->second.first;
+            
+            DUPLE duple(old_curr_node_global_ID, old_next_node_global_ID);
+
             layer_edgelist_map[duple] = weight_sum;
          } // loop over next_node index
       } // loop over curr_node index
@@ -289,7 +347,7 @@ int main(int argc, char* argv[])
       double weight_sum_02, weight_sum_98;
       mathfunc::lo_hi_values(
          weight_sums, 0.02, 0.98, weight_sum_02, weight_sum_98);
-      int tic = basic_math::mytruncate(log10(weight_sum_98 - weight_sum_02));
+//      int tic = basic_math::mytruncate(log10(weight_sum_98 - weight_sum_02));
       
       cout << "layer = " << layer_index
            << " curr_layer_name = " << param_layer_names[layer_index]
