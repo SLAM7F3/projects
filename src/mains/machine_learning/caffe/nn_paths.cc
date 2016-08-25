@@ -1,5 +1,15 @@
 // ========================================================================
-// Program NN_PATHS 
+// Program RAW_ACTIVATIONS imports a trained FACENET caffe model.  It
+// also takes in testing images which the model has never seen before.
+// For each FACENET neuron, we count how many input test images cause
+// it to fire.  We also record the mean and median values of its
+// non-zero activations.  Activation statistics for each node in each
+// layer are exported to an output text file.
+
+// RAW_ACTIVATIONS also generates montages of filter response image
+// chips for test images that significantly stimulate at least one
+// FACENET neuron.  The montages are exported to output male and
+// female subdirectories.
 
 // ./nn_paths 
 // /data/caffe/faces/trained_models/test_96.prototxt                     
@@ -7,7 +17,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/16/16; 8/23/16; 8/24/16
+// Last updated on 8/16/16; 8/23/16; 8/24/16; 8/25/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -45,6 +55,8 @@ int main(int argc, char** argv)
    string imagechips_subdir = "./vis_facenet/node_images/";
    string subnetwork_subdir = imagechips_subdir + "subnetworks/";
    filefunc::dircreate(subnetwork_subdir);
+   string activations_subdir = imagechips_subdir + "activations/";
+   filefunc::dircreate(activations_subdir);
    string male_subnetwork_subdir=subnetwork_subdir+"male/";
    string female_subnetwork_subdir=subnetwork_subdir+"female/";
    filefunc::dircreate(male_subnetwork_subdir);
@@ -162,17 +174,18 @@ int main(int argc, char** argv)
 //      << endl;
       int n_strong_activations = 0;
 
-// Periodically update median node activation information:
+// Periodically update node activation frequency and non-zero value
+// information:
 
       if(i > istart && i%50 == 0)
       {
-         string activations_filename=imagechips_subdir+"activations_"
+         string activations_filename=activations_subdir+"activations_"
             +stringfunc::integer_to_string(i,4)+".dat";
          ofstream activations_stream;
          filefunc::openfile(activations_filename, activations_stream);
          activations_stream << 
-            "# layer  node  stim_frac  median  quartile   mean     sigma"
-                            << endl;
+            "# layer  node  stimulation  median              quartile_width            mean               sigma" << endl;
+         activations_stream << "#  ID     ID   fraction     activation          activation                activation         activation" << endl;
          activations_stream << "#  n_images = " << i << endl;
          activations_stream << endl;
 
@@ -185,19 +198,29 @@ int main(int argc, char** argv)
       
 // Count fraction of test images which fire current node:
 
-            int n_stimulations = 0;
+            vector<double> nonzero_activations;
             for(unsigned int j = 0; j < curr_activations.size(); j++)
             {
-               if(curr_activations[j] > 0) n_stimulations++;
+               if(curr_activations[j] > 0)
+               {
+                  nonzero_activations.push_back(curr_activations[j]);
+               }
             }
-            double stimulation_frac = double(n_stimulations)/(i-istart+1);
+            double stimulation_frac = double(nonzero_activations.size())/
+               (i-istart+1);
 
-            double mu, sigma;
-            mathfunc::mean_and_std_dev(curr_activations, mu, sigma);
+            double mu = 0, sigma = 0;
+            double median = 0, quartile_width = 0;
 
-            double median, quartile_width;
-            mathfunc::median_value_and_quartile_width(
-               curr_activations, median, quartile_width);
+            if(nonzero_activations.size() > 0)
+            {
+               mathfunc::mean_and_std_dev(nonzero_activations, mu, sigma);
+//            mathfunc::mean_and_std_dev(curr_activations, mu, sigma);
+               mathfunc::median_value_and_quartile_width(
+                  nonzero_activations, median, quartile_width);
+//               curr_activations, median, quartile_width);
+            }
+
             activations_stream << curr_duple.first << "   "
                                << curr_duple.second << "   "
                                << stimulation_frac << " \t"
@@ -211,8 +234,7 @@ int main(int argc, char** argv)
          filefunc::closefile(activations_filename, activations_stream);
          string banner="Exported "+activations_filename;
          outputfunc::write_banner(banner);
-
-      }
+      } // i conditional
       
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
