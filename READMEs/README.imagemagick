@@ -169,9 +169,12 @@ montage double_quads_image_04084.png full_half_quads.png -mode Concatenate -fram
 
 
 
+
 montage -tile 2x2 -geometry 400x300  \
 multi_hand_bboxes_02622.png \
 single_hand_bboxes_04276.png \
 multi_hand_bboxes_04316.png \
 single_hand_bboxes_02906.png \
 hands_on_faces.png
+
+convert -size 1000x1056 xc:white facenet_architecture.png -gravity center -composite padded_facenet_architecture.png
