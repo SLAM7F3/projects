@@ -17,7 +17,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/16/16; 8/23/16; 8/24/16; 8/25/16
+// Last updated on 8/23/16; 8/24/16; 8/25/16; 8/26/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -191,11 +191,17 @@ int main(int argc, char** argv)
          activations_stream << endl;
 
          activations_stream << 
-"# layer  global node  local node  stimulation  median        quartile_width  mean            sigma" << endl;
+"# Layer  Global node  Local node  Stimulation  Median        Quartile_width  Mean            Sigma" << endl;
          activations_stream << 
 "#  ID       ID            ID      fraction     activation    activation      activation      activation" << endl;
+         activations_stream << endl;
 
-         int global_node_counter = 0;
+// Recall global node IDs 0, 1 and 2 are reserved for the RGB channels
+// within the input imagery data layer 0:
+
+         int n_RGB_channels = 3;
+         int global_node_counter = n_RGB_channels;
+
          for(node_activations_iter = node_activations_map.begin();
              node_activations_iter != node_activations_map.end();
              node_activations_iter++)
@@ -228,7 +234,10 @@ int main(int argc, char** argv)
 //               curr_activations, median, quartile_width);
             }
 
-            activations_stream << curr_duple.first << "   "
+// Recall layer 0 = input imagery data layer:
+
+            int curr_layer = curr_duple.first + 1;
+            activations_stream << curr_layer << "   "
                                << global_node_counter++ << "   "
                                << curr_duple.second << "   "
                                << stimulation_frac << " \t"
@@ -245,17 +254,18 @@ int main(int argc, char** argv)
       } // i conditional
       
       vector<string> montage_lines;
-      montage_lines.push_back(image_filename);
+      montage_lines.push_back("0  "+image_filename);
+
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
-         vector<int> node_IDs;
+         vector<int> local_node_IDs;
          vector<double> node_activations;
          int n_tiny_values = classifier.retrieve_layer_activations(
-            blob_names[layer], node_IDs, node_activations);
+            blob_names[layer], local_node_IDs, node_activations);
          int n_layer_nodes = node_activations.size();
          for(int n = 0; n < n_layer_nodes; n++)
          {
-            DUPLE curr_duple(layer, node_IDs[n]);
+            DUPLE curr_duple(layer, local_node_IDs[n]);
             node_activations_iter = node_activations_map.find(curr_duple);
             if(node_activations_iter == node_activations_map.end())
             {
@@ -293,7 +303,7 @@ int main(int argc, char** argv)
          unix_cmd = "montage -tile "+stringfunc::number_to_string(n_max)+"x1 ";
          for(int n = 0; n < n_max; n++)
          {
-//            cout << "     Node ID = " << node_IDs[n]
+//            cout << "     Local Node ID = " << local_node_IDs[n]
 //                 << " Activation = " << node_activations[n];
             if(renorm_node_activations.size() > 0)
             {
@@ -308,7 +318,7 @@ int main(int argc, char** argv)
             }
 //            cout << endl;
             string chip_basename = layer_name+"_"+
-               stringfunc::integer_to_string(node_IDs[n],3)+".png";
+               stringfunc::integer_to_string(local_node_IDs[n],3)+".png";
             string chip_filename = imagechips_subdir+layer_name+"/"+
                chip_basename;
 
@@ -317,7 +327,7 @@ int main(int argc, char** argv)
             {
                chiplabel_str += "'"+true_gender_label+" c="+
                   stringfunc::number_to_string(classification_score,3)+"' ";
-               string curr_line = stringfunc::number_to_string(layer)+"  "
+               string curr_line = stringfunc::number_to_string(layer+1)+"  "
                   +true_gender_label+"  "
                   +stringfunc::number_to_string(classification_score)+"  "
                   +chip_filename;
@@ -326,10 +336,10 @@ int main(int argc, char** argv)
             else if(renorm_node_activations.size() > 0)
             {
                chiplabel_str += "' node "+stringfunc::number_to_string(
-                  node_IDs[n])+"  a="+stringfunc::number_to_string(
+                  local_node_IDs[n])+"  a="+stringfunc::number_to_string(
                   renorm_node_activations[n],3)+"' ";
-               string curr_line = stringfunc::number_to_string(layer)+"  "
-                  +stringfunc::number_to_string(node_IDs[n])+"  "
+               string curr_line = stringfunc::number_to_string(layer+1)+"  "
+                  +stringfunc::number_to_string(local_node_IDs[n])+"  "
                   +stringfunc::number_to_string(renorm_node_activations[n])
                   +"  "+chip_filename;
                montage_lines.push_back(curr_line);
@@ -353,7 +363,6 @@ int main(int argc, char** argv)
          string montage_filename = "layer_"+
             stringfunc::integer_to_string(layer+1,3)+".png";
          unix_cmd += " "+montage_filename;
-         
 //         sysfunc::unix_command(unix_cmd);
 
       } // loop over layer index
@@ -362,13 +371,35 @@ int main(int argc, char** argv)
       if(classification_score < 0.95) continue;
       if(n_strong_activations < 3) continue;
 
-// Generate network montage from individual layer montages:
+// Check whether there exists at least one image chip corresponding to
+// each Facnet layer 0 through n_layers:
 
-      for(unsigned int m = 0; m < montage_lines.size(); m++)
+      unsigned int n_represented_layers = 0;
+      for(unsigned int layer = 0; layer <= n_layers; layer++)
       {
-         montagestream << montage_lines[m] << endl;
+         for(unsigned int m = 0; m < montage_lines.size(); m++)
+         {
+            vector<string> substrings = 
+               stringfunc::decompose_string_into_substrings(montage_lines[m]);
+            if(layer == stringfunc::string_to_number(substrings[0]))
+            {
+               n_represented_layers++;
+               break;
+
+            }
+         } // loop over index m
+      } // loop over index layer
+
+      if(n_represented_layers == n_layers+1)
+      {
+         for(unsigned int m = 0; m < montage_lines.size(); m++)
+         {
+            montagestream << montage_lines[m] << endl;
+         }
+         montagestream << endl;
       }
-      montagestream << endl;
+      
+// Generate network montage from individual layer montages:
 
       unix_cmd = "montage -geometry +2+2 -tile 1x"
          +stringfunc::number_to_string(n_layers+1)
@@ -393,7 +424,7 @@ int main(int argc, char** argv)
          stringfunc::integer_to_string(i,4)+".png";
       unix_cmd += network_montage_filename;
 //      cout << unix_cmd << endl;
-      sysfunc::unix_command(unix_cmd);
+//      sysfunc::unix_command(unix_cmd);
 
       string banner="Exported "+network_montage_filename;
       outputfunc::write_banner(banner);
