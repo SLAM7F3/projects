@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/12/16; 8/14/16; 8/15/16; 8/17/16
+Last updated on 8/14/16; 8/15/16; 8/17/16; 8/26/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -1229,6 +1229,68 @@ apart into training, validation and testing subsets.  Image chips smaller
 than 48x48 doubled in size.  Solver type = SGD
 
 Training started around 7:20 am
+
+-----------
+*.  Fri, Aug 26, Titan 1, morning
+
+350K combined original + Adience + Iranian faces + non-faces used for training.
+
+Gender classification, new 9-layer FaceNet2, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
+non-faces , base learning rate = 0.001, accuracy layer added for training
+phase, Dropout added into all layers of network.  Dropout probabilities of
+nodes being ignored start small and increase to 0.5 toward end of network.
+Gaussian initialize of all node weights.  Weight decay = 0.0010.  6x
+augmentation of our 40K faces, 2X augmentation of Adience and Iranian
+female faces.  Imagery data broken apart into training, validation and
+testing subsets.  Image chips smaller than 48x48 doubled in size.
+
+Training restarted with new Face02 including a max pool around 10:30.
+Learning rate = 0.0003.  Definitely too large !!!
+
+Training restarted around 12:30 pm with simpler Face02 network.  Learning
+rate = 0.0003.  Definitely too large.  Restarted at 12:43 with learning
+rate = 0.00003.
+
+Training restarted around 3:15 pm with smaller version of Face01 network.
+Learning rate = 0.003.  Running on 350K Aug 5 training set.
+After 45 mins, 34K iterations ran and caffe test accuracy was around 0.85.  
+
+Training restarted around 4 pm with 5 conv layers in smaller version of
+Face01 network.  Learning rate = 0.003.
+
+
+*.  Fri, Aug 26, Titan 3, morning
+
+350K combined original + Adience + Iranian faces + non-faces used for training.
+
+Gender classification, new 9-layer FaceNet2, baseline set of O(20K) female
++ O(20K) male faces + 17K Adience faces + 300 Iranian females + O(90K)
+non-faces , base learning rate = 0.001, accuracy layer added for training
+phase, Dropout added into all layers of network.  Dropout probabilities of
+nodes being ignored start small and increase to 0.5 toward end of network.
+Gaussian initialize of all node weights.  Weight decay = 0.0010.  6x
+augmentation of our 40K faces, 2X augmentation of Adience and Iranian
+female faces.  Imagery data broken apart into training, validation and
+testing subsets.  Image chips smaller than 48x48 doubled in size.
+
+Training restarted with new Face02 including a max pool around 10:30.
+Learning rate = 0.0001.  Caffe validation score --> 0.5.  
+Try rerunning at 11:50 am with learning rate = 0.00003.
+
+Training restarted around 12:30 pm with simpler Face02 network.  Learning
+rate = 0.0001
+
+Training restarted around 3:20 pm with smaller version of Face01 network.
+Learning rate = 0.001.  Running on 350K Aug 5 training set.
+
+Training restarted around 4 pm with 5 conv layers in smaller version of
+Face01 network.  Learning rate = 0.001.  Stopped training after 30K
+iterations.  Caffe test accuracy was around 0.79.   For comparison, caffe
+test accuracy is around 0.80 on T1 after 17.6K iterations.
+
+Training restarted around 5:25 pm with 6 conv layers in smaller version of
+Face01 network.  Learning rate = 0.003.  
 
 
 ======================================
