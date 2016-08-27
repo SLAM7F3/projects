@@ -102,13 +102,12 @@ int main(int argc, char *argv[])
    vector<string> cleaned_strings;
    if(generate_just_digits_flag)
    {
-      int n_digits = 220000;
+      int n_digits = 220;
+//      int n_digits = 220000;
       for(int n = 0; n < n_digits; n++)
       {
          int curr_digit = n%10;
          cleaned_strings.push_back(stringfunc::number_to_string(curr_digit));
-         cout << "n = " << n << " cleaned_string = " << cleaned_strings.back()
-              << endl;
       }
    }
    else
