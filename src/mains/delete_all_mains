@@ -92,7 +92,7 @@ cd ../spase
 build_anti_spase
 cd ../structmotion
 build_anti_structmotion
-cd ../../syntext
+cd ../syntext
 build_anti_syntext
 cd ../tech_challenge
 build_anti_challenge

@@ -96,7 +96,7 @@ cd ../spase
 build_spase
 cd ../structmotion
 build_structmotion
-cd ../../syntext
+cd ../syntext
 build_syntext
 cd ../tech_challenge
 build_tech_challenge
