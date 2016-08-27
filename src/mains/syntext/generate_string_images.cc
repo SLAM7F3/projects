@@ -46,7 +46,7 @@
 //			 ./generate_string_images
 
 // ==========================================================================
-// Last updated on 4/15/16; 4/17/16; 4/20/16; 4/22/16
+// Last updated on 4/15/16; 4/17/16; 4/20/16; 4/22/16; 8/27/16
 // ==========================================================================
 
 //   c='0';	// ascii = 48
@@ -96,8 +96,26 @@ int main(int argc, char *argv[])
 
    nrfunc::init_time_based_seed();
 
+
+   bool generate_just_digits_flag = true;
+   
    vector<string> cleaned_strings;
-   textfunc::generate_phrase_set(cleaned_strings);
+   if(generate_just_digits_flag)
+   {
+      int n_digits = 20;
+//      int n_digits = 220000;
+      for(int n = 0; n < n_digits; n++)
+      {
+         int curr_digit = n%10;
+         cleaned_strings.push_back(stringfunc::number_to_string(curr_digit));
+         cout << "n = " << n << " cleaned_string = " << cleaned_strings.back()
+              << endl;
+      }
+   }
+   else
+   {
+      textfunc::generate_phrase_set(cleaned_strings);
+   }
 
 // Import a variety of ttf files for fonts which we have personally
 // confirmed as "reasonable":
@@ -265,8 +283,10 @@ int main(int argc, char *argv[])
 
       cout << " 3" << flush;
 
-      unsigned int char_width_lo = 5;
-      unsigned int char_width_hi = 100;
+//      unsigned int char_width_lo = 5;
+//      unsigned int char_width_hi = 100;
+      unsigned int char_width_lo = 10;
+      unsigned int char_width_hi = 96;
       double lambda = 0.09;
 
       if(handwriting_font_flag)
