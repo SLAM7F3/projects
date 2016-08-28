@@ -30,8 +30,9 @@ class tictac3d
    friend std::ostream& operator<< 
       (std::ostream& outstream,const tictac3d& C);
 
+   void randomize_board_state();
    void display_board_state();
-   bool check_player_win(int player_ID);
+   int check_player_win(int player_ID);
 
   private: 
 
@@ -51,6 +52,10 @@ class tictac3d
    void print_winning_pattern();
 
    bool Zplane_win(int player_ID, int pz);
+   bool Zcolumn_win(int player_ID, int px, int py);
+   bool corner_2_corner_win(int player_ID);
+   bool Zslant_xconst_win(int player_ID, int px);
+   bool Zslant_yconst_win(int player_ID, int py);
 };
 
 // ==========================================================================
