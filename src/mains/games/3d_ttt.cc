@@ -20,6 +20,8 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d();
 
    ttt_ptr->display_board_state();
+   ttt_ptr->check_player_win(1);
+   ttt_ptr->check_player_win(-1);
 
    delete ttt_ptr;
 }

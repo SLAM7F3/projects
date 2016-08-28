@@ -9,13 +9,18 @@
 
 #include <map>
 #include <vector>
-#include "math/ltmatrix.h"
-#include "math/threematrix.h"
+#include "math/lttriple.h"
+#include "math/threevector.h"
 
 class tictac3d
 {
    
   public:
+
+   typedef std::map<triple, int, lttriple> WINNING_POSNS_MAP;
+
+// independent triple:  winning board posns
+// dependent int:  winner ID
 
 // Initialization, constructor and destructor functions:
 
@@ -26,12 +31,15 @@ class tictac3d
       (std::ostream& outstream,const tictac3d& C);
 
    void display_board_state();
+   bool check_player_win(int player_ID);
 
   private: 
 
    int n_size;
    std::vector<int> curr_board_state;
 
+   WINNING_POSNS_MAP winning_posns_map;
+   WINNING_POSNS_MAP::iterator winning_posns_iter;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -39,6 +47,10 @@ class tictac3d
    int get_cell_value(int px, int py, int pz);
    void display_Zgrid_state(int pz);
 
+   bool winning_cell_posn(int player_ID, int px, int py, int pz);
+   void print_winning_pattern();
+
+   bool Zplane_win(int player_ID, int pz);
 };
 
 // ==========================================================================
