@@ -1,0 +1,61 @@
+Jon Schmid
+3dttt
+
+I calculate threatspace faster than any one else, besides maybe Steve
+who does it the same way on the server.  It only takes four get operations 
+per move.  That's one increment operation in the ThreatList for each of the 
+four gets that succeed.
+
+I histogram the total number of 3's 2's and 1's into separate bins.
+Then I act directly on any 4's i can get, or any move that gives me
+two 3s when my opponent has none.  Those are both guaranteed wins.
+Then my static evaluator choses a good move based on the total numbers of
+3s, 2s, and 1s.
+
+I wrote code to train my constants for the static evaluator with Reinforcement
+Learning.  I found that 19 and 10 worked really good after 6 hours of methodical
+search against all constants in a given range.  My static evaluator used the 
+constants 3const, and 2const to scale the histogrammed values of 1count 2count
+and 3count.
+
+Static Evaluator Code:
+---------------------
+(setq score (-
+				  (+ (*  my3count  3const) (* my2count  2const) my1count)
+				  (+ (*  his3count 3const) (* his2count 2const) his1count)))
+-here... 3const and 2const were discovered by my methodical search method
+
+The static eval constants turned out to not help at all once i had all the features
+of a good evaluator with shortcuts.
+
+I have a working opening move sequence.  It will try to go to "64" 
+(a cube corner), unless its taken, then it will go to the symmetric
+cube corner "0".
+
+To Run: paste the following line->    :cl schmid3.lisp
+
+Then you can run the normal 3dttt
+functions.                             (3dttt:connect)
+							   (3dttt:login 'superschmid) 
+							   (3dttt:play-game 'any)
+
+
+FILES
+-----------------------------------------------------------------------------------------------------------
+schmid3.lisp                                                 The main file containing my make-move function.
+
+schmid3_notworking_butwith_started_minimax.lisp              A version with an almost working minimax algorithm.
+
+game_start_calc.lisp                                         Pre-Game building of my fast data structures.
+
+staticEvalTrainer.lisp                                       The superschmid side of the static-eval constant 
+							     training algorithm.  There was another similar file
+							     that ran on another process to play it.  Together they
+							     allowed training on all constants in a range.
+
+STATS.txt						     The explanations and results of my progress and training
+							     throughout the project.
+
+
+
+

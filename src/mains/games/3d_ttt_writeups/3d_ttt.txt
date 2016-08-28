@@ -1,0 +1,107 @@
+3D Tic Tac Toe
+--------------
+ Al Robinson
+ CS 242
+ March 26, 2002
+
+
+This is a LISP program that plays 3D Tic Tac Toe on a 4x4x4 board.  
+It can use two algorithms, minimax or alpha-beta, and search to
+a given depth.  
+
+Using the program
+-----------------
+Using the program is simple.  It is designed to use the 3dttt program
+included in the assignment.  A new game is initialized using (new-game),
+and a move is made using (make-move lastmove), where lastmove is the 
+move most recently used by opponent (nil if no move has occurred yet).  
+Moves are communicated using numbers 0-63 to represent spaces on the 
+game board.
+
+How it works
+------------
+Five lists are maintained.  The first is simply a list of empty spaces
+still left on the board.  There are then two lists representing the 
+moves occupied by the first and second player, and two more lists 
+representing the possible ways to win for the first and second player.
+
+The list of wins start out as lists of 76 4-tuples, with each sublist
+containing the four board positions which make up a winning move.  After
+each move, the opposing player's win list is pruned so that the win moves
+which are not possible (since the other player has blocked them) are no 
+longer included.
+
+These list of win states are used in the static evaluator.  The operation
+of the static evaluator is fairly straightforward: for each player, a list
+is made which contains, for each possible win state, the number of matches
+between that win state and the player's own positions.  4, of course, 
+represents a won game.  It then decides if the current state means that a 
+win is assured for one player or the other.  If so, the max evaluation of
+1 or -1 is outputted.  Otherwise, the number of ones, twos, and threes for
+each player are counted and divided by a constant, and their difference
+is outputted as the evaluation.
+
+The operation of the algorithms is straight-forward as well.  The minimax
+function takes in a depth as an argument and then iterates through 
+every move in the open position list.  It simulates each move and calls 
+the min function with a 1 smaller depth, which then simulates each successive 
+move and calls the max function, etc., until depth 1 is reached, at 
+which point the evaluation function is called.
+
+Alpha-beta pruning search works exactly the same way, except before each
+iteration it checks to see if the value is such that it should prune.  This
+greatly speeds up execution time.
+
+
+
+
+
+
+
+Performance
+-----------
+Playing-wise, until the very end of development my static evaluator
+playing by itself (depth 1) was beating depth 2 or 3.  However, with
+the final changes I made to alpha-beta, depth 2 and depth 3 alpha-beta
+began to finally beat depth 1.  It plays fairly well (in that no human
+who tried could beat it) at any depth.  
+
+The program performs fairly slow, although alpha-beta moves much faster
+because of pruning:
+
+Following are rough average of average move time (system time) and
+average number of nodes pruned for three depths for each algorithms.
+As can be seen, the pruning in alpha-beta greatly increases the speed
+of performance, especially in depth 3.  This increase should grow
+exponentially as the depth gets larger.  For now, it appears that at 
+each depth the average move time is three times greater for minimax 
+than it is for alpha-beta.
+
+		 -------------------------------------------------
+		|     Depth    |   Avg Move Time   |  Avg Pruned  |
+		 --------------+-------------------+--------------
+		|       1      |        45ms       |     N/A      |
+    Minimax -=>	|       2      |      2500ms       |     N/A      |
+		|       3      |    180000ms       |     N/A      |
+		 --------------+-------------------+--------------
+		|       1      |        45ms       |        0     |
+ Alpha-Beta -=>	|       2      |       700ms       |     2000     |
+		|       3      |     60000ms	   |	40000     |
+		 ------------------------------------------------- 
+
+
+
+What could be added
+-------------------
+The best way to make this program run better would be to increase the 
+speed of the evaluation function and its helper functions.  This would
+allow the depth of the alpha-beta search to be greater, which would 
+make it play better.
+
+The best way to increase this would probably be to change the way game
+information is stored, so it's oriented in a way that places more stress
+on space (which is available in abundance) and less on computation.
+
+Of course, making the evaluation function work better is always a good
+way to make it play better, though increasing the depth can compensate
+for a less than perfect evaluation function.
