@@ -134,9 +134,15 @@ int main(int argc, char** argv)
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-   double Bmean = 104.008;
-   double Gmean = 116.669;
-   double Rmean = 122.675;
+// Mean RGB values derived from O(350K) 96x96 training face image chips
+   double Bmean = 38.5;
+   double Gmean = 41.9;
+   double Rmean = 49.0;
+
+// Imagenet mean RGB values:
+//   double Bmean = 104.008;
+//   double Gmean = 116.669;
+//   double Rmean = 122.675;
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("non");

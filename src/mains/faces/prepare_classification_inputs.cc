@@ -42,9 +42,16 @@ int main(int argc, char *argv[])
    timefunc::initialize_timeofday_clock();
    sysfunc::clearscreen();
 
-   bool compute_mean_RGB_values_flag = true;
-//   bool compute_mean_RGB_values_flag = false;
-   
+//    bool compute_mean_RGB_values_flag = true;
+   bool compute_mean_RGB_values_flag = false;
+
+// On 8/28/16, we used this program to compute the following mean RGB
+// values for O(350K) 96x96 training face image chips:
+
+//   Mean B value = 38.5125
+//   Mean G value = 41.9476
+//   Mean R value = 49.0264
+
    vector<string> training_images_subdirs;
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";

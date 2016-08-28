@@ -4,7 +4,63 @@ Gender detection results for Face02 networks
 Last updated on 8/26/16
 ==========================================================================
 
-T1
+Lessons learned:
+
+1.  After training facenets with 5, 6 and 7 conv layers on Sat Aug 28, we
+found no compelling benefit over using 4 conv layers as in facenet01.
+Facial gender classification appears to work best with 4 conv layers!
+
+
+-------------------------------------------------------------------
+
+350K combined original + Adience + Iranian faces + non-faces used for training.
+
+Gender classification, baseline set of O(20K) female + O(20K) male faces +
+17K Adience faces + 300 Iranian females + O(90K) non-faces , base learning
+rate = 0.003, accuracy layer added for training phase, Dropout added into
+all layers of network.  Dropout probabilities of nodes being ignored start
+small and increase to 0.5 toward end of network.  Gaussian initialize all
+node weights. with sigma = 0.1 for first conv and last fc layers and sigma
+= 0.01 for all other weight layers.  Weight decay = 0.0010.  6x
+augmentation of our 40K faces, 2X augmentation of Adience and Iranian
+female faces.  Imagery data broken apart into training, validation and
+testing subsets.  Image chips smaller than 48x48 doubled in size.
+
+mean_B_value: 38.5   #  mu_blue for O(350K) 96x96 training face image chips
+mean_G_value: 41.9   #  mu_green for O(350K) 96x96 training face image chips
+mean_R_value: 49.0   #  mu_red for O(350K) 96x96 training face image chips
+  
+-------------------------------------------------------------------
+
+*.  Sun Aug 28 , Titan 1, morning
+
+Training started on Facenet 02a around 8:40 am
+
+/data/caffe/faces/trained_models/Aug27_2a_T1/train_iter_2000.caffemodel 
+n_total_weights = 4813056 n_total_biases = 835
+n = 0 n_layer_nodes = 64
+n = 1 n_layer_nodes = 96
+n = 2 n_layer_nodes = 128
+n = 3 n_layer_nodes = 160
+n = 4 n_layer_nodes = 192
+n = 5 n_layer_nodes = 192
+n = 6 n_layer_nodes = 3
+
+*.  Sun Aug 28 , Titan 3, morning
+
+Training started on Facenet 02b around 8:43 am
+
+/data/caffe/faces/trained_models/Aug27_2b_T3/train_iter_5000.caffemodel 
+n_total_weights = 4776192 n_total_biases = 643
+
+n = 0 n_layer_nodes = 64
+n = 1 n_layer_nodes = 96
+n = 2 n_layer_nodes = 128
+n = 3 n_layer_nodes = 160
+n = 4 n_layer_nodes = 192
+n = 5 n_layer_nodes = 3
+
+
 
 -------------------------------------------------------------------
 Facenet1: 4 convolutions  
