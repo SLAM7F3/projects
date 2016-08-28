@@ -2,7 +2,7 @@
 // texture_rectangle class provides functionality for displaying
 // images and videos within OSG TextureRectangles.
 // ========================================================================
-// Last updated on 7/29/16; 8/1/16; 8/5/16; 8/9/16
+// Last updated on 8/1/16; 8/5/16; 8/9/16; 8/28/16
 // ========================================================================
 
 #ifndef TEXTURE_RECTANGLE_H
@@ -276,6 +276,7 @@ class texture_rectangle
      int px_lo,int px_hi,int py_lo,int py_hi,
      double& mu_R,double& mu_G,double& mu_B,
      double& sigma_R,double& sigma_G,double& sigma_B);
+   void get_pixel_RGB_means(double& mu_R,double& mu_G,double& mu_B);
 
 // Drawing member functions:
 

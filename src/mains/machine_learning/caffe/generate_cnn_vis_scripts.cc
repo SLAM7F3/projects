@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/18/16; 8/20/16; 8/22/16; 8/24/16
+// Last updated on 8/20/16; 8/22/16; 8/24/16; 8/28/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -92,7 +92,9 @@ int main(int argc, char* argv[])
    else 
    {
       Facenet_flag = true;
-      max_nodes_per_param_layer = 512;
+      max_nodes_per_param_layer = 20;
+//      max_nodes_per_param_layer = 25;
+//      max_nodes_per_param_layer = 512;
    }
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;
@@ -123,8 +125,15 @@ int main(int argc, char* argv[])
    }
    else if(Facenet_flag)
    {
-      scripts_subdir="./vis_facenet/";
+//      scripts_subdir="./vis_facenet/";
+      scripts_subdir="./vis_facenet2/";
+      cout << "Enter subdir of vis_facenet2 into which image chips will be exported" << endl;
+      string scripts_subsubdir;
+      cin >> scripts_subsubdir;
+      filefunc::add_trailing_dir_slash(scripts_subsubdir);
+      scripts_subdir += scripts_subsubdir;
    }
+
    filefunc::dircreate(scripts_subdir);
    string node_images_subdir=scripts_subdir+"node_images/";
    filefunc::dircreate(node_images_subdir);
@@ -201,12 +210,27 @@ int main(int argc, char* argv[])
    else if (Facenet_flag)
    {
       param_layer_names.push_back("conv1a");
+      param_layer_names.push_back("conv1b");
+      param_layer_names.push_back("conv2a");
+      param_layer_names.push_back("conv2b");
+      param_layer_names.push_back("conv3a");
+      param_layer_names.push_back("conv3b");
+      param_layer_names.push_back("conv4");
+      param_layer_names.push_back("fc5");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7_faces");
+
+/*
+// Facenet1:
+      param_layer_names.push_back("conv1a");
       param_layer_names.push_back("conv2a");
       param_layer_names.push_back("conv3a");
       param_layer_names.push_back("conv4a");
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
+*/
+
       init_scale = 15; // empirically reduced for 96x96 face images
    }
 
@@ -232,7 +256,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 30;
+         max_iters = 5;
+//         max_iters = 30;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -245,7 +270,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 30;
+         max_iters = 5;
+//         max_iters = 30;
       }
       
       for(int iter = 0; iter < max_iters; iter++)
@@ -359,8 +385,6 @@ int main(int argc, char* argv[])
             outstream << "--num_sizes=1 \\" << endl;
             outstream << "--iter_behavior=print" << endl;
 */
-
-
 
             filefunc::closefile(curr_script_filename, outstream);
             filefunc::make_executable(curr_script_filename);

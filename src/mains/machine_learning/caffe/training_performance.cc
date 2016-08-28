@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 8/2/16; 8/8/16; 8/15/16; 8/16/16
+// Last updated on 8/8/16; 8/15/16; 8/16/16; 8/28/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -83,23 +83,15 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Aug15_360K_96cap_nmf_T1/";
+      "Aug26_7conv_T1/";
+//       "Aug26_6conv_T3/";
+//      "Aug26_5conv_T1/";
+//      "Aug15_360K_96cap_nmf_T1/";
 //      "Aug15_260K_96cap_mf_T3/";
 //        "Aug6_350K_96cap_T1/";
 //        "Aug6_350K_96cap_T3/";
 //      "Aug3_260K_96cap_T1/";
 //      "Aug3_260K_96cap_T3/";
-//       "Aug2_184K_64cap_T1/";
-//       "Aug2_184K_96cap_T3/";
-//       "Aug2_184K_T3/";
-//       "Aug2_184K_T1/";
-//       "Aug1_37K_T3/";
-//       "Jul30_150K_doublesized_morecapacity_T3/";
-//       "Jul30_150K_doublesized_T1/";
-//      "Jul30_41K_doublesized_morecapacity_T3/";
-//      "Jul30_41K_doublesized_T1/";
-//      "Jul29_150K_7layers_singleface_morecapacity_0.001wd_T3/";
-//       "Jul29_150K_7layers_singleface_T1/";
 
    string log_filename=dated_subdir+"caffe.bin.INFO";
    bool strip_comments_flag = false;

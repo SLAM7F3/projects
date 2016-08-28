@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 8/3/16; 8/6/16; 8/10/16; 8/15/16
+// Last updated on 8/6/16; 8/10/16; 8/15/16; 8/28/16
 // ==========================================================================
 
 #include <iostream>
@@ -23,6 +23,7 @@
 #include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
+#include "video/texture_rectangle.h"
 #include "time/timefuncs.h"
 
 using std::cin;
@@ -41,6 +42,9 @@ int main(int argc, char *argv[])
    timefunc::initialize_timeofday_clock();
    sysfunc::clearscreen();
 
+   bool compute_mean_RGB_values_flag = true;
+//   bool compute_mean_RGB_values_flag = false;
+   
    vector<string> training_images_subdirs;
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
@@ -49,6 +53,8 @@ int main(int argc, char *argv[])
    vector<string> dated_subdirs;
    dated_subdirs.push_back("Aug15_female_106x106_augmented/");
    dated_subdirs.push_back("Aug15_male_106x106_augmented/");
+//   dated_subdirs.push_back("Aug2_female_106x106_augmented/");
+//   dated_subdirs.push_back("Aug2_male_106x106_augmented/");
    dated_subdirs.push_back("Jul31_106x106_adience/");
    dated_subdirs.push_back("Iran_106x106/");
    dated_subdirs.push_back("nonface_106x106/");
@@ -97,6 +103,44 @@ int main(int argc, char *argv[])
       {
          image_filenames.push_back(curr_image_filenames[i]);
       }
+   }
+
+   if(compute_mean_RGB_values_flag)
+   {
+      string banner="Computing mean RGB values";
+      outputfunc::write_banner(banner);
+
+      double img_mu_R, img_mu_G, img_mu_B;
+      double total_mu_R = 0, total_mu_G = 0, total_mu_B = 0;
+      texture_rectangle *tr_ptr = new texture_rectangle(
+         image_filenames.front(), NULL);
+
+      int n_images = image_filenames.size();
+      double renorm_factor = 1.0 / n_images;
+      for(int i = 0; i < n_images; i++)
+      {
+         double progress_frac=double(i)/n_images;
+         if(i > 0 && i%5000 == 0)
+         {
+            outputfunc::print_elapsed_and_remaining_time(progress_frac);
+            cout << "i = " << i << " n_images = " << n_images << endl;
+            double factor = double(n_images) / i;
+            cout << "Mean B value = " << total_mu_B * factor << endl;
+            cout << "Mean G value = " << total_mu_G * factor << endl;
+            cout << "Mean R value = " << total_mu_R * factor << endl;
+         }
+         tr_ptr->fast_import_photo_from_file(image_filenames[i]);
+         tr_ptr->get_pixel_RGB_means(img_mu_R, img_mu_G, img_mu_B);
+         total_mu_R += renorm_factor * img_mu_R;
+         total_mu_G += renorm_factor * img_mu_G;
+         total_mu_B += renorm_factor * img_mu_B;
+      }
+      delete tr_ptr;
+      cout << "=================================================== " << endl;
+      cout << "Mean B value = " << total_mu_B << endl;
+      cout << "Mean G value = " << total_mu_G << endl;
+      cout << "Mean R value = " << total_mu_R << endl;
+      cout << "=================================================== " << endl;
    }
 
    string output_filename=training_subdir+"all_images_vs_classes.txt";

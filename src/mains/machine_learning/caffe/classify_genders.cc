@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/8/16; 8/9/16; 8/10/16; 8/16/16
+// Last updated on 8/9/16; 8/10/16; 8/16/16; 8/28/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -522,14 +522,17 @@ int main(int argc, char** argv)
   prob_female_incorrect.writeprobdists(false);
 */
 
-            string banner="Exported correctly classified chips to "+
-               correct_chips_subdir;
-            outputfunc::write_banner(banner);
-            banner="Exported incorrectly classified chips to "+
-               incorrect_chips_subdir;
-            outputfunc::write_banner(banner);
-            banner="Exported unsure chips to "+ unsure_chips_subdir;
-            outputfunc::write_banner(banner);
+            if(copy_image_chips_flag)
+            {
+               string banner="Copied correctly classified chips to "+
+                  correct_chips_subdir;
+               outputfunc::write_banner(banner);
+               banner="Copied incorrectly classified chips to "+
+                  incorrect_chips_subdir;
+               outputfunc::write_banner(banner);
+               banner="Copied unsure chips to "+ unsure_chips_subdir;
+               outputfunc::write_banner(banner);
+            }
 
             double curr_score = 
                (1 - incorrect_weight_frac) * 

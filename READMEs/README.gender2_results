@@ -1,0 +1,220 @@
+==========================================================================
+Gender detection results for Face02 networks
+==========================================================================
+Last updated on 8/26/16
+==========================================================================
+
+T1
+
+-------------------------------------------------------------------
+Facenet1: 4 convolutions  
+
+/data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
+
+n_total_weights = 10575136 n_total_biases = 1283
+
+n_nonface = 1025 n_male = 1819 n_female = 1688
+
+n_correct = 3810
+ n_nonface_correct = 1018 n_male_correct = 1553 n_female_correct = 1239
+
+
+n_incorrect = 458
+ n_nonface_incorrect = 7 n_male_incorrect = 210 n_female_incorrect = 241
+
+ n_unsure = 264
+ n_male_unsure = 56 n_female_unsure = 208
+
+frac_correct = 0.840688 frac_unsure = 0.0582524 frac_incorrect = 0.101059
+
+frac_nonface_correct = 0.993171
+frac_nonface_incorrect = 0.00682927
+
+frac_male_correct = 0.853766
+frac_male_unsure = 0.0307861
+frac_male_incorrect = 0.115448
+
+frac_female_correct = 0.734005
+frac_female_unsure = 0.123223
+frac_female_incorrect = 0.142773
+
+Confusion matrix:
+
+1021	2	6	0	
+51	1553	159	56	
+25	216	1239	208	
+0	0	0	0	
+
+-------------------------------------------------------------------
+5 convolutions  (terminated OK), Titan 1
+
+  /data/caffe/faces/trained_models/Aug26_5conv_T1/train_iter_300000.caffemodel
+  caffe validation accuracy asymptotes to 0.886, no overfitting
+  n_total_weights = 4849920 n_total_biases = 899
+	n = 0 n_layer_nodes = 64
+	n = 1 n_layer_nodes = 64
+	n = 2 n_layer_nodes = 96
+	n = 3 n_layer_nodes = 128
+	n = 4 n_layer_nodes = 160
+	n = 5 n_layer_nodes = 192
+	n = 6 n_layer_nodes = 192
+	n = 7 n_layer_nodes = 3
+
+n_nonface = 1023 n_male = 1819 n_female = 1688
+
+n_correct = 3754
+ n_nonface_correct = 1000 n_male_correct = 1538 n_female_correct = 1216
+
+n_incorrect = 483
+ n_nonface_incorrect = 23 n_male_incorrect = 197 n_female_incorrect = 263
+
+ n_unsure = 293
+ n_male_unsure = 84 n_female_unsure = 209
+
+frac_correct = 0.828698 frac_unsure = 0.0646799 frac_incorrect = 0.106623
+
+frac_nonface_correct = 0.977517
+frac_nonface_incorrect = 0.0224829
+
+frac_male_correct = 0.84552
+frac_male_unsure = 0.0461792
+frac_male_incorrect = 0.108301
+
+frac_female_correct = 0.720379
+frac_female_unsure = 0.123815
+frac_female_incorrect = 0.155806
+
+Confusion matrix:
+
+1001	27	1	0	
+44	1538	153	84	
+22	241	1216	209	
+0	0	0	0	
+
+-------------------------------------------------------------------
+6 convolutions  (terminated OK),  Titan 3
+
+  /data/caffe/faces/trained_models/Aug26_6conv_T3/train_iter_273000.caffemodel
+  caffe validation accuracy asymptotes to 0.883, no overfitting
+  n_total_weights = 4932864 n_total_biases = 995
+
+	n = 0 n_layer_nodes = 64
+	n = 1 n_layer_nodes = 64
+	n = 2 n_layer_nodes = 96
+	n = 3 n_layer_nodes = 96
+	n = 4 n_layer_nodes = 128
+	n = 5 n_layer_nodes = 160
+	n = 6 n_layer_nodes = 192
+	n = 7 n_layer_nodes = 192
+	n = 8 n_layer_nodes = 3
+
+n_nonface = 1021 n_male = 1819 n_female = 1688
+
+n_correct = 3789
+ n_nonface_correct = 1006 n_male_correct = 1509 n_female_correct = 1274
+
+n_incorrect = 474
+ n_nonface_incorrect = 15 n_male_incorrect = 231 n_female_incorrect = 228
+
+ n_unsure = 265
+ n_male_unsure = 79 n_female_unsure = 186
+
+frac_correct = 0.836793 frac_unsure = 0.0585247 frac_incorrect = 0.104682
+
+frac_nonface_correct = 0.985309
+frac_nonface_incorrect = 0.0146915
+
+frac_male_correct = 0.829577
+frac_male_unsure = 0.0434305
+frac_male_incorrect = 0.126993
+
+frac_female_correct = 0.754739
+frac_female_unsure = 0.11019
+frac_female_incorrect = 0.135071
+
+Confusion matrix:
+
+1010	17	2	0	
+51	1509	180	79	
+26	202	1274	186	
+0	0	0	0	
+
+
+
+-------------------------------------------------------------------
+7 convolutions  (terminated OK)
+
+  /data/caffe/faces/trained_models/Aug26_7conv_T1/train_iter_113221.caffemodel
+  caffe validation accuracy asymptotes to 0.881, no overfitting
+  Trained for only 30 epochs.  Accuracy might still have been
+     slightly increasing at end of session
+  initial 0.003 learning rate is too high!
+  n_total_weights = 5080320 n_total_biases = 1123
+
+n = 0 n_layer_nodes = 64
+n = 1 n_layer_nodes = 64
+n = 2 n_layer_nodes = 96
+n = 3 n_layer_nodes = 96
+n = 4 n_layer_nodes = 128
+n = 5 n_layer_nodes = 128
+n = 6 n_layer_nodes = 160
+n = 7 n_layer_nodes = 192
+n = 8 n_layer_nodes = 192
+n = 9 n_layer_nodes = 3
+
+n_nonface = 1025 n_male = 1819 n_female = 1688
+
+n_correct = 3757
+ n_nonface_correct = 1016 n_male_correct = 1487 n_female_correct = 1254
+
+
+n_incorrect = 533
+ n_nonface_incorrect = 9 n_male_incorrect = 258 n_female_incorrect = 266
+
+ n_unsure = 242
+ n_male_unsure = 74 n_female_unsure = 168
+
+frac_correct = 0.828994 frac_unsure = 0.0533981 frac_incorrect = 0.117608
+
+frac_nonface_correct = 0.99122
+frac_nonface_incorrect = 0.00878049
+
+frac_male_correct = 0.817482
+frac_male_unsure = 0.0406817
+frac_male_incorrect = 0.141836
+
+frac_female_correct = 0.742891
+frac_female_unsure = 0.0995261
+frac_female_incorrect = 0.157583
+
+Confusion matrix:
+
+1018	10	1	0	
+71	1487	187	74	
+43	223	1254	168	
+0	0	0	0	
+
+
+........................................................
+7 convolutions, 2 fc layers, 2 max pools + 1 avg pool (running as of 1:45
+pm Sat) 
+
+T3
+
+
+
+
+........................................................
+8 convolutions (failed to converge!)
+
+........................................................
+7 convolutions, 2 fc layers (running as of noontime Sat)
+
+
+
+======================================
+TODO:
+
+*.  Break out all Magick++ methods in videofuncs and imagefuncs namespaces
+into new magickfuncs namespace sitting in src/images/
+

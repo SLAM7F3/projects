@@ -9,7 +9,7 @@
 // ========================================================================
 // texture_rectangle provides functionality for displaying video files.
 // ========================================================================
-// Last updated on 6/25/16; 8/1/16; 8/5/16; 8/9/16
+// Last updated on 8/1/16; 8/5/16; 8/9/16; 8/28/16
 // ========================================================================
 
 #include <iostream>
@@ -2738,15 +2738,26 @@ void texture_rectangle::get_pixel_region_RGB_moments(
 // and quartile widths rather than means and standard deviations.  And
 // the latter are faster to compute than the former...
 
-//   mathfunc::mean_and_std_dev(region_R_values,mu_R,sigma_R);
-//   mathfunc::mean_and_std_dev(region_G_values,mu_G,sigma_G);
-//   mathfunc::mean_and_std_dev(region_B_values,mu_B,sigma_B);
+   mathfunc::mean_and_std_dev(region_R_values,mu_R,sigma_R);
+   mathfunc::mean_and_std_dev(region_G_values,mu_G,sigma_G);
+   mathfunc::mean_and_std_dev(region_B_values,mu_B,sigma_B);
    
-   mathfunc::median_value_and_quartile_width(region_R_values,mu_R,sigma_R);
-   mathfunc::median_value_and_quartile_width(region_G_values,mu_G,sigma_G);
-   mathfunc::median_value_and_quartile_width(region_B_values,mu_B,sigma_B);
+//   mathfunc::median_value_and_quartile_width(region_R_values,mu_R,sigma_R);
+//   mathfunc::median_value_and_quartile_width(region_G_values,mu_G,sigma_G);
+//   mathfunc::median_value_and_quartile_width(region_B_values,mu_B,sigma_B);
 }
 
+
+void texture_rectangle::get_pixel_RGB_means(
+   double& mu_R,double& mu_G,double& mu_B)
+{
+   get_pixel_region_RGB_values(
+      0, getWidth() - 1, 0, getHeight() - 1, image_refptr->data());
+   
+   mu_R = mathfunc::mean(region_R_values);
+   mu_G = mathfunc::mean(region_G_values);
+   mu_B = mathfunc::mean(region_B_values);
+}
 
 // ========================================================================
 // Drawing member functions

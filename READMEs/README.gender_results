@@ -1293,6 +1293,38 @@ Training restarted around 5:25 pm with 6 conv layers in smaller version of
 Face01 network.  Learning rate = 0.003.  
 
 
+-----------
+
+T1
+
+5 convolutions  (terminated OK)
+  caffe validation accuracy asymptotes to 0.886, no overfitting
+  n_total_weights = 4849920 n_total_biases = 899
+	n = 0 n_layer_nodes = 64
+	n = 1 n_layer_nodes = 64
+	n = 2 n_layer_nodes = 96
+	n = 3 n_layer_nodes = 128
+	n = 4 n_layer_nodes = 160
+	n = 5 n_layer_nodes = 192
+	n = 6 n_layer_nodes = 192
+	n = 7 n_layer_nodes = 3
+
+7 convolutions  (terminated OK)
+
+
+7 convolutions, 2 fc layers, 2 max pools + 1 avg pool (running as of 1:45
+pm Sat) 
+
+T3
+
+6 convolutions  (terminated OK)
+
+8 convolutions (failed to converge!)
+
+7 convolutions, 2 fc layers (running as of noontime Sat)
+
+
+
 ======================================
 TODO:
 
