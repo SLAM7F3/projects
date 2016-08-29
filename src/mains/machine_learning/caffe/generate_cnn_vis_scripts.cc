@@ -236,7 +236,6 @@ int main(int argc, char* argv[])
       cout << "Param layer p = " << p << " is named " << param_layer_names[p]
            << endl;
    }
-   outputfunc::enter_continue_char();
 
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 

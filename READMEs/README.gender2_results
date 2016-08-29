@@ -23,6 +23,9 @@ is true...
 3.  We also found no particular benefit to reducing the number of final
 fully connected layers from 3 down to 2.  
 
+4.  We see no obvious benefit to increasing the number of nodes within
+fully connected layers from 256 to 512.
+
 -------------------------------------------------------------------
 
 350K combined original + Adience + Iranian faces + non-faces used for training.
@@ -43,10 +46,12 @@ mean_G_value: 41.9   #  mu_green for O(350K) 96x96 training face image chips
 mean_R_value: 49.0   #  mu_red for O(350K) 96x96 training face image chips
   
 -------------------------------------------------------------------
-
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2e
 
 Training started on Facenet model 2e around 6:20 am
+
+  /data/caffe/faces/trained_models/Aug29_2e_T1/train_iter_103000.caffemodel
+  caffe validation accuracy asymptotes to 0.872 with no overfitting
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 192
@@ -58,9 +63,34 @@ n = 6 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
 
+frac_correct = 0.825933 frac_unsure = 0.0656064 frac_incorrect = 0.10846
+
+frac_nonface_correct = 0.97549
+frac_nonface_incorrect = 0.0245098
+
+frac_male_correct = 0.847719
+frac_male_unsure = 0.0450797
+frac_male_incorrect = 0.107202
+
+frac_female_correct = 0.712085
+frac_female_unsure = 0.12737
+frac_female_incorrect = 0.160545
+
+Confusion matrix:
+
+1002	20	7	0	
+37	1542	158	82	
+24	247	1202	215	
+0	0	0	0	
+
+-------------------------------------------------------------------
 *.  Mon Aug 29 , Titan 3, morning, Facenet model 2f
 
-Training started on Facenet model 2e around 6:25 am
+Training started on Facenet model 2f around 6:25 am
+
+/data/caffe/faces/trained_models/Aug29_2f_T3/train_iter_89000.caffemodel 
+  caffe validation accuracy asymptotes to 0.872 with no overfitting
+  n_total_weights = 20616064 n_total_biases = 1923
 
 n = 0 n_layer_nodes = 128
 n = 1 n_layer_nodes = 256
@@ -70,9 +100,29 @@ n = 4 n_layer_nodes = 512
 n = 5 n_layer_nodes = 512
 n = 6 n_layer_nodes = 3
 
+frac_nonface_correct = 0.978495
+frac_nonface_incorrect = 0.0215054
+
+frac_male_correct = 0.816383
+frac_male_unsure = 0.0538758
+frac_male_incorrect = 0.129742
+
+frac_female_correct = 0.710308
+frac_female_unsure = 0.155213
+frac_female_incorrect = 0.134479
+
+Confusion matrix:
+
+1005	21	3	0	
+44	1485	192	98	
+23	204	1199	262	
+0	0	0	0	
+
+
 New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
 
-*.  Mon Aug 29 , Titan 1, Facenet model 2g
+-------------------------------------------------------------------
+*.  Mon Aug 29 , Titan 1, Facenet model 2g, 5th conv layer
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 96
@@ -85,7 +135,8 @@ n = 7 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
 
-*.  Mon Aug 29 , Titan 3, Facenet model 2h
+-------------------------------------------------------------------
+*.  Mon Aug 29 , Titan 3, Facenet model 2h, 5th conv layer
 
 n = 0 n_layer_nodes = 128
 n = 1 n_layer_nodes = 128
@@ -98,6 +149,36 @@ n = 7 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
 
+-------------------------------------------------------------------
+*.  Mon Aug 29 , Titan 1, morning, Facenet model 2i, 4 FC layers
+Training started around 12:45 pm
+
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 256
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 128
+n = 7 n_layer_nodes = 3
+
+New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
+
+-------------------------------------------------------------------
+*.  Mon Aug 29 , Titan 1, morning, Facenet model 2j, 1 max pool + 1 avg pool
+Training started around 12:45 pm
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 256
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 128
+n = 7 n_layer_nodes = 3
+
+New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
 
 
 -------------------------------------------------------------------
@@ -105,7 +186,7 @@ New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
 
 Training started on Facenet 02a around 8:40 am
 
-/data/caffe/faces/trained_models/Aug27_2a_T1/train_iter_2000.caffemodel 
+/data/caffe/faces/trained_models/Aug27_2a_T1/train_iter_72000.caffemodel 
   caffe validation accuracy asymptotes to 0.866 with no overfitting
   n_total_weights = 4813056 n_total_biases = 835
 n = 0 n_layer_nodes = 64
@@ -116,58 +197,59 @@ n = 4 n_layer_nodes = 192
 n = 5 n_layer_nodes = 192
 n = 6 n_layer_nodes = 3
 
-frac_correct = 0.7914 frac_unsure = 0.0480706 frac_incorrect = 0.160529
+frac_correct = 0.814831 frac_unsure = 0.0801148 frac_incorrect = 0.105054
 
-frac_nonface_correct = 0.98249
-frac_nonface_incorrect = 0.0175097
+frac_nonface_correct = 0.983398
+frac_nonface_incorrect = 0.0166016
 
-frac_male_correct = 0.721825
-frac_male_unsure = 0.0390324
-frac_male_incorrect = 0.239142
+frac_male_correct = 0.823529
+frac_male_unsure = 0.0522265
+frac_male_incorrect = 0.124244
 
-frac_female_correct = 0.75
-frac_female_unsure = 0.0870853
-frac_female_incorrect = 0.162915
+frac_female_correct = 0.703199
+frac_female_unsure = 0.158768
+frac_female_incorrect = 0.138033
 
 Confusion matrix:
 
-1010	13	6	0	
-119	1313	316	71	
-79	196	1266	147	
+1011	17	1	0	
+44	1498	182	95	
+22	211	1187	268	
 0	0	0	0	
 
+-------------------------------------------------------------------
 *.  Sun Aug 28, Titan 1, afternoon, larger Facenet model 2a
 
 /data/caffe/faces/trained_models/Aug27_2a_larger_T1/train_iter_185000.caffemodel
   caffe validation accuracy asymptotes to 0.881 with no overfitting
   n_total_weights = 10463680 n_total_biases = 1219
 
-frac_correct = 0.815313 frac_unsure = 0.0337599 frac_incorrect = 0.150927
+frac_correct = 0.834656 frac_unsure = 0.0577601 frac_incorrect = 0.107584
 
-frac_nonface_correct = 0.969756
-frac_nonface_incorrect = 0.0302439
+frac_nonface_correct = 0.979592
+frac_nonface_incorrect = 0.0204082
 
+frac_male_correct = 0.850467
+frac_male_unsure = 0.0406817
+frac_male_incorrect = 0.108851
 
-frac_male_correct = 0.776251
-frac_male_unsure = 0.0263881
-frac_male_incorrect = 0.197361
-
-frac_female_correct = 0.763626
-frac_female_unsure = 0.0622038
-frac_female_incorrect = 0.174171
+frac_female_correct = 0.729265
+frac_female_unsure = 0.111374
+frac_female_incorrect = 0.15936
 
 Confusion matrix:
 
-996	25	8	0	
-123	1412	236	48	
-81	213	1289	105	
+1008	19	2	0	
+41	1547	157	74	
+21	248	1231	188	
 0	0	0	0	
 
+-------------------------------------------------------------------
 *.  Sun Aug 28 , Titan 3, morning, Facenet model 2b
 
 Training started on Facenet 02b around 8:43 am
 
-/data/caffe/faces/trained_models/Aug27_2b_T3/train_iter_5000.caffemodel 
+/data/caffe/faces/trained_models/Aug27_2b_T3/train_iter_101000.caffemodel 
   caffe validation accuracy asymptotes to 0.855 with no overfitting
   n_total_weights = 4776192 n_total_biases = 643
 
@@ -178,26 +260,27 @@ n = 3 n_layer_nodes = 160
 n = 4 n_layer_nodes = 192
 n = 5 n_layer_nodes = 3
 
-frac_correct = 0.78305 frac_unsure = 0.0613551 frac_incorrect = 0.155595
+frac_correct = 0.796072 frac_unsure = 0.0856323 frac_incorrect = 0.118296
 
-frac_nonface_correct = 0.967773
-frac_nonface_incorrect = 0.0322266
+frac_nonface_correct = 0.979492
+frac_nonface_incorrect = 0.0205078
 
-frac_male_correct = 0.778999
-frac_male_unsure = 0.0379329
-frac_male_incorrect = 0.183068
+frac_male_correct = 0.854865
+frac_male_unsure = 0.0494777
+frac_male_incorrect = 0.095657
 
-frac_female_correct = 0.675355
-frac_female_unsure = 0.123815
-frac_female_incorrect = 0.200829
+frac_female_correct = 0.621445
+frac_female_unsure = 0.17654
+frac_female_incorrect = 0.202014
 
 Confusion matrix:
 
-993	33	3	0	
-122	1417	211	69	
-66	273	1140	209	
+1003	25	1	0	
+55	1555	119	90	
+26	315	1049	298	
 0	0	0	0	
 
+-------------------------------------------------------------------
 *.  Sun Aug 28, Titan 3, afternoon, larger Facenet model 2b
 
 /data/caffe/faces/trained_models/Aug27_2b_larger_T3/train_iter_216000.caffemodel
@@ -211,7 +294,27 @@ n = 3 n_layer_nodes = 256
 n = 4 n_layer_nodes = 256
 n = 5 n_layer_nodes = 3
 
+frac_correct = 0.821492 frac_unsure = 0.0703883 frac_incorrect = 0.10812
 
+frac_nonface_correct = 0.985366
+frac_nonface_incorrect = 0.0146341
+
+frac_male_correct = 0.847719
+frac_male_unsure = 0.0362837
+frac_male_incorrect = 0.115998
+
+frac_female_correct = 0.69372
+frac_female_unsure = 0.149882
+frac_female_incorrect = 0.156398
+
+Confusion matrix:
+
+1013	15	1	0	
+53	1542	158	66	
+26	238	1171	253	
+0	0	0	0	
+
+-------------------------------------------------------------------
 *.  Sun Aug 28, Titan 1, afternoon, Facenet model 2c
 
 /data/caffe/faces/trained_models/Aug27_2c_T1/train_iter_92000.caffemodel
@@ -226,50 +329,51 @@ n = 4 n_layer_nodes = 192
 n = 5 n_layer_nodes = 192
 n = 6 n_layer_nodes = 3
 
-frac_correct = 0.796958 frac_unsure = 0.0376984 frac_incorrect = 0.165344
+frac_correct = 0.82183 frac_unsure = 0.0590959 frac_incorrect = 0.119074
 
-frac_nonface_correct = 0.971817
-frac_nonface_incorrect = 0.0281827
+frac_nonface_correct = 0.983463
+frac_nonface_incorrect = 0.016537
 
-frac_male_correct = 0.77845
-frac_male_unsure = 0.0258384
-frac_male_incorrect = 0.195712
+frac_male_correct = 0.810335
+frac_male_unsure = 0.0461792
+frac_male_incorrect = 0.143485
 
-frac_female_correct = 0.710308
-frac_female_unsure = 0.0734597
-frac_female_incorrect = 0.216232
+frac_female_correct = 0.735782
+frac_female_unsure = 0.109005
+frac_female_incorrect = 0.155213
 
 Confusion matrix:
 
-1000	28	1	0	
-153	1416	203	47	
-92	273	1199	124	
+1011	17	1	0	
+49	1474	212	84	
+28	234	1242	184	
 0	0	0	0	
 
+-------------------------------------------------------------------
 *.  Sun Aug 28, Titan 3, afternoon, Facenet model 2d
 
 /data/caffe/faces/trained_models/Aug27_2d_T3/train_iter_115000.caffemodel
   caffe validation accuracy asymptotes to 0.867 with no overfitting
   n_total_weights = 4776192 n_total_biases = 643
 
-frac_correct = 0.789683 frac_unsure = 0.0365961 frac_incorrect = 0.173721
+frac_correct = 0.819806 frac_unsure = 0.0657256 frac_incorrect = 0.114468
 
-frac_nonface_correct = 0.966958
-frac_nonface_incorrect = 0.0330418
+frac_nonface_correct = 0.983447
+frac_nonface_incorrect = 0.0165531
 
-frac_male_correct = 0.699285
-frac_male_unsure = 0.0329852
-frac_male_incorrect = 0.26773
+frac_male_correct = 0.811985
+frac_male_unsure = 0.0500275
+frac_male_incorrect = 0.137988
 
-frac_female_correct = 0.779028
-frac_female_unsure = 0.0627962
-frac_female_incorrect = 0.158175
+frac_female_correct = 0.728673
+frac_female_unsure = 0.12263
+frac_female_incorrect = 0.148697
 
 Confusion matrix:
 
-995	26	8	0	
-153	1272	334	60	
-88	179	1315	106	
+1011	13	5	0	
+64	1477	187	91	
+34	217	1230	207	
 0	0	0	0	
 
 -------------------------------------------------------------------
