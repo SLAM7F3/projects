@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 8/16/16; 8/17/16; 8/19/16; 8/23/16
+// Last modified on 8/17/16; 8/19/16; 8/23/16; 8/29/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -51,10 +51,12 @@ class caffe_classifier
    float get_weight(
       int param_layer_index, 
       int input_node_ID, int output_node_ID, int height, int width);
+   void compute_weights_mu_sigma(int param_layer_index,
+                                 double& mu, double& sigma);
    float get_weight_sum(
       int param_layer_index, int input_node_ID, int output_node_ID);
    int get_global_weight_node_ID(int param_layer_index, int node_index);
-
+   
    void rgb_img_to_bgr_fvec(texture_rectangle& curr_img);
    void generate_dense_map();
    void generate_dense_map_data_blob();

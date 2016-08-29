@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 8/17/16; 8/18/16; 8/19/16; 8/23/16
+// Last modified on 8/18/16; 8/19/16; 8/23/16; 8/29/16
 // ==========================================================================
 
 #include <caffe/net.hpp>
@@ -238,8 +238,12 @@ void caffe_classifier::print_network_metadata()
            << " param_blob.shape_string() = " << param_blob->shape_string()
            << endl;
    }
+
+   cout << endl;
+   cout << "--------------------------------------------" << endl;
    cout << "n_total_weights = " << n_total_weights
         << " n_total_biases = " << n_total_biases << endl;
+   cout << "--------------------------------------------" << endl;
 
 
    int global_weight_node_counter = 0;
@@ -299,14 +303,14 @@ void caffe_classifier::print_network_metadata()
       mathfunc::median_value_and_quartile_width(
          biases, b_median, b_quartile_width);
 
-/*
       cout << "  Weights:  mu = " << w_mu << " sigma = " << w_sigma 
-           << "   median = " << w_median << " quartile_width = "
-           << w_quartile_width << endl;
+//           << "   median = " << w_median << " quartile_width = "
+//           << w_quartile_width 
+           << endl;
       cout << "  Biases:  mu = " << b_mu << " sigma = " << b_sigma 
-           << "   median = " << b_median << " quartile_width = "
-           << b_quartile_width << endl << endl;
-*/
+//           << "   median = " << b_median << " quartile_width = "
+//           << b_quartile_width 
+           << endl << endl;
 
    } // loop over index p labeling parameter layers
 
@@ -403,6 +407,53 @@ float caffe_classifier::get_weight(
       net_->params().at(2 * param_layer_index);
 
    return weights_blob->data_at(output_node_ID, input_node_ID, height, width);
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_weights_mu_sigma() returns the mean and
+// standard deviation for all trained weights within the layer
+// specified by input param_layer_index.
+
+void caffe_classifier::compute_weights_mu_sigma(int param_layer_index,
+                                                double& mu, double& sigma)
+{
+//   cout << "inside caffe_classifier::compute_weights_mu_sigma()" << endl;
+//   cout << "param_layer_index = " << param_layer_index << endl;
+   
+   const shared_ptr<const caffe::Blob<float> > weights_blob =
+      net_->params().at(2 * param_layer_index);
+
+   int n_output_nodes = weights_blob->shape(0);
+   int n_input_nodes = weights_blob->shape(1);
+   
+   int height = 1, width = 1;
+//   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
+//   cout << " weights_blob.shape_string() = " << weights_blob->shape_string()
+//        << endl;
+
+   if(weights_blob->num_axes() > 2)
+   {
+      height = weights_blob->shape(2);
+      width = weights_blob->shape(3);
+   }
+
+   vector<double> weights;
+   for(int output_ID = 0; output_ID < n_output_nodes; output_ID++)
+   {
+      for(int input_ID = 0; input_ID < n_input_nodes; input_ID++)
+      {
+         for(int h = 0; h < height; h++)
+         {
+            for(int w = 0; w < width; w++)
+            {
+               weights.push_back(
+                  weights_blob->data_at(output_ID, input_ID, height, width));
+            }
+         }
+      } // loop over input_ID
+   } // loop over output_ID
+
+   mathfunc::mean_and_std_dev(weights, mu, sigma);
 }
 
 // ---------------------------------------------------------------------
@@ -622,13 +673,12 @@ int caffe_classifier::retrieve_layer_activations(
    const shared_ptr<const caffe::Blob<float> > curr_blob =
       net_->blob_by_name(blob_name);
    const float *blob_data = curr_blob->cpu_data();
-
-   int num_axes = curr_blob->num_axes();
    int n_filters = curr_blob->shape(1);
-   int filter_width = 1;
-   int filter_height = 1;
 
 /*
+   int num_axes = curr_blob->num_axes();
+   int filter_width = 1;
+   int filter_height = 1;
    if(num_axes > 2)
    {
       filter_width = curr_blob->shape(2);
@@ -1077,8 +1127,5 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
    cout << "At end of caffe_classifier::Preprocess()" << endl;
 }
 
-
 */
-
-
 

@@ -214,7 +214,8 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("conv3");
       param_layer_names.push_back("conv4");
       param_layer_names.push_back("fc5");
-      param_layer_names.push_back("fc6_faces");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7_faces");
 
 /*
 // Facenet1:
@@ -229,6 +230,13 @@ int main(int argc, char* argv[])
 
       init_scale = 15; // empirically reduced for 96x96 face images
    }
+
+   for(unsigned int p = 0; p < param_layer_names.size(); p++)
+   {
+      cout << "Param layer p = " << p << " is named " << param_layer_names[p]
+           << endl;
+   }
+   outputfunc::enter_continue_char();
 
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
