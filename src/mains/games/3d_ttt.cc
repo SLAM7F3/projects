@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program 3D_TTT
 // ==========================================================================
-// Last updated on 8/28/16
+// Last updated on 8/28/16; 8/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -22,18 +22,22 @@ int main (int argc, char* argv[])
    nrfunc::init_time_based_seed();
    tictac3d* ttt_ptr = new tictac3d();
 
-   int n_iters = 10000;
-   for(int iter = 0; iter < n_iters; iter++)
+   bool game_over = false;
+   while(!game_over)
    {
-      ttt_ptr->randomize_board_state();
+//       ttt_ptr->randomize_board_state();
       ttt_ptr->display_board_state();
+      
+      ttt_ptr->enter_human_move();
 
-      if(ttt_ptr->check_player_win(1) >= 4)
+      if(ttt_ptr->check_player_win(1))
       {
+         game_over = true;
       }
       
-      if(ttt_ptr->check_player_win(-1) >= 4)
+      if(ttt_ptr->check_player_win(-1))
       {
+         game_over = true;
       }
 
    } // loop over iter index

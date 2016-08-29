@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 8/28/16
+// Last modified on 8/28/16; 8/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -36,14 +36,16 @@ void tictac3d::allocate_member_objects()
 void tictac3d::initialize_member_objects()
 {
    n_size = 4;
+   generate_all_winnable_paths();
 }		       
-
 
 // ---------------------------------------------------------------------
 tictac3d::tictac3d()
 {
    allocate_member_objects();
    initialize_member_objects();
+
+   reset_board_state();
 }
 
 // Copy constructor:
@@ -75,11 +77,46 @@ int tictac3d::get_cell_value(int px, int py, int pz)
    return curr_board_state.at(p);
 }
 
+void tictac3d::set_cell_value(int px, int py, int pz, int value)
+{
+   int p = n_size * n_size * pz + n_size * py + px;   
+   curr_board_state[p] = value;
+}
+
+void tictac3d::enter_human_move()
+{
+   int px, py, pz;
+   cout << "Enter Z level:" << endl;
+   cin >> pz;
+   cout << "Enter X: " << endl;
+   cin >> px;
+   cout << "Enter Y: " << endl;
+   cin >> py;
+   int human_value = 1;
+   set_cell_value(px,py,pz,human_value);
+}
+
+// ---------------------------------------------------------------------
+void tictac3d::reset_board_state()
+{
+   curr_board_state.clear();
+   winning_posns_map.clear();
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      for(int py = 0; py < n_size; py++)
+      {
+         for(int px = 0; px < n_size; px++)
+         {
+            int curr_val = 0;
+            curr_board_state.push_back(curr_val);
+         } // loop over px 
+      } // loop over py
+   } // loop over pz
+}		       
+
 // ---------------------------------------------------------------------
 void tictac3d::randomize_board_state()
 {
-   n_size = 4;
-
    curr_board_state.clear();
    winning_posns_map.clear();
    for(int pz = 0; pz < n_size; pz++)
@@ -226,8 +263,6 @@ void tictac3d::print_winning_pattern()
 
 int tictac3d::check_player_win(int player_ID)
 {
-   cout << "inside check_player_win, player_ID = " << player_ID << endl;
-
    int win_in_zplane = 1;
    int win_in_zcolumn = 2;
    int win_in_zslant = 3;
@@ -284,8 +319,91 @@ int tictac3d::check_player_win(int player_ID)
       }
    } // loop over pz
 
-
    return 0;
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_all_winnable_paths()
+
+void tictac3d::generate_all_winnable_paths()
+{
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      generate_winnable_Zplane_paths(pz);
+   }
+
+   for(int py = 0; py < n_size; py++)
+   {
+      for(int px = 0; px < n_size; px++)
+      {
+         generate_winnable_Zcolumn_path(px,py);
+      }
+   }
+   
+   for(int px = 0; px < n_size; px++)
+   {
+      generate_Zslant_xconst_winnable_paths(px);
+   }
+
+   for(int py = 0; py < n_size; py++)
+   {
+      generate_Zslant_yconst_winnable_paths(py);
+   }
+
+   generate_corner_2_corner_winnable_paths();
+
+   cout << "Total numer of winnable paths = "
+        << winnable_paths.size() << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_winnable_Zplane_paths()
+
+void tictac3d::generate_winnable_Zplane_paths(int pz)
+{
+   vector<triple> curr_path;
+   
+// Firstly add 4 horizontal rows within Z-plane:
+
+   for(int py = 0; py < n_size; py++)
+   {
+      curr_path.clear();
+      for(int px = 0; px < n_size; px++)
+      {
+         curr_path.push_back(triple(px,py,pz));
+      }
+      winnable_paths.push_back(curr_path);
+   }
+
+// Secondly add 4 vertical columns within Z-plane:
+
+   for(int px = 0; px < n_size; px++)
+   {
+      curr_path.clear();
+      for(int py = 0; py < n_size; py++)
+      {
+         curr_path.push_back(triple(px,py,pz));
+      }
+      winnable_paths.push_back(curr_path);
+   }
+
+// Thirdly add 2 diagonals within Z-plane:
+
+   curr_path.clear();
+   for(int px = 0; px < n_size; px++)
+   {
+      int py = px;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+
+   curr_path.clear();
+   for(int px = 0; px < n_size; px++)
+   {
+      int py = n_size - 1 - px;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
 }
 
 // ---------------------------------------------------------------------
@@ -363,6 +481,19 @@ bool tictac3d::Zplane_win(int player_ID, int pz)
 }
 
 // ---------------------------------------------------------------------
+// Boolean member function generate_winnable_Zcolumn_path()
+
+void tictac3d::generate_winnable_Zcolumn_path(int px, int py)
+{
+   vector<triple> curr_path;
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+}
+
+// ---------------------------------------------------------------------
 // Boolean member function Zcolumn_win() returns true if input
 // player_ID occupies 4 continguous cells with Z = 0, 1, ... n_size - 1:
 
@@ -379,6 +510,50 @@ bool tictac3d::Zcolumn_win(int player_ID, int px, int py)
       }
    }
    return column_win;
+}
+
+// ---------------------------------------------------------------------
+// Boolean member function generate_Zslant_x[y]_winnable_paths()
+
+void tictac3d::generate_Zslant_xconst_winnable_paths(int px)
+{
+   vector<triple> curr_path;
+
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int py = pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+
+   curr_path.clear();
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int py = n_size - 1 - pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+}
+
+// ---------------------------------------------------------------------
+void tictac3d::generate_Zslant_yconst_winnable_paths(int py)
+{
+   vector<triple> curr_path;
+
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int px = pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+
+   curr_path.clear();
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int px = n_size - 1 - pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
 }
 
 // ---------------------------------------------------------------------
@@ -416,6 +591,7 @@ bool tictac3d::Zslant_xconst_win(int player_ID, int px)
    return false;
 }
 
+// ---------------------------------------------------------------------
 bool tictac3d::Zslant_yconst_win(int player_ID, int py)
 {
    bool slant_win = true;
@@ -445,6 +621,49 @@ bool tictac3d::Zslant_yconst_win(int player_ID, int py)
    if(slant_win) return slant_win;
 
    return false;
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_corner_2_corner_winnable_paths() 
+
+void tictac3d::generate_corner_2_corner_winnable_paths()
+{
+   vector<triple> curr_path;
+
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int px = pz;
+      int py = pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+   
+   curr_path.clear();
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int px = n_size - 1 - pz;
+      int py = pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+
+   curr_path.clear();
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int px = pz;
+      int py = n_size - 1 - pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
+
+   curr_path.clear();
+   for(int pz = 0; pz < n_size; pz++)
+   {
+      int px = n_size - 1 - pz;
+      int py = n_size - 1 - pz;
+      curr_path.push_back(triple(px,py,pz));
+   }
+   winnable_paths.push_back(curr_path);
 }
 
 // ---------------------------------------------------------------------
