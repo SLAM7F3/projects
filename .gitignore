@@ -106,6 +106,7 @@ src/mains/faces/clean_images
 src/mains/faces/prepare_classification_inputs
 src/mains/faces/prepare_deeplab_inputs
 src/mains/faces/updatetxt
+src/mains/games/3d_ttt
 src/mains/pathplanning/pathfinder
 src/mains/korea/orthobldgs
 src/mains/korea/run_view_tel
