@@ -525,14 +525,18 @@ int main(int argc, char *argv[])
       bool visualize_mask_flag = false;
 //      bool visualize_mask_flag = true;
       int max_charmask_val, max_wordmask_val;
-      curr_imagetext.generate_masks(
-         charmask_texture_rectangle_ptr, wordmask_texture_rectangle_ptr,
-         visualize_mask_flag, max_charmask_val, max_wordmask_val);
+
+      if(!generate_just_digits_flag)
+      {
+         curr_imagetext.generate_masks(
+            charmask_texture_rectangle_ptr, wordmask_texture_rectangle_ptr,
+            visualize_mask_flag, max_charmask_val, max_wordmask_val);
 //      cout << "max_charmask_val = " << max_charmask_val
 //           << " max_wordmask_val = " << max_wordmask_val << endl;
 
-      charmask_texture_rectangle_ptr->write_curr_frame(charmask_filename);
-      wordmask_texture_rectangle_ptr->write_curr_frame(wordmask_filename);
+         charmask_texture_rectangle_ptr->write_curr_frame(charmask_filename);
+         wordmask_texture_rectangle_ptr->write_curr_frame(wordmask_filename);
+      }
 
       if(visualize_mask_flag)
       {
@@ -553,18 +557,31 @@ int main(int argc, char *argv[])
       double max_abs_el = 30;
       double max_abs_roll = 20;
 
-      if(!textfunc::rotate_image_and_masks(
-            synthetic_chip_filename, charmask_filename, wordmask_filename,
-            rotated_images_subdir, rotated_char_masks_subdir, 
-            rotated_word_masks_subdir, max_text_label_width,
-            max_abs_az, max_abs_el, max_abs_roll,
-            rotated_image_filename, rotated_charmask_filename,
-            rotated_wordmask_filename))
+      if(generate_just_digits_flag)
       {
-         cout << "textfunc::rotate_image_and_masks() failed" << endl;
-         continue;
+         if(!textfunc::rotate_image(
+               synthetic_chip_filename, rotated_images_subdir,
+               max_text_label_width))
+         {
+            cout << "textfunc::rotate_image() failed" << endl;
+            continue;
+         }
       }
-
+      else
+      {
+         if(!textfunc::rotate_image_and_masks(
+               synthetic_chip_filename, charmask_filename, wordmask_filename,
+               rotated_images_subdir, rotated_char_masks_subdir, 
+               rotated_word_masks_subdir, max_text_label_width,
+               max_abs_az, max_abs_el, max_abs_roll,
+               rotated_image_filename, rotated_charmask_filename,
+               rotated_wordmask_filename))
+         {
+            cout << "textfunc::rotate_image_and_masks() failed" << endl;
+            continue;
+         }
+      }
+      
 // Delete (rotated_image, rotated_charmask, rotated_wordmask) if any
 // charmask or wordmask value is invalid:
 

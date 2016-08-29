@@ -1093,6 +1093,8 @@ src/mains/machine_learning/caffe/scripts/
 src/mains/machine_learning/deeplab/screenshots/
 src/mains/machine_learning/caffe/training_performance
 src/mains/machine_learning/caffe/classify_chars
+src/mains/machine_learning/caffe/order_activations
+src/mains/machine_learning/caffe/raw_activations
 src/mains/machine_learning/caffe/caffe_classification
 src/mains/machine_learning/caffe/run_classify
 src/mains/machine_learning/caffe/parse_lmdb
@@ -1900,6 +1902,8 @@ src/mains/photosynth/bundler_convert
 src/mains/photosynth/fill_photo_hierarchy
 src/mains/photosynth/extract_face
 src/mains/photosynth/ladarsynth
+src/mains/photosynth/Qt/moc_*.cpp
+src/mains/photosynth/Qt/qtphotoserver
 src/mains/photosynth/Qt/run_photoserver
 src/mains/photosynth/Qt/run_qtviewbundler
 src/mains/photosynth/gps_vs_recon

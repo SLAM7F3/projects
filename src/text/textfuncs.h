@@ -1,7 +1,7 @@
 // ==========================================================================
 // Textfuncs namespace header
 // ==========================================================================
-// Last updated on 3/27/16; 4/5/16; 4/17/16; 4/20/16
+// Last updated on 4/5/16; 4/17/16; 4/20/16; 8/29/16
 // ==========================================================================
 
 #ifndef TEXTFUNCS_H
@@ -122,6 +122,9 @@ namespace textfunc
 
 // Text image chip rotation methods:
 
+   bool rotate_image(
+      std::string image_filename, std::string rotated_images_subdir, 
+      double max_pixel_width);
    bool rotate_image_and_mask(
       std::string image_filename, std::string mask_filename,
       std::string rotated_images_subdir, std::string rotated_masks_subdir,

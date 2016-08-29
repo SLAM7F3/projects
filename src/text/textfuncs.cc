@@ -1,7 +1,7 @@
 // ==========================================================================
 // Methods for synthesizing text character images
 // ==========================================================================
-// Last updated on 4/9/16; 4/11/16; 4/17/16; 4/20/16
+// Last updated on 4/11/16; 4/17/16; 4/20/16; 8/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -1335,7 +1335,7 @@ namespace textfunc
 
 // Method rotate_image_and_mask() takes in image and corresponding
 // mask filenames.  For some sizable fraction of calls, this method
-// performs not rotation and simply copies the input image and mask to
+// performs no rotation and simply copies the input image and mask to
 // output files.  But for those cases where nontrivial rotation is
 // performed, this method instantiates a virtual camera whose
 // horizontal FOV and aspect ratio are random gaussian variables.  The
@@ -1347,6 +1347,76 @@ namespace textfunc
 // If the rotated image and mask files are successfully exported to
 // disk, this boolean method returns true.
 
+   bool rotate_image(
+      string image_filename, string rotated_images_subdir, 
+      double max_pixel_width)
+   {
+//      cout << "inside textfunc::rotate_image()" << endl;
+
+      if(!filefunc::fileexist(image_filename)) return false;
+
+      string image_basename=filefunc::getbasename(image_filename);      
+      string rotated_image_filename=rotated_images_subdir+image_basename;
+
+// For a nontrivial fraction of input images, do NOT apply any
+// rotation:
+
+      double non_rotate_frac = 0.40;
+      if(nrfunc::ran1() < non_rotate_frac)
+      {
+         rotated_image_filename=stringfunc::prefix(rotated_image_filename)+
+            "_NoRot.png";
+         string unix_cmd="cp "+image_filename+" "+rotated_image_filename;
+         sysfunc::unix_command(unix_cmd);
+      }
+      else
+      {
+         double FOV_u = (45 + 15 * nrfunc::gasdev());
+         FOV_u = basic_math::max(FOV_u, 10.0);
+         FOV_u = basic_math::min(FOV_u, 80.0);
+         FOV_u *= PI/180;
+
+         double aspect_ratio = 1.333 + 0.2 * nrfunc::gasdev();
+         aspect_ratio = basic_math::max(0.5, aspect_ratio);
+         aspect_ratio = basic_math::min(2.0, aspect_ratio);
+
+         double img_az = 0 + 50 * nrfunc::gasdev();
+         img_az = basic_math::max(img_az, -80.0);
+         img_az = basic_math::min(img_az, 80.0);
+         img_az *= PI/180;
+
+         double img_el = 0 + 15 * nrfunc::gasdev();
+         img_el = basic_math::max(img_el, -30.0);
+         img_el = basic_math::min(img_el, 30.0);
+         img_el *= PI/180;
+
+         double img_roll = 0 + 3 * nrfunc::gasdev();
+         img_roll = basic_math::max(img_roll, -15.0);
+         img_roll = basic_math::min(img_roll, 15.0);
+         img_roll *= PI/180;
+
+         string background_color="none";
+         textfunc::perspective_projection(
+            FOV_u, aspect_ratio, max_pixel_width,
+            img_az, img_el, img_roll, 
+            image_filename, background_color, rotated_image_filename);
+      } // non-rotation conditional
+
+      bool rot_img_exists = filefunc::fileexist(rotated_image_filename);
+      if(rot_img_exists)
+      {
+         return true;
+      }
+      else
+      {
+         cout << "Rotated image = " << rotated_image_filename
+              << " rot_img_exists = " << rot_img_exists << endl;
+         filefunc::deletefile(rotated_image_filename);
+         return false;
+      }
+   }
+
+// -------------------------------------------------------------------------
    bool rotate_image_and_mask(
       string image_filename, string mask_filename,
       string rotated_images_subdir,string rotated_masks_subdir,
@@ -1919,9 +1989,9 @@ namespace textfunc
       colorfunc::RGB occlusion_RGB = colorfunc::generate_random_RGB(
          normalized_RGB_values, 0, 360, 0, 0.5, 0, 0.5);
 
-      int occlusion_width, px_occlusion_start;
+      int occlusion_width = 0, px_occlusion_start = 0;
       int occlusion_height, py_occlusion_start;
-      int pu_center, pv_center;
+      int pu_center = 0, pv_center = 0;
 
       bool vertical_pole_occlusion = false;
       bool horizontal_line_occlusion = false;
