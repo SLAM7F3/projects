@@ -46,7 +46,7 @@
 //			 ./generate_string_images
 
 // ==========================================================================
-// Last updated on 4/15/16; 4/17/16; 4/20/16; 4/22/16; 8/27/16
+// Last updated on 4/20/16; 4/22/16; 8/27/16; 8/29/16
 // ==========================================================================
 
 //   c='0';	// ascii = 48
@@ -96,9 +96,7 @@ int main(int argc, char *argv[])
 
    nrfunc::init_time_based_seed();
 
-
    bool generate_just_digits_flag = true;
-   
    vector<string> cleaned_strings;
    if(generate_just_digits_flag)
    {
@@ -208,16 +206,24 @@ int main(int argc, char *argv[])
 
       cout << "Steps: 1" << flush;
 
-      int min_n_words = 1;
-      int max_n_words = 15;
+      if(generate_just_digits_flag)
+      {
+         curr_imagetext.set_phrase(
+            cleaned_strings[nrfunc::ran1() * cleaned_strings.size()] );
+      }
+      else
+      {
+         int min_n_words = 1;
+         int max_n_words = 15;
 //      int max_n_words = 20;
-      textfunc::select_text_phrase(
-         cleaned_strings, min_n_words, max_n_words, curr_imagetext);
+         textfunc::select_text_phrase(
+            cleaned_strings, min_n_words, max_n_words, curr_imagetext);
 
 //      int n_words = curr_imagetext.get_n_words();
 //      cout << "min_n_words = " << min_n_words 
 //           << " n_words = " << n_words << endl;
 //      cout << "phrase = " << curr_imagetext.get_phrase() << endl;
+      }
 
 // Select current font:
 
@@ -280,10 +286,13 @@ int main(int argc, char *argv[])
 
       cout << " 3" << flush;
 
-//      unsigned int char_width_lo = 5;
-//      unsigned int char_width_hi = 100;
-      unsigned int char_width_lo = 10;
-      unsigned int char_width_hi = 96;
+      unsigned int char_width_lo = 5;
+      unsigned int char_width_hi = 100;
+      if(generate_just_digits_flag)
+      {
+         char_width_lo = 10;
+         char_width_hi = 96;
+      }
       double lambda = 0.09;
 
       if(handwriting_font_flag)
@@ -559,7 +568,7 @@ int main(int argc, char *argv[])
 // Delete (rotated_image, rotated_charmask, rotated_wordmask) if any
 // charmask or wordmask value is invalid:
 
-      if(!visualize_mask_flag)
+      if(!generate_just_digits_flag && !visualize_mask_flag)
       {
          if(!textfunc::check_mask_values(
             rotated_image_filename, rotated_charmask_filename, 
