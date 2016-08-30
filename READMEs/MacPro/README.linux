@@ -1,7 +1,7 @@
 =============================================================================
 General linux notes
 =============================================================================
-Last updated on 9/30/15; 5/4/16
+Last updated on 9/30/15; 5/4/16; 8/30/16
 =============================================================================
 
 *.  The following rsync commands "pull" large numbers of files from local
@@ -29,3 +29,7 @@ pcho-MacPro:vgg128_large_fov% md5sum ./init.caffemodel
 from ftp servers
 
 e.g.   wget -r ftp://ftp2.census.gov/geo/tiger/TIGER2015/ADDRFEAT/
+
+*.  Excluding filenames following a pattern from tarballs:
+
+tar cvzf trained_models.tgz --exclude '*.caffemodel' ./trained_models/
