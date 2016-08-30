@@ -290,7 +290,7 @@ int main(int argc, char *argv[])
       unsigned int char_width_hi = 100;
       if(generate_just_digits_flag)
       {
-         char_width_lo = 10;
+         char_width_lo = 50;
          char_width_hi = 96;
       }
       double lambda = 0.09;
@@ -561,7 +561,8 @@ int main(int argc, char *argv[])
       {
          if(!textfunc::rotate_image(
                synthetic_chip_filename, rotated_images_subdir,
-               max_text_label_width))
+               max_text_label_width, rotated_image_filename, 
+               curr_imagetext.get_phrase()))
          {
             cout << "textfunc::rotate_image() failed" << endl;
             continue;

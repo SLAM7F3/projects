@@ -1,7 +1,7 @@
 // ==========================================================================
 // Methods for synthesizing text character images
 // ==========================================================================
-// Last updated on 4/11/16; 4/17/16; 4/20/16; 8/29/16
+// Last updated on 4/17/16; 4/20/16; 8/29/16; 8/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -1333,39 +1333,41 @@ namespace textfunc
 // Text image chip rotation methods
 // ==========================================================================
 
-// Method rotate_image_and_mask() takes in image and corresponding
-// mask filenames.  For some sizable fraction of calls, this method
-// performs no rotation and simply copies the input image and mask to
-// output files.  But for those cases where nontrivial rotation is
-// performed, this method instantiates a virtual camera whose
-// horizontal FOV and aspect ratio are random gaussian variables.  The
-// image and mask are also rotated in 3 dimensions according to random
-// az, el and roll gaussian variables.  After perspectively projecting
-// the image and mask into the virtual camera, ImageMagick is used to
-// generate and export their 2D imageplane renderings.
-
-// If the rotated image and mask files are successfully exported to
-// disk, this boolean method returns true.
-
    bool rotate_image(
       string image_filename, string rotated_images_subdir, 
-      double max_pixel_width)
+      double max_pixel_width, string& rotated_image_filename,
+      string phrase)
    {
 //      cout << "inside textfunc::rotate_image()" << endl;
 
       if(!filefunc::fileexist(image_filename)) return false;
 
       string image_basename=filefunc::getbasename(image_filename);      
-      string rotated_image_filename=rotated_images_subdir+image_basename;
+
+      bool non_rotate_flag = false;
+      double non_rotate_frac = 0.40;
+      if(nrfunc::ran1() < non_rotate_frac)
+      {
+         non_rotate_flag = true;
+         string prefix = stringfunc::prefix(image_basename);
+         string suffix = stringfunc::suffix(image_basename);
+         image_basename=prefix+"_NoRot."+suffix;
+      }
+      
+      if(phrase.size() > 0)
+      {
+         string prefix = stringfunc::prefix(image_basename);
+         string suffix = stringfunc::suffix(image_basename);
+         image_basename = prefix+"_"+phrase+"."+suffix;
+      }
+      
+      rotated_image_filename=rotated_images_subdir+image_basename;
 
 // For a nontrivial fraction of input images, do NOT apply any
 // rotation:
 
-      double non_rotate_frac = 0.40;
-      if(nrfunc::ran1() < non_rotate_frac)
+      if(non_rotate_flag)
       {
-         rotated_image_filename=stringfunc::prefix(rotated_image_filename)+
-            "_NoRot.png";
          string unix_cmd="cp "+image_filename+" "+rotated_image_filename;
          sysfunc::unix_command(unix_cmd);
       }
@@ -1417,6 +1419,20 @@ namespace textfunc
    }
 
 // -------------------------------------------------------------------------
+// Method rotate_image_and_mask() takes in image and corresponding
+// mask filenames.  For some sizable fraction of calls, this method
+// performs no rotation and simply copies the input image and mask to
+// output files.  But for those cases where nontrivial rotation is
+// performed, this method instantiates a virtual camera whose
+// horizontal FOV and aspect ratio are random gaussian variables.  The
+// image and mask are also rotated in 3 dimensions according to random
+// az, el and roll gaussian variables.  After perspectively projecting
+// the image and mask into the virtual camera, ImageMagick is used to
+// generate and export their 2D imageplane renderings.
+
+// If the rotated image and mask files are successfully exported to
+// disk, this boolean method returns true.
+
    bool rotate_image_and_mask(
       string image_filename, string mask_filename,
       string rotated_images_subdir,string rotated_masks_subdir,

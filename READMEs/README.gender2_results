@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results for Face02 networks
 ==========================================================================
-Last updated on 8/26/16; 8/29/16
+Last updated on 8/26/16; 8/29/16; 8/30/16
 ==========================================================================
 
 Lessons learned:
@@ -25,6 +25,9 @@ fully connected layers from 3 down to 2.
 
 4.  We see no obvious benefit to increasing the number of nodes within
 fully connected layers from 256 to 512.
+
+5.  We see no obvious benefit to decreasing from 3 max pooling layers down
+to 1 max pool + 1 avg pool.
 
 -------------------------------------------------------------------
 
@@ -50,8 +53,8 @@ mean_R_value: 49.0   #  mu_red for O(350K) 96x96 training face image chips
 
 Training started on Facenet model 2e around 6:20 am
 
-  /data/caffe/faces/trained_models/Aug29_2e_T1/train_iter_103000.caffemodel
-  caffe validation accuracy asymptotes to 0.872 with no overfitting
+  /data/caffe/faces/trained_models/Aug29_2e_T1/train_iter_262000.caffemodel
+  caffe validation accuracy asymptotes to 0.882 with no overfitting
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 192
@@ -63,33 +66,36 @@ n = 6 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
 
-frac_correct = 0.825933 frac_unsure = 0.0656064 frac_incorrect = 0.10846
+frac_correct = 0.833481 frac_unsure = 0.0591873 frac_incorrect = 0.107332
 
-frac_nonface_correct = 0.97549
-frac_nonface_incorrect = 0.0245098
+frac_nonface_correct = 0.980411
+frac_nonface_incorrect = 0.0195886
 
-frac_male_correct = 0.847719
-frac_male_unsure = 0.0450797
-frac_male_incorrect = 0.107202
+frac_male_correct = 0.857614
+frac_male_unsure = 0.0373832
+frac_male_incorrect = 0.105003
 
-frac_female_correct = 0.712085
-frac_female_unsure = 0.12737
-frac_female_incorrect = 0.160545
+frac_female_correct = 0.718602
+frac_female_unsure = 0.118483
+frac_female_incorrect = 0.162915
 
 Confusion matrix:
 
-1002	20	7	0	
-37	1542	158	82	
-24	247	1202	215	
+1008	14	7	0	
+39	1560	152	68	
+27	248	1213	200	
 0	0	0	0	
+
+These results are comparable to our best results from facenet_01 (as they
+should be).
 
 -------------------------------------------------------------------
 *.  Mon Aug 29 , Titan 3, morning, Facenet model 2f
 
 Training started on Facenet model 2f around 6:25 am
 
-/data/caffe/faces/trained_models/Aug29_2f_T3/train_iter_89000.caffemodel 
-  caffe validation accuracy asymptotes to 0.872 with no overfitting
+/data/caffe/faces/trained_models/Aug29_2f_T3/train_iter_212000.caffemodel 
+  caffe validation accuracy asymptotes to 0.879 with no overfitting
   n_total_weights = 20616064 n_total_biases = 1923
 
 n = 0 n_layer_nodes = 128
@@ -100,29 +106,36 @@ n = 4 n_layer_nodes = 512
 n = 5 n_layer_nodes = 512
 n = 6 n_layer_nodes = 3
 
-frac_nonface_correct = 0.978495
-frac_nonface_incorrect = 0.0215054
+frac_correct = 0.826384 frac_unsure = 0.0677256 frac_incorrect = 0.10589
 
-frac_male_correct = 0.816383
-frac_male_unsure = 0.0538758
-frac_male_incorrect = 0.129742
+frac_nonface_correct = 0.989279
+frac_nonface_incorrect = 0.0107212
 
-frac_female_correct = 0.710308
-frac_female_unsure = 0.155213
-frac_female_incorrect = 0.134479
+frac_male_correct = 0.843321
+frac_male_unsure = 0.0406817
+frac_male_incorrect = 0.115998
+
+frac_female_correct = 0.709123
+frac_female_unsure = 0.138033
+frac_female_incorrect = 0.152844
 
 Confusion matrix:
 
-1005	21	3	0	
-44	1485	192	98	
-23	204	1199	262	
+1017	6	6	0	
+43	1534	168	74	
+24	234	1197	233	
 0	0	0	0	
-
 
 New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
 
+These results are not significantly better than those for model 2e.  Yet
+the total number of parameters in this model is twice that in model 2e.
+Visualization of maximal filter responses also shows no obvious benefit
+over model 2e.
+
 -------------------------------------------------------------------
-*.  Mon Aug 29 , Titan 1, Facenet model 2g, 5th conv layer
+*.  Tues, Aug 30, Titan 1, Facenet model 2g, 5th conv layer at beginning
+Training started on Titan 1 at 6:20
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 96
@@ -136,15 +149,16 @@ n = 7 n_layer_nodes = 3
 New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
 
 -------------------------------------------------------------------
-*.  Mon Aug 29 , Titan 3, Facenet model 2h, 5th conv layer
+*.  Tues, Aug 30, Titan 3, Facenet model 2h, 5th conv layer at end
+Training started on Titan 3 at 6:20
 
-n = 0 n_layer_nodes = 128
-n = 1 n_layer_nodes = 128
-n = 2 n_layer_nodes = 256
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
 n = 3 n_layer_nodes = 256
 n = 4 n_layer_nodes = 256
-n = 5 n_layer_nodes = 512
-n = 6 n_layer_nodes = 512
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
 n = 7 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
@@ -153,6 +167,9 @@ New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2i, 4 FC layers
 Training started around 12:45 pm
 
+/data/caffe/faces/trained_models/Aug29_2i_T1/train_iter_146000.caffemodel 
+  caffe validation accuracy asymptotes to 0.883 with no overfitting
+  n_total_weights = 10607520 n_total_biases = 1411
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 192
@@ -164,10 +181,40 @@ n = 6 n_layer_nodes = 128
 n = 7 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
+
+frac_correct = 0.846612 frac_unsure = 0.0326639 frac_incorrect = 0.120724
+
+frac_nonface_correct = 0.974609
+frac_nonface_incorrect = 0.0253906
+
+frac_male_correct = 0.893348
+frac_male_unsure = 0.0148433
+frac_male_incorrect = 0.0918087
+
+frac_female_correct = 0.718602
+frac_female_unsure = 0.0716825
+frac_female_incorrect = 0.209716
+
+Confusion matrix:
+
+1002	23	4	0	
+33	1625	134	27	
+20	334	1213	121	
+0	0	0	0	
+
+Male classification is better than baseline model 2e.  But female
+classification is worse.  Visualization of maximal filter responses also
+shows no obvious benefit over model 2e.
 
 -------------------------------------------------------------------
-*.  Mon Aug 29 , Titan 1, morning, Facenet model 2j, 1 max pool + 1 avg pool
-Training started around 12:45 pm
+*.  Mon Aug 29 , Titan 1, morning, Facenet model 2j, 1 2x2 max pool + 1 4x4
+avg pool.  Training started around 12:45 pm
+
+  /data/caffe/faces/trained_models/Aug29_2j_T3/train_iter_52000.caffemodel
+  caffe validation accuracy approaches 0.862 with no overfitting after 14
+epochs.  Probably has not yet asymptoted
+
+n_total_weights = 10575136 n_total_biases = 1283
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 192
@@ -175,10 +222,31 @@ n = 2 n_layer_nodes = 224
 n = 3 n_layer_nodes = 256
 n = 4 n_layer_nodes = 256
 n = 5 n_layer_nodes = 256
-n = 6 n_layer_nodes = 128
-n = 7 n_layer_nodes = 3
+n = 6 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
+
+
+frac_correct = 0.818082 frac_unsure = 0.0637266 frac_incorrect = 0.118192
+
+frac_nonface_correct = 0.972763
+frac_nonface_incorrect = 0.0272374
+
+frac_male_correct = 0.840022
+frac_male_unsure = 0.042331
+frac_male_incorrect = 0.117647
+
+frac_female_correct = 0.700237
+frac_female_unsure = 0.125592
+frac_female_incorrect = 0.174171
+
+Confusion matrix:
+
+1001	26	2	0	
+43	1528	171	77	
+27	267	1182	212	
+0	0	0	0	
+
 
 
 -------------------------------------------------------------------
