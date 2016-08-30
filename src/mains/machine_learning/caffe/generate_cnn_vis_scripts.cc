@@ -211,11 +211,12 @@ int main(int argc, char* argv[])
    {
       param_layer_names.push_back("conv1a");
       param_layer_names.push_back("conv1b");
-      param_layer_names.push_back("conv2a");
-      param_layer_names.push_back("conv2b");
-      param_layer_names.push_back("fc3");
-      param_layer_names.push_back("fc4");
-      param_layer_names.push_back("fc5_faces");
+      param_layer_names.push_back("conv2");
+      param_layer_names.push_back("conv3");
+      param_layer_names.push_back("conv4");
+      param_layer_names.push_back("fc5");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7_faces");
 
 /*
 // Facenet1:

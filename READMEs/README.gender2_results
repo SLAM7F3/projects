@@ -29,6 +29,9 @@ fully connected layers from 256 to 512.
 5.  We see no obvious benefit to decreasing from 3 max pooling layers down
 to 1 max pool + 1 avg pool.
 
+6.  We probably want to add additional convolution layers as close to the
+first fully connected layer as possible.
+
 -------------------------------------------------------------------
 
 350K combined original + Adience + Iranian faces + non-faces used for training.
@@ -135,7 +138,12 @@ over model 2e.
 
 -------------------------------------------------------------------
 *.  Tues, Aug 30, Titan 1, Facenet model 2g, 5th conv layer at beginning
-Training started on Titan 1 at 6:20
+Training started on Titan 1 at 6:20 am.  Training stopped on Titan 1 at 3
+pm on Tuesday.
+
+/data/caffe/faces/trained_models/Aug29_2g_T1/train_iter_58000.caffemodel
+
+n_total_weights = 10658080 n_total_biases = 1379
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 96
@@ -146,11 +154,59 @@ n = 5 n_layer_nodes = 256
 n = 6 n_layer_nodes = 256
 n = 7 n_layer_nodes = 3
 
+Param layer p = 0 is named conv1a
+Param layer p = 1 is named conv1b
+Param layer p = 2 is named conv2
+Param layer p = 3 is named conv3
+Param layer p = 4 is named conv4
+Param layer p = 5 is named fc5
+Param layer p = 6 is named fc6
+Param layer p = 7 is named fc7_faces
+
 New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
+
+Visualization of maximal filter responses strongly suggests this is
+a poor place to insert a 5th conv layer into the Facenet 01 network.
 
 -------------------------------------------------------------------
 *.  Tues, Aug 30, Titan 3, Facenet model 2h, 5th conv layer at end
-Training started on Titan 3 at 6:20
+Training started on Titan 3 at 6:20 am.  
+
+/data/caffe/faces/trained_models/Aug29_2h_T3/train_iter_108000.caffemodel 
+  caffe validation accuracy asymptotes to around 0.887 with no overfitting
+  n_total_weights = 11164960 n_total_biases = 1539
+
+Parameter layer p = 0
+  Weights:  mu = -0.0018423 sigma = 0.069216
+  Biases:  mu = -0.00234467 sigma = 0.0380845
+
+Parameter layer p = 1
+  Weights:  mu = -0.00127711 sigma = 0.0101724
+  Biases:  mu = -0.000921247 sigma = 0.0190266
+
+Parameter layer p = 2
+  Weights:  mu = -0.00133513 sigma = 0.00887396
+  Biases:  mu = 0.00451479 sigma = 0.0275073
+
+Parameter layer p = 3
+  Weights:  mu = -0.00100316 sigma = 0.00769576
+  Biases:  mu = 0.0216955 sigma = 0.040436
+
+Parameter layer p = 4
+  Weights:  mu = -0.000560563 sigma = 0.00502484
+  Biases:  mu = 0.068271 sigma = 0.07712
+
+Parameter layer p = 5
+  Weights:  mu = 9.11489e-06 sigma = 0.00265918
+  Biases:  mu = 0.0198979 sigma = 0.0189256
+
+Parameter layer p = 6
+  Weights:  mu = 0.00154712 sigma = 0.00899908
+  Biases:  mu = 0.0910845 sigma = 0.0516342
+
+Parameter layer p = 7
+  Weights:  mu = -0.00218801 sigma = 0.0855959
+  Biases:  mu = -6.24607e-07 sigma = 0.15614
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 192
@@ -162,6 +218,27 @@ n = 6 n_layer_nodes = 256
 n = 7 n_layer_nodes = 3
 
 New mean RGB values + new std for 0th and 7th layers compared to Facenet01.
+
+frac_nonface_correct = 0.979572
+frac_nonface_incorrect = 0.020428
+
+frac_male_correct = 0.833975
+frac_male_unsure = 0.0252886
+frac_male_incorrect = 0.140737
+
+frac_female_correct = 0.772512
+frac_female_unsure = 0.0657583
+frac_female_incorrect = 0.16173
+
+Confusion matrix:
+
+1007	17	5	0	
+55	1517	201	46	
+37	236	1304	111	
+0	0	0	0	
+
+Visualization of maximal filter responses strongly suggests this is
+the best way to insert a 5th conv layer into the Face01 network!
 
 -------------------------------------------------------------------
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2i, 4 FC layers
@@ -247,7 +324,57 @@ Confusion matrix:
 27	267	1182	212	
 0	0	0	0	
 
+-------------------------------------------------------------------
+*.  Tues Aug 30 , Titan 1, pm, Facenet model 2k, 5 conv layers, 2 before
+final max pool
+Training started on Titan 1 around 12:50 pm 
 
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 224
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
+n = 7 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3a
+Param layer p = 3 is named conv3b
+Param layer p = 4 is named conv4
+Param layer p = 5 is named fc5
+Param layer p = 6 is named fc6
+Param layer p = 7 is named fc7_faces
+
+-------------------------------------------------------------------
+*.  Tues Aug 30 , Titan 3, pm, Facenet model 2l, 6 conv layers, 3 after
+final max pool, 3 FC layers
+Training started on Titan 3 around 1 pm
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3
+Param layer p = 3 is named conv4a
+Param layer p = 4 is named conv4b
+Param layer p = 5 is named conv4c
+Param layer p = 6 is named fc5
+Param layer p = 7 is named fc6
+Param layer p = 8 is named fc7_faces
+
+-------------------------------------------------------------------
+*.  Tues Aug 30 , Titan 1, pm, Facenet model 2m, 6 conv layers, 3 after
+final max pool, 2 FC layers
+Training started on Titan 1 around 3 pm
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3
+Param layer p = 3 is named conv4a
+Param layer p = 4 is named conv4b
+Param layer p = 5 is named conv4c
+Param layer p = 7 is named fc5
+Param layer p = 8 is named fc6_faces
 
 -------------------------------------------------------------------
 *.  Sun Aug 28 , Titan 1, morning, Facenet model 2a

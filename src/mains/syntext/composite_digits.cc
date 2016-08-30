@@ -234,7 +234,8 @@ int main(int argc, char *argv[])
 //         composite_image_filename=comp_images_subdir+"composite_image_"+
 //            stringfunc::integer_to_string(t,5)+".png";
 
-         composite_image_filename=comp_images_subdir+"comp_image.png";
+         composite_image_filename=comp_images_subdir+"comp_image_"+
+            stringfunc::number_to_string(p)+".png";
 
          string unix_cmd="convert '"+curr_background_filename+"' -crop "+
             stringfunc::number_to_string(composite_tile_size)+"x"+
