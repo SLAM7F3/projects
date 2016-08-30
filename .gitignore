@@ -1428,6 +1428,7 @@ src/mains/JAV/combine_HOG_detectors
 src/mains/syntext/text_files/generate_all_text
 src/mains/syntext/clean_input_text
 src/mains/syntext/company_names
+src/mains/syntext/composite_digits
 src/mains/syntext/composite_string_tiles
 src/mains/syntext/create_numbers
 src/mains/syntext/decimal_numbers
@@ -1903,6 +1904,7 @@ src/mains/photosynth/bundler_convert
 src/mains/photosynth/fill_photo_hierarchy
 src/mains/photosynth/extract_face
 src/mains/photosynth/ladarsynth
+src/mains/photosynth/Qt/makefile
 src/mains/photosynth/Qt/moc_*.cpp
 src/mains/photosynth/Qt/qtphotoserver
 src/mains/photosynth/Qt/run_photoserver
