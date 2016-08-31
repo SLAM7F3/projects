@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
    else 
    {
       Facenet_flag = true;
-      max_nodes_per_param_layer = 20;
+//      max_nodes_per_param_layer = 20;
 //      max_nodes_per_param_layer = 25;
-//      max_nodes_per_param_layer = 512;
+      max_nodes_per_param_layer = 257;
    }
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;
@@ -209,14 +209,50 @@ int main(int argc, char* argv[])
    }
    else if (Facenet_flag)
    {
-      param_layer_names.push_back("conv1a");
-      param_layer_names.push_back("conv1b");
+
+// Baseline Facenet model 2e  (4 conv layers)
+
+//      param_layer_names.push_back("conv1");
+//      param_layer_names.push_back("conv2");
+//      param_layer_names.push_back("conv3");
+//      param_layer_names.push_back("conv4");
+//      param_layer_names.push_back("fc5");
+//      param_layer_names.push_back("fc6");
+//      param_layer_names.push_back("fc7_faces");
+
+// Facenet model 2l  (conv4a + conv4b + conv 4c)
+
+//      param_layer_names.push_back("conv1");
+//      param_layer_names.push_back("conv2");
+//      param_layer_names.push_back("conv3");
+//      param_layer_names.push_back("conv4a");
+//      param_layer_names.push_back("conv4b");
+//      param_layer_names.push_back("conv4c");
+//      param_layer_names.push_back("fc5");
+//      param_layer_names.push_back("fc6");
+//      param_layer_names.push_back("fc7_faces");
+
+// Facenet model 2h  (conv4a + conv4b)
+
+      param_layer_names.push_back("conv1");
       param_layer_names.push_back("conv2");
       param_layer_names.push_back("conv3");
-      param_layer_names.push_back("conv4");
+      param_layer_names.push_back("conv4a");
+      param_layer_names.push_back("conv4b");
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
+
+// Facenet model 2k  (conv3a + conv3b)
+
+//      param_layer_names.push_back("conv1");
+//      param_layer_names.push_back("conv2");
+//      param_layer_names.push_back("conv3a");
+//      param_layer_names.push_back("conv3b");
+//      param_layer_names.push_back("conv4");
+//      param_layer_names.push_back("fc5");
+//      param_layer_names.push_back("fc6");
+//      param_layer_names.push_back("fc7_faces");
 
 /*
 // Facenet1:
@@ -260,8 +296,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 30;
+//         max_iters = 5;
+         max_iters = 30;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -274,8 +310,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 30;
+//         max_iters = 5;
+         max_iters = 30;
       }
       
       for(int iter = 0; iter < max_iters; iter++)

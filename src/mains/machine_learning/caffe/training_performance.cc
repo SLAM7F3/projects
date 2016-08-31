@@ -83,7 +83,8 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
-      "Aug30_2k_T1/";
+      "Aug30_2l_T3/";
+//      "Aug30_2k_T1/";
 //       "Aug29_2h_T3/";
 //      "Aug29_2j_T3/";
 //      "Aug29_2i_T1/";
@@ -94,8 +95,7 @@ int main(int argc, char* argv[])
 //      "Aug27_2d_T3/";
 //       "Aug27_2c_T1/";
 //      "Aug27_2b_T3/";
-//       "Aug26_6conv_T3/";
-//      "Aug26_5conv_T1/";
+
 
    string log_filename=dated_subdir+"caffe.bin.INFO";
    bool strip_comments_flag = false;

@@ -276,10 +276,10 @@ void caffe_classifier::print_network_metadata()
          global_weight_node_id_map[duple] = global_weight_node_counter++;
       }
       int final_global_weight_node = global_weight_node_counter - 1;
-      cout << "  Initial global weight node ID = " << init_global_weight_node
-           << endl;
-      cout << "  Final global weight node ID = " << final_global_weight_node
-           << endl;
+//      cout << "  Initial global weight node ID = " << init_global_weight_node
+//           << endl;
+//      cout << "  Final global weight node ID = " << final_global_weight_node
+//           << endl;
 
       const float *weights_data = weights_blob->cpu_data();
       const float *biases_data = biases_blob->cpu_data();
