@@ -21,9 +21,6 @@ class tictac3d
 // independent triple:  winning board posns
 // dependent int:  winner ID
 
-
-
-
 // Initialization, constructor and destructor functions:
 
    tictac3d();
@@ -51,6 +48,7 @@ class tictac3d
    void allocate_member_objects();
    void initialize_member_objects();
 
+   int get_cell_value(triple t);
    int get_cell_value(int px, int py, int pz);
    void set_cell_value(int px, int py, int pz, int value);
 

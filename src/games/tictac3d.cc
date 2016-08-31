@@ -71,6 +71,11 @@ ostream& operator<< (ostream& outstream,const tictac3d& T)
 
 // ==========================================================================
 
+int tictac3d::get_cell_value(triple t)
+{
+   return get_cell_value(t.first, t.second, t.third);
+}
+
 int tictac3d::get_cell_value(int px, int py, int pz)
 {
    int p = n_size * n_size * pz + n_size * py + px;   
