@@ -342,19 +342,167 @@ Confusion matrix:
 0	0	0	0	
 
 
-
 -------------------------------------------------------------------
 *.  Weds Aug 31 , Titan 1, am, Facenet model 2n, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers
+Reset std devs
 
+Training started on titan 1 around 6:35 am
+
+  /data/caffe/faces/trained_models/Aug31_2n_T1/train_iter_72000.caffemodel
+  caffe validation accuracy around 0.882 after 20 epochs - no overfitting
+
+n_total_weights = 11,616,544 n_total_biases = 1763
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 224
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
+n = 7 n_layer_nodes = 256
+n = 8 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3a
+Param layer p = 3 is named conv3b
+Param layer p = 4 is named conv4a
+Param layer p = 5 is named conv4b
+Param layer p = 6 is named fc5
+Param layer p = 7 is named fc6
+Param layer p = 8 is named fc7_faces
+
+Parameter layer p = 0
+  Weights:  mu = -0.00129584 sigma = 0.0702138
+  Biases:  mu = 0.0017395 sigma = 0.0328923
+
+Parameter layer p = 1
+  Weights:  mu = -0.00163784 sigma = 0.0107853
+  Biases:  mu = 0.00099391 sigma = 0.0190225
+
+Parameter layer p = 2
+  Weights:  mu = -0.00122959 sigma = 0.0093355
+  Biases:  mu = 0.0129956 sigma = 0.0265228
+
+Parameter layer p = 3
+  Weights:  mu = -0.00161565 sigma = 0.0086356
+  Biases:  mu = 0.0356192 sigma = 0.0527932
+
+Parameter layer p = 4
+  Weights:  mu = -0.000426551 sigma = 0.00556942
+  Biases:  mu = 0.0492704 sigma = 0.0492463
+
+Parameter layer p = 5
+  Weights:  mu = -0.000187955 sigma = 0.00381945
+  Biases:  mu = 0.0469677 sigma = 0.0429129
+
+Parameter layer p = 6
+  Weights:  mu = 2.05024e-06 sigma = 0.00139523
+  Biases:  mu = 0.0148494 sigma = 0.0185964
+
+Parameter layer p = 7
+  Weights:  mu = 0.00163086 sigma = 0.00927953
+  Biases:  mu = 0.0854083 sigma = 0.0442769
+
+Parameter layer p = 8
+  Weights:  mu = -0.000484976 sigma = 0.0876936
+  Biases:  mu = 4.14749e-07 sigma = 0.118642
+
+frac_correct = 0.849073 frac_unsure = 0.0348632 frac_incorrect = 0.116064
+
+frac_nonface_correct = 0.988293
+frac_nonface_incorrect = 0.0117073
+
+frac_male_correct = 0.814733
+frac_male_unsure = 0.0269379
+frac_male_incorrect = 0.158329
+
+frac_female_correct = 0.80154
+frac_female_unsure = 0.0645735
+frac_female_incorrect = 0.133886
+
+Confusion matrix:
+
+1013	13	3	0	
+42	1482	246	49	
+28	198	1353	109	
+0	0	0	0	
+
+-------------------------------------------------------------------
+*.  Weds Aug 31 , Titan 3, am, Facenet model 2o, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, leaky ReLUs
 
 Reset std devs
-Training started on titan 1 around 6:35 am
+Training started on titan 3 around 12:20 pm
 
 
 -------------------------------------------------------------------
 *.  Weds Aug 31 , Titan 3, am, Facenet model 2p, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, AVE pool rather than MAX pool
-
 Reset std devs
+
 Training started on titan 3 around 6:50 am
+
+  /data/caffe/faces/trained_models/Aug31_2p_T3/train_iter_90000.caffemodel
+  caffe validation accuracy around 0.885 after 25 epochs - no overfitting
+
+n_total_weights = 11,616,544 n_total_biases = 1763
+
+Parameter layer p = 0
+  Weights:  mu = -0.00146658 sigma = 0.0748373
+  Biases:  mu = -0.00178887 sigma = 0.0368978
+
+Parameter layer p = 1
+  Weights:  mu = -0.00178954 sigma = 0.0112717
+  Biases:  mu = 0.00138357 sigma = 0.0244916
+
+Parameter layer p = 2
+  Weights:  mu = -0.00147965 sigma = 0.00943635
+  Biases:  mu = 0.02708 sigma = 0.0662412
+
+Parameter layer p = 3
+  Weights:  mu = -0.000972124 sigma = 0.00679191
+  Biases:  mu = 0.0737577 sigma = 0.0632939
+
+Parameter layer p = 4
+  Weights:  mu = -0.000410599 sigma = 0.0046441
+  Biases:  mu = 0.0492251 sigma = 0.0277441
+
+Parameter layer p = 5
+  Weights:  mu = 0.000230325 sigma = 0.00379321
+  Biases:  mu = 0.0227724 sigma = 0.0214315
+
+Parameter layer p = 6
+  Weights:  mu = 9.71838e-06 sigma = 0.0013482
+  Biases:  mu = 0.00854122 sigma = 0.0199063
+
+Parameter layer p = 7
+  Weights:  mu = 0.00178928 sigma = 0.0104485
+  Biases:  mu = 0.0693665 sigma = 0.065737
+
+Parameter layer p = 8
+  Weights:  mu = 0.000210494 sigma = 0.0988193
+  Biases:  mu = -2.54313e-06 sigma = 0.843189
+
+frac_correct = 0.845186 frac_unsure = 0.0329064 frac_incorrect = 0.121908
+
+frac_nonface_correct = 0.975514
+frac_nonface_incorrect = 0.0244858
+
+frac_male_correct = 0.858164
+frac_male_unsure = 0.0203408
+frac_male_incorrect = 0.121495
+
+frac_female_correct = 0.75237
+frac_female_unsure = 0.0663507
+frac_female_incorrect = 0.18128
+
+Confusion matrix:
+
+1001	23	5	0	
+28	1561	193	37	
+19	287	1270	112	
+0	0	0	0	
+

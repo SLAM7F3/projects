@@ -33,6 +33,9 @@ to 1 max pool + 1 avg pool.
 6.  We probably want to add additional convolution layers as close to the
 first fully connected layer as possible.
 
+7.  Globally replacing max pooling layers with average pooling layers
+led to better male and worse female classification.
+
 -------------------------------------------------------------------
 
 350K combined original + Adience + Iranian faces + non-faces used for training.
@@ -565,6 +568,14 @@ conv3a+conv3b+conv4a+conv4b, 3 FC layers
 
 Reset std devs
 Training started on titan 1 around 6:35 am
+
+
+-------------------------------------------------------------------
+*.  Weds Aug 31 , Titan 3, am, Facenet model 2o, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, leaky ReLUs
+
+Reset std devs
+Training started on titan 3 around 12:20 pm
 
 
 -------------------------------------------------------------------

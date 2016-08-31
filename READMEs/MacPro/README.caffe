@@ -1,8 +1,14 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 8/1/16; 8/14/16; 8/16/16; 8/17/16
+Last updated on 8/1/16; 8/14/16; 8/16/16; 8/17/16; 8/31/16
 =============================================================================
+
+*.  On 8/31/16, we git cloned the latest version of the publically
+available caffe onto Titan3 and Titan1.  We copied the Makefile.config from
+the caffe_custom into the public subdir.  We then were able to build
+caffe_public without problems (though with some warning messages) on
+Titan3/Titan1 by chanting make -j all, make test, and make runtest.
 
 *.  On 8/17/16, we downloaded the latest version of caffe_custom from Tho's
 git repository.  We only had to modify the python lines within
@@ -104,9 +110,9 @@ name>.<hostname>.<user name>.log.<severity level>.<date>.<time>.<pid>"
 default, glog copies the log messages of severity level ERROR or FATAL to
 standard error (stderr) in addition to log files.
 
-*.  On 9/29/15, Tho recommended that we check to see if caffe builds
-cleanly on Titan1.  So he told us to check out a copy of caffe onto titan1
-from git by chanting
+*.  On 9/29/15, Tho recommended that we check to see if the publically
+available caffe builds cleanly on Titan1.  So he told us to check out a
+copy of caffe onto titan1 from git by chanting
 
 	git clone https://github.com/BVLC/caffe.git
 
@@ -199,10 +205,11 @@ caffe.
 *.  See http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html for 
 "Blobs, Layers and Nets: anatomy of a Caffe model".
 
-*.  In order to check out a clean copy of caffe onto our Thinkmate, Tho
-directed us to the primary caffe website (caffe.berkeleyvision.org).  Press
-on red "View on GitHub" button located on LHS.  Then copy HTTPS clone URL
-located on RHS into a git clone terminal command:
+*.  In order to check out a clean copy of the publically available caffe
+onto our Thinkmate, Tho directed us to the primary caffe website
+(caffe.berkeleyvision.org).  Press on red "View on GitHub" button located
+on LHS.  Then copy HTTPS clone URL located on RHS into a git clone terminal
+command:
 
 	git clone https://github.com/BVLC/caffe.git
 
