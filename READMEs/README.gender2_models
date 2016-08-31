@@ -506,3 +506,10 @@ Confusion matrix:
 19	287	1270	112	
 0	0	0	0	
 
+------------------------------------------------------------------- *.
+Weds Aug 31 , Titan 1, am, Facenet model 2q, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
+layers
+
+Reset std devs
+Training started on titan 1 around 12:30 pm
