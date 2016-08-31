@@ -328,6 +328,10 @@ Confusion matrix:
 *.  Tues Aug 30 , Titan 1, pm, Facenet model 2k, 5 conv layers, 2 before
 final max pool
 Training started on Titan 1 around 12:50 pm 
+  /data/caffe/faces/trained_models/Aug30_2k_T1/train_iter_116000.caffemodel
+  caffe validation accuracy asymptotes to 0.890 with no overfitting
+
+n_total_weights = 11026720 n_total_biases = 1507
 
 n = 0 n_layer_nodes = 96
 n = 1 n_layer_nodes = 192
@@ -346,6 +350,26 @@ Param layer p = 4 is named conv4
 Param layer p = 5 is named fc5
 Param layer p = 6 is named fc6
 Param layer p = 7 is named fc7_faces
+
+frac_correct = 0.85119 frac_unsure = 0.0288801 frac_incorrect = 0.119929
+
+frac_nonface_correct = 0.993197
+frac_nonface_incorrect = 0.00680272
+
+frac_male_correct = 0.846619
+frac_male_unsure = 0.0241891
+frac_male_incorrect = 0.129192
+
+frac_female_correct = 0.76955
+frac_female_unsure = 0.0515403
+frac_female_incorrect = 0.17891
+
+Confusion matrix:
+
+1022	7	0	0	
+50	1540	185	44	
+28	274	1299	87	
+0	0	0	0	
 
 -------------------------------------------------------------------
 *.  Tues Aug 30 , Titan 3, pm, Facenet model 2l, 6 conv layers, 3 after
