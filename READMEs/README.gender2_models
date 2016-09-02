@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 8/26/16; 8/29/16; 8/30/16; 8/31/16
+Last updated on 8/29/16; 8/30/16; 8/31/16; 9/1/16
 ==========================================================================
 
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2e, 4 conv layers
@@ -167,8 +167,8 @@ Visualization of maximal filter responses strongly suggests this is
 the best way to insert a 5th conv layer into the Face01 network!
 
 ***************************
-As of 8/31/16, model 2h yields the best overall gender classification
-performance results!
+As of 8/31/16, 5-conv layer model 2h yields better overall gender
+classification performance results than 4-conv layer model 2e.
 ***************************
 
 -------------------------------------------------------------------
@@ -251,8 +251,7 @@ Confusion matrix:
 0	0	0	0	
 
 ***************************
-As of 8/31/16, model 2k is very competitive with model 2h which 
-yields the best overall performance results!
+As of 8/31/16, 5-conv layer model 2k is very competitive with model 2h
 ***************************
 
 -------------------------------------------------------------------
@@ -347,10 +346,12 @@ Confusion matrix:
 conv3a+conv3b+conv4a+conv4b, 3 FC layers
 Reset std devs
 
-Training started on titan 1 around 6:35 am
+Training started on titan 1 around 6:35 am.  
+Starting to visualize all nodes' favorite responses as of Thurs Sep 1 at
+6:30 pm.
 
-  /data/caffe/faces/trained_models/Aug31_2n_T1/train_iter_72000.caffemodel
-  caffe validation accuracy around 0.882 after 20 epochs - no overfitting
+  /data/caffe/faces/trained_models/Aug31_2n_T1/train_iter_264000.caffemodel
+  caffe validation accuracy around 0.907 after 73 epochs - no overfitting
 
 n_total_weights = 11,616,544 n_total_biases = 1763
 
@@ -415,13 +416,13 @@ frac_correct = 0.849073 frac_unsure = 0.0348632 frac_incorrect = 0.116064
 frac_nonface_correct = 0.988293
 frac_nonface_incorrect = 0.0117073
 
-frac_male_correct = 0.814733
-frac_male_unsure = 0.0269379
-frac_male_incorrect = 0.158329
+frac_male_correct = 0.814733  0.8444
+frac_male_unsure = 0.0269379  0.0131
+frac_male_incorrect = 0.158329  0.142
 
-frac_female_correct = 0.80154
-frac_female_unsure = 0.0645735
-frac_female_incorrect = 0.133886
+frac_female_correct = 0.80154   0.787
+frac_female_unsure = 0.0645735  0.046
+frac_female_incorrect = 0.133886  0.165
 
 Confusion matrix:
 
@@ -430,8 +431,17 @@ Confusion matrix:
 28	198	1353	109	
 0	0	0	0	
 
+1007   20  2  0
+57  1536  202   24
+35  244  1330  79
+
+***************************
+As of 9/1/16, 6 conv-layer model 2n yields the best overall gender
+classification performance results!
+***************************
+
 -------------------------------------------------------------------
-*.  Weds Aug 31 , Titan 3, am, Facenet model 2o, 6 conv layers,
+*.  Weds Aug 31 , Titan 3, Facenet model 2o, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, leaky ReLUs
 
 Reset std devs
@@ -506,10 +516,45 @@ Confusion matrix:
 19	287	1270	112	
 0	0	0	0	
 
-------------------------------------------------------------------- *.
-Weds Aug 31 , Titan 1, am, Facenet model 2q, 6 conv layers,
+------------------------------------------------------------------- 
+*. Weds Aug 31 , Titan 1, Facenet model 2q, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
 layers
 
-Reset std devs
 Training started on titan 1 around 12:30 pm
+
+  /data/caffe/faces/trained_models/Aug31_2q_T1/train_iter_120000.caffemodel
+  caffe validation accuracy around 0.893
+
+
+frac male correct = 0.7449
+frac male unsure = 0.118
+frac male incorrect = 0.136
+
+frac female correct = 0.691
+frac femal unsure = 0.180
+frace female wrong = 0.127
+
+
+1009  12 8 0
+129  1355 119 216
+63 153 1167  305
+
+
+
+------------------------------------------------------------------- 
+*. Thurs, Sep 1, Titan 1, Facenet model 2r, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
+layers.  Increase learning rate to 0.03 and increase learning rate step
+from 25K to 10K.
+
+Training started on titan 1 around 6 pm 
+
+------------------------------------------------------------------- 
+*. Thurs, Sep 1, Titan 3, Facenet model 2s, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
+layers.  Base learning rate = 0.003.  Decreased dropout and l2 regularization.
+from 0.001 to 0.0005
+
+
+Training started on titan 3 around 6 pm
