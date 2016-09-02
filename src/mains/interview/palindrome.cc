@@ -1,5 +1,5 @@
 // =====================================================================
-// Recursive palindrome
+// Recursively determine if a string is a palindrome
 // =====================================================================
 // Last updated on 2/10/16
 // =====================================================================
@@ -26,8 +26,8 @@ bool is_palindrome(string str)
       return true;
    }
 
-// If first and last characters inside string different, string is not
-// a palindrome:
+// If first and last characters inside string are different, string is
+// not a palindrome:
 
    else if (str[0] != str[str.size()-1])
    {

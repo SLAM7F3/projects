@@ -78,14 +78,13 @@ int main()
       search_value, sequence, min_index, max_index);
    if(search_value_index == -1)
    {
-      cout << "Search value does not lie within sequence sequence"
+      cout << "Search value does not lie within sequence"
            << endl;
    }
    else
    {
       cout << "Search value is located at index " << search_value_index
            << endl;
-
    }
 }
 

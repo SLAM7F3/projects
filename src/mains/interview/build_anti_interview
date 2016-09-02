@@ -5,3 +5,4 @@
 /bin/rm ./palindrome
 /bin/rm ./powers
 /bin/rm ./quicksort
+/bin/rm ./reverse_words

@@ -5,3 +5,4 @@
 ~/bin/MAKE program=palindrome
 ~/bin/MAKE program=powers
 ~/bin/MAKE program=quicksort
+~/bin/MAKE program=reverse_words

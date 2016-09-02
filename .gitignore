@@ -1130,6 +1130,14 @@ src/mains/ied/danger
 src/mains/ied/enhance_scale
 src/mains/ied/rotate_raw_data
 src/mains/ied/ied
+src/mains/interview/binary_search
+src/mains/interview/binary_tree
+src/mains/interview/factorial
+src/mains/interview/hanoi
+src/mains/interview/palindrome
+src/mains/interview/powers
+src/mains/interview/quicksort
+src/mains/interview/reverse_words
 src/mains/plume/viewtripods
 src/mains/plume/binary_2_image
 src/mains/plume/georegister_cameras
