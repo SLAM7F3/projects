@@ -1132,7 +1132,9 @@ src/mains/ied/rotate_raw_data
 src/mains/ied/ied
 src/mains/interview/binary_search
 src/mains/interview/binary_tree
+src/mains/interview/compress_string
 src/mains/interview/factorial
+src/mains/interview/find_zeros
 src/mains/interview/hanoi
 src/mains/interview/palindrome
 src/mains/interview/powers
