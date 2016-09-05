@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
    else 
    {
       Facenet_flag = true;
-      max_nodes_per_param_layer = 20;
+//      max_nodes_per_param_layer = 20;
 //      max_nodes_per_param_layer = 25;
-//      max_nodes_per_param_layer = 257;
+      max_nodes_per_param_layer = 257;
    }
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;
@@ -308,8 +308,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 30;
+       //  max_iters = 5;
+         max_iters = 30;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -322,8 +322,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 30;
+//         max_iters = 5;
+         max_iters = 30;
       }
       
       for(int iter = 0; iter < max_iters; iter++)
