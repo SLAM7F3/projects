@@ -701,7 +701,7 @@ int caffe_classifier::retrieve_layer_activations(
 */
 
    int n_tiny_activations = 0;
-   const double TINY = 0.001;
+   const double TINY = 1E-10;
    node_IDs.clear();
    node_activations.clear();
    for(int n = 0; n < n_filters; n++)

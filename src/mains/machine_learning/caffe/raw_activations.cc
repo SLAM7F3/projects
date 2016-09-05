@@ -4,12 +4,11 @@
 // For each FACENET neuron, we count how many input test images cause
 // it to fire.  We also record the mean and median values of its
 // non-zero activations.  Activation statistics for each node in each
-// layer are exported to an output text file.
+// layer are periodically exported to output text files within
+// activations_subdir.
 
-// RAW_ACTIVATIONS also generates montages of filter response image
-// chips for test images that significantly stimulate at least one
-// FACENET neuron.  The montages are exported to output male and
-// female subdirectories.
+// RAW_ACTIVATIONS also exports text files for each input test image
+// containing activation values for all nodes which fired.  
 
 // ./raw_activations
 // /data/caffe/faces/trained_models/test_96.prototxt                     
@@ -17,7 +16,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/23/16; 8/24/16; 8/25/16; 8/26/16
+// Last updated on 8/24/16; 8/25/16; 8/26/16; 9/5/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -57,6 +56,10 @@ int main(int argc, char** argv)
    filefunc::dircreate(subnetwork_subdir);
    string activations_subdir = imagechips_subdir + "activations/";
    filefunc::dircreate(activations_subdir);
+   string image_activations_subdir = activations_subdir + "images/";
+   filefunc::dircreate(image_activations_subdir);
+   string node_activations_subdir = activations_subdir + "nodes/";
+   filefunc::dircreate(node_activations_subdir);
    string male_subnetwork_subdir=subnetwork_subdir+"male/";
    string female_subnetwork_subdir=subnetwork_subdir+"female/";
    filefunc::dircreate(male_subnetwork_subdir);
@@ -82,14 +85,13 @@ int main(int argc, char** argv)
    int istart=0;
 //   int istop = 500;
    int istop = n_images;
-   string unix_cmd;
 
    string montage_filename="montage_cmds.dat";
    ofstream montagestream;
    filefunc::openfile(montage_filename, montagestream);
 
    typedef std::map<DUPLE, vector<double>, ltduple> NODE_ACTIVATIONS_MAP;
-// independent DUPLE contains (local ID for node in layer L, layer ID)
+// independent DUPLE contains (layer ID, local ID for node in layer L)
 // dependent vector<double> contains node activations for all testing images
    NODE_ACTIVATIONS_MAP node_activations_map;
 //   NODE_ACTIVATIONS_MAP female_node_activations_map, male_node_activations_map;
@@ -121,6 +123,7 @@ int main(int argc, char** argv)
 //           << " image_basename = " << image_basename 
            << " image_filename = " << image_filename
            << endl;
+
       
       vector<string> substrings = 
          stringfunc::decompose_string_into_substrings(image_basename,"_");
@@ -143,38 +146,8 @@ int main(int argc, char** argv)
       int classification_label = classifier.get_classification_result();
       double classification_score=classifier.get_classification_score();
 
-      int true_label = -1;
       string true_gender_label = substrings[0];
-      if(true_gender_label == "non")
-      {
-         true_label = 0;
-      }
-      else if(true_gender_label == "male")
-      {
-         true_label = 1;
-      }
-      else if(true_gender_label == "female")
-      {
-         true_label = 2;
-      }
-
-      string classification_gender_label;
-      if(classification_label == 0)
-      {
-         classification_gender_label = "non";
-      }
-      else if(classification_label == 1)
-      {
-         classification_gender_label = "male";
-      }
-      else if(classification_label == 2)
-      {
-         classification_gender_label = "female";
-      }
-
-      cout << "true_gender_label = " << true_gender_label << endl;
-//      cout << "classification_gender_label = " << classification_gender_label
-//           << " classification score = " << classification_score
+//       cout << "true_gender_label = " << true_gender_label << endl;
 //      << endl;
       int n_strong_activations = 0;
 
@@ -251,10 +224,22 @@ int main(int argc, char** argv)
          filefunc::closefile(activations_filename, activations_stream);
          string banner="Exported "+activations_filename;
          outputfunc::write_banner(banner);
-      } // i conditional
-      
+      } // i > istart && i%50 == 0 conditional
+
       vector<string> montage_lines;
       montage_lines.push_back("0  "+image_filename);
+
+// Open text file for current image into which we save all nonzero
+// node activation information:
+
+      string currimage_activations_filename=image_activations_subdir+
+         "image_activations_"+stringfunc::integer_to_string(i,4)+".dat";
+      ofstream image_activations_stream;
+      filefunc::openfile(
+         currimage_activations_filename, image_activations_stream);
+      image_activations_stream << "# i = " << i 
+                               << " image_filename = " << image_filename
+                               << endl << endl;
 
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
@@ -263,8 +248,26 @@ int main(int argc, char** argv)
          int n_tiny_values = classifier.retrieve_layer_activations(
             blob_names[layer], local_node_IDs, node_activations);
          int n_layer_nodes = node_activations.size();
+         double layer_nonzero_activations_frac = 
+            double(n_layer_nodes - n_tiny_values) / n_layer_nodes;
+         image_activations_stream << endl;
+         image_activations_stream << "#  " << layer_nonzero_activations_frac
+                                  << " of nodes in layer " << layer+1
+                                  << " have nonzero activations " 
+                                  << endl << endl;
          for(int n = 0; n < n_layer_nodes; n++)
          {
+
+// Export nonzero node activations for current image to output text
+// file:
+
+            if(node_activations[n] > 0)
+            {
+               image_activations_stream << layer+1 << "  "
+                                        << local_node_IDs[n] << "  "
+                                        << node_activations[n] << endl;
+            }
+
             DUPLE curr_duple(layer, local_node_IDs[n]);
             node_activations_iter = node_activations_map.find(curr_duple);
             if(node_activations_iter == node_activations_map.end())
@@ -300,7 +303,6 @@ int main(int argc, char** argv)
          if(n_layer_nodes < n_max) n_max = n_layer_nodes;
          if(layer == n_layers - 1) n_max = 1;
 
-         unix_cmd = "montage -tile "+stringfunc::number_to_string(n_max)+"x1 ";
          for(int n = 0; n < n_max; n++)
          {
 //            cout << "     Local Node ID = " << local_node_IDs[n]
@@ -344,7 +346,6 @@ int main(int argc, char** argv)
                   +"  "+chip_filename;
                montage_lines.push_back(curr_line);
             }
-            unix_cmd += chiplabel_str+" "+chip_filename+" ";
          } // loop over index n labeling activated neurons' image chips
          
 // Compute statistics for current layer's node activations:
@@ -362,10 +363,13 @@ int main(int argc, char** argv)
 
          string montage_filename = "layer_"+
             stringfunc::integer_to_string(layer+1,3)+".png";
-         unix_cmd += " "+montage_filename;
-//         sysfunc::unix_command(unix_cmd);
-
       } // loop over layer index
+
+      filefunc::closefile(
+         currimage_activations_filename, image_activations_stream);
+
+      string banner="Exported "+currimage_activations_filename;
+      outputfunc::write_banner(banner);
        
       if(classification_label == 0) continue;
       if(classification_score < 0.95) continue;
@@ -398,43 +402,7 @@ int main(int argc, char** argv)
          }
          montagestream << endl;
       }
-      
-// Generate network montage from individual layer montages:
-
-      unix_cmd = "montage -geometry +2+2 -tile 1x"
-         +stringfunc::number_to_string(n_layers+1)
-         +" "+image_filename+" ";
-
-      vector<string> layer_montage_filenames;
-      for(unsigned int layer = 0; layer < n_layers; layer++)
-      {
-         layer_montage_filenames.push_back(
-            "layer_"+
-            stringfunc::integer_to_string(layer+1,3)+".png");
-         unix_cmd += layer_montage_filenames.back()+" ";
-      }
-
-      string network_montage_filename=male_subnetwork_subdir;
-      if(true_gender_label == "female")
-      {
-         network_montage_filename=female_subnetwork_subdir;
-      }
-      
-      network_montage_filename += "network_"+
-         stringfunc::integer_to_string(i,4)+".png";
-      unix_cmd += network_montage_filename;
-//      cout << unix_cmd << endl;
-//      sysfunc::unix_command(unix_cmd);
-
-      string banner="Exported "+network_montage_filename;
-      outputfunc::write_banner(banner);
-
-      for(unsigned int layer = 0; layer < n_layers; layer++)
-      {
-         filefunc::deletefile(layer_montage_filenames[layer]);
-      }
-
-   } // loop over index i labeling input image tiles
+   } // loop over index i labeling input test images
 
    cout << "n_images = " << n_images << endl;  // 4536
    cout << "test.prototxt = " << test_prototxt_filename << endl;
@@ -443,6 +411,46 @@ int main(int argc, char** argv)
 
    filefunc::closefile(montage_filename, montagestream);
    string banner="Exported "+montage_filename;
+   outputfunc::write_banner(banner);
+
+// Export nonzero activations for each node within entire network to
+// individual text files:
+
+   int n_nonzero_activations = 0;
+   for(node_activations_iter = node_activations_map.begin();
+       node_activations_iter != node_activations_map.end();
+       node_activations_iter++)
+   {
+      DUPLE curr_duple = node_activations_iter->first;
+      int layer_ID = curr_duple.first + 1;
+      int local_node_ID = curr_duple.second;
+
+      string node_activations_filename=node_activations_subdir+
+         "node_activations_"+stringfunc::number_to_string(layer_ID)+"_"+
+         stringfunc::integer_to_string(local_node_ID,3)+".dat";
+      ofstream node_activations_stream;
+      filefunc::openfile(node_activations_filename, node_activations_stream);
+      
+      vector<double> curr_activations = node_activations_iter->second;
+      vector<double> nonzero_activations;
+      for(unsigned int j = 0; j < curr_activations.size(); j++)
+      {
+         if(curr_activations[j] > 0)
+         {
+            node_activations_stream << curr_activations[j] << "  ";
+            n_nonzero_activations++;
+            if(n_nonzero_activations%10 == 0)
+            {
+               node_activations_stream << endl;
+            }
+         }
+      }
+      node_activations_stream << endl;
+      filefunc::closefile(node_activations_filename, node_activations_stream);
+   } // loop over node activations iterator
+
+   banner="Exported all nonzero activations for all network nodes to "+
+      node_activations_subdir;
    outputfunc::write_banner(banner);
 }
 
