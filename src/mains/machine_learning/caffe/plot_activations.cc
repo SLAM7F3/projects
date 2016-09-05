@@ -33,6 +33,9 @@ int main(int argc, char** argv)
    string ordered_activations_filename=activations_subdir+
       "ordered_activations.dat";
 
+
+
+
    vector< vector<double> > row_numbers = 
       filefunc::ReadInRowNumbers(ordered_activations_filename);
 

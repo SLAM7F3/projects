@@ -237,9 +237,7 @@ int main(int argc, char** argv)
       ofstream image_activations_stream;
       filefunc::openfile(
          currimage_activations_filename, image_activations_stream);
-      image_activations_stream << "# i = " << i 
-                               << " image_filename = " << image_filename
-                               << endl << endl;
+      image_activations_stream << image_filename << endl << endl;
 
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {

@@ -121,7 +121,7 @@ namespace stringfunc
    void string_to_n_numbers(unsigned int n,std::string numberstring,int X[]);
    void string_to_n_numbers(unsigned int n,std::string numberstring,
                             double X[]);
-   std::vector<double> string_to_numbers(std::string numberstring); 
+   std::vector<double> string_to_numbers(std::string numberstring);
    std::vector<double> string_to_numbers(std::string numberstring,
                                          std::string separator_chars);
    std::string find_and_replace_char(
