@@ -239,12 +239,22 @@ int main(int argc, char** argv)
          currimage_activations_filename, image_activations_stream);
       image_activations_stream << image_filename << endl << endl;
 
+      double softmax_denom = 0;
+
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          vector<int> local_node_IDs;
          vector<double> node_activations;
+
+         bool sort_activations_flag = true;
+         if(layer == n_layers - 1)
+         {
+            sort_activations_flag = false;
+         }
+         
          int n_tiny_values = classifier.retrieve_layer_activations(
-            blob_names[layer], local_node_IDs, node_activations);
+            blob_names[layer], local_node_IDs, node_activations,
+            sort_activations_flag);
          int n_layer_nodes = node_activations.size();
          double layer_nonzero_activations_frac = 
             double(n_layer_nodes - n_tiny_values) / n_layer_nodes;
@@ -264,6 +274,11 @@ int main(int argc, char** argv)
                image_activations_stream << layer+1 << "  "
                                         << local_node_IDs[n] << "  "
                                         << node_activations[n] << endl;
+            }
+
+            if(layer == n_layers - 1)
+            {
+               softmax_denom += exp(node_activations[n]);
             }
 
             DUPLE curr_duple(layer, local_node_IDs[n]);
@@ -362,6 +377,38 @@ int main(int argc, char** argv)
          string montage_filename = "layer_"+
             stringfunc::integer_to_string(layer+1,3)+".png";
       } // loop over layer index
+
+// Compute softmax class probabilities from final layer:
+
+      image_activations_stream << endl;
+      image_activations_stream << "#  Softmax class probabilities" 
+                               << endl << endl;
+
+      bool sort_activations_flag = false;
+      int layer = n_layers - 1;
+      vector<int> local_node_IDs;
+      vector<double> node_activations;
+      int n_tiny_values = classifier.retrieve_layer_activations(
+         blob_names[layer], local_node_IDs, node_activations, 
+         sort_activations_flag);
+      int n_layer_nodes = node_activations.size();
+      for(int n = 0; n < n_layer_nodes; n++)
+      {
+         double softmax_prob = exp(node_activations[n]) / softmax_denom;
+         string class_label = "non-face";
+         if(n == 1)
+         {
+            class_label = "male face";
+         }
+         else if(n == 2)
+         {
+            class_label = "female face";
+         }
+         image_activations_stream << n << "   "
+                                  << softmax_prob << "   # "
+                                  << class_label
+                                  << endl;
+      }
 
       filefunc::closefile(
          currimage_activations_filename, image_activations_stream);

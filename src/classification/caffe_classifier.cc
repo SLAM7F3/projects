@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 8/18/16; 8/19/16; 8/23/16; 8/29/16
+// Last modified on 8/19/16; 8/23/16; 8/29/16; 9/6/16
 // ==========================================================================
 
 #include <caffe/net.hpp>
@@ -668,7 +668,8 @@ void caffe_classifier::generate_dense_map_data_blob()
 // specified layer whose activations effectively equal zero.
 
 int caffe_classifier::retrieve_layer_activations(
-   string blob_name, vector<int>& node_IDs, vector<double>& node_activations)
+   string blob_name, vector<int>& node_IDs, vector<double>& node_activations,
+   bool sort_activations_flag)
 {
    const shared_ptr<const caffe::Blob<float> > curr_blob =
       net_->blob_by_name(blob_name);
@@ -718,7 +719,10 @@ int caffe_classifier::retrieve_layer_activations(
 //   cout << "n_tiny_activations = " << n_tiny_activations 
 //        << " tiny_activation_frac = " << tiny_activation_frac << endl;
 
-   templatefunc::Quicksort_descending(node_activations, node_IDs);
+   if(sort_activations_flag)
+   {
+      templatefunc::Quicksort_descending(node_activations, node_IDs);
+   }
 
    return n_tiny_activations;
 }

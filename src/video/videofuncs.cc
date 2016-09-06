@@ -7,7 +7,7 @@
 // ==========================================================================
 // Videofuncs namespace method definitions
 // ==========================================================================
-// Last modified on 7/23/16; 7/30/16; 8/1/16; 8/19/16
+// Last modified on 7/30/16; 8/1/16; 8/19/16; 9/6/16
 // ==========================================================================
 
 #include <iostream>
@@ -2620,7 +2620,8 @@ namespace videofunc
     texture_rectangle* text_texture_rectangle_ptr,
     int fontsize,
     vector<string>& text_lines,
-    vector<twovector>& xy_start,
+    vector<twovector>& xy_start,  // Measured in pixels relative to 
+				  // lower left corner
     vector<colorfunc::Color>& text_colors)
   {
     //         cout << "inside videofunc::annotate_image_with_text()" << endl;
@@ -2643,7 +2644,8 @@ namespace videofunc
             
       if (text_colors[i]==colorfunc::white)
       {
-        curr_RGB=colorfunc::RGB(1,0.9,0.8);
+         curr_RGB=colorfunc::RGB(1,1,1);
+//        curr_RGB=colorfunc::RGB(1,0.9,0.8);
       }
       else if (text_colors[i]==colorfunc::grey)
       {

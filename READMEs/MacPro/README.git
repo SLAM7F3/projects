@@ -620,6 +620,7 @@ e.g.
     git push origin --delete branch_name
 
     e.g. git push origin --delete pr_tesseract_cleanup
+         git push origin --delete tagger2_083016
 
  - Goto Apple's github webpage  (https://github.geo.apple.com)  
    We created a bookmark for this website in our Apple bookmarks firefox

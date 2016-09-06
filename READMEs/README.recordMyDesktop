@@ -34,3 +34,16 @@ avconv -i test.ogv \
 avconv -i tidmarsh_2.ogv \
    -c:v libx264 -preset veryslow -qp 0 \
    tidmarsh_2.mp4
+
+avconv -i male_faces.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+   male_faces.mp4
+
+ffmpeg -i male_faces.ogv -b 24000000 male_faces.mp4
+
+ffmpeg -i female_faces.ogv -b 24000000 female_faces.mp4
+
+ffmpeg -i female_faces.ogv -b 1500000 female_faces_1.5.mp4
+
+
+ffmpeg -i male_faces.ogv -b 1500000 male_faces_1.5.mp4
