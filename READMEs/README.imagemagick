@@ -1,7 +1,7 @@
 ========================================================================
 Image Magick notes
 ========================================================================
-Last updated 3/26/16; 4/9/16; 6/26/16; 6/28/16
+Last updated 4/9/16; 6/26/16; 6/28/16; 9/5/16
 ========================================================================
 
 *.  Uniform red foreground text:
@@ -168,9 +168,7 @@ montage -geometry 728x409 -tile 1x2 full_quads_image_04084.png padded_half_quads
 montage double_quads_image_04084.png full_half_quads.png -mode Concatenate -frame 2 double_full_half_quads.png
 
 
-
-
-montage -tile 2x2 -geometry 400x300  \
+*.  montage -tile 2x2 -geometry 400x300  \
 multi_hand_bboxes_02622.png \
 single_hand_bboxes_04276.png \
 multi_hand_bboxes_04316.png \
@@ -178,3 +176,36 @@ single_hand_bboxes_02906.png \
 hands_on_faces.png
 
 convert -size 1000x1056 xc:white facenet_architecture.png -gravity center -composite padded_facenet_architecture.png
+
+*.  To create a 100x100 imagechip of a specified RGB color, chant something
+like
+
+  convert -size 24x24 canvas:'rgb( 50,50,50 )' dark_grey.jpg
+
+*, To insert a small face imagechip into a larger subnet image, chant
+something like
+
+composite -geometry  +520+25 male_face_4527.png subnet_4527.png composite_4527.png
+
+*.  In order to vertically lengthen a subnet image, chant something like
+
+convert composite_3751.png -resize 890x1096\! new_composite_3751.png
+
+*.  In order to horizontally concatenate 3 subnet images which have nearly
+equal heights, chant something like
+
+montage  -mode concatenate \
+new_composite_3751.png composite_3113.png composite_0385.png \
+montage_abc.png
+
+
+*.  On 9/5/16, we experienced major problems with trying to crop PNG files
+via commands such as 
+
+convert composite_0171.png -crop 556x1084+334+0 cropped_composite_0171.png
+
+So we had to first convert the png file to jpeg and then perform the crop:
+
+convert composite_0171.png -quality 100 composite_0171.jpg
+convert composite_0171.jpg -crop 556x1084+344+0 cropped_composite_0171.jpg
+

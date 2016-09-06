@@ -1,11 +1,12 @@
 // ==========================================================================
 // Imagesdatabasefuncs namespace method definitions
 // ==========================================================================
-// Last modified on 10/29/13; 10/31/13; 4/3/14; 8/22/16
+// Last modified on 10/29/13; 10/31/13; 4/3/14; 8/22/16; 9/5/16
 // ==========================================================================
 
 #include <iostream>
 #include "astro_geo/Clock.h"
+#include "general/filefuncs.h"
 #include "astro_geo/geopoint.h"
 #include "postgres/gis_database.h"
 #include "graphs/graph.h"
@@ -1734,6 +1735,79 @@ std::string generate_update_image_metadata_SQL_command_serialID(
    }
 
 // ---------------------------------------------------------------------   
+
+// FAKE FAKE:  Mon Sep 5 at 10:48 am
+
+   void reset_nodes_metadata(
+      vector<int>& node_ID, vector<double>& relative_size, 
+      vector<string>& color, vector<string>& thumbnail_URL)
+   {
+      string projects_subdir = "/home/pcho/programs/c++/git/projects/";
+      string caffe_subdir=projects_subdir+"src/mains/machine_learning/caffe/";
+      string activations_subdir=caffe_subdir+
+         "vis_facenet/node_images/activations/";
+      string renorm_subdir=activations_subdir+"images/renormalized/";
+      
+      int image_activations_index;
+      cout << "Enter image activations index:" << endl;
+      cin >> image_activations_index;
+      string index_str = stringfunc::integer_to_string(
+         image_activations_index,4);
+
+      string image_activations_filename=renorm_subdir+
+         "image_activations_"+index_str+".dat";
+
+      filefunc::ReadInfile(image_activations_filename);
+      string image_filename = filefunc::text_line[0];
+      
+      typedef std::map<int, fourvector> NODE_ACTIVATIONS_MAP;
+      NODE_ACTIVATIONS_MAP node_activations_map;
+      NODE_ACTIVATIONS_MAP::iterator node_activations_iter;
+
+// Independent int contains new global node ID
+// Dependent fourvector contains Pcum, R, G, B
+
+      for(unsigned int i = 1; i < filefunc::text_line.size(); i++)
+      {
+         vector<double> curr_vals = stringfunc::string_to_numbers(
+            filefunc::text_line[i]);
+         int layer_ID = curr_vals[0];
+         int old_local_node_ID = curr_vals[1];
+         int old_global_node_ID = curr_vals[2];
+         int new_local_node_ID = curr_vals[3];
+         int new_global_node_ID = curr_vals[4];
+
+         double Pcum = curr_vals[5];
+         double r = curr_vals[6] / 255.0;
+         double g = curr_vals[7] / 255.0;
+         double b = curr_vals[8] / 255.0;
+         fourvector f(Pcum, r, g, b);
+         node_activations_map[old_global_node_ID] = f;
+//         node_activations_map[new_global_node_ID] = f;
+      } // loop over index i 
+
+      for(unsigned int i = 0; i < node_ID.size(); i++)
+      {
+         node_activations_iter = node_activations_map.find(node_ID[i]);
+         if(node_activations_iter == node_activations_map.end())
+         {
+            thumbnail_URL[i] = 
+               "/data/ImageEngine/facenet/thumbnails/thumbnail_dark_grey.jpg";
+            continue;
+         }
+
+         fourvector f = node_activations_iter->second;
+         double Pcum = f.get(0);
+         double r = f.get(1);
+         double g = f.get(2);
+         double b = f.get(3);
+         
+         relative_size[i] = 12;
+         color[i] = colorfunc::RGB_to_RRGGBB_hex(r,g,b);
+      } // loop over index i 
+   }
+   
+// ---------------------------------------------------------------------   
 // Method write_nodes_json_string() takes in hierarchy and graph IDs.
 // It performs a single database call to retrieve all node metadata
 // for the specified graph and another single database call to
@@ -1767,6 +1841,14 @@ std::string generate_update_image_metadata_SQL_command_serialID(
          gis_database_ptr,hierarchy_ID,graph_ID,
          node_ID,epoch,URL,npx,npy,thumbnail_URL,thumbnail_npx,thumbnail_npy,
          parent_node_ID,gx,gy,gx2,gy2,relative_size,color,label);
+
+
+// FAKE FAKE  Mon Sep 5 at 10:46 am
+
+      if(hierarchy_ID == 47)
+      {
+         reset_nodes_metadata(node_ID, relative_size, color, thumbnail_URL);
+      }
 
       ATTRIBUTES_METADATA_MAP* image_annotations_map_ptr=
          retrieve_all_image_annotations(
@@ -1835,6 +1917,7 @@ std::string generate_update_image_metadata_SQL_command_serialID(
             json_string += "         'gy2': "+
                stringfunc::number_to_string(gy2[n])+",\n";
          }
+
          json_string += "         'relativeSize': "+
             stringfunc::number_to_string(relative_size[n])+",\n";
   

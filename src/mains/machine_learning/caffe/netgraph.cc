@@ -3,7 +3,7 @@
 // a layout for the neural net's layers with rows of a rectangle.
 // Nodes within a layer are grouped together within subrows of the
 // rectangle.  The layout is exported to a text file which can be
-// ingested by program mains/photosynth/fill_photo_hierarchy wtihin
+// ingested by program mains/photosynth/fill_photo_hierarchy within
 // the IMAGESEARCH pipeline.  NETGRAPH next generates an edgelist file
 // which can be ingested by program mains/graphs/kmeans_clusters
 // within the IMAGESEARCH pipeline.
