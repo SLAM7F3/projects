@@ -15,4 +15,5 @@
 ~/bin/MAKE program=parse_lmdb
 ~/bin/MAKE program=raw_activations
 ~/bin/MAKE program=relabel_non_chips
+~/bin/MAKE program=renorm_image_activations
 ~/bin/MAKE program=training_performance

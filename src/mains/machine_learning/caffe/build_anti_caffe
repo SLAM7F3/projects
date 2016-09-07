@@ -15,4 +15,5 @@
 /bin/rm ./parse_lmdb
 /bin/rm ./raw_activations
 /bin/rm ./relabel_non_chips
+/bin/rm ./renorm_image_activations
 /bin/rm ./training_performance

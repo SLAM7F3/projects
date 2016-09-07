@@ -11,7 +11,7 @@
 // cold.  The renormalized activation fractions and RGB values are
 // exported to a new set of text files for each test image.
 
-//                         ./image_activations
+//                         ./renorm_image_activations
 
 // ========================================================================
 // Last updated on 9/5/16; 9/7/16

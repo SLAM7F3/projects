@@ -1,7 +1,7 @@
 ==========================================================================
 Neural net pathway results
 ==========================================================================
-Last updated on 8/16/16; 8/17/16; 8/25/16; 9/5/16
+Last updated on 8/17/16; 8/25/16; 9/5/16; 9/7/16
 ==========================================================================
 
 In this README, we define the following root directories:
@@ -49,6 +49,20 @@ frequencies.  The new ordering for nodes is exported to an output text
 file.
 
                         ./order_activations
+
+
+*.  Program $caffe_root/RENORM_IMAGE_ACTIVATIONS imports extremal nonzero
+activation values for each layer output by program RAW_ACTIVATIONS.  (The
+minimum activation values are all very close to 0.)  It also imports
+nonzero raw activation values for every Facenet node calculated for each
+test image.  RENORM_IMAGE_ACTIVATIONS effectively rescales the raw
+activation values to fractions ranging between 0 and 1.  It then assigns
+hues and values based upon these fractions so that fractionally large
+activations are colored bright and hot while fractionally small activations
+are colored dim and cold.  The renormalized activation fractions and RGB
+values are exported to a new set of text files for each test image.
+
+                        ./renorm_image_activations
 
 
 *.  Program $caffe_root/NETGRAPH imports a trained caffe model.  It first
