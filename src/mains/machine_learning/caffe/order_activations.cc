@@ -8,7 +8,7 @@
 //                         ./order_activations
 
 // ========================================================================
-// Last updated on 8/24/16; 8/25/16; 8/26/16; 9/5/16
+// Last updated on 8/25/16; 8/26/16; 9/5/16; 9/7/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -98,8 +98,8 @@ int main(int argc, char** argv)
              << endl;
    outstream << "# ====================================================="
              << endl;
-   outstream << "# Layer  Old local   Old global New local    New global  Stimul  Median  Quartile" << endl;
-   outstream << "# ID     node ID     node ID    node ID      node ID     freq    act     act" << endl;
+   outstream << "# Layer  Old local   Old global New local    New global  Stimul  Nonzero     Nonzero median" << endl;
+   outstream << "# ID     node ID     node ID    node ID      node ID     freq    median act  act frac      " << endl;
    outstream << "# ====================================================="
              << endl << endl;
 
@@ -113,6 +113,7 @@ int main(int argc, char** argv)
       double stimul_frac = 1.0;
       double median_activation = 1.0;
       double quartile_activation = 0.5;
+      double median_act_frac = 1.0;
       int old_local_node_ID = i;
       int new_local_node_ID = i;
 
@@ -129,7 +130,7 @@ int main(int argc, char** argv)
                 << i << "    "
                 << stimul_frac << "    "
                 << median_activation << "    "
-                << quartile_activation << endl;
+                << median_act_frac << endl;
    }
    outstream << endl;
 
@@ -138,6 +139,10 @@ int main(int argc, char** argv)
    int RGB_data_offset = 3;
 //    int node_counter = 0 + RGB_data_offset;
    int new_global_node_ID = 0 + RGB_data_offset;
+
+   double min_median_activation = 1E10;
+   double max_median_activation = -min_median_activation;
+   
    for(unsigned int r = 0; r < row_numbers.size(); r++)
    {
 //      for(unsigned int c = 0 ; c < row_numbers.at(r).size(); c++)
@@ -153,6 +158,15 @@ int main(int argc, char** argv)
          stimulation_frac.push_back(row_numbers.at(r).at(3));
          median_activation.push_back(row_numbers.at(r).at(4));
          quartile_activation.push_back(row_numbers.at(r).at(5));
+
+         double curr_median_activation = median_activation.back();
+         if(curr_median_activation > 0)
+         {
+           min_median_activation = basic_math::min(min_median_activation,
+                                                   curr_median_activation);
+           max_median_activation = basic_math::max(max_median_activation,
+                                                   curr_median_activation);
+         }
       }
 
       int curr_layer = row_numbers.at(r).at(0);
@@ -160,6 +174,11 @@ int main(int argc, char** argv)
       {
          outstream << "# ====================================================="
                    << endl << endl;
+         outstream << "# Minimum non-zero activation = "
+                   << min_median_activation << endl;
+         outstream << "# Maximum non-zero activation = "
+                   << max_median_activation << endl << endl;
+
          templatefunc::Quicksort_descending(
             stimulation_frac, old_global_node_ID, node_ID, 
             median_activation, quartile_activation);
@@ -173,6 +192,10 @@ int main(int argc, char** argv)
             DUPLE duple(prev_layer,node_ID[i]);
             node_ids_map[ duple ] = new_node_ID[i];
 
+            double median_activation_frac = 
+               (median_activation[i] - min_median_activation)/ 
+               (max_median_activation - min_median_activation);
+
             outstream << prev_layer << "    "
                       << node_ID[i] << "    "
                       << old_global_node_ID[i] << "    "
@@ -180,7 +203,8 @@ int main(int argc, char** argv)
                       << new_global_node_ID++ << "    "
                       << stimulation_frac[i] << "    "
                       << median_activation[i] << "    "
-                      << quartile_activation[i] << endl;
+                      << median_activation_frac 
+                      << endl;
          }
          outstream << endl;
 
@@ -191,6 +215,9 @@ int main(int argc, char** argv)
          local_node_ID = 0;
          median_activation.clear();
          quartile_activation.clear();
+
+         min_median_activation = 1E10;
+         max_median_activation = -min_median_activation;
       }
       prev_layer = curr_layer;
 
@@ -201,9 +228,23 @@ int main(int argc, char** argv)
       median_activation.push_back(row_numbers.at(r).at(4));
       quartile_activation.push_back(row_numbers.at(r).at(5));
 
+      double curr_median_activation = median_activation.back();
+      if(curr_median_activation > 0)
+      {
+         min_median_activation = basic_math::min(min_median_activation,
+                                                 curr_median_activation);
+         max_median_activation = basic_math::max(max_median_activation,
+                                                 curr_median_activation);
+      }
    } // loop over index r labeling rows in activations_filename
 
    filefunc::closefile(ordered_activations_filename, outstream);
+
+   string banner="Exported ordered activations to "+
+      ordered_activations_filename;
+   outputfunc::write_banner(banner);
+
+   exit(-1);
 
 //   for(node_ids_iter = node_ids_map.begin(); node_ids_iter != 
 //          node_ids_map.end(); node_ids_iter++)
@@ -321,9 +362,6 @@ int main(int argc, char** argv)
       }
    } // loop over index i labeling text lines
 
-   string banner="Exported ordered activations to "+
-      ordered_activations_filename;
-   outputfunc::write_banner(banner);
 }
 
    

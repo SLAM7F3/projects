@@ -1,7 +1,7 @@
 // ==========================================================================
 // Imagesdatabasefuncs namespace method definitions
 // ==========================================================================
-// Last modified on 10/29/13; 10/31/13; 4/3/14; 8/22/16; 9/5/16
+// Last modified on 4/3/14; 8/22/16; 9/5/16; 9/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -1734,9 +1734,18 @@ std::string generate_update_image_metadata_SQL_command_serialID(
       return json_string;
    }
 
-// ---------------------------------------------------------------------   
+// ---------------------------------------------------------------------
+// Method reset_nodes_metadata() queries the user to enter an index
+// for some set of Facenet node activations corresponding to a
+// particular test image.  For each facenet node, this method imports
+// a text file containing Pcum, R, G, B as a function of old node ID
+// into an STL map.  Looping over all node IDs, this method then
+// resets the relative size and color of nodes with nonzero
+// activations.  If a node has zero activation, its thumbnail URL is
+// reset to a dark grey image chip.
 
-// FAKE FAKE:  Mon Sep 5 at 10:48 am
+// We wrote this highly specialized method on 9/5/16 for facenet
+// visualization purposes.
 
    void reset_nodes_metadata(
       vector<int>& node_ID, vector<double>& relative_size, 
@@ -1756,7 +1765,6 @@ std::string generate_update_image_metadata_SQL_command_serialID(
 
       string image_activations_filename=renorm_subdir+
          "image_activations_"+index_str+".dat";
-
       filefunc::ReadInfile(image_activations_filename);
       string image_filename = filefunc::text_line[0];
       
@@ -1764,8 +1772,8 @@ std::string generate_update_image_metadata_SQL_command_serialID(
       NODE_ACTIVATIONS_MAP node_activations_map;
       NODE_ACTIVATIONS_MAP::iterator node_activations_iter;
 
-// Independent int contains new global node ID
-// Dependent fourvector contains Pcum, R, G, B
+// Independent int contains old global node ID
+// Dependent fourvector contains Pcum, r, g, b
 
       for(unsigned int i = 1; i < filefunc::text_line.size(); i++)
       {
@@ -1806,6 +1814,91 @@ std::string generate_update_image_metadata_SQL_command_serialID(
          color[i] = colorfunc::RGB_to_RRGGBB_hex(r,g,b);
       } // loop over index i 
    }
+
+/*
+
+// ---------------------------------------------------------------------
+// This overloaded version of reset_nodes_metadata() was written for
+// visualizing overall stimulation frequencies and nonzero median
+// activations for every node within Facenet 1.
+
+   void reset_nodes_metadata(
+      vector<int>& node_ID, vector<double>& relative_size, 
+      vector<string>& color, vector<string>& thumbnail_URL)
+   {
+      string projects_subdir = "/home/pcho/programs/c++/git/projects/";
+      string caffe_subdir=projects_subdir+"src/mains/machine_learning/caffe/";
+      string activations_subdir=caffe_subdir+
+         "vis_facenet/node_images/activations/";
+      string ordered_activations_filename=activations_subdir+
+         "ordered_activations.dat";
+
+      vector< vector<double> > row_values = filefunc::ReadInRowNumbers(
+         ordered_activations_filename);
+
+      typedef std::map<int, fourvector> NODE_ACTIVATIONS_MAP;
+      NODE_ACTIVATIONS_MAP node_activations_map;
+      NODE_ACTIVATIONS_MAP::iterator node_activations_iter;
+
+// Independent int contains old global node ID
+// Dependent fourvector contains stimul_freq/median nonzero activation frac, 
+// r, g, b
+
+      for(unsigned int i = 0; i < row_values.size(); i++)
+      {
+         vector<double> curr_vals = row_values[i];
+         int layer_ID = curr_vals[0];
+         int old_local_node_ID = curr_vals[1];
+         int old_global_node_ID = curr_vals[2];
+         int new_local_node_ID = curr_vals[3];
+         int new_global_node_ID = curr_vals[4];
+
+         double stimul_freq = curr_vals[5];
+         double median_nonzero_activation_frac = curr_vals[7];
+//         double frac = stimul_freq;
+         double frac = median_nonzero_activation_frac;
+
+         double h = 250 * (1 - frac);
+         double s = 1;
+         double v = 0.4 * (1 + frac);
+         
+         double r, g, b;
+         colorfunc::hsv_to_RGB(h, s, v, r, g, b);
+
+//         const double TINY = 1E-5;
+         const double TINY = -1E-5;
+         if(frac < TINY)
+         {
+            r = g = b = 0.2;
+         }
+         
+         fourvector f(stimul_freq, r, g, b);
+         node_activations_map[old_global_node_ID] = f;
+      } // loop over index i 
+
+      for(unsigned int i = 0; i < node_ID.size(); i++)
+      {
+         node_activations_iter = node_activations_map.find(node_ID[i]);
+         if(node_activations_iter == node_activations_map.end())
+         {
+            thumbnail_URL[i] = 
+               "/data/ImageEngine/facenet/thumbnails/thumbnail_dark_grey.jpg";
+            continue;
+         }
+
+         fourvector f = node_activations_iter->second;
+         double stimul_freq = f.get(0);
+         double r = f.get(1);
+         double g = f.get(2);
+         double b = f.get(3);
+         
+//         relative_size[i] = 12;
+         color[i] = colorfunc::RGB_to_RRGGBB_hex(r,g,b);
+      } // loop over index i 
+   }
+
+*/
+
    
 // ---------------------------------------------------------------------   
 // Method write_nodes_json_string() takes in hierarchy and graph IDs.
@@ -1842,8 +1935,11 @@ std::string generate_update_image_metadata_SQL_command_serialID(
          node_ID,epoch,URL,npx,npy,thumbnail_URL,thumbnail_npx,thumbnail_npy,
          parent_node_ID,gx,gy,gx2,gy2,relative_size,color,label);
 
+// FAKE FAKE Mon Sep 5 at 10:46 am 
 
-// FAKE FAKE  Mon Sep 5 at 10:46 am
+// For facenet visualization purposes, reset nodes' colors, sizes and
+// thumbnail URLs based upon their activation responses to a
+// particular input test image:
 
       if(hierarchy_ID == 47)
       {
