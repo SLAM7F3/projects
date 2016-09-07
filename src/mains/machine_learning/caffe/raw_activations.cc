@@ -7,8 +7,10 @@
 // layer are periodically exported to output text files within
 // activations_subdir.
 
-// RAW_ACTIVATIONS also exports text files for each input test image
-// containing activation values for all nodes which fired.  
+// RAW_ACTIVATIONS exports text files for each input test image
+// containing activation values for all nodes which fired.  It also
+// exports a text file containing the minimum and maximum nonzero
+// activation values for each layer.
 
 // ./raw_activations
 // /data/caffe/faces/trained_models/test_96.prototxt                     
@@ -16,7 +18,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/24/16; 8/25/16; 8/26/16; 9/5/16
+// Last updated on 8/25/16; 8/26/16; 9/5/16; 9/7/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -60,10 +62,32 @@ int main(int argc, char** argv)
    filefunc::dircreate(image_activations_subdir);
    string node_activations_subdir = activations_subdir + "nodes/";
    filefunc::dircreate(node_activations_subdir);
-   string male_subnetwork_subdir=subnetwork_subdir+"male/";
-   string female_subnetwork_subdir=subnetwork_subdir+"female/";
-   filefunc::dircreate(male_subnetwork_subdir);
-   filefunc::dircreate(female_subnetwork_subdir);
+
+// Save min and max nonzero activations for each layer calculated
+// across all test images and for all nodes within each layer in
+// following STL map
+
+   typedef std::map<int, twovector> EXTREMAL_ACTIVATIONS_MAP;
+// independent int = layer ID
+// dependent twovector holds min and max activations for all nodes
+// within a layer
+
+   EXTREMAL_ACTIVATIONS_MAP extremal_activations_map;
+   EXTREMAL_ACTIVATIONS_MAP::iterator extremal_activations_iter;
+
+// Following blob names are appropriate for Facenet 1 only !!!
+
+   vector<string> blob_names;
+   blob_names.push_back("conv1a");
+   blob_names.push_back("conv2a");
+   blob_names.push_back("conv3a");
+   blob_names.push_back("conv4a");
+   blob_names.push_back("fc5");
+   blob_names.push_back("fc6");
+   blob_names.push_back("fc7_faces");
+   unsigned int n_layers = blob_names.size();
+
+// Following RGB mean values are appropriate for Facenet 1 only !!!
 
    double Bmean = 104.008;
    double Gmean = 116.669;
@@ -100,16 +124,6 @@ int main(int argc, char** argv)
 //   const double strong_activation_threshold = 0.2;
    const double strong_activation_threshold = 0.25;
 
-   vector<string> blob_names;
-   blob_names.push_back("conv1a");
-   blob_names.push_back("conv2a");
-   blob_names.push_back("conv3a");
-   blob_names.push_back("conv4a");
-   blob_names.push_back("fc5");
-   blob_names.push_back("fc6");
-   blob_names.push_back("fc7_faces");
-   unsigned int n_layers = blob_names.size();
-
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_and_remaining_time(
@@ -124,7 +138,6 @@ int main(int argc, char** argv)
            << " image_filename = " << image_filename
            << endl;
 
-      
       vector<string> substrings = 
          stringfunc::decompose_string_into_substrings(image_basename,"_");
 
@@ -201,10 +214,8 @@ int main(int argc, char** argv)
             if(nonzero_activations.size() > 0)
             {
                mathfunc::mean_and_std_dev(nonzero_activations, mu, sigma);
-//            mathfunc::mean_and_std_dev(curr_activations, mu, sigma);
                mathfunc::median_value_and_quartile_width(
                   nonzero_activations, median, quartile_width);
-//               curr_activations, median, quartile_width);
             }
 
 // Recall layer 0 = input imagery data layer:
@@ -263,6 +274,9 @@ int main(int argc, char** argv)
                                   << " of nodes in layer " << layer+1
                                   << " have nonzero activations " 
                                   << endl << endl;
+
+         double min_nonzero_activation = 1E10;
+         double max_nonzero_activation = - min_nonzero_activation;
          for(int n = 0; n < n_layer_nodes; n++)
          {
 
@@ -274,6 +288,10 @@ int main(int argc, char** argv)
                image_activations_stream << layer+1 << "  "
                                         << local_node_IDs[n] << "  "
                                         << node_activations[n] << endl;
+               min_nonzero_activation = basic_math::min(
+                  min_nonzero_activation, node_activations[n]);
+               max_nonzero_activation = basic_math::max(
+                  max_nonzero_activation, node_activations[n]);
             }
 
             if(layer == n_layers - 1)
@@ -293,6 +311,27 @@ int main(int argc, char** argv)
             {
                node_activations_iter->second.push_back(node_activations[n]);
             }
+         } // loop over index n labeling nodes within current layer
+
+         extremal_activations_iter = extremal_activations_map.find(
+            layer+1);
+         if(extremal_activations_iter == extremal_activations_map.end())
+         {
+            extremal_activations_map[layer+1] = 
+               twovector(min_nonzero_activation, max_nonzero_activation);
+         }
+         else
+         {
+            double prev_min_nonzero_activation = 
+               extremal_activations_iter->second.get(0);
+            double prev_max_nonzero_activation = 
+               extremal_activations_iter->second.get(1);
+            min_nonzero_activation = basic_math::min(
+               min_nonzero_activation, prev_min_nonzero_activation);
+            max_nonzero_activation = basic_math::max(
+               max_nonzero_activation, prev_max_nonzero_activation);
+            extremal_activations_iter->second.put(0,min_nonzero_activation);
+            extremal_activations_iter->second.put(1,max_nonzero_activation);
          }
 
 // Convert raw node activations into relative fractions:
@@ -497,6 +536,39 @@ int main(int argc, char** argv)
    banner="Exported all nonzero activations for all network nodes to "+
       node_activations_subdir;
    outputfunc::write_banner(banner);
+
+// Export extremal nonzero activation values to output text file:
+
+   string extremal_activations_filename=activations_subdir+
+      "extremal_layer_activations.dat";
+   ofstream extremal_stream;
+   filefunc::openfile(extremal_activations_filename, extremal_stream);
+
+   extremal_stream << "# ====================================================="
+                   << endl;
+   extremal_stream << "# Layer  Min non-zero   Max non-zero" << endl;
+   extremal_stream << "#   ID    activation     activation" << endl;
+   extremal_stream << "# ====================================================="
+                   << endl << endl;
+
+   for(extremal_activations_iter = extremal_activations_map.begin();
+       extremal_activations_iter != extremal_activations_map.end();
+       extremal_activations_iter++)
+   {
+      int layer = extremal_activations_iter->first;
+      double min_nonzero_activation = extremal_activations_iter->second.get(0);
+      double max_nonzero_activation = extremal_activations_iter->second.get(1);
+      
+      extremal_stream << layer << "   "
+                      << min_nonzero_activation << "   "
+                      << max_nonzero_activation 
+                      << endl;
+   }
+   
+   banner="Exported extremal activation values per layer to "+
+      extremal_activations_filename;
+   outputfunc::write_banner(banner);
+   filefunc::closefile(extremal_activations_filename, extremal_stream);
 }
 
    

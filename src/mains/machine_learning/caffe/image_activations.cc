@@ -35,6 +35,31 @@ int main(int argc, char** argv)
    filefunc::dircreate(renorm_image_activations_subdir);
    string node_activations_subdir = activations_subdir + "nodes/";
 
+// First import min and max activation values for all nodes within
+// each layer:
+
+   typedef std::map<int, twovector> EXTREMAL_ACTIVATIONS_MAP;
+// independent int = layer ID
+// dependent twovector holds min and max activations for all nodes
+// within a layer
+
+   EXTREMAL_ACTIVATIONS_MAP extremal_activations_map;
+   EXTREMAL_ACTIVATIONS_MAP::iterator extremal_activations_iter;
+
+   string extremal_activations_filename = activations_subdir + 
+      "extremal_layer_activations.dat";
+   vector< vector<double> > row_values = filefunc::ReadInRowNumbers(
+      extremal_activations_filename);
+   
+   for(unsigned int r = 0; r < row_values.size(); r++)
+   {
+      int layer_ID = row_values[r].at(0);
+      double min_activation = row_values[r].at(1);
+      double max_activation = row_values[r].at(2);
+      extremal_activations_map[layer_ID] = 
+         twovector(min_activation, max_activation);
+   }
+
    string ordered_activations_filename = activations_subdir+
       "ordered_activations.dat";
    vector< vector<double> > row_numbers = filefunc::ReadInRowNumbers(
@@ -116,7 +141,7 @@ int main(int argc, char** argv)
       outstream << image_filename << endl << endl;
 
       outstream << 
-         "# Layer  Old local  Old global   New local  New global  Pcum    R    G    B"
+         "# Layer  Old local  Old global   New local  New global  Frac    R    G    B"
                 << endl;
       outstream << 
         "#  ID     node ID    node ID       node ID    node ID         "
@@ -134,19 +159,12 @@ int main(int argc, char** argv)
          node_activations_iter = node_activations_map.find(old_duple);
 
          double r, g, b;
-         double pcum = 0;
+         double frac = 0;
          if(node_activations_iter == node_activations_map.end())
          {
 /*
             cout << "Error inside image_activations main program!" << endl;
             cout << "Should not have reached this point" << endl;
-            cout << "layer_ID = " << layer_ID
-                 << " old_local_node_ID = " << old_local_node_ID 
-                 << endl;
-            cout << "f = " << f 
-                 << " of " << image_activation_filenames.size() - 1 << endl;
-            cout << "image_activation_filenames[f] = " 
-                 << image_activation_filenames[f] << endl;
             exit(-1);
 */
            //            r = g = b = 0.2;
@@ -155,16 +173,61 @@ int main(int argc, char** argv)
          }
          else
          {
+/*
             prob_distribution* prob_ptr = node_activations_iter->second;
-
             int bin = prob_ptr->get_bin_number(nonzero_activation);
             pcum = prob_ptr->get_pcum(bin);
+            frac = pcum;
+*/
 
 // Map pcum = 1 --> bright red and pcum = 0 --> dark blue:
 
-            double hue = 250 * ( 1 - pcum);
+            extremal_activations_iter = extremal_activations_map.find(
+               layer_ID);
+            if(extremal_activations_iter == extremal_activations_map.end())
+            {
+               frac = 1;
+            }
+            else
+            {
+               double min_activation = 0;
+//               double min_activation = extremal_activations_iter->
+//                  second.get(0);
+               double max_activation = extremal_activations_iter->
+                  second.get(1);
+               frac = (nonzero_activation - min_activation) /
+                  (max_activation - min_activation);
+               
+               if(frac < 0 || frac > 1)
+               {
+                  cout << "layer_ID = " << layer_ID
+                       << " nonzero_act = " << nonzero_activation
+                       << " min_act = " << min_activation
+                       << " max_act = " << max_activation
+                       << " frac = " << frac
+                       << endl;
+
+                  cout << "layer_ID = " << layer_ID
+                       << " old_local_node_ID = " << old_local_node_ID 
+                       << endl;
+                  cout << "f = " << f 
+                       << " of " << image_activation_filenames.size() - 1 
+                       << endl;
+                  cout << "image_activation_filenames[f] = " 
+                       << image_activation_filenames[f] << endl;
+
+                  outputfunc::enter_continue_char();
+               }
+            }
+
+// As of 9/7/16, we intentionally bias hues towards warmer tones:
+
+//            double hue = 250 * (1 - frac);
+            double hue = 250  - 375 * frac;
+            if(hue < 0) hue = 0;
+
             double s = 1;
-            double v = 0.4 * (1 + pcum);
+            double v = 0.4 * (1 + frac);
             colorfunc::hsv_to_RGB(hue, s, v, r, g, b);
          }
 
@@ -183,25 +246,25 @@ int main(int argc, char** argv)
                    << old_global_node_ID << "       "
                    << new_local_node_ID << "       "
                    << new_global_node_ID << "       "
-                   << pcum << "      " 
+                   << frac << "      " 
                    << R << "      " 
                    << G << "      " 
                    << B << "      " 
                    << endl;
 
-         const double min_pcum_threshold = 0.60;
-         const double max_pcum_threshold = 0.75;
-//         const double min_pcum_threshold = 0.75;
-//         const double max_pcum_threshold = 0.85;
-//         const double min_pcum_threshold = 0.85;
-//         const double max_pcum_threshold = 0.99;
-//         const double min_pcum_threshold = 0.99;
-//         const double max_pcum_threshold = 1.00;
-         if(layer_ID == max_layer_ID && pcum > min_pcum_threshold &&
-            pcum < max_pcum_threshold)
+         const double min_frac_threshold = 0.60;
+         const double max_frac_threshold = 0.75;
+//         const double min_frac_threshold = 0.75;
+//         const double max_frac_threshold = 0.85;
+//         const double min_frac_threshold = 0.85;
+//         const double max_frac_threshold = 0.99;
+//         const double min_frac_threshold = 0.99;
+//         const double max_frac_threshold = 1.00;
+         if(layer_ID == max_layer_ID && frac > min_frac_threshold &&
+            frac < max_frac_threshold)
          {
             cout << filefunc::getbasename(image_activation_filenames[f])
-                 << "   pcum = " << pcum 
+                 << "   frac = " << frac 
                  << "   class = " << class_label
                  << endl;
          }
