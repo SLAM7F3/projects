@@ -1,7 +1,7 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 8/11/16; 8/12/16; 8/19/16; 8/22/16
+Last updated on 8/12/16; 8/19/16; 8/22/16; 9/8/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
@@ -102,5 +102,49 @@ on the PV40 cluster.  Our gardn_s2d_Aug11 code which worked OK on Fri, Aug
 
 
 =============================
-Q: What is the significance of a grey square near the upper left turning
+
+Q0: What is the significance of a grey square near the upper left turning
 red?
+
+Q1:  What is the basic idea/purpose of the _mouse_blocked member of
+TGEditor?  It seems to only be set to true within 
+TGEditorModule_Polylines_TG2::update_crop_mode().  
+
+A1: It was a quick hack to allow an "overlay" area with
+prioritized/exclusive mouse access, so you can interact with the crop mode
+bar (opens on left side if you press 'C') without manipulating any polygons
+or other elements that happen to be visible underneath. We can hopefully
+use it for other similar purposes if there's one (at most) layer of GUI on
+top of the other default things. It's possible to make a more general
+overlapped window system, but it might be needlessly complex if we don't
+have a clear use case for it. The focus is still on simplicity, so we
+should probably try to resist new features that lack a defined purpose. One
+drawback is that preemption between modules will depend on update order, so
+a module later in the list can't steal mouse focus from an earlier one
+without using a different concept. It might be possible to support that
+with a minor change that requires _mouse_blocked to be unset for two
+consecutive frames before it's "released". That way any module can set it
+and it will be visible to all others. Still, internal state must decide if
+you should ignore or obey the block, so there's some argument in favor of
+making it slightly more intelligent. Like "mouse_owned_by" set to the
+name/pointer of the module, via request/release mouse ownership. Looks also
+like the "mouse_owned" event has a similar role...
+
+Q2:  In various update() callbacks, what purpose do the following lines
+serve?
+  if(event_occured("start_zoom"))
+    take_focus();
+  if(event_occured("crop_zoom"))
+    take_focus();
+  if(event_occured("reset_zoom"))
+    lose_focus();
+
+A2: The editor will trigger these events based on user navigation
+actions. Some modules may want to take focus and start updating immediately
+when one of these occur, such as the current "Add polyline" mode that
+automatically triggers when you start zooming in from overview. Also,
+zooming back out will stop that mode and go back to overview. Generally,
+all such interesting events should be broadcast like this, so modules can
+determine individually what, if anything, to do in response. There's also
+an event for changing the image, which typically causes modules to
+reset/initialize.

@@ -1,3 +1,4 @@
+/bin/rm ./add_softmax
 /bin/rm ./all_lmdb
 /bin/rm ./caffe_classification
 /bin/rm ./check_lmdb

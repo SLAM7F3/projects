@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 8/30/16; 8/31/16; 9/1/16; 9/7/16; 9/8/16
+Last updated on 8/31/16; 9/1/16; 9/7/16; 9/8/16
 ==========================================================================
 
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2e, 4 conv layers
@@ -82,7 +82,6 @@ Confusion matrix:
 These results are comparable to our best results from facenet_01 (as they
 should be).
 
-
 -------------------------------------------------------------------
 *.  Weds, Sep 7 , Titan 1, evening, Facenet model 2e, 4 conv layers
 
@@ -113,7 +112,6 @@ Confusion matrix:
 112	1522	156	81	
 82	219	1478	183	
 0	0	0	0	
-
 
 -------------------------------------------------------------------
 *.  Weds, Sep 7 , Titan 3, evening, Facenet model 2e, 4 conv layers
@@ -195,6 +193,27 @@ Confusion matrix:
 111	1527	162	71	
 80	199	1554	129	
 0	0	0	0	
+
+-------------------------------------------------------------------
+*.  Thurs, Sep 8 , Titan 1, morning, Facenet model 2e, 4 conv layers
+
+New set of O(360K) training image chips which should have much less black
+padding than in the past.  Manually reset standard deviations for weight
+fillers based upon previous Model 2e trained weights.  Also using newly
+updated mean RGB values.
+  
+Training started on Facenet model 2e around 7:15 am
+
+
+-------------------------------------------------------------------
+*.  Thurs, Sep 8 , Titan 3, morning, Facenet model 2q, 6 conv layers with BN
+
+New set of O(360K) training image chips which should have much less black
+padding than in the past.  Also using newly updated mean RGB values.
+  
+Training started on Facenet model 2q around 7:15 am
+
+
 
 -------------------------------------------------------------------
 *.  Tues, Aug 30, Titan 3, Facenet model 2h, 5th conv layer after final
@@ -655,14 +674,13 @@ frace female wrong = 0.127
 63 153 1167  305
 
 
-
 ------------------------------------------------------------------- 
-*. Thurs, Sep 1, Titan 1, Facenet model 2r, 6 conv layers,
+*. Thurs, Sep 8, Titan 1, Facenet model 2r, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
 layers.  Increase learning rate to 0.03 and increase learning rate step
 from 25K to 10K.
 
-Training started on titan 1 around 6 pm 
+Training started on titan 1 on Sep 8 around 3 pm 
 
 ------------------------------------------------------------------- 
 *. Thurs, Sep 1, Titan 3, Facenet model 2s, 6 conv layers,
