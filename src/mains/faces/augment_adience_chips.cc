@@ -104,8 +104,7 @@ int main( int argc, char** argv )
          image_basename,"_");
       string gender_value = substrings[0];
 
-      texture_rectangle* tr_ptr = new texture_rectangle(
-         image_filename, NULL);
+      texture_rectangle* tr_ptr = new texture_rectangle(image_filename, NULL);
       int xdim = tr_ptr->getWidth();
       int ydim = tr_ptr->getHeight();
 

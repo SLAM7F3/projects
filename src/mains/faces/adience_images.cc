@@ -42,7 +42,8 @@ int main(int argc, char** argv)
    timefunc::initialize_timeofday_clock(); 
 
 //   string faces_rootdir = "/data/TrainingImagery/faces/";
-   string faces_rootdir = "/media/DataTransfer/faces/";
+   string faces_rootdir = "/media/pcho/DataTransfer/faces/";
+//   string faces_rootdir = "/media/DataTransfer/faces/";
    string adiencefaces_subdir = faces_rootdir + "AdienceFaces/";
    string faces_subdir = adiencefaces_subdir + "faces/";
    string output_faces_subdir="resized_adiencefaces/";

@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 6/17/16; 8/8/16; 8/10/16; 8/11/16
+Last updated on 8/8/16; 8/10/16; 8/11/16; 9/7/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -776,3 +776,12 @@ then were able to make clean and build master without problem.
 
 git fetch origin
 git checkout -b foo origin/foo
+
+*.  In order to merge origin/s2d_chunks into our local tagger2 branch,
+Michael told us to chant
+
+git fetch
+git merge origin/s2d_chunks
+
+
+

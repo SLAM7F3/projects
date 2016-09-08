@@ -5,7 +5,9 @@
 // it to fire.  We also record the mean and median values of its
 // non-zero activations.  Activation statistics for each node in each
 // layer are periodically exported to output text files within
-// activations_subdir.
+// activations_subdir.  Any test image which has zero activation for
+// all nodes within a network layer is copied into a subdirectory of
+// zero_activations_subdir.
 
 // RAW_ACTIVATIONS exports text files for each input test image
 // containing activation values for all nodes which fired.  It also
@@ -58,10 +60,13 @@ int main(int argc, char** argv)
    filefunc::dircreate(subnetwork_subdir);
    string activations_subdir = imagechips_subdir + "activations/";
    filefunc::dircreate(activations_subdir);
-   string image_activations_subdir = activations_subdir + "images/";
-   filefunc::dircreate(image_activations_subdir);
    string node_activations_subdir = activations_subdir + "nodes/";
    filefunc::dircreate(node_activations_subdir);
+   string image_activations_subdir = activations_subdir + "images/";
+   filefunc::dircreate(image_activations_subdir);
+   string zero_activations_subdir = image_activations_subdir + 
+      "zero_activations/";
+   filefunc::dircreate(zero_activations_subdir);
 
 // Save min and max nonzero activations for each layer calculated
 // across all test images and for all nodes within each layer in
@@ -105,6 +110,8 @@ int main(int argc, char** argv)
       input_images_subdir, search_all_children_dirs_flag);
    int n_images = image_filenames.size();
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
+   cout << "Total number of test images = " << n_images << endl;
+   exit(-1);
 
    int istart=0;
 //   int istop = 500;
@@ -160,8 +167,7 @@ int main(int argc, char** argv)
       double classification_score=classifier.get_classification_score();
 
       string true_gender_label = substrings[0];
-//       cout << "true_gender_label = " << true_gender_label << endl;
-//      << endl;
+//      cout << "true_gender_label = " << true_gender_label << endl;
       int n_strong_activations = 0;
 
 // Periodically update node activation frequency and non-zero value
@@ -251,7 +257,6 @@ int main(int argc, char** argv)
       image_activations_stream << image_filename << endl << endl;
 
       double softmax_denom = 0;
-
       for(unsigned int layer = 0; layer < n_layers; layer++)
       {
          vector<int> local_node_IDs;
@@ -277,6 +282,7 @@ int main(int argc, char** argv)
 
          double min_nonzero_activation = 1E10;
          double max_nonzero_activation = - min_nonzero_activation;
+         bool zero_activations_flag = true;
          for(int n = 0; n < n_layer_nodes; n++)
          {
 
@@ -292,6 +298,7 @@ int main(int argc, char** argv)
                   min_nonzero_activation, node_activations[n]);
                max_nonzero_activation = basic_math::max(
                   max_nonzero_activation, node_activations[n]);
+               zero_activations_flag = false;
             }
 
             if(layer == n_layers - 1)
@@ -312,6 +319,19 @@ int main(int argc, char** argv)
                node_activations_iter->second.push_back(node_activations[n]);
             }
          } // loop over index n labeling nodes within current layer
+
+// If current image has zero activation for all nodes within current
+// layer, copy it into a subdirectory of zero_activations_subdir:
+
+         if(zero_activations_flag)
+         {
+            string zero_activations_subsubdir = zero_activations_subdir+
+               stringfunc::number_to_string(layer+1)+"/";
+            filefunc::dircreate(zero_activations_subsubdir);
+            string unix_cmd = "cp "+image_filename+" "+
+               zero_activations_subsubdir;
+            sysfunc::unix_command(unix_cmd);
+         }
 
          extremal_activations_iter = extremal_activations_map.find(
             layer+1);

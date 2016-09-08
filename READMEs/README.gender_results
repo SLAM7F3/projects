@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results
 ==========================================================================
-Last updated on 8/14/16; 8/15/16; 8/17/16; 8/26/16
+Last updated on 8/15/16; 8/17/16; 8/26/16; 9/7/16
 ==========================================================================
 
 *.  On 7/31/16, we generated 17,457 = 9747 female + 7710 male image chips
@@ -87,10 +87,16 @@ Face bbox aspect ratio:  median +/- quartile_width = 0.7447 +/- 0.1054
 
 On 8/12/16, we explicitly counted all female and male image chips:
 
-Our O(40K) face chips:
+Our O(40K) face chips 
+---------------------
 
-female training: 18940
-male training: 18877
+Sitting on Thinkmate in
+/home/pcho/programs/c++/git/projects/src/mains/faces/
+augmented_face_chips_Aug2.  Tarball created and placed onto orange disk #12
+within /media/Datatransfer/faces/.
+
+female training: 18940   ---> 113641 after augmentation
+male training: 18877     ---> 113263 after augmentation
 
 female validation: 533
 male validation: 503
@@ -103,8 +109,19 @@ female total:  21,050
 male total:  20,961
 
 
-Adience female training: 9249
-Adience male training:   7337
+Adience face chips
+------------------
+
+Unaugmented 106x106 Adience chips are sitting on Thinkmate in 
+/data/peter_stuff/imagery/faces/adiencefaces_106x106/ . 
+Tarball adiencefaces_106x106.tgz sitting on orange disk #12 within
+/media/Datatransfer/faces contains these unaugmented 106x106 Adience chips.
+
+Tarball created for augmented Adience chips and placed onto orange disk #12
+within /media/Datatransfer/faces/augmented/adience/face_chips.tgz.
+
+Adience female training: 9249  --> 18498 after augmentation
+Adience male training:   7337  --> 14674 after augmentation
 
 Adience female validation: 124
 Adience male validation:   83
@@ -116,20 +133,40 @@ Adience testing:  664
 Adience female total: 9747
 Adience male total: 7710
 
-Iran female training:  357
+
+Iranian female face chips:
+-------------------------
+
+Sitting on Thinkmate in
+/home/pcho/programs/c++/git/projects/src/mains/faces/augmented_iran_face_chips/).
+Tarball created and placed onto orange disk #12 within
+/media/Datatransfer/faces/.
+
+
+Iran female training:  357   --> 714 after augmentation
 Iran female validation:  1
 Iran female testing:  11
 
 Iran female total:  369
 
+Non-face chips:
+--------------
 
+Training: 102,048 
+Validation: 496
+Testing: 1060
+
+
+All face training chips: 260,790
+All face+nonface training chips = 362,838
+All face testing chips: 3833
+All face+nonface testing chips: 4893
 
 All female chips:  31,166
 All male chips:  28,671
 
 All chips:  59,837
 All testing chips:  3833
-
 
 
 ===============================================================

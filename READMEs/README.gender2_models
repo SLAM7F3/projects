@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 8/29/16; 8/30/16; 8/31/16; 9/1/16
+Last updated on 8/30/16; 8/31/16; 9/1/16; 9/7/16
 ==========================================================================
 
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2e, 4 conv layers
@@ -81,6 +81,27 @@ Confusion matrix:
 
 These results are comparable to our best results from facenet_01 (as they
 should be).
+
+
+-------------------------------------------------------------------
+*.  Weds, Sep 7 , Titan 1, evening, Facenet model 2e, 4 conv layers
+
+New set of O(360K) training image chips which should have much less black
+content than in the past.  
+
+Training started on Facenet model 2e around 5:20 pm
+
+
+-------------------------------------------------------------------
+*.  Weds, Sep 7 , Titan 3, evening, Facenet model 2e, 4 conv layers
+
+New set of O(360K) training image chips which should have much less black
+content than in the past.  Manually reset standard deviations for weight
+fillers based upon previous Model 2e trained weights.
+  
+
+Training started on Facenet model 2e around 5:20 pm
+
 
 -------------------------------------------------------------------
 *.  Tues, Aug 30, Titan 3, Facenet model 2h, 5th conv layer after final

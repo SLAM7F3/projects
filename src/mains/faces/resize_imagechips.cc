@@ -17,7 +17,7 @@
 //                          ./resize_imagechips
 
 // ==========================================================================
-// Last updated on 7/30/16; 7/31/16; 8/1/16; 8/2/16
+// Last updated on 7/31/16; 8/1/16; 8/2/16; 9/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -93,6 +93,14 @@ int main(int argc, char *argv[])
          stringfunc::number_to_string(max_xdim)+"x"+
          stringfunc::number_to_string(max_ydim)+".jpg";
 
+// As of Sep 2016, we experiment with upsampling image chips so that
+// their new pixel sizes precisely equal max_xdim x max_ydim : 
+
+      videofunc::force_size_image(
+         image_filenames[i], max_xdim, max_ydim,
+         padded_jpg_filename);
+
+/*
       string unix_cmd="convert -size ";
       unix_cmd += stringfunc::number_to_string(max_xdim)+"x"+
          stringfunc::number_to_string(max_ydim)+" ";
@@ -100,8 +108,10 @@ int main(int argc, char *argv[])
       unix_cmd += " -gravity center -composite ";
       unix_cmd += padded_jpg_filename;
 //      cout << unix_cmd << endl;
-
       sysfunc::unix_command(unix_cmd);
+*/
+
+
    } // loop over index i 
 } 
 

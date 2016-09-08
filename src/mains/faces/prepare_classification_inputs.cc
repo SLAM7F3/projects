@@ -9,7 +9,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 8/6/16; 8/10/16; 8/15/16; 8/28/16
+// Last updated on 8/10/16; 8/15/16; 8/28/16; 9/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -55,16 +55,23 @@ int main(int argc, char *argv[])
    vector<string> training_images_subdirs;
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string training_subdir = face_chips_subdir+"training/";
+   string training_subdir = face_chips_subdir+"training/Sep7/";
 
    vector<string> dated_subdirs;
-   dated_subdirs.push_back("Aug15_female_106x106_augmented/");
-   dated_subdirs.push_back("Aug15_male_106x106_augmented/");
+   dated_subdirs.push_back("20k_female_106x106/");
+   dated_subdirs.push_back("20k_male_106x106/");
+   dated_subdirs.push_back("adience_female_106x106/");
+   dated_subdirs.push_back("adience_male_106x106/");
+   dated_subdirs.push_back("iran_female_106x106/");
+   dated_subdirs.push_back("nonface_106x106/");
+
+//   dated_subdirs.push_back("Aug15_female_106x106_augmented/");
+//   dated_subdirs.push_back("Aug15_male_106x106_augmented/");
 //   dated_subdirs.push_back("Aug2_female_106x106_augmented/");
 //   dated_subdirs.push_back("Aug2_male_106x106_augmented/");
-   dated_subdirs.push_back("Jul31_106x106_adience/");
-   dated_subdirs.push_back("Iran_106x106/");
-   dated_subdirs.push_back("nonface_106x106/");
+//   dated_subdirs.push_back("Jul31_106x106_adience/");
+//   dated_subdirs.push_back("Iran_106x106/");
+//   dated_subdirs.push_back("nonface_106x106/");
 
 //    Aug2 female non-augmented = 18940
 //    Aug2 male non-augmented = 18877
@@ -148,7 +155,7 @@ int main(int argc, char *argv[])
       cout << "Mean G value = " << total_mu_G << endl;
       cout << "Mean R value = " << total_mu_R << endl;
       cout << "=================================================== " << endl;
-   }
+   } // compute_mean_RGB_values_flag conditional
 
    string output_filename=training_subdir+"all_images_vs_classes.txt";
    ofstream output_stream;
