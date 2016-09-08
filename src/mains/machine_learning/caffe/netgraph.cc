@@ -13,7 +13,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/19/16; 8/20/16; 8/23/16; 8/25/16
+// Last updated on 8/20/16; 8/23/16; 8/25/16; 9/8/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -99,8 +99,8 @@ int main(int argc, char* argv[])
 // their stimulation frequencies generated via program
 // ORDER_ACTIVATIONS:
 
-   string imagechips_subdir = "./vis_facenet/node_images/";
-   string activations_subdir = imagechips_subdir + "activations/";
+   string network_subdir = "./vis_facenet/network/";
+   string activations_subdir = network_subdir + "activations/";
    string ordered_activations_filename=activations_subdir+
       "ordered_activations.dat";
 
@@ -178,14 +178,28 @@ int main(int argc, char* argv[])
    }
    else if (Facenet_flag)
    {
+
+// Facenet Model 2e:
+
       param_layer_names.push_back("data");
-      param_layer_names.push_back("conv1a");
-      param_layer_names.push_back("conv2a");
-      param_layer_names.push_back("conv3a");
-      param_layer_names.push_back("conv4a");
+      param_layer_names.push_back("conv1");
+      param_layer_names.push_back("conv2");
+      param_layer_names.push_back("conv3");
+      param_layer_names.push_back("conv4");
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
+
+// Facenet 1:
+
+//      param_layer_names.push_back("data");
+//      param_layer_names.push_back("conv1a");
+//      param_layer_names.push_back("conv2a");
+//      param_layer_names.push_back("conv3a");
+//      param_layer_names.push_back("conv4a");
+//      param_layer_names.push_back("fc5");
+//      param_layer_names.push_back("fc6");
+//      param_layer_names.push_back("fc7_faces");
    }
 
 // Generate layout for network layers and nodes within a 0 < gx <

@@ -1,7 +1,7 @@
 ==========================================================================
 Gender detection results for Face02 networks
 ==========================================================================
-Last updated on 8/29/16; 8/30/16; 8/31/16; 9/7/16
+Last updated on 8/30/16; 8/31/16; 9/7/16; 9/8/16
 ==========================================================================
 
 Lessons learned:
@@ -40,10 +40,21 @@ led to better male and worse female classification.
 had ZERO activations for all nodes within the following convolution layers
 of Facenet 1:
 
-Conv layer 1:  3325 / 4536
-Conv layer 2:     5 / 4536
-Conv layer 3:   768 / 4536
-Conv layer 4:     2 / 4536
+Conv layer 1:  3325 / 4536 = 73.3%
+Conv layer 2:     5 / 4536 =  0.1%
+Conv layer 3:   768 / 4536 = 16.9%
+Conv layer 4:     2 / 4536 =  0.04%
+
+After seeing an 9% improvement in Facenet 1 classification of female faces,
+we strongly suspect that we should ALWAYS resize training image chips so
+that they fill up the input volume as much as possible!  Moreover, the
+numbers of test images which have all zero activations within convolution
+layers 1 and 3 are dramatically reduced:
+
+Conv layer 1:  318 / 4892 = 6.5%
+Conv layer 2:    3 / 4892 = 0.05%
+Conv layer 3:   69 / 4892 = 1.4%
+Conv layer 4:   54 / 4892 = 1.1%
 
 -------------------------------------------------------------------
 

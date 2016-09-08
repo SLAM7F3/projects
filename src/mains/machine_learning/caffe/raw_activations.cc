@@ -20,7 +20,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/25/16; 8/26/16; 9/5/16; 9/7/16
+// Last updated on 8/26/16; 9/5/16; 9/7/16; 9/8/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -55,10 +55,11 @@ int main(int argc, char** argv)
    string input_images_subdir = argv[3];
    filefunc::add_trailing_dir_slash(input_images_subdir);
 
-   string imagechips_subdir = "./vis_facenet/node_images/";
-   string subnetwork_subdir = imagechips_subdir + "subnetworks/";
+   string network_subdir = "./vis_facenet/network/";
+   filefunc::dircreate(network_subdir);
+   string subnetwork_subdir = network_subdir + "subnetworks/";
    filefunc::dircreate(subnetwork_subdir);
-   string activations_subdir = imagechips_subdir + "activations/";
+   string activations_subdir = network_subdir + "activations/";
    filefunc::dircreate(activations_subdir);
    string node_activations_subdir = activations_subdir + "nodes/";
    filefunc::dircreate(node_activations_subdir);
@@ -80,23 +81,39 @@ int main(int argc, char** argv)
    EXTREMAL_ACTIVATIONS_MAP extremal_activations_map;
    EXTREMAL_ACTIVATIONS_MAP::iterator extremal_activations_iter;
 
-// Following blob names are appropriate for Facenet 1 only !!!
+// Following blob names are appropriate for Facenet 2e only !!!
 
    vector<string> blob_names;
-   blob_names.push_back("conv1a");
-   blob_names.push_back("conv2a");
-   blob_names.push_back("conv3a");
-   blob_names.push_back("conv4a");
+   blob_names.push_back("conv1");
+   blob_names.push_back("conv2");
+   blob_names.push_back("conv3");
+   blob_names.push_back("conv4");
    blob_names.push_back("fc5");
    blob_names.push_back("fc6");
    blob_names.push_back("fc7_faces");
+
+// Following blob names are appropriate for Facenet 1 only !!!
+
+//   blob_names.push_back("conv1a");
+//   blob_names.push_back("conv2a");
+//   blob_names.push_back("conv3a");
+//   blob_names.push_back("conv4a");
+//   blob_names.push_back("fc5");
+//   blob_names.push_back("fc6");
+//   blob_names.push_back("fc7_faces");
    unsigned int n_layers = blob_names.size();
+
+// Following RGB mean values are appropriate for Facenet 2e only !!!
+
+   double Bmean = 38.5;
+   double Gmean = 41.9;
+   double Rmean = 49.0;
 
 // Following RGB mean values are appropriate for Facenet 1 only !!!
 
-   double Bmean = 104.008;
-   double Gmean = 116.669;
-   double Rmean = 122.675;
+//   double Bmean = 104.008;
+//   double Gmean = 116.669;
+//   double Rmean = 122.675;
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("non");
@@ -111,10 +128,8 @@ int main(int argc, char** argv)
    int n_images = image_filenames.size();
    vector<int> shuffled_image_indices = mathfunc::random_sequence(n_images);
    cout << "Total number of test images = " << n_images << endl;
-   exit(-1);
 
    int istart=0;
-//   int istop = 500;
    int istop = n_images;
 
    string montage_filename="montage_cmds.dat";
@@ -393,7 +408,7 @@ int main(int argc, char** argv)
 //            cout << endl;
             string chip_basename = layer_name+"_"+
                stringfunc::integer_to_string(local_node_IDs[n],3)+".png";
-            string chip_filename = imagechips_subdir+layer_name+"/"+
+            string chip_filename = network_subdir+layer_name+"/"+
                chip_basename;
 
             string chiplabel_str = " -label ";

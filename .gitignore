@@ -1081,6 +1081,7 @@ src/mains/machine_learning/deeplab/pngtest
 src/mains/machine_learning/deeplab/pyramid_testing_images
 src/mains/machine_learning/generate_tsne_input
 src/mains/machine_learning/tsne_2_output
+src/mains/machine_learning/caffe/add_softmax
 src/mains/machine_learning/caffe/all_lmdb
 src/mains/machine_learning/caffe/classify_genders
 src/mains/machine_learning/caffe/ensemble_chars

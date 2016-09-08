@@ -212,13 +212,13 @@ int main(int argc, char* argv[])
 
 // Baseline Facenet model 2e  (4 conv layers)
 
-//      param_layer_names.push_back("conv1");
-//      param_layer_names.push_back("conv2");
-//      param_layer_names.push_back("conv3");
-//      param_layer_names.push_back("conv4");
-//      param_layer_names.push_back("fc5");
-//      param_layer_names.push_back("fc6");
-//      param_layer_names.push_back("fc7_faces");
+      param_layer_names.push_back("conv1");
+      param_layer_names.push_back("conv2");
+      param_layer_names.push_back("conv3");
+      param_layer_names.push_back("conv4");
+      param_layer_names.push_back("fc5");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7_faces");
 
 // Facenet model 2l  (conv4a + conv4b + conv 4c)
 
@@ -256,15 +256,15 @@ int main(int argc, char* argv[])
 
 // Facenet model 2n  (conv3a + conv3b + conv4a + conv4b)
 
-      param_layer_names.push_back("conv1");
-      param_layer_names.push_back("conv2");
-      param_layer_names.push_back("conv3a");
-      param_layer_names.push_back("conv3b");
-      param_layer_names.push_back("conv4a");
-      param_layer_names.push_back("conv4b");
-      param_layer_names.push_back("fc5");
-      param_layer_names.push_back("fc6");
-      param_layer_names.push_back("fc7_faces");
+//      param_layer_names.push_back("conv1");
+//      param_layer_names.push_back("conv2");
+//      param_layer_names.push_back("conv3a");
+//      param_layer_names.push_back("conv3b");
+//      param_layer_names.push_back("conv4a");
+//      param_layer_names.push_back("conv4b");
+//      param_layer_names.push_back("fc5");
+//      param_layer_names.push_back("fc6");
+//      param_layer_names.push_back("fc7_faces");
 
 /*
 // Facenet1:

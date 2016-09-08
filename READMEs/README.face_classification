@@ -1,7 +1,7 @@
 ========================================================================
 Face classification
 ========================================================================
-Last updated 7/28/16; 7/29/16; 8/3/16; 8/6/16
+Last updated 7/29/16; 8/3/16; 8/6/16; 9/8/16
 ========================================================================
 
 In this README, we define the following root directories:
@@ -124,6 +124,9 @@ text file containing the image chip files' full pathnames vs their class
 IDs.  PREPARE_CLASSIFICATION_INPUTS then shuffles the pairs of pathnames vs
 class IDs multiple times.  The shuffled text file becomes an input to Caffe
 fine-tuning of VGG-16/Resnet networks.
+
+This program can also be used to compute the mean RGB values for
+all training image chips.
 
                     ./prepare_classification_inputs
 

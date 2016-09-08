@@ -11,10 +11,10 @@
 // cold.  The renormalized activation fractions and RGB values are
 // exported to a new set of text files for each test image.
 
-//                         ./renorm_image_activations
+//                      ./renorm_image_activations
 
 // ========================================================================
-// Last updated on 9/5/16; 9/7/16
+// Last updated on 9/5/16; 9/7/16; 9/8/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -37,8 +37,8 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
-   string imagechips_subdir = "./vis_facenet/node_images/";
-   string activations_subdir = imagechips_subdir + "activations/";
+   string network_subdir = "./vis_facenet/network/";
+   string activations_subdir = network_subdir + "activations/";
    string image_activations_subdir = activations_subdir + "images/";
    string renorm_image_activations_subdir = image_activations_subdir 
       + "renormalized/";
@@ -177,8 +177,6 @@ int main(int argc, char** argv)
             cout << "Should not have reached this point" << endl;
             exit(-1);
 */
-           //            r = g = b = 0.2;
-
             continue;
          }
          else
@@ -232,8 +230,8 @@ int main(int argc, char** argv)
 
 // As of 9/7/16, we intentionally bias hues towards warmer tones:
 
-//            double hue = 250 * (1 - frac);
-            double hue = 250  - 375 * frac;
+            double hue = 250 * (1 - frac);
+//            double hue = 250  - 375 * frac;
             if(hue < 0) hue = 0;
 
             double s = 1;
@@ -262,14 +260,14 @@ int main(int argc, char** argv)
                    << B << "      " 
                    << endl;
 
-         const double min_frac_threshold = 0.60;
-         const double max_frac_threshold = 0.75;
+//         const double min_frac_threshold = 0.60;
+//         const double max_frac_threshold = 0.75;
 //         const double min_frac_threshold = 0.75;
 //         const double max_frac_threshold = 0.85;
 //         const double min_frac_threshold = 0.85;
 //         const double max_frac_threshold = 0.99;
-//         const double min_frac_threshold = 0.99;
-//         const double max_frac_threshold = 1.00;
+         const double min_frac_threshold = 0.99;
+         const double max_frac_threshold = 1.00;
          if(layer_ID == max_layer_ID && frac > min_frac_threshold &&
             frac < max_frac_threshold)
          {

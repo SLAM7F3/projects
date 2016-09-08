@@ -6,10 +6,13 @@
 // of pathnames vs class IDs multiple times.  The shuffled text file
 // becomes an input to Caffe fine-tuning of VGG-16/Resnet networks.
 
+// This program can also be used to compute the mean RGB values for
+// all training image chips.
+
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 8/10/16; 8/15/16; 8/28/16; 9/7/16
+// Last updated on 8/15/16; 8/28/16; 9/7/16; 9/8/16
 // ==========================================================================
 
 #include <iostream>
@@ -42,8 +45,16 @@ int main(int argc, char *argv[])
    timefunc::initialize_timeofday_clock();
    sysfunc::clearscreen();
 
-//    bool compute_mean_RGB_values_flag = true;
-   bool compute_mean_RGB_values_flag = false;
+    bool compute_mean_RGB_values_flag = true;
+//   bool compute_mean_RGB_values_flag = false;
+
+// On 9/8/16, we used this program to compute the following mean RGB
+// values for O(360K) 96x96 training face image chips which have as
+// little black border as possible:
+
+// Mean B value = 89.6968
+// Mean G value = 99.0488
+// Mean R value = 114.735
 
 // On 8/28/16, we used this program to compute the following mean RGB
 // values for O(350K) 96x96 training face image chips:
@@ -155,6 +166,7 @@ int main(int argc, char *argv[])
       cout << "Mean G value = " << total_mu_G << endl;
       cout << "Mean R value = " << total_mu_R << endl;
       cout << "=================================================== " << endl;
+      exit(-1);
    } // compute_mean_RGB_values_flag conditional
 
    string output_filename=training_subdir+"all_images_vs_classes.txt";

@@ -8,7 +8,7 @@
 //                         ./order_activations
 
 // ========================================================================
-// Last updated on 8/25/16; 8/26/16; 9/5/16; 9/7/16
+// Last updated on 8/26/16; 9/5/16; 9/7/16; 9/8/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -36,9 +36,9 @@ int main(int argc, char** argv)
    NODE_IDS_MAP node_ids_map;
    NODE_IDS_MAP::iterator node_ids_iter;
 
-   string imagechips_subdir = "./vis_facenet/node_images/";
-   string activations_subdir = imagechips_subdir + "activations/";
-   string subnetwork_subdir = imagechips_subdir + "subnetworks/";
+   string network_subdir = "./vis_facenet/network/";
+   string activations_subdir = network_subdir + "activations/";
+   string subnetwork_subdir = network_subdir + "subnetworks/";
    filefunc::dircreate(subnetwork_subdir);
    string male_subnetwork_subdir=subnetwork_subdir+"male/";
    string female_subnetwork_subdir=subnetwork_subdir+"female/";
