@@ -87,19 +87,26 @@ int main(int argc, char *argv[])
          outputfunc::print_elapsed_and_remaining_time(progress_frac);
       }
 
-// As of Sep 2016, we upsample image chips so that their new pixel
-// sizes precisely equal max_xdim x max_ydim.  But we ignore any input
-// image chip whose aspect ratio is either too small or too large:
-
-      unsigned int xdim,ydim;
-      imagefunc::get_image_width_height(image_filenames[i],xdim,ydim);
-      double aspect_ratio = double(xdim) / double(ydim);
-
 // Calculated aspect ratio for face bboxes:
 
       const double aspect_ratio_median = 0.7447; 
       const double aspect_ratio_quartile_width = 0.1054;
 
+      const double max_magnification = 6;
+      const int min_xdim = max_xdim / max_magnification;
+      const int min_ydim = min_xdim / aspect_ratio_median;
+
+// Ignore any image chip whose pixel width or height are too small:
+
+      unsigned int xdim,ydim;
+      imagefunc::get_image_width_height(image_filenames[i],xdim,ydim);
+      if(xdim < min_xdim || ydim < min_ydim) continue;
+
+// As of Sep 2016, we upsample image chips so that their new pixel
+// sizes precisely equal max_xdim x max_ydim.  But we ignore any input
+// image chip whose aspect ratio is either too small or too large:
+
+      double aspect_ratio = double(xdim) / double(ydim);
       double min_aspect_ratio = aspect_ratio_median 
          - 4 * aspect_ratio_quartile_width;
       double max_aspect_ratio = aspect_ratio_median 

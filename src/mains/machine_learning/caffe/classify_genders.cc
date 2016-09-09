@@ -215,6 +215,16 @@ int main(int argc, char** argv)
                fullimage_ID_str = substrings[2];
             }
 //            cout << "fullimage_ID_str = " << fullimage_ID_str << endl;
+
+
+// FAKE FAKE:  Fri Sep 9 at 2:22 pm
+
+// Ignore any input 96x96 training image chip which does not
+// correspond to an original cropping from an interent image:
+
+            int augmentation_ID = stringfunc::string_to_number(substrings[3]);
+            if(augmentation_ID > 0) continue;
+
       
             unsigned int input_img_width, input_img_height;
             imagefunc::get_image_width_height(

@@ -261,6 +261,36 @@ These results are somewhat WORSE than those from Weds, Sep 7 , Titan 3,
 evening, Facenet model 2e, 4 conv layers. But here we used better values
 for RGB mean values !!!
 
+As of Friday, Sep 9, we impose reasonable constraints on the minimum pixel
+size for training/testing chips (px >= 16) as well as image chip aspect
+ratio.  When these constraints are in place, gender classification results
+from Facenet model 2e becomes:
+
+
+frac_correct = 0.846071 frac_unsure = 0.0465865 frac_incorrect = 0.107342
+
+frac_nonface_correct = 0.999051
+frac_nonface_incorrect = 0.000948767
+
+frac_male_correct = 0.823224
+frac_male_unsure = 0.0363951
+frac_male_incorrect = 0.140381
+
+frac_female_correct = 0.7811
+frac_female_unsure = 0.082221
+frac_female_incorrect = 0.136679
+
+Confusion matrix:
+
+1054	5	0	0	
+89	1425	154	63	
+64	192	1463	154	
+0	0	0	0	
+
+
+As of Friday, Sep 9 we observe randomness in the confusion matrix which
+makes no sense !!!
+
 -------------------------------------------------------------------
 *.  Thurs, Sep 8 , Titan 3, morning, Facenet model 2q, 6 conv layers with BN
 

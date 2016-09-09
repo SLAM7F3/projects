@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 8/8/16; 8/10/16; 8/11/16; 9/7/16
+Last updated on 8/10/16; 8/11/16; 9/7/16; 9/9/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -726,6 +726,10 @@ git checkout -b pr_cleanup_w_tests
 git cherry-pick 2c0a249
 git cherry-pick fc74969
 
+
+*.  On 9/9/16, Tiago showed us that we should generally execute a GitHub
+Desktop --> Repository --> Pull operation in order to force GitHub Desktop
+to become synchronized with the remote github server.
 
 *.  When you are in the middle of something, your boss comes in and demands
 that you fix something immediately:
