@@ -2322,18 +2322,23 @@ void PolyLinesGroup::goto_frame()
 }
 
 // --------------------------------------------------------------------------
-// Member function goto_image_filename
+// Member function goto_image_filename() is a specialized utility
+// which we wrote for program ATTRIBUTE_IMAGES.  It assumes the
+// present working directory is filled with jpg images with filenames
+// of the form ./image_XXXXX.jpg.  If so, this method queries the user
+// to enter the XXXXX image ID string.  It then finds the
+// corresponding frame number and jumps to that image.
 
 void PolyLinesGroup::goto_image_filename()
 {
-   cout << "inside PolyLinesGrop::goto_image_filename()" << endl;
+//   cout << "inside PolyLinesGrop::goto_image_filename()" << endl;
 
    double curr_diag = get_currimage_frame_diag();
    
    string image_ID_str;
    cout << "Enter image ID string:" << endl;
    cin >> image_ID_str;
-   string image_filename = "image_"+image_ID_str+".jpg";
+   string image_filename = "./image_"+image_ID_str+".jpg";
    int frame_number = AC_ptr->get_image_framenumber(image_filename);
 
    if(frame_number == -1)
