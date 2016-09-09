@@ -17,7 +17,7 @@
 //                          ./resize_imagechips
 
 // ==========================================================================
-// Last updated on 7/31/16; 8/1/16; 8/2/16; 9/7/16
+// Last updated on 8/1/16; 8/2/16; 9/7/16; 9/9/16
 // ==========================================================================
 
 #include <iostream>
@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
    cout << "max_xdim = " << max_xdim << " max_ydim = " << max_ydim
         << endl;
 
+   int n_bad_aspect_ratios = 0;
    int istart=0;
    int istop = image_filenames.size();
    int n_images = istop - istart;
@@ -86,15 +87,37 @@ int main(int argc, char *argv[])
          outputfunc::print_elapsed_and_remaining_time(progress_frac);
       }
 
+// As of Sep 2016, we upsample image chips so that their new pixel
+// sizes precisely equal max_xdim x max_ydim.  But we ignore any input
+// image chip whose aspect ratio is either too small or too large:
+
+      unsigned int xdim,ydim;
+      imagefunc::get_image_width_height(image_filenames[i],xdim,ydim);
+      double aspect_ratio = double(xdim) / double(ydim);
+
+// Calculated aspect ratio for face bboxes:
+
+      const double aspect_ratio_median = 0.7447; 
+      const double aspect_ratio_quartile_width = 0.1054;
+
+      double min_aspect_ratio = aspect_ratio_median 
+         - 4 * aspect_ratio_quartile_width;
+      double max_aspect_ratio = aspect_ratio_median 
+         + 4 * aspect_ratio_quartile_width;
+
+      if(aspect_ratio < min_aspect_ratio ||
+         aspect_ratio > max_aspect_ratio)
+      {
+         n_bad_aspect_ratios++;
+         continue;
+      }
+
       string basename = filefunc::getbasename(image_filenames[i]);
       string padded_jpg_filename=resized_chips_subdir
          +stringfunc::prefix(basename);
       padded_jpg_filename += "_"+
          stringfunc::number_to_string(max_xdim)+"x"+
          stringfunc::number_to_string(max_ydim)+".jpg";
-
-// As of Sep 2016, we experiment with upsampling image chips so that
-// their new pixel sizes precisely equal max_xdim x max_ydim : 
 
       videofunc::force_size_image(
          image_filenames[i], max_xdim, max_ydim,
@@ -111,8 +134,11 @@ int main(int argc, char *argv[])
       sysfunc::unix_command(unix_cmd);
 */
 
-
    } // loop over index i 
+
+   double frac_bad_aspect_ratios = double(n_bad_aspect_ratios) / n_images;
+   cout << "Fraction of image chips ignored due to bad aspect ratios = " 
+        << frac_bad_aspect_ratios << endl;
 } 
 
 
