@@ -783,8 +783,8 @@ string AnimationController::get_world_time_string(bool display_UTC_flag) const
 
 void AnimationController::store_unordered_image_filenames(string subdir)
 {
-   cout << "inside AnimationController::store_unordered_image_filenames()" 
-        << endl;
+  //   cout << "inside AnimationController::store_unordered_image_filenames()" 
+  //      << endl;
 
    vector<string> image_filenames;
    image_filenames=filefunc::image_files_in_subdir(subdir);
@@ -796,8 +796,6 @@ void AnimationController::store_unordered_image_filenames(string subdir)
       image_numbers_map[i]=image_filenames[i];
       image_filenames_map[image_filenames[i]] = i;
    }
-
-   outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
