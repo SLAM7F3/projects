@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for POLYLINESGROUP class
 // ==========================================================================
-// Last modified on 7/7/16; 7/8/16; 7/9/16; 7/21/16
+// Last modified on 7/8/16; 7/9/16; 7/21/16; 9/9/16
 // ==========================================================================
 
 #ifndef POLYLINESGROUP_H
@@ -259,6 +259,7 @@ class PolyLinesGroup : public GeometricalsGroup
 // Bounding box labeling methods:
 
    void goto_frame();
+   void goto_image_filename();
    void increment_frame();
    void decrement_frame();
    void jump_forward_frame(int jump);

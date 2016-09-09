@@ -1,7 +1,7 @@
 // ==========================================================================
 // AnimationController header file 
 // ==========================================================================
-// Last modified on 12/25/11; 12/31/11; 10/3/12; 1/22/16
+// Last modified on 12/31/11; 10/3/12; 1/22/16; 9/9/16
 // ==========================================================================
 
 #ifndef ANIMATIONCONTROLLER_H
@@ -127,12 +127,23 @@ class AnimationController
 // Ordered image storage and retrieval member functions:
 
    typedef std::map<int,std::string > IMAGE_NUMBERS_MAP;
-   IMAGE_NUMBERS_MAP ordered_image_filenames_map;
+// Independent int = frame number
+// Dependent string = image filename
+
+   IMAGE_NUMBERS_MAP image_numbers_map;
+
+   typedef std::map<std::string, int > IMAGE_FILENAMES_MAP;
+// Indepedent string = image filename
+// Dependent int = frame number
+
+   IMAGE_FILENAMES_MAP image_filenames_map;
 
    void store_unordered_image_filenames(std::string subdir);
    void store_image_filenames_ordered_by_width(std::string subdir);
    void store_ordered_image_filenames(std::string subdir);
    std::string get_ordered_image_filename(int frame_number);
+   int get_image_framenumber(std::string image_filename);
+
    std::string get_curr_image_filename();
    std::string get_next_ordered_image_filename();
    int get_n_ordered_image_filenames() const;

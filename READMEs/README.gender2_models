@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 8/31/16; 9/1/16; 9/7/16; 9/8/16
+Last updated on 8/31/16; 9/1/16; 9/7/16; 9/8/16; 9/9/16
 ==========================================================================
 
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2e, 4 conv layers
@@ -117,7 +117,7 @@ Confusion matrix:
 *.  Weds, Sep 7 , Titan 3, evening, Facenet model 2e, 4 conv layers
 
 New set of O(360K) training image chips which should have much less black
-content than in the past.  Manually reset standard deviations for weight
+padding than in the past.  Manually reset standard deviations for weight
 fillers based upon previous Model 2e trained weights.
   
 Training started on Facenet model 2e around 5:20 pm
@@ -171,7 +171,6 @@ Parameter layer p = 6
   Weights:  mu = 0.000194186 sigma = 0.0956365
   Biases:  mu = -1.25666e-06 sigma = 0.182269
 
-
 4892 test images
 
 frac_correct = 0.845068 frac_unsure = 0.0409333 frac_incorrect = 0.113999
@@ -205,6 +204,63 @@ updated mean RGB values.
 Training started on Facenet model 2e around 7:15 am
 
 
+/data/caffe/faces/trained_models/Sep8_2e_T1/train_iter_272000.caffemodel
+  caffe validation accuracy approaches to 0.880 with some small overfitting
+
+n_total_weights = 10575136 n_total_biases = 1283
+
+Parameter layer p = 0
+  Weights:  mu = 0.000755608 sigma = 0.0696508
+  Biases:  mu = 0.0109696 sigma = 0.0284092
+
+Parameter layer p = 1
+  Weights:  mu = -0.00138339 sigma = 0.00979403
+  Biases:  mu = 0.00274219 sigma = 0.0286758
+
+Parameter layer p = 2
+  Weights:  mu = -0.00113574 sigma = 0.00820436
+  Biases:  mu = -0.0033433 sigma = 0.0540122
+
+Parameter layer p = 3
+  Weights:  mu = -0.00115964 sigma = 0.00803753
+  Biases:  mu = 0.0411079 sigma = 0.141454
+
+Parameter layer p = 4
+  Weights:  mu = -9.45519e-05 sigma = 0.00253377
+  Biases:  mu = 0.0119374 sigma = 0.0679622
+
+Parameter layer p = 5
+  Weights:  mu = 0.000122473 sigma = 0.0107388
+  Biases:  mu = 0.115618 sigma = 0.0479661
+
+Parameter layer p = 6
+  Weights:  mu = 0.0010609 sigma = 0.0945904
+  Biases:  mu = -5.17815e-07 sigma = 0.169602
+
+frac_correct = 0.832617 frac_unsure = 0.0503376 frac_incorrect = 0.117045
+
+frac_nonface_correct = 0.999051
+frac_nonface_incorrect = 0.000948767
+
+frac_male_correct = 0.811865
+frac_male_unsure = 0.0400855
+frac_male_incorrect = 0.148049
+
+frac_female_correct = 0.762997
+frac_female_unsure = 0.087156
+frac_female_incorrect = 0.149847
+
+Confusion matrix:
+
+1054	5	0	0	
+121	1519	156	75	
+88	206	1497	171	
+0	0	0	0	
+
+These results are somewhat WORSE than those from Weds, Sep 7 , Titan 3,
+evening, Facenet model 2e, 4 conv layers. But here we used better values
+for RGB mean values !!!
+
 -------------------------------------------------------------------
 *.  Thurs, Sep 8 , Titan 3, morning, Facenet model 2q, 6 conv layers with BN
 
@@ -212,6 +268,10 @@ New set of O(360K) training image chips which should have much less black
 padding than in the past.  Also using newly updated mean RGB values.
   
 Training started on Facenet model 2q around 7:15 am
+
+/data/caffe/faces/trained_models/Sep8_2q_T3/train_iter_210000.caffemodel
+  caffe validation accuracy asymptotes to around 0.906 with some small overfitting
+
 
 
 
