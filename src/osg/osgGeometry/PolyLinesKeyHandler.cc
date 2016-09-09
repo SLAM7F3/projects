@@ -71,7 +71,8 @@ bool PolyLinesKeyHandler::handle(
          }
          else if (ea.getKey()=='g')
          {
-            PolyLinesGroup_ptr->goto_frame();
+           //            PolyLinesGroup_ptr->goto_frame();
+            PolyLinesGroup_ptr->goto_image_filename();
             return true;
          }
          else if (ea.getKey()=='i')

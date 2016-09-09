@@ -1,7 +1,7 @@
 // ==========================================================================
 // AnimationController class member function definitions
 // ==========================================================================
-// Last modified on 10/3/12; 4/3/13; 4/6/14; 1/22/16
+// Last modified on 4/3/13; 4/6/14; 1/22/16; 9/9/16
 // ==========================================================================
 
 #include <iostream>
@@ -776,25 +776,25 @@ string AnimationController::get_world_time_string(bool display_UTC_flag) const
 
 // Member function store_unordered_image_filenames() takes in a
 // subdirectory which is assumed to hold a some quasi-random set of
-// image files.  This method fills STL map member
-// ordered_image_filenames with the imported image file names.
+// image files.  This method fills STL map member image_numbers_map
+// with imported image filename as a function of frame number.  It
+// fills STL map member image_filenames_map with frame number as as
+// function of image filename.
 
 void AnimationController::store_unordered_image_filenames(string subdir)
 {
 //   cout << "inside AnimationController::store_unordered_image_filenames()" 
 //        << endl;
-//   cout << "subdir = " << subdir << endl;
 
    vector<string> image_filenames;
    image_filenames=filefunc::image_files_in_subdir(subdir);
 //   cout << "image_filenames.size() = " << image_filenames.size() << endl;
 
-   ordered_image_filenames_map.clear();
+   image_numbers_map.clear();
    for (unsigned int i=0; i<image_filenames.size(); i++)
    {
-      ordered_image_filenames_map[i]=image_filenames[i];
-//      cout << "i = " << i << " ordered filename = "
-//           << image_filenames[i] << endl;
+      image_numbers_map[i]=image_filenames[i];
+      image_filenames_map[image_filenames[i]] = i;
    }
 }
 
@@ -825,10 +825,10 @@ void AnimationController::store_image_filenames_ordered_by_width(string subdir)
    
    templatefunc::Quicksort(image_widths, image_filenames);
 
-   ordered_image_filenames_map.clear();
+   image_numbers_map.clear();
    for (unsigned int i=0; i<image_filenames.size(); i++)
    {
-      ordered_image_filenames_map[i]=image_filenames[i];
+      image_numbers_map[i]=image_filenames[i];
 //      cout << "i = " << i << " ordered filename = "
 //           << image_filenames[i] << endl;
    }
@@ -867,7 +867,7 @@ void AnimationController::store_ordered_image_filenames(string subdir)
       allowed_suffixes,subdir);
 //   cout << "image_filenames.size() = " << image_filenames.size() << endl;
 
-   ordered_image_filenames_map.clear();
+   image_numbers_map.clear();
 
    string separator_chars="-_.";
    for (unsigned int i=0; i<image_filenames.size(); i++)
@@ -908,7 +908,7 @@ void AnimationController::store_ordered_image_filenames(string subdir)
 
       if (i==0) set_frame_counter_offset(true_imagenumber);
 
-      ordered_image_filenames_map[true_imagenumber]=image_filenames[i];
+      image_numbers_map[true_imagenumber]=image_filenames[i];
 
 //      cout << "i = " << i
 //           << " true_imagenumber = " << true_imagenumber
@@ -929,7 +929,7 @@ void AnimationController::store_ordered_image_filenames(string subdir)
    {
       for (unsigned int i=0; i<image_filenames.size(); i++)
       {
-         ordered_image_filenames_map[i]=image_filenames[i];
+         image_numbers_map[i]=image_filenames[i];
       }
    }
 
@@ -938,7 +938,7 @@ void AnimationController::store_ordered_image_filenames(string subdir)
 
 // ---------------------------------------------------------------------
 // Member function get_ordered_image_filename() searches STL map
-// member ordered_image_filenames_map for a filename corresponding to
+// member image_numbers_map for a filename corresponding to
 // the input framenumber.  If one exists, this method returns
 // the retrieved filename.  Otherwise, it returns an empty string.
 
@@ -947,12 +947,9 @@ string AnimationController::get_ordered_image_filename(int frame_number)
 //   cout << "inside AnimationController::get_ordered_image_filename()" 
 //        << endl;
 //   cout << "frame_number = " << frame_number << endl;
-//   cout << "ordered_image_filenames_map.size() = "
-//        << ordered_image_filenames_map.size() << endl;
 
-   IMAGE_NUMBERS_MAP::iterator iter=ordered_image_filenames_map.find(
-      frame_number);
-   if (iter==ordered_image_filenames_map.end()) 
+   IMAGE_NUMBERS_MAP::iterator iter=image_numbers_map.find(frame_number);
+   if (iter==image_numbers_map.end()) 
    {
 //      cout << "ordered image filename not found" << endl;
 //      outputfunc::enter_continue_char();
@@ -961,9 +958,22 @@ string AnimationController::get_ordered_image_filename(int frame_number)
    else
    {
       string ordered_image_filename=iter->second;
-//      cout << "ordered_image_filename = " 
-//           << filefunc::getbasename(ordered_image_filename) << endl;
       return ordered_image_filename;
+   }
+}
+
+// ---------------------------------------------------------------------
+int AnimationController::get_image_framenumber(string image_filename)
+{
+
+   IMAGE_FILENAMES_MAP::iterator iter=image_filenames_map.find(image_filename);
+   if (iter==image_filenames_map.end()) 
+   {
+      return -1;
+   }
+   else
+   {
+      return iter->second;
    }
 }
 
@@ -975,5 +985,5 @@ int AnimationController::get_n_ordered_image_filenames() const
 //   cout << "inside AnimationController::get_n_ordered_image_filenames()" 
 //        << endl;
 
-   return ordered_image_filenames_map.size();
+   return image_numbers_map.size();
 }

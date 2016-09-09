@@ -1,7 +1,7 @@
 // ==========================================================================
 // POLYLINESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 7/21/16; 7/24/16; 8/5/16; 8/9/16
+// Last modified on 7/24/16; 8/5/16; 8/9/16; 9/9/16
 // ==========================================================================
 
 #include <iomanip>
@@ -2318,9 +2318,37 @@ void PolyLinesGroup::goto_frame()
    currimage_PolyLine_index = 0;
    set_selected_bbox();
 
-//   double scalefactor = next_diag / curr_diag;
-//   get_CM_2D_ptr()->set_eye_to_center_distance(
-//      get_CM_2D_ptr()->get_eye_to_center_distance() * scalefactor);
+   get_CM_2D_ptr()->maintain_rel_image_size(curr_diag, next_diag);
+}
+
+// --------------------------------------------------------------------------
+// Member function goto_image_filename
+
+void PolyLinesGroup::goto_image_filename()
+{
+   cout << "inside PolyLinesGrop::goto_image_filename()" << endl;
+
+   double curr_diag = get_currimage_frame_diag();
+   
+   string image_ID_str;
+   cout << "Enter image ID string:" << endl;
+   cin >> image_ID_str;
+   string image_filename = "image_"+image_ID_str+".jpg";
+   int frame_number = AC_ptr->get_image_framenumber(image_filename);
+
+   if(frame_number == -1)
+   {
+      cout << "No such image filename exists" << endl;
+      return;
+   }
+
+   AC_ptr->set_curr_framenumber(frame_number);
+   double next_diag = get_currimage_frame_diag();
+
+   generate_image_bboxes(get_image_ID_str());
+   currimage_PolyLine_index = 0;
+   set_selected_bbox();
+
    get_CM_2D_ptr()->maintain_rel_image_size(curr_diag, next_diag);
 }
 

@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/9/16; 8/10/16; 8/16/16; 8/28/16
+// Last updated on 8/10/16; 8/16/16; 8/28/16; 9/9/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -85,8 +85,8 @@ int main(int argc, char** argv)
 
    timefunc::initialize_timeofday_clock();
 
-//   bool copy_image_chips_flag = true;
-   bool copy_image_chips_flag = false;
+   bool copy_image_chips_flag = true;
+//   bool copy_image_chips_flag = false;
 
    bool truth_known_flag = true;
 //   bool truth_known_flag = false;
@@ -134,15 +134,21 @@ int main(int argc, char** argv)
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-// Mean RGB values derived from O(350K) 96x96 training face image chips
-   double Bmean = 38.5;
-   double Gmean = 41.9;
-   double Rmean = 49.0;
+// Mean RGB values derived from O(360K) 96x96 training face image chips
+
+   double Bmean = 89.7;   // Minimal black padding
+   double Gmean = 99.0;   // Minimal black padding
+   double Rmean = 114.7;  // Minimal black padding
+
+//   double Bmean = 38.5;
+//   double Gmean = 41.9;
+//   double Rmean = 49.0;
 
 // Imagenet mean RGB values:
 //   double Bmean = 104.008;
 //   double Gmean = 116.669;
 //   double Rmean = 122.675;
+
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("non");
@@ -199,10 +205,17 @@ int main(int argc, char** argv)
             string image_basename = filefunc::getbasename(image_filename);
 //            cout << "i = " << i << " image_basename = " << image_basename 
 //                 << endl;
-      
-            vector<string> substrings = 
-               stringfunc::decompose_string_into_substrings(image_basename,"_");
 
+            vector<string> substrings = 
+               stringfunc::decompose_string_into_substrings(
+                  image_basename, "_.");
+            string fullimage_ID_str="";
+            if(substrings[1] == "face")//20K female & male faces labeled by PC
+            {
+               fullimage_ID_str = substrings[2];
+            }
+//            cout << "fullimage_ID_str = " << fullimage_ID_str << endl;
+      
             unsigned int input_img_width, input_img_height;
             imagefunc::get_image_width_height(
                orig_image_filename, input_img_width, input_img_height);
@@ -285,15 +298,24 @@ int main(int argc, char** argv)
                   classification_gender_label = "female";
                }
 
-               string correct_chip_basename=true_gender_label+"_"+
+               string correct_chip_basename=true_gender_label+"_";
+               if(fullimage_ID_str.size() > 0)
+               {
+                  correct_chip_basename += fullimage_ID_str+"_";
+               }
+               correct_chip_basename += 
                   stringfunc::number_to_string(classification_score)+"_"+
-                  stringfunc::integer_to_string(i,5)+
-                  ".jpg";
+                  stringfunc::integer_to_string(i,5)+".jpg";
+
                string incorrect_chip_basename=true_gender_label+"_"+
-                  classification_gender_label+"_"+
+                  classification_gender_label+"_";
+               if(fullimage_ID_str.size() > 0)
+               {
+                  incorrect_chip_basename += fullimage_ID_str+"_";
+               }
+               incorrect_chip_basename += 
                   stringfunc::number_to_string(classification_score)+"_"+
-                  stringfunc::integer_to_string(i,5)+
-                  ".jpg";
+                  stringfunc::integer_to_string(i,5)+".jpg";
                
                if(true_label == 0 &&
                   classification_label == true_label && 
