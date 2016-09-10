@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 8/31/16; 9/1/16; 9/7/16; 9/8/16; 9/9/16
+Last updated on 9/7/16; 9/8/16; 9/9/16; 9/10/16
 ==========================================================================
 
 *.  Mon Aug 29 , Titan 1, morning, Facenet model 2e, 4 conv layers
@@ -290,19 +290,6 @@ Confusion matrix:
 
 As of Friday, Sep 9 we observe randomness in the confusion matrix which
 makes no sense !!!
-
--------------------------------------------------------------------
-*.  Thurs, Sep 8 , Titan 3, morning, Facenet model 2q, 6 conv layers with BN
-
-New set of O(360K) training image chips which should have much less black
-padding than in the past.  Also using newly updated mean RGB values.
-  
-Training started on Facenet model 2q around 7:15 am
-
-/data/caffe/faces/trained_models/Sep8_2q_T3/train_iter_210000.caffemodel
-  caffe validation accuracy asymptotes to around 0.906 with some small overfitting
-
-
 
 
 -------------------------------------------------------------------
@@ -654,22 +641,12 @@ Confusion matrix:
 28	198	1353	109	
 0	0	0	0	
 
-1007   20  2  0
-57  1536  202   24
-35  244  1330  79
-
-***************************
-As of 9/1/16, 6 conv-layer model 2n yields the best overall gender
-classification performance results!
-***************************
-
 -------------------------------------------------------------------
 *.  Weds Aug 31 , Titan 3, Facenet model 2o, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, leaky ReLUs
 
 Reset std devs
 Training started on titan 3 around 12:20 pm
-
 
 -------------------------------------------------------------------
 *.  Weds Aug 31 , Titan 3, am, Facenet model 2p, 6 conv layers,
@@ -764,6 +741,39 @@ frace female wrong = 0.127
 63 153 1167  305
 
 
+-------------------------------------------------------------------
+*.  Thurs, Sep 8 , Titan 3, morning, Facenet model 2q, 6 conv layers with BN
+
+New set of O(360K) training image chips which should have much less black
+padding than in the past.  Also using newly updated mean RGB values.
+  
+Training started on Facenet model 2q around 7:15 am
+
+/data/caffe/faces/trained_models/Sep8_2q_T3/train_iter_530000.caffemodel
+
+  caffe validation accuracy asymptotes to around 0.906 with some small but
+nontrivial overfitting
+
+frac_correct = 0.86854 frac_unsure = 0.0197298 frac_incorrect = 0.111731
+
+frac_nonface_correct = 1
+frac_nonface_incorrect = 0
+
+frac_male_correct = 0.84922
+frac_male_unsure = 0.0127094
+frac_male_incorrect = 0.13807
+
+frac_female_correct = 0.812066
+frac_female_unsure = 0.0373732
+frac_female_incorrect = 0.150561
+
+Confusion matrix:
+
+1059	0	0	0	
+83	1470	156	22	
+64	218	1521	70	
+0	0	0	0	
+
 ------------------------------------------------------------------- 
 *. Thurs, Sep 8, Titan 1, Facenet model 2r, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
@@ -771,6 +781,34 @@ layers.  Increase learning rate to 0.03 and increase learning rate step
 from 25K to 10K.
 
 Training started on titan 1 on Sep 8 around 3 pm 
+
+  /data/caffe/faces/trained_models/Sep8_2r_T1/train_iter_198000.caffemodel
+  caffe validation accuracy asymptotes to 0.905; very little overfitting
+
+frac_correct = 0.871756 frac_unsure = 0.0272357 frac_incorrect = 0.101008
+
+frac_nonface_correct = 0.994334
+frac_nonface_incorrect = 0.00566572
+
+frac_male_correct = 0.834778
+frac_male_unsure = 0.0196418
+frac_male_incorrect = 0.145581
+
+frac_female_correct = 0.836626
+frac_female_unsure = 0.049653
+frac_female_incorrect = 0.113721
+
+Confusion matrix:
+
+1053	5	1	0	
+78	1445	174	34	
+58	155	1567	93	
+0	0	0	0	
+
+***************************
+As of 9/10/16, 6 conv-layer model 2r with batch normalization yields the
+best overall gender classification performance results!
+***************************
 
 ------------------------------------------------------------------- 
 *. Thurs, Sep 1, Titan 3, Facenet model 2s, 6 conv layers,

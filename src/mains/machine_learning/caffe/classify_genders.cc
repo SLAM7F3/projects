@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/10/16; 8/16/16; 8/28/16; 9/9/16
+// Last updated on 8/16/16; 8/28/16; 9/9/16; 9/10/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -85,8 +85,8 @@ int main(int argc, char** argv)
 
    timefunc::initialize_timeofday_clock();
 
-   bool copy_image_chips_flag = true;
-//   bool copy_image_chips_flag = false;
+//   bool copy_image_chips_flag = true;
+   bool copy_image_chips_flag = false;
 
    bool truth_known_flag = true;
 //   bool truth_known_flag = false;
@@ -216,16 +216,17 @@ int main(int argc, char** argv)
             }
 //            cout << "fullimage_ID_str = " << fullimage_ID_str << endl;
 
-
-// FAKE FAKE:  Fri Sep 9 at 2:22 pm
-
 // Ignore any input 96x96 training image chip which does not
-// correspond to an original cropping from an interent image:
+// correspond to an original cropping from an interent image.  In the
+// future, we can try experimenting with classification via voting...
 
-            int augmentation_ID = stringfunc::string_to_number(substrings[3]);
-            if(augmentation_ID > 0) continue;
-
-      
+            if(substrings[0] != "non")
+            {
+               int augmentation_ID = stringfunc::string_to_number(
+                  substrings[3]);
+               if(augmentation_ID > 0) continue;
+            }
+            
             unsigned int input_img_width, input_img_height;
             imagefunc::get_image_width_height(
                orig_image_filename, input_img_width, input_img_height);

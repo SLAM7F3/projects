@@ -56,10 +56,12 @@ int main(int argc, char *argv[])
    string resized_chips_subdir=images_subdir+"resized_chips/";
    filefunc::dircreate(resized_chips_subdir);
 
-//   bool check_aspect_ratios_flag = true;
-   bool check_aspect_ratios_flag = false;
+   bool check_aspect_ratios_flag = true;
+//   bool check_aspect_ratios_flag = false;
+   cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
    cout << "check_aspect_ratios_flag = " << check_aspect_ratios_flag
         << endl;
+   cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
 
    char training_char;
    cout << "Enter 't' if input image chips are to be used for training:"
@@ -76,7 +78,7 @@ int main(int argc, char *argv[])
    cout << "max_xdim = " << max_xdim << " max_ydim = " << max_ydim
         << endl;
 
-   int n_bad_aspect_ratios = 0;
+   int n_bad_aspect_ratio_images = 0;
    int istart=0;
    int istop = image_filenames.size();
    int n_images = istop - istart;
@@ -90,7 +92,14 @@ int main(int argc, char *argv[])
       {
          double progress_frac = double(i - istart)/n_images;
          outputfunc::print_elapsed_and_remaining_time(progress_frac);
-         cout << "i = " << i << endl;
+         double bad_aspect_ratio_image_frac = 
+            double(n_bad_aspect_ratio_images)/(i - istart);
+         cout << "i = " << i 
+              << " n_bad_aspect_ratio_images = "
+              << n_bad_aspect_ratio_images 
+              << " bad_aspect_ratio_image_frac = "
+              << bad_aspect_ratio_image_frac
+              << endl;
       }
 
       Magick::Image curr_image;
@@ -129,7 +138,7 @@ int main(int argc, char *argv[])
             aspect_ratio < min_aspect_ratio ||
             aspect_ratio > max_aspect_ratio) )
       {
-         n_bad_aspect_ratios++;
+         n_bad_aspect_ratio_images++;
          continue;
       }
 
@@ -157,7 +166,8 @@ int main(int argc, char *argv[])
 
    } // loop over index i 
 
-   double frac_bad_aspect_ratios = double(n_bad_aspect_ratios) / n_images;
+   double frac_bad_aspect_ratios = double(n_bad_aspect_ratio_images) 
+      / n_images;
    cout << "Fraction of image chips ignored due to bad aspect ratios = " 
         << frac_bad_aspect_ratios << endl;
 } 
