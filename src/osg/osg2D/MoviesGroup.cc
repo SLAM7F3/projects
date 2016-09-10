@@ -1,7 +1,7 @@
 // ==========================================================================
 // MOVIESGROUP class member function definitions
 // ==========================================================================
-// Last modified on 4/24/12; 8/6/13; 12/4/13; 8/9/16
+// Last modified on 8/6/13; 12/4/13; 8/9/16; 9/10/16
 // ==========================================================================
 
 #include "osg/osgGraphicals/AnimationController.h"
@@ -21,6 +21,8 @@
 #include "image/TwoDarray.h"
 
 #include "templates/mytemplates.h"
+
+#include "video/videofuncs.h"
  
 using std::cin;
 using std::cout;
@@ -520,18 +522,7 @@ void MoviesGroup::update_display()
             curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_width();
          int curr_height = 
             curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_height();
-
          curr_Movie_ptr->display_current_frame();
-/*
-         double curr_diag = curr_Movie_ptr->get_texture_rectangle_ptr()->
-            getDiag();
-         if(!nearly_equal(curr_diag, prev_diag))
-         {
-            cout << "curr_diag = " << curr_diag
-                 << " prev_diag = " << prev_diag << endl;
-            prev_diag = curr_diag;
-         }
-*/
 
          int next_width = 
             curr_Movie_ptr->get_texture_rectangle_ptr()->get_next_width();
@@ -540,14 +531,13 @@ void MoviesGroup::update_display()
 
          if(curr_width != next_width || curr_height != next_height)
          {
-         cout << "curr_width = " << curr_width
-              << " curr_height = " << curr_height << endl;
-         cout << " next_width = " << next_width 
-              << " next_height = " << next_height << endl;
+            cout << "   curr_width = " << curr_width
+                 << " curr_height = " << curr_height << endl;
+            //            cout << "   next_width = " << next_width 
+            //     << " next_height = " << next_height << endl;
          }
 
       } // loop over index n labeling movie Graphicals
-      
    }
    
    if (aerial_video_frame_flag)

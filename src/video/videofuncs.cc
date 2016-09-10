@@ -7,7 +7,7 @@
 // ==========================================================================
 // Videofuncs namespace method definitions
 // ==========================================================================
-// Last modified on 7/30/16; 8/1/16; 8/19/16; 9/6/16
+// Last modified on 8/1/16; 8/19/16; 9/6/16; 9/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -3368,7 +3368,7 @@ namespace videofunc
      string input_image_filename, Magick::Image& curr_image)
   {
     if (!filefunc::fileexist(input_image_filename)) return false;
-    if (!imagefunc::valid_image_file(input_image_filename)) return false;
+//    if (!imagefunc::valid_image_file(input_image_filename)) return false;
 
     // On 5/7/12, we discovered the painful way that flickr images whose
     // horizontal and vertical dimension metadata can be read may still
@@ -3402,6 +3402,9 @@ namespace videofunc
       cout << "Error message = " << error.what() << endl;
       return false;
     }
+
+    cout << "Imported " << input_image_filename << endl;
+
     return true;
   }
 
@@ -3489,6 +3492,67 @@ namespace videofunc
      B = color.blueQuantum() / range;
   }
 
+  // ---------------------------------------------------------------------
+  // Method get_n_color_channels() is taken from
+  // http://stackoverflow.com/questions/32342082/imagemagick-c-api-get-channels-of-image
+
+//  Remember the channel count is subjective to the colorspace. The
+//  MagickCore::ImageInfo structure will contain a channel property;
+//  which, is an enumerator of ChannelType. Using bitwise comparison,
+//  and respecting colorspace, the total channels in an image can be
+//  calculated as...
+
+  int get_n_color_channels(Magick::Image& curr_image)
+  {
+//     cout << "inside videofunc::get_n_color_channels()" << endl;
+     MagickCore::ImageInfo* info = curr_image.imageInfo();
+     if(info == NULL)
+     {
+        return -1;
+     }
+     int channel_count = 0;
+
+// Have Red, or Cyan (CMYK), or Gray
+     if ((info->channel & Magick::RedChannel) != 0) 
+     {
+        channel_count++;
+//        cout << "  red channel" << endl;
+     }
+     
+
+// Have Green, or Magenta (CMYK)
+     if ((info->channel & Magick::GreenChannel) != 0)
+     {
+        channel_count++;
+//        cout << "  green channel" << endl;
+     }
+     
+
+// Have Blue, or Yellow (CMYK)
+     if ((info->channel & Magick::BlueChannel) != 0) 
+     {
+        channel_count++;
+//        cout << "  blue channel" << endl;
+     }
+     
+
+// Check for Alpha channel (if enabled)
+     if (((info->channel & Magick::OpacityChannel) != 0)
+         && (curr_image.matte() != Magick::MagickFalse))
+     {
+        channel_count++;
+//        cout << "  alpha channel" << endl;
+     }
+     
+
+// Have Black channel in CMYK image
+//     if (((info->channel & Magick::IndexChannel) != 0)
+//         && (curr_image.colorSpace() == Magick::CMYKColorspace)) 
+//        channel_count++;
+
+     return channel_count;
+  }
+  
 } // videofunc namespace
 
 

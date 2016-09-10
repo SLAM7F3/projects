@@ -3,16 +3,17 @@
 // subdirectory.  It first converts any PNG files into JPG images to
 // avoid alpha-channel headaches.  It next renames an ".jpeg" or
 // ".JPG" suffixes as ".jpg".  Finally, it explicitly checks the
-// number of color channels within the JPG files.  CLEAN_IMAGES
-// deletes any JPG file which doesn't have exactly 3 color channels.
+// number of color channels within the JPG files.  CLEAN_IMAGES moves
+// any JPG file which doesn't have exactly 3 color channels into an
+// eightbit_images subdirectory.
 
 // We wrote this utility in order to homogenize highly-variable
 // internet imagery.
 
-//	 		./clean_images
+//	   		     ./clean_images
 
 // =======================================================================
-// Last updated on 5/9/16
+// Last updated on 5/9/16; 9/10/16
 // =======================================================================
 
 #include <algorithm>
@@ -28,6 +29,7 @@
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
 #include "video/texture_rectangle.h"
+#include "time/timefuncs.h"
 
 using std::cin;
 using std::cout;
@@ -55,23 +57,38 @@ int main( int argc, char** argv )
    input_images_subdir=root_subdir+input_images_subdir;
 
    input_images_subdir = 
-      "/home/pcho/Downloads/test_faces/";
-//      "/media/DataTransfer/faces/google_images/Jul2016/women3/";
-//      "/media/DataTransfer/faces/google_images/Jul2016/nonfaces_10/";
+      "./";
+//      "/home/pcho/Downloads/test_faces/";
 //      "/media/DataTransfer/faces/google_images/Jul2016/gimages21/";
+
+   string eightbit_images_subdir = input_images_subdir+
+      "eightbit_images/";
+   filefunc::dircreate(eightbit_images_subdir);
    
 
    vector<string> image_filenames=
       filefunc::image_files_in_subdir(input_images_subdir);
    int n_orig_filenames = image_filenames.size();
    cout << "n_orig_filenames = " << n_orig_filenames << endl;
+   int n_eightbit_images = 0;
       
-   for (unsigned int i=0; i<image_filenames.size(); i++)
+   int istart = 0;
+   cout <<  "Enter starting image number:" << endl;
+   cin >> istart;
+   int istop = image_filenames.size();
+
+   timefunc::initialize_timeofday_clock(); 
+
+   for (int i = istart; i < istop; i++)
    {
+      if(i%100 == 0)
+      {
+         double progress_frac = double(i - istart)/double(istop - istart);
+         outputfunc::print_elapsed_and_remaining_time(progress_frac);
+      }
+
       string currimage_filename=image_filenames[i];
       string currimage_suffix = stringfunc::suffix(currimage_filename);
-
-
       string currjpg_filename = currimage_filename;
       if(currimage_suffix=="png" || currimage_suffix =="PNG")
       {
@@ -102,18 +119,19 @@ int main( int argc, char** argv )
          sysfunc::unix_command(unix_cmd);
       }
 
-/*
       texture_rectangle *tr_ptr = new texture_rectangle(currjpg_filename,NULL);
       int n_channels = tr_ptr->getNchannels();
       if(n_channels != 3)
       {
-         cout << "Deleting currjpg_filename  = " << currjpg_filename
-              << " which has n_channels = " << n_channels << endl;
-         filefunc::deletefile(currjpg_filename);
+         cout << "currjpg_filename  = " << currjpg_filename
+              << " has n_channels = " << n_channels << endl;
+         n_eightbit_images++;
+         cout << "n_eightbit_images = " << n_eightbit_images << endl;
+
+         string unix_cmd = "mv "+currjpg_filename+" "+
+            eightbit_images_subdir;
+         sysfunc::unix_command(unix_cmd);
       }
-
-*/
-
    } // loop over index i labeling all input images
 
    vector<string> cleaned_image_filenames=

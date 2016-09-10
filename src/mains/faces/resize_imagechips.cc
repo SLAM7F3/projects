@@ -17,7 +17,7 @@
 //                          ./resize_imagechips
 
 // ==========================================================================
-// Last updated on 8/1/16; 8/2/16; 9/7/16; 9/9/16
+// Last updated on 8/2/16; 9/7/16; 9/9/16; 9/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -77,6 +77,9 @@ int main(int argc, char *argv[])
    int n_images = istop - istart;
    cout << "n_images within current working subdir = " << n_images << endl;
    
+   cout << "Enter istart:" << endl;
+   cin >> istart;
+
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_fraction(i,1000,n_images);
@@ -85,21 +88,29 @@ int main(int argc, char *argv[])
       {
          double progress_frac = double(i - istart)/n_images;
          outputfunc::print_elapsed_and_remaining_time(progress_frac);
+         cout << "i = " << i << endl;
+      }
+
+      Magick::Image curr_image;
+      if(!videofunc::import_IM_image(image_filenames[i], curr_image))
+      {
+         cout << "Couldn't open image = " << image_filenames[i] << endl;
+         continue;
       }
 
 // Calculated aspect ratio for face bboxes:
 
       const double aspect_ratio_median = 0.7447; 
       const double aspect_ratio_quartile_width = 0.1054;
-
-      const double max_magnification = 6;
-      const int min_xdim = max_xdim / max_magnification;
+      const int min_xdim = 20;
       const int min_ydim = min_xdim / aspect_ratio_median;
 
 // Ignore any image chip whose pixel width or height are too small:
 
-      unsigned int xdim,ydim;
+      unsigned int xdim,ydim, bytesize;
+      string format;
       imagefunc::get_image_width_height(image_filenames[i],xdim,ydim);
+
       if(xdim < min_xdim || ydim < min_ydim) continue;
 
 // As of Sep 2016, we upsample image chips so that their new pixel
@@ -108,9 +119,9 @@ int main(int argc, char *argv[])
 
       double aspect_ratio = double(xdim) / double(ydim);
       double min_aspect_ratio = aspect_ratio_median 
-         - 4 * aspect_ratio_quartile_width;
+         - 3.5 * aspect_ratio_quartile_width;
       double max_aspect_ratio = aspect_ratio_median 
-         + 4 * aspect_ratio_quartile_width;
+         + 3.5 * aspect_ratio_quartile_width;
 
       if(aspect_ratio < min_aspect_ratio ||
          aspect_ratio > max_aspect_ratio)

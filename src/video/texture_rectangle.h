@@ -706,7 +706,8 @@ inline unsigned int texture_rectangle::get_next_height() const
 
 inline unsigned int texture_rectangle::getNchannels() const
 {
-   return m_Nchannels;
+   return image_refptr->getPixelSizeInBits() / 8;
+//    return m_Nchannels;
 }
 
 inline void texture_rectangle::set_first_imagenumber(int i)
