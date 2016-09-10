@@ -56,6 +56,11 @@ int main(int argc, char *argv[])
    string resized_chips_subdir=images_subdir+"resized_chips/";
    filefunc::dircreate(resized_chips_subdir);
 
+//   bool check_aspect_ratios_flag = true;
+   bool check_aspect_ratios_flag = false;
+   cout << "check_aspect_ratios_flag = " << check_aspect_ratios_flag
+        << endl;
+
    char training_char;
    cout << "Enter 't' if input image chips are to be used for training:"
         << endl;
@@ -77,9 +82,6 @@ int main(int argc, char *argv[])
    int n_images = istop - istart;
    cout << "n_images within current working subdir = " << n_images << endl;
    
-   cout << "Enter istart:" << endl;
-   cin >> istart;
-
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_fraction(i,1000,n_images);
@@ -123,8 +125,9 @@ int main(int argc, char *argv[])
       double max_aspect_ratio = aspect_ratio_median 
          + 3.5 * aspect_ratio_quartile_width;
 
-      if(aspect_ratio < min_aspect_ratio ||
-         aspect_ratio > max_aspect_ratio)
+      if(check_aspect_ratios_flag && (
+            aspect_ratio < min_aspect_ratio ||
+            aspect_ratio > max_aspect_ratio) )
       {
          n_bad_aspect_ratios++;
          continue;

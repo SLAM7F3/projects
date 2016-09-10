@@ -15,7 +15,7 @@
 //			./augment_adience_chips
 
 // ========================================================================
-// Last updated on 7/31/16
+// Last updated on 7/31/16; 9/10/16
 // ========================================================================
 
 #include <fstream>
@@ -50,7 +50,7 @@ int main( int argc, char** argv )
    std::set_new_handler(sysfunc::out_of_memory);
 
    bool rgb2grey_flag = true;		       // default as of Jun 14
-   double rgb2grey_threshold = 0.2;            // default as of Jun 14
+   double rgb2grey_threshold = 0.3;            // default as of Sep 14
    double noise_threshold = 0.5;               // default as of Jun 14
 
    string faces_subdir = "/data/peter_stuff/imagery/faces/";
@@ -99,7 +99,8 @@ int main( int argc, char** argv )
 
       string image_filename=image_filenames[n];
       string image_basename=filefunc::getbasename(image_filename);
-      
+      string image_ID_str = stringfunc::integer_to_string(n,5);      
+
       vector<string> substrings = stringfunc::decompose_string_into_substrings(
          image_basename,"_");
       string gender_value = substrings[0];
@@ -125,12 +126,20 @@ int main( int argc, char** argv )
       int n_augmentations_per_chip = 1;
       if(classification_value == "training")
       {
-         n_augmentations_per_chip = 2;
+         n_augmentations_per_chip = 3;
       }
 
+// As of 8/14/16, we experiment with intentionally augmenting both the
+// validation and testing sets.  At inference time, we'll take some
+// sort of vote to determine an averaged class label:
+
+      else 
+      {
+         n_augmentations_per_chip = 5;
+      }
+      
       for(int a = 0; a < n_augmentations_per_chip; a++)
       {
-
          tr2_ptr->copy_RGB_values(tr_ptr);
 
          bool horiz_flipped_flag = false;
@@ -139,7 +148,7 @@ int main( int argc, char** argv )
             horiz_flipped_flag = true;
          }
          
-         if(a > 0)
+         if(a > 0 && classification_value == "training")
          {
             double delta_h = -30 + nrfunc::ran1() * 60;
             double delta_s = -0.25 + nrfunc::ran1() * 0.5;
@@ -158,7 +167,8 @@ int main( int argc, char** argv )
                delta_h, delta_s, delta_v);
          }
 
-         if(a > 0 && nrfunc::ran1() >= noise_threshold)
+         if(a > 0 && nrfunc::ran1() >= noise_threshold &&
+            classification_value == "training")
          {
             double noise_frac= 0.05 * nrfunc::ran1(); 
             double sigma = noise_frac * 255;
@@ -169,7 +179,7 @@ int main( int argc, char** argv )
          string output_subdir=output_chips_subdir;
          output_subdir += classification_value+"/"+gender_value+"/";
          string output_filename= output_subdir + 
-            gender_value+"_adience_face_"
+            gender_value+"_adience_face_"+image_ID_str+"_"
             +stringfunc::integer_to_string(a,2)+"_"
             +stringfunc::integer_to_string(face_ID++,5)+".jpg";
          
@@ -187,7 +197,14 @@ int main( int argc, char** argv )
          if(classification_value != "training")
          {
             int new_xdim = 96;
-            int new_ydim = 96;
+            int new_ydim = new_xdim;
+            Magick::Geometry newSize(new_xdim, new_ydim);
+            IM_image.zoom(newSize);
+         }
+         else
+         {
+            int new_xdim = 106 * (0.5 + 0.5 * nrfunc::ran1());
+            int new_ydim = new_xdim;
             Magick::Geometry newSize(new_xdim, new_ydim);
             IM_image.zoom(newSize);
          }
@@ -199,8 +216,14 @@ int main( int argc, char** argv )
 
          double theta = 30 * 2 * (nrfunc::ran1() - 0.5);
          videofunc::crop_rotate_image(IM_image,theta);
-         videofunc::export_IM_image(output_filename, IM_image);
 
+         if(nrfunc::ran1() > 0.33 && classification_value == "training")
+         {
+            double blur_sigma = 2.5 * nrfunc::ran1();
+            videofunc::gaussian_blur_image(IM_image, blur_sigma);
+         }
+
+         videofunc::export_IM_image(output_filename, IM_image);
       } // loop over index a labeling augmentations
          
       delete tr2_ptr;

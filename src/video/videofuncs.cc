@@ -3402,8 +3402,7 @@ namespace videofunc
       cout << "Error message = " << error.what() << endl;
       return false;
     }
-
-    cout << "Imported " << input_image_filename << endl;
+//    cout << "Imported " << input_image_filename << endl;
 
     return true;
   }

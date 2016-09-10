@@ -12,7 +12,7 @@
 //                     ./prepare_classification_inputs
 
 // ==========================================================================
-// Last updated on 8/15/16; 8/28/16; 9/7/16; 9/8/16
+// Last updated on 8/28/16; 9/7/16; 9/8/16; 9/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -66,15 +66,23 @@ int main(int argc, char *argv[])
    vector<string> training_images_subdirs;
    string faces_subdir = "/data/caffe/faces/";
    string face_chips_subdir = faces_subdir+"image_chips/";
-   string training_subdir = face_chips_subdir+"training/Sep7/";
+   string training_subdir = face_chips_subdir+"training/Sep10_106x106/";
 
    vector<string> dated_subdirs;
-   dated_subdirs.push_back("20k_female_106x106/");
-   dated_subdirs.push_back("20k_male_106x106/");
-   dated_subdirs.push_back("adience_female_106x106/");
-   dated_subdirs.push_back("adience_male_106x106/");
-   dated_subdirs.push_back("iran_female_106x106/");
-   dated_subdirs.push_back("nonface_106x106/");
+   dated_subdirs.push_back("20k_female/");
+   dated_subdirs.push_back("20k_male/");
+   dated_subdirs.push_back("adience_female/");
+   dated_subdirs.push_back("adience_male/");
+   dated_subdirs.push_back("iran_female/");
+   dated_subdirs.push_back("nonface/");
+
+// Sep 10, 2016 training imagery for gender classification:
+
+// Adience female: non-augmented = 9242   augmented = 27,726
+// Adience male: non-augmented =   7335   augmented = 22,005
+// Iran female:  non-augmented =    354   augmented =  1,062   
+// Non-face:  103,601
+
 
 //   dated_subdirs.push_back("Aug15_female_106x106_augmented/");
 //   dated_subdirs.push_back("Aug15_male_106x106_augmented/");
