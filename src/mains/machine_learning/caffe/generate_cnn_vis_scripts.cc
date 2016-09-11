@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/22/16; 8/24/16; 8/28/16; 8/31/16
+// Last updated on 8/24/16; 8/28/16; 8/31/16; 9/11/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
    else 
    {
       Facenet_flag = true;
-//      max_nodes_per_param_layer = 20;
+      max_nodes_per_param_layer = 20;
 //      max_nodes_per_param_layer = 25;
-      max_nodes_per_param_layer = 257;
+//      max_nodes_per_param_layer = 257;
    }
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;
@@ -149,6 +149,7 @@ int main(int argc, char* argv[])
            << n_layer_nodes[n] << endl;
    }
 
+   int sublayer_skip = -1;
    double init_scale = 50;
    vector<string> param_layer_names;
    if (Alexnet_flag)
@@ -212,6 +213,7 @@ int main(int argc, char* argv[])
 
 // Baseline Facenet model 2e  (4 conv layers)
 
+      sublayer_skip = 2;       
       param_layer_names.push_back("conv1");
       param_layer_names.push_back("conv2");
       param_layer_names.push_back("conv3");
@@ -223,6 +225,7 @@ int main(int argc, char* argv[])
 // Facenet model 2r  (conv3a + conv3b + conv4a + conv4b)
 
 /*
+      sublayer_skip = 6;	// Facenet model 2q, 2r
       param_layer_names.push_back("conv1");
       param_layer_names.push_back("conv2");
       param_layer_names.push_back("conv3a");
@@ -276,8 +279,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-//         max_iters = 5;
-         max_iters = 100;
+         max_iters = 5;
+//         max_iters = 100;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -285,28 +288,34 @@ int main(int argc, char* argv[])
    int node_counter = 0;
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
-      int layer_index = layer - layer_start;
+      int layer_index = (layer - layer_start) * sublayer_skip;
 
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-//         max_iters = 5;
-         max_iters = 100;
+         max_iters = 5;
+//         max_iters = 100;
       }
       
       for(int iter = 0; iter < max_iters; iter++)
       {
-//         int start_node = 0;
-         int start_node = 1; // Use to extract just male/female chips for
+         int start_node = 0;
+//         int start_node = 1; // Use to extract just male/female chips for
 //                             //  final fully connected layer from Facenet2
+         cout << "layer = " << layer
+              << " layer_index = " << layer_index
+              << " n_layer_nodes = " << n_layer_nodes[layer_index]
+              << endl;
+
          for(int node = start_node; node < n_layer_nodes[layer_index]; node++)
          {
-            outputfunc::update_progress_and_remaining_time(
-               node_counter++, 10, n_total_nodes_to_process);
-
+//            outputfunc::update_progress_and_remaining_time(
+//               node_counter++, 100, n_total_nodes_to_process);
+            
             if(node > max_nodes_per_param_layer) continue;
 
-            string orig_layer_name=param_layer_names[layer_index];
+            string orig_layer_name=
+               param_layer_names[layer_index/sublayer_skip];
             string curr_layer_name = stringfunc::find_and_replace_char(
                orig_layer_name, "/", "_");
             

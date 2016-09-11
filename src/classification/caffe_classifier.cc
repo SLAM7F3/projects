@@ -184,14 +184,12 @@ void caffe_classifier::print_network_metadata()
 // between true and false and don't obviously correlate with conv/FC
 // layers in VGG/Face01 networks...
 
-/*
    vector<string> param_names = net_->param_display_names();
    for(unsigned int p = 0; p < param_names.size(); p++)
    {
       cout << "p = " << p << " param_names[p] = " << param_names[p]
            << endl;
    }
-*/
 
    for(int b = 0; b < n_blobs; b++)
    {
@@ -217,23 +215,19 @@ void caffe_classifier::print_network_metadata()
 // network from all parameter blobs:
 
    int n_param_layers = net_->params().size();
-   if(n_param_layers%2 != 0) n_param_layers--;  // e.g. ResNet-50
-   cout << "Number of layers containing weights and biases = " 
-        << n_param_layers/2 << endl;
+//   if(n_param_layers%2 != 0) n_param_layers--;  // e.g. ResNet-50
+   cout << "Number of layers containing calculated parameters = " 
+        << n_param_layers << endl;
+//        << n_param_layers/2 << endl;
 
-   int n_total_weights = 0;
-   int n_total_biases = 0;
+   int n_total_params = 0;
    for(int p = 0; p < n_param_layers; p++)
    {
       const shared_ptr<const caffe::Blob<float> > param_blob =
          net_->params().at(p);
-      if(p%2 == 0)
+      if(param_blob->num_axes() > 1)
       {
-         n_total_weights += param_blob->count();
-      }
-      else
-      {
-         n_total_biases += param_blob->count();
+         n_total_params += param_blob->count();
       }
       cout << "p = " << p 
            << " param_blob.num_axes() = " << param_blob->num_axes()
@@ -243,10 +237,9 @@ void caffe_classifier::print_network_metadata()
 
    cout << endl;
    cout << "--------------------------------------------" << endl;
-   cout << "n_total_weights = " << n_total_weights
-        << " n_total_biases = " << n_total_biases << endl;
+   cout << "n_total_params = " << n_total_params
+        << endl;
    cout << "--------------------------------------------" << endl;
-
 
    int global_weight_node_counter = 0;
 
@@ -258,23 +251,21 @@ void caffe_classifier::print_network_metadata()
 // Compute distribution statistics for trained weights and biases
 // within each layer containing parameters:
 
-   for(int p = 0; p < n_param_layers; p += 2)
+   for(int p = 0; p < n_param_layers; p++)
    {
-      cout << "Parameter layer p = " << p/2 << endl;
+      cout << "Parameter layer p = " << p << endl;
       
-      const shared_ptr<const caffe::Blob<float> > weights_blob =
+      const shared_ptr<const caffe::Blob<float> > params_blob =
          net_->params().at(p);
-      const shared_ptr<const caffe::Blob<float> > biases_blob =
-         net_->params().at(p+1);
 
-      n_param_layer_nodes.push_back(weights_blob->shape(0));
+      n_param_layer_nodes.push_back(params_blob->shape(0));
 //      cout << "n_param_layer_nodes = "
 //           << n_param_layer_nodes.back() << endl;
 
       int init_global_weight_node = global_weight_node_counter;
       for(int w = 0; w < n_param_layer_nodes.back(); w++)
       {
-         DUPLE duple(p/2 + 1, w); // layer 0 holds input image
+         DUPLE duple(p + 1, w); // layer 0 holds input image
          global_weight_node_id_map[duple] = global_weight_node_counter++;
       }
       int final_global_weight_node = global_weight_node_counter - 1;
@@ -283,36 +274,24 @@ void caffe_classifier::print_network_metadata()
 //      cout << "  Final global weight node ID = " << final_global_weight_node
 //           << endl;
 
-      const float *weights_data = weights_blob->cpu_data();
-      const float *biases_data = biases_blob->cpu_data();
+      const float *params_data = params_blob->cpu_data();
 
-      vector<double> weights, biases;
-      for(int i = 0; i < weights_blob->count(); i++)
+      vector<double> params;
+      for(int i = 0; i < params_blob->count(); i++)
       {
-         weights.push_back(weights_data[i]);
-      }
-      for(int i = 0; i < biases_blob->count(); i++)
-      {
-         biases.push_back(biases_data[i]);
+         params.push_back(params_data[i]);
       }
       
-      double w_mu, w_sigma, b_mu, b_sigma;
-      mathfunc::mean_and_std_dev(weights, w_mu, w_sigma);
-      mathfunc::mean_and_std_dev(biases, b_mu, b_sigma);
-      double w_median, w_quartile_width, b_median, b_quartile_width;
+      double params_mu, params_sigma;
+      mathfunc::mean_and_std_dev(params, params_mu, params_sigma);
+      double params_median, params_quartile_width;
       mathfunc::median_value_and_quartile_width(
-         weights, w_median, w_quartile_width);
-      mathfunc::median_value_and_quartile_width(
-         biases, b_median, b_quartile_width);
+         params, params_median, params_quartile_width);
 
-      cout << "  Weights:  mu = " << w_mu << " sigma = " << w_sigma 
+      cout << "  Params:  mu = " << params_mu << " sigma = " << params_sigma 
 //           << "   median = " << w_median << " quartile_width = "
 //           << w_quartile_width 
            << endl;
-      cout << "  Biases:  mu = " << b_mu << " sigma = " << b_sigma 
-//           << "   median = " << b_median << " quartile_width = "
-//           << b_quartile_width 
-           << endl << endl;
 
    } // loop over index p labeling parameter layers
 
@@ -387,7 +366,7 @@ void caffe_classifier::print_network_metadata()
 */
 
    cout << "..........................................." << endl;
-//    outputfunc::enter_continue_char();
+//   outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------

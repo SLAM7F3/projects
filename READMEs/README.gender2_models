@@ -85,6 +85,175 @@ Training started on titan 3 on Sep 10 around 5 pm
   /data/caffe/faces/trained_models/Sep10_2r_T1/train_iter_182000.caffemodel
   caffe validation accuracy asymptotes to 0.919; very little overfitting
 
+n_layers = 47
+
+Layer l = 0 layer_name = input
+Layer l = 1 layer_name = conv1      1
+Layer l = 2 layer_name = bn1        2
+Layer l = 3 layer_name = scale1
+Layer l = 4 layer_name = relu1      1
+Layer l = 5 layer_name = drop1
+Layer l = 6 layer_name = maxpool1
+Layer l = 7 layer_name = conv2      1
+Layer l = 8 layer_name = bn2        2
+Layer l = 9 layer_name = scale2
+Layer l = 10 layer_name = relu2
+Layer l = 11 layer_name = drop2
+Layer l = 12 layer_name = maxpool2
+Layer l = 13 layer_name = conv3a
+Layer l = 14 layer_name = bn3a
+Layer l = 15 layer_name = scale3a
+Layer l = 16 layer_name = relu3a
+Layer l = 17 layer_name = drop3a
+Layer l = 18 layer_name = conv3b
+Layer l = 19 layer_name = bn3b
+Layer l = 20 layer_name = scale3b
+Layer l = 21 layer_name = relu3b
+Layer l = 22 layer_name = drop3b
+Layer l = 23 layer_name = maxpool3
+Layer l = 24 layer_name = conv4a
+Layer l = 25 layer_name = bn4a
+Layer l = 26 layer_name = scale4a
+Layer l = 27 layer_name = relu4a
+Layer l = 28 layer_name = drop4a
+Layer l = 29 layer_name = conv4b
+Layer l = 30 layer_name = bn4b
+Layer l = 31 layer_name = scale4b
+Layer l = 32 layer_name = relu4b
+Layer l = 33 layer_name = drop4b
+Layer l = 34 layer_name = fc5
+Layer l = 35 layer_name = bn5
+Layer l = 36 layer_name = scale5
+Layer l = 37 layer_name = relu5
+Layer l = 38 layer_name = drop5
+Layer l = 39 layer_name = fc6
+Layer l = 40 layer_name = bn6
+Layer l = 41 layer_name = scale6
+Layer l = 42 layer_name = relu6
+Layer l = 43 layer_name = drop6
+Layer l = 44 layer_name = fc7_faces
+Layer l = 45 layer_name = prob
+Layer l = 46 layer_name = output
+
+
+model_2r
+
+Number of layers containing calculated parameters = 49
+n_total_weights = 11,616,544
+
+p = 0 param_blob.num_axes() = 4 param_blob.shape_string() = 96 3 3 3 (2592)
+p = 1 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 2 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 3 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 4 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 5 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 6 param_blob.num_axes() = 4 param_blob.shape_string() = 192 96 3 3 (165888)
+p = 7 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 8 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 9 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 10 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 11 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 12 param_blob.num_axes() = 4 param_blob.shape_string() = 224 192 3 3 (387072)
+p = 13 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 14 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 15 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 16 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 17 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 18 param_blob.num_axes() = 4 param_blob.shape_string() = 224 224 3 3 (451584)
+p = 19 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 20 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 21 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 22 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 23 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 24 param_blob.num_axes() = 4 param_blob.shape_string() = 256 224 3 3 (516096)
+p = 25 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 26 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 27 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 28 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 29 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 30 param_blob.num_axes() = 4 param_blob.shape_string() = 256 256 3 3 (589824)
+p = 31 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 32 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 33 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 34 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 35 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 36 param_blob.num_axes() = 2 param_blob.shape_string() = 256 36864 (9437184)
+p = 37 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 38 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 39 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 40 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 41 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 42 param_blob.num_axes() = 2 param_blob.shape_string() = 256 256 (65536)
+p = 43 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 44 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 45 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 46 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 47 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 48 param_blob.num_axes() = 2 param_blob.shape_string() = 3 256 (768)
+
+n = 0 n_layer_nodes = 96		input --> conv1
+n = 1 n_layer_nodes = 96
+n = 2 n_layer_nodes = 96
+n = 3 n_layer_nodes = 1
+n = 4 n_layer_nodes = 96
+n = 5 n_layer_nodes = 96
+
+n = 6 n_layer_nodes = 192		conv1 --> conv2
+n = 7 n_layer_nodes = 192
+n = 8 n_layer_nodes = 192
+n = 9 n_layer_nodes = 1
+n = 10 n_layer_nodes = 192
+n = 11 n_layer_nodes = 192
+
+n = 12 n_layer_nodes = 224		conv2 --> conv3a
+n = 13 n_layer_nodes = 224
+n = 14 n_layer_nodes = 224
+n = 15 n_layer_nodes = 1
+n = 16 n_layer_nodes = 224
+n = 17 n_layer_nodes = 224
+
+n = 18 n_layer_nodes = 224		conv3a --> conv3b
+n = 19 n_layer_nodes = 224
+n = 20 n_layer_nodes = 224
+n = 21 n_layer_nodes = 1
+n = 22 n_layer_nodes = 224
+n = 23 n_layer_nodes = 224
+
+n = 24 n_layer_nodes = 256		conv3b --> conv4a
+n = 25 n_layer_nodes = 256
+n = 26 n_layer_nodes = 256
+n = 27 n_layer_nodes = 1
+n = 28 n_layer_nodes = 256
+n = 29 n_layer_nodes = 256
+
+n = 30 n_layer_nodes = 256		conv4a --> conv4b
+n = 31 n_layer_nodes = 256
+n = 32 n_layer_nodes = 256
+n = 33 n_layer_nodes = 1
+n = 34 n_layer_nodes = 256
+n = 35 n_layer_nodes = 256
+
+n = 36 n_layer_nodes = 256             conv4b --> fc5
+n = 37 n_layer_nodes = 256
+n = 38 n_layer_nodes = 256
+n = 39 n_layer_nodes = 1
+n = 40 n_layer_nodes = 256
+n = 41 n_layer_nodes = 256
+
+n = 42 n_layer_nodes = 256            fc5 --> fc6
+n = 43 n_layer_nodes = 256
+n = 44 n_layer_nodes = 256
+n = 45 n_layer_nodes = 1
+n = 46 n_layer_nodes = 256
+n = 47 n_layer_nodes = 256
+
+n = 48 n_layer_nodes = 3	     fc6 --> fc7_faces
+
+
+
+
+
+
 frac_correct = 0.881681 frac_unsure = 0.00960042 frac_incorrect = 0.108718
 
 frac_nonface_correct = 0.996212
