@@ -8,7 +8,7 @@
 //			   training_performance
 
 // ==========================================================================
-// Last updated on 8/8/16; 8/15/16; 8/16/16; 8/28/16
+// Last updated on 8/15/16; 8/16/16; 8/28/16; 9/11/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -49,14 +49,10 @@ int main(int argc, char* argv[])
 {
    cout.precision(8);
 
-   int n_training_images_per_epoch = 359992;
+   int n_training_images_per_epoch = 386925;
+//   int n_training_images_per_epoch = 359992;
 //   int n_training_images_per_epoch = 260788;  
 //    int n_training_images_per_epoch = 184440;  
-//    int n_training_images_per_epoch = 37500;  
-//    int n_training_images_per_epoch = 41821;  
-                      // O(43K) unaugmented face gender images 
-//   int n_training_images_per_epoch = 151268;   
-                      // O(170K) augmented gender images
 
 //   cout << "Enter number of training images per epoch (e.g. 2000 for mini, 20000 for full)"
 //	<< endl;
@@ -83,17 +79,13 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
+      "Sep10_2r_T3/";
+//      "Sep10_2e_T1/";
 //       "Sep8_2r_T1/";
-      "Sep8_2q_T3/";
+//      "Sep8_2q_T3/";
 //       "Sep8_2e_T1/";
 //       "Sep7_2e_T3/";
 //       "Sep7_2e_T1/";
-//       "Aug31_2q_T1/";
- //    "Aug31_2p_T3/";
-        //   "Aug31_2n_T1/";
-//       "Aug30_2l_T3/";
-//      "Aug30_2k_T1/";
-
 
 
    string log_filename=dated_subdir+"caffe.bin.INFO";

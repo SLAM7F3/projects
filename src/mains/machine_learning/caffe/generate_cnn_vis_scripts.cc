@@ -212,16 +212,17 @@ int main(int argc, char* argv[])
 
 // Baseline Facenet model 2e  (4 conv layers)
 
-//      param_layer_names.push_back("conv1");
-//      param_layer_names.push_back("conv2");
-//      param_layer_names.push_back("conv3");
-//      param_layer_names.push_back("conv4");
-//      param_layer_names.push_back("fc5");
-//      param_layer_names.push_back("fc6");
-//      param_layer_names.push_back("fc7_faces");
+      param_layer_names.push_back("conv1");
+      param_layer_names.push_back("conv2");
+      param_layer_names.push_back("conv3");
+      param_layer_names.push_back("conv4");
+      param_layer_names.push_back("fc5");
+      param_layer_names.push_back("fc6");
+      param_layer_names.push_back("fc7_faces");
 
 // Facenet model 2r  (conv3a + conv3b + conv4a + conv4b)
 
+/*
       param_layer_names.push_back("conv1");
       param_layer_names.push_back("conv2");
       param_layer_names.push_back("conv3a");
@@ -231,6 +232,7 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
+*/
 
 /*
 // Facenet1:
@@ -274,8 +276,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 30;
+//         max_iters = 5;
+         max_iters = 100;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -288,13 +290,16 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 30;
+//         max_iters = 5;
+         max_iters = 100;
       }
       
       for(int iter = 0; iter < max_iters; iter++)
       {
-         for(int node = 0; node < n_layer_nodes[layer_index]; node++)
+//         int start_node = 0;
+         int start_node = 1; // Use to extract just male/female chips for
+//                             //  final fully connected layer from Facenet2
+         for(int node = start_node; node < n_layer_nodes[layer_index]; node++)
          {
             outputfunc::update_progress_and_remaining_time(
                node_counter++, 10, n_total_nodes_to_process);

@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/16/16; 8/28/16; 9/9/16; 9/10/16
+// Last updated on 8/28/16; 9/9/16; 9/10/16; 9/11/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -73,8 +73,8 @@ int main(int argc, char** argv)
 
    min_male_score_threshold = 0.52;
    max_male_score_threshold = 0.52;
-   min_female_score_threshold = 0.58;
-   max_female_score_threshold = 0.58;
+   min_female_score_threshold = 0.52;
+   max_female_score_threshold = 0.52;
 
 //   incorrect_weight_frac = 0.50;
 //   incorrect_weight_frac = 0.6;
@@ -134,17 +134,14 @@ int main(int argc, char** argv)
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
 
-// Mean RGB values derived from O(360K) 96x96 training face image chips
+// Mean RGB values derived from O(386K) 96x96 training face image chips
 
-   double Bmean = 89.7;   // Minimal black padding
-   double Gmean = 99.0;   // Minimal black padding
-   double Rmean = 114.7;  // Minimal black padding
-
-//   double Bmean = 38.5;
-//   double Gmean = 41.9;
-//   double Rmean = 49.0;
+   double Bmean = 89.0;   // Minimal black padding with cleaned test chips
+   double Gmean = 96.6;   // Minimal black padding with cleaned test chips
+   double Rmean = 111.6;  // Minimal black padding with cleaned test chips
 
 // Imagenet mean RGB values:
+
 //   double Bmean = 104.008;
 //   double Gmean = 116.669;
 //   double Rmean = 122.675;

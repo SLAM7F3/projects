@@ -20,7 +20,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/26/16; 9/5/16; 9/7/16; 9/8/16
+// Last updated on 9/5/16; 9/7/16; 9/8/16; 9/11/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -103,17 +103,12 @@ int main(int argc, char** argv)
 //   blob_names.push_back("fc7_faces");
    unsigned int n_layers = blob_names.size();
 
-// Following RGB mean values are appropriate for Facenet 2e only !!!
+// Mean RGB values derived from O(386K) 96x96 training face image chips
 
-   double Bmean = 38.5;
-   double Gmean = 41.9;
-   double Rmean = 49.0;
+   double Bmean = 89.0;   // Minimal black padding with cleaned test chips
+   double Gmean = 96.6;   // Minimal black padding with cleaned test chips
+   double Rmean = 111.6;  // Minimal black padding with cleaned test chips
 
-// Following RGB mean values are appropriate for Facenet 1 only !!!
-
-//   double Bmean = 104.008;
-//   double Gmean = 116.669;
-//   double Rmean = 122.675;
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("non");

@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
    string resized_chips_subdir=images_subdir+"resized_chips/";
    filefunc::dircreate(resized_chips_subdir);
 
-   bool check_aspect_ratios_flag = true;
-//   bool check_aspect_ratios_flag = false;
+   bool check_aspect_ratios_flag = true; // 20K male + 20K female
+//   bool check_aspect_ratios_flag = false; // iran, adience
    cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
    cout << "check_aspect_ratios_flag = " << check_aspect_ratios_flag
         << endl;

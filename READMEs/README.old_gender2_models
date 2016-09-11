@@ -1,0 +1,890 @@
+==========================================================================
+Best gender detection models among Face02 networks
+==========================================================================
+Last updated on 9/8/16; 9/9/16; 9/10/16; 9/11/16
+==========================================================================
+
+*.  Mon Aug 29 , Titan 1, morning, Facenet model 2e, 4 conv layers
+
+Training started on Facenet model 2e around 6:20 am
+
+  /data/caffe/faces/trained_models/Aug29_2e_T1/train_iter_262000.caffemodel
+  caffe validation accuracy asymptotes to 0.882 with no overfitting
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 256
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3
+Param layer p = 3 is named conv4
+Param layer p = 4 is named fc5
+Param layer p = 5 is named fc6
+Param layer p = 6 is named fc7_faces
+
+n_total_weights = 10575136 n_total_biases = 1283
+
+Parameter layer p = 0
+  Weights:  mu = -0.00171576 sigma = 0.067076
+  Biases:  mu = -0.00628992 sigma = 0.042503
+
+Parameter layer p = 1
+  Weights:  mu = -0.00113675 sigma = 0.00991092
+  Biases:  mu = 0.000333949 sigma = 0.0226812
+
+Parameter layer p = 2
+  Weights:  mu = -0.00111227 sigma = 0.00851326
+  Biases:  mu = 0.00495021 sigma = 0.0359106
+
+Parameter layer p = 3
+  Weights:  mu = -0.000820066 sigma = 0.0070024
+  Biases:  mu = 0.0320287 sigma = 0.0568744
+
+Parameter layer p = 4
+  Weights:  mu = -3.30762e-05 sigma = 0.00310086
+  Biases:  mu = 0.0164281 sigma = 0.0212823
+
+Parameter layer p = 5
+  Weights:  mu = 0.00088967 sigma = 0.0090267
+  Biases:  mu = 0.107347 sigma = 0.0506361
+
+Parameter layer p = 6
+  Weights:  mu = -0.00060278 sigma = 0.0820898
+  Biases:  mu = -1.5609e-06 sigma = 0.268786
+
+New mean RGB values + new std for 0th and 6th layers compared to Facenet01.
+
+frac_correct = 0.833481 frac_unsure = 0.0591873 frac_incorrect = 0.107332
+
+frac_nonface_correct = 0.980411
+frac_nonface_incorrect = 0.0195886
+
+frac_male_correct = 0.857614
+frac_male_unsure = 0.0373832
+frac_male_incorrect = 0.105003
+
+frac_female_correct = 0.718602
+frac_female_unsure = 0.118483
+frac_female_incorrect = 0.162915
+
+Confusion matrix:
+
+1008	14	7	0	
+39	1560	152	68	
+27	248	1213	200	
+0	0	0	0	
+
+These results are comparable to our best results from facenet_01 (as they
+should be).
+
+-------------------------------------------------------------------
+*.  Weds, Sep 7 , Titan 1, evening, Facenet model 2e, 4 conv layers
+
+New set of O(360K) training image chips which should have much less black
+content than in the past.  
+
+Training started on Facenet model 2e around 5:20 pm
+
+  /data/caffe/faces/trained_models/Sep7_2e_T1/train_iter_224000.caffemodel
+  caffe validation accuracy approaches to 0.880 with perhaps some small overfitting
+
+frac_correct = 0.829139 frac_unsure = 0.0540209 frac_incorrect = 0.116841
+
+frac_nonface_correct = 0.998102
+frac_nonface_incorrect = 0.00189753
+
+frac_male_correct = 0.813469
+frac_male_unsure = 0.0432924
+frac_male_incorrect = 0.143239
+
+frac_female_correct = 0.753313
+frac_female_unsure = 0.0932722
+frac_female_incorrect = 0.153415
+
+Confusion matrix:
+
+1055	3	1	0	
+112	1522	156	81	
+82	219	1478	183	
+0	0	0	0	
+
+-------------------------------------------------------------------
+*.  Weds, Sep 7 , Titan 3, evening, Facenet model 2e, 4 conv layers
+
+New set of O(360K) training image chips which should have much less black
+padding than in the past.  Manually reset standard deviations for weight
+fillers based upon previous Model 2e trained weights.
+  
+Training started on Facenet model 2e around 5:20 pm
+
+/data/caffe/faces/trained_models/Sep7_2e_T3/train_iter_262000.caffemodel
+  caffe validation accuracy approaches to 0.883 with some small overfitting
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 256
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3
+Param layer p = 3 is named conv4
+Param layer p = 4 is named fc5
+Param layer p = 5 is named fc6
+Param layer p = 6 is named fc7_faces
+
+n_total_weights = 10575136 n_total_biases = 1283
+
+Parameter layer p = 0
+  Weights:  mu = -0.00251388 sigma = 0.0700757
+  Biases:  mu = 0.00731882 sigma = 0.0514877
+
+Parameter layer p = 1
+  Weights:  mu = -0.00118952 sigma = 0.00994184
+  Biases:  mu = 0.00508627 sigma = 0.0335492
+
+Parameter layer p = 2
+  Weights:  mu = -0.00125093 sigma = 0.00825294
+  Biases:  mu = 0.00171135 sigma = 0.0552745
+
+Parameter layer p = 3
+  Weights:  mu = -0.0011131 sigma = 0.00794445
+  Biases:  mu = 0.0693129 sigma = 0.134697
+
+Parameter layer p = 4
+  Weights:  mu = -9.92061e-05 sigma = 0.00254782
+  Biases:  mu = 0.0314658 sigma = 0.0511961
+
+Parameter layer p = 5
+  Weights:  mu = 0.000334909 sigma = 0.0107665
+  Biases:  mu = 0.114149 sigma = 0.038823
+
+Parameter layer p = 6
+  Weights:  mu = 0.000194186 sigma = 0.0956365
+  Biases:  mu = -1.25666e-06 sigma = 0.182269
+
+4892 test images
+
+frac_correct = 0.845068 frac_unsure = 0.0409333 frac_incorrect = 0.113999
+
+frac_nonface_correct = 0.995252
+frac_nonface_incorrect = 0.00474834
+
+frac_male_correct = 0.816141
+frac_male_unsure = 0.0379476
+frac_male_incorrect = 0.145911
+
+frac_female_correct = 0.792049
+frac_female_unsure = 0.0657492
+frac_female_incorrect = 0.142202
+
+Confusion matrix:
+
+1050	7	2	0	
+111	1527	162	71	
+80	199	1554	129	
+0	0	0	0	
+
+-------------------------------------------------------------------
+*.  Thurs, Sep 8 , Titan 1, morning, Facenet model 2e, 4 conv layers
+
+New set of O(360K) training image chips which should have much less black
+padding than in the past.  Manually reset standard deviations for weight
+fillers based upon previous Model 2e trained weights.  Also using newly
+updated mean RGB values.
+  
+Training started on Facenet model 2e around 7:15 am
+
+
+/data/caffe/faces/trained_models/Sep8_2e_T1/train_iter_272000.caffemodel
+  caffe validation accuracy approaches to 0.880 with some small overfitting
+
+n_total_weights = 10575136 n_total_biases = 1283
+
+Parameter layer p = 0
+  Weights:  mu = 0.000755608 sigma = 0.0696508
+  Biases:  mu = 0.0109696 sigma = 0.0284092
+
+Parameter layer p = 1
+  Weights:  mu = -0.00138339 sigma = 0.00979403
+  Biases:  mu = 0.00274219 sigma = 0.0286758
+
+Parameter layer p = 2
+  Weights:  mu = -0.00113574 sigma = 0.00820436
+  Biases:  mu = -0.0033433 sigma = 0.0540122
+
+Parameter layer p = 3
+  Weights:  mu = -0.00115964 sigma = 0.00803753
+  Biases:  mu = 0.0411079 sigma = 0.141454
+
+Parameter layer p = 4
+  Weights:  mu = -9.45519e-05 sigma = 0.00253377
+  Biases:  mu = 0.0119374 sigma = 0.0679622
+
+Parameter layer p = 5
+  Weights:  mu = 0.000122473 sigma = 0.0107388
+  Biases:  mu = 0.115618 sigma = 0.0479661
+
+Parameter layer p = 6
+  Weights:  mu = 0.0010609 sigma = 0.0945904
+  Biases:  mu = -5.17815e-07 sigma = 0.169602
+
+frac_correct = 0.832617 frac_unsure = 0.0503376 frac_incorrect = 0.117045
+
+frac_nonface_correct = 0.999051
+frac_nonface_incorrect = 0.000948767
+
+frac_male_correct = 0.811865
+frac_male_unsure = 0.0400855
+frac_male_incorrect = 0.148049
+
+frac_female_correct = 0.762997
+frac_female_unsure = 0.087156
+frac_female_incorrect = 0.149847
+
+Confusion matrix:
+
+1054	5	0	0	
+121	1519	156	75	
+88	206	1497	171	
+0	0	0	0	
+
+These results are somewhat WORSE than those from Weds, Sep 7 , Titan 3,
+evening, Facenet model 2e, 4 conv layers. But here we used better values
+for RGB mean values !!!
+
+As of Friday, Sep 9, we impose reasonable constraints on the minimum pixel
+size for training/testing chips (px >= 16) as well as image chip aspect
+ratio.  When these constraints are in place, gender classification results
+from Facenet model 2e becomes:
+
+
+frac_correct = 0.846071 frac_unsure = 0.0465865 frac_incorrect = 0.107342
+
+frac_nonface_correct = 0.999051
+frac_nonface_incorrect = 0.000948767
+
+frac_male_correct = 0.823224
+frac_male_unsure = 0.0363951
+frac_male_incorrect = 0.140381
+
+frac_female_correct = 0.7811
+frac_female_unsure = 0.082221
+frac_female_incorrect = 0.136679
+
+Confusion matrix:
+
+1054	5	0	0	
+89	1425	154	63	
+64	192	1463	154	
+0	0	0	0	
+
+As of Friday, Sep 9 we observe randomness in the confusion matrix which
+makes no sense !!!
+
+-------------------------------------------------------------------
+*.  Sat, Sep 10 , Titan 1, afternoon, Facenet model 2e, 4 conv layers
+
+New set of O(386K) training image chips which have much less black padding
+than in the past.  Manually reset standard deviations for weight fillers
+based upon previous Model 2e trained weights.  Using newly updated mean RGB
+values.  Training set has been significantly cleaned to remove spurious
+classification labels.
+  
+Training started on Facenet model 2e around 5 pm.
+
+/data/caffe/faces/trained_models/Sep10_2e_T1/train_iter_300000.caffemodel 
+  caffe validation accuracy asymptotes to around 0.894 with some small
+  but definite overfitting
+
+n_total_weights = 10,575,136 n_total_biases = 1283
+
+Parameter layer p = 0
+  Weights:  mu = 0.000414118 sigma = 0.0693051
+  Biases:  mu = 0.0157053 sigma = 0.0325258
+
+Parameter layer p = 1
+  Weights:  mu = -0.00128091 sigma = 0.00962133
+  Biases:  mu = 0.00387631 sigma = 0.0256235
+
+Parameter layer p = 2
+  Weights:  mu = -0.00115404 sigma = 0.00813202
+  Biases:  mu = -0.00536314 sigma = 0.0515413
+
+Parameter layer p = 3
+  Weights:  mu = -0.00110636 sigma = 0.00793817
+  Biases:  mu = 0.0494581 sigma = 0.143864
+
+Parameter layer p = 4
+  Weights:  mu = -9.88699e-05 sigma = 0.00257214
+  Biases:  mu = 0.015505 sigma = 0.0615438
+
+Parameter layer p = 5
+  Weights:  mu = 0.000194972 sigma = 0.0107389
+  Biases:  mu = 0.114255 sigma = 0.0513329
+
+Parameter layer p = 6
+  Weights:  mu = 2.32585e-05 sigma = 0.0936726
+  Biases:  mu = -7.13665e-07 sigma = 0.0731815
+
+frac_correct = 0.857106 frac_unsure = 0.0235996 frac_incorrect = 0.119295
+
+frac_nonface_correct = 0.999055
+frac_nonface_incorrect = 0.00094518
+
+frac_male_correct = 0.81087
+frac_male_unsure = 0.0289855
+frac_male_incorrect = 0.160145
+
+frac_female_correct = 0.796192
+frac_female_unsure = 0.0359661
+frac_female_incorrect = 0.167842
+
+Confusion matrix:
+
+1058	1	0	0	
+125	1119	96	40	
+91	147	1129	51	
+0	0	0	0	
+
+
+male_score_threshold = 0.52 female_score_threshold = 0.52
+
+
+We still observe some variability in confusion matrix results!!!
+
+
+-------------------------------------------------------------------
+*.  Tues, Aug 30, Titan 3, Facenet model 2h, 5th conv layer after final
+max pool
+Training started on Titan 3 at 6:20 am.  
+
+/data/caffe/faces/trained_models/Aug29_2h_T3/train_iter_294000.caffemodel 
+  caffe validation accuracy asymptotes to around 0.895 with perhaps 
+  slight overfitting
+
+  n_total_weights = 11,164,960 n_total_biases = 1539
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 256
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
+n = 7 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3
+Param layer p = 3 is named conv4a
+Param layer p = 4 is named conv4b
+Param layer p = 5 is named fc5
+Param layer p = 6 is named fc6
+Param layer p = 7 is named fc7_faces
+
+Parameter layer p = 0
+  Weights:  mu = -0.00174696 sigma = 0.0683134
+  Biases:  mu = -0.00189756 sigma = 0.0397123
+
+Parameter layer p = 1
+  Weights:  mu = -0.00118577 sigma = 0.00993896
+  Biases:  mu = -0.000865359 sigma = 0.0194823
+
+Parameter layer p = 2
+  Weights:  mu = -0.00120124 sigma = 0.00857981
+  Biases:  mu = 0.00485925 sigma = 0.0279415
+
+Parameter layer p = 3
+  Weights:  mu = -0.000930226 sigma = 0.00745409
+  Biases:  mu = 0.0227746 sigma = 0.0404812
+
+Parameter layer p = 4
+  Weights:  mu = -0.000525946 sigma = 0.00489332
+  Biases:  mu = 0.068664 sigma = 0.07447
+
+Parameter layer p = 5
+  Weights:  mu = 1.46273e-05 sigma = 0.00248768
+  Biases:  mu = 0.0201204 sigma = 0.0188627
+
+Parameter layer p = 6
+  Weights:  mu = 0.00170436 sigma = 0.00930591
+  Biases:  mu = 0.0926569 sigma = 0.052462
+
+Parameter layer p = 7
+  Weights:  mu = -0.00202325 sigma = 0.0887146
+  Biases:  mu = -5.7742e-07 sigma = 0.167106
+
+frac_correct = 0.848258 frac_unsure = 0.0293339 frac_incorrect = 0.122408
+
+frac_nonface_correct = 0.97371
+frac_nonface_incorrect = 0.0262902
+
+frac_male_correct = 0.842771
+frac_male_unsure = 0.0203408
+frac_male_incorrect = 0.136888
+
+frac_female_correct = 0.777844
+frac_female_unsure = 0.056872
+frac_female_incorrect = 0.165284
+
+Confusion matrix:
+
+1002	27	0	0	
+61	1533	188	37	
+33	246	1313	96	
+0	0	0	0	
+
+Visualization of maximal filter responses strongly suggests this is
+the best way to insert a 5th conv layer into the Face01 network!
+
+***************************
+As of 8/31/16, 5-conv layer model 2h yields better overall gender
+classification performance results than 4-conv layer model 2e.
+***************************
+
+-------------------------------------------------------------------
+*.  Tues Aug 30 , Titan 1, pm, Facenet model 2k, 5 conv layers, 2 before
+final max pool
+Training started on Titan 1 around 12:50 pm 
+  /data/caffe/faces/trained_models/Aug30_2k_T1/train_iter_116000.caffemodel
+  caffe validation accuracy asymptotes to 0.890 with no overfitting
+
+n_total_weights = 11,026,720 n_total_biases = 1507
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 224
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
+n = 7 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3a
+Param layer p = 3 is named conv3b
+Param layer p = 4 is named conv4
+Param layer p = 5 is named fc5
+Param layer p = 6 is named fc6
+Param layer p = 7 is named fc7_faces
+
+Parameter layer p = 0
+  Weights:  mu = -0.0019073 sigma = 0.0718577
+  Biases:  mu = -0.0031099 sigma = 0.0391092
+
+Parameter layer p = 1
+  Weights:  mu = -0.00157322 sigma = 0.0106537
+  Biases:  mu = 0.00200235 sigma = 0.0220568
+
+Parameter layer p = 2
+  Weights:  mu = -0.00109053 sigma = 0.0089871
+  Biases:  mu = 0.0128334 sigma = 0.0302954
+
+Parameter layer p = 3
+  Weights:  mu = -0.00142797 sigma = 0.00828174
+  Biases:  mu = 0.0296715 sigma = 0.0680591
+
+Parameter layer p = 4
+  Weights:  mu = -0.000591705 sigma = 0.00605763
+  Biases:  mu = 0.0546228 sigma = 0.0685322
+
+Parameter layer p = 5
+  Weights:  mu = 2.8282e-06 sigma = 0.00272661
+  Biases:  mu = 0.0242793 sigma = 0.0175113
+
+Parameter layer p = 6
+  Weights:  mu = 0.00169283 sigma = 0.0100391
+  Biases:  mu = 0.0899586 sigma = 0.0479576
+
+Parameter layer p = 7
+  Weights:  mu = -0.00137064 sigma = 0.0947755
+  Biases:  mu = -3.88517e-07 sigma = 0.1512
+
+frac_correct = 0.85119 frac_unsure = 0.0288801 frac_incorrect = 0.119929
+
+frac_nonface_correct = 0.993197
+frac_nonface_incorrect = 0.00680272
+
+frac_male_correct = 0.846619
+frac_male_unsure = 0.0241891
+frac_male_incorrect = 0.129192
+
+frac_female_correct = 0.76955
+frac_female_unsure = 0.0515403
+frac_female_incorrect = 0.17891
+
+Confusion matrix:
+
+1022	7	0	0	
+50	1540	185	44	
+28	274	1299	87	
+0	0	0	0	
+
+***************************
+As of 8/31/16, 5-conv layer model 2k is very competitive with model 2h
+***************************
+
+-------------------------------------------------------------------
+*.  Tues Aug 30 , Titan 3, pm, Facenet model 2l, 6 conv layers, 3 after
+final max pool, 3 FC layers
+Training started on Titan 3 around 1 pm
+
+  /data/caffe/faces/trained_models/Aug30_2l_T3/train_iter_154000.caffemodel
+  caffe validation accuracy asymptotes to 0.900 with no overfitting
+
+n_total_weights = 11,754,784 n_total_biases = 1795
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3
+Param layer p = 3 is named conv4a
+Param layer p = 4 is named conv4b
+Param layer p = 5 is named conv4c
+Param layer p = 6 is named fc5
+Param layer p = 7 is named fc6
+Param layer p = 8 is named fc7_faces
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 256
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
+n = 7 n_layer_nodes = 3
+
+Parameter layer p = 0
+  Weights:  mu = -0.00209242 sigma = 0.0678112
+  Biases:  mu = -0.00280178 sigma = 0.0404695
+
+Parameter layer p = 1
+  Weights:  mu = -0.00148748 sigma = 0.010059
+  Biases:  mu = -0.000521517 sigma = 0.0188167
+
+Parameter layer p = 2
+  Weights:  mu = -0.00137651 sigma = 0.0088032
+  Biases:  mu = 0.00491522 sigma = 0.0268962
+
+Parameter layer p = 3
+  Weights:  mu = -0.00105041 sigma = 0.00775448
+  Biases:  mu = 0.0180862 sigma = 0.034263
+
+Parameter layer p = 4
+  Weights:  mu = -0.000339101 sigma = 0.00456063
+  Biases:  mu = 0.0493335 sigma = 0.0530716
+
+Parameter layer p = 5
+  Weights:  mu = 2.44271e-06 sigma = 0.00384558
+  Biases:  mu = 0.038571 sigma = 0.043799
+
+Parameter layer p = 6
+  Weights:  mu = 3.72765e-05 sigma = 0.00245405
+  Biases:  mu = 0.0134576 sigma = 0.0159878
+
+Parameter layer p = 7
+  Weights:  mu = 0.00123338 sigma = 0.00878365
+  Biases:  mu = 0.0992461 sigma = 0.0760599
+
+Parameter layer p = 8
+  Weights:  mu = 0.00117658 sigma = 0.083619
+  Biases:  mu = 1.04246e-06 sigma = 0.218129
+
+
+frac_correct = 0.848291 frac_unsure = 0.031753 frac_incorrect = 0.119956
+
+frac_nonface_correct = 0.970817
+frac_nonface_incorrect = 0.0291829
+
+frac_male_correct = 0.846619
+frac_male_unsure = 0.0181418
+frac_male_incorrect = 0.135239
+
+frac_female_correct = 0.775474
+frac_female_unsure = 0.0657583
+frac_female_incorrect = 0.158768
+
+Confusion matrix:
+
+998	24	7	0	
+62	1540	184	33	
+36	232	1309	111	
+0	0	0	0	
+
+
+-------------------------------------------------------------------
+*.  Weds Aug 31 , Titan 1, am, Facenet model 2n, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers
+Reset std devs
+
+Training started on titan 1 around 6:35 am.  
+Starting to visualize all nodes' favorite responses as of Thurs Sep 1 at
+6:30 pm.
+
+  /data/caffe/faces/trained_models/Aug31_2n_T1/train_iter_264000.caffemodel
+  caffe validation accuracy around 0.907 after 73 epochs - no overfitting
+
+n_total_weights = 11,616,544 n_total_biases = 1763
+
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 192
+n = 2 n_layer_nodes = 224
+n = 3 n_layer_nodes = 224
+n = 4 n_layer_nodes = 256
+n = 5 n_layer_nodes = 256
+n = 6 n_layer_nodes = 256
+n = 7 n_layer_nodes = 256
+n = 8 n_layer_nodes = 3
+
+Param layer p = 0 is named conv1
+Param layer p = 1 is named conv2
+Param layer p = 2 is named conv3a
+Param layer p = 3 is named conv3b
+Param layer p = 4 is named conv4a
+Param layer p = 5 is named conv4b
+Param layer p = 6 is named fc5
+Param layer p = 7 is named fc6
+Param layer p = 8 is named fc7_faces
+
+Parameter layer p = 0
+  Weights:  mu = -0.00129584 sigma = 0.0702138
+  Biases:  mu = 0.0017395 sigma = 0.0328923
+
+Parameter layer p = 1
+  Weights:  mu = -0.00163784 sigma = 0.0107853
+  Biases:  mu = 0.00099391 sigma = 0.0190225
+
+Parameter layer p = 2
+  Weights:  mu = -0.00122959 sigma = 0.0093355
+  Biases:  mu = 0.0129956 sigma = 0.0265228
+
+Parameter layer p = 3
+  Weights:  mu = -0.00161565 sigma = 0.0086356
+  Biases:  mu = 0.0356192 sigma = 0.0527932
+
+Parameter layer p = 4
+  Weights:  mu = -0.000426551 sigma = 0.00556942
+  Biases:  mu = 0.0492704 sigma = 0.0492463
+
+Parameter layer p = 5
+  Weights:  mu = -0.000187955 sigma = 0.00381945
+  Biases:  mu = 0.0469677 sigma = 0.0429129
+
+Parameter layer p = 6
+  Weights:  mu = 2.05024e-06 sigma = 0.00139523
+  Biases:  mu = 0.0148494 sigma = 0.0185964
+
+Parameter layer p = 7
+  Weights:  mu = 0.00163086 sigma = 0.00927953
+  Biases:  mu = 0.0854083 sigma = 0.0442769
+
+Parameter layer p = 8
+  Weights:  mu = -0.000484976 sigma = 0.0876936
+  Biases:  mu = 4.14749e-07 sigma = 0.118642
+
+frac_correct = 0.849073 frac_unsure = 0.0348632 frac_incorrect = 0.116064
+
+frac_nonface_correct = 0.988293
+frac_nonface_incorrect = 0.0117073
+
+frac_male_correct = 0.814733  0.8444
+frac_male_unsure = 0.0269379  0.0131
+frac_male_incorrect = 0.158329  0.142
+
+frac_female_correct = 0.80154   0.787
+frac_female_unsure = 0.0645735  0.046
+frac_female_incorrect = 0.133886  0.165
+
+Confusion matrix:
+
+1013	13	3	0	
+42	1482	246	49	
+28	198	1353	109	
+0	0	0	0	
+
+-------------------------------------------------------------------
+*.  Weds Aug 31 , Titan 3, Facenet model 2o, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, leaky ReLUs
+
+Reset std devs
+Training started on titan 3 around 12:20 pm
+
+-------------------------------------------------------------------
+*.  Weds Aug 31 , Titan 3, am, Facenet model 2p, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, AVE pool rather than MAX pool
+Reset std devs
+
+Training started on titan 3 around 6:50 am
+
+  /data/caffe/faces/trained_models/Aug31_2p_T3/train_iter_90000.caffemodel
+  caffe validation accuracy around 0.885 after 25 epochs - no overfitting
+
+n_total_weights = 11,616,544 n_total_biases = 1763
+
+Parameter layer p = 0
+  Weights:  mu = -0.00146658 sigma = 0.0748373
+  Biases:  mu = -0.00178887 sigma = 0.0368978
+
+Parameter layer p = 1
+  Weights:  mu = -0.00178954 sigma = 0.0112717
+  Biases:  mu = 0.00138357 sigma = 0.0244916
+
+Parameter layer p = 2
+  Weights:  mu = -0.00147965 sigma = 0.00943635
+  Biases:  mu = 0.02708 sigma = 0.0662412
+
+Parameter layer p = 3
+  Weights:  mu = -0.000972124 sigma = 0.00679191
+  Biases:  mu = 0.0737577 sigma = 0.0632939
+
+Parameter layer p = 4
+  Weights:  mu = -0.000410599 sigma = 0.0046441
+  Biases:  mu = 0.0492251 sigma = 0.0277441
+
+Parameter layer p = 5
+  Weights:  mu = 0.000230325 sigma = 0.00379321
+  Biases:  mu = 0.0227724 sigma = 0.0214315
+
+Parameter layer p = 6
+  Weights:  mu = 9.71838e-06 sigma = 0.0013482
+  Biases:  mu = 0.00854122 sigma = 0.0199063
+
+Parameter layer p = 7
+  Weights:  mu = 0.00178928 sigma = 0.0104485
+  Biases:  mu = 0.0693665 sigma = 0.065737
+
+Parameter layer p = 8
+  Weights:  mu = 0.000210494 sigma = 0.0988193
+  Biases:  mu = -2.54313e-06 sigma = 0.843189
+
+frac_correct = 0.845186 frac_unsure = 0.0329064 frac_incorrect = 0.121908
+
+frac_nonface_correct = 0.975514
+frac_nonface_incorrect = 0.0244858
+
+frac_male_correct = 0.858164
+frac_male_unsure = 0.0203408
+frac_male_incorrect = 0.121495
+
+frac_female_correct = 0.75237
+frac_female_unsure = 0.0663507
+frac_female_incorrect = 0.18128
+
+Confusion matrix:
+
+1001	23	5	0	
+28	1561	193	37	
+19	287	1270	112	
+0	0	0	0	
+
+------------------------------------------------------------------- 
+*. Weds Aug 31 , Titan 1, Facenet model 2q, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
+layers
+
+Training started on titan 1 around 12:30 pm
+
+  /data/caffe/faces/trained_models/Aug31_2q_T1/train_iter_120000.caffemodel
+  caffe validation accuracy around 0.893
+
+
+frac male correct = 0.7449
+frac male unsure = 0.118
+frac male incorrect = 0.136
+
+frac female correct = 0.691
+frac femal unsure = 0.180
+frace female wrong = 0.127
+
+
+1009  12 8 0
+129  1355 119 216
+63 153 1167  305
+
+
+-------------------------------------------------------------------
+*.  Thurs, Sep 8 , Titan 3, morning, Facenet model 2q, 6 conv layers with BN
+
+New set of O(360K) training image chips which should have much less black
+padding than in the past.  Also using newly updated mean RGB values.
+  
+Training started on Facenet model 2q around 7:15 am
+
+/data/caffe/faces/trained_models/Sep8_2q_T3/train_iter_530000.caffemodel
+
+  caffe validation accuracy asymptotes to around 0.906 with some small but
+nontrivial overfitting
+
+frac_correct = 0.86854 frac_unsure = 0.0197298 frac_incorrect = 0.111731
+
+frac_nonface_correct = 1
+frac_nonface_incorrect = 0
+
+frac_male_correct = 0.84922
+frac_male_unsure = 0.0127094
+frac_male_incorrect = 0.13807
+
+frac_female_correct = 0.812066
+frac_female_unsure = 0.0373732
+frac_female_incorrect = 0.150561
+
+Confusion matrix:
+
+1059	0	0	0	
+83	1470	156	22	
+64	218	1521	70	
+0	0	0	0	
+
+------------------------------------------------------------------- 
+*. Thurs, Sep 8, Titan 1, Facenet model 2r, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
+layers.  Increase learning rate to 0.03 and increase learning rate step
+from 25K to 10K.
+
+Training started on titan 1 on Sep 8 around 3 pm 
+
+  /data/caffe/faces/trained_models/Sep8_2r_T1/train_iter_198000.caffemodel
+  caffe validation accuracy asymptotes to 0.905; very little overfitting
+
+frac_correct = 0.871756 frac_unsure = 0.0272357 frac_incorrect = 0.101008
+
+frac_nonface_correct = 0.994334
+frac_nonface_incorrect = 0.00566572
+
+frac_male_correct = 0.834778
+frac_male_unsure = 0.0196418
+frac_male_incorrect = 0.145581
+
+frac_female_correct = 0.836626
+frac_female_unsure = 0.049653
+frac_female_incorrect = 0.113721
+
+Confusion matrix:
+
+1053	5	1	0	
+78	1445	174	34	
+58	155	1567	93	
+0	0	0	0	
+
+***************************
+As of 9/10/16, 6 conv-layer model 2r with batch normalization yields the
+best overall gender classification performance results!
+***************************
+
+------------------------------------------------------------------- 
+*. Thurs, Sep 1, Titan 3, Facenet model 2s, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization after all
+layers.  Base learning rate = 0.003.  Decreased dropout and l2 regularization.
+from 0.001 to 0.0005
+
+
+Training started on titan 3 around 6 pm

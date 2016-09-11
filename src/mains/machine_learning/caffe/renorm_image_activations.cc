@@ -2,14 +2,15 @@
 // Program RENORM_IMAGE_ACTIVATIONS imports extremal nonzero
 // activation values for each layer output by program RAW_ACTIVATIONS.
 // (The minimum activation values are all very close to 0.)  It also
-// imports nonzero raw activation values for every Facenet node
-// calculated for each test image.  RENORM_IMAGE_ACTIVATIONS
-// effectively rescales the raw activation values to fractions ranging
-// between 0 and 1.  It then assigns hues and values based upon these
-// fractions so that fractionally large activations are colored bright
-// and hot while fractionally small activations are colored dim and
-// cold.  The renormalized activation fractions and RGB values are
-// exported to a new set of text files for each test image.
+// imports nonzero ordered activation values for every Facenet node
+// calculated for each test image by program ORDERED_ACTIVATIONS.
+// RENORM_IMAGE_ACTIVATIONS effectively rescales the ordered
+// activation values to fractions ranging between 0 and 1.  It then
+// assigns hues and values based upon these fractions so that
+// fractionally large activations are colored bright and hot while
+// fractionally small activations are colored dim and cold.  The
+// renormalized activation fractions and RGB values are exported to a
+// new set of text files for each test image.
 
 //                      ./renorm_image_activations
 
