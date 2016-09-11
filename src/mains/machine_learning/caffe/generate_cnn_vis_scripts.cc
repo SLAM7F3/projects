@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
    else 
    {
       Facenet_flag = true;
-      max_nodes_per_param_layer = 20;
+//      max_nodes_per_param_layer = 20;
 //      max_nodes_per_param_layer = 25;
-//      max_nodes_per_param_layer = 257;
+      max_nodes_per_param_layer = 257;
    }
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;

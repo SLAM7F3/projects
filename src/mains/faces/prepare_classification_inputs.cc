@@ -45,19 +45,29 @@ int main(int argc, char *argv[])
    timefunc::initialize_timeofday_clock();
    sysfunc::clearscreen();
 
-    bool compute_mean_RGB_values_flag = true;
-//   bool compute_mean_RGB_values_flag = false;
+//    bool compute_mean_RGB_values_flag = true;
+   bool compute_mean_RGB_values_flag = false;
+
+// On 9/10/16, we used this program to compute the following mean RGB
+// values for O(386K) 96x96 training face image chips which have as
+// little black border padding as possible and reasonable aspect
+// ratios:
+
+// Mean B value = 89.0424
+// Mean G value = 96.5871
+// Mean R value = 111.598
 
 // On 9/8/16, we used this program to compute the following mean RGB
 // values for O(360K) 96x96 training face image chips which have as
-// little black border as possible:
+// little black border padding as possible:
 
 // Mean B value = 89.6968
 // Mean G value = 99.0488
 // Mean R value = 114.735
 
 // On 8/28/16, we used this program to compute the following mean RGB
-// values for O(350K) 96x96 training face image chips:
+// values for O(350K) 96x96 training face image chips with significant
+// black border padding:
 
 //   Mean B value = 38.5125
 //   Mean G value = 41.9476
