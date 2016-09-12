@@ -81,13 +81,27 @@ int main(int argc, char** argv)
    EXTREMAL_ACTIVATIONS_MAP extremal_activations_map;
    EXTREMAL_ACTIVATIONS_MAP::iterator extremal_activations_iter;
 
-// Following blob names are appropriate for Facenet 2e only !!!
-
    vector<string> blob_names;
+
+/*
+// Following blob names are appropriate for Facenet 2e:
    blob_names.push_back("conv1");
    blob_names.push_back("conv2");
    blob_names.push_back("conv3");
    blob_names.push_back("conv4");
+   blob_names.push_back("fc5");
+   blob_names.push_back("fc6");
+   blob_names.push_back("fc7_faces");
+*/
+
+// Following blob names are appropriate for Facenet 2q, 2r:
+
+   blob_names.push_back("conv1");
+   blob_names.push_back("conv2");
+   blob_names.push_back("conv3a");
+   blob_names.push_back("conv3b");
+   blob_names.push_back("conv4a");
+   blob_names.push_back("conv4b");
    blob_names.push_back("fc5");
    blob_names.push_back("fc6");
    blob_names.push_back("fc7_faces");

@@ -284,8 +284,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 100;
+//         max_iters = 5;
+         max_iters = 100;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -299,8 +299,8 @@ int main(int argc, char* argv[])
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-         max_iters = 5;
-//         max_iters = 100;
+//         max_iters = 5;
+         max_iters = 100;
       }
       
       for(int iter = 0; iter < max_iters; iter++)

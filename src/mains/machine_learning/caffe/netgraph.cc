@@ -181,6 +181,7 @@ int main(int argc, char* argv[])
    else if (Facenet_flag)
    {
 
+/*
 // Facenet Model 2e:
 
       minor_layer_skip = 2;
@@ -192,11 +193,11 @@ int main(int argc, char* argv[])
       major_layer_names.push_back("fc5");
       major_layer_names.push_back("fc6");
       major_layer_names.push_back("fc7_faces");
+*/
 
+// Facenet model 2n, 2q, 2r  (conv3a + conv3b + conv4a + conv4b)
 
-// Facenet model 2q,2r  (conv3a + conv3b + conv4a + conv4b)
-
-/*
+//      minor_layer_skip = 2;	// Facenet model 2n
       minor_layer_skip = 6;	// Facenet model 2q, 2r
       major_layer_names.push_back("conv1");
       major_layer_names.push_back("conv2");
@@ -207,8 +208,6 @@ int main(int argc, char* argv[])
       major_layer_names.push_back("fc5");
       major_layer_names.push_back("fc6");
       major_layer_names.push_back("fc7_faces");
-*/
-
 
 // Facenet 1:
 
