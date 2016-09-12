@@ -1,7 +1,7 @@
 // ==========================================================================
 // caffe_classifier class member function definitions
 // ==========================================================================
-// Last modified on 8/19/16; 8/23/16; 8/29/16; 9/6/16
+// Last modified on 8/23/16; 8/29/16; 9/6/16; 9/12/16
 // ==========================================================================
 
 #include <caffe/net.hpp>
@@ -251,6 +251,7 @@ void caffe_classifier::print_network_metadata()
 // Compute distribution statistics for trained weights and biases
 // within each layer containing parameters:
 
+   cout << "n_param_layers = " << n_param_layers << endl;
    for(int p = 0; p < n_param_layers; p++)
    {
       cout << "Parameter layer p = " << p << endl;
@@ -292,7 +293,41 @@ void caffe_classifier::print_network_metadata()
 //           << "   median = " << w_median << " quartile_width = "
 //           << w_quartile_width 
            << endl;
+   } // loop over index p labeling parameter layers
 
+   cout << endl;
+   cout << "////////////////////////////////////////////////" << endl;
+   cout << endl;
+   
+   int major_weight_node_counter = 0;
+
+   // Minor layer 0 is defined to hold 3 RGB channels for input image:
+   major_weight_node_id_map[DUPLE(0,0)] = major_weight_node_counter++;
+   major_weight_node_id_map[DUPLE(0,1)] = major_weight_node_counter++;
+   major_weight_node_id_map[DUPLE(0,2)] = major_weight_node_counter++;
+
+// FAKE FAKE:  Mon Sep 12 at 7:30 am
+// hardwire pskip for model 2e for now...
+
+   int pskip = 2;
+   for(int p = 0; p < n_param_layers; p += pskip)
+   {
+      int major_layer_ID = p / pskip + 1; // Recall major layer 0 holds 
+					  //   input image
+      cout << "Parameter layer p = " << p 
+           << " major_layer_ID = " << major_layer_ID << endl;
+
+      int init_major_weight_node = major_weight_node_counter;
+      for(int w = 0; w < n_param_layer_nodes[p]; w++)
+      {
+         DUPLE duple(major_layer_ID, w); 
+         major_weight_node_id_map[duple] = major_weight_node_counter++;
+      }
+      int final_major_weight_node = major_weight_node_counter - 1;
+      cout << "  Initial major weight node ID = " << init_major_weight_node
+           << endl;
+      cout << "  Final major weight node ID = " << final_major_weight_node
+           << endl;
    } // loop over index p labeling parameter layers
 
 /*   
@@ -366,7 +401,7 @@ void caffe_classifier::print_network_metadata()
 */
 
    cout << "..........................................." << endl;
-//   outputfunc::enter_continue_char();
+//    outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
@@ -385,7 +420,7 @@ float caffe_classifier::get_weight(
    int input_node_ID, int output_node_ID, int height, int width)
 {
    const shared_ptr<const caffe::Blob<float> > weights_blob =
-      net_->params().at(2 * param_layer_index);
+      net_->params().at(param_layer_index);
 
    return weights_blob->data_at(output_node_ID, input_node_ID, height, width);
 }
@@ -438,6 +473,9 @@ void caffe_classifier::compute_weights_mu_sigma(int param_layer_index,
 }
 
 // ---------------------------------------------------------------------
+// Member function get_weight_sum() returns an integrated weight
+// summed over the height and width channels if they exist.
+
 float caffe_classifier::get_weight_sum(
    int param_layer_index, int input_node_ID, int output_node_ID)
 {
@@ -447,7 +485,7 @@ float caffe_classifier::get_weight_sum(
 //        << " output_node_ID = " << output_node_ID << endl;
    
    const shared_ptr<const caffe::Blob<float> > weights_blob =
-      net_->params().at(2 * param_layer_index);
+      net_->params().at(param_layer_index);
 
    int height = 1, width = 1;
 //   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
@@ -460,6 +498,7 @@ float caffe_classifier::get_weight_sum(
       width = weights_blob->shape(3);
    }
 
+//   cout << "height = " << height << " width = " << width << endl;
    float weight_sum = 0;
    for(int h = 0; h < height; h++)
    {
@@ -493,6 +532,30 @@ int caffe_classifier::get_global_weight_node_ID(int param_layer_index, int node_
    else
    {
       return global_weight_node_id_iter->second;
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function get_major_weight_node_ID() takes in an ID for some
+// major layer as well as an index for some node within that layer.
+// It returns the global ID for the specified weight node.
+
+int caffe_classifier::get_major_weight_node_ID(int major_layer_ID, int node_index)
+{
+   DUPLE duple(major_layer_ID, node_index);
+   NODE_ID_MAP::iterator major_weight_node_id_iter = 
+      major_weight_node_id_map.find(duple);
+   if(major_weight_node_id_iter == major_weight_node_id_map.end())
+   {
+      cout << "Error in caffe_classifier::get_major_weight_node_ID()" << endl;
+      cout << "major_layer_ID = " << major_layer_ID
+           << " node_index = " << node_index << endl;
+      outputfunc::enter_continue_char();
+      return -1;
+   }
+   else
+   {
+      return major_weight_node_id_iter->second;
    }
 }
 
@@ -1113,4 +1176,5 @@ void caffe_classifier::Preprocess(const cv::Mat& img,
 }
 
 */
+
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 8/19/16; 8/23/16; 8/29/16; 9/6/16
+// Last modified on 8/23/16; 8/29/16; 9/6/16; 9/12/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -23,7 +23,7 @@ class caffe_classifier
   public:
 
    typedef std::map<DUPLE, int, ltduple> NODE_ID_MAP;
-// independent DUPLE contains (layer ID, node ID)
+// independent DUPLE contains (minor layer index/major layer ID, node ID)
 // dependent int contains node_counter
 
 // Initialization, constructor and destructor functions:
@@ -56,6 +56,7 @@ class caffe_classifier
    float get_weight_sum(
       int param_layer_index, int input_node_ID, int output_node_ID);
    int get_global_weight_node_ID(int param_layer_index, int node_index);
+   int get_major_weight_node_ID(int major_layer_ID, int node_index);
    
    void rgb_img_to_bgr_fvec(texture_rectangle& curr_img);
    void generate_dense_map();
@@ -82,7 +83,7 @@ class caffe_classifier
    std::vector<std::string> n_param_layer_names;
 
    NODE_ID_MAP global_weight_node_id_map;
-
+   NODE_ID_MAP major_weight_node_id_map;
 
    caffe::shared_ptr<caffe::Net<float> > net_;
    cv::Size input_geometry_;

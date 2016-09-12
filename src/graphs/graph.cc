@@ -1455,7 +1455,7 @@ void graph::export_edgelist(
 
 void graph::read_nodes_layout(string layout_filename)
 {
-//   cout << "inside graph::read_nodes_layout()" << endl;
+   cout << "inside graph::read_nodes_layout()" << endl;
    if (!filefunc::fileexist(layout_filename)) return;
 
    string banner="Importing node layout information from "+layout_filename;
