@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/24/16; 8/28/16; 8/31/16; 9/11/16
+// Last updated on 8/28/16; 8/31/16; 9/11/16; 9/12/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -92,9 +92,9 @@ int main(int argc, char* argv[])
    else 
    {
       Facenet_flag = true;
-      max_nodes_per_param_layer = 20;
+//      max_nodes_per_param_layer = 20;
 //      max_nodes_per_param_layer = 25;
-//      max_nodes_per_param_layer = 257;
+      max_nodes_per_param_layer = 257;
    }
 
    cout << "caffe_model_basename = " << caffe_model_basename << endl;
@@ -105,6 +105,8 @@ int main(int argc, char* argv[])
    cout << "Facenet_flag = " << Facenet_flag << endl;
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+
+
 
    string scripts_subdir;
    if(Alexnet_flag)
@@ -213,6 +215,7 @@ int main(int argc, char* argv[])
 
 // Baseline Facenet model 2e  (4 conv layers)
 
+/*
       sublayer_skip = 2;       
       param_layer_names.push_back("conv1");
       param_layer_names.push_back("conv2");
@@ -221,11 +224,13 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
+*/
 
-// Facenet model 2r  (conv3a + conv3b + conv4a + conv4b)
+// Facenet model 2n, 2q, 2r  (conv3a + conv3b + conv4a + conv4b)
 
-/*
-      sublayer_skip = 6;	// Facenet model 2q, 2r
+      sublayer_skip = 2;	// Facenet model 2n w/o BN
+//      sublayer_skip = 6;	// Facenet models 2q, 2r w BN
+
       param_layer_names.push_back("conv1");
       param_layer_names.push_back("conv2");
       param_layer_names.push_back("conv3a");
@@ -235,7 +240,7 @@ int main(int argc, char* argv[])
       param_layer_names.push_back("fc5");
       param_layer_names.push_back("fc6");
       param_layer_names.push_back("fc7_faces");
-*/
+
 
 /*
 // Facenet1:
@@ -286,6 +291,7 @@ int main(int argc, char* argv[])
    }
    
    int node_counter = 0;
+   classifier.set_minor_layer_skip(sublayer_skip);
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
       int layer_index = (layer - layer_start) * sublayer_skip;

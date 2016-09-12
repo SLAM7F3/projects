@@ -49,6 +49,7 @@ void caffe_classifier::initialize_member_objects()
 // classification rather than semantic segmentation:
 
    segmentation_flag = false; 
+   minor_layer_skip = 2;
 }		       
 
 // ---------------------------------------------------------------------
@@ -263,13 +264,13 @@ void caffe_classifier::print_network_metadata()
 //      cout << "n_param_layer_nodes = "
 //           << n_param_layer_nodes.back() << endl;
 
-      int init_global_weight_node = global_weight_node_counter;
+//      int init_global_weight_node = global_weight_node_counter;
       for(int w = 0; w < n_param_layer_nodes.back(); w++)
       {
          DUPLE duple(p + 1, w); // layer 0 holds input image
          global_weight_node_id_map[duple] = global_weight_node_counter++;
       }
-      int final_global_weight_node = global_weight_node_counter - 1;
+//      int final_global_weight_node = global_weight_node_counter - 1;
 //      cout << "  Initial global weight node ID = " << init_global_weight_node
 //           << endl;
 //      cout << "  Final global weight node ID = " << final_global_weight_node
@@ -306,14 +307,11 @@ void caffe_classifier::print_network_metadata()
    major_weight_node_id_map[DUPLE(0,1)] = major_weight_node_counter++;
    major_weight_node_id_map[DUPLE(0,2)] = major_weight_node_counter++;
 
-// FAKE FAKE:  Mon Sep 12 at 7:30 am
-// hardwire pskip for model 2e for now...
 
-   int pskip = 2;
-   for(int p = 0; p < n_param_layers; p += pskip)
+   for(int p = 0; p < n_param_layers; p += minor_layer_skip)
    {
-      int major_layer_ID = p / pskip + 1; // Recall major layer 0 holds 
-					  //   input image
+      int major_layer_ID = p / minor_layer_skip + 1; 
+			// Recall major layer 0 holds input image
       cout << "Parameter layer p = " << p 
            << " major_layer_ID = " << major_layer_ID << endl;
 

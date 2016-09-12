@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 9/8/16; 9/9/16; 9/10/16; 9/11/16
+Last updated on 9/9/16; 9/10/16; 9/11/16; 9/12/16
 ==========================================================================
 
 *.  Sat, Sep 10 , Titan 1, afternoon, Facenet model 2e, 4 conv layers
@@ -282,3 +282,35 @@ As of 9/10/16, 6 conv-layer model 2r with batch normalization yields the
 best overall gender classification performance results!
 ***************************
 
+
+------------------------------------------------------------------- 
+*. Sun, Sep 11, Titan 1, Facenet model 2n, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, no batch normalization 
+
+Training started on titan 1 on Sep 11 around 3 pm
+
+  /data/caffe/faces/trained_models/Sep10_2r_T1/train_iter_288000.caffemodel
+  caffe validation accuracy asymptotes to 0.904; some small overfitting
+
+frac_correct = 0.863554 frac_unsure = 0.00985733 frac_incorrect = 0.126589
+
+frac_nonface_correct = 0.993377
+frac_nonface_incorrect = 0.00662252
+
+frac_male_correct = 0.813043
+frac_male_unsure = 0.0137681
+frac_male_incorrect = 0.173188
+
+frac_female_correct = 0.815938
+frac_female_unsure = 0.0133992
+frac_female_incorrect = 0.170663
+
+Confusion matrix:
+
+1052	2	5	0	
+114	1122	125	19	
+91	151	1157	19	
+0	0	0	0	
+
+
+male_score_threshold = 0.52 female_score_threshold = 0.52

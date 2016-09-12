@@ -47,6 +47,7 @@ class caffe_classifier
    unsigned int get_n_labels() const;
    std::vector<int>& get_n_param_layer_nodes();
    const std::vector<int>& get_n_param_layer_nodes() const;
+   void set_minor_layer_skip(int skip);
 
    float get_weight(
       int param_layer_index, 
@@ -77,6 +78,7 @@ class caffe_classifier
    int num_data_channels_;
    int input_img_xdim, input_img_ydim;
    int classification_result;
+   int minor_layer_skip;
    double classification_score;
    std::string test_prototxt_filename, trained_caffe_model_filename;
    std::vector<int> n_param_layer_nodes;
@@ -168,6 +170,10 @@ inline const std::vector<int>& caffe_classifier::get_n_param_layer_nodes() const
    return n_param_layer_nodes;
 }
 
+inline void caffe_classifier::set_minor_layer_skip(int skip)
+{
+   minor_layer_skip = skip;
+}
 
 
 #endif  // caffe_classifier.h

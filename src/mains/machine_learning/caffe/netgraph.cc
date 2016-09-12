@@ -274,7 +274,8 @@ int main(int argc, char* argv[])
          for(int m = m_start; m < m_stop; m++)
          {
             double numer = m + (c%2) * 0.5;
-            double gx = n_minor_layers * (0.5 + numer / max_n_nodes_per_subrow);
+            double gx = n_major_layers * 
+               (0.5 + numer / max_n_nodes_per_subrow);
             double gy_prime = gy + 0.25 * (n_layer_subrows - 1 - c);
 
             activations_iter = activations_map.find(new_global_node_ID);
@@ -295,7 +296,7 @@ int main(int argc, char* argv[])
       int m_stop = m_start + remaining_subrow_nodes;
       for(int m = m_start; m < m_stop; m++)
       {
-         double gx = n_minor_layers * 
+         double gx = n_major_layers * 
             (0.5 + double(m) / max_n_nodes_per_subrow);
 
          activations_iter = activations_map.find(new_global_node_ID);
