@@ -185,12 +185,12 @@ void caffe_classifier::print_network_metadata()
 // between true and false and don't obviously correlate with conv/FC
 // layers in VGG/Face01 networks...
 
-   vector<string> param_names = net_->param_display_names();
-   for(unsigned int p = 0; p < param_names.size(); p++)
-   {
-      cout << "p = " << p << " param_names[p] = " << param_names[p]
-           << endl;
-   }
+//   vector<string> param_names = net_->param_display_names();
+//   for(unsigned int p = 0; p < param_names.size(); p++)
+//   {
+//      cout << "p = " << p << " param_names[p] = " << param_names[p]
+//           << endl;
+//   }
 
    for(int b = 0; b < n_blobs; b++)
    {
