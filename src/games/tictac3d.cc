@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 8/28/16; 8/29/16
+// Last modified on 8/28/16; 8/29/16; 9/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -35,15 +35,18 @@ void tictac3d::allocate_member_objects()
 
 void tictac3d::initialize_member_objects()
 {
-   n_size = 4;
+   game_over = false;
    generate_all_winnable_paths();
 }		       
 
 // ---------------------------------------------------------------------
-tictac3d::tictac3d()
+tictac3d::tictac3d(int n_size, int n_zlevels)
 {
    allocate_member_objects();
    initialize_member_objects();
+
+   this->n_size = n_size;
+   this->n_zlevels = n_zlevels;
 
    reset_board_state();
 }
@@ -71,34 +74,80 @@ ostream& operator<< (ostream& outstream,const tictac3d& T)
 
 // ==========================================================================
 
-int tictac3d::get_cell_value(triple t)
+int tictac3d::get_cell_value(triple t) const
 {
    return get_cell_value(t.first, t.second, t.third);
 }
 
-int tictac3d::get_cell_value(int px, int py, int pz)
+int tictac3d::get_cell_value(int px, int py, int pz) const
 {
    int p = n_size * n_size * pz + n_size * py + px;   
    return curr_board_state.at(p);
 }
 
-void tictac3d::set_cell_value(int px, int py, int pz, int value)
+bool tictac3d::set_cell_value(int px, int py, int pz, int value)
 {
    int p = n_size * n_size * pz + n_size * py + px;   
+   if(get_cell_value(px, py, pz) != 0)
+   {
+      return false;
+   }
+
    curr_board_state[p] = value;
+   return true;
 }
+
+int tictac3d::get_n_filled_cells() const
+{
+   int n_filled_cells = 0;
+   for(int pz = 0; pz < n_zlevels; pz++)
+   {
+      for(int py = 0; py < n_size; py++)
+      {
+         for(int px = 0; px < n_size; px++)
+         {
+            if(get_cell_value(px,py,pz) != 0)
+            {
+               n_filled_cells++;
+            }
+         } // loop over px 
+      } // loop over py
+   } // loop over pz
+
+   return n_filled_cells;
+}
+
 
 void tictac3d::enter_human_move()
 {
-   int px, py, pz;
-   cout << "Enter Z level:" << endl;
-   cin >> pz;
+   int px, py, pz = 0;
+   if(n_zlevels > 1)
+   {
+      cout << "Enter Z level:" << endl;
+      cin >> pz;
+      if (pz >= n_zlevels) pz = n_zlevels - 1;
+   }
+
    cout << "Enter X: " << endl;
    cin >> px;
    cout << "Enter Y: " << endl;
    cin >> py;
    int human_value = 1;
-   set_cell_value(px,py,pz,human_value);
+   curr_score = 0;
+   if(!set_cell_value(px,py,pz,human_value))
+   {
+      curr_score = -1;
+      game_over = true;
+   }
+   else
+   {
+      int n_total_cells = n_zlevels * n_size * n_size;
+      if(get_n_filled_cells() == n_total_cells)
+      {
+         curr_score = 1;
+         game_over = true;
+      }
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -106,7 +155,7 @@ void tictac3d::reset_board_state()
 {
    curr_board_state.clear();
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       for(int py = 0; py < n_size; py++)
       {
@@ -124,7 +173,7 @@ void tictac3d::randomize_board_state()
 {
    curr_board_state.clear();
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       for(int py = 0; py < n_size; py++)
       {
@@ -150,12 +199,16 @@ void tictac3d::randomize_board_state()
 // ---------------------------------------------------------------------
 void tictac3d::display_board_state()
 {
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       cout << endl;
-      cout << "Z = " << pz << endl << endl;
+      if(n_zlevels > 1)
+      {
+         cout << "Z = " << pz << endl << endl;
+      }
       display_Zgrid_state(pz);
    } // loop over pz index
+   cout << "curr_score = " << curr_score << endl;
 }
 
 void tictac3d::display_Zgrid_state(int pz)
@@ -278,6 +331,7 @@ int tictac3d::check_player_win(int player_ID)
    if(corner_2_corner_win(player_ID))
    {
       print_winning_pattern();
+      game_over = true;
       return win_in_corner_diag;
    }
 
@@ -288,6 +342,7 @@ int tictac3d::check_player_win(int player_ID)
       if(Zslant_xconst_win(player_ID,px))
       {
          print_winning_pattern();
+         game_over = true;
          return win_in_zslant;
       }
    }
@@ -297,6 +352,7 @@ int tictac3d::check_player_win(int player_ID)
       if(Zslant_yconst_win(player_ID,py))
       {
          print_winning_pattern();
+         game_over = true;
          return win_in_zslant;
       }
    }
@@ -309,17 +365,19 @@ int tictac3d::check_player_win(int player_ID)
          if(Zcolumn_win(player_ID, px, py))
          {
             print_winning_pattern();
+            game_over = true;
             return win_in_zcolumn;
          }
       }
    }
 
 // Check if player wins within any of 40 Z-planes possibilities:
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       if(Zplane_win(player_ID, pz))
       {
          print_winning_pattern();
+         game_over = true;
          return win_in_zplane;
       }
    } // loop over pz
@@ -332,7 +390,7 @@ int tictac3d::check_player_win(int player_ID)
 
 void tictac3d::generate_all_winnable_paths()
 {
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       generate_winnable_Zplane_paths(pz);
    }
@@ -491,7 +549,7 @@ bool tictac3d::Zplane_win(int player_ID, int pz)
 void tictac3d::generate_winnable_Zcolumn_path(int px, int py)
 {
    vector<triple> curr_path;
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       curr_path.push_back(triple(px,py,pz));
    }
@@ -506,7 +564,7 @@ bool tictac3d::Zcolumn_win(int player_ID, int px, int py)
 {
    bool column_win = true;
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       winning_posns_map[triple(px,py,pz)] = player_ID;
       if(get_cell_value(px,py,pz) != player_ID)
@@ -524,7 +582,7 @@ void tictac3d::generate_Zslant_xconst_winnable_paths(int px)
 {
    vector<triple> curr_path;
 
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int py = pz;
       curr_path.push_back(triple(px,py,pz));
@@ -532,9 +590,9 @@ void tictac3d::generate_Zslant_xconst_winnable_paths(int px)
    winnable_paths.push_back(curr_path);
 
    curr_path.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int py = n_size - 1 - pz;
+      int py = n_zlevels - 1 - pz;
       curr_path.push_back(triple(px,py,pz));
    }
    winnable_paths.push_back(curr_path);
@@ -545,7 +603,7 @@ void tictac3d::generate_Zslant_yconst_winnable_paths(int py)
 {
    vector<triple> curr_path;
 
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int px = pz;
       curr_path.push_back(triple(px,py,pz));
@@ -553,9 +611,9 @@ void tictac3d::generate_Zslant_yconst_winnable_paths(int py)
    winnable_paths.push_back(curr_path);
 
    curr_path.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int px = n_size - 1 - pz;
+      int px = n_zlevels - 1 - pz;
       curr_path.push_back(triple(px,py,pz));
    }
    winnable_paths.push_back(curr_path);
@@ -569,7 +627,7 @@ bool tictac3d::Zslant_xconst_win(int player_ID, int px)
 {
    bool slant_win = true;
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int py = pz;
       winning_posns_map[triple(px,py,pz)] = player_ID;
@@ -582,9 +640,9 @@ bool tictac3d::Zslant_xconst_win(int player_ID, int px)
 
    slant_win = true;
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int py = n_size - 1 - pz;
+      int py = n_zlevels - 1 - pz;
       winning_posns_map[triple(px,py,pz)] = player_ID;
       if(get_cell_value(px,py,pz) != player_ID)
       {
@@ -601,7 +659,7 @@ bool tictac3d::Zslant_yconst_win(int player_ID, int py)
 {
    bool slant_win = true;
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int px = pz;
       winning_posns_map[triple(px,py,pz)] = player_ID;
@@ -614,9 +672,9 @@ bool tictac3d::Zslant_yconst_win(int player_ID, int py)
 
    slant_win = true;
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int px = n_size - 1 - pz;
+      int px = n_zlevels - 1 - pz;
       winning_posns_map[triple(px,py,pz)] = player_ID;
       if(get_cell_value(px,py,pz) != player_ID)
       {
@@ -635,7 +693,7 @@ void tictac3d::generate_corner_2_corner_winnable_paths()
 {
    vector<triple> curr_path;
 
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int px = pz;
       int py = pz;
@@ -644,28 +702,28 @@ void tictac3d::generate_corner_2_corner_winnable_paths()
    winnable_paths.push_back(curr_path);
    
    curr_path.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int px = n_size - 1 - pz;
+      int px = n_zlevels - 1 - pz;
       int py = pz;
       curr_path.push_back(triple(px,py,pz));
    }
    winnable_paths.push_back(curr_path);
 
    curr_path.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int px = pz;
-      int py = n_size - 1 - pz;
+      int py = n_zlevels - 1 - pz;
       curr_path.push_back(triple(px,py,pz));
    }
    winnable_paths.push_back(curr_path);
 
    curr_path.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int px = n_size - 1 - pz;
-      int py = n_size - 1 - pz;
+      int px = n_zlevels - 1 - pz;
+      int py = n_zlevels - 1 - pz;
       curr_path.push_back(triple(px,py,pz));
    }
    winnable_paths.push_back(curr_path);
@@ -680,7 +738,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    bool corner_diag_win = true;
 
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int px = pz;
       int py = pz;
@@ -693,9 +751,9 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    if(corner_diag_win) return true;
 
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int px = n_size - 1 - pz;
+      int px = n_zlevels - 1 - pz;
       int py = pz;
       winning_posns_map[triple(px, py, pz)] = player_ID;
       if(get_cell_value(px, py, pz) != player_ID)
@@ -706,10 +764,10 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    if(corner_diag_win) return true;
 
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
       int px = pz;
-      int py = n_size - 1 - pz;
+      int py = n_zlevels - 1 - pz;
       winning_posns_map[triple(px, py, pz)] = player_ID;
       if(get_cell_value(px, py, pz) != player_ID)
       {
@@ -719,10 +777,10 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    if(corner_diag_win) return true;
 
    winning_posns_map.clear();
-   for(int pz = 0; pz < n_size; pz++)
+   for(int pz = 0; pz < n_zlevels; pz++)
    {
-      int px = n_size - 1 - pz;
-      int py = n_size - 1 - pz;
+      int px = n_zlevels - 1 - pz;
+      int py = n_zlevels - 1 - pz;
       winning_posns_map[triple(px, py, pz)] = player_ID;
       if(get_cell_value(px, py, pz) != player_ID)
       {

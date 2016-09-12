@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program 3D_TTT
 // ==========================================================================
-// Last updated on 8/28/16; 8/29/16
+// Last updated on 8/28/16; 8/29/16; 9/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -20,16 +20,19 @@ int main (int argc, char* argv[])
    using std::vector;
 
    nrfunc::init_time_based_seed();
-   tictac3d* ttt_ptr = new tictac3d();
+//   tictac3d* ttt_ptr = new tictac3d(4,4);
+   tictac3d* ttt_ptr = new tictac3d(2,1);
+//   tictac3d* ttt_ptr = new tictac3d(4,1);
 
-   bool game_over = false;
-   while(!game_over)
+
+   while(!ttt_ptr->get_game_over())
    {
 //       ttt_ptr->randomize_board_state();
       ttt_ptr->display_board_state();
       
       ttt_ptr->enter_human_move();
 
+/*
       if(ttt_ptr->check_player_win(1))
       {
          game_over = true;
@@ -39,8 +42,12 @@ int main (int argc, char* argv[])
       {
          game_over = true;
       }
+*/
 
-   } // loop over iter index
+   } // !game_over while loop
+   cout << "Final score = " << ttt_ptr->get_score() << endl;
+   cout << "GAME OVER" << endl << endl;
+
    delete ttt_ptr;
 }
 

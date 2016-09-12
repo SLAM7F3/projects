@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 8/28/16; 8/29/16
+// Last modified on 8/28/16; 8/29/16; 9/12/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -23,21 +23,29 @@ class tictac3d
 
 // Initialization, constructor and destructor functions:
 
-   tictac3d();
+   tictac3d(int n_size, int n_zlevels);
    tictac3d(const tictac3d& C);
    ~tictac3d();
    friend std::ostream& operator<< 
       (std::ostream& outstream,const tictac3d& C);
 
+   void set_n_zlevels(int n);
+   double get_score() const;
+   bool get_game_over() const;
+
    void reset_board_state();
    void randomize_board_state();
    void display_board_state();
    void enter_human_move();
+   int get_n_filled_cells() const;
    int check_player_win(int player_ID);
 
   private: 
 
+   bool game_over;
    int n_size;
+   int n_zlevels;
+   double curr_score;
    std::vector<int> curr_board_state;
 
    std::vector<std::vector<triple> > winnable_paths;
@@ -48,9 +56,9 @@ class tictac3d
    void allocate_member_objects();
    void initialize_member_objects();
 
-   int get_cell_value(triple t);
-   int get_cell_value(int px, int py, int pz);
-   void set_cell_value(int px, int py, int pz, int value);
+   int get_cell_value(triple t) const;
+   int get_cell_value(int px, int py, int pz) const;
+   bool set_cell_value(int px, int py, int pz, int value);
 
    void display_Zgrid_state(int pz);
 
@@ -77,6 +85,20 @@ class tictac3d
 
 // Set and get member functions:
 
+inline void tictac3d::set_n_zlevels(int n)
+{
+   n_zlevels = n;
+}
+
+inline double tictac3d::get_score() const
+{
+   return curr_score;
+}
+
+inline bool tictac3d::get_game_over() const
+{
+   return game_over;
+}
 
 
 #endif  // tictac3d.h
