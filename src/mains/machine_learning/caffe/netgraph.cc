@@ -14,7 +14,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/23/16; 8/25/16; 9/8/16; 9/12/16
+// Last updated on 8/25/16; 9/8/16; 9/12/16; 9/13/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -29,6 +29,7 @@
 #include "classification/caffe_classifier.h"
 #include "general/filefuncs.h"
 #include "math/mathfuncs.h"
+#include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "math/prob_distribution.h"
 #include "general/stringfuncs.h"
@@ -94,7 +95,8 @@ int main(int argc, char* argv[])
    cout << "Resnet50_flag = " << Resnet50_flag << endl;
    cout << "Facenet_flag = " << Facenet_flag << endl;
 
-   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+
+
 
 // Import activations for each FACENET node within each layer order by
 // their stimulation frequencies generated via program
@@ -125,6 +127,7 @@ int main(int argc, char* argv[])
    filefunc::openfile(edgelist_filename, edgelist_stream);
 
    int minor_layer_skip = -1;
+   int fc_layer_ID, reduced_chip_size;
    vector<string> major_layer_names;
    if (Alexnet_flag)
    {
@@ -193,12 +196,15 @@ int main(int argc, char* argv[])
       major_layer_names.push_back("fc5");
       major_layer_names.push_back("fc6");
       major_layer_names.push_back("fc7_faces");
+      fc_layer_ID = 5;
+      reduced_chip_size = 12 * 12;
 */
 
 // Facenet model 2n, 2q, 2r  (conv3a + conv3b + conv4a + conv4b)
 
 //      minor_layer_skip = 2;	// Facenet model 2n
       minor_layer_skip = 6;	// Facenet model 2q, 2r
+      major_layer_names.push_back("data");
       major_layer_names.push_back("conv1");
       major_layer_names.push_back("conv2");
       major_layer_names.push_back("conv3a");
@@ -208,6 +214,8 @@ int main(int argc, char* argv[])
       major_layer_names.push_back("fc5");
       major_layer_names.push_back("fc6");
       major_layer_names.push_back("fc7_faces");
+      fc_layer_ID = 7;
+      reduced_chip_size = 12 * 12;
 
 // Facenet 1:
 
@@ -221,22 +229,35 @@ int main(int argc, char* argv[])
 //      major_layer_names.push_back("fc7_faces");
    }
 
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
+                               minor_layer_skip);
+
 // Generate layout for network layers and nodes within a 0 < gx <
 // n_layers , 0 < gy < 2 * n_layers rectangle.  Export layout to graph
 // layout filename which can be ingested by program
 // mains/photosynth/fill_photo_hierarchy within the IMAGESEARCH
 // pipeline:
 
-   vector<int> n_layer_channels;
-   n_layer_channels.push_back(3); // Zeroth data layer contains 3 RGB channels
+   vector<int> n_minor_layer_channels;
+   n_minor_layer_channels.push_back(3); // Zeroth data layer contains 3 RGB channels
    int max_nodes_per_layer = 0;
    for(unsigned int n = 0; n < classifier.get_n_param_layer_nodes().size();
        n++)
    {
-      n_layer_channels.push_back(
+      n_minor_layer_channels.push_back(
          classifier.get_n_param_layer_nodes().at(n));
       max_nodes_per_layer = basic_math::max(max_nodes_per_layer,
-                                            n_layer_channels.back());
+                                            n_minor_layer_channels.back());
+   }
+
+   for(unsigned int minor_layer_index = 0; 
+       minor_layer_index < n_minor_layer_channels.size(); 
+       minor_layer_index++)
+   {
+      cout << "minor_layer_index = " << minor_layer_index
+           <<  " n_minor_layer_channels = " 
+           << n_minor_layer_channels[minor_layer_index]
+           << endl;
    }
    cout << "max_nodes_per_layer = " << max_nodes_per_layer << endl;
 
@@ -246,25 +267,35 @@ int main(int argc, char* argv[])
    graph_layout_stream << "# Image_ID  gX       gY  " << endl << endl;
 
    int new_global_node_ID = 0;
-   int n_minor_layers = n_layer_channels.size();
-   cout << "n_minor_layers = " << n_minor_layers << endl;
-   int n_major_layers = n_minor_layers / minor_layer_skip;
+   int n_major_layers = classifier.get_n_major_layers();
+   int n_minor_layers = classifier.get_n_minor_layers();
    cout << "n_major_layers = " << n_major_layers << endl;
+   cout << "n_minor_layers = " << n_minor_layers << endl;
+   cout << "minor_layer_skip = " << classifier.get_minor_layer_skip() << endl;
 
-   for(int minor_layer_index = 0; minor_layer_index < n_minor_layers; 
-       minor_layer_index += minor_layer_skip)
+   for(int major_layer_ID = 0; major_layer_ID < n_major_layers; 
+       major_layer_ID++)
    {
-      int n_curr_layer_nodes = n_layer_channels[minor_layer_index];
-      int major_layer_ID = minor_layer_index/ minor_layer_skip;
-      cout << "Major_layer_ID = " << major_layer_ID << endl;
-      cout << "Minor layer = " << minor_layer_index << " has " 
+      int minor_layer_index;
+      if(major_layer_ID == 0)
+      {
+         minor_layer_index = 0;
+      }
+      else
+      {
+         minor_layer_index = 1 + (major_layer_ID - 1) * minor_layer_skip;
+      }
+      
+      int n_curr_layer_nodes = n_minor_layer_channels[minor_layer_index];
+
+      cout << " Major_layer_ID = " << major_layer_ID 
+           << " Minor_layer_index = " << minor_layer_index << " has " 
            << n_curr_layer_nodes << " nodes" << endl;
 
       int start_node_ID = new_global_node_ID;
       double gy = 2 * (n_major_layers - major_layer_ID) + 0.5;
       
       int max_n_nodes_per_subrow = 52;
-//      int max_n_nodes_per_subrow = 64;
       int n_layer_subrows = n_curr_layer_nodes / max_n_nodes_per_subrow + 1;
       for(int c = 0; c < n_layer_subrows - 1; c++)
       {
@@ -328,58 +359,58 @@ int main(int argc, char* argv[])
    int n_middle = 0;
    int n_total = 0;
 
-   int minor_layer_start = 0;  
-   int minor_layer_stop = n_minor_layers - 1;
-
-//   cout << "Enter layer_start:" << endl;
-//   cin >> layer_start;
-//   cout << "Enter layer_stop:" << endl;
-//   cin >> layer_stop;
-
-   cout << "minor_layer_start = " << minor_layer_start
-        << " minor_layer_stop = " << minor_layer_stop << endl << endl;
-
-   for(int minor_layer_index = minor_layer_start; 
-       minor_layer_index < minor_layer_stop; 
-       minor_layer_index += minor_layer_skip)
+   for(int major_layer_ID = 0; major_layer_ID < n_major_layers-1 ; 
+       major_layer_ID++)
    {
+      string curr_major_layer_name=major_layer_names[major_layer_ID];
+      string next_major_layer_name=major_layer_names[major_layer_ID+1];
+
+      int curr_param_layer_index = (major_layer_ID) * minor_layer_skip;
+      int n_curr_layer_nodes = classifier.get_param_layer_n_input_nodes(
+         curr_param_layer_index);
+      int n_next_layer_nodes = classifier.get_param_layer_n_output_nodes(
+         curr_param_layer_index);
+      
       layer_edgelist_map.clear();
-      int major_layer_ID = minor_layer_index/ minor_layer_skip;
       cout << "=====================================================" << endl;
-      cout << "Processing minor_layer_index = " << minor_layer_index << endl;
-      cout << " major_layer_ID = " << major_layer_ID << endl;
-      cout << "n_layer_channels[minor_layer_index] = "
-           << n_layer_channels[minor_layer_index] << endl;
-      for(int curr_node = 0; curr_node < n_layer_channels[minor_layer_index]; 
-          curr_node++)
+      cout << "major_layer_ID = " << major_layer_ID << endl;
+      cout << "   curr_major_layer_name = " << curr_major_layer_name << endl;
+      cout << "   next_major_layer_name = " << next_major_layer_name << endl;
+      cout << "   curr_param_layer_index = " << curr_param_layer_index << endl;
+      cout << "   n_curr_layer_nodes = " << n_curr_layer_nodes << endl;
+      cout << "   n_next_layer_nodes = " << n_next_layer_nodes << endl;
+
+
+      for(int curr_node = 0; curr_node < n_curr_layer_nodes; curr_node++)
       {
-         int curr_node_global_ID = classifier.get_global_weight_node_ID(
-            minor_layer_index, curr_node);
-         int curr_node_major_ID = classifier.get_major_weight_node_ID(
-            major_layer_ID, curr_node);
-
-         string curr_major_layer_name=major_layer_names[major_layer_ID];
-
-         for(int next_node = 0; next_node < 
-                n_layer_channels[minor_layer_index+minor_layer_skip]; 
-             next_node++)
+         int curr_node_major_ID;
+         if(major_layer_ID == fc_layer_ID - 1)
          {
-            int next_node_global_ID = classifier.get_global_weight_node_ID(
-               minor_layer_index+minor_layer_skip, next_node);
+            curr_node_major_ID = curr_node / reduced_chip_size;
+         }
+         else
+         {
+            curr_node_major_ID = classifier.get_major_weight_node_ID(
+               major_layer_ID, curr_node);
+         }
+
+         for(int next_node = 0; next_node < n_next_layer_nodes; next_node++)
+         {
             int next_node_major_ID = classifier.get_major_weight_node_ID(
                major_layer_ID+1, next_node);
 
-//            cout << "major_layer_ID = " << major_layer_ID
-//                 << " minor_layer_index = " << minor_layer_index
-//                 << " curr_node = " << curr_node
-//                 << " next_node = " << next_node << endl;
+            float weight_sum = 0;
+            if(major_layer_ID == fc_layer_ID - 1)
+            {
+               weight_sum = nrfunc::ran1();
+            }
+            else
+            {
+               weight_sum = classifier.get_weight_sum(
+                  curr_param_layer_index,curr_node,next_node);
+            }
 
-            float weight_sum = 
-               classifier.get_weight_sum(minor_layer_index,curr_node,next_node);
-
-//            DUPLE duple(curr_node_global_ID, next_node_global_ID);
             DUPLE duple(curr_node_major_ID, next_node_major_ID);
-
             layer_edgelist_map[duple] = weight_sum;
          } // loop over next_node index
       } // loop over curr_node index
@@ -396,34 +427,14 @@ int main(int argc, char* argv[])
       mathfunc::median_value_and_quartile_width(
          weight_sums, median_weight_sum, quartile_width);
 
-//       double weight_sum_02, weight_sum_98;
-//      mathfunc::lo_hi_values(
-//         weight_sums, 0.02, 0.98, weight_sum_02, weight_sum_98);
-//      int tic = basic_math::mytruncate(log10(weight_sum_98 - weight_sum_02));
-
-      cout << "minor_layer_index = " << minor_layer_index << endl;
-      cout << "major_layer_ID = " << major_layer_ID << endl;
-      cout << " curr_major_layer_name = " 
-           << major_layer_names[major_layer_ID] << endl;
-      cout << " next_major_layer_name = " 
-           << major_layer_names[major_layer_ID+1] << endl;
       cout << " median_weight_sum = " << median_weight_sum
            << " quartile_width = " << quartile_width
            << endl;
-
-//      cout << "weight_sum_98 = " << weight_sum_98
-//           << " weight_sum_02 = " << weight_sum_02 << endl;
-//      cout << "tic = " << tic << endl;
 
       double min_weight_sum = mathfunc::minimal_value(weight_sums);
       double max_weight_sum = mathfunc::maximal_value(weight_sums);
       prob_distribution weights_prob(
          200, min_weight_sum, max_weight_sum, weight_sums);
-
-//      weights_prob.set_xmin(weight_sum_02);
-//      weights_prob.set_xmax(weight_sum_98);
-//      weights_prob.set_xtic(0.5 * pow(10, tic));
-//      weights_prob.set_xsubtic(0.1 * pow(10, tic));
 
       weights_prob.set_xmin(-0.05);
       weights_prob.set_xmax(0.05);
@@ -431,10 +442,9 @@ int main(int argc, char* argv[])
       weights_prob.set_xsubtic(0.005);
 
       weights_prob.set_xlabel("Weight sums");
-      weights_prob.set_color(colorfunc::get_color(minor_layer_index));
+      weights_prob.set_color(colorfunc::get_color(major_layer_ID));
       weights_prob.set_densityfilenamestr(
-         "weights_sum_"+stringfunc::number_to_string(minor_layer_index)
-         +".meta");
+         "weights_sum_"+stringfunc::number_to_string(major_layer_ID)+".meta");
       weights_prob.write_density_dist(false,true);
 
 // Renormalize weights so that they mostly lie within interval [0,100]
@@ -485,7 +495,7 @@ int main(int argc, char* argv[])
       double frac_middle = double(n_middle)/n_total;
       cout << "frac_middle = " << frac_middle << endl;
 
-   } // loop over layer index
+   } // loop over major_layer_ID index
 
    filefunc::closefile(edgelist_filename, edgelist_stream);
 

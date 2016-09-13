@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for caffe_classifier class 
 // ==========================================================================
-// Last modified on 8/23/16; 8/29/16; 9/6/16; 9/12/16
+// Last modified on 8/29/16; 9/6/16; 9/12/16; 9/13/16
 // ==========================================================================
 
 #ifndef CAFFE_CLASSIFIER_H
@@ -30,7 +30,8 @@ class caffe_classifier
 
    caffe_classifier(
       const std::string& deploy_prototxt_filename,
-      const std::string& trained_caffe_model_filename);
+      const std::string& trained_caffe_model_filename,
+      int minor_layer_skip = 2);
 
    ~caffe_classifier();
    friend std::ostream& operator<< 
@@ -47,16 +48,23 @@ class caffe_classifier
    unsigned int get_n_labels() const;
    std::vector<int>& get_n_param_layer_nodes();
    const std::vector<int>& get_n_param_layer_nodes() const;
+   int get_n_major_layers() const;
+   int get_n_minor_layers() const;
    void set_minor_layer_skip(int skip);
+   int get_minor_layer_skip() const;
+
+   int get_param_layer_n_input_nodes(int param_layer_index);
+   int get_param_layer_n_output_nodes(int param_layer_index);
+
 
    float get_weight(
       int param_layer_index, 
       int input_node_ID, int output_node_ID, int height, int width);
-   void compute_weights_mu_sigma(int param_layer_index,
+   void compute_weights_mu_sigma(int minor_layer_index,
                                  double& mu, double& sigma);
    float get_weight_sum(
-      int param_layer_index, int input_node_ID, int output_node_ID);
-   int get_global_weight_node_ID(int param_layer_index, int node_index);
+      int minor_layer_index, int input_node_ID, int output_node_ID);
+   int get_global_weight_node_ID(int minor_layer_index, int node_index);
    int get_major_weight_node_ID(int major_layer_ID, int node_index);
    
    void rgb_img_to_bgr_fvec(texture_rectangle& curr_img);
@@ -78,7 +86,7 @@ class caffe_classifier
    int num_data_channels_;
    int input_img_xdim, input_img_ydim;
    int classification_result;
-   int minor_layer_skip;
+   int n_major_layers, n_minor_layers, minor_layer_skip;
    double classification_score;
    std::string test_prototxt_filename, trained_caffe_model_filename;
    std::vector<int> n_param_layer_nodes;
@@ -170,9 +178,24 @@ inline const std::vector<int>& caffe_classifier::get_n_param_layer_nodes() const
    return n_param_layer_nodes;
 }
 
+inline int caffe_classifier::get_n_major_layers() const
+{
+   return n_major_layers;
+}
+
+inline int caffe_classifier::get_n_minor_layers() const
+{
+   return n_minor_layers;
+}
+
 inline void caffe_classifier::set_minor_layer_skip(int skip)
 {
    minor_layer_skip = skip;
+}
+
+inline int caffe_classifier::get_minor_layer_skip() const
+{
+   return minor_layer_skip;
 }
 
 
