@@ -447,87 +447,65 @@ float caffe_classifier::get_weight(
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_weights_mu_sigma() returns the mean and
-// standard deviation for all trained weights within the layer
-// specified by input minor_layer_index.
-
-void caffe_classifier::compute_weights_mu_sigma(int minor_layer_index,
-                                                double& mu, double& sigma)
-{
-//   cout << "inside caffe_classifier::compute_weights_mu_sigma()" << endl;
-//   cout << "minor_layer_index = " << minor_layer_index << endl;
-   
-   const shared_ptr<const caffe::Blob<float> > weights_blob =
-      net_->params().at(2 * minor_layer_index);
-
-   int n_output_nodes = weights_blob->shape(0);
-   int n_input_nodes = weights_blob->shape(1);
-   
-   int height = 1, width = 1;
-//   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
-//   cout << " weights_blob.shape_string() = " << weights_blob->shape_string()
-//        << endl;
-
-   if(weights_blob->num_axes() > 2)
-   {
-      height = weights_blob->shape(2);
-      width = weights_blob->shape(3);
-   }
-
-   vector<double> weights;
-   for(int output_ID = 0; output_ID < n_output_nodes; output_ID++)
-   {
-      for(int input_ID = 0; input_ID < n_input_nodes; input_ID++)
-      {
-         for(int h = 0; h < height; h++)
-         {
-            for(int w = 0; w < width; w++)
-            {
-               weights.push_back(
-                  weights_blob->data_at(output_ID, input_ID, height, width));
-            }
-         }
-      } // loop over input_ID
-   } // loop over output_ID
-
-   mathfunc::mean_and_std_dev(weights, mu, sigma);
-}
-
-// ---------------------------------------------------------------------
 // Member function get_weight_sum() returns an integrated weight
 // summed over the height and width channels if they exist.
 
 float caffe_classifier::get_weight_sum(
-   int minor_layer_index, int input_node_ID, int output_node_ID)
+   int param_layer_index, int input_node_ID, int output_node_ID)
 {
 //   cout << "inside caffe_classifier::get_weight_sum()" << endl;
-//   cout << "minor_layer_index = " << minor_layer_index
+//   cout << "param_layer_index = " << param_layer_index
 //        << " input_node_ID = " << input_node_ID
 //        << " output_node_ID = " << output_node_ID << endl;
    
    const shared_ptr<const caffe::Blob<float> > weights_blob =
-      net_->params().at(minor_layer_index);
+      net_->params().at(param_layer_index);
 
-   int height = 1, width = 1;
 //   cout << "weights_blob->num_axes() = " << weights_blob->num_axes() << endl;
 //   cout << " weights_blob.shape_string() = " << weights_blob->shape_string()
 //        << endl;
 
+   int height = 1, width = 1;
    if(weights_blob->num_axes() > 2)
    {
       height = weights_blob->shape(2);
       width = weights_blob->shape(3);
    }
-
 //   cout << "height = " << height << " width = " << width << endl;
+
    float weight_sum = 0;
    for(int h = 0; h < height; h++)
    {
       for(int w = 0; w < width; w++)
       {
          weight_sum += get_weight(
-            minor_layer_index, input_node_ID, output_node_ID, h, w);
+            param_layer_index, input_node_ID, output_node_ID, h, w);
       }
+   }
+   return weight_sum;
+}
+
+// ---------------------------------------------------------------------
+// Member function get_fully_connected_weight_sum() is a special case
+// which needs to be called in the transition from the last
+// convolutional layer to the first fully connected layer.  It sums
+// all weights for each pixel within the reduced image chip for a
+// given pair (reduced_input_node_ID = input_node_ID / reduced_chip_size, 
+// output_node_ID).
+
+float caffe_classifier::get_fully_connected_weight_sum(
+   int param_layer_index, int reduced_chip_size, 
+   int reduced_input_node_ID, int output_node_ID)
+{
+   const shared_ptr<const caffe::Blob<float> > weights_blob =
+      net_->params().at(param_layer_index);
+
+   float weight_sum = 0;
+   for(int r = 0; r < reduced_chip_size; r++)
+   {
+      int input_node_ID = reduced_input_node_ID * reduced_chip_size + r;
+      weight_sum += get_weight(
+         param_layer_index, input_node_ID, output_node_ID, 1, 1);
    }
    return weight_sum;
 }

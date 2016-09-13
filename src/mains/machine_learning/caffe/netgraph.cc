@@ -95,9 +95,6 @@ int main(int argc, char* argv[])
    cout << "Resnet50_flag = " << Resnet50_flag << endl;
    cout << "Facenet_flag = " << Facenet_flag << endl;
 
-
-
-
 // Import activations for each FACENET node within each layer order by
 // their stimulation frequencies generated via program
 // ORDER_ACTIVATIONS:
@@ -380,13 +377,13 @@ int main(int argc, char* argv[])
       cout << "   n_curr_layer_nodes = " << n_curr_layer_nodes << endl;
       cout << "   n_next_layer_nodes = " << n_next_layer_nodes << endl;
 
-
       for(int curr_node = 0; curr_node < n_curr_layer_nodes; curr_node++)
       {
          int curr_node_major_ID;
          if(major_layer_ID == fc_layer_ID - 1)
          {
-            curr_node_major_ID = curr_node / reduced_chip_size;
+            curr_node_major_ID = classifier.get_major_weight_node_ID(
+               major_layer_ID, curr_node / reduced_chip_size);
          }
          else
          {
@@ -402,7 +399,9 @@ int main(int argc, char* argv[])
             float weight_sum = 0;
             if(major_layer_ID == fc_layer_ID - 1)
             {
-               weight_sum = nrfunc::ran1();
+               weight_sum = classifier.get_fully_connected_weight_sum(
+                  curr_param_layer_index, reduced_chip_size,
+                  curr_node_major_ID, next_node);
             }
             else
             {

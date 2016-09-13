@@ -56,14 +56,15 @@ class caffe_classifier
    int get_param_layer_n_input_nodes(int param_layer_index);
    int get_param_layer_n_output_nodes(int param_layer_index);
 
-
    float get_weight(
       int param_layer_index, 
       int input_node_ID, int output_node_ID, int height, int width);
-   void compute_weights_mu_sigma(int minor_layer_index,
-                                 double& mu, double& sigma);
    float get_weight_sum(
-      int minor_layer_index, int input_node_ID, int output_node_ID);
+      int param_layer_index, int input_node_ID, int output_node_ID);
+   float get_fully_connected_weight_sum(
+      int param_layer_index, int reduced_chip_size, 
+      int reduced_input_node_ID, int output_node_ID);
+
    int get_global_weight_node_ID(int minor_layer_index, int node_index);
    int get_major_weight_node_ID(int major_layer_ID, int node_index);
    
