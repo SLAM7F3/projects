@@ -181,7 +181,7 @@ int main(int argc, char* argv[])
    else if (Facenet_flag)
    {
 
-/*
+     /*
 // Facenet Model 2e:
 
       minor_layer_skip = 2;
@@ -195,7 +195,8 @@ int main(int argc, char* argv[])
       major_layer_names.push_back("fc7_faces");
       fc_layer_ID = 5;
       reduced_chip_size = 12 * 12;
-*/
+     */
+
 
 // Facenet model 2n, 2q, 2r  (conv3a + conv3b + conv4a + conv4b)
 
@@ -227,7 +228,8 @@ int main(int argc, char* argv[])
    }
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
-                               minor_layer_skip);
+                               major_layer_names.size(), minor_layer_skip);
+   
 
 // Generate layout for network layers and nodes within a 0 < gx <
 // n_layers , 0 < gy < 2 * n_layers rectangle.  Export layout to graph
@@ -307,7 +309,6 @@ int main(int argc, char* argv[])
 
             activations_iter = activations_map.find(new_global_node_ID);
             int old_global_node_ID = activations_iter->second.first;
-//            graph_layout_stream << new_global_node_ID << "   " 
             graph_layout_stream << old_global_node_ID << "   " 
                                 << gx << "   " << gy_prime << endl;
 
@@ -328,7 +329,6 @@ int main(int argc, char* argv[])
 
          activations_iter = activations_map.find(new_global_node_ID);
          int old_global_node_ID = activations_iter->second.first;
-//         graph_layout_stream << new_global_node_ID << "   " 
          graph_layout_stream << old_global_node_ID << "   " 
                              << gx << "   " << gy << endl;
 
@@ -384,13 +384,16 @@ int main(int argc, char* argv[])
          {
             curr_node_major_ID = classifier.get_major_weight_node_ID(
                major_layer_ID, curr_node / reduced_chip_size);
+            if(curr_node%1000 == 0) cout << curr_node << " "
+                                         << flush;
+            if(curr_node > 0 && curr_node%10000 == 0) cout << endl;
          }
          else
          {
             curr_node_major_ID = classifier.get_major_weight_node_ID(
                major_layer_ID, curr_node);
          }
-
+         
          for(int next_node = 0; next_node < n_next_layer_nodes; next_node++)
          {
             int next_node_major_ID = classifier.get_major_weight_node_ID(
@@ -401,7 +404,7 @@ int main(int argc, char* argv[])
             {
                weight_sum = classifier.get_fully_connected_weight_sum(
                   curr_param_layer_index, reduced_chip_size,
-                  curr_node_major_ID, next_node);
+                  curr_node / reduced_chip_size, next_node);
             }
             else
             {

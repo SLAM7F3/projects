@@ -54,14 +54,27 @@ void caffe_classifier::initialize_member_objects()
 // ---------------------------------------------------------------------
 caffe_classifier::caffe_classifier(
    const string& deploy_prototxt_filename,
-   const string& trained_caffe_model_filename,
-   int minor_layer_skip)
+   const string& trained_caffe_model_filename)
 {
    allocate_member_objects();
    initialize_member_objects();
 
    test_prototxt_filename = deploy_prototxt_filename;
    this->trained_caffe_model_filename = trained_caffe_model_filename;
+   load_trained_network();
+}
+// ---------------------------------------------------------------------
+caffe_classifier::caffe_classifier(
+   const string& deploy_prototxt_filename,
+   const string& trained_caffe_model_filename,
+   int n_major_layers, int minor_layer_skip)
+{
+   allocate_member_objects();
+   initialize_member_objects();
+
+   test_prototxt_filename = deploy_prototxt_filename;
+   this->trained_caffe_model_filename = trained_caffe_model_filename;
+   this->n_major_layers = n_major_layers;
    this->minor_layer_skip = minor_layer_skip;
    load_trained_network();
 }
@@ -300,10 +313,9 @@ void caffe_classifier::print_network_metadata()
    cout << endl;
    cout << "n_minor_layers = " << n_minor_layers << endl;
    cout << "minor_layer_skip = " << minor_layer_skip << endl;
+   cout << "n_major_layers = " << n_major_layers << endl;
 
    int major_weight_node_counter = 0;
-   n_major_layers = 2 + n_minor_layers / minor_layer_skip;
-   cout << "n_major_layers = " << n_major_layers << endl;
 
    // Major layer 0 is defined to hold 3 RGB channels for input image:
    major_weight_node_id_map[DUPLE(0,0)] = major_weight_node_counter++;
@@ -499,6 +511,15 @@ float caffe_classifier::get_fully_connected_weight_sum(
 {
    const shared_ptr<const caffe::Blob<float> > weights_blob =
       net_->params().at(param_layer_index);
+
+//   cout << "inside get_fully_connected_weight_sum()" << endl;
+//   cout << "param_layer_index = " << param_layer_index
+//        << " reduced_chip_size = " << reduced_chip_size
+//        << endl;
+//   cout << "reduced_input_node_ID = " << reduced_input_node_ID
+//        << " output_node_ID = " << output_node_ID << endl;
+//   cout << " weights_blob.shape_string() = " << weights_blob->shape_string() 
+//        << endl;
 
    float weight_sum = 0;
    for(int r = 0; r < reduced_chip_size; r++)
@@ -982,197 +1003,3 @@ void caffe_classifier::cleanup_memory()
    delete cc_tr_ptr;
    cc_tr_ptr = NULL;
 }
-
-// ==========================================================================
-// AS OF 8/2/15, THE FOLLOWING CODE METHODS ARE DEPRECATED 
-// ==========================================================================
-
-/*
-
-// Pair (label, confidence) representing a prediction:
-
-typedef std::pair<string, float> Prediction;
-
-
-static bool PairCompare(const pair<float, int>& lhs,
-                        const pair<float, int>& rhs) 
-{
-   return lhs.first > rhs.first;
-}
-
-// ---------------------------------------------------------------------
-// Method Argmax returns the indices of the top N values of vector v. 
-
-static vector<int> Argmax(const vector<float>& v, int N) 
-{
-   vector<pair<float, int> > pairs;
-   for (size_t i = 0; i < v.size(); ++i)
-      pairs.push_back(std::make_pair(v[i], i));
-   std::partial_sort(pairs.begin(), pairs.begin() + N, pairs.end(), 
-                     PairCompare);
-
-   vector<int> result;
-   for (int i = 0; i < N; ++i)
-      result.push_back(pairs[i].second);
-   return result;
-}
-
-// ---------------------------------------------------------------------
-// Member function Classify returns the top N predictions
-
-vector<Prediction> caffe_classifier::Classify(const cv::Mat& img, int N) 
-{
-   cout << "inside caffe_classifier::Classify()" << endl;
-   vector<float> output = Predict(img);
-   
-   N = std::min<int>(labels_.size(), N);
-   vector<int> maxN = Argmax(output, N);
-   vector<Prediction> predictions;
-   for (int i = 0; i < N; ++i) {
-      int idx = maxN[i];
-      predictions.push_back(std::make_pair(labels_[idx], output[idx]));
-   }
-
-   return predictions;
-}
-
-
-// ---------------------------------------------------------------------
-// Member function SetMean() loads the mean file in binaryproto format
-
-void caffe_classifier::SetMean(const string& mean_file) 
-{
-   BlobProto blob_proto;
-   ReadProtoFromBinaryFileOrDie(mean_file.c_str(), &blob_proto);
-
-   // Convert from BlobProto to Blob<float> 
-   Blob<float> mean_blob;
-   mean_blob.FromProto(blob_proto);
-   CHECK_EQ(mean_blob.channels(), num_data_channels_)
-      << "Number of channels of mean file doesn't match input layer.";
-
-   // The format of the mean file is planar 32-bit float BGR or grayscale. 
-   vector<cv::Mat> channels;
-   float* data = mean_blob.mutable_cpu_data();
-   for (int i = 0; i < num_data_channels_; ++i) {
-      // Extract an individual channel. 
-      cv::Mat channel(mean_blob.height(), mean_blob.width(), CV_32FC1, data);
-      channels.push_back(channel);
-      data += mean_blob.height() * mean_blob.width();
-   }
-
-   // Merge the separate channels into a single image. 
-   cv::Mat mean;
-   cv::merge(channels, mean);
-
-   // Compute the global mean pixel value and create a mean image
-   // filled with this value. 
-   cv::Scalar channel_mean = cv::mean(mean);
-   mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
-}
-
-// ---------------------------------------------------------------------
-
-vector<float> caffe_classifier::Predict(const cv::Mat& img) 
-{
-   cout << "inside caffe_classifier::Predict()" << endl;
-   Blob<float>* input_blob = net_->input_blobs()[0];
-   input_blob->Reshape(1, num_data_channels_,
-                        input_geometry_.height, input_geometry_.width);
-
-   // Forward dimension change to all layers
-   net_->Reshape();
-
-   vector<cv::Mat> input_channels;
-   WrapInputLayer(&input_channels);
-
-   Preprocess(img, &input_channels);
-
-   net_->ForwardPrefilled();
-
-   // Copy the output layer to a vector 
-   Blob<float>* output_layer = net_->output_blobs()[0];
-   const float* begin = output_layer->cpu_data();
-   const float* end = begin + output_layer->channels();
-   return vector<float>(begin, end);
-}
-
-// ---------------------------------------------------------------------
-// Member function WrapInputLayer() wraps the input layer of the
-// network in separate cv::Mat objects (one per channel). This way we
-// save one memcpy operation and we don't need to rely on
-// cudaMemcpy2D. The last preprocessing operation will write the
-// separate channels directly to the input layer.
-
-void caffe_classifier::WrapInputLayer(vector<cv::Mat>* input_channels) 
-{
-   Blob<float>* input_blob = net_->input_blobs()[0];
-
-   int width = input_blob->width();
-   int height = input_blob->height();
-   float* input_data = input_blob->mutable_cpu_data();
-   for (int i = 0; i < input_blob->channels(); ++i) 
-   {
-      cv::Mat channel(height, width, CV_32FC1, input_data);
-      input_channels->push_back(channel);
-      input_data += width * height;
-   }
-}
-
-// ---------------------------------------------------------------------
-
-void caffe_classifier::Preprocess(const cv::Mat& img,
-                                  vector<cv::Mat>* input_channels) 
-{
-   cout << "inside caffe_classifier::Preprocess()" << endl;
-   cout << "img.channels() = " << img.channels() << endl;
-   cout << "num_data_channels_ = " << num_data_channels_ << endl;
-   
-   // Convert the input image to the input image format of the network. 
-   cv::Mat sample;
-   if (img.channels() == 3 && num_data_channels_ == 1)
-      cv::cvtColor(img, sample, CV_BGR2GRAY);
-   else if (img.channels() == 4 && num_data_channels_ == 1)
-      cv::cvtColor(img, sample, CV_BGRA2GRAY);
-   else if (img.channels() == 4 && num_data_channels_ == 3)
-      cv::cvtColor(img, sample, CV_BGRA2BGR);
-   else if (img.channels() == 1 && num_data_channels_ == 3)
-      cv::cvtColor(img, sample, CV_GRAY2BGR);
-   else
-      sample = img;
-
-
-   cv::Mat sample_resized;
-
-   cout << "sample.size() = " << sample.size() << endl;
-   
-   if (sample.size() != input_geometry_)
-      cv::resize(sample, sample_resized, input_geometry_);
-   else
-      sample_resized = sample;
-
-
-   cv::Mat sample_float;
-   if (num_data_channels_ == 3)
-      sample_resized.convertTo(sample_float, CV_32FC3);
-   else
-      sample_resized.convertTo(sample_float, CV_32FC1);
-
-   cv::Mat sample_normalized;
-   cout << "before cv::subtract" << endl;
-   cv::subtract(sample_float, mean_, sample_normalized);
-
-   // This operation will write the separate BGR planes directly to the
-   // input layer of the network because it is wrapped by the cv::Mat
-   // objects in input_channels. 
-   cv::split(sample_normalized, *input_channels);
-
-   CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
-         == net_->input_blobs()[0]->cpu_data())
-      << "Input channels are not wrapping the input layer of the network.";
-
-   cout << "At end of caffe_classifier::Preprocess()" << endl;
-}
-
-*/
-

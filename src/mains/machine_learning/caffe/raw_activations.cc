@@ -1,3 +1,7 @@
+// NEED TO AUTOMATICALLY CREATE SOFTLINK : activations.dat --> 
+// // activations_4500.dat !!!
+
+
 // ========================================================================
 // Program RAW_ACTIVATIONS imports a trained FACENET caffe model.  It
 // also takes in testing images which the model has never seen before.
@@ -20,7 +24,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 9/5/16; 9/7/16; 9/8/16; 9/11/16
+// Last updated on 9/7/16; 9/8/16; 9/11/16; 9/13/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -50,8 +54,6 @@ int main(int argc, char** argv)
 
    string test_prototxt_filename   = argv[1];
    string caffe_model_filename = argv[2];
-   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
-
    string input_images_subdir = argv[3];
    filefunc::add_trailing_dir_slash(input_images_subdir);
 
@@ -83,46 +85,77 @@ int main(int argc, char** argv)
 
    vector<string> blob_names;
 
-/*
-// Following blob names are appropriate for Facenet 2e:
-   blob_names.push_back("conv1");
-   blob_names.push_back("conv2");
-   blob_names.push_back("conv3");
-   blob_names.push_back("conv4");
-   blob_names.push_back("fc5");
-   blob_names.push_back("fc6");
-   blob_names.push_back("fc7_faces");
-*/
+   string facenet_model_label;
+   cout << "Enter facenet model label: (e.g. 2e, 2r)" << endl;
+   cin >> facenet_model_label;
 
-// Following blob names are appropriate for Facenet 2q, 2r:
+// Enumerate blob names as functions of Facenet model label:
 
-   blob_names.push_back("conv1");
-   blob_names.push_back("conv2");
-   blob_names.push_back("conv3a");
-   blob_names.push_back("conv3b");
-   blob_names.push_back("conv4a");
-   blob_names.push_back("conv4b");
-   blob_names.push_back("fc5");
-   blob_names.push_back("fc6");
-   blob_names.push_back("fc7_faces");
+   if(facenet_model_label == "1")
+   {
+      blob_names.push_back("conv1a");
+      blob_names.push_back("conv2a");
+      blob_names.push_back("conv3a");
+      blob_names.push_back("conv4a");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+   }
+   else if(facenet_model_label == "2e")
+   {
+      blob_names.push_back("conv1");
+      blob_names.push_back("conv2");
+      blob_names.push_back("conv3");
+      blob_names.push_back("conv4");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+   }
+   else if (facenet_model_label == "2n" ||
+            facenet_model_label == "2q" ||
+            facenet_model_label == "2r")
+   {
+      blob_names.push_back("conv1");
+      blob_names.push_back("conv2");
+      blob_names.push_back("conv3a");
+      blob_names.push_back("conv3b");
+      blob_names.push_back("conv4a");
+      blob_names.push_back("conv4b");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+   }
+   else
+   {
+      cout << "Unsupported facenet model label " << endl;
+      exit(-1);
+   }
+   int n_major_layers = blob_names.size() + 1;
+   int n_blob_layers = n_major_layers - 1;
 
-// Following blob names are appropriate for Facenet 1 only !!!
+   int minor_layer_skip;
+   if(facenet_model_label == "2e")
+   {
+      minor_layer_skip = 2;	
+   }
+   else if(facenet_model_label == "2n")
+   {
+      minor_layer_skip = 2;   
+   }
+   else if(facenet_model_label == "2q" || facenet_model_label == "2r")
+   {
+      minor_layer_skip = 6;   
+   }
+   
 
-//   blob_names.push_back("conv1a");
-//   blob_names.push_back("conv2a");
-//   blob_names.push_back("conv3a");
-//   blob_names.push_back("conv4a");
-//   blob_names.push_back("fc5");
-//   blob_names.push_back("fc6");
-//   blob_names.push_back("fc7_faces");
-   unsigned int n_layers = blob_names.size();
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
+                               n_major_layers, minor_layer_skip);
 
 // Mean RGB values derived from O(386K) 96x96 training face image chips
 
    double Bmean = 89.0;   // Minimal black padding with cleaned test chips
    double Gmean = 96.6;   // Minimal black padding with cleaned test chips
    double Rmean = 111.6;  // Minimal black padding with cleaned test chips
-
    classifier.set_mean_bgr(Bmean, Gmean, Rmean);
 
    classifier.add_label("non");
@@ -281,13 +314,13 @@ int main(int argc, char** argv)
       image_activations_stream << image_filename << endl << endl;
 
       double softmax_denom = 0;
-      for(unsigned int layer = 0; layer < n_layers; layer++)
+      for(unsigned int layer = 0; layer < n_blob_layers; layer++)
       {
          vector<int> local_node_IDs;
          vector<double> node_activations;
 
          bool sort_activations_flag = true;
-         if(layer == n_layers - 1)
+         if(layer == n_blob_layers - 1)
          {
             sort_activations_flag = false;
          }
@@ -325,7 +358,7 @@ int main(int argc, char** argv)
                zero_activations_flag = false;
             }
 
-            if(layer == n_layers - 1)
+            if(layer == n_blob_layers - 1)
             {
                softmax_denom += exp(node_activations[n]);
             }
@@ -397,7 +430,7 @@ int main(int argc, char** argv)
 //         unsigned n_max = 4;
          int n_max = 5;
          if(n_layer_nodes < n_max) n_max = n_layer_nodes;
-         if(layer == n_layers - 1) n_max = 1;
+         if(layer == n_blob_layers - 1) n_max = 1;
 
          for(int n = 0; n < n_max; n++)
          {
@@ -421,7 +454,7 @@ int main(int argc, char** argv)
                chip_basename;
 
             string chiplabel_str = " -label ";
-            if(layer == n_layers - 1)
+            if(layer == n_blob_layers - 1)
             {
                chiplabel_str += "'"+true_gender_label+" c="+
                   stringfunc::number_to_string(classification_score,3)+"' ";
@@ -468,7 +501,7 @@ int main(int argc, char** argv)
                                << endl << endl;
 
       bool sort_activations_flag = false;
-      int layer = n_layers - 1;
+      int layer = n_blob_layers - 1;
       vector<int> local_node_IDs;
       vector<double> node_activations;
       int n_tiny_values = classifier.retrieve_layer_activations(
@@ -504,10 +537,10 @@ int main(int argc, char** argv)
       if(n_strong_activations < 3) continue;
 
 // Check whether there exists at least one image chip corresponding to
-// each Facnet layer 0 through n_layers:
+// each Facnet layer 0 through n_blob_layers:
 
       unsigned int n_represented_layers = 0;
-      for(unsigned int layer = 0; layer <= n_layers; layer++)
+      for(unsigned int layer = 0; layer <= n_blob_layers; layer++)
       {
          for(unsigned int m = 0; m < montage_lines.size(); m++)
          {
@@ -522,7 +555,7 @@ int main(int argc, char** argv)
          } // loop over index m
       } // loop over index layer
 
-      if(n_represented_layers == n_layers+1)
+      if(n_represented_layers == n_blob_layers+1)
       {
          for(unsigned int m = 0; m < montage_lines.size(); m++)
          {

@@ -30,8 +30,11 @@ class caffe_classifier
 
    caffe_classifier(
       const std::string& deploy_prototxt_filename,
+      const std::string& trained_caffe_model_filename);
+   caffe_classifier(
+      const std::string& deploy_prototxt_filename,
       const std::string& trained_caffe_model_filename,
-      int minor_layer_skip = 2);
+      int n_major_layers, int minor_layer_skip);
 
    ~caffe_classifier();
    friend std::ostream& operator<< 
@@ -114,17 +117,6 @@ class caffe_classifier
    void allocate_member_objects();
    void initialize_member_objects();
    void docopy(const caffe_classifier& C);
-
-
-// Deprecated member functions:
-
-//   void SetMean(const std::string& mean_file);
-//   std::vector<float> Predict(const cv::Mat& img);
-//   void WrapInputLayer(std::vector<cv::Mat>* input_channels);
-//   void Preprocess(const cv::Mat& img,
-//                   std::vector<cv::Mat>* input_channels);
-//   std::vector<std::pair<std::string, float> > Classify(
-//      const cv::Mat& img, int N = 5);
 };
 
 // ==========================================================================
