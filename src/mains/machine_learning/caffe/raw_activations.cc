@@ -86,7 +86,7 @@ int main(int argc, char** argv)
    vector<string> blob_names;
 
    string facenet_model_label;
-   cout << "Enter facenet model label: (e.g. 2e, 2r)" << endl;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
    cin >> facenet_model_label;
 
 // Enumerate blob names as functions of Facenet model label:

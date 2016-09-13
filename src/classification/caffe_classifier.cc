@@ -154,8 +154,8 @@ void caffe_classifier::print_network_metadata()
         << trained_caffe_model_filename << endl;
    cout << "Test prototxt filename = " << test_prototxt_filename << endl;
 
-   int n_layers = net_->layer_names().size();
-   cout << "n_layers = " << n_layers << endl;
+   n_minor_layers = net_->layer_names().size();
+   cout << "n_minor_layers = " << n_minor_layers << endl;
    int n_blobs = net_->blob_names().size();
    cout << "n_blobs = " << n_blobs << endl;
 
@@ -182,9 +182,9 @@ void caffe_classifier::print_network_metadata()
       cout << "network_phase = caffe::TEST" << endl;
    }
    
-   for(int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_minor_layers; l++)
    {
-      cout << "Layer l = " << l 
+      cout << "Minor layer l = " << l 
            << " layer_name = " << net_->layer_names().at(l)
            << endl;
 //      cout << "param_layer_names.push_back(\""
@@ -229,12 +229,12 @@ void caffe_classifier::print_network_metadata()
 // Extract total number of weights and biases contained within
 // network from all parameter blobs:
 
-   n_minor_layers = net_->params().size();
+   n_param_layers = net_->params().size();
    cout << "Number of layers containing calculated parameters = " 
-        << n_minor_layers << endl;
+        << n_param_layers << endl;
 
    int n_total_params = 0;
-   for(int p = 0; p < n_minor_layers; p++)
+   for(int p = 0; p < n_param_layers; p++)
    {
       const shared_ptr<const caffe::Blob<float> > param_blob =
          net_->params().at(p);
@@ -264,8 +264,8 @@ void caffe_classifier::print_network_metadata()
 // Compute distribution statistics for trained weights and biases
 // within each layer containing parameters:
 
-   cout << "n_minor_layers = " << n_minor_layers << endl;
-   for(int p = 0; p < n_minor_layers; p++)
+   cout << "n_param_layers = " << n_param_layers << endl;
+   for(int p = 0; p < n_param_layers; p++)
    {
       cout << "Parameter layer p = " << p << endl;
       
@@ -273,8 +273,8 @@ void caffe_classifier::print_network_metadata()
          net_->params().at(p);
 
       n_param_layer_nodes.push_back(params_blob->shape(0));
-//      cout << "n_param_layer_nodes = "
-//           << n_param_layer_nodes.back() << endl;
+      cout << "n_param_layer_nodes = "
+           << n_param_layer_nodes.back() << endl;
 
 //      int init_global_weight_node = global_weight_node_counter;
       for(int w = 0; w < n_param_layer_nodes.back(); w++)
@@ -314,6 +314,7 @@ void caffe_classifier::print_network_metadata()
    cout << "n_minor_layers = " << n_minor_layers << endl;
    cout << "minor_layer_skip = " << minor_layer_skip << endl;
    cout << "n_major_layers = " << n_major_layers << endl;
+   cout << "n_param_layers = " << n_param_layers << endl;
 
    int major_weight_node_counter = 0;
 
@@ -325,12 +326,16 @@ void caffe_classifier::print_network_metadata()
    cout << "  Initial major weight node ID = 0" << endl;
    cout << "  Final major weight node ID = 2" << endl;
 
-   for(int p = 0; p < n_minor_layers; p += minor_layer_skip)
+
+   for(int major_layer_ID = 1; major_layer_ID < n_major_layers; 
+       major_layer_ID++)
    {
-      int major_layer_ID = 1 + p / minor_layer_skip; 
+      int p = (major_layer_ID - 1) * minor_layer_skip;
 			// Recall major layer 0 holds input image
       cout << "Major_layer_ID = " << major_layer_ID
-           << " parameter layer p = " << p << endl;
+           << " parameter layer p = " << p 
+           << " n_param_layer_nodes[p] = "
+           << n_param_layer_nodes[p] << endl;
 
       int init_major_weight_node = major_weight_node_counter;
       for(int w = 0; w < n_param_layer_nodes[p]; w++)

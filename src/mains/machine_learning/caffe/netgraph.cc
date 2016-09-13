@@ -180,56 +180,68 @@ int main(int argc, char* argv[])
    }
    else if (Facenet_flag)
    {
+      string facenet_model_label;
+      cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+      cin >> facenet_model_label;
 
-     /*
-// Facenet Model 2e:
+      if(facenet_model_label == "1")
+      {
+         major_layer_names.push_back("data");
+         major_layer_names.push_back("conv1a");
+         major_layer_names.push_back("conv2a");
+         major_layer_names.push_back("conv3a");
+         major_layer_names.push_back("conv4a");
+         major_layer_names.push_back("fc5");
+         major_layer_names.push_back("fc6");
+         major_layer_names.push_back("fc7_faces");
+         fc_layer_ID = 5;
+         reduced_chip_size = 12 * 12;
+      }
+      else if(facenet_model_label == "2e")
+      {
+         major_layer_names.push_back("data");
+         major_layer_names.push_back("conv1");
+         major_layer_names.push_back("conv2");
+         major_layer_names.push_back("conv3");
+         major_layer_names.push_back("conv4");
+         major_layer_names.push_back("fc5");
+         major_layer_names.push_back("fc6");
+         major_layer_names.push_back("fc7_faces");
+         fc_layer_ID = 5;
+         reduced_chip_size = 12 * 12;
+      }
+      else if (facenet_model_label == "2n" ||
+               facenet_model_label == "2q" ||
+               facenet_model_label == "2r")
+      {
+         major_layer_names.push_back("data");
+         major_layer_names.push_back("conv1");
+         major_layer_names.push_back("conv2");
+         major_layer_names.push_back("conv3a");
+         major_layer_names.push_back("conv3b");
+         major_layer_names.push_back("conv4a");
+         major_layer_names.push_back("conv4b");
+         major_layer_names.push_back("fc5");
+         major_layer_names.push_back("fc6");
+         major_layer_names.push_back("fc7_faces");
+         fc_layer_ID = 7;
+         reduced_chip_size = 12 * 12;
+      }
 
-      minor_layer_skip = 2;
-      major_layer_names.push_back("data");
-      major_layer_names.push_back("conv1");
-      major_layer_names.push_back("conv2");
-      major_layer_names.push_back("conv3");
-      major_layer_names.push_back("conv4");
-      major_layer_names.push_back("fc5");
-      major_layer_names.push_back("fc6");
-      major_layer_names.push_back("fc7_faces");
-      fc_layer_ID = 5;
-      reduced_chip_size = 12 * 12;
-     */
-
-
-// Facenet model 2n, 2q, 2r  (conv3a + conv3b + conv4a + conv4b)
-
-//      minor_layer_skip = 2;	// Facenet model 2n
-      minor_layer_skip = 6;	// Facenet model 2q, 2r
-      major_layer_names.push_back("data");
-      major_layer_names.push_back("conv1");
-      major_layer_names.push_back("conv2");
-      major_layer_names.push_back("conv3a");
-      major_layer_names.push_back("conv3b");
-      major_layer_names.push_back("conv4a");
-      major_layer_names.push_back("conv4b");
-      major_layer_names.push_back("fc5");
-      major_layer_names.push_back("fc6");
-      major_layer_names.push_back("fc7_faces");
-      fc_layer_ID = 7;
-      reduced_chip_size = 12 * 12;
-
-// Facenet 1:
-
-//      major_layer_names.push_back("data");
-//      major_layer_names.push_back("conv1a");
-//      major_layer_names.push_back("conv2a");
-//      major_layer_names.push_back("conv3a");
-//      major_layer_names.push_back("conv4a");
-//      major_layer_names.push_back("fc5");
-//      major_layer_names.push_back("fc6");
-//      major_layer_names.push_back("fc7_faces");
-   }
+      if(facenet_model_label == "2e" ||
+         facenet_model_label == "2n")
+      {
+         minor_layer_skip = 2;
+      }
+      else if (facenet_model_label == "2q" ||
+               facenet_model_label == "2r")
+      {
+         minor_layer_skip = 6;	
+      }
+   } // Facenet_flag conditional
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
                                major_layer_names.size(), minor_layer_skip);
-   
 
 // Generate layout for network layers and nodes within a 0 < gx <
 // n_layers , 0 < gy < 2 * n_layers rectangle.  Export layout to graph

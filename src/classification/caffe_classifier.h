@@ -90,7 +90,7 @@ class caffe_classifier
    int num_data_channels_;
    int input_img_xdim, input_img_ydim;
    int classification_result;
-   int n_major_layers, n_minor_layers, minor_layer_skip;
+   int n_major_layers, n_minor_layers, minor_layer_skip, n_param_layers;
    double classification_score;
    std::string test_prototxt_filename, trained_caffe_model_filename;
    std::vector<int> n_param_layer_nodes;
