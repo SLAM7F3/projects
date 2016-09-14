@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 9/9/16; 9/10/16; 9/11/16; 9/12/16
+Last updated on 9/10/16; 9/11/16; 9/12/16; 9/14/16
 ==========================================================================
 
 *.  Sat, Sep 10 , Titan 1, afternoon, Facenet model 2e, 4 conv layers
@@ -282,7 +282,6 @@ As of 9/10/16, 6 conv-layer model 2r with batch normalization yields the
 best overall gender classification performance results!
 ***************************
 
-
 ------------------------------------------------------------------- 
 *. Sun, Sep 11, Titan 1, Facenet model 2n, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, no batch normalization 
@@ -312,5 +311,14 @@ Confusion matrix:
 91	151	1157	19	
 0	0	0	0	
 
-
 male_score_threshold = 0.52 female_score_threshold = 0.52
+
+------------------------------------------------------------------- 
+*. Weds, Sep 14, Titan 3, Facenet model 2s, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization, l2
+reg param = 0.0005, less dropout
+
+Started training on Titan 3 around 8:15 am 
+
+
+
