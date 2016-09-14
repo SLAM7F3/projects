@@ -2384,6 +2384,7 @@ namespace graphdbfunc
          graph_hierarchy_ID);
       SQL_cmd += " AND graph_ID="+stringfunc::number_to_string(graph_ID);
       Genarray<string>* field_array_ptr=gis_database_ptr->select_data(SQL_cmd);
+//      cout << "SQL_cmd = " << SQL_cmd << endl;
 
       if (field_array_ptr==NULL) return false;
 
@@ -2399,6 +2400,12 @@ namespace graphdbfunc
          string label=field_array_ptr->get(m,3);
          string color=field_array_ptr->get(m,4);
          double size=stringfunc::string_to_number(field_array_ptr->get(m,5));
+
+//         cout << "m = " << m 
+//              << " layout = " << layout
+//              << " gx = " << gx << " gy = " << gy << endl;
+//         cout << "   label = " << label << " color = " << color
+//              <<  " size = " << size << endl;
 
          layouts.push_back(layout);
          gxs.push_back(gx);

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Imagesdatabasefuncs namespace method definitions
 // ==========================================================================
-// Last modified on 4/3/14; 8/22/16; 9/5/16; 9/7/16
+// Last modified on 8/22/16; 9/5/16; 9/7/16; 9/14/16
 // ==========================================================================
 
 #include <iostream>
@@ -1713,7 +1713,10 @@ std::string generate_update_image_metadata_SQL_command_serialID(
             json_string += "               \"size\":  \""+
                stringfunc::number_to_string(sizes[a])+"\", \n";
 
-            colorfunc::Color c=colorfunc::string_to_color(colors[a]);
+            string curr_color = stringfunc::remove_trailing_whitespace(
+               colors[a]);
+            curr_color = stringfunc::remove_leading_whitespace(curr_color);
+            colorfunc::Color c=colorfunc::string_to_color(curr_color);
             colorfunc::RGB curr_RGB=colorfunc::get_RGB_values(c);
             json_string += "               \"rgbColor\": ["+
                stringfunc::number_to_string(curr_RGB.first)+","+
