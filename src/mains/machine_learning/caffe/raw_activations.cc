@@ -1,16 +1,12 @@
-// NEED TO AUTOMATICALLY CREATE SOFTLINK : activations.dat --> 
-// // activations_4500.dat !!!
-
-
 // ========================================================================
 // Program RAW_ACTIVATIONS imports a trained FACENET caffe model.  It
 // also takes in testing images which the model has never seen before.
 // For each FACENET neuron, we count how many input test images cause
 // it to fire.  We also record the mean and median values of its
 // non-zero activations.  Activation statistics for each node in each
-// layer are periodically exported to output text files within
-// activations_subdir.  Any test image which has zero activation for
-// all nodes within a network layer is copied into a subdirectory of
+// layer are exported to output text files within activations_subdir.
+// Any test image which has zero activation for all nodes within a
+// network layer is copied into a subdirectory of
 // zero_activations_subdir.
 
 // RAW_ACTIVATIONS exports text files for each input test image
@@ -24,7 +20,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 9/7/16; 9/8/16; 9/11/16; 9/13/16
+// Last updated on 9/8/16; 9/11/16; 9/13/16; 9/14/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -50,6 +46,10 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
+   string facenet_model_label;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cin >> facenet_model_label;
+
    timefunc::initialize_timeofday_clock();
 
    string test_prototxt_filename   = argv[1];
@@ -61,8 +61,12 @@ int main(int argc, char** argv)
    filefunc::dircreate(network_subdir);
    string subnetwork_subdir = network_subdir + "subnetworks/";
    filefunc::dircreate(subnetwork_subdir);
-   string activations_subdir = network_subdir + "activations/";
+   string base_activations_subdir = network_subdir + "activations/";
+   filefunc::dircreate(base_activations_subdir);
+   string activations_subdir = base_activations_subdir + "model_"+
+      facenet_model_label+"/";
    filefunc::dircreate(activations_subdir);
+
    string node_activations_subdir = activations_subdir + "nodes/";
    filefunc::dircreate(node_activations_subdir);
    string image_activations_subdir = activations_subdir + "images/";
@@ -84,10 +88,6 @@ int main(int argc, char** argv)
    EXTREMAL_ACTIVATIONS_MAP::iterator extremal_activations_iter;
 
    vector<string> blob_names;
-
-   string facenet_model_label;
-   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
-   cin >> facenet_model_label;
 
 // Enumerate blob names as functions of Facenet model label:
 
@@ -133,8 +133,12 @@ int main(int argc, char** argv)
    int n_major_layers = blob_names.size() + 1;
    int n_blob_layers = n_major_layers - 1;
 
-   int minor_layer_skip;
-   if(facenet_model_label == "2e")
+   int minor_layer_skip = -1;
+   if(facenet_model_label == "1")
+   {
+      minor_layer_skip = 2;	
+   }
+   else if(facenet_model_label == "2e")
    {
       minor_layer_skip = 2;	
    }
@@ -146,7 +150,6 @@ int main(int argc, char** argv)
    {
       minor_layer_skip = 6;   
    }
-   
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
                                n_major_layers, minor_layer_skip);
@@ -197,10 +200,13 @@ int main(int argc, char** argv)
       string orig_image_filename = image_filenames[image_ID];
       string image_filename = orig_image_filename;
       string image_basename = filefunc::getbasename(image_filename);
-      cout << "i = " << i 
-//           << " image_basename = " << image_basename 
-           << " image_filename = " << image_filename
-           << endl;
+
+      if(i%100 == 0)
+      {
+         cout << "i = " << i 
+              << " image_filename = " << image_filename
+              << endl;
+      }
 
       vector<string> substrings = 
          stringfunc::decompose_string_into_substrings(image_basename,"_");
@@ -226,80 +232,6 @@ int main(int argc, char** argv)
       string true_gender_label = substrings[0];
 //      cout << "true_gender_label = " << true_gender_label << endl;
       int n_strong_activations = 0;
-
-// Periodically update node activation frequency and non-zero value
-// information:
-
-      if(i > istart && i%50 == 0)
-      {
-         string activations_filename=activations_subdir+"activations_"
-            +stringfunc::integer_to_string(i,4)+".dat";
-         ofstream activations_stream;
-         filefunc::openfile(activations_filename, activations_stream);
-         activations_stream << "#  n_images = " << i << endl;
-         activations_stream << endl;
-
-         activations_stream << 
-"# Layer  Global node  Local node  Stimulation  Median        Quartile_width  Mean            Sigma" << endl;
-         activations_stream << 
-"#  ID       ID            ID      fraction     activation    activation      activation      activation" << endl;
-         activations_stream << endl;
-
-// Recall global node IDs 0, 1 and 2 are reserved for the RGB channels
-// within the input imagery data layer 0:
-
-         int n_RGB_channels = 3;
-         int global_node_counter = n_RGB_channels;
-
-         for(node_activations_iter = node_activations_map.begin();
-             node_activations_iter != node_activations_map.end();
-             node_activations_iter++)
-         {
-            DUPLE curr_duple = node_activations_iter->first;
-            vector<double> curr_activations = node_activations_iter->second;
-      
-// Count fraction of test images which fire current node:
-
-            vector<double> nonzero_activations;
-            for(unsigned int j = 0; j < curr_activations.size(); j++)
-            {
-               if(curr_activations[j] > 0)
-               {
-                  nonzero_activations.push_back(curr_activations[j]);
-               }
-            }
-            double stimulation_frac = double(nonzero_activations.size())/
-               (i-istart+1);
-
-            double mu = 0, sigma = 0;
-            double median = 0, quartile_width = 0;
-
-            if(nonzero_activations.size() > 0)
-            {
-               mathfunc::mean_and_std_dev(nonzero_activations, mu, sigma);
-               mathfunc::median_value_and_quartile_width(
-                  nonzero_activations, median, quartile_width);
-            }
-
-// Recall layer 0 = input imagery data layer:
-
-            int curr_layer = curr_duple.first + 1;
-            activations_stream << curr_layer << "   "
-                               << global_node_counter++ << "   "
-                               << curr_duple.second << "   "
-                               << stimulation_frac << " \t"
-                               << median << " \t\t"
-                               << quartile_width << " \t\t"
-                               << mu << " \t\t"
-                               << sigma << " \t\t"
-                               << endl;
-         } // loop over node activations iterator
-
-         filefunc::closefile(activations_filename, activations_stream);
-         string banner="Exported "+activations_filename;
-         outputfunc::write_banner(banner);
-      } // i > istart && i%50 == 0 conditional
-
       vector<string> montage_lines;
       montage_lines.push_back("0  "+image_filename);
 
@@ -314,7 +246,7 @@ int main(int argc, char** argv)
       image_activations_stream << image_filename << endl << endl;
 
       double softmax_denom = 0;
-      for(unsigned int layer = 0; layer < n_blob_layers; layer++)
+      for(int layer = 0; layer < n_blob_layers; layer++)
       {
          vector<int> local_node_IDs;
          vector<double> node_activations;
@@ -440,7 +372,7 @@ int main(int argc, char** argv)
             {
 //               cout << " Renormalized activation = " 
 //                    << renorm_node_activations[n];
-               if(layer < blob_names.size() - 1 &&
+               if(layer < int(blob_names.size()) - 1 &&
                   renorm_node_activations[n] > strong_activation_threshold)
                {
                   n_strong_activations++;
@@ -539,8 +471,8 @@ int main(int argc, char** argv)
 // Check whether there exists at least one image chip corresponding to
 // each Facnet layer 0 through n_blob_layers:
 
-      unsigned int n_represented_layers = 0;
-      for(unsigned int layer = 0; layer <= n_blob_layers; layer++)
+      int n_represented_layers = 0;
+      for(int layer = 0; layer <= n_blob_layers; layer++)
       {
          for(unsigned int m = 0; m < montage_lines.size(); m++)
          {
@@ -570,8 +502,76 @@ int main(int argc, char** argv)
    cout << "trained caffe model = " << caffe_model_filename << endl;
    cout << "input_images_subdir = " << input_images_subdir << endl;
 
+// Export activation frequency and non-zero value information:
+
+   string activations_filename=activations_subdir+"activations.dat";
+   ofstream activations_stream;
+   filefunc::openfile(activations_filename, activations_stream);
+   activations_stream << "#  Number of images = " << n_images << endl;
+   activations_stream << "#  Model = " << facenet_model_label << endl;
+   activations_stream << endl;
+
+   activations_stream << 
+      "# Layer  Global node  Local node  Stimulation  Median        Quartile_width  Mean            Sigma" << endl;
+   activations_stream << 
+      "#  ID       ID            ID      fraction     activation    activation      activation      activation" << endl;
+   activations_stream << endl;
+
+// Recall global node IDs 0, 1 and 2 are reserved for the RGB channels
+// within the input imagery data layer 0:
+
+   int n_RGB_channels = 3;
+   int global_node_counter = n_RGB_channels;
+
+   for(node_activations_iter = node_activations_map.begin();
+       node_activations_iter != node_activations_map.end();
+       node_activations_iter++)
+   {
+      DUPLE curr_duple = node_activations_iter->first;
+      vector<double> curr_activations = node_activations_iter->second;
+      
+// Count fraction of test images which fire current node:
+
+      vector<double> nonzero_activations;
+      for(unsigned int j = 0; j < curr_activations.size(); j++)
+      {
+         if(curr_activations[j] > 0)
+         {
+            nonzero_activations.push_back(curr_activations[j]);
+         }
+      }
+      double stimulation_frac = double(nonzero_activations.size())/n_images;
+
+      double mu = 0, sigma = 0;
+      double median = 0, quartile_width = 0;
+
+      if(nonzero_activations.size() > 0)
+      {
+         mathfunc::mean_and_std_dev(nonzero_activations, mu, sigma);
+         mathfunc::median_value_and_quartile_width(
+            nonzero_activations, median, quartile_width);
+      }
+
+// Recall layer 0 = input imagery data layer:
+
+      int curr_layer = curr_duple.first + 1;
+      activations_stream << curr_layer << "   "
+                         << global_node_counter++ << "   "
+                         << curr_duple.second << "   "
+                         << stimulation_frac << " \t"
+                         << median << " \t\t"
+                         << quartile_width << " \t\t"
+                         << mu << " \t\t"
+                         << sigma << " \t\t"
+                         << endl;
+   } // loop over node activations iterator
+
+   filefunc::closefile(activations_filename, activations_stream);
+   string banner="Exported "+activations_filename;
+   outputfunc::write_banner(banner);
+
    filefunc::closefile(montage_filename, montagestream);
-   string banner="Exported "+montage_filename;
+   banner="Exported "+montage_filename;
    outputfunc::write_banner(banner);
 
 // Export nonzero activations for each node within entire network to

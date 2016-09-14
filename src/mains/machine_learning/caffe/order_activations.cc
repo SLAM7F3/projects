@@ -8,7 +8,7 @@
 //                         ./order_activations
 
 // ========================================================================
-// Last updated on 9/5/16; 9/7/16; 9/8/16; 9/11/16
+// Last updated on 9/7/16; 9/8/16; 9/11/16; 9/14/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -30,6 +30,10 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
+   string facenet_model_label;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cin >> facenet_model_label;
+
    typedef std::map<DUPLE, int, ltduple> NODE_IDS_MAP;
 // independent duple contains (layer_ID, old_local_node_ID)
 // dependent int contains new_local_node_ID
@@ -37,7 +41,9 @@ int main(int argc, char** argv)
    NODE_IDS_MAP::iterator node_ids_iter;
 
    string network_subdir = "./vis_facenet/network/";
-   string activations_subdir = network_subdir + "activations/";
+   string base_activations_subdir = network_subdir + "activations/";
+   string activations_subdir = base_activations_subdir + "model_"+
+      facenet_model_label+"/";
    string subnetwork_subdir = network_subdir + "subnetworks/";
    filefunc::dircreate(subnetwork_subdir);
    string male_subnetwork_subdir=subnetwork_subdir+"male/";

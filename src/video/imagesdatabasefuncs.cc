@@ -1632,8 +1632,10 @@ std::string generate_update_image_metadata_SQL_command_serialID(
             graph_edge* graph_edge_ptr=graph_edge_ptrs[e];
             int curr_matches=graph_edge_ptr->get_weight();
 
-            double max_weight = 100;
-            double min_weight = 0;
+            //double max_weight = 100;
+            //double min_weight = 0;
+            double max_weight = 75;
+            double min_weight =25;
             int edge_weight = curr_matches - (max_weight+min_weight)/2; 
             int min_abs_weight = 5;
 
@@ -1645,7 +1647,8 @@ std::string generate_update_image_metadata_SQL_command_serialID(
                node* node1_ptr=graph_edge_ptr->get_node1_ptr();
                node* node2_ptr=graph_edge_ptr->get_node2_ptr();
          
-// FAKE FAKE:  Mon Aug 22 at 4:30 am
+// FAKE FAKE:  Mon Aug 22, 2016 
+// Use new edge coloring for trained neural network graph display     
 
                colorfunc::RGB edge_RGB=graph_ptr->
                   compute_edge_color(curr_matches, max_weight, min_weight);

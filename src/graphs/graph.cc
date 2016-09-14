@@ -1334,8 +1334,8 @@ colorfunc::RGB graph::compute_edge_color(
 
    colorfunc::HSV curr_hsv;
    curr_hsv.first = (1 - frac_weight) * 120;
-   curr_hsv.second = 0.75 + 0.25 * fabs(frac_weight);
-   curr_hsv.third = 0.60 + 0.40 * fabs(frac_weight);
+   curr_hsv.second = 0.333 + 0.666 * fabs(frac_weight);
+   curr_hsv.third = 0.333 + 0.666 * fabs(frac_weight);
 //   curr_hsv.second = 0.15 + 0.85 * fabs(frac_weight);
 //   curr_hsv.third = 0.25 + 0.75 * fabs(frac_weight);
    return colorfunc::hsv_to_RGB(curr_hsv);
