@@ -143,7 +143,6 @@ int main(int argc, char** argv)
    prev_layer = 0;
    int local_node_ID = 0;
    int RGB_data_offset = 3;
-//    int node_counter = 0 + RGB_data_offset;
    int new_global_node_ID = 0 + RGB_data_offset;
 
    double min_median_activation = 1E10;
@@ -151,11 +150,6 @@ int main(int argc, char** argv)
    
    for(unsigned int r = 0; r < row_numbers.size(); r++)
    {
-//      for(unsigned int c = 0 ; c < row_numbers.at(r).size(); c++)
-//      {
-//         cout << row_numbers.at(r).at(c) << "  ";
-//      }
-
       if(r == row_numbers.size() -1)
       {
          old_global_node_ID.push_back(row_numbers.at(r).at(1));

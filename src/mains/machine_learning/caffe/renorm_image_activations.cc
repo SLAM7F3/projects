@@ -235,10 +235,12 @@ int main(int argc, char** argv)
                }
             }
 
-// As of 9/7/16, we intentionally bias hues towards warmer tones:
+//            double hue = 250 * (1 - frac);  // unbiased
 
-            double hue = 250 * (1 - frac);
-//            double hue = 250  - 375 * frac;
+// As of 9/7/16, we intentionally bias hues towards warmer tones:
+            double hue = 250  - 375 * frac;
+
+
             if(hue < 0) hue = 0;
 
             double s = 1;
@@ -267,13 +269,13 @@ int main(int argc, char** argv)
                    << B << "      " 
                    << endl;
 
-//         const double min_frac_threshold = 0.60;
+         //        const double min_frac_threshold = 0.60;
 //         const double max_frac_threshold = 0.75;
-//         const double min_frac_threshold = 0.75;
+         const double min_frac_threshold = 0.75;
 //         const double max_frac_threshold = 0.85;
 //         const double min_frac_threshold = 0.85;
 //         const double max_frac_threshold = 0.99;
-         const double min_frac_threshold = 0.99;
+//         const double min_frac_threshold = 0.90;
          const double max_frac_threshold = 1.00;
          if(layer_ID == max_layer_ID && frac > min_frac_threshold &&
             frac < max_frac_threshold)

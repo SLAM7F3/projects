@@ -1759,8 +1759,9 @@ std::string generate_update_image_metadata_SQL_command_serialID(
    {
       string projects_subdir = "/home/pcho/programs/c++/git/projects/";
       string caffe_subdir=projects_subdir+"src/mains/machine_learning/caffe/";
-      string activations_subdir=caffe_subdir+
-         "vis_facenet/node_images/activations/";
+      string base_activations_subdir=caffe_subdir+
+         "vis_facenet/network/activations/";
+      string activations_subdir = base_activations_subdir + "model_2e/";
       string renorm_subdir=activations_subdir+"images/renormalized/";
       
       int image_activations_index;
@@ -1947,7 +1948,7 @@ std::string generate_update_image_metadata_SQL_command_serialID(
 // thumbnail URLs based upon their activation responses to a
 // particular input test image:
 
-      if(hierarchy_ID == 47)
+      if(hierarchy_ID == 48)
       {
          reset_nodes_metadata(node_ID, relative_size, color, thumbnail_URL);
       }
