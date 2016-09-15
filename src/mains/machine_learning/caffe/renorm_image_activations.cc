@@ -38,9 +38,9 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
-   string facenet_model_label;
+   string facenet_model_label = "2e";
    cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
-   cin >> facenet_model_label;
+//   cin >> facenet_model_label;
 
    string network_subdir = "./vis_facenet/network/";
    string base_activations_subdir = network_subdir + "activations/";
@@ -269,21 +269,26 @@ int main(int argc, char** argv)
                    << B << "      " 
                    << endl;
 
-         //        const double min_frac_threshold = 0.60;
+         const double min_frac_threshold = 0.05;
+         const double max_frac_threshold = 0.30;
+//         const double min_frac_threshold = 0.50;
 //         const double max_frac_threshold = 0.75;
-         const double min_frac_threshold = 0.75;
+//         const double min_frac_threshold = 0.75;
 //         const double max_frac_threshold = 0.85;
 //         const double min_frac_threshold = 0.85;
 //         const double max_frac_threshold = 0.99;
 //         const double min_frac_threshold = 0.90;
-         const double max_frac_threshold = 1.00;
+//         const double max_frac_threshold = 1.00;
          if(layer_ID == max_layer_ID && frac > min_frac_threshold &&
             frac < max_frac_threshold)
          {
-            cout << filefunc::getbasename(image_activation_filenames[f])
-                 << "   frac = " << frac 
-                 << "   class = " << class_label
-                 << endl;
+            if(class_label == "female_face")
+            {
+               cout << filefunc::getbasename(image_activation_filenames[f])
+                    << "   frac = " << frac 
+                    << "   class = " << class_label
+                    << endl;
+            }
          }
 
       } // loop over index i labeling lines within image activations text file

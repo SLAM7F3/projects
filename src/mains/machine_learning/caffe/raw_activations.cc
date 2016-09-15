@@ -113,7 +113,8 @@ int main(int argc, char** argv)
    }
    else if (facenet_model_label == "2n" ||
             facenet_model_label == "2q" ||
-            facenet_model_label == "2r")
+            facenet_model_label == "2r" ||
+            facenet_model_label == "2s")
    {
       blob_names.push_back("conv1");
       blob_names.push_back("conv2");
@@ -146,7 +147,8 @@ int main(int argc, char** argv)
    {
       minor_layer_skip = 2;   
    }
-   else if(facenet_model_label == "2q" || facenet_model_label == "2r")
+   else if(facenet_model_label == "2q" || facenet_model_label == "2r" ||
+           facenet_model_label == "2s")
    {
       minor_layer_skip = 6;   
    }

@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/28/16; 9/9/16; 9/10/16; 9/11/16
+// Last updated on 8/28/16; 9/9/16; 9/10/16; 9/11/16; 9/15/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -40,6 +40,73 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
+   string facenet_model_label;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cin >> facenet_model_label;
+
+   vector<string> blob_names;
+
+// Enumerate blob names as functions of Facenet model label:
+
+   if(facenet_model_label == "1")
+   {
+      blob_names.push_back("conv1a");
+      blob_names.push_back("conv2a");
+      blob_names.push_back("conv3a");
+      blob_names.push_back("conv4a");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+   }
+   else if(facenet_model_label == "2e")
+   {
+      blob_names.push_back("conv1");
+      blob_names.push_back("conv2");
+      blob_names.push_back("conv3");
+      blob_names.push_back("conv4");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+   }
+   else if (facenet_model_label == "2n" ||
+            facenet_model_label == "2q" ||
+            facenet_model_label == "2r" ||
+            facenet_model_label == "2s")
+   {
+      blob_names.push_back("conv1");
+      blob_names.push_back("conv2");
+      blob_names.push_back("conv3a");
+      blob_names.push_back("conv3b");
+      blob_names.push_back("conv4a");
+      blob_names.push_back("conv4b");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6");
+      blob_names.push_back("fc7_faces");
+   }
+   else
+   {
+      cout << "Unsupported facenet model label " << endl;
+      exit(-1);
+   }
+   int n_major_layers = blob_names.size() + 1;
+   int n_blob_layers = n_major_layers - 1;
+
+   int minor_layer_skip = -1;
+   if(facenet_model_label == "1")
+   {
+      minor_layer_skip = 2;	
+   }
+   else if(facenet_model_label == "2e" ||
+           facenet_model_label == "2n")
+   {
+      minor_layer_skip = 2;	
+   }
+   else if(facenet_model_label == "2q" || facenet_model_label == "2r" ||
+           facenet_model_label == "2s")
+   {
+      minor_layer_skip = 6;   
+   }
+
 //   double male_score_threshold = 0.5;
 //   double female_score_threshold = 0.5;
 //   cout << "Enter minimal score for male classification:" << endl;
@@ -132,7 +199,8 @@ int main(int argc, char** argv)
       filefunc::purge_files_in_subdir(unsure_chips_subdir);
    }
 
-   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
+                               n_major_layers, minor_layer_skip);
 
 // Mean RGB values derived from O(386K) 96x96 training face image chips
 

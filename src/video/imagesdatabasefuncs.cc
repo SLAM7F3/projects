@@ -1950,7 +1950,7 @@ std::string generate_update_image_metadata_SQL_command_serialID(
 
       if(hierarchy_ID == 48)
       {
-         reset_nodes_metadata(node_ID, relative_size, color, thumbnail_URL);
+        reset_nodes_metadata(node_ID, relative_size, color, thumbnail_URL);
       }
 
       ATTRIBUTES_METADATA_MAP* image_annotations_map_ptr=

@@ -9,7 +9,7 @@
 //                         ./add_softmax
 
 // ========================================================================
-// Last updated on 9/6/16; 9/8/16
+// Last updated on 9/6/16; 9/8/16; 9/15/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -29,8 +29,14 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
+   string facenet_model_label;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cin >> facenet_model_label;
+
    string network_subdir = "./vis_facenet/network/";
-   string activations_subdir = network_subdir + "activations/";
+   string base_activations_subdir = network_subdir + "activations/";
+   string activations_subdir = base_activations_subdir + "model_"+
+      facenet_model_label+"/";
    string image_activations_subdir = activations_subdir + "images/";
 
 //   int class_index = 0; // male face
@@ -47,12 +53,12 @@ int main(int argc, char** argv)
    if(class_index == 0)
    {
       composites_subdir = caffe_subdir + 
-         "/screen_shots/2016/Sep/Sep5/male/composites/";
+         "/screen_shots/2016/Sep/Sep14/male/composited_images/";
    }
    else if (class_index == 1)
    {
       composites_subdir = caffe_subdir + 
-         "/screen_shots/2016/Sep/Sep5/female/composites/";
+         "/screen_shots/2016/Sep/Sep14/female/composited_images/";
    }
 
    string annotated_composites_subdir = composites_subdir+"annnotated/";
@@ -78,8 +84,8 @@ int main(int argc, char** argv)
 
       cout << "f = " << f
            << " composite_filename = " 
-           << filefunc::getbasename(composites_filenames[f]) 
-           << " male_prob = " << male_face_prob
+           << filefunc::getbasename(composites_filenames[f])  << endl;
+      cout << "   male_prob = " << male_face_prob
            << " female_prob = " << female_face_prob
            << " nonface_prob = " << non_face_prob
            << endl;
