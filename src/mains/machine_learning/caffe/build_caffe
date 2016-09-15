@@ -7,8 +7,9 @@
 ~/bin/MAKE program=ensemble_chars
 ~/bin/MAKE program=extract_features
 ~/bin/MAKE program=finetuned_classify
-~/bin/MAKE program=generate_file_list
 ~/bin/MAKE program=generate_cnn_vis_scripts
+~/bin/MAKE program=generate_file_list
+~/bin/MAKE program=generate_movie_scripts
 ~/bin/MAKE program=imagenet_classification
 ~/bin/MAKE program=netgraph
 ~/bin/MAKE program=order_activations

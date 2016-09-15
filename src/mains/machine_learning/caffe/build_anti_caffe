@@ -9,6 +9,7 @@
 /bin/rm ./finetuned_classify
 /bin/rm ./generate_cnn_vis_scripts
 /bin/rm ./generate_file_list
+/bin/rm ./generate_movie_scripts
 /bin/rm ./imagenet_classification
 /bin/rm ./netgraph
 /bin/rm ./order_activations
