@@ -269,8 +269,8 @@ int main(int argc, char** argv)
                    << B << "      " 
                    << endl;
 
-         const double min_frac_threshold = 0.05;
-         const double max_frac_threshold = 0.30;
+         const double min_frac_threshold = 0.15;
+         const double max_frac_threshold = 0.50;
 //         const double min_frac_threshold = 0.50;
 //         const double max_frac_threshold = 0.75;
 //         const double min_frac_threshold = 0.75;
@@ -282,7 +282,7 @@ int main(int argc, char** argv)
          if(layer_ID == max_layer_ID && frac > min_frac_threshold &&
             frac < max_frac_threshold)
          {
-            if(class_label == "female_face")
+            if(class_label == "male_face")
             {
                cout << filefunc::getbasename(image_activation_filenames[f])
                     << "   frac = " << frac 

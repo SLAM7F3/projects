@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 9/11/16; 9/12/16; 9/14/16; 9/15/16
+Last updated on 9/12/16; 9/14/16; 9/15/16; 9/16/16
 ==========================================================================
 
 *.  Sat, Sep 10 , Titan 1, afternoon, Facenet model 2e, 4 conv layers
@@ -351,6 +351,36 @@ reg param = 0.0005, No dropout in first 2 conv layers.
 
 Training started at noontime on titan1
 
+/data/caffe/faces/trained_models/Sep15_2t_T1/train_iter_172000.caffemodel
+caffe validation accuracy asymptotes to 0.916; no overfitting
+
+
+frac_correct = 0.884047 frac_unsure = 0.0127108 frac_incorrect = 0.103243
+
+frac_nonface_correct = 0.99527
+frac_nonface_incorrect = 0.00473037
+
+frac_male_correct = 0.83913
+frac_male_unsure = 0.0195652
+frac_male_incorrect = 0.141304
+
+frac_female_correct = 0.844852
+frac_female_unsure = 0.0155148
+frac_female_incorrect = 0.139633
+
+Confusion matrix:
+
+1053	3	3	0	
+84	1158	111	27	
+62	136	1198	22	
+0	0	0	0	
+
+***************************
+As of 9/16/16, 6 conv-layer model 2t with batch normalization and reduced
+regularization yields the best overall gender classification performance
+results!
+
+***************************
 
 ------------------------------------------------------------------- 
 *. Thurs, Sep 15, Titan 3, Facenet model 2t, 6 conv layers,
@@ -358,3 +388,32 @@ conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization, l2
 reg param = 0.0010, No dropout in first 2 conv layers.
 
 Training started at noontime on titan3
+/data/caffe/faces/trained_models/Sep15_2t_T3/train_iter_194000.caffemodel
+caffe validation accuracy asymptotes to 0.913; no overfitting
+
+frac_correct = 0.878403 frac_unsure = 0.00881514 frac_incorrect = 0.112782
+
+frac_nonface_correct = 0.995279
+frac_nonface_incorrect = 0.00472144
+
+frac_male_correct = 0.83913
+frac_male_unsure = 0.0123188
+frac_male_incorrect = 0.148551
+
+frac_female_correct = 0.829337
+frac_female_unsure = 0.0119887
+frac_female_incorrect = 0.158674
+
+Confusion matrix:
+
+1054	3	2	0	
+83	1158	122	17	
+66	159	1176	17	
+0	0	0	0	
+
+------------------------------------------------------------------- 
+*. Fri, Sep 16, Titan 3, Facenet model 2t, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization, No L2
+regularziation.  No dropout in first 2 conv layers.
+
+Training started around 8:30 am on 9/16/16
