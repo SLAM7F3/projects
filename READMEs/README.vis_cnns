@@ -1,7 +1,7 @@
 ==========================================================================
 Neural net visualization notes
 ==========================================================================
-Last updated on 9/7/16; 9/8/16; 9/11/16; 9/14/16
+Last updated on 9/8/16; 9/11/16; 9/14/16; 9/17/16
 ==========================================================================
 
 In this README, we define the following root directories:
@@ -91,3 +91,9 @@ colored according to their activations for a particular test image.  We
 wrote ADD_SOFTMAX primarily for movie generation purposes.
 
                         ./add_softmax
+
+*.  Program $caffe_root/MONTAGE_MOVIEFRAMES is a specialized utility which
+we wrote in order to generate montages of annotated female and male
+activation displays for movie making purposes.
+
+                        ./montage_movieframes

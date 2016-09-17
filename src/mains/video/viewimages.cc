@@ -68,7 +68,8 @@ int main( int argc, char** argv )
 // Instantiate Operations object to handle mode, animation and image
 // number control:
 
-   bool display_movie_state=true;
+//   bool display_movie_state=true;
+   bool display_movie_state=false;
    bool display_movie_number=true;
    bool display_movie_world_time=false;
    bool display_movie_elapsed_time=false;

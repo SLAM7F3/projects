@@ -61,7 +61,7 @@ int main(int argc, char** argv)
          "/screen_shots/2016/Sep/Sep14/female/composited_images/";
    }
 
-   string annotated_composites_subdir = composites_subdir+"annnotated/";
+   string annotated_composites_subdir = composites_subdir+"annotated/";
    filefunc::dircreate(annotated_composites_subdir);
    
    vector<string> composites_filenames = filefunc::image_files_in_subdir(
@@ -83,6 +83,8 @@ int main(int argc, char** argv)
       double female_face_prob = row_numbers[n_lines - 1].at(1);
 
       cout << "f = " << f
+           << " activation_filename = "
+           << image_activation_filename 
            << " composite_filename = " 
            << filefunc::getbasename(composites_filenames[f])  << endl;
       cout << "   male_prob = " << male_face_prob
@@ -112,7 +114,7 @@ int main(int argc, char** argv)
          gender_prob = female_face_prob;
 
       }
-      curr_textline += stringfunc::number_to_string(gender_prob,3);
+      curr_textline += stringfunc::number_to_string(gender_prob,5);
 
       vector<string> text_lines;
       text_lines.push_back(curr_textline);
@@ -131,7 +133,7 @@ int main(int argc, char** argv)
       string annotated_composite_basename = 
          annotated_composites_subdir+
          "annotated_composite_"+
-         stringfunc::number_to_string(1-gender_prob,3)+"_"+
+         stringfunc::number_to_string(1-gender_prob,6)+"_"+
          image_index_str+".png";
       text_tr_ptr->write_curr_frame(
          annotated_composite_basename);
