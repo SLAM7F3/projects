@@ -15,7 +15,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 9/8/16; 9/12/16; 9/13/16; 9/14/16
+// Last updated on 9/12/16; 9/13/16; 9/14/16; 9/17/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -54,7 +54,7 @@ using std::vector;
 int main(int argc, char* argv[])
 {
    string facenet_model_label;
-   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
    cin >> facenet_model_label;
       
    timefunc::initialize_timeofday_clock();
@@ -134,7 +134,8 @@ int main(int argc, char* argv[])
    }
    else if (facenet_model_label == "2n" ||
             facenet_model_label == "2q" ||
-            facenet_model_label == "2r")
+            facenet_model_label == "2r" ||
+            facenet_model_label == "2t")
    {
       major_layer_names.push_back("data");
       major_layer_names.push_back("conv1");
@@ -156,7 +157,8 @@ int main(int argc, char* argv[])
       minor_layer_skip = 2;
    }
    else if (facenet_model_label == "2q" ||
-            facenet_model_label == "2r")
+            facenet_model_label == "2r" ||
+            facenet_model_label == "2t")
    {
       minor_layer_skip = 6;	
    }

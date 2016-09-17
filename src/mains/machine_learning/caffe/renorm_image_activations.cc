@@ -15,7 +15,7 @@
 //                      ./renorm_image_activations
 
 // ========================================================================
-// Last updated on 9/5/16; 9/7/16; 9/8/16; 9/14/16
+// Last updated on 9/7/16; 9/8/16; 9/14/16; 9/17/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -39,7 +39,7 @@ using std::vector;
 int main(int argc, char** argv) 
 {
    string facenet_model_label = "2e";
-   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
 //   cin >> facenet_model_label;
 
    string network_subdir = "./vis_facenet/network/";

@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
    string trained_models_subdir = faces_data_subdir+"trained_models/";
 
    string dated_subdir = trained_models_subdir+
+     //      "Sep16_2t_T3/";
       "Sep15_2t_T1/";
 //      "Sep15_2t_T3/";
 //      "Sep14_2s_T3/";
@@ -86,8 +87,6 @@ int main(int argc, char* argv[])
 //       "Sep10_2r_T3/";
 //      "Sep10_2e_T1/";
 //       "Sep8_2r_T1/";
-//      "Sep8_2q_T3/";
-//       "Sep8_2e_T1/";
 
 
    string log_filename=dated_subdir+"caffe.bin.INFO";

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Graphdbfuncs namespace method definitions
 // ==========================================================================
-// Last modified on 5/27/14; 11/15/15; 12/1/15; 1/18/16; 8/19/16
+// Last modified on 12/1/15; 1/18/16; 8/19/16; 9/17/16
 // ==========================================================================
 
 #include <iostream>
@@ -271,7 +271,8 @@ namespace graphdbfunc
 //      cout << "inside graphdbfunc::generate_retrieve_hierarchy_IDs_SQL_command()" 
 //           << endl;
 
-      string SQL_command="SELECT graph_hierarchy_ID,name from graph_hierarchies";
+      string SQL_command="SELECT graph_hierarchy_ID,name from graph_hierarchies ";
+      SQL_command += "order by graph_hierarchy_ID";
       return SQL_command;
    }
 
@@ -303,7 +304,7 @@ namespace graphdbfunc
 //           << endl;
 
       string curr_select_cmd=generate_retrieve_hierarchy_IDs_SQL_command();
-//      cout << "curr_select_cmd = " << curr_select_cmd << endl;
+      cout << "curr_select_cmd = " << curr_select_cmd << endl;
 //      cout << "gis_database_ptr = " << gis_database_ptr << endl;
 
       Genarray<string>* field_array_ptr=gis_database_ptr->
