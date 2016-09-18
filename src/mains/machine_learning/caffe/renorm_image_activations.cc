@@ -38,7 +38,7 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
-   string facenet_model_label = "2e";
+   string facenet_model_label = "2t";
    cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
 //   cin >> facenet_model_label;
 
@@ -238,7 +238,8 @@ int main(int argc, char** argv)
 //            double hue = 250 * (1 - frac);  // unbiased
 
 // As of 9/7/16, we intentionally bias hues towards warmer tones:
-            double hue = 250  - 375 * frac;
+//            double hue = 250  - 375 * frac;	   // model 2e
+            double hue = 250  - 625 * frac;	   // model 2t
 
 
             if(hue < 0) hue = 0;
@@ -269,20 +270,20 @@ int main(int argc, char** argv)
                    << B << "      " 
                    << endl;
 
-         const double min_frac_threshold = 0.15;
-         const double max_frac_threshold = 0.50;
-//         const double min_frac_threshold = 0.50;
+//         const double min_frac_threshold = 0.15;
+         const double min_frac_threshold = 0.45;
+//         const double min_frac_threshold = 0.025;
 //         const double max_frac_threshold = 0.75;
 //         const double min_frac_threshold = 0.75;
 //         const double max_frac_threshold = 0.85;
 //         const double min_frac_threshold = 0.85;
 //         const double max_frac_threshold = 0.99;
 //         const double min_frac_threshold = 0.90;
-//         const double max_frac_threshold = 1.00;
+         const double max_frac_threshold = 1.00;
          if(layer_ID == max_layer_ID && frac > min_frac_threshold &&
             frac < max_frac_threshold)
          {
-            if(class_label == "male_face")
+            if(class_label == "non_face")
             {
                cout << filefunc::getbasename(image_activation_filenames[f])
                     << "   frac = " << frac 

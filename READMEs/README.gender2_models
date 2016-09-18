@@ -354,6 +354,325 @@ stepsize = 10K
 gamma = 0.5
 weight_decay = 0.0005
 
+...........................................
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 96
+n = 2 n_layer_nodes = 96
+n = 3 n_layer_nodes = 1
+n = 4 n_layer_nodes = 96
+n = 5 n_layer_nodes = 96
+n = 6 n_layer_nodes = 192
+n = 7 n_layer_nodes = 192
+n = 8 n_layer_nodes = 192
+n = 9 n_layer_nodes = 1
+n = 10 n_layer_nodes = 192
+n = 11 n_layer_nodes = 192
+n = 12 n_layer_nodes = 224
+n = 13 n_layer_nodes = 224
+n = 14 n_layer_nodes = 224
+n = 15 n_layer_nodes = 1
+n = 16 n_layer_nodes = 224
+n = 17 n_layer_nodes = 224
+n = 18 n_layer_nodes = 224
+n = 19 n_layer_nodes = 224
+n = 20 n_layer_nodes = 224
+n = 21 n_layer_nodes = 1
+n = 22 n_layer_nodes = 224
+n = 23 n_layer_nodes = 224
+n = 24 n_layer_nodes = 256
+n = 25 n_layer_nodes = 256
+n = 26 n_layer_nodes = 256
+n = 27 n_layer_nodes = 1
+n = 28 n_layer_nodes = 256
+n = 29 n_layer_nodes = 256
+n = 30 n_layer_nodes = 256
+n = 31 n_layer_nodes = 256
+n = 32 n_layer_nodes = 256
+n = 33 n_layer_nodes = 1
+n = 34 n_layer_nodes = 256
+n = 35 n_layer_nodes = 256
+n = 36 n_layer_nodes = 256
+n = 37 n_layer_nodes = 256
+n = 38 n_layer_nodes = 256
+n = 39 n_layer_nodes = 1
+n = 40 n_layer_nodes = 256
+n = 41 n_layer_nodes = 256
+n = 42 n_layer_nodes = 256
+n = 43 n_layer_nodes = 256
+n = 44 n_layer_nodes = 256
+n = 45 n_layer_nodes = 1
+n = 46 n_layer_nodes = 256
+n = 47 n_layer_nodes = 256
+n = 48 n_layer_nodes = 3
+
+Minor layer l = 0 layer_name = input
+Minor layer l = 1 layer_name = conv1
+Minor layer l = 2 layer_name = bn1
+Minor layer l = 3 layer_name = scale1
+Minor layer l = 4 layer_name = relu1
+Minor layer l = 5 layer_name = drop1
+Minor layer l = 6 layer_name = maxpool1
+Minor layer l = 7 layer_name = conv2
+Minor layer l = 8 layer_name = bn2
+Minor layer l = 9 layer_name = scale2
+Minor layer l = 10 layer_name = relu2
+Minor layer l = 11 layer_name = drop2
+Minor layer l = 12 layer_name = maxpool2
+Minor layer l = 13 layer_name = conv3a
+Minor layer l = 14 layer_name = bn3a
+Minor layer l = 15 layer_name = scale3a
+Minor layer l = 16 layer_name = relu3a
+Minor layer l = 17 layer_name = drop3a
+Minor layer l = 18 layer_name = conv3b
+Minor layer l = 19 layer_name = bn3b
+Minor layer l = 20 layer_name = scale3b
+Minor layer l = 21 layer_name = relu3b
+Minor layer l = 22 layer_name = drop3b
+Minor layer l = 23 layer_name = maxpool3
+Minor layer l = 24 layer_name = conv4a
+Minor layer l = 25 layer_name = bn4a
+Minor layer l = 26 layer_name = scale4a
+Minor layer l = 27 layer_name = relu4a
+Minor layer l = 28 layer_name = drop4a
+Minor layer l = 29 layer_name = conv4b
+Minor layer l = 30 layer_name = bn4b
+Minor layer l = 31 layer_name = scale4b
+Minor layer l = 32 layer_name = relu4b
+Minor layer l = 33 layer_name = drop4b
+Minor layer l = 34 layer_name = fc5
+Minor layer l = 35 layer_name = bn5
+Minor layer l = 36 layer_name = scale5
+Minor layer l = 37 layer_name = relu5
+Minor layer l = 38 layer_name = drop5
+Minor layer l = 39 layer_name = fc6
+Minor layer l = 40 layer_name = bn6
+Minor layer l = 41 layer_name = scale6
+Minor layer l = 42 layer_name = relu6
+Minor layer l = 43 layer_name = drop6
+Minor layer l = 44 layer_name = fc7_faces
+Minor layer l = 45 layer_name = prob
+Minor layer l = 46 layer_name = output
+
+Blob b = 0 blob_name = data : 1 3 96 96 (27648)
+Blob b = 1 blob_name = conv1 : 1 96 96 96 (884736)
+Blob b = 2 blob_name = maxpool1 : 1 96 48 48 (221184)
+Blob b = 3 blob_name = conv2 : 1 192 48 48 (442368)
+Blob b = 4 blob_name = maxpool2 : 1 192 24 24 (110592)
+Blob b = 5 blob_name = conv3a : 1 224 24 24 (129024)
+Blob b = 6 blob_name = conv3b : 1 224 24 24 (129024)
+Blob b = 7 blob_name = maxpool3 : 1 224 12 12 (32256)
+Blob b = 8 blob_name = conv4a : 1 256 12 12 (36864)
+Blob b = 9 blob_name = conv4b : 1 256 12 12 (36864)
+Blob b = 10 blob_name = fc5 : 1 256 (256)
+Blob b = 11 blob_name = fc6 : 1 256 (256)
+Blob b = 12 blob_name = fc7_faces : 1 3 (3)
+Blob b = 13 blob_name = prob : 1 3 (3)
+Blob b = 14 blob_name = output : 1 2 1 (2)
+
+Number of layers containing calculated parameters = 49
+p = 0 param_blob.num_axes() = 4 param_blob.shape_string() = 96 3 3 3 (2592)
+p = 1 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 2 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 3 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 4 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 5 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 6 param_blob.num_axes() = 4 param_blob.shape_string() = 192 96 3 3 (165888)
+p = 7 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 8 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 9 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 10 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 11 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 12 param_blob.num_axes() = 4 param_blob.shape_string() = 224 192 3 3 (387072)
+p = 13 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 14 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 15 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 16 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 17 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 18 param_blob.num_axes() = 4 param_blob.shape_string() = 224 224 3 3 (451584)
+p = 19 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 20 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 21 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 22 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 23 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 24 param_blob.num_axes() = 4 param_blob.shape_string() = 256 224 3 3 (516096)
+p = 25 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 26 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 27 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 28 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 29 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 30 param_blob.num_axes() = 4 param_blob.shape_string() = 256 256 3 3 (589824)
+p = 31 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 32 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 33 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 34 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 35 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 36 param_blob.num_axes() = 2 param_blob.shape_string() = 256 36864 (9437184)
+p = 37 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 38 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 39 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 40 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 41 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 42 param_blob.num_axes() = 2 param_blob.shape_string() = 256 256 (65536)
+p = 43 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 44 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 45 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 46 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 47 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 48 param_blob.num_axes() = 2 param_blob.shape_string() = 3 256 (768)
+
+--------------------------------------------
+n_total_params = 11616544
+--------------------------------------------
+n_param_layers = 49
+Parameter layer p = 0
+n_param_layer_nodes = 96
+  Params:  mu = -0.0019578 sigma = 0.0632684
+Parameter layer p = 1
+n_param_layer_nodes = 96
+  Params:  mu = -107.591 sigma = 537.743
+Parameter layer p = 2
+n_param_layer_nodes = 96
+  Params:  mu = 352440 sigma = 369837
+Parameter layer p = 3
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 4
+n_param_layer_nodes = 96
+  Params:  mu = 0.105581 sigma = 0.0615517
+Parameter layer p = 5
+n_param_layer_nodes = 96
+  Params:  mu = -0.0611344 sigma = 0.111843
+Parameter layer p = 6
+n_param_layer_nodes = 192
+  Params:  mu = -0.00077341 sigma = 0.0100557
+Parameter layer p = 7
+n_param_layer_nodes = 192
+  Params:  mu = -69.8906 sigma = 69.1877
+Parameter layer p = 8
+n_param_layer_nodes = 192
+  Params:  mu = 4.80583 sigma = 3.52057
+Parameter layer p = 9
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 10
+n_param_layer_nodes = 192
+  Params:  mu = 0.113998 sigma = 0.0366861
+Parameter layer p = 11
+n_param_layer_nodes = 192
+  Params:  mu = -0.0516389 sigma = 0.052919
+Parameter layer p = 12
+n_param_layer_nodes = 224
+  Params:  mu = -0.000821355 sigma = 0.0091484
+Parameter layer p = 13
+n_param_layer_nodes = 224
+  Params:  mu = -44.5999 sigma = 27.1983
+Parameter layer p = 14
+n_param_layer_nodes = 224
+  Params:  mu = 4.59831 sigma = 1.52792
+Parameter layer p = 15
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 16
+n_param_layer_nodes = 224
+  Params:  mu = 0.129481 sigma = 0.019303
+Parameter layer p = 17
+n_param_layer_nodes = 224
+  Params:  mu = -0.0793734 sigma = 0.029569
+Parameter layer p = 18
+n_param_layer_nodes = 224
+  Params:  mu = -0.00177042 sigma = 0.0104046
+Parameter layer p = 19
+n_param_layer_nodes = 224
+  Params:  mu = -47.9354 sigma = 21.2745
+Parameter layer p = 20
+n_param_layer_nodes = 224
+  Params:  mu = 1.75844 sigma = 0.481216
+Parameter layer p = 21
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 22
+n_param_layer_nodes = 224
+  Params:  mu = 0.127859 sigma = 0.0150917
+Parameter layer p = 23
+n_param_layer_nodes = 224
+  Params:  mu = -0.130827 sigma = 0.02649
+Parameter layer p = 24
+n_param_layer_nodes = 256
+  Params:  mu = -0.00117091 sigma = 0.0104112
+Parameter layer p = 25
+n_param_layer_nodes = 256
+  Params:  mu = -34.7875 sigma = 15.107
+Parameter layer p = 26
+n_param_layer_nodes = 256
+  Params:  mu = 1.6635 sigma = 0.319021
+Parameter layer p = 27
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 28
+n_param_layer_nodes = 256
+  Params:  mu = 0.1192 sigma = 0.0153824
+Parameter layer p = 29
+n_param_layer_nodes = 256
+  Params:  mu = -0.108604 sigma = 0.0336844
+Parameter layer p = 30
+n_param_layer_nodes = 256
+  Params:  mu = -0.00164762 sigma = 0.00827566
+Parameter layer p = 31
+n_param_layer_nodes = 256
+  Params:  mu = -36.6976 sigma = 18.5409
+Parameter layer p = 32
+n_param_layer_nodes = 256
+  Params:  mu = 0.798933 sigma = 0.391371
+Parameter layer p = 33
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 34
+n_param_layer_nodes = 256
+  Params:  mu = 0.0973607 sigma = 0.0314797
+Parameter layer p = 35
+n_param_layer_nodes = 256
+  Params:  mu = -0.0874832 sigma = 0.0463007
+Parameter layer p = 36
+n_param_layer_nodes = 256
+  Params:  mu = -0.000146386 sigma = 0.0032806
+Parameter layer p = 37
+n_param_layer_nodes = 256
+  Params:  mu = -79.2548 sigma = 45.8389
+Parameter layer p = 38
+n_param_layer_nodes = 256
+  Params:  mu = 15.2367 sigma = 5.25795
+Parameter layer p = 39
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 40
+n_param_layer_nodes = 256
+  Params:  mu = 0.111991 sigma = 0.016843
+Parameter layer p = 41
+n_param_layer_nodes = 256
+  Params:  mu = -0.0624233 sigma = 0.0437613
+Parameter layer p = 42
+n_param_layer_nodes = 256
+  Params:  mu = -0.000160943 sigma = 0.00937837
+Parameter layer p = 43
+n_param_layer_nodes = 256
+  Params:  mu = -0.849341 sigma = 7.47459
+Parameter layer p = 44
+n_param_layer_nodes = 256
+  Params:  mu = 1.08402 sigma = 0.367622
+Parameter layer p = 45
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 46
+n_param_layer_nodes = 256
+  Params:  mu = 0.228273 sigma = 0.0326414
+Parameter layer p = 47
+n_param_layer_nodes = 256
+  Params:  mu = 0.0757586 sigma = 0.04428
+Parameter layer p = 48
+n_param_layer_nodes = 3
+  Params:  mu = -1.35781e-05 sigma = 0.144161
+
+
 frac_correct = 0.884047 frac_unsure = 0.0127108 frac_incorrect = 0.103243
 
 frac_nonface_correct = 0.99527

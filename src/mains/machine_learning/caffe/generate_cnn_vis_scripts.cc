@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/28/16; 8/31/16; 9/11/16; 9/12/16
+// Last updated on 8/31/16; 9/11/16; 9/12/16; 9/17/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -104,11 +104,8 @@ int main(int argc, char* argv[])
    cout << "Resnet50_flag = " << Resnet50_flag << endl;
    cout << "Facenet_flag = " << Facenet_flag << endl;
 
-   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename);
-
-
-
    string scripts_subdir;
+   string facenet_model_label;
    if(Alexnet_flag)
    {
       scripts_subdir="./vis_alexnet/";
@@ -127,11 +124,11 @@ int main(int argc, char* argv[])
    }
    else if(Facenet_flag)
    {
-//      scripts_subdir="./vis_facenet/";
       scripts_subdir="./vis_facenet2/";
-      cout << "Enter subdir of vis_facenet2 into which image chips will be exported" << endl;
-      string scripts_subsubdir;
-      cin >> scripts_subsubdir;
+
+      cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
+      cin >> facenet_model_label;
+      string scripts_subsubdir = "model_"+facenet_model_label;
       filefunc::add_trailing_dir_slash(scripts_subsubdir);
       scripts_subdir += scripts_subsubdir;
    }
@@ -144,14 +141,7 @@ int main(int argc, char* argv[])
    ofstream all_scripts_stream;
    filefunc::openfile(all_scripts_filename, all_scripts_stream);
 
-   vector<int> n_layer_nodes = classifier.get_n_param_layer_nodes();
-   for(unsigned int n = 0; n < n_layer_nodes.size(); n++)
-   {
-      cout << "n = " << n << " n_layer_nodes = "
-           << n_layer_nodes[n] << endl;
-   }
-
-   int sublayer_skip = -1;
+   int minor_layer_skip = -1;
    double init_scale = 50;
    vector<string> param_layer_names;
    if (Alexnet_flag)
@@ -212,55 +202,61 @@ int main(int argc, char* argv[])
    }
    else if (Facenet_flag)
    {
-
-// Baseline Facenet model 2e  (4 conv layers)
-
-/*
-      sublayer_skip = 2;       
-      param_layer_names.push_back("conv1");
-      param_layer_names.push_back("conv2");
-      param_layer_names.push_back("conv3");
-      param_layer_names.push_back("conv4");
-      param_layer_names.push_back("fc5");
-      param_layer_names.push_back("fc6");
-      param_layer_names.push_back("fc7_faces");
-*/
-
-// Facenet model 2n, 2q, 2r  (conv3a + conv3b + conv4a + conv4b)
-
-      sublayer_skip = 2;	// Facenet model 2n w/o BN
-//      sublayer_skip = 6;	// Facenet models 2q, 2r w BN
-
-      param_layer_names.push_back("conv1");
-      param_layer_names.push_back("conv2");
-      param_layer_names.push_back("conv3a");
-      param_layer_names.push_back("conv3b");
-      param_layer_names.push_back("conv4a");
-      param_layer_names.push_back("conv4b");
-      param_layer_names.push_back("fc5");
-      param_layer_names.push_back("fc6");
-      param_layer_names.push_back("fc7_faces");
-
-
-/*
-// Facenet1:
-      param_layer_names.push_back("conv1a");
-      param_layer_names.push_back("conv2a");
-      param_layer_names.push_back("conv3a");
-      param_layer_names.push_back("conv4a");
-      param_layer_names.push_back("fc5");
-      param_layer_names.push_back("fc6");
-      param_layer_names.push_back("fc7_faces");
-*/
+      if(facenet_model_label == "2e")
+      {
+         minor_layer_skip = 2;       
+         param_layer_names.push_back("conv1");
+         param_layer_names.push_back("conv2");
+         param_layer_names.push_back("conv3");
+         param_layer_names.push_back("conv4");
+         param_layer_names.push_back("fc5");
+         param_layer_names.push_back("fc6");
+         param_layer_names.push_back("fc7_faces");
+      }
+      else if (facenet_model_label == "2n" ||
+               facenet_model_label == "2q" ||
+               facenet_model_label == "2r" ||
+               facenet_model_label == "2s" ||
+               facenet_model_label == "2t")
+      {
+         minor_layer_skip = 6;       
+         param_layer_names.push_back("conv1");
+         param_layer_names.push_back("conv2");
+         param_layer_names.push_back("conv3a");
+         param_layer_names.push_back("conv3b");
+         param_layer_names.push_back("conv4a");
+         param_layer_names.push_back("conv4b");
+         param_layer_names.push_back("fc5");
+         param_layer_names.push_back("fc6");
+         param_layer_names.push_back("fc7_faces");
+      }
+      else
+      {
+         cout << "Unsupported facenet model label " << endl;
+         exit(-1);
+      }
 
       init_scale = 15; // empirically reduced for 96x96 face images
    }
 
+   int n_major_layers = param_layer_names.size() + 1;
    for(unsigned int p = 0; p < param_layer_names.size(); p++)
    {
       cout << "Param layer p = " << p << " is named " << param_layer_names[p]
            << endl;
    }
+
+
+   caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
+                               n_major_layers, minor_layer_skip);
+
+   vector<int> n_layer_nodes = classifier.get_n_param_layer_nodes();
+   for(unsigned int n = 0; n < n_layer_nodes.size(); n++)
+   {
+      cout << "n = " << n << " n_layer_nodes = "
+           << n_layer_nodes[n] << endl;
+   }
+
 
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
@@ -291,10 +287,10 @@ int main(int argc, char* argv[])
    }
    
    int node_counter = 0;
-   classifier.set_minor_layer_skip(sublayer_skip);
+   classifier.set_minor_layer_skip(minor_layer_skip);
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
-      int layer_index = (layer - layer_start) * sublayer_skip;
+      int layer_index = (layer - layer_start) * minor_layer_skip;
 
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
@@ -321,7 +317,7 @@ int main(int argc, char* argv[])
             if(node > max_nodes_per_param_layer) continue;
 
             string orig_layer_name=
-               param_layer_names[layer_index/sublayer_skip];
+               param_layer_names[layer_index/minor_layer_skip];
             string curr_layer_name = stringfunc::find_and_replace_char(
                orig_layer_name, "/", "_");
             

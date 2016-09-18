@@ -362,7 +362,7 @@ class texture_rectangle
    void write_curr_frame(
       const twovector& lower_left_corner_fracs,
       const twovector& upper_right_corner_fracs,
-      std::string output_filename,int n_horiz_output_pixels=-1);
+       std::string output_filename,int n_horiz_output_pixels=-1);
    void write_curr_frame(
       unsigned int px_start,unsigned int px_stop,
       unsigned int py_start,unsigned int py_stop,

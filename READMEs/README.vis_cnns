@@ -97,3 +97,15 @@ we wrote in order to generate montages of annotated female and male
 activation displays for movie making purposes.
 
                         ./montage_movieframes
+
+
+*.  Program $caffe_root/FACE_FEATURES imports a trained FACENET caffe
+model.  It also takes in some set of training, validation and/or testing
+images.  It queries the user to enter the name of the trained network layer
+whose activations will be used as feature descriptors for the input images.
+Looping over each input image, FACE_FEATURES checks if pixel width and
+height equal 96.  If not, it crops out a 96x96 subimage from the input
+image's center.  It then retrieves the activation values from the specified
+network layer for the 96x96 image chip.  The activation values along with
+the full pathname for the original chip are written to an output text file.
+

@@ -9,7 +9,7 @@
 //                         ./add_softmax
 
 // ========================================================================
-// Last updated on 9/6/16; 9/8/16; 9/15/16
+// Last updated on 9/6/16; 9/8/16; 9/15/16; 9/17/16
 // ========================================================================
 
 #include "general/filefuncs.h"
@@ -30,7 +30,7 @@ using std::vector;
 int main(int argc, char** argv) 
 {
    string facenet_model_label;
-   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
    cin >> facenet_model_label;
 
    string network_subdir = "./vis_facenet/network/";
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
    int class_index = 1; // female face
 //   int class_index = 2; // non-face
 
-   cout <<  "Enter class index : 0 = male face, 1 = female face, 2 = non-face"
+   cout <<  "Enter class index : 0 = male face, 1 = female face, 2 = non-face, 3 = face_vs_nonface"
         << endl;
    cin >> class_index;
 
@@ -53,16 +53,23 @@ int main(int argc, char** argv)
    if(class_index == 0)
    {
       composites_subdir = caffe_subdir + 
-         "/screen_shots/2016/Sep/Sep14/male/composited_images/";
+         "/screen_shots/2016/Sep/Sep16/male/composited_images/";
    }
    else if (class_index == 1)
    {
       composites_subdir = caffe_subdir + 
-         "/screen_shots/2016/Sep/Sep14/female/composited_images/";
+         "/screen_shots/2016/Sep/Sep16/female/composited_images/";
+   }
+   else if (class_index == 2)
+   {
+      composites_subdir = caffe_subdir + 
+         "/screen_shots/2016/Sep/Sep16/nonface/composited_images/";
    }
 
    string annotated_composites_subdir = composites_subdir+"annotated/";
    filefunc::dircreate(annotated_composites_subdir);
+   string face_vs_nonface_subdir = composites_subdir+"face_vs_nonface/";
+   filefunc::dircreate(face_vs_nonface_subdir);
    
    vector<string> composites_filenames = filefunc::image_files_in_subdir(
       composites_subdir);
@@ -81,6 +88,7 @@ int main(int argc, char** argv)
       double non_face_prob = row_numbers[n_lines - 3].at(1);
       double male_face_prob = row_numbers[n_lines - 2].at(1);
       double female_face_prob = row_numbers[n_lines - 1].at(1);
+      double face_prob = male_face_prob + female_face_prob;
 
       cout << "f = " << f
            << " activation_filename = "
@@ -98,24 +106,36 @@ int main(int argc, char** argv)
          composites_filenames[f], NULL);
       int fontsize = 25;
 
-      double gender_prob;
+      double prob;
       string curr_textline;
       vector<twovector> xy_start;
+
       if(class_index == 0)
       {
          curr_textline = "Male face prob = ";
          xy_start.push_back(twovector( 450, 20));
-         gender_prob = male_face_prob;
+         prob = male_face_prob;
+         curr_textline += stringfunc::number_to_string(prob,5);
       }
       else if (class_index == 1)
       {
          curr_textline = "Female face prob = ";
          xy_start.push_back(twovector( 440, 20)); 
-         gender_prob = female_face_prob;
-
+         prob = female_face_prob;
+         curr_textline += stringfunc::number_to_string(prob,5);
       }
-      curr_textline += stringfunc::number_to_string(gender_prob,5);
+      else if (class_index == 2)
+      {
+         curr_textline = "Non face prob = ";
+         xy_start.push_back(twovector( 440, 20)); 
+         prob = non_face_prob;
+         curr_textline += stringfunc::number_to_string(prob,5);
+      }
 
+      curr_textline = "Face prob = ";
+      xy_start.push_back(twovector( 440, 20)); 
+      curr_textline += stringfunc::number_to_string(face_prob,5);
+      
       vector<string> text_lines;
       text_lines.push_back(curr_textline);
 
@@ -130,11 +150,21 @@ int main(int argc, char** argv)
 // images to be ordered so that those with the highest gender
 // classifications are lexicographically first:
 
+/*
       string annotated_composite_basename = 
          annotated_composites_subdir+
          "annotated_composite_"+
-         stringfunc::number_to_string(1-gender_prob,6)+"_"+
+         stringfunc::number_to_string(1-prob,6)+"_"+
          image_index_str+".png";
+*/
+
+      string annotated_composite_basename = 
+         face_vs_nonface_subdir+
+         "face_vs_nonface_"+
+         stringfunc::number_to_string(1-face_prob,6)+"_"+
+         image_index_str+".png";
+
+
       text_tr_ptr->write_curr_frame(
          annotated_composite_basename);
 

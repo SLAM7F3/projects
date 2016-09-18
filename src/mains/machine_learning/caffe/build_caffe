@@ -6,6 +6,8 @@
 ~/bin/MAKE program=classify_genders
 ~/bin/MAKE program=ensemble_chars
 ~/bin/MAKE program=extract_features
+~/bin/MAKE program=face_edgelist
+~/bin/MAKE program=face_features
 ~/bin/MAKE program=finetuned_classify
 ~/bin/MAKE program=generate_cnn_vis_scripts
 ~/bin/MAKE program=generate_file_list

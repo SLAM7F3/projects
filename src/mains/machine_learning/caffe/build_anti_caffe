@@ -6,6 +6,8 @@
 /bin/rm ./classify_genders
 /bin/rm ./ensemble_chars
 /bin/rm ./extract_features
+/bin/rm ./face_edgelist
+/bin/rm ./face_features
 /bin/rm ./finetuned_classify
 /bin/rm ./generate_cnn_vis_scripts
 /bin/rm ./generate_file_list

@@ -28,7 +28,7 @@ using std::vector;
 int main(int argc, char** argv) 
 {
    string facenet_model_label;
-   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r)" << endl;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
    cin >> facenet_model_label;
 
    string network_subdir = "./vis_facenet/network/";
@@ -41,8 +41,10 @@ int main(int argc, char** argv)
    string node_activations_subdir = activations_subdir + "nodes/";
 
    string starting_subdir = 
-      "/home/pcho/programs/c++/git/projects/src/mains/machine_learning/caffe/screen_shots/2016/Sep/Sep14/";
+      "/home/pcho/programs/c++/git/projects/src/mains/machine_learning/caffe/screen_shots/2016/Sep/Sep16/";
+//   string screen_shots_subdir = starting_subdir+"female/";
    string screen_shots_subdir = starting_subdir+"male/";
+//   string screen_shots_subdir = starting_subdir+"nonface/";
    string cropped_images_subdir=screen_shots_subdir+"cropped_images/";
    filefunc::dircreate(cropped_images_subdir);
    string composite_images_subdir=screen_shots_subdir+"composited_images/";
@@ -85,7 +87,8 @@ int main(int argc, char** argv)
 
       string composite_image_filename=composite_images_subdir+
          "composite_"+testimg_index_str+".png";
-      unix_cmd="composite -geometry  +575+25 "+imagechip_filename+
+//      unix_cmd="composite -geometry  +575+25 "+imagechip_filename+
+      unix_cmd="composite -geometry  +575+10 "+imagechip_filename+
          " "+cropped_image_filename+" "+composite_image_filename;
       composite_stream << unix_cmd << endl;
    }
