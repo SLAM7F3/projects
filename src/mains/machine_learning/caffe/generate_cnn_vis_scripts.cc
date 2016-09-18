@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 8/31/16; 9/11/16; 9/12/16; 9/17/16
+// Last updated on 9/11/16; 9/12/16; 9/17/16; 9/18/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -32,6 +32,7 @@
 #include "math/basic_math.h"
 #include "classification/caffe_classifier.h"
 #include "general/filefuncs.h"
+#include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
@@ -48,6 +49,16 @@ using std::ofstream;
 using std::pair;
 using std::string;
 using std::vector;
+
+double get_ran_factor()
+{
+   double ran_power = -1 + 2 * nrfunc::ran1();
+   double ran_factor = pow(1.5, ran_power);
+//   double ran_factor = pow(2.0, ran_power);
+//   double ran_factor = pow(3.0, ran_power);
+   return ran_factor;
+}
+
 
 // ==========================================================================
 
@@ -257,14 +268,21 @@ int main(int argc, char* argv[])
            << n_layer_nodes[n] << endl;
    }
 
-
    string cnn_vis_pathname = "/usr/local/python/cnn_vis.py";
 
    int layer_start = 1;   // We name very first layer as 1 rather than 0
 //   int layer_stop =  1;
    int final_layer = param_layer_names.size();
-
    int layer_stop = final_layer;
+
+
+// FAKE FAKE:  Sun Sep 18 at 12:57 pm 
+//   layer_start = layer_stop = 5;   // conv4a
+//   layer_start = layer_stop = 6;   // conv4b
+//   layer_start = layer_stop = 7;   // fc5
+//   layer_start = layer_stop = 8;   // fc6
+   layer_start = layer_stop = 9;   // fc7_faces
+   
    cout << "layer_start = " << layer_start << endl;
    cout << "layer_stop = " << layer_stop << endl;
 
@@ -276,12 +294,12 @@ int main(int argc, char* argv[])
    int n_total_nodes_to_process = 0;
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
-      int layer_index = layer - layer_start;
+      int layer_index = layer - 1;
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-//         max_iters = 5;
-         max_iters = 100;
+//         max_iters = 50;
+         max_iters = 150;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
    }
@@ -290,18 +308,18 @@ int main(int argc, char* argv[])
    classifier.set_minor_layer_skip(minor_layer_skip);
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
-      int layer_index = (layer - layer_start) * minor_layer_skip;
-
+      int layer_index = (layer - 1) * minor_layer_skip;
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-//         max_iters = 5;
-         max_iters = 100;
+//         max_iters = 50;
+         max_iters = 150;
       }
-      
+
       for(int iter = 0; iter < max_iters; iter++)
       {
          int start_node = 0;
+         int stop_node = n_layer_nodes[layer_index];
 //         int start_node = 1; // Use to extract just male/female chips for
 //                             //  final fully connected layer from Facenet2
          cout << "layer = " << layer
@@ -309,7 +327,8 @@ int main(int argc, char* argv[])
               << " n_layer_nodes = " << n_layer_nodes[layer_index]
               << endl;
 
-         for(int node = start_node; node < n_layer_nodes[layer_index]; node++)
+         int node_skip = 1;
+         for(int node = start_node; node < stop_node; node += node_skip)
          {
 //            outputfunc::update_progress_and_remaining_time(
 //               node_counter++, 100, n_total_nodes_to_process);
@@ -364,7 +383,84 @@ int main(int argc, char* argv[])
             outstream << "--rescale_image \\" << endl;
             outstream << "--gpu=0   \\" << endl;
 
-// Aug 18 parameters:
+/*
+// Sep 18, 2016 parameters (yields decent results for all layers
+// except fc7_faces within 6-conv layer model 2t with batch normalization):
+
+            outstream << "--initialization_scale="
+                      << init_scale  << " \\" << endl;
+//                      << init_scale * get_ran_factor() << " \\" << endl;
+            double init_blur = 5;
+            outstream << "--initialization_blur="
+                      << init_blur << " \\" << endl;
+//                      << init_blur * get_ran_factor() << " \\" << endl;
+            int num_steps = 120;
+            outstream << "--num_steps="
+                      << int(num_steps) << " \\" << endl;
+//                      << int(num_steps * get_ran_factor()) << " \\" << endl;
+            outstream << "--batch_size=1 \\" << endl;
+            outstream << "--output_iter=100 \\" << endl;
+//            double learning_rate = 2.0;
+            double learning_rate = 3.6;
+            outstream << "--learning_rate="
+                      << learning_rate << " \\" << endl;
+//                      << learning_rate * get_ran_factor() << " \\" << endl;
+            outstream << "--learning_rate_decay_iter=4000 \\" << endl;
+            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
+            outstream << "--decay_rate=0.95 \\" << endl;  
+//            double alpha = 3.0;
+            double alpha = 1.0;
+            outstream << "--alpha="
+                      << alpha  << " \\" << endl;  
+//                      << alpha * get_ran_factor() << " \\" << endl;  
+//            double p_reg = 1E-5;
+            double p_reg = 3.7E-6;
+            outstream << "--p_reg="
+                      << p_reg << " \\" << endl;
+//                      << p_reg * get_ran_factor() << " \\" << endl;
+            outstream << "--p_scale=1.0 \\" << endl;
+//            double beta = 2.25;
+            double beta = 1.2;
+            outstream << "--beta="
+                      << beta << " \\" << endl;
+//                      << beta * get_ran_factor() << " \\" << endl;
+            double tv_reg = 2E-5;
+            outstream << "--tv_reg=" 
+                      << tv_reg << " \\" << endl;
+//                      << tv_reg * get_ran_factor() << " \\" << endl;
+            outstream << "--tv_reg_step_iter=4000 \\" << endl;
+            outstream << "--tv_reg_step=1E-4 \\" << endl;
+            outstream << "--num_sizes=1 \\" << endl;
+            outstream << "--iter_behavior=print" << endl;
+*/
+
+// Sep 18, 2016 parameters (yields good results for final fc7_faces
+// layer of 6-conv layer model 2t with batch normalization):
+
+            outstream << "--initialization_scale="
+                      << init_scale << " \\" << endl;
+            outstream << "--initialization_blur=5 \\" << endl;
+            outstream << "--num_steps=120 \\" << endl;
+            outstream << "--batch_size=1 \\" << endl;
+            outstream << "--output_iter=100 \\" << endl;
+            outstream << "--learning_rate=2.0 \\" << endl;
+            outstream << "--learning_rate_decay_iter=40 \\" << endl;
+            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
+            outstream << "--decay_rate=0.95 \\" << endl;  
+            outstream << "--alpha=2.0 \\" << endl;  
+            outstream << "--p_reg=1E-5 \\" << endl;
+            outstream << "--p_scale=1.0 \\" << endl;
+            outstream << "--beta=2.25 \\" << endl;
+            outstream << "--tv_reg=2E-5 \\" << endl;
+            outstream << "--tv_reg_step_iter=40 \\" << endl;
+            outstream << "--tv_reg_step=1E-4 \\" << endl;
+            outstream << "--num_sizes=1 \\" << endl;
+            outstream << "--iter_behavior=print" << endl;
+
+
+/*
+// Aug 18 parameters (yields decent results for 4-conv & 6-conv layer
+// models without batch normalization):
 
             outstream << "--initialization_scale="
                       << init_scale << " \\" << endl;
@@ -378,31 +474,6 @@ int main(int argc, char* argv[])
             outstream << "--learning_rate=0.8 \\" << endl;
 			                // empirically optimized
             outstream << "--learning_rate_decay_iter=20 \\" << endl;
-            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
-            outstream << "--decay_rate=0.95 \\" << endl;  
-					// empirically optimized
-            outstream << "--alpha=4.0 \\" << endl;  
-					// empirically optimized
-            outstream << "--p_reg=0.0001 \\" << endl;
-            outstream << "--beta=2.5 \\" << endl;
-            outstream << "--tv_reg=0.00001 \\" << endl;
-					// empirically optimized
-            outstream << "--tv_reg_step_iter=25 \\" << endl;
-					// empirically optimized
-            outstream << "--tv_reg_step=0.00010 \\" << endl;
-					// empirically optimized
-            outstream << "--num_sizes=1 \\" << endl;
-            outstream << "--iter_behavior=print" << endl;
-
-
-/*
-// Aug 17 parameters:
-            outstream << "--num_steps=100 \\" << endl;
-					// empirically optimized
-            outstream << "--batch_size=25 \\" << endl;
-            outstream << "--output_iter=100 \\" << endl;
-            outstream << "--learning_rate=0.1 \\" << endl;
-            outstream << "--learning_rate_decay_iter=100 \\" << endl;
             outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
             outstream << "--decay_rate=0.95 \\" << endl;  
 					// empirically optimized
