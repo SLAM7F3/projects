@@ -42,6 +42,9 @@ using std::vector;
 
 int main(int argc, char** argv) 
 {
+//   bool copy_files_to_image_engine_subdir = true;
+   bool copy_files_to_image_engine_subdir = false;
+   
    string facenet_model_label = "2t";
    timefunc::initialize_timeofday_clock();
 
@@ -57,6 +60,7 @@ int main(int argc, char** argv)
       facenet_model_label+"/";
    string features_subdir = activations_subdir + "features/";
    filefunc::dircreate(features_subdir);
+   string image_engine_subdir = "/data/ImageEngine/faces/";
 
 // Enumerate blob names as functions of Facenet model label:
 
@@ -166,6 +170,15 @@ int main(int argc, char** argv)
       string orig_image_filename = image_filenames[image_ID];
       string image_filename = orig_image_filename;
       string image_basename = filefunc::getbasename(image_filename);
+
+      if(copy_files_to_image_engine_subdir)
+      {
+         string unix_cmd = "cp "+image_filename+" "+
+            image_engine_subdir;
+         cout << unix_cmd << endl;
+         sysfunc::unix_command(unix_cmd);
+         continue;
+      }
 
       vector<string> substrings = 
          stringfunc::decompose_string_into_substrings(image_basename,"_");

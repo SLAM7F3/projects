@@ -325,7 +325,7 @@ sorted by the number of nodes they contain to an output text file.
 
 Program OGDF_LAYOUT parses an input graph edgelist text file generated
 program SIFT_PARSER.  It queries the user to set a minimum edge weight
-threshold.  [By convention, maximum edge weight equals 100 while mininum
+threshold.  [By convention, maximum edge weight equals 100 while minimum
 edge weight equals 0.]
 
 It next calls a graphical layout algorithm within the C++ Open Graph

@@ -1,7 +1,7 @@
 // =========================================================================
 // Program OGDF_LAYOUT parses an input graph edgelist text file.  It
 // queries the user to set a minimum edge weight threshold.  [By
-// convention, maximum edge weight equals 100 while mininum edge
+// convention, maximum edge weight equals 100 while minimum edge
 // weight equals 0.]
 
 // It next calls a graphical layout algorithm within the C++ Open
@@ -232,12 +232,13 @@ int main(int argc, char *argv[])
       {
          index++;
       }
+
 //      cout << "index = " << index << endl;
 //      int node_ID=node_ID_given_index[index];
       node first_node=node_given_index[index];
 //      cout << "node ID = " << node_ID
 //           << " first_node->index() = " << first_node->index() 
-//          << endl;
+//           << endl;
 
 // Given the first node within a new connected component, recursively
 // find all of its neighbors within the connected component:
@@ -245,7 +246,9 @@ int main(int argc, char *argv[])
       Graph SG;
       NodeArray<int> SG_NodeID;
       NodeArray<node> subgraph_nodes;
+      cout << "Before call to CSG" << endl;
       ogdf::ConnectedSubgraph<int>::call(Gcopy,SG,first_node,subgraph_nodes);
+      cout << "After call to CSG" << endl;
 
       int n_subgraph_nodes=SG.numberOfNodes();
 //      cout << "SG.num_nodes = " << n_subgraph_nodes << endl;
@@ -260,7 +263,6 @@ int main(int argc, char *argv[])
          int curr_node_ID=node_ID_given_index[curr_node_index];
          curr_component_node_IDs.push_back(curr_node_ID);
          node_visited_flag[curr_node_index]=true;
-//         cout << "subgraph node ID = " << curr_node_ID << endl;
       }
       connected_component_node_IDs.push_back(curr_component_node_IDs);
 

@@ -36,6 +36,9 @@ using std::vector;
 
 // ------------------------------------------------------------------
 
+// First 6170 feature descriptors correspond to testing and validation
+// face image chips
+
 int main() 
 {
    double min_edge_weight = 70;	 // VGG-16
@@ -55,10 +58,15 @@ int main()
    vector<string> feature_filenames = 
       filefunc::files_in_subdir_matching_specified_suffixes(
          allowed_suffixes, features_subdir);
+   cout << "Total number of feature descriptor files = "
+        << feature_filenames.size() << endl;
+   cout << "Enter number of features to process:" << endl;
+
+   int n_feature_descriptors;
+   cin >> n_feature_descriptors;
 
    int n_feature_dims = 256; // fc6
    cout << "n_feature_dims = " << n_feature_dims << endl;
-   int n_feature_descriptors = feature_filenames.size();
    vector<vector<float> > feature_descriptors;
 
    ofstream imagepaths_stream;
@@ -85,11 +93,14 @@ int main()
          curr_descriptor.push_back(curr_val);
          dmag_sqr += curr_val * curr_val;
       }
+/*
       double dmag = sqrt(dmag_sqr);
       for(int d = 0; d < n_feature_dims; d++)
       {
          curr_descriptor[d] = curr_descriptor[d] / dmag;
       }
+*/
+
       feature_descriptors.push_back(curr_descriptor);
    } // loop over index f labeling feature filenames
    filefunc::closefile(imagepaths_filename, imagepaths_stream);
@@ -107,7 +118,7 @@ int main()
 
 // Compute inner products between feature descriptors:
 
-   int max_edges_per_node = 4;
+   int max_edges_per_node = 6;
 //   int max_edges_per_node = 10;
    double dotproduct_counter = 0;
    vector<double> edge_weights;
@@ -118,7 +129,7 @@ int main()
 
    double edge_weight;
    vector<int> g_values;
-   vector<float> feature_vec_f;
+   vector<float> feature_vec_f, delta_vec;
    vector<double> curr_edge_weights;
    g_values.reserve(n_feature_descriptors);
    feature_vec_f.reserve(n_feature_dims);
@@ -143,14 +154,26 @@ int main()
 // Take edge weight to equal 100 * dotproduct between feature descriptors
 // labeled by indices f and g:
 
-         double dotproduct = 0;
+//         double dotproduct = 0;
+         double delta_mag_sqr = 0;
          for(int i = 0; i < n_feature_dims; i++)
          {
-            dotproduct += 
-               feature_vec_f[i] * (feature_descriptors[g])[i];
+            delta_mag_sqr += sqr(
+               feature_vec_f[i] - (feature_descriptors[g])[i]);
+//            dotproduct += 
+//               feature_vec_f[i] * (feature_descriptors[g])[i];
          }
-         edge_weight = 100 * dotproduct;
-         
+//         edge_weight = 100 * dotproduct;
+         double delta_mag = sqrt(delta_mag_sqr);
+         if(delta_mag > 10)
+         {
+            edge_weight = 0;
+         }
+         else
+         {
+            edge_weight = 100 * (1 - 0.1 * delta_mag);
+         }
+
 // Don't bother storing more than 10 million edge weights for prob
 // distribution construction purposes:
 
