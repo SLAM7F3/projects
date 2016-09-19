@@ -1757,6 +1757,7 @@ std::string generate_update_image_metadata_SQL_command_serialID(
       vector<int>& node_ID, vector<double>& relative_size, 
       vector<string>& color, vector<string>& thumbnail_URL)
    {
+      cout << "inside imagesdatabasefunc::reset_nodes_metadata()" << endl;
       string projects_subdir = "/home/pcho/programs/c++/git/projects/";
       string caffe_subdir=projects_subdir+"src/mains/machine_learning/caffe/";
       string base_activations_subdir=caffe_subdir+
@@ -1943,12 +1944,13 @@ std::string generate_update_image_metadata_SQL_command_serialID(
          node_ID,epoch,URL,npx,npy,thumbnail_URL,thumbnail_npx,thumbnail_npy,
          parent_node_ID,gx,gy,gx2,gy2,relative_size,color,label);
 
-// FAKE FAKE Mon Sep 5 at 10:46 am 
+// FAKE FAKE Mon Sep 5, 2016 at 10:46 am 
 
 // For facenet visualization purposes, reset nodes' colors, sizes and
 // thumbnail URLs based upon their activation responses to a
 // particular input test image:
 
+      if(hierarchy_ID == 50) // model 2t
       if(hierarchy_ID == 999)
       {
         reset_nodes_metadata(node_ID, relative_size, color, thumbnail_URL);
