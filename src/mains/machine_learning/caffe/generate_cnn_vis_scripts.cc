@@ -18,7 +18,7 @@
 //    /data/caffe/faces/trained_models/Aug6_350K_96cap_T3/train_iter_702426.caffemodel 
 
 // ==========================================================================
-// Last updated on 9/11/16; 9/12/16; 9/17/16; 9/18/16
+// Last updated on 9/12/16; 9/17/16; 9/18/16; 9/19/16
 // ==========================================================================
 
 #include  <algorithm>
@@ -53,9 +53,13 @@ using std::vector;
 double get_ran_factor()
 {
    double ran_power = -1 + 2 * nrfunc::ran1();
-   double ran_factor = pow(1.5, ran_power);
+
+//   double ran_factor = pow(1.2, ran_power);
+//   double ran_factor = pow(1.5, ran_power);
 //   double ran_factor = pow(2.0, ran_power);
-//   double ran_factor = pow(3.0, ran_power);
+   double ran_factor = pow(3.0, ran_power);
+
+//   double ran_factor = 1;
    return ran_factor;
 }
 
@@ -137,7 +141,7 @@ int main(int argc, char* argv[])
    {
       scripts_subdir="./vis_facenet2/";
 
-      cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
+      cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t, 2u)" << endl;
       cin >> facenet_model_label;
       string scripts_subsubdir = "model_"+facenet_model_label;
       filefunc::add_trailing_dir_slash(scripts_subsubdir);
@@ -241,13 +245,26 @@ int main(int argc, char* argv[])
          param_layer_names.push_back("fc6");
          param_layer_names.push_back("fc7_faces");
       }
+      else if (facenet_model_label == "2u")
+      {
+         minor_layer_skip = 6;       
+         param_layer_names.push_back("conv1");
+         param_layer_names.push_back("conv2");
+         param_layer_names.push_back("conv3a");
+         param_layer_names.push_back("conv3b");
+         param_layer_names.push_back("conv4a");
+         param_layer_names.push_back("conv4b");
+         param_layer_names.push_back("fc5");
+         param_layer_names.push_back("fc6_faces");
+      }
       else
       {
          cout << "Unsupported facenet model label " << endl;
          exit(-1);
       }
 
-      init_scale = 15; // empirically reduced for 96x96 face images
+//      init_scale = 15; // empirically reduced for 96x96 face images
+      init_scale = 10; // empirically reduced for 96x96 face images model 2u
    }
 
    int n_major_layers = param_layer_names.size() + 1;
@@ -256,7 +273,6 @@ int main(int argc, char* argv[])
       cout << "Param layer p = " << p << " is named " << param_layer_names[p]
            << endl;
    }
-
 
    caffe_classifier classifier(test_prototxt_filename, caffe_model_filename,
                                n_major_layers, minor_layer_skip);
@@ -279,9 +295,9 @@ int main(int argc, char* argv[])
 // FAKE FAKE:  Sun Sep 18 at 12:57 pm 
 //   layer_start = layer_stop = 5;   // conv4a
 //   layer_start = layer_stop = 6;   // conv4b
-//   layer_start = layer_stop = 7;   // fc5
+   layer_start = layer_stop = 7;   // fc5
 //   layer_start = layer_stop = 8;   // fc6
-   layer_start = layer_stop = 9;   // fc7_faces
+//   layer_start = layer_stop = 9;   // fc7
    
    cout << "layer_start = " << layer_start << endl;
    cout << "layer_stop = " << layer_stop << endl;
@@ -296,9 +312,11 @@ int main(int argc, char* argv[])
    {
       int layer_index = layer - 1;
       int max_iters = 1;
+
+
       if(layer == final_layer && Facenet_flag)
       {
-//         max_iters = 50;
+//         max_iters = 100;
          max_iters = 150;
       }
       n_total_nodes_to_process += max_iters * n_layer_nodes[layer_index];
@@ -309,10 +327,11 @@ int main(int argc, char* argv[])
    for(int layer = layer_stop; layer >= layer_start; layer--)
    {
       int layer_index = (layer - 1) * minor_layer_skip;
+
       int max_iters = 1;
       if(layer == final_layer && Facenet_flag)
       {
-//         max_iters = 50;
+//         max_iters = 100;
          max_iters = 150;
       }
 
@@ -384,6 +403,99 @@ int main(int argc, char* argv[])
             outstream << "--gpu=0   \\" << endl;
 
 /*
+// Sep 19, 2016 parameters (yields mediocre results for all
+// layers except fc6_faces within 6-conv layer model 2u with batch
+// normalization):
+
+            outstream << "--initialization_scale="
+//                      << init_scale * get_ran_factor() << " \\" << endl;
+                      << init_scale  << " \\" << endl;
+            double init_blur = 5;
+            outstream << "--initialization_blur="
+//                      << init_blur * get_ran_factor() << " \\" << endl;
+                      << init_blur << " \\" << endl;
+            int num_steps = 120;
+            outstream << "--num_steps="
+//                      << int(num_steps * get_ran_factor()) << " \\" << endl;
+                      << int(num_steps) << " \\" << endl;
+            outstream << "--batch_size=1 \\" << endl;
+            outstream << "--output_iter=100 \\" << endl;
+//            double learning_rate = 2.0;
+            double learning_rate = 5;
+            outstream << "--learning_rate="
+                      << learning_rate * get_ran_factor() << " \\" << endl;
+            outstream << "--learning_rate_decay_iter=40 \\" << endl;
+            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
+            outstream << "--decay_rate=0.95 \\" << endl;  
+//            double alpha = 3.0;
+//            double alpha = 1.0;
+            double alpha = 0.4;
+            outstream << "--alpha="
+                      << alpha * get_ran_factor() << " \\" << endl;  
+            double p_reg = 5E-6;
+            outstream << "--p_reg="
+                      << p_reg << " \\" << endl;
+//                      << p_reg * get_ran_factor() << " \\" << endl;
+            outstream << "--p_scale=1.0 \\" << endl;
+            double beta = 1.7;
+            outstream << "--beta="
+                      << beta << " \\" << endl;
+//                      << beta * get_ran_factor() << " \\" << endl;
+            double tv_reg = 1E-5;
+            outstream << "--tv_reg=" 
+                      << tv_reg * get_ran_factor() << " \\" << endl;
+            outstream << "--tv_reg_step_iter=40 \\" << endl;
+            outstream << "--tv_reg_step=1E-4 \\" << endl;
+            outstream << "--num_sizes=1 \\" << endl;
+            outstream << "--iter_behavior=print" << endl;
+*/
+
+/*
+// Sep 19, 2016 parameters (yields mediocre results for final faces
+// layer of 6-conv layer model 2u with batch normalization):
+
+            outstream << "--initialization_scale="
+                      << init_scale  << " \\" << endl;
+            double init_blur = 5;
+            outstream << "--initialization_blur="
+                      << init_blur << " \\" << endl;
+            int num_steps = 120;
+            outstream << "--num_steps="
+                      << int(num_steps) << " \\" << endl;
+            outstream << "--batch_size=1 \\" << endl;
+            outstream << "--output_iter=100 \\" << endl;
+            double learning_rate = 1;
+            outstream << "--learning_rate="
+//                      << learning_rate << " \\" << endl;
+                      << learning_rate * get_ran_factor() << " \\" << endl;
+            outstream << "--learning_rate_decay_iter=4000 \\" << endl;
+            outstream << "--learning_rate_decay_fraction=0.5 \\" << endl;
+            outstream << "--decay_rate=0.95 \\" << endl;  
+            double alpha = 1.6;
+            outstream << "--alpha="
+//                      << alpha  << " \\" << endl;  
+                      << alpha * get_ran_factor() << " \\" << endl;  
+            double p_reg = 1E-5;
+            outstream << "--p_reg="
+//                      << p_reg  << " \\" << endl;
+                      << p_reg * get_ran_factor() << " \\" << endl;
+            outstream << "--p_scale=1.0 \\" << endl;
+            double beta = 2;
+            outstream << "--beta="
+//                      << beta << " \\" << endl;
+                      << beta * get_ran_factor() << " \\" << endl;
+            double tv_reg = 2.5E-5;
+            outstream << "--tv_reg=" 
+//                      << tv_reg << " \\" << endl;
+                      << tv_reg * get_ran_factor() << " \\" << endl;
+            outstream << "--tv_reg_step_iter=40 \\" << endl;
+            outstream << "--tv_reg_step=1E-4 \\" << endl;
+            outstream << "--num_sizes=1 \\" << endl;
+            outstream << "--iter_behavior=print" << endl;
+*/
+
+
+/*
 // Sep 18, 2016 parameters (yields decent results for all layers
 // except fc7_faces within 6-conv layer model 2t with batch normalization):
 
@@ -434,7 +546,8 @@ int main(int argc, char* argv[])
             outstream << "--iter_behavior=print" << endl;
 */
 
-// Sep 18, 2016 parameters (yields good results for final fc7_faces
+
+// Sep 18, 2016 parameters (yields good results for final faces
 // layer of 6-conv layer model 2t with batch normalization):
 
             outstream << "--initialization_scale="
@@ -454,8 +567,6 @@ int main(int argc, char* argv[])
             outstream << "--tv_reg=2E-5 \\" << endl;
             outstream << "--tv_reg_step_iter=40 \\" << endl;
             outstream << "--tv_reg_step=1E-4 \\" << endl;
-            outstream << "--num_sizes=1 \\" << endl;
-            outstream << "--iter_behavior=print" << endl;
 
 
 /*

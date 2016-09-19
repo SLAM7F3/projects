@@ -1,7 +1,7 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 8/12/16; 8/19/16; 8/22/16; 9/8/16
+Last updated on 8/19/16; 8/22/16; 9/8/16; 9/19/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
@@ -148,3 +148,27 @@ all such interesting events should be broadcast like this, so modules can
 determine individually what, if anything, to do in response. There's also
 an event for changing the image, which typically causes modules to
 reset/initialize.
+
+*.  Methods to encode/decode geo IDs are sitting in app/build/sxd_merge.c/
+sxd_geo_id_encode() and sxd_geo_id_decode().
+
+*.  On 9/19/16, we got lots of help from Daniel Raggarsson with getting
+pwin to compile on our macbook.  In particular, Daniel showed us that
+we really neede to chant
+
+		xcode-select install
+
+in order to download and install Xcode Command Line Tools.  After this
+chant, /usr/include on our Macbook now contains stdio.h and many other
+basic header files which it was previously missing.
+
+Daniel also showed us that we must used clang-omp rather than just clang in
+order to successfully compile pwin on our Macbook.  
+
+*.  In order to compile pwin on our macbook, we changed our "makepwin" script
+within ~/bin/makepwin to read as follows:
+
+   cd /Users/cho/sputnik/pwin/build/mac 
+   make  pwin OPT=3 RDN=1 TAGGER_DEV=1 PWGL=1
+
+

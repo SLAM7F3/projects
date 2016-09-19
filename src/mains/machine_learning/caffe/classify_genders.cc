@@ -15,7 +15,7 @@
 // /data/caffe/faces/image_chips/testing/Jul30_and_31_96x96
 
 // ========================================================================
-// Last updated on 8/28/16; 9/9/16; 9/10/16; 9/11/16; 9/15/16
+// Last updated on 9/10/16; 9/11/16; 9/15/16; 9/19/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -41,7 +41,7 @@ using std::vector;
 int main(int argc, char** argv) 
 {
    string facenet_model_label;
-   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t)" << endl;
+   cout << "Enter facenet model label: (e.g. 2e, 2n, 2r, 2t, 2u)" << endl;
    cin >> facenet_model_label;
 
    vector<string> blob_names;
@@ -84,6 +84,17 @@ int main(int argc, char** argv)
       blob_names.push_back("fc6");
       blob_names.push_back("fc7_faces");
    }
+   else if (facenet_model_label == "2u")
+   {
+      blob_names.push_back("conv1");
+      blob_names.push_back("conv2");
+      blob_names.push_back("conv3a");
+      blob_names.push_back("conv3b");
+      blob_names.push_back("conv4a");
+      blob_names.push_back("conv4b");
+      blob_names.push_back("fc5");
+      blob_names.push_back("fc6_faces");
+   }
    else
    {
       cout << "Unsupported facenet model label " << endl;
@@ -103,7 +114,8 @@ int main(int argc, char** argv)
       minor_layer_skip = 2;	
    }
    else if(facenet_model_label == "2q" || facenet_model_label == "2r" ||
-           facenet_model_label == "2s" || facenet_model_label == "2t")
+           facenet_model_label == "2s" || facenet_model_label == "2t" ||
+           facenet_model_label == "2u")
    {
       minor_layer_skip = 6;   
    }

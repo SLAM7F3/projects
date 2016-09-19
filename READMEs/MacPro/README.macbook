@@ -1,12 +1,13 @@
 ===========================================================================================
 Apple MacBook Pro Laptop notes
 ===========================================================================================
-Last updated on 1/25/16; 2/1/16; 2/5/16; 2/19/16
+Last updated on 2/1/16; 2/5/16; 2/19/16; 9/19/16
 ===========================================================================================
 
 *.  As of 1/26/15, we have updated all software on our MacBook.
 
-*.  OS X Yosemite version = 10.10.5
+*.  On 9/19/16, we updated the software on our MacBook.  It is now running
+OS X El Capitan Version 10.11.16.
 
 *.  Click on Apple icon on far upper left corner --> About This Mac in
 order to see hardware information about our MacBook laptop.
@@ -39,4 +40,21 @@ Screen capture image is deposited onto the Desktop.
 of terminal commands.  So when we close one bash xterm window and open
 another, then new window knows about command history previously entered
 into the closed window.
+
+*.  On 9/19/16, we got lots of help from Daniel Raggarsson with getting
+pwin to compile on our macbook.  In particular, Daniel showed us that
+we really neede to chant
+
+		xcode-select install
+
+in order to download and install Xcode Command Line Tools.  After this
+chant, /usr/include on our Macbook now contains stdio.h and many other
+basic header files which it was previously missing.
+
+*.  In order to compile pwin on our macbook, we changed our "makepwin" script
+within ~/bin/makepwin to read as follows:
+
+   cd /Users/cho/sputnik/pwin/build/mac 
+   make  pwin OPT=3 RDN=1 TAGGER_DEV=1 PWGL=1
+
 

@@ -1,7 +1,7 @@
 ==========================================================================
 Best gender detection models among Face02 networks
 ==========================================================================
-Last updated on 9/14/16; 9/15/16; 9/16/16; 9/17/16
+Last updated on 9/15/16; 9/16/16; 9/17/16; 9/19/16
 ==========================================================================
 
 *.  Sat, Sep 10 , Titan 1, afternoon, Facenet model 2e, 4 conv layers
@@ -760,3 +760,388 @@ Confusion matrix:
 
 Results with no L2 regularization are clearly inferior to those with l2 reg
 = 0.0005
+
+------------------------------------------------------------------- 
+*. Sun, Sep 19, Titan 1, Facenet model 2u, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 2 FC layers, batch normalization, L2 
+reg param = 0.0005.  No dropout in first 2 conv layers.
+
+/data/caffe/faces/trained_models/Sep18_2u_T1/train_iter_148000.caffemodel
+caffe validation accuracy asymptotes to 0.916; no overfitting
+
+n_minor_layers = 42
+n_blobs = 14
+network_phase = caffe::TEST
+Minor layer l = 0 layer_name = input
+Minor layer l = 1 layer_name = conv1
+Minor layer l = 2 layer_name = bn1
+Minor layer l = 3 layer_name = scale1
+Minor layer l = 4 layer_name = relu1
+Minor layer l = 5 layer_name = drop1
+Minor layer l = 6 layer_name = maxpool1
+Minor layer l = 7 layer_name = conv2
+Minor layer l = 8 layer_name = bn2
+Minor layer l = 9 layer_name = scale2
+Minor layer l = 10 layer_name = relu2
+Minor layer l = 11 layer_name = drop2
+Minor layer l = 12 layer_name = maxpool2
+Minor layer l = 13 layer_name = conv3a
+Minor layer l = 14 layer_name = bn3a
+Minor layer l = 15 layer_name = scale3a
+Minor layer l = 16 layer_name = relu3a
+Minor layer l = 17 layer_name = drop3a
+Minor layer l = 18 layer_name = conv3b
+Minor layer l = 19 layer_name = bn3b
+Minor layer l = 20 layer_name = scale3b
+Minor layer l = 21 layer_name = relu3b
+Minor layer l = 22 layer_name = drop3b
+Minor layer l = 23 layer_name = maxpool3
+Minor layer l = 24 layer_name = conv4a
+Minor layer l = 25 layer_name = bn4a
+Minor layer l = 26 layer_name = scale4a
+Minor layer l = 27 layer_name = relu4a
+Minor layer l = 28 layer_name = drop4a
+Minor layer l = 29 layer_name = conv4b
+Minor layer l = 30 layer_name = bn4b
+Minor layer l = 31 layer_name = scale4b
+Minor layer l = 32 layer_name = relu4b
+Minor layer l = 33 layer_name = drop4b
+Minor layer l = 34 layer_name = fc5
+Minor layer l = 35 layer_name = bn5
+Minor layer l = 36 layer_name = scale5
+Minor layer l = 37 layer_name = relu5
+Minor layer l = 38 layer_name = drop5
+Minor layer l = 39 layer_name = fc6_faces
+Minor layer l = 40 layer_name = prob
+Minor layer l = 41 layer_name = output
+
+Blob b = 0 blob_name = data : 1 3 96 96 (27648)
+Blob b = 1 blob_name = conv1 : 1 96 96 96 (884736)
+Blob b = 2 blob_name = maxpool1 : 1 96 48 48 (221184)
+Blob b = 3 blob_name = conv2 : 1 192 48 48 (442368)
+Blob b = 4 blob_name = maxpool2 : 1 192 24 24 (110592)
+Blob b = 5 blob_name = conv3a : 1 224 24 24 (129024)
+Blob b = 6 blob_name = conv3b : 1 224 24 24 (129024)
+Blob b = 7 blob_name = maxpool3 : 1 224 12 12 (32256)
+Blob b = 8 blob_name = conv4a : 1 256 12 12 (36864)
+Blob b = 9 blob_name = conv4b : 1 256 12 12 (36864)
+Blob b = 10 blob_name = fc5 : 1 256 (256)
+Blob b = 11 blob_name = fc6_faces : 1 3 (3)
+Blob b = 12 blob_name = prob : 1 3 (3)
+Blob b = 13 blob_name = output : 1 2 1 (2)
+
+Number of layers containing calculated parameters = 43
+p = 0 param_blob.num_axes() = 4 param_blob.shape_string() = 96 3 3 3 (2592)
+p = 1 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 2 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 3 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 4 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 5 param_blob.num_axes() = 1 param_blob.shape_string() = 96 (96)
+p = 6 param_blob.num_axes() = 4 param_blob.shape_string() = 192 96 3 3 (165888)
+p = 7 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 8 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 9 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 10 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 11 param_blob.num_axes() = 1 param_blob.shape_string() = 192 (192)
+p = 12 param_blob.num_axes() = 4 param_blob.shape_string() = 224 192 3 3 (387072)
+p = 13 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 14 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 15 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 16 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 17 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 18 param_blob.num_axes() = 4 param_blob.shape_string() = 224 224 3 3 (451584)
+p = 19 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 20 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 21 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 22 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 23 param_blob.num_axes() = 1 param_blob.shape_string() = 224 (224)
+p = 24 param_blob.num_axes() = 4 param_blob.shape_string() = 256 224 3 3 (516096)
+p = 25 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 26 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 27 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 28 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 29 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 30 param_blob.num_axes() = 4 param_blob.shape_string() = 256 256 3 3 (589824)
+p = 31 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 32 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 33 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 34 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 35 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 36 param_blob.num_axes() = 2 param_blob.shape_string() = 256 36864 (9437184)
+p = 37 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 38 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 39 param_blob.num_axes() = 1 param_blob.shape_string() = 1 (1)
+p = 40 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 41 param_blob.num_axes() = 1 param_blob.shape_string() = 256 (256)
+p = 42 param_blob.num_axes() = 2 param_blob.shape_string() = 3 256 (768)
+
+--------------------------------------------
+n_total_params = 11551008
+--------------------------------------------
+n_param_layers = 43
+Parameter layer p = 0
+n_param_layer_nodes = 96
+  Params:  mu = -0.00125386 sigma = 0.0637989
+Parameter layer p = 1
+n_param_layer_nodes = 96
+  Params:  mu = -83.072 sigma = 545.768
+Parameter layer p = 2
+n_param_layer_nodes = 96
+  Params:  mu = 353670 sigma = 343644
+Parameter layer p = 3
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 4
+n_param_layer_nodes = 96
+  Params:  mu = 0.102181 sigma = 0.0634938
+Parameter layer p = 5
+n_param_layer_nodes = 96
+  Params:  mu = -0.053286 sigma = 0.10698
+Parameter layer p = 6
+n_param_layer_nodes = 192
+  Params:  mu = -0.000939713 sigma = 0.0102567
+Parameter layer p = 7
+n_param_layer_nodes = 192
+  Params:  mu = -71.9374 sigma = 67.8308
+Parameter layer p = 8
+n_param_layer_nodes = 192
+  Params:  mu = 5.35309 sigma = 3.82573
+Parameter layer p = 9
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 10
+n_param_layer_nodes = 192
+  Params:  mu = 0.114266 sigma = 0.0353001
+Parameter layer p = 11
+n_param_layer_nodes = 192
+  Params:  mu = -0.0528894 sigma = 0.0467916
+Parameter layer p = 12
+n_param_layer_nodes = 224
+  Params:  mu = -0.000805973 sigma = 0.00913701
+Parameter layer p = 13
+n_param_layer_nodes = 224
+  Params:  mu = -41.9411 sigma = 22.5564
+Parameter layer p = 14
+n_param_layer_nodes = 224
+  Params:  mu = 3.97002 sigma = 1.15715
+Parameter layer p = 15
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 16
+n_param_layer_nodes = 224
+  Params:  mu = 0.129816 sigma = 0.018363
+Parameter layer p = 17
+n_param_layer_nodes = 224
+  Params:  mu = -0.083253 sigma = 0.0295765
+Parameter layer p = 18
+n_param_layer_nodes = 224
+  Params:  mu = -0.00182562 sigma = 0.0104982
+Parameter layer p = 19
+n_param_layer_nodes = 224
+  Params:  mu = -46.7 sigma = 21.0664
+Parameter layer p = 20
+n_param_layer_nodes = 224
+  Params:  mu = 1.62823 sigma = 0.419345
+Parameter layer p = 21
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 22
+n_param_layer_nodes = 224
+  Params:  mu = 0.127973 sigma = 0.0154715
+Parameter layer p = 23
+n_param_layer_nodes = 224
+  Params:  mu = -0.129398 sigma = 0.0254351
+Parameter layer p = 24
+n_param_layer_nodes = 256
+  Params:  mu = -0.00114237 sigma = 0.0104523
+Parameter layer p = 25
+n_param_layer_nodes = 256
+  Params:  mu = -33.3547 sigma = 14.003
+Parameter layer p = 26
+n_param_layer_nodes = 256
+  Params:  mu = 1.57698 sigma = 0.306422
+Parameter layer p = 27
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 28
+n_param_layer_nodes = 256
+  Params:  mu = 0.118019 sigma = 0.0147562
+Parameter layer p = 29
+n_param_layer_nodes = 256
+  Params:  mu = -0.108918 sigma = 0.0310227
+Parameter layer p = 30
+n_param_layer_nodes = 256
+  Params:  mu = -0.00175428 sigma = 0.00819086
+Parameter layer p = 31
+n_param_layer_nodes = 256
+  Params:  mu = -35.1846 sigma = 17.9316
+Parameter layer p = 32
+n_param_layer_nodes = 256
+  Params:  mu = 0.681833 sigma = 0.298597
+Parameter layer p = 33
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 34
+n_param_layer_nodes = 256
+  Params:  mu = 0.0961928 sigma = 0.0275481
+Parameter layer p = 35
+n_param_layer_nodes = 256
+  Params:  mu = -0.0873314 sigma = 0.0396653
+Parameter layer p = 36
+n_param_layer_nodes = 256
+  Params:  mu = -3.61235e-05 sigma = 0.00286688
+Parameter layer p = 37
+n_param_layer_nodes = 256
+  Params:  mu = -9.92208 sigma = 31.5134
+Parameter layer p = 38
+n_param_layer_nodes = 256
+  Params:  mu = 9.0511 sigma = 2.65438
+Parameter layer p = 39
+n_param_layer_nodes = 1
+  Params:  mu = 999.982 sigma = 0
+Parameter layer p = 40
+n_param_layer_nodes = 256
+  Params:  mu = 0.283945 sigma = 0.0302986
+Parameter layer p = 41
+n_param_layer_nodes = 256
+  Params:  mu = 0.0281623 sigma = 0.0805298
+Parameter layer p = 42
+n_param_layer_nodes = 3
+  Params:  mu = 1.01037e-05 sigma = 0.175405
+
+////////////////////////////////////////////////
+
+n_minor_layers = 42
+minor_layer_skip = 6
+n_major_layers = 9
+n_param_layers = 43
+Major_layer_ID = 0 has 3 input RGB nodes
+  Initial major weight node ID = 0
+  Final major weight node ID = 2
+Major_layer_ID = 1 parameter layer p = 0 n_param_layer_nodes[p] = 96
+  Initial major weight node ID = 3
+  Final major weight node ID = 98
+Major_layer_ID = 2 parameter layer p = 6 n_param_layer_nodes[p] = 192
+  Initial major weight node ID = 99
+  Final major weight node ID = 290
+Major_layer_ID = 3 parameter layer p = 12 n_param_layer_nodes[p] = 224
+  Initial major weight node ID = 291
+  Final major weight node ID = 514
+Major_layer_ID = 4 parameter layer p = 18 n_param_layer_nodes[p] = 224
+  Initial major weight node ID = 515
+  Final major weight node ID = 738
+Major_layer_ID = 5 parameter layer p = 24 n_param_layer_nodes[p] = 256
+  Initial major weight node ID = 739
+  Final major weight node ID = 994
+Major_layer_ID = 6 parameter layer p = 30 n_param_layer_nodes[p] = 256
+  Initial major weight node ID = 995
+  Final major weight node ID = 1250
+Major_layer_ID = 7 parameter layer p = 36 n_param_layer_nodes[p] = 256
+  Initial major weight node ID = 1251
+  Final major weight node ID = 1506
+Major_layer_ID = 8 parameter layer p = 42 n_param_layer_nodes[p] = 3
+  Initial major weight node ID = 1507
+  Final major weight node ID = 1509
+...........................................
+n = 0 n_layer_nodes = 96
+n = 1 n_layer_nodes = 96
+n = 2 n_layer_nodes = 96
+n = 3 n_layer_nodes = 1
+n = 4 n_layer_nodes = 96
+n = 5 n_layer_nodes = 96
+n = 6 n_layer_nodes = 192
+n = 7 n_layer_nodes = 192
+n = 8 n_layer_nodes = 192
+n = 9 n_layer_nodes = 1
+n = 10 n_layer_nodes = 192
+n = 11 n_layer_nodes = 192
+n = 12 n_layer_nodes = 224
+n = 13 n_layer_nodes = 224
+n = 14 n_layer_nodes = 224
+n = 15 n_layer_nodes = 1
+n = 16 n_layer_nodes = 224
+n = 17 n_layer_nodes = 224
+n = 18 n_layer_nodes = 224
+n = 19 n_layer_nodes = 224
+n = 20 n_layer_nodes = 224
+n = 21 n_layer_nodes = 1
+n = 22 n_layer_nodes = 224
+n = 23 n_layer_nodes = 224
+n = 24 n_layer_nodes = 256
+n = 25 n_layer_nodes = 256
+n = 26 n_layer_nodes = 256
+n = 27 n_layer_nodes = 1
+n = 28 n_layer_nodes = 256
+n = 29 n_layer_nodes = 256
+n = 30 n_layer_nodes = 256
+n = 31 n_layer_nodes = 256
+n = 32 n_layer_nodes = 256
+n = 33 n_layer_nodes = 1
+n = 34 n_layer_nodes = 256
+n = 35 n_layer_nodes = 256
+n = 36 n_layer_nodes = 256
+n = 37 n_layer_nodes = 256
+n = 38 n_layer_nodes = 256
+n = 39 n_layer_nodes = 1
+n = 40 n_layer_nodes = 256
+n = 41 n_layer_nodes = 256
+n = 42 n_layer_nodes = 3
+
+frac_correct = 0.882261 frac_unsure = 0.0114108 frac_incorrect = 0.106328
+
+frac_nonface_correct = 0.994329
+frac_nonface_incorrect = 0.00567108
+
+frac_male_correct = 0.835507
+frac_male_unsure = 0.0166667
+frac_male_incorrect = 0.147826
+
+frac_female_correct = 0.844147
+frac_female_unsure = 0.0148096
+frac_female_incorrect = 0.141044
+
+Confusion matrix:
+
+1052	3	4	0	
+84	1153	120	23	
+68	132	1197	21	
+0	0	0	0	
+
+
+male_score_threshold = 0.52 female_score_threshold = 0.52
+
+*************************** 
+As of 9/19/16, 6 conv-layer model 2u with batch normalization, only 2 FC
+layers and reduced regularization yields gender classification performance
+very close to model 2t!
+***************************
+
+------------------------------------------------------------------- 
+*. Sun, Sep 19, Titan 3, Facenet model 2u, 6 conv layers,
+conv3a+conv3b+conv4a+conv4b, 2 FC layers, batch normalization, L2 
+reg param = 0.0010.  No dropout in first 2 conv layers.
+
+/data/caffe/faces/trained_models/Sep18_2u_T3/train_iter_168000.caffemodel
+caffe validation accuracy asymptotes to 0.918; no significant overfitting
+frac_correct = 0.875714 frac_unsure = 0.017644 frac_incorrect = 0.106642
+
+frac_nonface_correct = 0.995265
+frac_nonface_incorrect = 0.00473485
+
+frac_male_correct = 0.83913
+frac_male_unsure = 0.0217391
+frac_male_incorrect = 0.13913
+
+frac_female_correct = 0.822285
+frac_female_unsure = 0.0267983
+frac_female_incorrect = 0.150917
+
+Confusion matrix:
+
+1052	2	5	0	
+82	1158	110	30	
+68	146	1166	38	
+0	0	0	0	
+
+These Titan3 results for model 2u are worse than those from Titan1 with
+less L2 regularization.
