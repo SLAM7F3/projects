@@ -208,7 +208,7 @@ int main(int argc, char** argv)
       }
       classifier.generate_dense_map();
 
-// Open text file for current image into which we save all nonzero
+// Open text file for current image into which we save all
 // node activation information:
 
       string currimage_features_filename=image_features_subdir+
