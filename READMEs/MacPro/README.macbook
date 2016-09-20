@@ -1,7 +1,7 @@
 ===========================================================================================
 Apple MacBook Pro Laptop notes
 ===========================================================================================
-Last updated on 2/1/16; 2/5/16; 2/19/16; 9/19/16
+Last updated on 2/5/16; 2/19/16; 9/19/16; 9/20/16
 ===========================================================================================
 
 *.  As of 1/26/15, we have updated all software on our MacBook.
@@ -56,5 +56,30 @@ within ~/bin/makepwin to read as follows:
 
    cd /Users/cho/sputnik/pwin/build/mac 
    make  pwin OPT=3 RDN=1 TAGGER_DEV=1 PWGL=1
+
+*.  "Homebrew" is a package manager for Mac OS X.
+
+Chant "brew list" to see list of homebrew packages installed on macbook.
+
+*.  On 9/20/16, Ross pointed out that Viktor's script to mount startown
+must be hacked on a Macbook so that it takes our GEO-LDAP username pcho
+rather than our default "cho" username on the macbook.  Viktor told us to
+explicitly replace $USER with "pcho".  He also told us to change the host
+line in his startown_mount.sh script from 
+
+    host="rd17d01ls-geo0838.rd.geo.apple.com"
+
+to
+
+    host="pcho@rd17d01ls-geo0838.rd.geo.apple.com"
+
+We also needed to make the mountpoint /startown-gpfs on our macbook owned
+by user cho and not by root.
+
+After making these changes, startown mounted on our macbook!
+
+*.  On 9/20/16, we generated a public ssh key on our macbook.  We then
+followed the "Distribute public ssh key" instructions on the flyover wiki
+page in order to upload our macbook ssh key.
 
 
