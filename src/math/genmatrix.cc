@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 2/9/16; 2/10/16; 2/12/16; 2/15/16
+// Last modified on 2/10/16; 2/12/16; 2/15/16; 9/20/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -153,11 +153,15 @@ genmatrix& genmatrix::operator= (const genmatrix& m)
 ostream& operator<< (ostream& outstream,const genmatrix& A)
 {
    outstream << endl;
+
+
    for (unsigned int i=0; i<A.mdim; i++)
    {
       for (unsigned int j=0; j<A.ndim; j++)
       {
-         outstream << A.get(i,j) << "\t";
+         outstream << A.get(i,j) 
+//                   << " ";
+                   << "\t";
       }
       outstream << endl;
    }
@@ -791,6 +795,11 @@ bool genmatrix::two_inverse(genmatrix& Ainv) const
 // returns the singular values within Wsorted in descending order.
 
 // Recall *this = A = Usorted * Wsorted * Vsorted.transpose()
+
+// A: mdim x ndim
+// Usorted: mdim x ndim
+// Wsorted: ndim x ndim
+// Vsorted: ndim x ndim
 
 bool genmatrix::sorted_singular_value_decomposition(
    genmatrix& Usorted,genmatrix& Wsorted,genmatrix& Vsorted) const

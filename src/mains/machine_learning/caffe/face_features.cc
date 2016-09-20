@@ -10,13 +10,13 @@
 // 96x96 image chip.  The activation values along with the full
 // pathname for the original chip are written to an output text file.
 
-// ./face_features                                           \
-// /data/caffe/faces/trained_models/Sep15_2t_T1/test.prototxt            \
-// /data/caffe/faces/trained_models/Sep15_2t_T1/train_iter_172000.caffemodel \
+// ./face_features                                          
+// /data/caffe/faces/trained_models/Sep15_2t_T1/test.prototxt           
+// /data/caffe/faces/trained_models/Sep15_2t_T1/train_iter_172000.caffemodel
 // /data/caffe/faces/image_chips/training/Sep10_106x106/non_augmented/
 
 // ========================================================================
-// Last updated on 9/17/16
+// Last updated on 9/17/16; 9/20/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -39,6 +39,10 @@ using std::ofstream;
 using std::pair;
 using std::string;
 using std::vector;
+
+// ------------------------------------------------------------------
+// First 6170 feature descriptors correspond to testing and validation
+// face image chips
 
 int main(int argc, char** argv) 
 {
@@ -143,10 +147,10 @@ int main(int argc, char** argv)
    classifier.add_label("female");
    classifier.add_label("unsure");
 
-   cout << "Enter name of major layer (e.g. fc5, fc6) " << endl;
-   cout << "  for which image features should be exported:" << endl;
-   string feature_layer_name;
-   cin >> feature_layer_name;
+   string feature_layer_name = "fc6";
+//   cout << "Enter name of major layer (e.g. fc5, fc6) " << endl;
+//   cout << "  for which image features should be exported:" << endl;
+//   cin >> feature_layer_name;
    string image_features_subdir = features_subdir + feature_layer_name;
    filefunc::add_trailing_dir_slash(image_features_subdir);
    filefunc::dircreate(image_features_subdir);
@@ -159,16 +163,24 @@ int main(int argc, char** argv)
    cout << "Total number of input images = " << n_images << endl;
 
    int istart = 0;
-   cout << "Enter ID for starting input image:" << endl;
-   cin >> istart;
-   int istop = istart + n_images;
+   int istop = 6169;
+//   cout << "Enter ID for starting input image:" << endl;
+//   cin >> istart;
+//   cout << "Enter ID for stopping input image:" << endl;
+//   cin >> istop;
+   int n_descriptors = istop - istart + 1;
+
+// Assemble feature descriptors into rows of matrix M:
+
+   int d_dims = 256;  // dimension of fc6 layer
+   genmatrix M(n_descriptors, d_dims);  
+
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_and_remaining_time(
-         i-istart, 500, (istop-istart));
+         i-istart, 1000, (istop-istart));
       int image_ID = shuffled_image_indices[i-istart];
-      string orig_image_filename = image_filenames[image_ID];
-      string image_filename = orig_image_filename;
+      string image_filename = image_filenames[image_ID];
       string image_basename = filefunc::getbasename(image_filename);
 
       if(copy_files_to_image_engine_subdir)
@@ -208,17 +220,7 @@ int main(int argc, char** argv)
       }
       classifier.generate_dense_map();
 
-// Open text file for current image into which we save all
-// node activation information:
-
-      string currimage_features_filename=image_features_subdir+
-         feature_layer_name+"_"+stringfunc::integer_to_string(i,6)+".dat";
-      ofstream image_features_stream;
-      filefunc::openfile(
-         currimage_features_filename, image_features_stream);
-      image_features_stream << image_filename << endl;
-      image_features_stream << true_gender_label << endl;
-      image_features_stream << endl;
+// Retrieve node activations for specified network layer:
 
       vector<int> local_node_IDs;
       vector<double> node_activations;
@@ -229,10 +231,92 @@ int main(int argc, char** argv)
          sort_activations_flag);
 
       int n_layer_nodes = node_activations.size();
-      for(int n = 0; n < n_layer_nodes; n++)
+      for(int d = 0; d < n_layer_nodes; d++)
       {
-         image_features_stream << node_activations[n] << endl;
+         M.put(i, d, node_activations[d]);
       } // loop over index n labeling nodes within current layer
+   } // loop over index i labeling input test images
+
+// Compute SVD of data matrix M:
+
+   genmatrix Usorted(n_descriptors, d_dims);
+   genmatrix Wsorted(d_dims, d_dims);
+   genmatrix Vsorted(d_dims, d_dims);
+   
+   if(!M.sorted_singular_value_decomposition(Usorted, Wsorted, Vsorted))
+   {
+      cout << "SVD of data matrix M failed" << endl;
+      exit(-1);
+   }
+
+   double max_eigenvalue = 1, eigenvalue_ratio;
+   for(int d = 0; d < d_dims; d++)
+   {
+      double singular_value = Wsorted.get(d,d);
+      double eigenvalue = sqr(singular_value);
+      if(d == 0)
+      {
+         max_eigenvalue = eigenvalue;
+         eigenvalue_ratio = 1.0;
+      }
+      else
+      {
+         eigenvalue_ratio = eigenvalue / max_eigenvalue;
+      }
+      
+      cout << "d = " << d << " singular value = " << singular_value
+           << " eigenvalue = " << eigenvalue 
+           << " eigenvalue/max_eigenvalue = " << eigenvalue_ratio
+           << endl;
+   }
+   
+// For fc5 layer of model 2t, eigenvalue/max_eigenvalue < 1E-4 for d >= 230
+// For fc6 layer of model 2t, eigenvalue/max_eigenvalue < 1E-4 for d >= 24
+
+   int d_max = 24; // fc6 layer
+
+   genvector curr_column(n_descriptors);
+   genmatrix Ureduced(n_descriptors, d_max);
+   genmatrix Wreduced(d_max, d_max);
+   Wreduced.clear_matrix_values();
+   for(int c = 0; c < d_max; c++)
+   {
+      Usorted.get_column(c, curr_column);
+      Ureduced.put_column(c, curr_column);
+      Wreduced.put(c,c,Wsorted.get(c,c));
+   }
+
+   genmatrix Mreduced(n_descriptors, d_max);
+   Mreduced = Ureduced * Wreduced;
+
+   for(int i = istart; i < istop; i++)
+   {
+      outputfunc::update_progress_and_remaining_time(
+         i-istart, 1000, (istop-istart));
+
+      int image_ID = shuffled_image_indices[i-istart];
+      string image_filename = image_filenames[image_ID];
+      string image_basename = filefunc::getbasename(image_filename);
+      vector<string> substrings = 
+         stringfunc::decompose_string_into_substrings(image_basename,"_");
+      string true_gender_label = substrings[0];
+
+// Open text file for current image into which we save reduced feature
+// descriptor:
+
+      string currimage_features_filename=image_features_subdir+
+         feature_layer_name+"_"+stringfunc::integer_to_string(i,6)+".dat";
+      ofstream image_features_stream;
+      filefunc::openfile(
+         currimage_features_filename, image_features_stream);
+      image_features_stream << image_filename << endl;
+      image_features_stream << true_gender_label << endl;
+      image_features_stream << endl;
+
+      for(int d = 0; d < d_max; d++)
+      {
+         image_features_stream << Mreduced.get(i,d) << endl;
+      } 
 
       filefunc::closefile(
          currimage_features_filename, image_features_stream);
@@ -245,6 +329,7 @@ int main(int argc, char** argv)
          string banner="Exported "+currimage_features_filename;
          outputfunc::write_banner(banner);
       }
-   } // loop over index i labeling input test images
+   } // loop over index i labeling test images
+
 }
 
