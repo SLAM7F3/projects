@@ -148,9 +148,9 @@ int main(int argc, char** argv)
    classifier.add_label("unsure");
 
    string feature_layer_name = "fc6";
-//   cout << "Enter name of major layer (e.g. fc5, fc6) " << endl;
-//   cout << "  for which image features should be exported:" << endl;
-//   cin >> feature_layer_name;
+   cout << "Enter name of major layer (e.g. fc5, fc6) " << endl;
+   cout << "  for which image features should be exported:" << endl;
+   cin >> feature_layer_name;
    string image_features_subdir = features_subdir + feature_layer_name;
    filefunc::add_trailing_dir_slash(image_features_subdir);
    filefunc::dircreate(image_features_subdir);
@@ -163,16 +163,12 @@ int main(int argc, char** argv)
    cout << "Total number of input images = " << n_images << endl;
 
    int istart = 0;
-   int istop = 6169;
-//   cout << "Enter ID for starting input image:" << endl;
-//   cin >> istart;
-//   cout << "Enter ID for stopping input image:" << endl;
-//   cin >> istop;
-   int n_descriptors = istop - istart + 1;
+   int n_descriptors = n_images;
+   int istop = n_descriptors;
 
 // Assemble feature descriptors into rows of matrix M:
 
-   int d_dims = 256;  // dimension of fc6 layer
+   int d_dims = 256;  // dimension of fc6, fc5 layer
    genmatrix M(n_descriptors, d_dims);  
 
    for(int i = istart; i < istop; i++)
@@ -270,10 +266,11 @@ int main(int argc, char** argv)
            << endl;
    }
    
-// For fc5 layer of model 2t, eigenvalue/max_eigenvalue < 1E-4 for d >= 230
+// For fc5 layer of model 2t, eigenvalue/max_eigenvalue < 1E-3 for d >= 86
 // For fc6 layer of model 2t, eigenvalue/max_eigenvalue < 1E-4 for d >= 24
 
-   int d_max = 24; // fc6 layer
+   int d_max = 86; // fc5 layer
+//   int d_max = 24; // fc6 layer
 
    genvector curr_column(n_descriptors);
    genmatrix Ureduced(n_descriptors, d_max);

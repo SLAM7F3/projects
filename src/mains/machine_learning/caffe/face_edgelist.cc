@@ -10,7 +10,7 @@
 //                         ./face_edgelist
 
 // ========================================================================
-// Last updated on 9/17/16; 9/18/16
+// Last updated on 9/17/16; 9/18/16; 9/20/16
 // ========================================================================
 
 #include <iostream>
@@ -45,6 +45,29 @@ int main()
    cout << "Enter minimum edge weight:" << endl;
    cin >> min_edge_weight;
 
+   string feature_layer_name = "fc6";
+   cout << "Enter name of major layer (e.g. fc5, fc6) " << endl;
+   cout << "  for which image features should be exported:" << endl;
+   cin >> feature_layer_name;
+
+   int n_feature_dims;
+   if(feature_layer_name=="fc5")
+   {
+      n_feature_dims = 86; // reduced fc5 descriptor dimension
+   }
+   else if(feature_layer_name=="fc6")
+   {
+      n_feature_dims = 24; // reduced fc6 descriptor dimension
+   }
+   else
+   {
+      cout << "Need to add requested feature layer into face_edgelist.cc"
+           << endl;
+      exit(-1);
+   }
+   cout << "n_feature_dims = " << n_feature_dims << endl;
+
+
    timefunc::initialize_timeofday_clock();
 
 // First import filenames from image_list.dat.  The ordering in this
@@ -66,30 +89,25 @@ int main()
    {
       string basename = filefunc::getbasename(filefunc::text_line[i]);
       basename_node_ids_map[basename] = i;
-//      cout << "basename = " << basename << " node ID = " << i << endl;
    }
 
    string caffe_subdir = 
       "/home/pcho/programs/c++/git/projects/src/mains/machine_learning/caffe/";
    string base_features_subdir = caffe_subdir + 
       "vis_facenet/network/activations/model_2t/features/";
-   string features_subdir = base_features_subdir + "fc6/";
-
+   string features_subdir = base_features_subdir + feature_layer_name+"/";
 
    vector<string> allowed_suffixes;
    allowed_suffixes.push_back("dat");
    vector<string> feature_filenames = 
       filefunc::files_in_subdir_matching_specified_suffixes(
          allowed_suffixes, features_subdir);
+
+   int n_feature_descriptors = feature_filenames.size();
    cout << "Total number of feature descriptor files = "
         << feature_filenames.size() << endl;
-   cout << "Enter number of features to process:" << endl;
-
-   int n_feature_descriptors;
-   cin >> n_feature_descriptors;
-
-   int n_feature_dims = 256; // fc6
-   cout << "n_feature_dims = " << n_feature_dims << endl;
+//   cout << "Enter number of features to process:" << endl;
+//   cin >> n_feature_descriptors;
    vector<vector<float> > feature_descriptors;
    
    typedef std::map<int, vector<float> > FEATURE_DESCRIPTORS_MAP;
@@ -103,6 +121,7 @@ int main()
    string imagepaths_filename = base_features_subdir+"imagepaths.dat";
    filefunc::openfile(imagepaths_filename, imagepaths_stream);
 
+   int n_missing_images = 0;
    for(int f = 0; f < n_feature_descriptors; f++)
    {
       outputfunc::update_progress_and_remaining_time(
@@ -117,6 +136,7 @@ int main()
       {
          cout << "Couldn't find node ID corresponding to basename = "
               << image_basename << endl;
+         cout << "n_missing_images = " << n_missing_images++ << endl;
       }
       else
       {
@@ -164,7 +184,9 @@ int main()
 // Compute inner products between feature descriptors:
 
 //   int max_edges_per_node = 6;
-   int max_edges_per_node = 10;
+//   int max_edges_per_node = 10;
+//   int max_edges_per_node = 20;
+   int max_edges_per_node = 100;
    double dotproduct_counter = 0;
    vector<double> edge_weights;
    double n_dotproducts = double(n_feature_descriptors) * 
