@@ -7,8 +7,12 @@
 // checks if pixel width and height equal 96.  If not, it crops out a
 // 96x96 subimage from the input image's center.  It then retrieves
 // the activation values from the specified network layer for the
-// 96x96 image chip.  The activation values along with the full
-// pathname for the original chip are written to an output text file.
+// 96x96 image chip.  
+
+// The activation values along with the full pathname for the original
+// chip are written to an output text file.  We also export an index
+// file containing feature file basenames vs corresponding test image
+// file basenames.
 
 // ./face_features                                          
 // /data/caffe/faces/trained_models/Sep15_2t_T1/test.prototxt           
@@ -16,7 +20,7 @@
 // /data/caffe/faces/image_chips/training/Sep10_106x106/non_augmented/
 
 // ========================================================================
-// Last updated on 9/17/16; 9/20/16
+// Last updated on 9/17/16; 9/20/16; 9/21/16
 // ========================================================================
 
 #include "classification/caffe_classifier.h"
@@ -286,6 +290,11 @@ int main(int argc, char** argv)
    genmatrix Mreduced(n_descriptors, d_max);
    Mreduced = Ureduced * Wreduced;
 
+   ofstream lookup_stream;
+   string lookup_filename = image_features_subdir+"features_vs_images.dat";
+   filefunc::openfile(lookup_filename, lookup_stream);
+
+   
    for(int i = istart; i < istop; i++)
    {
       outputfunc::update_progress_and_remaining_time(
@@ -303,6 +312,12 @@ int main(int argc, char** argv)
 
       string currimage_features_filename=image_features_subdir+
          feature_layer_name+"_"+stringfunc::integer_to_string(i,6)+".dat";
+
+      lookup_stream << filefunc::getbasename(currimage_features_filename)
+                    << "  "
+                    << filefunc::getbasename(image_filename) << endl;
+
+/*
       ofstream image_features_stream;
       filefunc::openfile(
          currimage_features_filename, image_features_stream);
@@ -317,6 +332,7 @@ int main(int argc, char** argv)
 
       filefunc::closefile(
          currimage_features_filename, image_features_stream);
+*/
 
       if(i-istart%100 == 0)
       {
@@ -328,5 +344,85 @@ int main(int argc, char** argv)
       }
    } // loop over index i labeling test images
 
+   filefunc::closefile(lookup_filename, lookup_stream);
+   string banner="Exported feature file basenames vs test image basenames to "+
+      lookup_filename;
+   outputfunc::write_banner(banner);
+
+
+   vector<string> left_male_faces, left_female_faces;
+   vector<string> right_male_faces, right_female_faces;
+   vector<string> forward_male_faces, forward_female_faces;
+
+   left_female_faces.push_back(
+      "female_face_20552_00_09251_96x96.jpg");
+   left_female_faces.push_back(
+      "female_face_21633_00_17247_96x96.jpg");
+   left_female_faces.push_back(
+      "female_face_11192_00_228730_96x96.jpg");
+   left_female_faces.push_back(
+      "female_face_09753_00_199144_96x96.jpg");
+
+   forward_female_faces.push_back(
+      "female_face_01756_00_40222_96x96.jpg");
+   forward_female_faces.push_back(
+      "female_face_09321_00_190569_96x96.jpg");
+   forward_female_faces.push_back(
+      "female_face_04020_00_111608_96x96.jpg");
+   forward_female_faces.push_back(
+      "female_face_08880_00_178498_96x96.jpg");
+   forward_female_faces.push_back(
+      "female_face_04913_00_136665_96x96.jpg");
+   forward_female_faces.push_back(
+      "female_face_01695_00_39062_96x96.jpg");
+   forward_female_faces.push_back(
+      "female_face_05038_00_142108_96x96.jpg");
+   
+   right_female_faces.push_back(
+      "female_face_10033_00_205292_96x96.jpg");
+   right_female_faces.push_back(
+      "female_face_10686_00_216595_96x96.jpg");
+   right_female_faces.push_back(
+      "female_face_04951_00_138187_96x96.jpg");
+   right_female_faces.push_back(
+      "female_face_05701_00_157577_96x96.jpg");
+   
+
+   left_male_faces.push_back(
+      "male_face_01645_00_38074_96x96.jpg");
+   left_male_faces.push_back(
+      "male_face_02764_00_68905_96x96.jpg");
+   left_male_faces.push_back(
+      "male_face_09170_00_183706_96x96.jpg");
+   left_male_faces.push_back(
+      "male_face_04633_00_128076_96x96.jpg");
+
+   forward_male_faces.push_back(
+      "male_face_11397_00_233631_96x96.jpg");
+   forward_male_faces.push_back(
+      "male_face_11271_00_230493_96x96.jpg");
+   forward_male_faces.push_back(
+      "male_face_01456_00_27242_96x96.jpg");
+   forward_male_faces.push_back(
+      "male_face_22237_00_39926_96x96.jpg");
+   forward_male_faces.push_back(
+      "male_face_16514_00_51198_96x96.jpg");
+   forward_male_faces.push_back(
+      "male_face_03114_00_77895_96x96.jpg");
+   forward_male_faces.push_back(
+      "male_face_04973_00_138891_96x96.jpg");
+
+   right_male_faces.push_back(
+      "male_face_04131_00_116286_96x96.jpg");
+   right_male_faces.push_back(
+      "male_face_01555_00_33810_96x96.jpg");
+   right_male_faces.push_back(
+      "male_face_01636_00_37818_96x96.jpg");
+   right_male_faces.push_back(
+      "male_face_04975_00_139062_96x96.jpg");
+   right_male_faces.push_back(
+      "male_face_03875_00_101231_96x96.jpg");
+   right_male_faces.push_back(
+      "male_face_10308_00_210188_96x96.jpg");
 }
 

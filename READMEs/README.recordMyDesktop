@@ -47,3 +47,11 @@ ffmpeg -i female_faces.ogv -b 1500000 female_faces_1.5.mp4
 
 
 ffmpeg -i male_faces.ogv -b 1500000 male_faces_1.5.mp4
+
+avconv -i model2t_network.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+   model2t_network.mp4
+
+avconv -i faces_fc5_graph.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+   faces_fc5_graph.mp4
