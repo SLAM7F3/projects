@@ -21,3 +21,4 @@
 /bin/rm ./relabel_non_chips
 /bin/rm ./renorm_image_activations
 /bin/rm ./training_performance
+/bin/rm ./vector_add

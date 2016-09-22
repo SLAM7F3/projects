@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
       exit(-1);
    }
 
+//   int max_xdim = 100;
+//   int max_ydim = 100;
 //   int max_xdim=500;
 //   int max_ydim=500;
 //   int max_xdim=512;
