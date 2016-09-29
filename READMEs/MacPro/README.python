@@ -1,8 +1,12 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 11/19/15; 1/17/16; 3/17/16; 8/14/16
+Last updated on 1/17/16; 3/17/16; 8/14/16; 9/29/16
 =============================================================================
+
+*.  To load some python script into ipython, chant
+
+%load path/to/your/file.py
 
 *.  In order to execute a python script called "python_script.py" from
 inside the python interpreter, chant
@@ -182,3 +186,11 @@ pcho@ubuntu:~/software/cnn-vis$ source activate my_env
 *.  General anaconda info is returned by chanting
 
 	conda info -a
+
+*.  range(n) returns integers starting at 0 up to but not including n
+
+>>> range(10)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+>>> range(1, 10)
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
