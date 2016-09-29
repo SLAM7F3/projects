@@ -700,6 +700,10 @@ results!
 
 ***************************
 
+FC6:  First 41 nodes = general face
+Middle 149 nodes = female/male face
+Last 66 nodes = non-face
+
 ------------------------------------------------------------------- 
 *. Thurs, Sep 15, Titan 3, Facenet model 2t, 6 conv layers,
 conv3a+conv3b+conv4a+conv4b, 3 FC layers, batch normalization, l2
