@@ -90,6 +90,11 @@ type your password every time you push things to github). If you use the
 latter construction, you’ll have to type your github password every time
 you push to github.
 
+*.  On m6700 laptop, create new subdirectory /home/cho/programs/python/.
+Then inside this subdir, chant
+
+	git clone git@github.com:PeterCho/python.git
+
 *.  After creating a local git repository called projects on our local
 machine and after creating a new, empty "projects" repository on github,
 upload local repository's contents to github as follows:
