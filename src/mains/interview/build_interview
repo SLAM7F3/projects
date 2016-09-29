@@ -1,6 +1,7 @@
 ~/bin/MAKE program=binary_search
 ~/bin/MAKE program=binary_tree
 ~/bin/MAKE program=factorial
+~/bin/MAKE program=find_zeros
 ~/bin/MAKE program=hanoi
 ~/bin/MAKE program=palindrome
 ~/bin/MAKE program=powers

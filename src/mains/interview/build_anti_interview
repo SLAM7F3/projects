@@ -1,6 +1,7 @@
 /bin/rm ./binary_search
 /bin/rm ./binary_tree
 /bin/rm ./factorial
+/bin/rm ./find_zeros
 /bin/rm ./hanoi
 /bin/rm ./palindrome
 /bin/rm ./powers
