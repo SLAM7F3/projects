@@ -1,5 +1,6 @@
 /bin/rm ./binary_search
 /bin/rm ./binary_tree
+/bin/rm ./compress_string
 /bin/rm ./factorial
 /bin/rm ./find_zeros
 /bin/rm ./hanoi
