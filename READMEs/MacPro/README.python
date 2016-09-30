@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 1/17/16; 3/17/16; 8/14/16; 9/29/16
+Last updated on 3/17/16; 8/14/16; 9/29/16; 9/30/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -205,3 +205,19 @@ than non byte-compiled scripts.
 
 >>> range(1, 10)
 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+*.  In order to generate a uniformly distributed random var over [0,1),
+chant
+
+from random import uniform
+.
+.
+.
+frand = uniform(0,1)    
+
+*.  Bool type in python takes values "True" and "False"
+
+*.  For string input from console keyboard, use raw_input() rather than
+input()
+
+		 input_str = raw_input("Enter input string: ")
