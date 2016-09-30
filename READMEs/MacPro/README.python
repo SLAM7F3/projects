@@ -4,6 +4,14 @@ Python language notes
 Last updated on 1/17/16; 3/17/16; 8/14/16; 9/29/16
 =============================================================================
 
+*.  Be sure to include "shebang" line below
+
+#! /usr/local/anaconda/bin/python
+
+as very first line in any python script.  It will then use anaconda's
+version of python to run the script.
+
+
 *.  To load some python script into ipython, chant
 
 %load path/to/your/file.py
@@ -186,6 +194,9 @@ pcho@ubuntu:~/software/cnn-vis$ source activate my_env
 *.  General anaconda info is returned by chanting
 
 	conda info -a
+
+*.  Byte-compiled python scripts end with .pyc suffixes.  They run faster
+than non byte-compiled scripts.
 
 *.  range(n) returns integers starting at 0 up to but not including n
 
