@@ -222,7 +222,6 @@ input()
 
 		 input_str = raw_input("Enter input string: ")
 
-
 *.  Swap two items in python by chanting
 
 	a, b = b, a

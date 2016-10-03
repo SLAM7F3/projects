@@ -21,13 +21,6 @@ class hanoi
 {
   public:
 
-/*
-   enum Peg
-   {
-      A, B, C
-   };
-*/
-
 // Constructor starts with all disks on peg A:
 
    hanoi(int n)
