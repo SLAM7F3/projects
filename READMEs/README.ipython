@@ -1,0 +1,28 @@
+=============================================================================
+IPython notebook notes
+=============================================================================
+Last updated on 10/3/16
+=============================================================================
+
+*. On 10/3/16, we followed the following advice on Thinkmate about how to
+create both python 2.7 and 3.5 kernels for ipython notebooks running under
+Jupyter:
+
+http://stackoverflow.com/questions/30492623/using-both-python-2-x-and-python-3-x-in-ipython-notebook
+
+The idea here is to install multiple ipython kernels. Here are instructions
+for anaconda. If you are not using anaconda, I recently added instructions
+using pure virtualenvs.  Anaconda 4.1.0
+
+Since version 4.1.0, anaconda includes a special package nb_conda_kernels
+that detects conda environments with notebook kernels and automatically
+registers them. This makes using a new python version as easy as creating
+new conda environments:
+
+conda create -n py27 python=2.7 ipykernel
+conda create -n py35 python=3.5 ipykernel
+
+After a restart of jupyter notebook, the new kernels are available over the
+graphical interface. Please note that new packages have to be explicitly
+installed into the new enviroments. The Managing environments section in
+conda's docs provides further information.
