@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 3/17/16; 8/14/16; 9/29/16; 9/30/16
+Last updated on 8/14/16; 9/29/16; 9/30/16; 10/3/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -221,3 +221,34 @@ frand = uniform(0,1)
 input()
 
 		 input_str = raw_input("Enter input string: ")
+
+
+*.  Swap two items in python by chanting
+
+	a, b = b, a
+
+*.  Python methods can take default argument values.  But it does not
+appear that their method names can be overloaded as in C++.
+
+*.  Sort a list of integers A by chanting
+
+	A.sort()
+
+*.  In order to return multiple values from a method in python, we can use
+tuples:
+
+def binary_search(search_value, A, min_index, max_index):
+    if search_value < A[min_index]:
+        return (-1, min_index, max_index)
+.
+.
+.
+
+
+*.  We can call our own methods (e.g. random_sequence sitting inside
+mymath.py) from another python file (e.g. binary_search.py) by including 
+
+	from mymath import random_sequence
+
+at top of python file which performs the method call
+

@@ -1,7 +1,7 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 8/19/16; 8/22/16; 9/8/16; 9/19/16
+Last updated on 8/22/16; 9/8/16; 9/19/16; 10/3/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
@@ -45,6 +45,7 @@ mode reverts to Overview.
   -  Press "Command key" + mouse wheel to zoom in/out of 2D window.
 
   -  Press "Command key" + Z in order to undo an operation
+  -  Press "Shift Command key" + Z in order to redo an operation
 
 *.  Browser input = https://flyover-admin.geo.apple.com/annotation/projects
 
@@ -91,6 +92,8 @@ Note ehat_y is oriented in the downward vertical direction!
 
 *.  Press command/windows key + Z in order to "undo" an editing operation
 within tagger2.
+
+*.  Press "Shift Command key" + Z in order to redo an operation
 
 mouse.lclick() == true when user presses down on left mouse button
 !mouse().left == true when user releases left button mouse click
