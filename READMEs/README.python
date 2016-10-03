@@ -222,6 +222,21 @@ input()
 
 		 input_str = raw_input("Enter input string: ")
 
+*.  Use "and"/"or" instead of "&&"/"!!" in python
+
+*.  Recall there is no increment operator such as i++ in python.  Instead
+use, i += 1
+
+*.  Use insert(0,...) to prepend a new element to front of a list:
+
+		self.pegDisks[toPeg].insert(0,currDisk)
+
+*.  Use pop(0) to pop off element from front of a list:
+
+		 self.pegDisks[fromPeg].pop(0)
+
+*.  "!=" means "not equals" in python.  But use "not flag" rather than
+"!flag" to negate a boolean variable in python.
 
 *.  Swap two items in python by chanting
 
