@@ -26,22 +26,27 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
+   void clear_matrices();
+   void print_matrices();
    void xavier_init_weight_matrices();
 
-  private: 
+  private:
 
+   int H;   		// Number of hidden layer neurons
    int Din;		// Input dimensionality 
    int Dout;		// Output dimensionality 
-   int H;   		// Number of hidden layer neurons
    int batch_size;  	// Perform parameter update after this many episodes
    double learning_rate;
    double gamma;	// Discount factor for reward
    
    genmatrix *W1_ptr, *W2_ptr;
-   genmatrix *grad1_ptr, *grad2_ptr;
-   genmatrix *rmsprop1_ptr, *rmsprop2_ptr;
+   genmatrix *grad1_ptr;
+   genmatrix *grad2_ptr;
+   genmatrix *rmsprop1_ptr;
+   genmatrix *rmsprop2_ptr;
 
    void allocate_member_objects();
+
    void initialize_member_objects();
 
 };

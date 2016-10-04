@@ -1,7 +1,7 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 8/22/16; 9/8/16; 9/19/16; 10/3/16
+Last updated on 9/8/16; 9/19/16; 10/3/16; 10/4/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
@@ -174,4 +174,12 @@ within ~/bin/makepwin to read as follows:
    cd /Users/cho/sputnik/pwin/build/mac 
    make  pwin OPT=3 RDN=1 TAGGER_DEV=1 PWGL=1
 
+
+*.  On Macbook Pro, delete key appears to be mapped to GLFW_KEY_BACKSPACE
+rather than GLFW_KEY_DELETE.
+
+*.  In order to build S2D editor on MacBook Pro, we can use our minor
+variant of Tomas' python script and chant
+
+	./build_s2d_editor -dst s2d_editor -ver 1000
 

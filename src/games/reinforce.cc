@@ -27,13 +27,11 @@ using std::vector;
 
 void reinforce::initialize_member_objects()
 {
-   cout << " inside reinforce::init_member_objs" << endl;
-   
    Din = 4 * 4;		// Input dimensionality
    Dout = 4 * 4;	// Output dimensionality
    H = 200;		// Number of hidden layer neurons
 
-   Din = 4;
+   Din = 3;
    Dout = 4;
    H = 5;
    
@@ -44,16 +42,16 @@ void reinforce::initialize_member_objects()
 
 void reinforce::allocate_member_objects()
 {
-   cout << "inside reinforce::allocate_member_objects()" << endl;
-   cout << "*this = " << *this << endl;
-   
    W1_ptr = new genmatrix(H, Din);
    W2_ptr = new genmatrix(Dout, H);
    grad1_ptr = new genmatrix(H, Din);
    grad2_ptr = new genmatrix(Dout, H);
    rmsprop1_ptr = new genmatrix(H, Din);
    rmsprop2_ptr = new genmatrix(Dout, H);
+}		       
 
+void reinforce::clear_matrices()
+{
    W1_ptr->clear_matrix_values();
    W2_ptr->clear_matrix_values();
    grad1_ptr->clear_matrix_values();
@@ -62,12 +60,24 @@ void reinforce::allocate_member_objects()
    rmsprop2_ptr->clear_matrix_values();
 }		       
 
+void reinforce::print_matrices()
+{
+   cout << "*W1_ptr = " << *W1_ptr << endl;
+   cout << "*W2_ptr = " << *W2_ptr << endl;
+
+   cout << "*grad1_ptr = " << *grad1_ptr << endl;
+   cout << "*grad2_ptr = " << *grad2_ptr << endl;
+
+   cout << "*rmsprop1_ptr = " << *rmsprop1_ptr << endl;
+   cout << "*rmsprop2_ptr = " << *rmsprop2_ptr << endl;
+}		       
+
 // ---------------------------------------------------------------------
 reinforce::reinforce()
 {
-   cout << "inside reinforce constructor" << endl;
    initialize_member_objects();
    allocate_member_objects();
+   clear_matrices();
 }
 
 // Copy constructor:
@@ -106,7 +116,6 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 
 void reinforce::xavier_init_weight_matrices()
 {
-   cout << "inside reinforce::xavier_init_weight_matrices()" << endl;
    for(int py = 0; py < W1_ptr->get_ndim(); py++)
    {
       for(int px = 0; px < W1_ptr->get_mdim(); px++)

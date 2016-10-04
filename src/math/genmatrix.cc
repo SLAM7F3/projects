@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 2/10/16; 2/12/16; 2/15/16; 9/20/16
+// Last modified on 2/12/16; 2/15/16; 9/20/16; 10/4/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -347,10 +347,9 @@ double genmatrix::columns_dotproduct(int c1, int c2)
 
 void genmatrix::clear_matrix_values()
 {
-//   cout << "inside genmatrix::clear_matrix_values()" << endl;
-   for (unsigned int i=0; i<ndim; i++)
+   for (unsigned int j=0; j<ndim; j++)
    {
-      for (unsigned int j=0; j<mdim; j++)
+      for (unsigned int i=0; i<mdim; i++)
       {
          put(i,j,0);
       }
