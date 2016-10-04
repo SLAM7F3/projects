@@ -24,6 +24,8 @@ cd ../flyover
 build_flyover
 cd ../../fusion
 build_fusion
+cd ../games
+build_games
 cd ../geo
 build_geo
 cd ../gist

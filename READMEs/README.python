@@ -11,7 +11,6 @@ Last updated on 9/29/16; 9/30/16; 10/3/16; 10/4/16
 as very first line in any python script.  It will then use anaconda's
 version of python to run the script.
 
-
 *.  To load some python script into ipython, chant
 
 %load path/to/your/file.py
@@ -38,12 +37,6 @@ definitions from a python script file called char_level_models.py, chant
 >>> lm = train_char_lm("shakespeare_input.txt", order=4)
 >>> lm['ello']
 [('!', 0.0068143100511073255), (' ', 0.013628620102214651), ("'", 0.017035775127768313), (',', 0.027257240204429302), ('.', 0.0068143100511073255), ('r', 0.059625212947189095), ('u', 0.03747870528109029), ('w', 0.817717206132879), ('n', 0.0017035775127768314), (':', 0.005110732538330494), ('?', 0.0068143100511073255)]
-
-*.  In order to obtain dimensions for a numpy matrix, call .shape
-
-correct_logprobs = -np.log(probs[range(num_examples), y])
-print correct_logprobs
-print correct_logprobs.shape
 
 *.  In order to download caffe models, we had to install the yaml module
 for python:
@@ -286,3 +279,24 @@ Query dictionary to see if it already contains a value corresponding to key
                 isomorphic_strings = False
                 break
 
+*.  Use iteritems() to iterate over dictionary entries:
+
+    dict = {i: i * 2 for i in range(10)}
+    for key, value in dict.iteritems():
+        print "key = ", key, " value = ", value
+
+
+*.  pickle and cPickle – Python object serialization
+Purpose:	Python object serialization
+Available In:	pickle at least 1.4, cPickle 1.5
+
+The pickle module implements an algorithm for turning an arbitrary Python
+object into a series of bytes. This process is also called serializing” the
+object. The byte stream representing the object can then be transmitted or
+stored, and later reconstructed to create a new object with the same
+characteristics.
+
+The cPickle module implements the same algorithm, in C instead of
+Python. It is many times faster than the Python implementation, but does
+not allow the user to subclass from Pickle. If subclassing is not important
+for your use, you probably want to use cPickle.

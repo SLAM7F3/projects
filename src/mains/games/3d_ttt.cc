@@ -21,8 +21,8 @@ int main (int argc, char* argv[])
 
    nrfunc::init_time_based_seed();
 //   tictac3d* ttt_ptr = new tictac3d(4,4);
-   tictac3d* ttt_ptr = new tictac3d(2,1);
-//   tictac3d* ttt_ptr = new tictac3d(4,1);
+//   tictac3d* ttt_ptr = new tictac3d(2,1);
+   tictac3d* ttt_ptr = new tictac3d(4,1);
 
 
    while(!ttt_ptr->get_game_over())
