@@ -6,7 +6,7 @@
 // ==========================================================================
 // String methods definitions
 // ==========================================================================
-// Last updated on 4/29/14; 5/28/14; 1/23/16; 3/31/16
+// Last updated on 5/28/14; 1/23/16; 3/31/16; 10/4/16
 // ==========================================================================
 
 #include <cstring>
@@ -671,7 +671,7 @@ namespace stringfunc
    }
 
 // ---------------------------------------------------------------------
-// Method remove_leading_whitespace returns a substring 
+// Method return_leading_whitespace returns a substring 
 // ranging from the input string's 0th up to but not including its
 // first non-white character.
 
@@ -697,9 +697,8 @@ namespace stringfunc
    }
 
 // ---------------------------------------------------------------------
-// Method remove_trailing_whitespace searches backwards within
-// inputstring for non-white characters.  It returns the substring
-// ranging from its 0th to its last non-white character.
+// Method remove_leading_whitespace searches forwards within
+// inputstring for its first non-white character.
 
    string remove_leading_whitespace(string inputstring)
    {

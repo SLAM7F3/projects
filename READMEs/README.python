@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 8/14/16; 9/29/16; 9/30/16; 10/3/16
+Last updated on 9/29/16; 9/30/16; 10/3/16; 10/4/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -259,11 +259,30 @@ def binary_search(search_value, A, min_index, max_index):
 .
 .
 
-
 *.  We can call our own methods (e.g. random_sequence sitting inside
 mymath.py) from another python file (e.g. binary_search.py) by including 
 
 	from mymath import random_sequence
 
 at top of python file which performs the method call
+
+
+*.  Call sys.exit(1) in order to exit python from within a script
+
+*.  Initialize dictionary as
+
+sDict = {}
+
+Query dictionary to see if it already contains a value corresponding to key
+= s[c]:
+
+        s_key = s[c]
+        s_val = sDict.get(s_key)
+        
+        if s_val == None:
+            sDict[s_key] = t[c]
+        else:
+            if s_val != t[c]:
+                isomorphic_strings = False
+                break
 
