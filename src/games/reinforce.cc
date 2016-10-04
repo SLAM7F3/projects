@@ -31,10 +31,6 @@ void reinforce::initialize_member_objects()
    Dout = 4 * 4;	// Output dimensionality
    H = 200;		// Number of hidden layer neurons
 
-   Din = 3;
-   Dout = 4;
-   H = 5;
-   
    batch_size = 10;	// Perform parameter update after this many episodes
    learning_rate = 0.001;	
    gamma = 0.99;	// Discount factor for reward
