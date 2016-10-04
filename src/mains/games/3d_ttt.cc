@@ -1,12 +1,13 @@
 // ==========================================================================
 // Program 3D_TTT
 // ==========================================================================
-// Last updated on 8/28/16; 8/29/16; 9/12/16
+// Last updated on 8/28/16; 8/29/16; 9/12/16; 10/4/16
 // ==========================================================================
 
 #include <iostream>
 #include <string>
 #include <vector>
+#include "games/reinforce.h"
 #include "games/tictac3d.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
@@ -24,6 +25,9 @@ int main (int argc, char* argv[])
 //   tictac3d* ttt_ptr = new tictac3d(2,1);
    tictac3d* ttt_ptr = new tictac3d(4,1);
 
+   reinforce* reinforce_ptr = new reinforce();
+   cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
+   reinforce_ptr->xavier_init_weight_matrices();
 
    while(!ttt_ptr->get_game_over())
    {
@@ -49,6 +53,7 @@ int main (int argc, char* argv[])
    cout << "GAME OVER" << endl << endl;
 
    delete ttt_ptr;
+   delete reinforce_ptr;
 }
 
 
