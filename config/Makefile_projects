@@ -6,7 +6,7 @@
 # Note added on 8/3/15:  Eliminated -lopencv_contrib, -lopencv_legacy   #
 # and -lopencv_nonfree which no longer exist under opencv3.0.0		#
 # ===================================================================== #
-# Last modified on 5/10/16; 6/20/16; 8/28/16; 10/4/16			#
+# Last modified on 6/20/16; 8/28/16; 10/4/16; 10/5/16			#
 # ===================================================================== #
 #									#
 # NOTES:								#
@@ -620,7 +620,7 @@ $(LIBDIR)/libfilter.a: $(FILTER_OBJECTS)
 	ar rsuv $(FILTER_DIR)/libfilter.a $(FILTER_OBJECTS)
 
 # =====================================================================	#
-GAMES_SRC=tictac2d.cc tictac3d.cc reinforce.cc
+GAMES_SRC=tictac2d.cc tictac3d.cc 
 GAMES_OBJS=$(GAMES_SRC:.cc=.o)
 GAMES_OBJECTS= ${GAMES_OBJS:%=$(GAMES_DIR)/%}
 $(LIBDIR)/libgames.a: $(GAMES_OBJECTS) 
@@ -738,7 +738,7 @@ $(LIBDIR)/libladar.a: $(LADAR_OBJECTS)
 	ar rsuv $(LADAR_DIR)/libladar.a $(LADAR_OBJECTS)
 
 # =====================================================================	#
-MACHINELEARNING_SRC=machinelearningfuncs.cc neural_net.cc
+MACHINELEARNING_SRC=machinelearningfuncs.cc neural_net.cc reinforce.cc
 MACHINELEARNING_OBJS=$(MACHINELEARNING_SRC:.cc=.o)
 MACHINELEARNING_OBJECTS= ${MACHINELEARNING_OBJS:%=$(MACHINE_LEARNING_DIR)/%}
 $(LIBDIR)/libmachinelearning.a: $(MACHINELEARNING_OBJECTS) 

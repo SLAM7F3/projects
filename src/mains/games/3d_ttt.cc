@@ -1,13 +1,13 @@
 // ==========================================================================
 // Program 3D_TTT
 // ==========================================================================
-// Last updated on 8/28/16; 8/29/16; 9/12/16; 10/4/16
+// Last updated on 8/29/16; 9/12/16; 10/4/16; 10/5/16
 // ==========================================================================
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include "games/reinforce.h"
+#include "machine_learning/reinforce.h"
 #include "games/tictac3d.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
