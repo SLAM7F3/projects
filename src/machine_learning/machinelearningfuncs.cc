@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 2/19/13; 2/8/16; 2/9/16
+// Last updated on 2/19/13; 2/8/16; 2/9/16; 10/5/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -36,6 +36,18 @@ namespace machinelearning_func
       }
       return output;
    }
+
+   void sigmoid(genmatrix& Zin, genmatrix& Zout)
+   {
+      for(unsigned int j = 0; j < Zin.get_ndim(); j++)
+      {
+         for(unsigned int i = 0; i < Zin.get_mdim(); i++)
+         {
+            Zout.put(i, j, sigmoid( Zin.get(i,j) ));
+         }
+      }
+   }
+   
 
    double deriv_sigmoid(double z)
    {

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/4/16
+// Last modified on 10/4/16; 10/5/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -12,6 +12,7 @@
 #include <vector>
 
 class genmatrix;
+class genvector;
 
 class reinforce
 {
@@ -29,6 +30,8 @@ class reinforce
    void clear_matrices();
    void print_matrices();
    void xavier_init_weight_matrices();
+   void compute_discounted_rewards();
+   void policy_forward(genvector* in_state_ptr);
 
   private:
 
@@ -39,16 +42,21 @@ class reinforce
    double learning_rate;
    double gamma;	// Discount factor for reward
    
-   genmatrix *W1_ptr, *W2_ptr;
-   genmatrix *grad1_ptr;
-   genmatrix *grad2_ptr;
-   genmatrix *rmsprop1_ptr;
-   genmatrix *rmsprop2_ptr;
+   genmatrix *W1_ptr;        // H x Din
+   genmatrix *W2_ptr;        // Dout x H
+   genmatrix *grad1_ptr;     // H x Din
+   genmatrix *grad2_ptr;     // Dout x H
+   genmatrix *rmsprop1_ptr;  // H x Din
+   genmatrix *rmsprop2_ptr;  // Dout x H
+
+   genvector *h_ptr;         // H x 1
+   genvector *logp_ptr;      // Dout x 1
+   genvector *p_ptr;         // Dout x 1
+
+   std::vector<double> rewards, discounted_rewards;
 
    void allocate_member_objects();
-
    void initialize_member_objects();
-
 };
 
 // ==========================================================================

@@ -6,6 +6,7 @@
 
 #include <string>
 #include "math/genmatrix.h"
+#include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
@@ -44,6 +45,10 @@ void reinforce::allocate_member_objects()
    grad2_ptr = new genmatrix(Dout, H);
    rmsprop1_ptr = new genmatrix(H, Din);
    rmsprop2_ptr = new genmatrix(Dout, H);
+
+   h_ptr = new genvector(H);
+   logp_ptr = new genvector(Dout);
+   p_ptr = new genvector(Dout);
 }		       
 
 void reinforce::clear_matrices()
@@ -92,6 +97,10 @@ reinforce::~reinforce()
    delete grad2_ptr;
    delete rmsprop1_ptr;
    delete rmsprop2_ptr;
+
+   delete h_ptr;
+   delete logp_ptr;
+   delete p_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -112,23 +121,63 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 
 void reinforce::xavier_init_weight_matrices()
 {
-   for(int py = 0; py < W1_ptr->get_ndim(); py++)
+   for(unsigned int py = 0; py < W1_ptr->get_ndim(); py++)
    {
-      for(int px = 0; px < W1_ptr->get_mdim(); px++)
+      for(unsigned int px = 0; px < W1_ptr->get_mdim(); px++)
       {
          W1_ptr->put(px,py,nrfunc::gasdev() / sqrt(Din) );
       } // loop over px
    } // loop over py 
 
-   for(int py = 0; py < W2_ptr->get_ndim(); py++)
+   for(unsigned int py = 0; py < W2_ptr->get_ndim(); py++)
    {
-      for(int px = 0; px < W2_ptr->get_mdim(); px++)
+      for(unsigned int px = 0; px < W2_ptr->get_mdim(); px++)
       {
          W2_ptr->put(px,py,nrfunc::gasdev() / sqrt(H) );
       } // loop over px
    } // loop over py 
 
-   cout << "W1 = " << *W1_ptr << endl;
-   cout << "W2 = " << *W2_ptr << endl;
+//   cout << "W1 = " << *W1_ptr << endl;
+//   cout << "W2 = " << *W2_ptr << endl;
 }
 
+// ---------------------------------------------------------------------
+void reinforce::compute_discounted_rewards()
+{
+   double running_add = 0;
+   int nsteps = rewards.size();
+
+   for(int t = nsteps - 1; t >= 0; t--)
+   {
+      running_add = running_add * gamma + rewards[t];
+      discounted_rewards.push_back(running_add);
+   }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::policy_forward(genvector* in_state_ptr)
+{
+   *h_ptr = (*W1_ptr) * (*in_state_ptr);
+   
+// Apply ReLU thresholding to hidden state activations:
+
+   for(int i = 0; i < H; i++)
+   {
+      if(h_ptr->get(i) < 0) h_ptr->put(i,0);
+   }
+   
+   *logp_ptr = (*W2_ptr) * (*h_ptr);
+   machinelearning_func::sigmoid(*logp_ptr, *p_ptr);
+}
+
+// ---------------------------------------------------------------------
+// eph is an array of intermediate hidden states
+
+/*
+void reinforce::policy_backward(genvector* eph, genvector* epdlogp)
+{
+//   dW2 = eph.transpose dotproduct epdlogp
+
+
+}
+*/

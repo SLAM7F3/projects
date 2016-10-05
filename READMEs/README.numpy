@@ -1,7 +1,7 @@
 =============================================================================
 Numpy language notes
 =============================================================================
-Last updated on 10/4/16
+Last updated on 10/4/16; 10/5/16
 =============================================================================
 
 *.  In order to obtain dimensions for a numpy matrix, call .shape
@@ -37,3 +37,13 @@ sampled from a univariate “normal” (Gaussian) distribution of mean 0 and
 variance 1 (if any of the d_i are floats, they are first converted to
 integers by truncation). A single float randomly sampled from the
 distribution is returned if no argument is provided.
+
+*.   a = np.array([1,2,3])
+a =  [1 2 3]
+
+a2 = np.array( [ [1], [2], [3] ] )
+
+a2 =  
+[[1]
+ [2]
+ [3]]
