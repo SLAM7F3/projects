@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 9/29/16; 9/30/16; 10/3/16; 10/4/16
+Last updated on 9/30/16; 10/3/16; 10/4/16; 10/5/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -106,7 +106,7 @@ data type.
 The values stored in a list can be accessed using the slice operator ([ ]
 and [:]) with indexes starting at 0 in the beginning of the list and
 working their way to end -1. The plus (+) sign is the list concatenation
-operator, and the asterisk (*) is the repetition operator. For example
+operator, and the asterisk (*) is the repetition operator. 
 
 *.  Python tuples:
 
@@ -300,3 +300,56 @@ The cPickle module implements the same algorithm, in C instead of
 Python. It is many times faster than the Python implementation, but does
 not allow the user to subclass from Pickle. If subclassing is not important
 for your use, you probably want to use cPickle.
+
+*.  In functional programming, iterating over a few things simultaneously
+is called “zip”. Python has a built-in zip function.  It returns a list of
+tuples, where the i-th tuple contains the i-th element from each of the
+argument sequences or iterables:
+
+a = [1,2,3]
+b = ['a','b','c']
+for i,j in zip(a,b):
+    print i, j
+
+1 a
+2 b
+3 c
+
+mykeys = ['a', 'b', 'c']
+myvalues = [1, 2, 3]
+dict(zip(mykeys, myvalues))
+
+{'a': 1, 'c': 3, 'b': 2}
+
+colors = ['red', 'green', 'blue']
+vals = [55, 89, 144, 233]
+for col, val in zip(colors, vals):
+     print(col, val)
+
+('red', 55)
+('green', 89)
+('blue', 144)
+
+*.  Python dictionaries and zip()
+
+keys = ['spam', 'eggs']
+vals = [42, 1729]
+d = dict(zip(keys, vals))
+
+{'eggs': 1729, 'spam': 42}
+
+Invert dictionary (i.e. swap keys and values):
+
+inv_d = dict(zip(d.values(), d.keys()))
+
+{1729: 'eggs', 42: 'spam'}
+
+*.  Sorting one list according to another:
+
+alist = ['a4', 'a1', 'a5', 'a2', 'a6', 'a3']
+blist = [4, 1, 5, 2, 6, 3]
+    
+a2list, b2list = (list(x) for x in zip(*sorted(zip(alist, blist))))
+
+['a1', 'a2', 'a3', 'a4', 'a5', 'a6']
+[1, 2, 3, 4, 5, 6]
