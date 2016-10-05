@@ -259,7 +259,6 @@ mymath.py) from another python file (e.g. binary_search.py) by including
 
 at top of python file which performs the method call
 
-
 *.  Call sys.exit(1) in order to exit python from within a script
 
 *.  Initialize dictionary as
