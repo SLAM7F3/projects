@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 9/30/16; 10/3/16; 10/4/16; 10/5/16
+Last updated on 10/3/16; 10/4/16; 10/5/16; 10/6/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -227,6 +227,8 @@ use, i += 1
 *.  Use pop(0) to pop off element from front of a list:
 
 		 self.pegDisks[fromPeg].pop(0)
+
+*.  Use lst.pop() or del lst[-1] to pop off last element from list lst.
 
 *.  "!=" means "not equals" in python.  But use "not flag" rather than
 "!flag" to negate a boolean variable in python.
