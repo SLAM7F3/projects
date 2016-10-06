@@ -1,7 +1,7 @@
 =============================================================================
 TAGGER2 notes
 =============================================================================
-Last updated on 9/8/16; 9/19/16; 10/3/16; 10/4/16
+Last updated on 9/19/16; 10/3/16; 10/4/16; 10/5/16
 =============================================================================
 
 *.  On 8/10/16, Tomas told us to compile the tagger-2 branch of gardn with
@@ -182,4 +182,13 @@ rather than GLFW_KEY_DELETE.
 variant of Tomas' python script and chant
 
 	./build_s2d_editor -dst s2d_editor -ver 1000
+
+*.  On 10/5/16, Ross told us that the working directory for Mac apps is
+usually set to AppName.app/Contents/MacOS/.  He suggested plcing external
+chunk data zipfiles into AppName.app/Resources/ .  Then inside of our
+tagger2 pwin code , we are able to refer to those tile data files via
+chanting "../Resources/tile_filename.zip".
+
+
+*.  zip -r s2d_editor.app.zip ./s2d_editor.app
 
