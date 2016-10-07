@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 10/3/16; 10/4/16; 10/5/16; 10/6/16
+Last updated on 10/4/16; 10/5/16; 10/6/16; 10/7/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -286,7 +286,6 @@ Query dictionary to see if it already contains a value corresponding to key
     for key, value in dict.iteritems():
         print "key = ", key, " value = ", value
 
-
 *.  pickle and cPickle – Python object serialization
 Purpose:	Python object serialization
 Available In:	pickle at least 1.4, cPickle 1.5
@@ -354,3 +353,5 @@ a2list, b2list = (list(x) for x in zip(*sorted(zip(alist, blist))))
 
 ['a1', 'a2', 'a3', 'a4', 'a5', 'a6']
 [1, 2, 3, 4, 5, 6]
+
+*.  Python has continue statement just like C/C++
