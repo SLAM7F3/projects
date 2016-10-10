@@ -1,7 +1,7 @@
 ===========================================================================================
 Apple MacBook Pro Laptop notes
 ===========================================================================================
-Last updated on 2/5/16; 2/19/16; 9/19/16; 9/20/16
+Last updated on 2/19/16; 9/19/16; 9/20/16; 10/10/16
 ===========================================================================================
 
 *.  As of 1/26/15, we have updated all software on our MacBook.
@@ -81,5 +81,42 @@ After making these changes, startown mounted on our macbook!
 *.  On 9/20/16, we generated a public ssh key on our macbook.  We then
 followed the "Distribute public ssh key" instructions on the flyover wiki
 page in order to upload our macbook ssh key.
+
+*.  On 10/10/16, we had trouble unmounting and remounting startown on our
+macbook.  We learned from https://github.com/osxfuse/osxfuse/wiki/FAQ that
+fusermount program doesn't exist for OS X.  Instead.  just use the standard
+umount command in OS X:
+
+		umount /startown-gpfs
+
+
+*. See
+http://www.loopinsight.com/2014/01/08/your-macs-built-in-screen-recorder/
+for directions on how to generate QuickTime movies using MacBook's built-in
+screen recorder
+
+Your Mac’s built-in screen recorder Posted on Wednesday, January 8th, 2014
+at 5:54 am. PT
+
+Not sure when this feature got added, but since this was new to me, thought
+this was worth sharing.
+
+Launch QuickTime Player (it’s in your Applications folder). Now select New
+Screen Recording from the File menu, or type control-command-N. A small
+screen recording window will appear, like so:
+
+recorder
+
+Click the little triangle on the right side of the window to adjust
+microphone and mouse click options. When ready, click the record button in
+the center of the window. Click and drag a section of the screen to record
+part of the screen or just click to record the entire screen. Once you do
+that, click to start recording. Click the stop button that appears in the
+menu bar to stop recording.
+
+Pretty easy, and the end result is a QuickTime movie you can use anywhere
+you’d expect (iMovie, YouTube, etc.) Clearly not a method a pro would use,
+but if your needs are relatively simple, this is a great solution.
+
 
 
