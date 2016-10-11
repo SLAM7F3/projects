@@ -1,7 +1,7 @@
 =============================================================================
 Python language notes
 =============================================================================
-Last updated on 10/4/16; 10/5/16; 10/6/16; 10/7/16
+Last updated on 10/5/16; 10/6/16; 10/7/16; 10/11/16
 =============================================================================
 
 *.  Be sure to include "shebang" line below
@@ -354,4 +354,21 @@ a2list, b2list = (list(x) for x in zip(*sorted(zip(alist, blist))))
 ['a1', 'a2', 'a3', 'a4', 'a5', 'a6']
 [1, 2, 3, 4, 5, 6]
 
-*.  Python has continue statement just like C/C++
+*.  Python has a continue statement just like C/C++
+
+*.  In order to perform a deepcopy of a list (and probably other python
+objects), we need to explicitly invoke python's deepcopy() command:
+
+from copy import deepcopy
+.
+.
+.
+def isValidSudoku(board):
+    board1 = deepcopy(board)
+    board2 = deepcopy(board)
+    print id(board)
+    print id(board1)
+    print id(board2)
+
+Python's id() command will return different values for deep copied
+objects.
