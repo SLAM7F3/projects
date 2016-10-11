@@ -316,6 +316,23 @@ void reinforce::process_timestep(
       *dW1_buffer_ptr += *dW1_ptr;
       *dW2_buffer_ptr += *dW2_ptr;
       
+// Perform RMSprop parameter update every batch_size episodes:
+
+      if(episode_number % batch_size == 0)
+      {
+         
+      }
+      
+
+/*
+    if episode_number % batch_size == 0:
+      for k,v in model.iteritems():
+        g = grad_buffer[k] # gradient
+        rmsprop_cache[k] = decay_rate * rmsprop_cache[k] + (1 - decay_rate) * g**2
+        model[k] += learning_rate * g / (np.sqrt(rmsprop_cache[k]) + 1e-5)
+        grad_buffer[k] = np.zeros_like(v) # reset batch gradient buffer
+*/
+
 
    } // episode_finished_flag
    
