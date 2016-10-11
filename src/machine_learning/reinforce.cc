@@ -45,9 +45,13 @@ void reinforce::initialize_member_objects()
 void reinforce::allocate_member_objects()
 {
    W1_ptr = new genmatrix(H, Din);
+   dW1_ptr = new genmatrix(H, Din);
+   dW1_buffer_ptr = new genmatrix(H, Din);
+
    W2_ptr = new genmatrix(Dout, H);
-   grad1_ptr = new genmatrix(H, Din);
-   grad2_ptr = new genmatrix(Dout, H);
+   dW2_ptr = new genmatrix(Dout, H);
+   dW2_buffer_ptr = new genmatrix(Dout, H);
+
    rmsprop1_ptr = new genmatrix(H, Din);
    rmsprop2_ptr = new genmatrix(Dout, H);
 
@@ -60,14 +64,20 @@ void reinforce::allocate_member_objects()
    episode_x_ptr = new genmatrix(Tmax, Din);
    episode_h_ptr = new genmatrix(Tmax, H);
    episode_dlogp_ptr = new genmatrix(Tmax, Dout);
+   episode_reward_ptr = new genvector(Tmax);
+   discounted_episode_reward_ptr = new genvector(Tmax);
 }		       
 
 void reinforce::clear_matrices()
 {
    W1_ptr->clear_matrix_values();
+   dW1_ptr->clear_matrix_values();
+   dW1_buffer_ptr->clear_matrix_values();
+
    W2_ptr->clear_matrix_values();
-   grad1_ptr->clear_matrix_values();
-   grad2_ptr->clear_matrix_values();
+   dW2_ptr->clear_matrix_values();
+   dW2_buffer_ptr->clear_matrix_values();
+
    rmsprop1_ptr->clear_matrix_values();
    rmsprop2_ptr->clear_matrix_values();
 }		       
@@ -77,8 +87,8 @@ void reinforce::print_matrices()
    cout << "*W1_ptr = " << *W1_ptr << endl;
    cout << "*W2_ptr = " << *W2_ptr << endl;
 
-   cout << "*grad1_ptr = " << *grad1_ptr << endl;
-   cout << "*grad2_ptr = " << *grad2_ptr << endl;
+   cout << "*dW1_ptr = " << *dW1_ptr << endl;
+   cout << "*dW2_ptr = " << *dW2_ptr << endl;
 
    cout << "*rmsprop1_ptr = " << *rmsprop1_ptr << endl;
    cout << "*rmsprop2_ptr = " << *rmsprop2_ptr << endl;
@@ -104,10 +114,12 @@ reinforce::~reinforce()
 {
    delete W1_ptr;
    delete dW1_ptr;
+   delete dW1_buffer_ptr;
+
    delete W2_ptr;
    delete dW2_ptr;
-   delete grad1_ptr;
-   delete grad2_ptr;
+   delete dW2_buffer_ptr;
+
    delete rmsprop1_ptr;
    delete rmsprop2_ptr;
 
@@ -121,6 +133,8 @@ reinforce::~reinforce()
    delete episode_x_ptr;
    delete episode_h_ptr;
    delete episode_dlogp_ptr;
+   delete episode_reward_ptr;
+   delete discounted_episode_reward_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -162,15 +176,14 @@ void reinforce::xavier_init_weight_matrices()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::compute_discounted_rewards()
+void reinforce::discount_rewards()
 {
    double running_add = 0;
-   int nsteps = rewards.size();
 
-   for(int t = nsteps - 1; t >= 0; t--)
+   for(int t = T-1; t >= 0; t--)
    {
-      running_add = running_add * gamma + rewards[t];
-      discounted_rewards.push_back(running_add);
+      running_add = running_add * gamma + episode_reward_ptr->get(t);
+      discounted_episode_reward_ptr->put(t, running_add);
    }
 }
 
@@ -249,10 +262,62 @@ void reinforce::process_timestep(
    episode_dlogp_ptr->put_row(curr_timestep, *dlogp_ptr);
    
    reward_sum += curr_reward;
+   episode_reward_ptr->put(curr_timestep, curr_reward);
 
    if (episode_finished_flag)
    {
+      episode_number++;
+
+// Compute the discounted reward backwards through time:
+
+      discount_rewards();
+
+// Standardize discounted rewards to be unit normal to help control
+// the gradient estimator variance:
+
+      double mean = 0;
+      for(int t = 0; t < T; t++)
+      {
+         mean += discounted_episode_reward_ptr->get(t);
+      }
+      mean /= T;
+      
+      double sigmasqr = 0;
+      for(int t = 0; t < T; t++)
+      {
+         curr_reward = discounted_episode_reward_ptr->get(t) - mean;
+         discounted_episode_reward_ptr->put(t, curr_reward);
+         sigmasqr += sqr(curr_reward);
+      }
+      sigmasqr /= T;
+      double sigma = sqrt(sigmasqr);
+
+      for(int t = 0; t < T; t++)
+      {
+         curr_reward = discounted_episode_reward_ptr->get(t) / sigma;
+         discounted_episode_reward_ptr->put(t, curr_reward);
+      }
+      
+// Modulate the gradient with advantage (Policy Gradient magic happens
+// right here):
+
+      genvector curr_row(Dout);
+      for(int t = 0; t < T; t++)
+      {
+         episode_dlogp_ptr->get_row(t, curr_row);
+         curr_row *= discounted_episode_reward_ptr->get(t);
+         episode_dlogp_ptr->put_row(t, curr_row);
+      }
+
+      policy_backward();
+
+// Accumulate dW1 and dW2 gradients over batch:
+
+      *dW1_buffer_ptr += *dW1_ptr;
+      *dW2_buffer_ptr += *dW2_ptr;
+      
+
    } // episode_finished_flag
    
-
+   curr_timestep++;
 }

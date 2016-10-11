@@ -30,7 +30,7 @@ class reinforce
    void clear_matrices();
    void print_matrices();
    void xavier_init_weight_matrices();
-   void compute_discounted_rewards();
+   void discount_rewards();
    void policy_forward();
    void policy_backward();
 
@@ -53,10 +53,12 @@ class reinforce
    
    genmatrix *W1_ptr;        // H x Din
    genmatrix *dW1_ptr;	     // H x Din
+   genmatrix *dW1_buffer_ptr;// H x Din
+
    genmatrix *W2_ptr;        // Dout x H
    genmatrix *dW2_ptr;       // Dout x H
-   genmatrix *grad1_ptr;     // H x Din
-   genmatrix *grad2_ptr;     // Dout x H
+   genmatrix *dW2_buffer_ptr;// Dout x H
+   
    genmatrix *rmsprop1_ptr;  // H x Din
    genmatrix *rmsprop2_ptr;  // Dout x H
 
@@ -70,6 +72,8 @@ class reinforce
    genmatrix *episode_x_ptr;   	// T x Din
    genmatrix *episode_h_ptr;    // T x H
    genmatrix *episode_dlogp_ptr;// T x Dout
+   genvector *episode_reward_ptr;  // T x 1
+   genvector *discounted_episode_reward_ptr;  // T x 1
 
    std::vector<double> rewards, discounted_rewards;
    double running_reward;
