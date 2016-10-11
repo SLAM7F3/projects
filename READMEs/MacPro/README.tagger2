@@ -1,6 +1,11 @@
-. There's also
-an event for changing the image, which typically causes modules to
-reset/initialize.
+============================================================================
+Tagger 2 and S2D editor notes
+============================================================================
+Last updated on 10/11/16
+============================================================================
+
+. There's also an event for changing the image, which typically causes
+modules to reset/initialize.
 
 *.  Methods to encode/decode geo IDs are sitting in app/build/sxd_merge.c/
 sxd_geo_id_encode() and sxd_geo_id_decode().
@@ -41,4 +46,23 @@ chanting "../Resources/tile_filename.zip".
 
 
 *.  zip -r s2d_editor.app.zip ./s2d_editor.app
+
+
+*.  Creating S2D editor project radars:
+
+Fire up radar app.  Under Find --> Problem, enter under the Component field
+
+	Name = Flyover PR
+	Version = Labeling
+
+Then press Find button in upper right to see examples of labeling radars
+previously sent to David Thurman.  
+
+When we generate a radar for a new problem, use Radar Guide --> New Problem
+--> Assign a Task .  Enter some descriptive title, Component (as above) and
+a short description.  After we press the "send" button, we can alter the
+default assignee and add cc's to other people.  John Wood generally
+recommends setting priority = 3 (important).  Finally, press File --> Save
+in order to send out radar and its ccs.
+
 
