@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/4/16; 10/5/16
+// Last modified on 10/4/16; 10/5/16; 10/11/16
 // ==========================================================================
 
 #include <string>
@@ -31,10 +31,15 @@ void reinforce::initialize_member_objects()
    Din = 4 * 4;		// Input dimensionality
    Dout = 4 * 4;	// Output dimensionality
    H = 200;		// Number of hidden layer neurons
+   Tmax = 1000;	 	// Maximum number of time steps per episode
 
    batch_size = 10;	// Perform parameter update after this many episodes
    learning_rate = 0.001;	
    gamma = 0.99;	// Discount factor for reward
+
+   running_reward = 0;
+   reward_sum = 0;
+   episode_number = 0;
 }		       
 
 void reinforce::allocate_member_objects()
@@ -48,7 +53,13 @@ void reinforce::allocate_member_objects()
 
    h_ptr = new genvector(H);
    logp_ptr = new genvector(Dout);
+   dlogp_ptr = new genvector(Dout);
    p_ptr = new genvector(Dout);
+   action_ptr = new genvector(Dout);
+
+   episode_x_ptr = new genmatrix(Tmax, Din);
+   episode_h_ptr = new genmatrix(Tmax, H);
+   episode_dlogp_ptr = new genmatrix(Tmax, Dout);
 }		       
 
 void reinforce::clear_matrices()
@@ -92,15 +103,24 @@ reinforce::reinforce(const reinforce& R)
 reinforce::~reinforce()
 {
    delete W1_ptr;
+   delete dW1_ptr;
    delete W2_ptr;
+   delete dW2_ptr;
    delete grad1_ptr;
    delete grad2_ptr;
    delete rmsprop1_ptr;
    delete rmsprop2_ptr;
 
+//    delete x_ptr;
    delete h_ptr;
    delete logp_ptr;
+   delete dlogp_ptr;
    delete p_ptr;
+   delete action_ptr;
+
+   delete episode_x_ptr;
+   delete episode_h_ptr;
+   delete episode_dlogp_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -155,9 +175,9 @@ void reinforce::compute_discounted_rewards()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::policy_forward(genvector* in_state_ptr)
+void reinforce::policy_forward()
 {
-   *h_ptr = (*W1_ptr) * (*in_state_ptr);
+   *h_ptr = (*W1_ptr) * (*x_ptr);
    
 // Apply ReLU thresholding to hidden state activations:
 
@@ -171,13 +191,68 @@ void reinforce::policy_forward(genvector* in_state_ptr)
 }
 
 // ---------------------------------------------------------------------
-// eph is an array of intermediate hidden states
-
-/*
-void reinforce::policy_backward(genvector* eph, genvector* epdlogp)
+void reinforce::policy_backward()
 {
-//   dW2 = eph.transpose dotproduct epdlogp
+   *dW2_ptr =  episode_dlogp_ptr->transpose() * (*episode_h_ptr);
 
+   genmatrix *dh_ptr = new genmatrix(H,T);
+   *dh_ptr = W2_ptr->transpose() * episode_dlogp_ptr->transpose();
+
+// Apply ReLU thresholding::
+
+   for(int i = 0; i < H; i++)
+   {
+      if(dh_ptr->get(i) < 0) dh_ptr->put(i,0);
+   }
+
+   *dW1_ptr = (*dh_ptr) * (*episode_x_ptr);
+
+   delete dh_ptr;
+}
+
+// ---------------------------------------------------------------------
+void reinforce::initialize_episode()
+{
+   episode_x_ptr->clear_values();
+   episode_h_ptr->clear_values();
+   episode_dlogp_ptr->clear_values();
+
+   curr_timestep = 0;
+}
+
+// ---------------------------------------------------------------------
+void reinforce::process_timestep(
+   genvector* input_state_ptr, double curr_reward, bool episode_finished_flag)
+{
+   x_ptr = input_state_ptr;
+   policy_forward();
+   
+   for(int d = 0; d < Dout; d++)
+   {
+      double action_prob = p_ptr->get(d);
+      double y;	 // fake label
+      if(nrfunc::ran1() < action_prob)
+      {
+         action_ptr->put(d, 1);
+         y = 1;
+      }
+      else
+      {
+         action_ptr->put(d, 0);
+         y = 0;
+      }
+      dlogp_ptr->put(d, y - action_prob);
+   } // loop over index d 
+          
+   episode_x_ptr->put_row(curr_timestep, *input_state_ptr);
+   episode_h_ptr->put_row(curr_timestep, *h_ptr);
+   episode_dlogp_ptr->put_row(curr_timestep, *dlogp_ptr);
+   
+   reward_sum += curr_reward;
+
+   if (episode_finished_flag)
+   {
+   } // episode_finished_flag
+   
 
 }
-*/
