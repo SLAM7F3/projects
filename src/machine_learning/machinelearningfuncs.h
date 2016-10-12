@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 2/19/13; 2/8/16; 2/9/16; 10/5/16
+// Last updated on 2/8/16; 2/9/16; 10/5/16; 10/12/16
 // ==========================================================================
 
 #include "math/genvector.h"
@@ -14,6 +14,9 @@ namespace machinelearning_func
 
    double deriv_sigmoid(double z);
    genvector deriv_sigmoid(genvector& z);
+
+   void ReLU(genvector& X);
+   void ReLU(genmatrix& Z);
 
 } // machine_learning_func namespace
 

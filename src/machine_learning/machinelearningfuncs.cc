@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 2/19/13; 2/8/16; 2/9/16; 10/5/16
+// Last updated on 2/8/16; 2/9/16; 10/5/16; 10/12/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -63,6 +63,25 @@ namespace machinelearning_func
          output.put(i, deriv_sigmoid( z.get(i) ) );
       }
       return output;
+   }
+
+   void ReLU(genvector& X)
+   {
+      for(unsigned int i = 0; i < X.get_mdim(); i++)
+      {
+         if(X.get(i) < 0) X.put(i,0);
+      }
+   }
+
+   void ReLU(genmatrix& Z)
+   {
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         for(unsigned int j = 0; j < Z.get_ndim(); j++)
+         {
+            if(Z.get(i,j) < 0) Z.put(i,j,0);
+         }
+      }
    }
 
 } // machinelearning_func namespace
