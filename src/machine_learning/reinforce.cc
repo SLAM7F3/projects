@@ -31,7 +31,8 @@ void reinforce::initialize_member_objects()
    Din = 4 * 4;		// Input dimensionality
    Dout = 4 * 4;	// Output dimensionality
    H = 200;		// Number of hidden layer neurons
-   Tmax = 1000;	 	// Maximum number of time steps per episode
+   Tmax = 64;	 	// Maximum number of time steps per episode
+//   Tmax = 1000;	 	// Maximum number of time steps per episode
 
    batch_size = 10;	// Perform parameter update after this many episodes
    learning_rate = 0.001;	

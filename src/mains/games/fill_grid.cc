@@ -28,24 +28,24 @@ int main (int argc, char* argv[])
 
    reinforce* reinforce_ptr = new reinforce();
    cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
-   reinforce_ptr->initialize_episode();
 
    int n_max_episodes = 1 * 1000000;
 //   int n_max_episodes = 10 * 1000000;
-   int n_episodes = 0;
    int n_losses = 0;
    int n_wins = 0;
 
-   while(n_episodes < n_max_episodes)
+   while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
+
       ttt_ptr->reset_board_state();
+      reinforce_ptr->initialize_episode();
 
       while(true)
       {
-//         ttt_ptr->display_board_state();
+         ttt_ptr->display_board_state();
          ttt_ptr->get_random_legal_AI_move();
          if(ttt_ptr->get_game_over()) break;
-//         ttt_ptr->display_board_state();
+         ttt_ptr->display_board_state();
 //       usleep(250 * 1000);
 
          bool print_flag = false;
@@ -65,7 +65,10 @@ int main (int argc, char* argv[])
       
 //      cout << "Final score = " << ttt_ptr->get_score() << endl;
 //      cout << "GAME OVER" << endl << endl;
-      n_episodes++;
+
+
+      reinforce_ptr->increment_episode_number();
+      int n_episodes = reinforce_ptr->get_episode_number();
       if(n_episodes % 100 == 0)
       {
          double win_frac = double(n_wins) / n_episodes;
@@ -76,9 +79,13 @@ int main (int argc, char* argv[])
               << endl;
       }
 
-//      outputfunc::enter_continue_char();
-   } // infinite while loop
+      cout << "*board_state_ptr = " 
+           << *(ttt_ptr->get_board_state_ptr()) << endl;
 
+      outputfunc::enter_continue_char();
+   } // n_episodes < n_max_episodes while loop
+
+   int n_episodes = reinforce_ptr->get_episode_number();
    double win_frac = double(n_wins) / n_episodes;
    cout << "n_episodes = " << n_episodes 
         << " n_losses = " << n_losses

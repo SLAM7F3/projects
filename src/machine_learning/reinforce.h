@@ -27,6 +27,9 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
+   int get_episode_number() const;
+   void increment_episode_number();
+
    void print_matrices();
 
    void initialize_episode();
@@ -94,13 +97,15 @@ class reinforce
 
 // Set and get member functions:
 
-/*
-inline void reinforce::set_n_zlevels(int n)
+inline int reinforce::get_episode_number() const
 {
-   n_zlevels = n;
+   return episode_number;
 }
-*/
 
+inline void reinforce::increment_episode_number() 
+{
+   episode_number++;
+}
 
 #endif  // reinforce.h
 

@@ -32,6 +32,7 @@ class tictac3d
    void set_n_zlevels(int n);
    double get_score() const;
    bool get_game_over() const;
+   genvector* get_board_state_ptr();
 
    void reset_board_state();
    void randomize_board_state();
@@ -50,6 +51,7 @@ class tictac3d
    int n_zlevels;
    double curr_score;
    std::vector<int> curr_board_state;
+   genvector* board_state_ptr;
 
    std::vector<std::vector<triple> > winnable_paths;
 

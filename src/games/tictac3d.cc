@@ -31,22 +31,24 @@ using std::vector;
 
 void tictac3d::allocate_member_objects()
 {
+   board_state_ptr = new genvector(n_size * n_size * n_zlevels);
 }		       
 
 void tictac3d::initialize_member_objects()
 {
    game_over = false;
    generate_all_winnable_paths();
+   board_state_ptr->clear_values();
 }		       
 
 // ---------------------------------------------------------------------
 tictac3d::tictac3d(int n_size, int n_zlevels)
 {
-   allocate_member_objects();
-   initialize_member_objects();
-
    this->n_size = n_size;
    this->n_zlevels = n_zlevels;
+
+   allocate_member_objects();
+   initialize_member_objects();
 
    reset_board_state();
 }
@@ -61,6 +63,7 @@ tictac3d::tictac3d(const tictac3d& T)
 // ---------------------------------------------------------------------
 tictac3d::~tictac3d()
 {
+   delete board_state_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -74,6 +77,15 @@ ostream& operator<< (ostream& outstream,const tictac3d& T)
 
 // ==========================================================================
 
+genvector* tictac3d::get_board_state_ptr()
+{
+   for(unsigned int p = 0; p < curr_board_state.size(); p++)
+   {
+      board_state_ptr->put(p, curr_board_state.at(p));
+   }
+   return board_state_ptr;
+}
+
 int tictac3d::get_cell_value(triple t) const
 {
    return get_cell_value(t.first, t.second, t.third);
@@ -84,6 +96,7 @@ int tictac3d::get_cell_value(int px, int py, int pz) const
    int p = n_size * n_size * pz + n_size * py + px;   
    return curr_board_state.at(p);
 }
+
 
 // Boolean member function set_cell_value() returns false if specified
 // cell is already occupied
