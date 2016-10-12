@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 2/12/16; 2/15/16; 9/20/16; 10/4/16
+// Last modified on 2/15/16; 9/20/16; 10/4/16; 10/12/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -513,6 +513,31 @@ genmatrix genmatrix::elementwise_product(const genmatrix& M)
       } // loop over index m
    }
    return product;
+}
+
+// ---------------------------------------------------------------------
+// Member function elementwise_power sets *this_ij = M_ij**alpha where
+// no sum on i and j indices is performed.
+
+void genmatrix::elementwise_power(const genmatrix& M, double alpha)
+{
+   if (mdim != M.get_mdim() || ndim != M.get_ndim())
+   {
+      cout << "Error in genmatrix::elementwise_sqr()!" << endl;
+      cout << "mdim = " << mdim << " ndim = " << ndim << endl;
+      cout << "M.mdim = " << M.get_mdim() << " M.ndim = " << M.get_ndim()
+           << endl;
+   }
+   else
+   {
+      for (unsigned int m=0; m<mdim; m++)
+      {
+         for (unsigned int n=0; n<ndim; n++)
+         {
+            put(m,n,pow(M.get(m,n), alpha));
+         } // loop over index n
+      } // loop over index m
+   }
 }
 
 // ---------------------------------------------------------------------
