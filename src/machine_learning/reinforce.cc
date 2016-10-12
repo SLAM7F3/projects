@@ -65,6 +65,7 @@ void reinforce::allocate_member_objects()
    logp_ptr = new genvector(Dout);
    dlogp_ptr = new genvector(Dout);
    p_ptr = new genvector(Dout);
+   pcum_ptr = new genvector(Dout);
 
    episode_x_ptr = new genmatrix(Tmax, Din);
    episode_h_ptr = new genmatrix(Tmax, H);
@@ -130,6 +131,7 @@ reinforce::~reinforce()
    delete logp_ptr;
    delete dlogp_ptr;
    delete p_ptr;
+   delete pcum_ptr;
 
    delete episode_x_ptr;
    delete episode_h_ptr;
@@ -228,7 +230,46 @@ void reinforce::compute_current_action(
 {
    policy_forward(input_state_ptr);
    
-// Sample an action from returned probability:
+// Renormalize action probabilities:
+
+   double denom = 0;
+   for(int d = 0; d < Dout; d++)
+   {
+      denom += p_ptr->get(d);
+   }
+
+   double pcum = 0;
+   for(int d = 0; d < Dout; d++)
+   {
+      p_ptr->put(d, p_ptr->get(d) / denom);
+      pcum += p_ptr->get(d);
+//      cout << "d = " << d << " p_dens = " << p_ptr->get(d)
+//           << " pcum = " << pcum << endl;
+      pcum_ptr->put(d, pcum);
+   }
+
+// Uniformly generate random variable.  Use it to inversely sample
+// cumulative probability distribution to set action dstar:
+
+   int dstar = -1;
+   double q = nrfunc::ran1();
+   for(int d = 0; d < Dout - 1; d++)
+   {
+      if(q >= pcum_ptr->get(d) && q < pcum_ptr->get(d+1))
+      {
+         dstar = d;
+      }
+   }
+   if(dstar == -1) dstar = Dout - 1;
+
+   output_action_ptr->clear_values();
+   output_action_ptr->put(dstar, 1);
+
+
+/*
+
+// REWORK THIS SECTION !!!
+
    for(int d = 0; d < Dout; d++)
    {
       double action_prob = p_ptr->get(d);
@@ -252,6 +293,7 @@ void reinforce::compute_current_action(
 
       dlogp_ptr->put(d, y - action_prob);
    } // loop over index d 
+*/
 
 // Record various intermediates needed later for backpropagation:
           

@@ -22,9 +22,11 @@ int main (int argc, char* argv[])
    using std::vector;
 
    nrfunc::init_time_based_seed();
-//   tictac3d* ttt_ptr = new tictac3d(2,1);
-   tictac3d* ttt_ptr = new tictac3d(3,1);
-//    tictac3d* ttt_ptr = new tictac3d(4,1);
+
+//   int nsize = 3;
+   int nsize = 4;
+   tictac3d* ttt_ptr = new tictac3d(nsize,1);
+   genvector* output_action_ptr = new genvector(nsize * nsize);
 
    reinforce* reinforce_ptr = new reinforce();
    cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
@@ -42,18 +44,30 @@ int main (int argc, char* argv[])
 
       while(true)
       {
-         ttt_ptr->display_board_state();
          ttt_ptr->get_random_legal_AI_move();
+//         ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over()) break;
-         ttt_ptr->display_board_state();
 //       usleep(250 * 1000);
+
+         reinforce_ptr->compute_current_action(
+            ttt_ptr->get_board_state_ptr(), output_action_ptr);
+         for(unsigned int c = 0; c < output_action_ptr->get_mdim(); c++)
+         {
+            if(output_action_ptr->get(c) > 0)
+            {
+               cout << "c = " << c << " action = " << output_action_ptr->get(c)
+                    << endl;
+            }
+         }
 
          bool print_flag = false;
 //         bool print_flag = true;
          ttt_ptr->get_random_agent_move(print_flag);
+//         ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over()) break;
       } // !game_over while loop
 
+      
       if(ttt_ptr->get_score() == -1)
       {
          n_losses++;
@@ -62,6 +76,11 @@ int main (int argc, char* argv[])
       {
          n_wins++;
       }
+
+//      ttt_ptr->display_board_state();
+//      cout << "*board_state_ptr = " 
+//           << *(ttt_ptr->get_board_state_ptr()) << endl;
+//      outputfunc::enter_continue_char();
       
 //      cout << "Final score = " << ttt_ptr->get_score() << endl;
 //      cout << "GAME OVER" << endl << endl;
@@ -79,10 +98,6 @@ int main (int argc, char* argv[])
               << endl;
       }
 
-      cout << "*board_state_ptr = " 
-           << *(ttt_ptr->get_board_state_ptr()) << endl;
-
-      outputfunc::enter_continue_char();
    } // n_episodes < n_max_episodes while loop
 
    int n_episodes = reinforce_ptr->get_episode_number();
@@ -95,6 +110,7 @@ int main (int argc, char* argv[])
 
    delete ttt_ptr;
    delete reinforce_ptr;
+   delete output_action_ptr;
 }
 
 

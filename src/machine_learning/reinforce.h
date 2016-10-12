@@ -69,6 +69,7 @@ class reinforce
    genvector *logp_ptr;      // Dout x 1
    genvector *dlogp_ptr;     // Dout x 1
    genvector *p_ptr;         // Dout x 1  Prob of taking action
+   genvector *pcum_ptr;      // Dout x 1  Cumulative prob of taking action
    genvector *action_ptr;    // Dout x 1  Just pointer to pre-existing output
 
    genmatrix *episode_x_ptr;   	// T x Din

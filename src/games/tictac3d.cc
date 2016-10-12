@@ -104,13 +104,14 @@ int tictac3d::get_cell_value(int px, int py, int pz) const
 bool tictac3d::set_cell_value(int px, int py, int pz, int value)
 {
    int p = n_size * n_size * pz + n_size * py + px;   
+   bool cell_unoccupied = true;
    if(get_cell_value(px, py, pz) != 0)
    {
-      return false;
+      cell_unoccupied = false;
    }
 
    curr_board_state[p] = value;
-   return true;
+   return cell_unoccupied;
 }
 
 int tictac3d::get_n_filled_cells() const
@@ -173,29 +174,47 @@ double tictac3d::get_random_agent_move(bool print_flag)
    int py = mathfunc::getRandomInteger(n_size);
    int pz = 0;
 
-   int human_value = 1;
+// Cell values:
+
+// -1   --> AI
+// 0    --> empty
+// 1    --> agent
+// 2    --> 2 agent (illegal)
+// 3    --> agent + AI (illegal)
+
+   int agent_value = 1;
    curr_score = 0;
-   if(!set_cell_value(px,py,pz,human_value))
+   int curr_cell_value = get_cell_value(px, py, pz);
+   if(curr_cell_value == -1)
    {
-      int curr_cell_value = get_cell_value(px,py,pz);
+      set_cell_value(px, py, pz, 3);
       curr_score = -1;
       game_over = true;
+
       if(print_flag)
       {
          cout << "Agent attempted illegal move into row = " << py 
               << " column = " << px << endl;
-         if (curr_cell_value == human_value)
-         {
-            cout << "Cell is already occupied by O" << endl;
-         }
-         else
-         {
-            cout << "Cell is already occupied by X" << endl;
-         }
+         cout << "Cell is already occupied by X" << endl;
       }
+   }
+   else if (curr_cell_value == 1)
+   {
+      set_cell_value(px, py, pz, 2);
+      curr_score = -1;
+      game_over = true;
+
+      if(print_flag)
+      {
+         cout << "Agent attempted illegal move into row = " << py 
+              << " column = " << px << endl;
+         cout << "Cell is already occupied by O" << endl;
+      }
+
    }
    else
    {
+      set_cell_value(px, py, pz, agent_value);
       int n_total_cells = n_zlevels * n_size * n_size;
       if(get_n_filled_cells() == n_total_cells)
       {
@@ -217,8 +236,12 @@ void tictac3d::get_random_legal_AI_move()
       int px = mathfunc::getRandomInteger(n_size);
       int py = mathfunc::getRandomInteger(n_size);
       int pz = 0;
-      legal_move_flag = true;
-      if(!set_cell_value(px,py,pz,AI_value))
+      if(get_cell_value(px,py,pz) == 0)
+      {
+         set_cell_value(px,py,pz,AI_value);
+         legal_move_flag = true;
+      }
+      else
       {
          legal_move_flag = false;
       }
@@ -312,6 +335,7 @@ void tictac3d::display_Zgrid_state(int pz)
       {
          int curr_cell_value = get_cell_value(px, py, pz);
          string cell_str;
+
          if(curr_cell_value == 0)
          {
             cell_str = "   ";
@@ -343,6 +367,17 @@ void tictac3d::display_Zgrid_state(int pz)
             }
             cout << cell_str << def << flush;
          }
+         else if (curr_cell_value == 2)
+         {
+            cell_str = " OO";
+            cout << purple << cell_str << def << flush;
+         }
+         else if (curr_cell_value == 3)
+         {
+            cell_str = " XO";
+            cout << purple << cell_str << def << flush;
+         }
+         
          if(px < n_size - 1)
          {
             cout << grey << "|" << def << flush;
