@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 8/28/16; 8/29/16; 9/12/16
+// Last modified on 8/28/16; 8/29/16; 9/12/16; 10/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -85,6 +85,9 @@ int tictac3d::get_cell_value(int px, int py, int pz) const
    return curr_board_state.at(p);
 }
 
+// Boolean member function set_cell_value() returns false if specified
+// cell is already occupied
+
 bool tictac3d::set_cell_value(int px, int py, int pz, int value)
 {
    int p = n_size * n_size * pz + n_size * py + px;   
@@ -117,7 +120,7 @@ int tictac3d::get_n_filled_cells() const
    return n_filled_cells;
 }
 
-
+// ---------------------------------------------------------------------
 void tictac3d::enter_human_move()
 {
    int px, py, pz = 0;
@@ -151,6 +154,73 @@ void tictac3d::enter_human_move()
 }
 
 // ---------------------------------------------------------------------
+double tictac3d::get_random_agent_move(bool print_flag)
+{
+   int px = mathfunc::getRandomInteger(n_size);
+   int py = mathfunc::getRandomInteger(n_size);
+   int pz = 0;
+
+   int human_value = 1;
+   curr_score = 0;
+   if(!set_cell_value(px,py,pz,human_value))
+   {
+      int curr_cell_value = get_cell_value(px,py,pz);
+      curr_score = -1;
+      game_over = true;
+      if(print_flag)
+      {
+         cout << "Agent attempted illegal move into row = " << py 
+              << " column = " << px << endl;
+         if (curr_cell_value == human_value)
+         {
+            cout << "Cell is already occupied by O" << endl;
+         }
+         else
+         {
+            cout << "Cell is already occupied by X" << endl;
+         }
+      }
+   }
+   else
+   {
+      int n_total_cells = n_zlevels * n_size * n_size;
+      if(get_n_filled_cells() == n_total_cells)
+      {
+         curr_score = 1;
+         game_over = true;
+      }
+   }
+   return curr_score;
+}
+
+// ---------------------------------------------------------------------
+void tictac3d::get_random_legal_AI_move()
+{
+   int AI_value = -1;
+   bool legal_move_flag = true;
+
+   do
+   {
+      int px = mathfunc::getRandomInteger(n_size);
+      int py = mathfunc::getRandomInteger(n_size);
+      int pz = 0;
+      legal_move_flag = true;
+      if(!set_cell_value(px,py,pz,AI_value))
+      {
+         legal_move_flag = false;
+      }
+   }
+   while(!legal_move_flag);
+
+   int n_total_cells = n_zlevels * n_size * n_size;
+   if(get_n_filled_cells() == n_total_cells)
+   {
+      curr_score = 1;
+      game_over = true;
+   }
+}
+
+// ---------------------------------------------------------------------
 void tictac3d::reset_board_state()
 {
    curr_board_state.clear();
@@ -166,6 +236,7 @@ void tictac3d::reset_board_state()
          } // loop over px 
       } // loop over py
    } // loop over pz
+   game_over = false;
 }		       
 
 // ---------------------------------------------------------------------

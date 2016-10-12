@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 8/28/16; 8/29/16; 9/12/16
+// Last modified on 8/28/16; 8/29/16; 9/12/16; 10/12/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -39,6 +39,9 @@ class tictac3d
    void enter_human_move();
    int get_n_filled_cells() const;
    int check_player_win(int player_ID);
+
+   double get_random_agent_move(bool print_flag = false);
+   void get_random_legal_AI_move();
 
   private: 
 
