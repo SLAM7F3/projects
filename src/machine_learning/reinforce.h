@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/4/16; 10/5/16; 10/11/16
+// Last modified on 10/4/16; 10/5/16; 10/11/16; 10/12/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -27,17 +27,13 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
-   void clear_matrices();
    void print_matrices();
-   void xavier_init_weight_matrices();
-   void discount_rewards();
-   void policy_forward();
-   void policy_backward();
 
    void initialize_episode();
-   void process_timestep(
-      genvector* input_state_ptr, double curr_reward, 
-      bool episode_finished_flag);
+   void compute_current_action(
+      genvector* input_state_ptr, genvector* output_action_ptr);
+   void record_reward_for_action(double curr_reward);
+   void update_weights(bool episode_finished_flag);
 
   private:
 
@@ -50,24 +46,27 @@ class reinforce
    int batch_size;  	// Perform parameter update after this many episodes
    double learning_rate;
    double gamma;	// Discount factor for reward
-   
+   double decay_rate;	// Decay factor for RMSProp leaky sum of grad**2
+
    genmatrix *W1_ptr;        // H x Din
    genmatrix *dW1_ptr;	     // H x Din
-   genmatrix *dW1_buffer_ptr;// H x Din
+   genmatrix *dW1_buffer_ptr;// H x Din  Update buffer for grad sums over batch
+   genmatrix *sqr_dW1_buffer_ptr;   // H x Din
+   genmatrix *rmsprop1_ptr;  // H x Din
+   genmatrix *sqrt_rmsprop1_ptr;  // H x Din
 
    genmatrix *W2_ptr;        // Dout x H
    genmatrix *dW2_ptr;       // Dout x H
-   genmatrix *dW2_buffer_ptr;// Dout x H
-   
-   genmatrix *rmsprop1_ptr;  // H x Din
+   genmatrix *dW2_buffer_ptr;// Dout x H Update buffer for grad sums over batch
+   genmatrix *sqr_dW2_buffer_ptr;   // Dout x H
    genmatrix *rmsprop2_ptr;  // Dout x H
+   genmatrix *sqrt_rmsprop2_ptr;  // Dout x H
 
-   genvector *x_ptr;	     // Din x 1
    genvector *h_ptr;         // H x 1
    genvector *logp_ptr;      // Dout x 1
    genvector *dlogp_ptr;     // Dout x 1
-   genvector *p_ptr;         // Dout x 1
-   genvector *action_ptr;    // Dout x 1
+   genvector *p_ptr;         // Dout x 1  Prob of taking action
+   genvector *action_ptr;    // Dout x 1  Just pointer to pre-existing output
 
    genmatrix *episode_x_ptr;   	// T x Din
    genmatrix *episode_h_ptr;    // T x H
@@ -75,10 +74,15 @@ class reinforce
    genvector *episode_reward_ptr;  // T x 1
    genvector *discounted_episode_reward_ptr;  // T x 1
 
-   std::vector<double> rewards, discounted_rewards;
    double running_reward;
    double reward_sum;
    int episode_number;
+
+   void xavier_init_weight_matrices();
+   void discount_rewards();
+   void policy_forward(genvector* x_ptr);
+   void policy_backward();
+
 
    void allocate_member_objects();
    void initialize_member_objects();

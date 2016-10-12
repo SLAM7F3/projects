@@ -27,7 +27,7 @@ int main (int argc, char* argv[])
 
    reinforce* reinforce_ptr = new reinforce();
    cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
-   reinforce_ptr->xavier_init_weight_matrices();
+   reinforce_ptr->initialize_episode();
 
    while(!ttt_ptr->get_game_over())
    {
