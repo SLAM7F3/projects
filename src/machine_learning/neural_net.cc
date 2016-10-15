@@ -136,6 +136,7 @@ ostream& operator<< (ostream& outstream,const neural_net& NN)
    outstream << "n_layers = " << NN.num_layers << endl << endl;
    for(unsigned int l = 0; l < NN.num_layers; l++)
    {
+      cout << "---------------------------" << endl;
       if(l == 0)
       {
          outstream << "INPUT Layer: l = 0" << endl;
@@ -150,15 +151,17 @@ ostream& operator<< (ostream& outstream,const neural_net& NN)
       {
          outstream << "Layer: l = " << l << endl;
       }
-
       cout << "  N_nodes = " << NN.layer_sizes[l] << endl;
-      
       genvector* curr_biases = NN.get_biases(l);
       cout << "biases = " << *curr_biases << endl;
+      cout << "---------------------------" << endl;      
 
       if(l == NN.num_layers-1) continue;
       genmatrix* curr_weights = NN.get_weights(l);
-      cout << "weights = " << *curr_weights << endl;
+      cout << curr_weights->get_mdim() << " x " << curr_weights->get_ndim()
+           << " weights matrix connecting layers " 
+           << l << " to " << l+1 << " :" << endl;
+      cout << *curr_weights << endl;
 
    } // loop over index l labeling neural net layer
 
