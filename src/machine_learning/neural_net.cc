@@ -325,7 +325,7 @@ neural_net::generate_training_mini_batches(
 // If "test_data" is provided then the network will be evaluated
 // against the test data after each epoch, and partial progress
 // printed out.  This is useful for tracking progress, but slows
-// things down substantially.  Input parameter lambda governs
+// things down substantially.  Input parameter lambda governs L2
 // regularization.
 
 void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
@@ -335,12 +335,16 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
 
    for(int e = 0; e < n_epochs; e++)
    {
-      cout << "Epoch e = " << e << " of " << n_epochs << endl;
-      cout << "   learning_rate = " << learning_rate 
-           << "  regularization lambda = " << lambda << endl;
-      cout << "   Test frac correct = " << evaluate() << endl;
+      if(e%10 == 0)
+      {
+         cout << "Epoch e = " << e << " of " << n_epochs << endl;
+         cout << "   learning_rate = " << learning_rate 
+              << "  regularization lambda = " << lambda << endl;
+         cout << "   Test frac correct = " << evaluate() << endl;
 //      cout << "   *this = " << *this << endl;
 //      outputfunc::enter_continue_char();
+      }
+      
 
       vector<DATA_PAIR> shuffled_training_data = 
          randomly_shuffle_training_data();
@@ -358,7 +362,7 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
 // ---------------------------------------------------------------------
 // Member function update_mini_batch() updates the network's weights
 // and biases by applying gradient descent using backpropagation to a
-// single mini batch.  lambda = regularization parameter.
+// single mini batch.  lambda = L2 regularization parameter.
 
 void neural_net::update_mini_batch(
    vector<DATA_PAIR>& mini_batch, double learning_rate, double lambda)

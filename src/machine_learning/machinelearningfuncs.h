@@ -22,7 +22,8 @@ namespace machinelearning_func
 
    void generate_data_samples(
       int n_samples, std::vector<neural_net::DATA_PAIR>& samples);
-
+   void print_data_samples(
+      const std::vector<neural_net::DATA_PAIR>& samples);
 
 } // machine_learning_func namespace
 

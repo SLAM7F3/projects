@@ -113,10 +113,22 @@ namespace machinelearning_func
          curr_data_pair.second = curr_y;
          samples.push_back(curr_data_pair);
 
-//         cout << "Sample n = " << n << endl;
-//         cout << " y = " << samples.back().second 
-//              << "   x = " << *(samples.back().first) << endl;
       } // loop over index n labeling training samples
+   }
+
+// --------------------------------------------------------------------------
+// Method print_data_samples() 
+   
+   void print_data_samples(
+      const vector<neural_net::DATA_PAIR>& samples)
+   {
+      for(unsigned int n = 0; n < samples.size(); n++)
+      {
+         neural_net::DATA_PAIR curr_sample = samples[n];
+         cout << "Sample n = " << n << endl;
+         cout << " y = " << curr_sample.second 
+              << "   x = " << *curr_sample.first << endl;
+      } // loop over index n labeling data samples
    }
    
 } // machinelearning_func namespace

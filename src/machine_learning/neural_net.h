@@ -51,7 +51,7 @@ class neural_net
          int mini_batch_size, 
          const std::vector<DATA_PAIR>& shuffled_training_data);
    void print_data_pair(int t, const DATA_PAIR& curr_data);
-   genvector feedforward(const genvector& a);
+   genvector feedforward(const genvector& a_input);
    void sgd(int n_epochs, int mini_batch_size, double learning_rate,
             double lambda);
 

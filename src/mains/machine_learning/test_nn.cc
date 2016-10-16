@@ -35,7 +35,7 @@ int main (int argc, char* argv[])
    nrfunc::init_time_based_seed();
 
    int Din = 1;   	// Number of input layer nodes
-   int H = 3;		// Number of single hidden layer nodes
+   int H = 5;		// Number of single hidden layer nodes
    int Dout = 1;   	// Number of output layer nodes
 
    vector<int> layer_dims;
@@ -52,8 +52,9 @@ int main (int argc, char* argv[])
 //    Desired labels:  0 <--> X_i is even
 //                     1 <--> X_i is odd   
    
-   int n_training_samples = 100;
+   int n_training_samples = 1000;
    int n_testing_samples = 0.1 * n_training_samples;
+   int mini_batch_size = 20;
 
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> testing_samples;
@@ -63,6 +64,33 @@ int main (int argc, char* argv[])
    machinelearning_func::generate_data_samples(
       n_testing_samples, testing_samples);
 
+   NN.import_training_data(training_samples);
+   NN.import_test_data(testing_samples);
+
+/*   
+   vector<neural_net::DATA_PAIR> shuffled_training_samples = 
+      NN.randomly_shuffle_training_data();   
+//   machinelearning_func::print_data_samples(shuffled_training_samples);
+
+   vector< vector<neural_net::DATA_PAIR> > mini_batches = 
+      NN.generate_training_mini_batches(mini_batch_size,
+                                        shuffled_training_samples);
+
+
+   for(unsigned int b = 0; b < mini_batches.size(); b++)
+   {
+      cout << "b = " << b << "  ----------------" << endl;
+      machinelearning_func::print_data_samples(mini_batches[b]);
+   }
+*/
+
+   int n_epochs = 500;
+   double learning_rate = 0.1;
+   double lambda = 0.1;	
+   NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda);
+   
+
+   cout << "NN = " << NN << endl;
 
 }
 
