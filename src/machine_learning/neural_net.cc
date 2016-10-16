@@ -233,6 +233,7 @@ genvector* neural_net::get_softmax_class_probs() const
 double neural_net::evaluate_model_on_test_set() 
 {
    int n_correct_predictions = 0;
+   incorrect_classifications.clear();
    for(unsigned int t = 0; t < n_test_samples; t++)
    {
       feedforward( test_data[t].first );
@@ -253,10 +254,15 @@ double neural_net::evaluate_model_on_test_set()
       {
          n_correct_predictions++;
       }
+      else
+      {
+         incorrect_classifications.push_back(t);
+      }
+      
    } // loop over index t labeling test samples
 
-   cout << "n_correct_predictions = " << n_correct_predictions
-        << " n_test_samples = " << n_test_samples << endl;
+//   cout << "n_correct_predictions = " << n_correct_predictions
+//        << " n_test_samples = " << n_test_samples << endl;
    double frac_correct = double(n_correct_predictions) / n_test_samples;
    return frac_correct;
 }
@@ -381,7 +387,34 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
          update_mini_batch(mini_batches[b]);
       } // loop over index b labeling mini batches
 
+      test_accuracy_history.push_back(evaluate_model_on_test_set());
+
    } // loop over index e labeling training epochs
+}
+
+// ---------------------------------------------------------------------
+void neural_net::print_test_accuracy_history()
+{
+   int n_epochs = test_accuracy_history.size();
+   int eskip = 1;
+   for(int e = 0; e < n_epochs; e += eskip)
+   {
+      if (e > 100 && e < 200)
+      {
+         eskip = 2;
+      }
+      else if (e > 200 && e < 300)
+      {
+         eskip = 5;
+      }
+      else if (e > 300)
+      {
+         eskip = 10;
+      }
+
+      cout << "e = " << e 
+           << " test accuracy frac = " << test_accuracy_history[e] << endl;
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -454,8 +487,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 {
 //    cout << "inside neural_net::backpropagate()" << endl;
 
-   double radius = curr_data_pair.first->magnitude();
-
+//   double radius = curr_data_pair.first->magnitude();
    int y = basic_math::round(curr_data_pair.second);
 //   cout << "training input radius = " << radius
 //        << " y = " << y << endl;
@@ -479,7 +511,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
    int curr_layer = num_layers - 1;
 //   cout << "curr_layer = num-layers - 1 = " << num_layers - 1 << endl;
 
-   double curr_cost = -log(a[curr_layer]->get(y));
+//   double curr_cost = -log(a[curr_layer]->get(y));
 //    cout << "  Current training sample cost = " << curr_cost << endl;
 
    for(int j = 0; j < layer_dims[curr_layer]; j++)

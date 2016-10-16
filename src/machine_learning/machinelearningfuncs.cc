@@ -169,8 +169,8 @@ namespace machinelearning_func
    {
       const int Din = 2;
       const double rmax = 2;
-      double r_inner = 0.75;
-      double r_outer = 1.25;
+      double r_inner = 0.95;
+      double r_outer = 1.05;
 
       for(int n = 0; n < n_samples; n++)
       {

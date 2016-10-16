@@ -37,7 +37,8 @@ int main (int argc, char* argv[])
 
    int Din = 2;   	// Number of input layer nodes
 //   int H = 3;		// Number of single hidden layer nodes
-   int H = 5;		// Number of single hidden layer nodes
+//   int H = 5;		// Number of single hidden layer nodes
+   int H = 8;		// Number of single hidden layer nodes
    int Dout = 2;   	// Number of output layer nodes
 
    vector<int> layer_dims;
@@ -46,8 +47,8 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
    neural_net NN(layer_dims);
    
-//   int n_training_samples = 500;
-   int n_training_samples = 200;
+   int n_training_samples = 1000;
+//   int n_training_samples = 200;
    int n_testing_samples = 0.25 * n_training_samples;
    int mini_batch_size = 10;
 
@@ -59,6 +60,19 @@ int main (int argc, char* argv[])
    machinelearning_func::generate_2d_data_samples(
       n_testing_samples, testing_samples);
 
+   NN.import_training_data(training_samples);
+   NN.import_test_data(testing_samples);
+
+   int n_epochs = 500;
+   double learning_rate = 0.01;
+   double lambda = 0.001;
+   NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda);
+   NN.print_test_accuracy_history();
+   vector<int> incorrect_classifications = NN.get_incorrect_classifications();
+
+// Generate metafile plot of training samples, testing samples and
+// classification predictions:
+
    vector<int> labels;
    vector<double> X, Y;
    for(unsigned int i = 0; i < training_samples.size(); i++)
@@ -66,6 +80,23 @@ int main (int argc, char* argv[])
       X.push_back(training_samples[i].first->get(0));
       Y.push_back(training_samples[i].first->get(1));
       labels.push_back(training_samples[i].second);
+   }
+
+   for(unsigned int i = 0; i < testing_samples.size(); i++)
+   {
+      X.push_back(testing_samples[i].first->get(0));
+      Y.push_back(testing_samples[i].first->get(1));
+
+      int color_offset = 2;
+      for(unsigned int j = 0; j < incorrect_classifications.size(); j++)
+      {
+         if(i == incorrect_classifications[j])
+         {
+            color_offset = 4;
+            break;
+         }
+      }
+      labels.push_back(testing_samples[i].second + color_offset);
    }
    
 // Generate metafile output whose markers are colored according to
@@ -93,37 +124,7 @@ int main (int argc, char* argv[])
 
    cout << "training_samples.size = " << training_samples.size() << endl;
    cout << "testing_samples.size = " << testing_samples.size() << endl;
-
-   NN.import_training_data(training_samples);
-   NN.import_test_data(testing_samples);
-
-/*
-   cout << "Training samples" << endl;
-   machinelearning_func::print_data_samples(training_samples);
-   cout << "Testing samples" << endl;
-   machinelearning_func::print_data_samples(testing_samples);
-*/
-
-/*
-   vector<neural_net::DATA_PAIR> shuffled_training_samples = 
-      NN.randomly_shuffle_training_data();   
-//   machinelearning_func::print_data_samples(shuffled_training_samples);
-
-   vector< vector<neural_net::DATA_PAIR> > mini_batches = 
-      NN.generate_training_mini_batches(mini_batch_size,
-                                        shuffled_training_samples);
-
-
-   for(unsigned int b = 0; b < mini_batches.size(); b++)
-   {
-      cout << "b = " << b << "  ----------------" << endl;
-      machinelearning_func::print_data_samples(mini_batches[b]);
-   }
-*/
-
-   int n_epochs = 1000;
-   double learning_rate = 0.01;
-   double lambda = 0.001;
-   NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda);
+   cout << "Number of testing samples incorrectly classified = "
+        << incorrect_classifications.size() << endl;
 }
 

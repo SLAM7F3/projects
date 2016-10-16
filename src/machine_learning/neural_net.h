@@ -58,6 +58,8 @@ class neural_net
             double lambda);
 
    double evaluate_model_on_test_set();
+   void print_test_accuracy_history();
+   std::vector<int>& get_incorrect_classifications();
 
   private: 
 
@@ -86,10 +88,15 @@ class neural_net
    double learning_rate;
    double lambda; // L2-regularization parameter
 
+   std::vector<double> test_accuracy_history;
+
+// Store indices for test samples whose class if incorrectly labeled
+// by the trained model:
+
+   std::vector<int> incorrect_classifications;
+
    void update_mini_batch(std::vector<DATA_PAIR>& mini_batch);
    void backpropagate(const DATA_PAIR& curr_data_pair);
-
-   genvector cost_derivative(genvector& output_activation, int y);
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
@@ -116,6 +123,12 @@ inline genmatrix* neural_net::get_weights(int l) const
 {
    return weights[l];
 }
+
+inline std::vector<int>& neural_net::get_incorrect_classifications() 
+{
+   return incorrect_classifications;
+}
+
 
 #endif  // neural_net.h
 
