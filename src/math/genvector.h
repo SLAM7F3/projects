@@ -54,6 +54,8 @@ class genvector:public genmatrix
    genvector unitvector() const;
 
    genvector hadamard_product(const genvector& Y) const;
+   genvector hadamard_division(const genvector& Y) const;
+   genvector hadamard_power(const genvector& Y, double alpha) const;
    genmatrix outerproduct(const genvector& Y) const;
    void self_outerproduct(genmatrix& B) const;
    using tensor::outerproduct;

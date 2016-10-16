@@ -30,16 +30,16 @@ class neural_net
 
 // Initialization, constructor and destructor functions:
 
-   neural_net(const std::vector<int>& sizes);
+   neural_net(const std::vector<int>& n_nodes_per_layer);
    neural_net(const neural_net& NN);
    ~neural_net();
 //   neural_net operator= (const neural_net& NN);
    friend std::ostream& operator<< 
-      (std::ostream& outstream,const neural_net& NN);
+      (std::ostream& outstream, neural_net& NN);
 
 // Set and get member functions
 
-   int get_layer_size(int l) const;
+   int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
 
@@ -51,34 +51,48 @@ class neural_net
          int mini_batch_size, 
          const std::vector<DATA_PAIR>& shuffled_training_data);
    void print_data_pair(int t, const DATA_PAIR& curr_data);
-   genvector feedforward(const genvector& a_input);
+
+   void feedforward(genvector* a_input);
+   genvector* get_softmax_class_probs() const;
    void sgd(int n_epochs, int mini_batch_size, double learning_rate,
             double lambda);
 
-   double evaluate();
+   double evaluate_model_on_test_set();
 
   private: 
 
    unsigned int num_layers, n_training_samples, n_test_samples;
    unsigned int n_classes;
-   std::vector<unsigned int> layer_sizes;
+   std::vector<int> layer_dims;
 
    std::vector<genvector*> biases, nabla_biases, delta_nabla_biases;
-//	Bias STL vectors have size num_layers
+//	Bias STL vectors are nonzero for layers 1 thru num_layers-1
    std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
-//	Weight STL vectors have size num_layers-1
+//	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
+//      {num_layers-2, num_layers-1}
 
    std::vector<DATA_PAIR> training_data;
    std::vector<DATA_PAIR> test_data;
 
-   void update_mini_batch(
-      std::vector<DATA_PAIR>& mini_batch, double learning_rate, double lambda);
+// Node weighted inputs:
+   std::vector<genvector*> z;
+
+// Node activation outputs:
+   std::vector<genvector*> a;
+
+// Node errors:
+   std::vector<genvector*> delta;
+
+   double learning_rate;
+   double lambda; // L2-regularization parameter
+
+   void update_mini_batch(std::vector<DATA_PAIR>& mini_batch);
    void backpropagate(const DATA_PAIR& curr_data_pair);
 
    genvector cost_derivative(genvector& output_activation, int y);
 
    void allocate_member_objects();
-   void initialize_member_objects();
+   void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
    void docopy(const neural_net& N);
 };
 
@@ -88,9 +102,9 @@ class neural_net
 
 // Set and get member functions:
 
-inline int neural_net::get_layer_size(int l) const
+inline int neural_net::get_layer_dim(int l) const
 {
-   return layer_sizes[l];
+   return layer_dims[l];
 }
 
 inline genvector* neural_net::get_biases(int l) const

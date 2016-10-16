@@ -233,16 +233,44 @@ void genvector::self_outerproduct(genmatrix& B) const
    }
 }
 
+// ---------------------------------------------------------------------
 // Member function hadamard_product() returns a genvector whose
 // elements are component-wise products of *this with Y:
 
 genvector genvector::hadamard_product(const genvector& Y) const
 {
    genvector B(mdim);
-
    for (unsigned int i=0; i<mdim; i++)
    {
       B.put(i,get(i)*Y.get(i));
+   }
+   return B;
+}
+
+// ---------------------------------------------------------------------
+// Member function hadamard_division() returns a genvector whose
+// ith element = this->i / Y[i]
+
+genvector genvector::hadamard_division(const genvector& Y) const
+{
+   genvector B(mdim);
+   for (unsigned int i=0; i<mdim; i++)
+   {
+      B.put(i,get(i) / Y.get(i));
+   }
+   return B;
+}
+
+// ---------------------------------------------------------------------
+// Member function hadamard_power() returns a genvector whose
+// elements are component-wise powers of Y:
+
+genvector genvector::hadamard_power(const genvector& Y, double alpha) const
+{
+   genvector B(mdim);
+   for (unsigned int i=0; i<mdim; i++)
+   {
+      B.put(i, pow(Y.get(i), alpha));
    }
    return B;
 }

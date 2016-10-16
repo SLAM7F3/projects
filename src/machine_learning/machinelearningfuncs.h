@@ -18,8 +18,9 @@ namespace machinelearning_func
    genvector deriv_sigmoid(genvector& z);
 
    void ReLU(genvector& X);
+   void ReLU(const genvector& Z, genvector& A);
    void ReLU(genmatrix& Z);
-   void softmax(genvector& Z);
+   void softmax(const genvector& Z, genvector& A);
 
    void generate_data_samples(
       int n_samples, std::vector<neural_net::DATA_PAIR>& samples);

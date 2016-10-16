@@ -72,10 +72,24 @@ namespace machinelearning_func
 
    void ReLU(genvector& X)
    {
-      cout << "inside ReLU" << endl;
       for(unsigned int i = 0; i < X.get_mdim(); i++)
       {
          if(X.get(i) < 0) X.put(i,0);
+      }
+   }
+
+   void ReLU(const genvector& Z, genvector& A)
+   {
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         if(Z.get(i) < 0) 
+         {
+            A.put(i,0);
+         }
+         else
+         {
+            A.put(i,Z.get(i));
+         }
       }
    }
 
@@ -91,37 +105,48 @@ namespace machinelearning_func
    }
 
 // --------------------------------------------------------------------------
-   void softmax(genvector& Z)
+   void softmax(const genvector& Z, genvector& A)
    {
-      cout << "inside softmax" << endl;
+//      cout << "inside softmax" << endl;
+
+      double Zmax = NEGATIVEINFINITY;
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         Zmax = basic_math::max(Zmax, Z.get(i));
+      }
+//      cout << "Zmax = " << Zmax << endl;
+
       double denom = 0;
       for(unsigned int i = 0; i < Z.get_mdim(); i++)
       {
-         double curr_exp = exp(Z.get(i));
+         double curr_exp = exp(Z.get(i) - Zmax);
          denom += curr_exp;
-         Z.put(i, curr_exp);
+         A.put(i, curr_exp);
       }
-
-      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      
+      for(unsigned int i = 0; i < A.get_mdim(); i++)
       {
-         Z.put(i, Z.get(i) / denom);
+         A.put(i, A.get(i) / denom);
       }
    }
 
 // --------------------------------------------------------------------------
 // Method generate_data_samples() implements a toy example where
 // training vectors are random integers and output labels are {0,1}
-// depending upon whether random integers are even or odd.
+// depending upon whether random integers exceed a threshold value.
    
    void generate_data_samples(
       int n_samples, vector<neural_net::DATA_PAIR>& samples)
    {
       const int Din = 1;
+      const int max_int_value = 2000;
+      const int threshold = max_int_value / 2;
+
       for(int n = 0; n < n_samples; n++)
       {
-         int curr_x = mathfunc::getRandomInteger(2000);
+         int curr_x = mathfunc::getRandomInteger(max_int_value);
          int curr_y = 0;
-         if(curr_x%2 == 1)
+         if(curr_x > threshold)
          {
             curr_y = 1;
          }
@@ -157,35 +182,34 @@ namespace machinelearning_func
    {
       const int Din = 1;
       genvector *mean = new genvector(Din);
+      genvector *sqrmean = new genvector(Din);
+      genvector *variance = new genvector(Din);
+      genvector *std_dev = new genvector(Din);
+
       for(unsigned int n = 0; n < samples.size(); n++)
       {
-//          cout << "n = " << n << " samples[n] = " << *samples[n].first << endl;
+//         cout << "n = " << n << " samples[n] = " << *samples[n].first << endl;
          *mean += *samples[n].first;
+         *sqrmean += samples[n].first->hadamard_product(*samples[n].first);
       }
       *mean /= samples.size();
+      *sqrmean /= samples.size();
+      *variance = *sqrmean - *mean;
+      *std_dev = variance->hadamard_power(*variance, 0.5);
+
 //      cout << "*mean = " << *mean << endl;
-
-// Note: This next section is specific to binary classification
-// of even/odd integers!
-
-      for(unsigned int d = 0; d < Din; d++)
-      {
-         int new_mean_d = basic_math::round(mean->get(d));
-         if(new_mean_d%2 == 1) new_mean_d--;
-         mean->put(d, new_mean_d);
-      }
-//       cout << "After rounding, *mean = " << *mean << endl;
+//      cout << "*sqrmean = " << *sqrmean << endl;
+//      cout << "*variance = " << *variance << endl;
+//      cout << "*std_dev = " << *std_dev << endl;
 
       for(unsigned int n = 0; n < samples.size(); n++)
       {
          *samples[n].first -= *mean;
-//         cout << "n = " << n 
-//              << " After subtracting mean, samples[n] = " 
-//              << *samples[n].first << " label = "
-//              << samples[n].second << endl;
+         *samples[n].first = samples[n].first->hadamard_division(*std_dev);
       }
 
       delete mean;
+      delete sqrmean;
    }
    
 
