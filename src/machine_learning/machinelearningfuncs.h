@@ -24,6 +24,9 @@ namespace machinelearning_func
 
    void generate_data_samples(
       int n_samples, std::vector<neural_net::DATA_PAIR>& samples);
+   void generate_2d_data_samples(
+      int n_samples, std::vector<neural_net::DATA_PAIR>& samples);
+
    void print_data_samples(
       const std::vector<neural_net::DATA_PAIR>& samples);
    void remove_data_samples_mean(std::vector<neural_net::DATA_PAIR>& samples);

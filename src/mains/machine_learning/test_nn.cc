@@ -15,6 +15,7 @@
 #include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
 #include "math/mathfuncs.h"
+#include "plot/metafile.h"
 #include "machine_learning/neural_net.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
@@ -34,7 +35,8 @@ int main (int argc, char* argv[])
 
    nrfunc::init_time_based_seed();
 
-   int Din = 1;   	// Number of input layer nodes
+   int Din = 2;   	// Number of input layer nodes
+//   int H = 3;		// Number of single hidden layer nodes
    int H = 5;		// Number of single hidden layer nodes
    int Dout = 2;   	// Number of output layer nodes
 
@@ -42,30 +44,55 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Din);
    layer_dims.push_back(H);
    layer_dims.push_back(Dout);
-   
    neural_net NN(layer_dims);
-   cout << "NN = " << NN << endl;
-
-// Binary classification experiment #1:  
-
-//    Training sample X_i is an integer
-//    Desired labels:  0 <--> X_i is even
-//                     1 <--> X_i is odd   
    
 //   int n_training_samples = 500;
-   int n_training_samples = 500;
-   int n_testing_samples = 0.1 * n_training_samples;
-   int mini_batch_size = 5;
+   int n_training_samples = 200;
+   int n_testing_samples = 0.25 * n_training_samples;
+   int mini_batch_size = 10;
 
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> testing_samples;
 
-   machinelearning_func::generate_data_samples(
+   machinelearning_func::generate_2d_data_samples(
       n_training_samples, training_samples);
-   machinelearning_func::generate_data_samples(
+   machinelearning_func::generate_2d_data_samples(
       n_testing_samples, testing_samples);
-   machinelearning_func::remove_data_samples_mean(training_samples);
-   machinelearning_func::remove_data_samples_mean(testing_samples);
+
+   vector<int> labels;
+   vector<double> X, Y;
+   for(unsigned int i = 0; i < training_samples.size(); i++)
+   {
+      X.push_back(training_samples[i].first->get(0));
+      Y.push_back(training_samples[i].first->get(1));
+      labels.push_back(training_samples[i].second);
+   }
+   
+// Generate metafile output whose markers are colored according to
+// class labels:
+
+   metafile curr_metafile;
+   
+   string meta_filename="circle";
+   string title="Toy circle data classification";
+   string x_label="X";
+   string y_label="Y";
+   double min_val = -2;
+   double max_val = 2;
+
+   curr_metafile.set_legend_flag(true);
+   curr_metafile.set_parameters(
+      meta_filename,title,x_label,y_label,
+      min_val, max_val, min_val, max_val);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_markers(labels,X,Y);
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   cout << "training_samples.size = " << training_samples.size() << endl;
+   cout << "testing_samples.size = " << testing_samples.size() << endl;
 
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
@@ -94,9 +121,9 @@ int main (int argc, char* argv[])
    }
 */
 
-   int n_epochs = 100;
-   double learning_rate = 0.001;
-   double lambda = 0.1;	
+   int n_epochs = 1000;
+   double learning_rate = 0.01;
+   double lambda = 0.001;
    NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda);
 }
 

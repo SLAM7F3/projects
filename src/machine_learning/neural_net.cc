@@ -171,7 +171,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
       }
       cout << "  N_nodes = " << NN.layer_dims[l] << endl;
       genvector* curr_biases = NN.get_biases(l);
-//      cout << "biases = " << *curr_biases << endl;
+      cout << "biases = " << *curr_biases << endl;
       cout << "---------------------------" << endl;      
 
       if(l == NN.num_layers-1) continue;
@@ -191,14 +191,13 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
 }
 
 // ==========================================================================
-
 // Member function feedforward returns the output of the network given
 // an input set of values.
 
 void neural_net::feedforward(genvector* a_input)
 {
    a[0] = a_input;
-//   cout << "inside feedforward, a_input = " << *a_input << endl;
+//    cout << "inside feedforward, a_input = " << *a_input << endl;
 
    for(unsigned int l = 0; l < num_layers-1; l++)
    {
@@ -219,8 +218,9 @@ void neural_net::feedforward(genvector* a_input)
       {
          machinelearning_func::ReLU(*z[l+1], *a[l+1]);
       }
-//      cout << "a[l+1] = " << *a[l+1] << endl;
+//       cout << "a[l+1] = " << *a[l+1] << endl;
    }
+//    outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
@@ -255,6 +255,8 @@ double neural_net::evaluate_model_on_test_set()
       }
    } // loop over index t labeling test samples
 
+   cout << "n_correct_predictions = " << n_correct_predictions
+        << " n_test_samples = " << n_test_samples << endl;
    double frac_correct = double(n_correct_predictions) / n_test_samples;
    return frac_correct;
 }
@@ -360,13 +362,13 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
 
    for(int e = 0; e < n_epochs; e++)
    {
-      if(e%2 == 0)
+      if(e%10 == 0)
       {
          cout << "Epoch e = " << e << " of " << n_epochs << endl;
          cout << "   learning_rate = " << learning_rate 
               << "  regularization lambda = " << lambda << endl;
          cout << "   *this = " << *this << endl;
-         outputfunc::enter_continue_char();
+//         outputfunc::enter_continue_char();
       }
       
       vector<DATA_PAIR> shuffled_training_data = 
@@ -393,13 +395,13 @@ void neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 // Initialize cumulative (over mini batch) weight and bias gradients
 // to zero:
 
-   for(unsigned int b = 0; b < nabla_biases.size(); b++)
+   for(unsigned int l = 0; l < num_layers; l++)
    {
-      nabla_biases[b]->clear_values();
+      nabla_biases[l]->clear_values();
    }
-   for(unsigned int w = 0; w < nabla_weights.size(); w++)
+   for(unsigned int l = 0; l < num_layers - 1; l++)
    {
-      nabla_weights[w]->clear_values();
+      nabla_weights[l]->clear_values();
    }
 
    for(unsigned int i = 0; i < mini_batch.size(); i++)
@@ -409,28 +411,34 @@ void neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 
 // Accumulate weights and bias gradients for each network layer:
 
-      for(unsigned int b = 0; b < nabla_biases.size(); b++)
+      for(unsigned int l = 0; l < num_layers; l++)
       {
-         *nabla_biases[b] += *delta_nabla_biases[b];
+         *nabla_biases[l] += *delta_nabla_biases[l];
       }
-      for(unsigned int w = 0; w < nabla_weights.size(); w++)
+      for(unsigned int l = 0; l < num_layers - 1; l++)
       {
-         *nabla_weights[w] += *delta_nabla_weights[w];
+         *nabla_weights[l] += *delta_nabla_weights[l];
       }
    } // loop over index i labeling training samples within mini batch
+   
 
 // Update weights and biases for eacy network layer by their nabla
 // values averaged over the current mini-batch:
 
-   for(unsigned int b = 0; b < biases.size(); b++)
+   for(unsigned int l = 0; l < num_layers; l++)
    {
-      *biases[b] -= learning_rate/mini_batch.size() * (*nabla_biases[b]);
+      *biases[l] -= learning_rate/mini_batch.size() * (*nabla_biases[l]);
+//      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
 
-   for(unsigned int w = 0; w < weights.size(); w++)
+   for(unsigned int l = 0; l < num_layers - 1; l++)
    {
-      *weights[w] -= learning_rate/mini_batch.size() * (*nabla_weights[w]);
+      *weights[l] -= learning_rate/mini_batch.size() * (*nabla_weights[l]);
+//      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
    }
+
+//   cout << "Correct test prediction frac = " << evaluate_model_on_test_set()
+//        << endl;
 
 //   outputfunc::enter_continue_char();
 }
@@ -446,20 +454,22 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 {
 //    cout << "inside neural_net::backpropagate()" << endl;
 
+   double radius = curr_data_pair.first->magnitude();
+
    int y = basic_math::round(curr_data_pair.second);
-//   cout << "training input = " << curr_data_pair.first->get(0) 
+//   cout << "training input radius = " << radius
 //        << " y = " << y << endl;
 
 // Initialize "instantaneous" (i.e. just for curr_data_pair) weight
 // and bias gradients to zero:
 
-   for(unsigned int b = 0; b < delta_nabla_biases.size(); b++)
+   for(unsigned int l = 0; l < num_layers; l++)
    {
-      delta_nabla_biases[b]->clear_values();
+      delta_nabla_biases[l]->clear_values();
    }
-   for(unsigned int w = 0; w < delta_nabla_weights.size(); w++)
+   for(unsigned int l = 0; l < num_layers - 1; l++)
    {
-      delta_nabla_weights[w]->clear_values();
+      delta_nabla_weights[l]->clear_values();
    }
 
    // Recall for layer l, delta_j = dC_x / dz_j
@@ -470,12 +480,12 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 //   cout << "curr_layer = num-layers - 1 = " << num_layers - 1 << endl;
 
    double curr_cost = -log(a[curr_layer]->get(y));
-//   cout << "Current training sample cost = " << curr_cost << endl;
+//    cout << "  Current training sample cost = " << curr_cost << endl;
 
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
       double curr_activation = a[curr_layer]->get(j);
-      if(j == y) curr_activation += 1.0;
+      if(j == y) curr_activation -= 1.0;
       delta[curr_layer]->put( j, curr_activation );
    }
    
@@ -487,10 +497,11 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 // Eqn BP2:
 
-// Weight matrix mapping prev layer nodes to curr layer nodes:
-      genmatrix* prev_weights = weights[prev_layer]; 
+// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
+// to curr layer nodes:
 
-      *delta[prev_layer] = prev_weights->transpose() * (*delta[curr_layer]);
+      *delta[prev_layer] = weights[prev_layer]->transpose() * 
+         (*delta[curr_layer]);
 
       for(int j = 0; j < layer_dims[prev_layer]; j++)
       {
@@ -508,7 +519,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 // Eqn BP4:
       *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
-         *a[prev_layer]) + 2 * lambda * (*prev_weights);
+         *a[prev_layer]) + 2 * lambda * (*weights[prev_layer]);
 
    } // loop over curr_layer
 }

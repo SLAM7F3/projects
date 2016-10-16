@@ -15,6 +15,7 @@
 
 #include "machine_learning/machinelearningfuncs.h"
 #include "math/mathfuncs.h"
+#include "numrec/nrfuncs.h"
 
 namespace machinelearning_func
 {
@@ -157,6 +158,45 @@ namespace machinelearning_func
          curr_data_pair.second = curr_y;
          samples.push_back(curr_data_pair);
 
+      } // loop over index n labeling training samples
+   }
+
+// --------------------------------------------------------------------------
+// Method generate_2d_data_samples() 
+
+   void generate_2d_data_samples(
+      int n_samples, vector<neural_net::DATA_PAIR>& samples)
+   {
+      const int Din = 2;
+      const double rmax = 2;
+      double r_inner = 0.75;
+      double r_outer = 1.25;
+
+      for(int n = 0; n < n_samples; n++)
+      {
+         double theta = 2*PI*nrfunc::ran1();
+         bool r_OK = false;
+         double r;
+         while(!r_OK)
+         {
+            r = rmax * nrfunc::ran1();
+            if(r < r_inner || r > r_outer)
+            {
+               r_OK = true;
+            }
+         }
+
+         int curr_label = 0;
+         if(r > r_outer){
+            curr_label = 1;
+         }
+        
+         neural_net::DATA_PAIR curr_data_pair;
+         curr_data_pair.first = new genvector(Din);
+         curr_data_pair.first->put(0, r * cos(theta));
+         curr_data_pair.first->put(1, r * sin(theta));
+         curr_data_pair.second = curr_label;
+         samples.push_back(curr_data_pair);
       } // loop over index n labeling training samples
    }
 
