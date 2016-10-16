@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 2/9/16; 10/5/16; 10/12/16; 10/15/16
+// Last updated on 10/5/16; 10/12/16; 10/15/16; 10/16/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -72,6 +72,7 @@ namespace machinelearning_func
 
    void ReLU(genvector& X)
    {
+      cout << "inside ReLU" << endl;
       for(unsigned int i = 0; i < X.get_mdim(); i++)
       {
          if(X.get(i) < 0) X.put(i,0);
@@ -90,6 +91,24 @@ namespace machinelearning_func
    }
 
 // --------------------------------------------------------------------------
+   void softmax(genvector& Z)
+   {
+      cout << "inside softmax" << endl;
+      double denom = 0;
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         double curr_exp = exp(Z.get(i));
+         denom += curr_exp;
+         Z.put(i, curr_exp);
+      }
+
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         Z.put(i, Z.get(i) / denom);
+      }
+   }
+
+// --------------------------------------------------------------------------
 // Method generate_data_samples() implements a toy example where
 // training vectors are random integers and output labels are {0,1}
 // depending upon whether random integers are even or odd.
@@ -100,7 +119,7 @@ namespace machinelearning_func
       const int Din = 1;
       for(int n = 0; n < n_samples; n++)
       {
-         int curr_x = mathfunc::getRandomInteger(1000);
+         int curr_x = mathfunc::getRandomInteger(2000);
          int curr_y = 0;
          if(curr_x%2 == 1)
          {
@@ -130,6 +149,46 @@ namespace machinelearning_func
               << "   x = " << *curr_sample.first << endl;
       } // loop over index n labeling data samples
    }
+
+// --------------------------------------------------------------------------
+// Method remove_data_samples_mean() 
+   
+   void remove_data_samples_mean(vector<neural_net::DATA_PAIR>& samples)
+   {
+      const int Din = 1;
+      genvector *mean = new genvector(Din);
+      for(unsigned int n = 0; n < samples.size(); n++)
+      {
+//          cout << "n = " << n << " samples[n] = " << *samples[n].first << endl;
+         *mean += *samples[n].first;
+      }
+      *mean /= samples.size();
+//      cout << "*mean = " << *mean << endl;
+
+// Note: This next section is specific to binary classification
+// of even/odd integers!
+
+      for(unsigned int d = 0; d < Din; d++)
+      {
+         int new_mean_d = basic_math::round(mean->get(d));
+         if(new_mean_d%2 == 1) new_mean_d--;
+         mean->put(d, new_mean_d);
+      }
+//       cout << "After rounding, *mean = " << *mean << endl;
+
+      for(unsigned int n = 0; n < samples.size(); n++)
+      {
+         *samples[n].first -= *mean;
+//         cout << "n = " << n 
+//              << " After subtracting mean, samples[n] = " 
+//              << *samples[n].first << " label = "
+//              << samples[n].second << endl;
+      }
+
+      delete mean;
+   }
+   
+
    
 } // machinelearning_func namespace
 

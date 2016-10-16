@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 2/8/16; 2/9/16
+// Last modified on 2/8/16; 2/9/16; 10/16/16
 // ==========================================================================
 
 #include <iostream>
@@ -176,6 +176,7 @@ ostream& operator<< (ostream& outstream,const neural_net& NN)
 genvector neural_net::feedforward(const genvector& a_input)
 {
    genvector* a_curr = new genvector(a_input);
+   //cout << "inside feedforward, a_input = " << a_input << endl;
 
    for(unsigned int l = 0; l < num_layers-1; l++)
    {
@@ -183,12 +184,29 @@ genvector neural_net::feedforward(const genvector& a_input)
       genvector* curr_biases = biases[l+1];
       genvector z_curr( (*curr_weights) * (*a_curr) + *curr_biases );
 
+      cout << "l = " << l << endl;
+      cout << "z_curr = " << z_curr << endl;
+
       delete a_curr;
-      a_curr = new genvector(machinelearning_func::sigmoid(z_curr));
+//      a_curr = new genvector(machinelearning_func::sigmoid(z_curr));
+
+// Perform soft-max classification on final-layer's weighted inputs:
+
+      if(l == num_layers - 2)
+      {
+         machinelearning_func::softmax(z_curr);
+      }
+      else // perform ReLU on hidden layer's weight inputs
+      {
+         machinelearning_func::ReLU(z_curr);
+      }
+      a_curr = new genvector(z_curr);
+//      cout << "a_curr = " << *a_curr << endl;
    }
    
    genvector a_output(*a_curr);
    delete a_curr;
+
    return a_output;
 }
 
