@@ -6,7 +6,7 @@
 # Note added on 8/3/15:  Eliminated -lopencv_contrib, -lopencv_legacy   #
 # and -lopencv_nonfree which no longer exist under opencv3.0.0		#
 # ===================================================================== #
-# Last modified on 6/20/16; 8/28/16; 10/4/16; 10/5/16			#
+# Last modified on 8/28/16; 10/4/16; 10/5/16; 10/17/16			#
 # ===================================================================== #
 #									#
 # NOTES:								#
@@ -296,12 +296,12 @@ MYLIBS = $(LIBDIR)/libspace.a \
 	 $(LIBDIR)/libplot.a \
 	 $(LIBDIR)/libwaveform.a \
 	 $(LIBDIR)/libsocket.a \
+	 $(LIBDIR)/libmachinelearning.a \
 	 $(LIBDIR)/libfilter.a \
 	 $(LIBDIR)/libnumerical.a \
 	 $(LIBDIR)/libxml.a \
 	 $(LIBDIR)/libkdtree.a \
 	 $(LIBDIR)/libcluster.a \
-	 $(LIBDIR)/libmachinelearning.a \
 	 $(LIBDIR)/libmath.a \
 	 $(LIBDIR)/libcolor.a \
 	 $(LIBDIR)/libweb.a \

@@ -68,6 +68,8 @@ class genmatrix:public genarray
    genmatrix elementwise_product(const genmatrix& M);
    void elementwise_power(const genmatrix& M, double alpha);
    genmatrix hadamard_power(double alpha);
+   void hadamard_sum(double alpha);
+   genmatrix hadamard_division(const genmatrix& D);
    double sqrd_Frobenius_norm();
 
 // Extremal element member functions:

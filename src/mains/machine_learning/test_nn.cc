@@ -63,7 +63,7 @@ int main (int argc, char* argv[])
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
 
-   int n_epochs = 500;
+   int n_epochs = 100;
    double learning_rate = 0.01;
    double lambda = 0.001;
    double rmsprop_decay_rate = 0.95;

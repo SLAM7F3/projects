@@ -5,6 +5,7 @@
 // ==========================================================================
 
 #include <iostream>
+#include "filter/filterfuncs.h"
 #include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
 #include "plot/metafile.h"
@@ -425,9 +426,24 @@ void neural_net::plot_loss_history()
 {
    int n_epochs = e_effective.back();
 
+// Temporally smooth noisy loss values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   vector<double> smoothed_minibatch_loss;
+   filterfunc::brute_force_filter(
+      avg_minibatch_loss, h, smoothed_minibatch_loss, 
+      wrap_around_input_values);
+
    metafile curr_metafile;
    string meta_filename="avg_minibatch_loss";
-   string title="Loss vs model training";
+   string title="Loss vs RMSprop model training";
    string subtitle=
       "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
       "; Weight decay="+stringfunc::number_to_string(lambda,3)+
@@ -438,13 +454,16 @@ void neural_net::plot_loss_history()
    double max_loss = 1;
 
    curr_metafile.set_parameters(
-      meta_filename,title,x_label,y_label, 0, n_epochs, min_loss, max_loss);
+      meta_filename, title, x_label, y_label, 0, n_epochs, min_loss, max_loss);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.set_ytic(0.2);
    curr_metafile.set_ysubtic(0.1);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(e_effective, avg_minibatch_loss);
+   curr_metafile.write_curve(e_effective, avg_minibatch_loss, colorfunc::red);
+   curr_metafile.write_curve(e_effective, smoothed_minibatch_loss,
+                             colorfunc::cyan);
+
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
@@ -530,9 +549,15 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
 
+   const double epsilon = 1E-5;
    for(unsigned int l = 0; l < num_layers - 1; l++)
    {
-      *weights[l] -= learning_rate * (*nabla_weights[l]);
+      genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
+      denom.hadamard_sum(epsilon);
+      
+      *weights[l] -= learning_rate * 
+         nabla_weights[l]->hadamard_division(denom);
+//      *weights[l] -= learning_rate * (*nabla_weights[l]);
 
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
    }
