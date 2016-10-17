@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/5/16; 10/12/16; 10/15/16; 10/16/16
+// Last updated on 10/12/16; 10/15/16; 10/16/16; 10/17/16
 // ==========================================================================
 
 #include <vector>
@@ -24,7 +24,9 @@ namespace machinelearning_func
 
    void generate_data_samples(
       int n_samples, std::vector<neural_net::DATA_PAIR>& samples);
-   void generate_2d_data_samples(
+   void generate_2d_spiral_data_samples(
+      int n_samples, std::vector<neural_net::DATA_PAIR>& samples);
+   void generate_2d_circular_data_samples(
       int n_samples, std::vector<neural_net::DATA_PAIR>& samples);
 
    void print_data_samples(

@@ -12,6 +12,7 @@
 #include "machine_learning/neural_net.h"
 #include "numrec/nrfuncs.h"
 #include "general/stringfuncs.h"
+#include "general/sysfuncs.h"
 
 using std::cin;
 using std::cout;
@@ -467,6 +468,72 @@ void neural_net::plot_loss_history()
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of training and testing set accuracies vs
+// epoch.
+
+void neural_net::plot_accuracies_history()
+{
+   int n_epochs = test_accuracy_history.size();
+   vector<double> epochs;
+   for(int e = 0; e < n_epochs; e++)
+   {
+      epochs.push_back(e);
+   }
+   
+
+/*
+// Temporally smooth noisy training accuracy values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   vector<double> smoothed_minibatch_loss;
+   filterfunc::brute_force_filter(
+      avg_minibatch_loss, h, smoothed_minibatch_loss, 
+      wrap_around_input_values);
+*/
+
+   metafile curr_metafile;
+   string meta_filename="accuracies";
+   string title="Model accuracy vs RMSprop model training";
+   string subtitle=
+      "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
+      "; Weight decay="+stringfunc::number_to_string(lambda,3)+
+      "; batch size="+stringfunc::number_to_string(mini_batch_size);
+   string x_label="Epoch";
+   string y_label="Model accuracy";
+   double min_loss = 0;
+   double max_loss = 1;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, n_epochs, min_loss, max_loss);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+
+   curr_metafile.write_curve(epochs, test_accuracy_history, colorfunc::red);
+//   curr_metafile.write_curve(e_effective, smoothed_minibatch_loss,
+//                             colorfunc::cyan);
+
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
 }
 
 // ---------------------------------------------------------------------
@@ -555,8 +622,11 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
       genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
       denom.hadamard_sum(epsilon);
       
+// RMSprop
       *weights[l] -= learning_rate * 
          nabla_weights[l]->hadamard_division(denom);
+
+// Vanilla SGD
 //      *weights[l] -= learning_rate * (*nabla_weights[l]);
 
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;

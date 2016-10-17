@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/5/16; 10/12/16; 10/15/16; 10/16/16
+// Last updated on 10/12/16; 10/15/16; 10/16/16; 10/17/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -162,9 +162,58 @@ namespace machinelearning_func
    }
 
 // --------------------------------------------------------------------------
-// Method generate_2d_data_samples() 
+// Generate_2d_spiral_data_samples() randomly populates 2D
+// points lying within an inner and beyond an outer circular region.  
 
-   void generate_2d_data_samples(
+   void generate_2d_spiral_data_samples(
+      int n_samples, vector<neural_net::DATA_PAIR>& samples)
+   {
+      const int Din = 2;
+      const double rmax = 2;
+
+// Class 0:
+
+      int curr_label = 0;
+      for(int n = 0; n < n_samples/2; n++)
+      {
+         double theta = 2*PI*nrfunc::ran1();
+         double rmin = 0.9 * fabs(theta) / (2 * PI);
+         double rmax = 1.1 * fabs(theta) / (2 * PI);
+         double r = rmin + nrfunc::ran1() * (rmax - rmin);
+         
+         neural_net::DATA_PAIR curr_data_pair;
+         curr_data_pair.first = new genvector(Din);
+         curr_data_pair.first->put(0, r * cos(theta));
+         curr_data_pair.first->put(1, r * sin(theta));
+         curr_data_pair.second = curr_label;
+         samples.push_back(curr_data_pair);
+      } // loop over index n labeling training samples
+
+// Class 1:
+
+      curr_label = 1;
+      for(int n = 0; n < n_samples/2; n++)
+      {
+         double theta = PI + 2*PI*nrfunc::ran1();
+         double rmin = 0.9 * fabs(theta-PI) / (2 * PI);
+         double rmax = 1.1 * fabs(theta-PI) / (2 * PI);
+         double r = rmin + nrfunc::ran1() * (rmax - rmin);
+         
+         neural_net::DATA_PAIR curr_data_pair;
+         curr_data_pair.first = new genvector(Din);
+         curr_data_pair.first->put(0, r * cos(theta));
+         curr_data_pair.first->put(1, r * sin(theta));
+         curr_data_pair.second = curr_label;
+         samples.push_back(curr_data_pair);
+      } // loop over index n labeling training samples
+   }
+
+
+// --------------------------------------------------------------------------
+// Generate_2d_circular_data_samples() randomly populates 2D
+// points lying within an inner and beyond an outer circular region.  
+
+   void generate_2d_circular_data_samples(
       int n_samples, vector<neural_net::DATA_PAIR>& samples)
    {
       const int Din = 2;

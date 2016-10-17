@@ -39,6 +39,7 @@ int main (int argc, char* argv[])
 //   int H = 3;		// Number of single hidden layer nodes
 //   int H = 5;		// Number of single hidden layer nodes
    int H = 8;		// Number of single hidden layer nodes
+//   int H = 50;		// Number of single hidden layer nodes
    int Dout = 2;   	// Number of output layer nodes
 
    vector<int> layer_dims;
@@ -55,10 +56,15 @@ int main (int argc, char* argv[])
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> testing_samples;
 
-   machinelearning_func::generate_2d_data_samples(
+   machinelearning_func::generate_2d_circular_data_samples(
       n_training_samples, training_samples);
-   machinelearning_func::generate_2d_data_samples(
+   machinelearning_func::generate_2d_circular_data_samples(
       n_testing_samples, testing_samples);
+
+//   machinelearning_func::generate_2d_spiral_data_samples(
+//      n_training_samples, training_samples);
+//   machinelearning_func::generate_2d_spiral_data_samples(
+//      n_testing_samples, testing_samples);
 
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
@@ -70,7 +76,8 @@ int main (int argc, char* argv[])
    NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda, 
           rmsprop_decay_rate);
    NN.plot_loss_history();
-   NN.print_test_accuracy_history();
+   NN.plot_accuracies_history();
+//    NN.print_test_accuracy_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
 
 // Generate metafile plot of training samples, testing samples and
@@ -106,13 +113,24 @@ int main (int argc, char* argv[])
 // class labels:
 
    metafile curr_metafile;
-   
+
+
    string meta_filename="circle";
    string title="Toy circle data classification";
    string x_label="X";
    string y_label="Y";
    double min_val = -2;
    double max_val = 2;
+
+/*
+
+   string meta_filename="spiral";
+   string title="Toy spiral data classification";
+   string x_label="X";
+   string y_label="Y";
+   double min_val = -1;
+   double max_val = 1;
+*/
 
    curr_metafile.set_legend_flag(true);
    curr_metafile.set_parameters(
@@ -124,6 +142,8 @@ int main (int argc, char* argv[])
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
 
    cout << "training_samples.size = " << training_samples.size() << endl;
    cout << "testing_samples.size = " << testing_samples.size() << endl;

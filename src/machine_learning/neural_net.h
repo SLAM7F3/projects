@@ -58,6 +58,7 @@ class neural_net
             double lambda, double rmsprop_decay_rate);
 
    void plot_loss_history();
+   void plot_accuracies_history();
    double evaluate_model_on_test_set();
    void print_test_accuracy_history();
    std::vector<int>& get_incorrect_classifications();
@@ -73,7 +74,6 @@ class neural_net
    std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {num_layers-2, num_layers-1}
-
 
    std::vector<genmatrix*> rmsprop_weights_cache;
 
