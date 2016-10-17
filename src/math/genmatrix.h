@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genmatrix class 
 // ==========================================================================
-// Last modified on 2/9/16; 2/10/16; 2/15/16; 10/12/16
+// Last modified on 2/10/16; 2/15/16; 10/12/16; 10/17/16
 // ==========================================================================
 
 #ifndef GENMATRIX_H
@@ -67,6 +67,7 @@ class genmatrix:public genarray
    genmatrix power(unsigned int n);
    genmatrix elementwise_product(const genmatrix& M);
    void elementwise_power(const genmatrix& M, double alpha);
+   genmatrix hadamard_power(double alpha);
    double sqrd_Frobenius_norm();
 
 // Extremal element member functions:

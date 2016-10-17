@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 2/15/16; 9/20/16; 10/4/16; 10/12/16
+// Last modified on 9/20/16; 10/4/16; 10/12/16; 10/17/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -538,6 +538,20 @@ void genmatrix::elementwise_power(const genmatrix& M, double alpha)
          } // loop over index n
       } // loop over index m
    }
+}
+
+genmatrix genmatrix::hadamard_power(double alpha)
+{
+   genmatrix B(mdim, ndim);
+   
+   for (unsigned int m=0; m<mdim; m++)
+   {
+      for (unsigned int n=0; n<ndim; n++)
+      {
+         B.put(m,n,pow(get(m,n), alpha));
+      } // loop over index n
+   } // loop over index m
+   return B;
 }
 
 // ---------------------------------------------------------------------

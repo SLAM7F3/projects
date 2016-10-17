@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genvector class member function definitions
 // ==========================================================================
-// Last modified on 9/5/08; 5/31/13; 8/24/13; 2/8/16
+// Last modified on 5/31/13; 8/24/13; 2/8/16; 10/17/16
 // ==========================================================================
 
 #include <math.h>
@@ -271,6 +271,16 @@ genvector genvector::hadamard_power(const genvector& Y, double alpha) const
    for (unsigned int i=0; i<mdim; i++)
    {
       B.put(i, pow(Y.get(i), alpha));
+   }
+   return B;
+}
+
+genvector genvector::hadamard_power(double alpha) const
+{
+   genvector B(mdim);
+   for (unsigned int i=0; i<mdim; i++)
+   {
+      B.put(i, pow(get(i), alpha));
    }
    return B;
 }

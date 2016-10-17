@@ -1,14 +1,16 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 2/8/16; 2/9/16; 10/16/16
+// Last modified on 2/8/16; 2/9/16; 10/16/16; 10/17/16
 // ==========================================================================
 
 #include <iostream>
 #include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
+#include "plot/metafile.h"
 #include "machine_learning/neural_net.h"
 #include "numrec/nrfuncs.h"
+#include "general/stringfuncs.h"
 
 using std::cin;
 using std::cout;
@@ -46,7 +48,6 @@ void neural_net::allocate_member_objects()
    {
       
    }
-   
 }		       
 
 // Input STL vector sizes contains the number of neurons in the
@@ -98,6 +99,10 @@ neural_net::neural_net(const vector<int>& n_nodes_per_layer)
       genmatrix *curr_delta_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       delta_nabla_weights.push_back(curr_delta_nabla_weights);
+      genmatrix *curr_rmsprop_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      curr_rmsprop_weights->clear_values();
+      rmsprop_weights_cache.push_back(curr_rmsprop_weights);
 
 // Xavier initialize weights connecting network layers l and l+1 to be
 // gaussian random vars distributed according to N(0,1/sqrt(n_in)):
@@ -142,6 +147,7 @@ neural_net::~neural_net()
       delete weights[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
+      delete rmsprop_weights_cache[l];
    }
 }
 
@@ -220,6 +226,7 @@ void neural_net::feedforward(genvector* a_input)
       }
 //       cout << "a[l+1] = " << *a[l+1] << endl;
    }
+
 //    outputfunc::enter_continue_char();
 }
 
@@ -227,6 +234,22 @@ void neural_net::feedforward(genvector* a_input)
 genvector* neural_net::get_softmax_class_probs() const
 {
    return a[num_layers-1];
+}
+
+// ---------------------------------------------------------------------
+double neural_net::get_sample_loss(DATA_PAIR& curr_data)
+{
+   genvector* class_probs = get_softmax_class_probs();
+   int class_label = curr_data.second;
+
+   double curr_prob = class_probs->get(class_label);
+   double curr_loss = 15;
+   double exp_neg_15 = 3.05902321E-7;
+   if(curr_prob > exp_neg_15)
+   {
+      curr_loss = -log(curr_prob);
+   }
+   return curr_loss;
 }
 
 // ---------------------------------------------------------------------
@@ -320,7 +343,7 @@ vector<neural_net::DATA_PAIR> neural_net::randomly_shuffle_training_data()
 // ---------------------------------------------------------------------
 vector< vector<neural_net::DATA_PAIR> > 
 neural_net::generate_training_mini_batches(
-   int mini_batch_size, const vector<DATA_PAIR>& shuffled_training_data)
+   const vector<DATA_PAIR>& shuffled_training_data)
 {
    unsigned int counter = 0;
    int n_mini_batches = n_training_samples / mini_batch_size;
@@ -361,10 +384,12 @@ neural_net::generate_training_mini_batches(
 // regularization.
 
 void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
-                     double lambda)
+                     double lambda, double rmsprop_decay_rate)
 {
+   this->mini_batch_size = mini_batch_size;
    this->learning_rate = learning_rate;
    this->lambda = lambda;
+   this->rmsprop_decay_rate = rmsprop_decay_rate;
 
    for(int e = 0; e < n_epochs; e++)
    {
@@ -380,16 +405,49 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
       vector<DATA_PAIR> shuffled_training_data = 
          randomly_shuffle_training_data();
       vector<vector<DATA_PAIR> > mini_batches = generate_training_mini_batches(
-         mini_batch_size, shuffled_training_data);
+         shuffled_training_data);
 
       for(unsigned int b = 0; b < mini_batches.size(); b++)
       {
-         update_mini_batch(mini_batches[b]);
+         e_effective.push_back(e + double(b) / mini_batches.size());
+         avg_minibatch_loss.push_back(update_mini_batch(mini_batches[b]));
       } // loop over index b labeling mini batches
 
       test_accuracy_history.push_back(evaluate_model_on_test_set());
 
    } // loop over index e labeling training epochs
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of averaged minibatch loss versus epoch.
+
+void neural_net::plot_loss_history()
+{
+   int n_epochs = e_effective.back();
+
+   metafile curr_metafile;
+   string meta_filename="avg_minibatch_loss";
+   string title="Loss vs model training";
+   string subtitle=
+      "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
+      "; Weight decay="+stringfunc::number_to_string(lambda,3)+
+      "; batch size="+stringfunc::number_to_string(mini_batch_size);
+   string x_label="Epoch";
+   string y_label="Averaged minibatch loss";
+   double min_loss = 0;
+   double max_loss = 1;
+
+   curr_metafile.set_parameters(
+      meta_filename,title,x_label,y_label, 0, n_epochs, min_loss, max_loss);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(e_effective, avg_minibatch_loss);
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
 }
 
 // ---------------------------------------------------------------------
@@ -420,9 +478,11 @@ void neural_net::print_test_accuracy_history()
 // ---------------------------------------------------------------------
 // Member function update_mini_batch() updates the network's weights
 // and biases by applying gradient descent using backpropagation to a
-// single mini batch.  lambda = L2 regularization parameter.
+// single mini batch.  lambda = L2 regularization parameter.  This
+// method returns the loss averaged over all samples within the
+// current mini_batch.
 
-void neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
+double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 {
 
 // Initialize cumulative (over mini batch) weight and bias gradients
@@ -437,36 +497,43 @@ void neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
       nabla_weights[l]->clear_values();
    }
 
-   for(unsigned int i = 0; i < mini_batch.size(); i++)
+   double avg_minibatch_loss = 0;
+   int mini_batch_size = mini_batch.size();
+   for(int i = 0; i < mini_batch_size; i++)
    {
       feedforward(mini_batch[i].first);
+      avg_minibatch_loss += get_sample_loss(mini_batch[i]);
       backpropagate(mini_batch[i]);
 
 // Accumulate weights and bias gradients for each network layer:
 
       for(unsigned int l = 0; l < num_layers; l++)
       {
-         *nabla_biases[l] += *delta_nabla_biases[l];
+         *nabla_biases[l] += *delta_nabla_biases[l] / mini_batch_size;
       }
       for(unsigned int l = 0; l < num_layers - 1; l++)
       {
-         *nabla_weights[l] += *delta_nabla_weights[l];
+         *nabla_weights[l] += *delta_nabla_weights[l] / mini_batch_size;
+         *rmsprop_weights_cache[l] = 
+            rmsprop_decay_rate * (*rmsprop_weights_cache[l])
+            + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
       }
    } // loop over index i labeling training samples within mini batch
+   avg_minibatch_loss /= mini_batch_size;
    
-
 // Update weights and biases for eacy network layer by their nabla
 // values averaged over the current mini-batch:
 
    for(unsigned int l = 0; l < num_layers; l++)
    {
-      *biases[l] -= learning_rate/mini_batch.size() * (*nabla_biases[l]);
+      *biases[l] -= learning_rate * (*nabla_biases[l]);
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
 
    for(unsigned int l = 0; l < num_layers - 1; l++)
    {
-      *weights[l] -= learning_rate/mini_batch.size() * (*nabla_weights[l]);
+      *weights[l] -= learning_rate * (*nabla_weights[l]);
+
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
    }
 
@@ -474,6 +541,7 @@ void neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 //        << endl;
 
 //   outputfunc::enter_continue_char();
+   return avg_minibatch_loss;
 }
 
 // ---------------------------------------------------------------------

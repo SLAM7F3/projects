@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 2/8/16; 2/9/16
+// Last modified on 2/8/16; 2/9/16; 10/17/16
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -48,15 +48,16 @@ class neural_net
    std::vector<DATA_PAIR> randomly_shuffle_training_data();
    std::vector< std::vector<neural_net::DATA_PAIR> > 
       generate_training_mini_batches(
-         int mini_batch_size, 
          const std::vector<DATA_PAIR>& shuffled_training_data);
    void print_data_pair(int t, const DATA_PAIR& curr_data);
 
    void feedforward(genvector* a_input);
    genvector* get_softmax_class_probs() const;
+   double get_sample_loss(DATA_PAIR& curr_data);
    void sgd(int n_epochs, int mini_batch_size, double learning_rate,
-            double lambda);
+            double lambda, double rmsprop_decay_rate);
 
+   void plot_loss_history();
    double evaluate_model_on_test_set();
    void print_test_accuracy_history();
    std::vector<int>& get_incorrect_classifications();
@@ -73,6 +74,9 @@ class neural_net
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {num_layers-2, num_layers-1}
 
+
+   std::vector<genmatrix*> rmsprop_weights_cache;
+
    std::vector<DATA_PAIR> training_data;
    std::vector<DATA_PAIR> test_data;
 
@@ -85,9 +89,12 @@ class neural_net
 // Node errors:
    std::vector<genvector*> delta;
 
+   int mini_batch_size;
    double learning_rate;
    double lambda; // L2-regularization parameter
+   double rmsprop_decay_rate;
 
+   std::vector<double> e_effective, avg_minibatch_loss;
    std::vector<double> test_accuracy_history;
 
 // Store indices for test samples whose class if incorrectly labeled
@@ -95,7 +102,7 @@ class neural_net
 
    std::vector<int> incorrect_classifications;
 
-   void update_mini_batch(std::vector<DATA_PAIR>& mini_batch);
+   double update_mini_batch(std::vector<DATA_PAIR>& mini_batch);
    void backpropagate(const DATA_PAIR& curr_data_pair);
 
    void allocate_member_objects();

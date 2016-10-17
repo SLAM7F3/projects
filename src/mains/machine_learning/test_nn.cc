@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TEST_NN
 // ==========================================================================
-// Last updated on 10/15/16; 10/16/16
+// Last updated on 10/15/16; 10/16/16; 10/17/16
 // ==========================================================================
 
 #include <stdint.h>
@@ -66,7 +66,10 @@ int main (int argc, char* argv[])
    int n_epochs = 500;
    double learning_rate = 0.01;
    double lambda = 0.001;
-   NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda);
+   double rmsprop_decay_rate = 0.95;
+   NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda, 
+          rmsprop_decay_rate);
+   NN.plot_loss_history();
    NN.print_test_accuracy_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
 
@@ -90,7 +93,7 @@ int main (int argc, char* argv[])
       int color_offset = 2;
       for(unsigned int j = 0; j < incorrect_classifications.size(); j++)
       {
-         if(i == incorrect_classifications[j])
+         if(int(i) == incorrect_classifications[j])
          {
             color_offset = 4;
             break;
