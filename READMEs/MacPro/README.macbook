@@ -1,7 +1,7 @@
 ===========================================================================================
 Apple MacBook Pro Laptop notes
 ===========================================================================================
-Last updated on 2/19/16; 9/19/16; 9/20/16; 10/10/16
+Last updated on 9/19/16; 9/20/16; 10/10/16; 10/17/16
 ===========================================================================================
 
 *.  As of 1/26/15, we have updated all software on our MacBook.
@@ -119,4 +119,22 @@ you’d expect (iMovie, YouTube, etc.) Clearly not a method a pro would use,
 but if your needs are relatively simple, this is a great solution.
 
 
+*.  Wiki entry for "compiling pwin on macOS"
+
+https://github.geo.apple.com/geo-flyover/sputnik/wiki/Compiling-pwin-on-macOS
+
+brew update
+brew install llvm cmake homebrew/versions/glfw3 glew protobuf openssl protobuf-c avro-c jansson snappy homebrew/science/suite-sparse
+ln -s /usr/local/opt/suite-sparse/include /usr/local/include/suitesparse
+ln -s /usr/local/opt/openssl/include/openssl /usr/local/include/
+ln -s /usr/local/Cellar/llvm/3.8.1/lib/libiomp5.dylib /usr/local/lib/
+sudo mkdir -p /opt/geo/shared/include/
+sudo ln -s /usr/local/include/google /opt/geo/shared/include/google
+
+*.  On 10/17/16, we upgraded our MacBook's OS to Sierra.  We followed the 
+above instructions for compiling pwin on MacOS.  But pwin couldn't compile
+due to missing header files (e.g. stdio.h).  Daniel Ragursson told us that
+we need to install command line tools in mac OS X by chanting
+
+	xcode-select --install
 
