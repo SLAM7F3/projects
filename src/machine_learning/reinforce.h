@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/4/16; 10/5/16; 10/11/16; 10/12/16
+// Last modified on 10/5/16; 10/11/16; 10/12/16; 10/17/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -70,7 +70,6 @@ class reinforce
    genvector *dlogp_ptr;     // Dout x 1
    genvector *p_ptr;         // Dout x 1  Prob of taking action
    genvector *pcum_ptr;      // Dout x 1  Cumulative prob of taking action
-   genvector *action_ptr;    // Dout x 1  Just pointer to pre-existing output
 
    genmatrix *episode_x_ptr;   	// T x Din
    genmatrix *episode_h_ptr;    // T x H
@@ -86,7 +85,6 @@ class reinforce
    void discount_rewards();
    void policy_forward(genvector* x_ptr);
    void policy_backward();
-
 
    void allocate_member_objects();
    void initialize_member_objects();
