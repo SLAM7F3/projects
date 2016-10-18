@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/5/16; 10/11/16; 10/12/16; 10/17/16
+// Last modified on 10/11/16; 10/12/16; 10/17/16; 10/18/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -21,8 +21,7 @@ class reinforce
 
 // Initialization, constructor and destructor functions:
 
-   reinforce();
-   reinforce(const reinforce& R);
+   reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax);
    ~reinforce();
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
@@ -30,64 +29,67 @@ class reinforce
    int get_episode_number() const;
    void increment_episode_number();
 
-   void print_matrices();
-
    void initialize_episode();
-   void compute_current_action(
-      genvector* input_state_ptr, genvector* output_action_ptr);
+   int compute_current_action(genvector* input_state_ptr);
    void record_reward_for_action(double curr_reward);
    void update_weights(bool episode_finished_flag);
 
   private:
 
-   int H;   		// Number of hidden layer neurons
-   int Din;		// Input dimensionality 
-   int Dout;		// Output dimensionality 
+   int n_layers, n_actions;
+   std::vector<int> layer_dims;
+
    int curr_timestep;
    int T;		// number of time steps in current episode
    int Tmax;
    int batch_size;  	// Perform parameter update after this many episodes
    double learning_rate;
+   double lambda;	// L2 regularization coefficient
    double gamma;	// Discount factor for reward
    double decay_rate;	// Decay factor for RMSProp leaky sum of grad**2
 
-   genmatrix *W1_ptr;        // H x Din
-   genmatrix *dW1_ptr;	     // H x Din
-   genmatrix *dW1_buffer_ptr;// H x Din  Update buffer for grad sums over batch
-   genmatrix *sqr_dW1_buffer_ptr;   // H x Din
-   genmatrix *rmsprop1_ptr;  // H x Din
-   genmatrix *sqrt_rmsprop1_ptr;  // H x Din
+   std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
+//	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
+//      {n_layers-2, n_layers-1}
 
-   genmatrix *W2_ptr;        // Dout x H
-   genmatrix *dW2_ptr;       // Dout x H
-   genmatrix *dW2_buffer_ptr;// Dout x H Update buffer for grad sums over batch
-   genmatrix *sqr_dW2_buffer_ptr;   // Dout x H
-   genmatrix *rmsprop2_ptr;  // Dout x H
-   genmatrix *sqrt_rmsprop2_ptr;  // Dout x H
+   std::vector<genmatrix*> rmsprop_weights_cache;
 
-   genvector *h_ptr;         // H x 1
-   genvector *logp_ptr;      // Dout x 1
-   genvector *dlogp_ptr;     // Dout x 1
-   genvector *p_ptr;         // Dout x 1  Prob of taking action
-   genvector *pcum_ptr;      // Dout x 1  Cumulative prob of taking action
+// STL vector index ranges over layers l = 0, 1, ..., n_layers
+// row index ranges over lth layer nodes j = 0, 1, ... n_nodes_in_lth_layer
+// column index ranges over t = 0, 1, ... T
 
-   genmatrix *episode_x_ptr;   	// T x Din
-   genmatrix *episode_h_ptr;    // T x H
-   genmatrix *episode_dlogp_ptr;// T x Dout
-   genvector *episode_reward_ptr;  // T x 1
-   genvector *discounted_episode_reward_ptr;  // T x 1
+// Node weighted inputs:
 
+   std::vector<genmatrix*> z;
+
+// Node activation outputs:
+   std::vector<genmatrix*> a;
+
+// Node errors:
+   std::vector<genmatrix*> delta_prime;
+
+   genvector *p_action;		// n_actions x 1
+   genvector *pcum_action;	// n_actions x 1
+
+// Episode datastructures:
+
+   genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
+   genvector *reward;  // T x 1
+   genvector *discounted_reward;  // T x 1
    double running_reward;
    double reward_sum;
    int episode_number;
 
-   void xavier_init_weight_matrices();
+
+   void policy_forward(int t, genvector& x_input);
+   void get_softmax_action_probs(int t) const;
    void discount_rewards();
-   void policy_forward(genvector* x_ptr);
    void policy_backward();
 
+
+
    void allocate_member_objects();
-   void initialize_member_objects();
+   void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
 };
 
 // ==========================================================================

@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/4/16; 10/5/16; 10/11/16; 10/12/16
+// Last modified on 10/5/16; 10/11/16; 10/12/16; 10/18/16
 // ==========================================================================
 
 #include <string>
@@ -26,118 +26,97 @@ using std::vector;
 // Initialization, constructor and destructor functions:
 // ---------------------------------------------------------------------
 
-void reinforce::initialize_member_objects()
+void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
-   Din = 4 * 4;		// Input dimensionality
-   Dout = 4 * 4;	// Output dimensionality
-   H = 200;		// Number of hidden layer neurons
-   Tmax = 64;	 	// Maximum number of time steps per episode
-//   Tmax = 1000;	 	// Maximum number of time steps per episode
-
-   batch_size = 10;	// Perform parameter update after this many episodes
+   batch_size = 5;	// Perform parameter update after this many episodes
    learning_rate = 0.001;	
+   lambda = 0.001;	// L2 regularization coefficient
    gamma = 0.99;	// Discount factor for reward
    decay_rate = 0.99;	// Decay factor for RMSProp leaky sum of grad**2
    
    running_reward = 0;
    reward_sum = 0;
    episode_number = 0;
-}		       
+
+   n_layers = n_nodes_per_layer.size();
+
+   for(int l = 0; l < n_layers; l++)
+   {
+      layer_dims.push_back(n_nodes_per_layer[l]);
+      genmatrix *curr_z = new genmatrix(layer_dims.back(), Tmax);
+      genmatrix *curr_a = new genmatrix(layer_dims.back(), Tmax);
+      genmatrix *curr_delta_prime = new genmatrix(layer_dims.back(), Tmax);
+      z.push_back(curr_z);
+      a.push_back(curr_a);
+      delta_prime.push_back(curr_delta_prime);
+   }
+   n_actions = layer_dims.back();
+
+   p_action = new genvector(n_actions);
+   pcum_action = new genvector(n_actions);
+
+// Weights link layer l with layer l+1:
+    
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      genmatrix *curr_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      weights.push_back(curr_weights);
+      genmatrix *curr_nabla_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      nabla_weights.push_back(curr_nabla_weights);
+      genmatrix *curr_delta_nabla_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      delta_nabla_weights.push_back(curr_delta_nabla_weights);
+      genmatrix *curr_rmsprop_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      curr_rmsprop_weights->clear_values();
+      rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+
+// Xavier initialize weights connecting network layers l and l+1 to be
+// gaussian random vars distributed according to N(0,1/sqrt(n_in)):
+
+      for(int i = 0; i < layer_dims[l+1]; i++)
+      {
+         for(int j = 0; j < layer_dims[l]; j++)
+         {
+            curr_weights->put(i, j, nrfunc::gasdev() / sqrt(layer_dims[l]) );
+         } // loop over index j labeling node in next layer
+      } // loop over index i labeling node in current layer
+
+   } // loop over index l labeling neural net layers
+}
 
 void reinforce::allocate_member_objects()
 {
-   W1_ptr = new genmatrix(H, Din);
-   dW1_ptr = new genmatrix(H, Din);
-   dW1_buffer_ptr = new genmatrix(H, Din);
-   sqr_dW1_buffer_ptr = new genmatrix(H, Din);
-
-   W2_ptr = new genmatrix(Dout, H);
-   dW2_ptr = new genmatrix(Dout, H);
-   dW2_buffer_ptr = new genmatrix(Dout, H);
-   sqr_dW2_buffer_ptr = new genmatrix(Dout, H);
-
-   rmsprop1_ptr = new genmatrix(H, Din);
-   sqrt_rmsprop1_ptr = new genmatrix(H, Din);
-   rmsprop2_ptr = new genmatrix(Dout, H);
-   sqrt_rmsprop2_ptr = new genmatrix(Dout, H);
-
-   h_ptr = new genvector(H);
-   logp_ptr = new genvector(Dout);
-   dlogp_ptr = new genvector(Dout);
-   p_ptr = new genvector(Dout);
-   pcum_ptr = new genvector(Dout);
-
-   episode_x_ptr = new genmatrix(Tmax, Din);
-   episode_h_ptr = new genmatrix(Tmax, H);
-   episode_dlogp_ptr = new genmatrix(Tmax, Dout);
-   episode_reward_ptr = new genvector(Tmax);
-   discounted_episode_reward_ptr = new genvector(Tmax);
-}		       
-
-void reinforce::print_matrices()
-{
-   cout << "*W1_ptr = " << *W1_ptr << endl;
-   cout << "*W2_ptr = " << *W2_ptr << endl;
-
-   cout << "*dW1_ptr = " << *dW1_ptr << endl;
-   cout << "*dW2_ptr = " << *dW2_ptr << endl;
-
-   cout << "*rmsprop1_ptr = " << *rmsprop1_ptr << endl;
-   cout << "*rmsprop2_ptr = " << *rmsprop2_ptr << endl;
+   y = new genvector(Tmax);
+   reward = new genvector(Tmax);
+   discounted_reward = new genvector(Tmax);
 }		       
 
 // ---------------------------------------------------------------------
-reinforce::reinforce()
+reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax)
 {
-   initialize_member_objects();
+   this->Tmax = Tmax;
+   initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
-
-// Clear cumulative matrices:
-
-   dW1_buffer_ptr->clear_matrix_values();
-   dW2_buffer_ptr->clear_matrix_values();
-   rmsprop1_ptr->clear_matrix_values();
-   rmsprop2_ptr->clear_matrix_values();
-
-   xavier_init_weight_matrices();
-}
-
-// Copy constructor:
-
-reinforce::reinforce(const reinforce& R)
-{
-//   docopy(T);
 }
 
 // ---------------------------------------------------------------------
 reinforce::~reinforce()
 {
-   delete W1_ptr;
-   delete dW1_ptr;
-   delete dW1_buffer_ptr;
-   delete sqr_dW1_buffer_ptr;
+   for(unsigned int l = 0; l < z.size(); l++)
+   {
+      delete z[l];
+      delete a[l];
+      delete delta_prime[l];
+   }
 
-   delete W2_ptr;
-   delete dW2_ptr;
-   delete dW2_buffer_ptr;
-   delete sqr_dW2_buffer_ptr;
-
-   delete rmsprop1_ptr;
-   delete sqrt_rmsprop1_ptr;
-   delete rmsprop2_ptr;
-   delete sqrt_rmsprop2_ptr;
-
-   delete h_ptr;
-   delete logp_ptr;
-   delete dlogp_ptr;
-   delete p_ptr;
-   delete pcum_ptr;
-
-   delete episode_x_ptr;
-   delete episode_h_ptr;
-   delete episode_dlogp_ptr;
-   delete episode_reward_ptr;
-   delete discounted_episode_reward_ptr;
+   delete p_action;
+   delete pcum_action;
+   delete y;
+   delete reward;
+   delete discounted_reward;
 }
 
 // ---------------------------------------------------------------------
@@ -146,36 +125,50 @@ reinforce::~reinforce()
 ostream& operator<< (ostream& outstream,const reinforce& R)
 {
    outstream << endl;
-   outstream << "Din = " << R.Din << " Dout = " << R.Dout << endl;
-   outstream << "H = " << R.H << endl;
    outstream << "batch_size = " << R.batch_size << " learning_rate = "
              << R.learning_rate << endl;
    outstream << "gamma = " << R.gamma << endl;
    return outstream;
 }
 
-// ==========================================================================
+// ---------------------------------------------------------------------
+// Member function policy_forward returns the output of the network
+// given an input set of values.
 
-void reinforce::xavier_init_weight_matrices()
+void reinforce::policy_forward(int t, genvector& x_input)
 {
-   for(unsigned int py = 0; py < W1_ptr->get_ndim(); py++)
-   {
-      for(unsigned int px = 0; px < W1_ptr->get_mdim(); px++)
-      {
-         W1_ptr->put(px,py,nrfunc::gasdev() / sqrt(Din) );
-      } // loop over px
-   } // loop over py 
+   a[0]->put_column(t, x_input);
+//    cout << "inside policy_forward, x_input = " << *x_input << endl;
 
-   for(unsigned int py = 0; py < W2_ptr->get_ndim(); py++)
+   for(int l = 0; l < n_layers-1; l++)
    {
-      for(unsigned int px = 0; px < W2_ptr->get_mdim(); px++)
-      {
-         W2_ptr->put(px,py,nrfunc::gasdev() / sqrt(H) );
-      } // loop over px
-   } // loop over py 
+//      cout << "l = " << l << endl;
+      genmatrix* curr_weights = weights[l];
+      genvector z_lplus1_t(*curr_weights * a[l]->get_column(t));
+      genvector a_lplus1_t(z_lplus1_t.get_mdim());
 
-//   cout << "W1 = " << *W1_ptr << endl;
-//   cout << "W2 = " << *W2_ptr << endl;
+      z[l+1]->put_column(t, z_lplus1_t);
+//      cout << "z[l+1, t] = " << z[l+1]->get_column(t) << endl;
+
+// Perform soft-max classification on final-layer's weighted inputs:
+
+      if(l == n_layers - 2)
+      {
+         machinelearning_func::softmax(z_lplus1_t, a_lplus1_t);
+      }
+      else // perform ReLU on hidden layer's weight inputs
+      {
+         machinelearning_func::ReLU(z_lplus1_t, a_lplus1_t);
+      }
+//       cout << "a[l+1] = " << a[l+1]->get_column(t) << endl;
+      a[l+1]->put_column(t, a_lplus1_t);
+   }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::get_softmax_action_probs(int t) const
+{
+   *p_action = a[n_layers-1]->get_column(t);
 }
 
 // ---------------------------------------------------------------------
@@ -185,132 +178,161 @@ void reinforce::discount_rewards()
 
    for(int t = T-1; t >= 0; t--)
    {
-      running_add = gamma * running_add + episode_reward_ptr->get(t);
-      discounted_episode_reward_ptr->put(t, running_add);
+      running_add = gamma * running_add + reward->get(t);
+      discounted_reward->put(t, running_add);
    }
-}
-
-// ---------------------------------------------------------------------
-void reinforce::policy_forward(genvector* x_ptr)
-{
-   *h_ptr = (*W1_ptr) * (*x_ptr);
-   machinelearning_func::ReLU(*h_ptr);
-      
-   *logp_ptr = (*W2_ptr) * (*h_ptr);
-   machinelearning_func::sigmoid(*logp_ptr, *p_ptr);
 }
 
 // ---------------------------------------------------------------------
 void reinforce::policy_backward()
 {
-   *dW2_ptr =  episode_dlogp_ptr->transpose() * (*episode_h_ptr);
 
-   genmatrix *dh_ptr = new genmatrix(H,T);
-   *dh_ptr = W2_ptr->transpose() * episode_dlogp_ptr->transpose();
-   machinelearning_func::ReLU(*dh_ptr);
+// Initialize "episode" weight gradients to zero:
 
-   *dW1_ptr = (*dh_ptr) * (*episode_x_ptr);
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      delta_nabla_weights[l]->clear_values();
+   }
 
-   delete dh_ptr;
-}
+   for(int t = 0; t < T; t++)
+   {
+      
+// Eqn BP1:
+
+      int curr_layer = n_layers - 1;
+      for(int j = 0; j < layer_dims[curr_layer]; j++)
+      {
+         double curr_activation = a[curr_layer]->get(j, t);
+         if(j == y->get(t)) curr_activation -= 1.0;
+
+// Modulate the gradient with advantage (Policy Gradient magic happens
+// right here):
+
+         delta_prime[curr_layer]->put(
+            j, t, discounted_reward->get(t) * curr_activation);
+      }
+   } // loop over index t
+   
+   for(int curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
+   {
+      int prev_layer = curr_layer - 1;
+
+// Eqn BP2A:
+
+// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
+// to curr layer nodes:
+
+      *delta_prime[prev_layer] = weights[prev_layer]->transpose() * 
+         (*delta_prime[curr_layer]);
+
+// Eqn BP2B:
+      for(int j = 0; j < layer_dims[prev_layer]; j++)
+      {
+         for(int t = 0; t < T; t++)
+         {
+            if(z[prev_layer]->get(j, t) < 0)
+            {
+               delta_prime[prev_layer]->put(j, t, 0);
+            }
+         } // loop over t index
+      } // loop over j index
+
+// Accumulate weight gradients over episode:
+
+      for(int t = 0; t < T; t++)
+      {
+// Eqn BP4:
+         *delta_nabla_weights[prev_layer] += 
+            delta_prime[curr_layer]->get_column(t).outerproduct(
+               a[prev_layer]->get_column(t)) +
+            2 * lambda * (*weights[prev_layer]);
+      }
+
+   } // loop over curr_layer index
+} 
 
 // ---------------------------------------------------------------------
 void reinforce::initialize_episode()
 {
-   episode_x_ptr->clear_values();
-   episode_h_ptr->clear_values();
-   episode_dlogp_ptr->clear_values();
+   for(unsigned int i = 0; i < z.size(); i++)
+   {
+      z[i]->clear_values();
+      a[i]->clear_values();
+   }
 
+   for(unsigned int i = 0; i < delta_prime.size(); i++)
+   {
+      delta_prime[i]->clear_values();
+   }
+
+   for(int t = 0; t < Tmax; t++)
+   {
+      y->put(t, 0);
+      reward->put(t, 0);
+      discounted_reward->put(t, 0);
+   }
+   
    curr_timestep = 0;
 }
 
 // ---------------------------------------------------------------------
-void reinforce::compute_current_action(
-   genvector* input_state_ptr, genvector* output_action_ptr)
+// Member function compute_current_action() imports an input state
+// vector.  It returns the index for the action which is
+// probabilistically selected based upon the current softmax action
+// distribution.
+
+int reinforce::compute_current_action(genvector* input_state_ptr)
 {
-   policy_forward(input_state_ptr);
-   
+   policy_forward(curr_timestep, *input_state_ptr);
+   get_softmax_action_probs(curr_timestep);  // n_actions x 1
+
 // Renormalize action probabilities:
 
    double denom = 0;
-   for(int d = 0; d < Dout; d++)
+   for(int a = 0; a < n_actions; a++)
    {
-      denom += p_ptr->get(d);
+      denom += p_action->get(a);
    }
 
    double pcum = 0;
-   for(int d = 0; d < Dout; d++)
+   for(int a = 0; a < n_actions; a++)
    {
-      p_ptr->put(d, p_ptr->get(d) / denom);
-      pcum += p_ptr->get(d);
-//      cout << "d = " << d << " p_dens = " << p_ptr->get(d)
-//           << " pcum = " << pcum << endl;
-      pcum_ptr->put(d, pcum);
+      p_action->put(a, p_action->get(a) / denom);
+      pcum += p_action->get(a);
+      pcum_action->put(a, pcum);
+//      cout << "a = " << a 
+//           << " p_action = " << p_action->get(a) 
+//           << " pcum_action = " << pcum_action->get(a) << endl;
    }
 
-// Uniformly generate random variable.  Use it to inversely sample
-// cumulative probability distribution to set action dstar:
+// Generate uniformly-distributed random variable.  Use it to
+// inversely sample cumulative probability distribution to set action
+// a_star:
 
-   int dstar = -1;
+   int a_star = 0;
    double q = nrfunc::ran1();
-   for(int d = 0; d < Dout - 1; d++)
+   for(int a = 0; a < n_actions - 1; a++)
    {
-      if(q >= pcum_ptr->get(d) && q < pcum_ptr->get(d+1))
+      if(q >= pcum_action->get(a) && q < pcum_action->get(a+1))
       {
-         dstar = d;
+         a_star = a + 1;
+         break;
       }
    }
-   if(dstar == -1) dstar = Dout - 1;
 
-   output_action_ptr->clear_values();
-   output_action_ptr->put(dstar, 1);
+   y->put(curr_timestep, a_star);
 
-
-/*
-
-// REWORK THIS SECTION !!!
-
-   for(int d = 0; d < Dout; d++)
-   {
-      double action_prob = p_ptr->get(d);
-      double y;	 // fake label
-      if(nrfunc::ran1() < action_prob)
-      {
-         output_action_ptr->put(d, 1);
-         y = 1;
-      }
-      else
-      {
-         output_action_ptr->put(d, 0);
-         y = 0;
-      }
-
-// Logistic regresssion loss function:
-
-// L_i = Sum_j [ y_ij log(sigma(f_j)) + (1 - y_ij) * log(1-sigma(f_j)) ]
-
-//  dL_i/df_j = y_ij - sigma(f_j)
-
-      dlogp_ptr->put(d, y - action_prob);
-   } // loop over index d 
-*/
-
-// Record various intermediates needed later for backpropagation:
-          
-   episode_x_ptr->put_row(curr_timestep, *input_state_ptr);
-   episode_h_ptr->put_row(curr_timestep, *h_ptr);
-   episode_dlogp_ptr->put_row(curr_timestep, *dlogp_ptr);
-   
-// Step the environment and then retrieve new reward measurements
+   return a_star;
 }
 
 // ---------------------------------------------------------------------
 void reinforce::record_reward_for_action(double curr_reward)
 {
    reward_sum += curr_reward;
-   episode_reward_ptr->put(curr_timestep, curr_reward);
+   reward->put(curr_timestep, curr_reward);
    curr_timestep++;
 }
+
 
 // ---------------------------------------------------------------------
 void reinforce::update_weights(bool episode_finished_flag)
@@ -327,15 +349,15 @@ void reinforce::update_weights(bool episode_finished_flag)
    double mean = 0;
    for(int t = 0; t < T; t++)
    {
-      mean += discounted_episode_reward_ptr->get(t);
+      mean += discounted_reward->get(t);
    }
    mean /= T;
       
    double sigmasqr = 0;
    for(int t = 0; t < T; t++)
    {
-      double curr_reward = discounted_episode_reward_ptr->get(t) - mean;
-      discounted_episode_reward_ptr->put(t, curr_reward);
+      double curr_reward = discounted_reward->get(t) - mean;
+      discounted_reward->put(t, curr_reward);
       sigmasqr += sqr(curr_reward);
    }
    sigmasqr /= T;
@@ -343,49 +365,51 @@ void reinforce::update_weights(bool episode_finished_flag)
 
    for(int t = 0; t < T; t++)
    {
-      double curr_reward = discounted_episode_reward_ptr->get(t) / sigma;
-      discounted_episode_reward_ptr->put(t, curr_reward);
-   }
-      
-// Modulate the gradient with advantage (Policy Gradient magic happens
-// right here):
-
-   genvector curr_row(Dout);
-   for(int t = 0; t < T; t++)
-   {
-      episode_dlogp_ptr->get_row(t, curr_row);
-      curr_row *= discounted_episode_reward_ptr->get(t);
-      episode_dlogp_ptr->put_row(t, curr_row);
+      double curr_reward = discounted_reward->get(t) / sigma;
+      discounted_reward->put(t, curr_reward);
    }
 
    policy_backward();
 
+/*      
+
 // Accumulate dW1 and dW2 gradients over batch:
 
+   *dW0_buffer_ptr += *dW0_ptr;
    *dW1_buffer_ptr += *dW1_ptr;
-   *dW2_buffer_ptr += *dW2_ptr;
             
 // Perform RMSprop parameter update every batch_size episodes:
 
    episode_number++;
    if(episode_number % batch_size == 0)
    {
+      sqr_dW0_buffer_ptr->elementwise_power(*dW0_buffer_ptr, 2);
       sqr_dW1_buffer_ptr->elementwise_power(*dW1_buffer_ptr, 2);
-      sqr_dW2_buffer_ptr->elementwise_power(*dW2_buffer_ptr, 2);
 
 //  MeanSquare(w,t) = 0.9 MeanSquare(w,t-1) + 0.1 (dE(t)/dw)**2
 
+      *rmsprop0_ptr = decay_rate * (*rmsprop0_ptr) +
+         (1 - decay_rate) * (*sqr_dW0_buffer_ptr);
       *rmsprop1_ptr = decay_rate * (*rmsprop1_ptr) +
          (1 - decay_rate) * (*sqr_dW1_buffer_ptr);
-      *rmsprop2_ptr = decay_rate * (*rmsprop2_ptr) +
-         (1 - decay_rate) * (*sqr_dW2_buffer_ptr);
 
 // Dividing gradient by sqrt(MeanSquare(w,t)) significantly improves learning:
 
+      sqrt_rmsprop0_ptr->elementwise_power(*rmsprop0_ptr, 0.5);
       sqrt_rmsprop1_ptr->elementwise_power(*rmsprop1_ptr, 0.5);
-      sqrt_rmsprop2_ptr->elementwise_power(*rmsprop2_ptr, 0.5);
 
       const double TINY = 1E-5;
+      for(unsigned int py = 0; py < W0_ptr->get_mdim(); py++)
+      {
+         for(unsigned int px = 0; px < W0_ptr->get_ndim(); px++)
+         {
+            double term1 = W0_ptr->get(px, py);
+            double denom = sqrt_rmsprop0_ptr->get(px, py) + TINY;
+            double term2 = learning_rate * rmsprop0_ptr->get(px,py)/denom;
+            W0_ptr->put(px, py, term1 + term2);
+         }
+      }
+
       for(unsigned int py = 0; py < W1_ptr->get_mdim(); py++)
       {
          for(unsigned int px = 0; px < W1_ptr->get_ndim(); px++)
@@ -397,20 +421,10 @@ void reinforce::update_weights(bool episode_finished_flag)
          }
       }
 
-      for(unsigned int py = 0; py < W2_ptr->get_mdim(); py++)
-      {
-         for(unsigned int px = 0; px < W2_ptr->get_ndim(); px++)
-         {
-            double term1 = W2_ptr->get(px, py);
-            double denom = sqrt_rmsprop2_ptr->get(px, py) + TINY;
-            double term2 = learning_rate * rmsprop2_ptr->get(px,py)/denom;
-            W2_ptr->put(px, py, term1 + term2);
-         }
-      }
-
+      dW0_buffer_ptr->clear_values();
       dW1_buffer_ptr->clear_values();
-      dW2_buffer_ptr->clear_values();
    } // episode % batch_size == 0 conditional
+*/
 
    if(running_reward == 0)
    {
@@ -425,3 +439,4 @@ void reinforce::update_weights(bool episode_finished_flag)
    cout << "Running reward mean = " << running_reward << endl;
    reward_sum = 0;
 }
+

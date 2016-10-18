@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 2/8/16; 2/9/16; 10/16/16; 10/17/16
+// Last modified on 2/9/16; 10/16/16; 10/17/16; 10/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -30,8 +30,8 @@ using std::vector;
 void neural_net::initialize_member_objects(
    const vector<int>& n_nodes_per_layer)
 {
-   num_layers = n_nodes_per_layer.size();
-   for(unsigned int l = 0; l < num_layers; l++)
+   n_layers = n_nodes_per_layer.size();
+   for(unsigned int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
       genvector *curr_z = new genvector(layer_dims.back());
@@ -46,7 +46,7 @@ void neural_net::initialize_member_objects(
 
 void neural_net::allocate_member_objects()
 {
-   for(unsigned int l = 0; l < num_layers; l++)
+   for(unsigned int l = 0; l < n_layers; l++)
    {
       
    }
@@ -63,7 +63,7 @@ neural_net::neural_net(const vector<int>& n_nodes_per_layer)
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 
-   for(unsigned int l = 0; l < num_layers; l++)
+   for(unsigned int l = 0; l < n_layers; l++)
    {
       genvector *curr_biases = new genvector(layer_dims[l]);
       biases.push_back(curr_biases);
@@ -90,7 +90,7 @@ neural_net::neural_net(const vector<int>& n_nodes_per_layer)
 
 // Weights link layer l with layer l+1:
     
-      if(l == num_layers-1) continue;
+      if(l == n_layers-1) continue;
       
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
@@ -159,8 +159,8 @@ neural_net::~neural_net()
 ostream& operator<< (ostream& outstream, neural_net& NN)
 {
    outstream << endl;
-   outstream << "n_layers = " << NN.num_layers << endl << endl;
-   for(unsigned int l = 0; l < NN.num_layers; l++)
+   outstream << "n_layers = " << NN.n_layers << endl << endl;
+   for(unsigned int l = 0; l < NN.n_layers; l++)
    {
       cout << "---------------------------" << endl;
       if(l == 0)
@@ -168,7 +168,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
          outstream << "INPUT Layer: l = 0" << endl;
       
       }
-      else if (l == NN.num_layers - 1)
+      else if (l == NN.n_layers - 1)
       {
          outstream << "OUTPUT Layer l = " << l << endl;
 
@@ -182,7 +182,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
       cout << "biases = " << *curr_biases << endl;
       cout << "---------------------------" << endl;      
 
-      if(l == NN.num_layers-1) continue;
+      if(l == NN.n_layers-1) continue;
       genmatrix* curr_weights = NN.get_weights(l);
       cout << curr_weights->get_mdim() << " x " << curr_weights->get_ndim()
            << " weights matrix connecting layers " 
@@ -207,7 +207,7 @@ void neural_net::feedforward(genvector* a_input)
    a[0] = a_input;
 //    cout << "inside feedforward, a_input = " << *a_input << endl;
 
-   for(unsigned int l = 0; l < num_layers-1; l++)
+   for(unsigned int l = 0; l < n_layers-1; l++)
    {
       genmatrix* curr_weights = weights[l];
       genvector* curr_biases = biases[l+1];
@@ -218,7 +218,7 @@ void neural_net::feedforward(genvector* a_input)
 
 // Perform soft-max classification on final-layer's weighted inputs:
 
-      if(l == num_layers - 2)
+      if(l == n_layers - 2)
       {
          machinelearning_func::softmax(*z[l+1], *a[l+1]);
       }
@@ -235,7 +235,7 @@ void neural_net::feedforward(genvector* a_input)
 // ---------------------------------------------------------------------
 genvector* neural_net::get_softmax_class_probs() const
 {
-   return a[num_layers-1];
+   return a[n_layers-1];
 }
 
 // ---------------------------------------------------------------------
@@ -291,7 +291,6 @@ double neural_net::evaluate_model_on_test_set()
    double frac_correct = double(n_correct_predictions) / n_test_samples;
    return frac_correct;
 }
-
 
 // ---------------------------------------------------------------------
 void neural_net::import_training_data(const vector<DATA_PAIR>& data)
@@ -486,7 +485,6 @@ void neural_net::plot_accuracies_history()
       epochs.push_back(e);
    }
    
-
 /*
 // Temporally smooth noisy training accuracy values:
 
@@ -537,31 +535,6 @@ void neural_net::plot_accuracies_history()
 }
 
 // ---------------------------------------------------------------------
-void neural_net::print_test_accuracy_history()
-{
-   int n_epochs = test_accuracy_history.size();
-   int eskip = 1;
-   for(int e = 0; e < n_epochs; e += eskip)
-   {
-      if (e > 100 && e < 200)
-      {
-         eskip = 2;
-      }
-      else if (e > 200 && e < 300)
-      {
-         eskip = 5;
-      }
-      else if (e > 300)
-      {
-         eskip = 10;
-      }
-
-      cout << "e = " << e 
-           << " test accuracy frac = " << test_accuracy_history[e] << endl;
-   }
-}
-
-// ---------------------------------------------------------------------
 // Member function update_mini_batch() updates the network's weights
 // and biases by applying gradient descent using backpropagation to a
 // single mini batch.  lambda = L2 regularization parameter.  This
@@ -574,11 +547,11 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 // Initialize cumulative (over mini batch) weight and bias gradients
 // to zero:
 
-   for(unsigned int l = 0; l < num_layers; l++)
+   for(unsigned int l = 0; l < n_layers; l++)
    {
       nabla_biases[l]->clear_values();
    }
-   for(unsigned int l = 0; l < num_layers - 1; l++)
+   for(unsigned int l = 0; l < n_layers - 1; l++)
    {
       nabla_weights[l]->clear_values();
    }
@@ -593,11 +566,11 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 
 // Accumulate weights and bias gradients for each network layer:
 
-      for(unsigned int l = 0; l < num_layers; l++)
+      for(unsigned int l = 0; l < n_layers; l++)
       {
          *nabla_biases[l] += *delta_nabla_biases[l] / mini_batch_size;
       }
-      for(unsigned int l = 0; l < num_layers - 1; l++)
+      for(unsigned int l = 0; l < n_layers - 1; l++)
       {
          *nabla_weights[l] += *delta_nabla_weights[l] / mini_batch_size;
          *rmsprop_weights_cache[l] = 
@@ -610,14 +583,14 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 // Update weights and biases for eacy network layer by their nabla
 // values averaged over the current mini-batch:
 
-   for(unsigned int l = 0; l < num_layers; l++)
+   for(unsigned int l = 0; l < n_layers; l++)
    {
       *biases[l] -= learning_rate * (*nabla_biases[l]);
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
 
    const double epsilon = 1E-5;
-   for(unsigned int l = 0; l < num_layers - 1; l++)
+   for(unsigned int l = 0; l < n_layers - 1; l++)
    {
       genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
       denom.hadamard_sum(epsilon);
@@ -658,11 +631,11 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 // Initialize "instantaneous" (i.e. just for curr_data_pair) weight
 // and bias gradients to zero:
 
-   for(unsigned int l = 0; l < num_layers; l++)
+   for(unsigned int l = 0; l < n_layers; l++)
    {
       delta_nabla_biases[l]->clear_values();
    }
-   for(unsigned int l = 0; l < num_layers - 1; l++)
+   for(unsigned int l = 0; l < n_layers - 1; l++)
    {
       delta_nabla_weights[l]->clear_values();
    }
@@ -671,8 +644,8 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 // Eqn BP1:
 
-   int curr_layer = num_layers - 1;
-//   cout << "curr_layer = num-layers - 1 = " << num_layers - 1 << endl;
+   int curr_layer = n_layers - 1;
+//   cout << "curr_layer = num-layers - 1 = " << n_layers - 1 << endl;
 
 //   double curr_cost = -log(a[curr_layer]->get(y));
 //    cout << "  Current training sample cost = " << curr_cost << endl;
@@ -684,7 +657,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       delta[curr_layer]->put( j, curr_activation );
    }
    
-   for(int curr_layer = num_layers-1; curr_layer >= 1; curr_layer--)
+   for(int curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
       int prev_layer = curr_layer - 1;
 //      cout << "curr_layer = " << curr_layer

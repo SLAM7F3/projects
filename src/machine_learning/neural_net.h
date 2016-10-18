@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 2/8/16; 2/9/16; 10/17/16
+// Last modified on 2/8/16; 2/9/16; 10/17/16; 10/18/16
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -60,20 +60,19 @@ class neural_net
    void plot_loss_history();
    void plot_accuracies_history();
    double evaluate_model_on_test_set();
-   void print_test_accuracy_history();
    std::vector<int>& get_incorrect_classifications();
 
   private: 
 
-   unsigned int num_layers, n_training_samples, n_test_samples;
+   unsigned int n_layers, n_training_samples, n_test_samples;
    unsigned int n_classes;
    std::vector<int> layer_dims;
 
    std::vector<genvector*> biases, nabla_biases, delta_nabla_biases;
-//	Bias STL vectors are nonzero for layers 1 thru num_layers-1
+//	Bias STL vectors are nonzero for layers 1 thru n_layers-1
    std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
-//      {num_layers-2, num_layers-1}
+//      {n_layers-2, n_layers-1}
 
    std::vector<genmatrix*> rmsprop_weights_cache;
 

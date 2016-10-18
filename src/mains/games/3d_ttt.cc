@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program 3D_TTT
 // ==========================================================================
-// Last updated on 8/29/16; 9/12/16; 10/4/16; 10/5/16
+// Last updated on 8/29/16; 9/12/16; 10/4/16; 10/5/16; 10/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -25,7 +25,17 @@ int main (int argc, char* argv[])
 //   tictac3d* ttt_ptr = new tictac3d(2,1);
    tictac3d* ttt_ptr = new tictac3d(4,1);
 
-   reinforce* reinforce_ptr = new reinforce();
+   int Din = 4 * 4;	// Input dimensionality
+   int H = 200;		// Number of hidden layer neurons
+   int Dout = 4 * 4;	// Output dimensionality
+   int Tmax = 64;
+
+   vector<int> layer_dims;
+   layer_dims.push_back(Din);
+   layer_dims.push_back(H);
+   layer_dims.push_back(Dout);
+
+   reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
    cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
    reinforce_ptr->initialize_episode();
 

@@ -77,7 +77,6 @@ int main (int argc, char* argv[])
           rmsprop_decay_rate);
    NN.plot_loss_history();
    NN.plot_accuracies_history();
-//    NN.print_test_accuracy_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
 
 // Generate metafile plot of training samples, testing samples and

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/12/16
+// Last updated on 10/12/16; 10/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -26,19 +26,24 @@ int main (int argc, char* argv[])
 //   int nsize = 3;
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize,1);
-   genvector* output_action_ptr = new genvector(nsize * nsize);
 
-   reinforce* reinforce_ptr = new reinforce();
-   cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
+   int Din = nsize * nsize;	// Input dimensionality
+   int H = 100;			// Number of hidden layer neurons
+   int Dout = nsize * nsize;	// Output dimensionality
+   int Tmax = 64;
+
+   vector<int> layer_dims;
+   layer_dims.push_back(Din);
+   layer_dims.push_back(H);
+   layer_dims.push_back(Dout);
+   reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 
    int n_max_episodes = 1 * 1000000;
-//   int n_max_episodes = 10 * 1000000;
    int n_losses = 0;
    int n_wins = 0;
 
    while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
-
       ttt_ptr->reset_board_state();
       reinforce_ptr->initialize_episode();
 
@@ -49,16 +54,11 @@ int main (int argc, char* argv[])
          if(ttt_ptr->get_game_over()) break;
 //       usleep(250 * 1000);
 
-         reinforce_ptr->compute_current_action(
-            ttt_ptr->get_board_state_ptr(), output_action_ptr);
-         for(unsigned int c = 0; c < output_action_ptr->get_mdim(); c++)
-         {
-            if(output_action_ptr->get(c) > 0)
-            {
-               cout << "c = " << c << " action = " << output_action_ptr->get(c)
-                    << endl;
-            }
-         }
+         int output_action = reinforce_ptr->compute_current_action(
+            ttt_ptr->get_board_state_ptr());
+         cout << "output_action = " << output_action << endl;
+
+// Step the environment and then retrieve new reward measurements:
 
          bool print_flag = false;
 //         bool print_flag = true;
@@ -110,7 +110,6 @@ int main (int argc, char* argv[])
 
    delete ttt_ptr;
    delete reinforce_ptr;
-   delete output_action_ptr;
 }
 
 
