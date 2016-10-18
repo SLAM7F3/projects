@@ -12,6 +12,7 @@
 #include "general/outputfuncs.h"
 #include "machine_learning/reinforce.h"
 #include "games/tictac3d.h"
+#include "time/timefuncs.h"
 
 int main (int argc, char* argv[])
 {
@@ -21,6 +22,7 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
+   timefunc::initialize_timeofday_clock();
 //    nrfunc::init_time_based_seed();
 
 //   int nsize = 3;
@@ -29,7 +31,7 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    int Din = nsize * nsize;	// Input dimensionality
-   int H = 200;			// Number of hidden layer neurons
+   int H = 150;			// Number of hidden layer neurons
    int Dout = nsize * nsize;	// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
@@ -39,7 +41,9 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 
-   int n_max_episodes = 1 * 1000000;
+//   int n_max_episodes = 1 * 1000000;
+   int n_max_episodes = 200000;
+   int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;
    double curr_reward;
@@ -51,7 +55,7 @@ int main (int argc, char* argv[])
 
       int curr_episode_number = reinforce_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
-         reinforce_ptr->get_episode_number(), 1000, n_max_episodes);
+         reinforce_ptr->get_episode_number(), n_update, n_max_episodes);
       
       while(true)
       {
@@ -117,7 +121,7 @@ int main (int argc, char* argv[])
       
       reinforce_ptr->increment_episode_number();
       int n_episodes = reinforce_ptr->get_episode_number();
-      if(n_episodes % 100 == 0)
+      if(curr_episode_number % n_update == 0)
       {
          double win_frac = double(n_wins) / n_episodes;
          cout << "n_episodes = " << n_episodes 

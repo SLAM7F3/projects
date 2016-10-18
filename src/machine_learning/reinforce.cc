@@ -28,11 +28,15 @@ using std::vector;
 
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
-   batch_size = 5;	// Perform parameter update after this many episodes
-   learning_rate = 0.001;	
-   lambda = 0.001;	// L2 regularization coefficient
+   batch_size = 10;	// Perform parameter update after this many episodes
+//   batch_size = 5;	// Perform parameter update after this many episodes
+   learning_rate = 1E-3;  // Better than 1E-4
+//   learning_rate = 1E-4;
+   lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
+//   lambda = 0.001;	// L2 regularization coefficient
    gamma = 0.99;	// Discount factor for reward
-   rmsprop_decay_rate = 0.99; 
+   rmsprop_decay_rate = 0.95; 
+//   rmsprop_decay_rate = 0.99; 
    
    running_reward = 0;
    reward_sum = 0;
@@ -466,7 +470,7 @@ void reinforce::update_weights(bool episode_finished_flag)
    reward_sum = 0;
 
    bool print_flag = false;
-   if(episode_number % 500 == 0) print_flag = true;
+   if(episode_number % 10000 == 0) print_flag = true;
    if(print_flag)
    {
       cout << "episode_number = " << episode_number << endl;
