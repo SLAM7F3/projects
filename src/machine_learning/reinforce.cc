@@ -32,7 +32,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    learning_rate = 0.001;	
    lambda = 0.001;	// L2 regularization coefficient
    gamma = 0.99;	// Discount factor for reward
-   decay_rate = 0.99;	// Decay factor for RMSProp leaky sum of grad**2
+   rmsprop_decay_rate = 0.99; 
    
    running_reward = 0;
    reward_sum = 0;
@@ -321,7 +321,6 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
    }
 
    y->put(curr_timestep, a_star);
-
    return a_star;
 }
 
@@ -332,7 +331,6 @@ void reinforce::record_reward_for_action(double curr_reward)
    reward->put(curr_timestep, curr_reward);
    curr_timestep++;
 }
-
 
 // ---------------------------------------------------------------------
 void reinforce::update_weights(bool episode_finished_flag)
@@ -371,60 +369,44 @@ void reinforce::update_weights(bool episode_finished_flag)
 
    policy_backward();
 
-/*      
+// Accumulate weights' gradients for each network layer:
 
-// Accumulate dW1 and dW2 gradients over batch:
-
-   *dW0_buffer_ptr += *dW0_ptr;
-   *dW1_buffer_ptr += *dW1_ptr;
-            
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      *nabla_weights[l] += *delta_nabla_weights[l] / T;
+      *rmsprop_weights_cache[l] = 
+         rmsprop_decay_rate * (*rmsprop_weights_cache[l])
+         + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
+   }
+   
 // Perform RMSprop parameter update every batch_size episodes:
 
    episode_number++;
    if(episode_number % batch_size == 0)
    {
-      sqr_dW0_buffer_ptr->elementwise_power(*dW0_buffer_ptr, 2);
-      sqr_dW1_buffer_ptr->elementwise_power(*dW1_buffer_ptr, 2);
-
-//  MeanSquare(w,t) = 0.9 MeanSquare(w,t-1) + 0.1 (dE(t)/dw)**2
-
-      *rmsprop0_ptr = decay_rate * (*rmsprop0_ptr) +
-         (1 - decay_rate) * (*sqr_dW0_buffer_ptr);
-      *rmsprop1_ptr = decay_rate * (*rmsprop1_ptr) +
-         (1 - decay_rate) * (*sqr_dW1_buffer_ptr);
-
-// Dividing gradient by sqrt(MeanSquare(w,t)) significantly improves learning:
-
-      sqrt_rmsprop0_ptr->elementwise_power(*rmsprop0_ptr, 0.5);
-      sqrt_rmsprop1_ptr->elementwise_power(*rmsprop1_ptr, 0.5);
-
-      const double TINY = 1E-5;
-      for(unsigned int py = 0; py < W0_ptr->get_mdim(); py++)
+      for(int l = 0; l < n_layers - 1; l++)
       {
-         for(unsigned int px = 0; px < W0_ptr->get_ndim(); px++)
-         {
-            double term1 = W0_ptr->get(px, py);
-            double denom = sqrt_rmsprop0_ptr->get(px, py) + TINY;
-            double term2 = learning_rate * rmsprop0_ptr->get(px,py)/denom;
-            W0_ptr->put(px, py, term1 + term2);
-         }
+         *rmsprop_weights_cache[l] = 
+            rmsprop_decay_rate * (*rmsprop_weights_cache[l])
+            + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
       }
 
-      for(unsigned int py = 0; py < W1_ptr->get_mdim(); py++)
-      {
-         for(unsigned int px = 0; px < W1_ptr->get_ndim(); px++)
-         {
-            double term1 = W1_ptr->get(px, py);
-            double denom = sqrt_rmsprop1_ptr->get(px, py) + TINY;
-            double term2 = learning_rate * rmsprop1_ptr->get(px,py)/denom;
-            W1_ptr->put(px, py, term1 + term2);
-         }
-      }
+// Update weights and biases for eacy network layer by their nabla
+// values averaged over the current mini-batch:
 
-      dW0_buffer_ptr->clear_values();
-      dW1_buffer_ptr->clear_values();
+      const double epsilon = 1E-5;
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
+         denom.hadamard_sum(epsilon);
+      
+         *weights[l] -= learning_rate * 
+            nabla_weights[l]->hadamard_division(denom);
+         nabla_weights[l]->clear_values();
+
+//      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
+      }
    } // episode % batch_size == 0 conditional
-*/
 
    if(running_reward == 0)
    {
@@ -439,4 +421,3 @@ void reinforce::update_weights(bool episode_finished_flag)
    cout << "Running reward mean = " << running_reward << endl;
    reward_sum = 0;
 }
-

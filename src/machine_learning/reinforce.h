@@ -46,7 +46,7 @@ class reinforce
    double learning_rate;
    double lambda;	// L2 regularization coefficient
    double gamma;	// Discount factor for reward
-   double decay_rate;	// Decay factor for RMSProp leaky sum of grad**2
+   double rmsprop_decay_rate; // Decay factor for RMSProp leaky sum of grad**2
 
    std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
@@ -80,13 +80,10 @@ class reinforce
    double reward_sum;
    int episode_number;
 
-
    void policy_forward(int t, genvector& x_input);
    void get_softmax_action_probs(int t) const;
    void discount_rewards();
    void policy_backward();
-
-
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
