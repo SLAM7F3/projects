@@ -92,10 +92,6 @@ int main (int argc, char* argv[])
          {
             break;
          }
-         else
-         {
-
-         }
       } // !game_over while loop
 
       if(ttt_ptr->get_score() == -1)
@@ -107,15 +103,6 @@ int main (int argc, char* argv[])
          n_wins++;
       }
 
-//      ttt_ptr->display_board_state();
-//      cout << "*board_state_ptr = " 
-//           << *(ttt_ptr->get_board_state_ptr()) << endl;
-//      outputfunc::enter_continue_char();
-      
-//      cout << "Final score = " << ttt_ptr->get_score() << endl;
-//      cout << "GAME OVER" << endl << endl;
-
-
       bool episode_finished_flag = true;
       reinforce_ptr->update_weights(episode_finished_flag);
       
@@ -123,6 +110,10 @@ int main (int argc, char* argv[])
       int n_episodes = reinforce_ptr->get_episode_number();
       if(curr_episode_number % n_update == 0)
       {
+         cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
+              << endl;
+         ttt_ptr->display_board_state();
+         
          double win_frac = double(n_wins) / n_episodes;
          cout << "n_episodes = " << n_episodes 
               << " n_losses = " << n_losses
@@ -130,7 +121,6 @@ int main (int argc, char* argv[])
               << " win_frac = " << win_frac
               << endl;
       }
-
    } // n_episodes < n_max_episodes while loop
 
    int n_episodes = reinforce_ptr->get_episode_number();

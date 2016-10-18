@@ -462,11 +462,9 @@ void reinforce::update_weights(bool episode_finished_flag)
    }
    else
    {
-      running_reward = 0.99 * running_reward + 0.01 * reward_sum;
+      running_reward = 0.90 * running_reward + 0.10 * reward_sum;
    }
-      
 //    cout << "Episode reward total was " << reward_sum << endl;
-
    reward_sum = 0;
 
    bool print_flag = false;
@@ -478,7 +476,6 @@ void reinforce::update_weights(bool episode_finished_flag)
       cout << "  avg_T = " << avg_T << endl;
       cout << "  Running reward mean = " << running_reward << endl;
    }
-
 }
 
 // ---------------------------------------------------------------------
