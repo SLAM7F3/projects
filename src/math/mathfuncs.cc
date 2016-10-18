@@ -1,7 +1,7 @@
 // ==========================================================================
 // "Primitive" math functions 
 // ==========================================================================
-// Last updated on 8/10/15; 8/12/15; 2/10/16; 8/23/16
+// Last updated on 8/12/15; 2/10/16; 8/23/16; 10/18/16
 // ==========================================================================
 
 #include <algorithm>
@@ -31,6 +31,7 @@
 #include "math/twovector.h"
 
 using std::cout;
+using std::deque;
 using std::endl;
 using std::flush;
 using std::ifstream;
@@ -2554,6 +2555,36 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
    }
 
    void mean_and_std_dev(const vector<double>& A,double& mean,double& std_dev)
+   {
+      unsigned int Asize=A.size();
+      if (Asize==1) 
+      {
+         mean=A[0];
+         std_dev=0;
+         return;
+      }
+      else if (Asize==2)
+      {
+         mean=0.5*(A[0]+A[1]);
+         std_dev=0.5*fabs(A[0]-A[1]);
+      }
+      else
+      {
+         mean=0;
+         double avg_sqr=0;
+         for (unsigned int i=0; i<Asize; i++)
+         {
+            mean += A[i];
+            avg_sqr += A[i]*A[i];
+         }
+         mean /= Asize;
+         avg_sqr /= Asize;
+            
+         std_dev=sqrt(avg_sqr-sqr(mean));
+      }
+   }
+
+   void mean_and_std_dev(const deque<double>& A,double& mean,double& std_dev)
    {
       unsigned int Asize=A.size();
       if (Asize==1) 

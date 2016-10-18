@@ -97,7 +97,6 @@ int tictac3d::get_cell_value(int px, int py, int pz) const
    return curr_board_state.at(p);
 }
 
-
 // Boolean member function set_cell_value() returns false if specified
 // cell is already occupied
 

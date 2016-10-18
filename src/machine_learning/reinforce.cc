@@ -357,20 +357,12 @@ void reinforce::update_weights(bool episode_finished_flag)
 
 //   cout << "inside reinforce::update_weights()" << endl;
 
-   
    T_values.push_back(T);
-   if(T_values.size() > 10)
+   if(T_values.size() > 1000)
    {
       T_values.pop_front();
    }
-
-   double avg_T = 0;
-   for(unsigned int t = 0; t < T_values.size(); t++)
-   {
-      avg_T += T_values[t];
-   }
-   avg_T /= T_values.size();
-
+   
 // Compute the discounted reward backwards through time:
 
    discount_rewards();
@@ -471,9 +463,10 @@ void reinforce::update_weights(bool episode_finished_flag)
    if(episode_number % 10000 == 0) print_flag = true;
    if(print_flag)
    {
+      double mu_T, sigma_T;
+      mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
       cout << "episode_number = " << episode_number << endl;
-      cout << "  T = " << T << endl;
-      cout << "  avg_T = " << avg_T << endl;
+      cout << "  T = " << mu_T << " +/- " << sigma_T << endl;
       cout << "  Running reward mean = " << running_reward << endl;
    }
 }

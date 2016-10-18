@@ -31,12 +31,14 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    int Din = nsize * nsize;	// Input dimensionality
-   int H = 150;			// Number of hidden layer neurons
+//   int H = 150;			// Number of hidden layer neurons
+   int H = 64;			// Number of hidden layer neurons
    int Dout = nsize * nsize;	// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
+   layer_dims.push_back(H);
    layer_dims.push_back(H);
    layer_dims.push_back(Dout);
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);

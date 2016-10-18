@@ -43,7 +43,7 @@ class reinforce
 
    int curr_timestep;
    int T;		// number of time steps in current episode
-   std::deque<int> T_values;  // Holds latest T values
+   std::deque<double> T_values;  // Holds latest T values
    int Tmax;
    int batch_size;  	// Perform parameter update after this many episodes
    double learning_rate;

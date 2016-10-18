@@ -9,12 +9,13 @@
 // ==========================================================================
 // Header file for stand-alone "primitive" math functions.
 // ==========================================================================
-// Last updated on 8/10/15; 8/12/15; 2/10/16; 8/23/16
+// Last updated on 8/12/15; 2/10/16; 8/23/16; 10/18/16
 // ==========================================================================
 
 #ifndef MATHFUNCS_H
 #define MATHFUNCS_H
 
+#include <deque>
 #include <iostream>
 #include <vector>
 #include <flann/flann.hpp>
@@ -254,6 +255,8 @@ namespace mathfunc
    double std_dev(const std::vector<double>& A);
    void mean_and_std_dev(
       const std::vector<double>& A,double& mean,double& std_dev);
+   void mean_and_std_dev(
+      const std::deque<double>& A,double& mean,double& std_dev);
 
    double variance(double A[],const int Nsize);
    double variance(double A[],double w[],const int Nsize);
