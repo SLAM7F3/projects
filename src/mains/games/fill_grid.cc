@@ -21,16 +21,17 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
-   nrfunc::init_time_based_seed();
+//    nrfunc::init_time_based_seed();
 
-//   int nsize = 3;
-   int nsize = 4;
-   tictac3d* ttt_ptr = new tictac3d(nsize,1);
+   int nsize = 3;
+//   int nsize = 4;
+   int n_zlevels = 1;
+   tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    int Din = nsize * nsize;	// Input dimensionality
-   int H = 100;			// Number of hidden layer neurons
+   int H = 5;			// Number of hidden layer neurons
    int Dout = nsize * nsize;	// Output dimensionality
-   int Tmax = 64;
+   int Tmax = nsize * nsize * n_zlevels;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -41,6 +42,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1 * 1000000;
    int n_losses = 0;
    int n_wins = 0;
+   double curr_reward;
 
    while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
@@ -50,9 +52,8 @@ int main (int argc, char* argv[])
       while(true)
       {
          ttt_ptr->get_random_legal_AI_move();
-//         ttt_ptr->display_board_state();
+         ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over()) break;
-//       usleep(250 * 1000);
 
          int output_action = reinforce_ptr->compute_current_action(
             ttt_ptr->get_board_state_ptr());
@@ -60,14 +61,31 @@ int main (int argc, char* argv[])
 
 // Step the environment and then retrieve new reward measurements:
 
-         bool print_flag = false;
+         int px = output_action % nsize;
+         int py = output_action / nsize;
+         int pz = 0;
+
+         cout << "px = " << px << " py = " << py << endl;
+
+         curr_reward = ttt_ptr->set_agent_move(px, py, pz);
+         reinforce_ptr->record_reward_for_action(curr_reward);
+         cout << "curr_reward = " << curr_reward << endl;
+
+//         bool print_flag = false;
 //         bool print_flag = true;
-         ttt_ptr->get_random_agent_move(print_flag);
-//         ttt_ptr->display_board_state();
-         if(ttt_ptr->get_game_over()) break;
+//         ttt_ptr->get_random_agent_move(print_flag);
+
+         ttt_ptr->display_board_state();
+         if(ttt_ptr->get_game_over())
+         {
+            break;
+         }
+         else
+         {
+
+         }
       } // !game_over while loop
 
-      
       if(ttt_ptr->get_score() == -1)
       {
          n_losses++;
@@ -86,6 +104,9 @@ int main (int argc, char* argv[])
 //      cout << "GAME OVER" << endl << endl;
 
 
+      bool episode_finished_flag = true;
+      reinforce_ptr->update_weights(episode_finished_flag);
+      
       reinforce_ptr->increment_episode_number();
       int n_episodes = reinforce_ptr->get_episode_number();
       if(n_episodes % 100 == 0)

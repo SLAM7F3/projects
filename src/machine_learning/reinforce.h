@@ -33,6 +33,7 @@ class reinforce
    int compute_current_action(genvector* input_state_ptr);
    void record_reward_for_action(double curr_reward);
    void update_weights(bool episode_finished_flag);
+   void print_weights();
 
   private:
 

@@ -138,17 +138,17 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 void reinforce::policy_forward(int t, genvector& x_input)
 {
    a[0]->put_column(t, x_input);
-//    cout << "inside policy_forward, x_input = " << *x_input << endl;
+   cout << "inside policy_forward, x_input = " << x_input << endl;
 
    for(int l = 0; l < n_layers-1; l++)
    {
-//      cout << "l = " << l << endl;
+      cout << "l = " << l << endl;
       genmatrix* curr_weights = weights[l];
       genvector z_lplus1_t(*curr_weights * a[l]->get_column(t));
       genvector a_lplus1_t(z_lplus1_t.get_mdim());
 
       z[l+1]->put_column(t, z_lplus1_t);
-//      cout << "z[l+1, t] = " << z[l+1]->get_column(t) << endl;
+      cout << "z[l+1, t] = " << z[l+1]->get_column(t) << endl;
 
 // Perform soft-max classification on final-layer's weighted inputs:
 
@@ -160,9 +160,11 @@ void reinforce::policy_forward(int t, genvector& x_input)
       {
          machinelearning_func::ReLU(z_lplus1_t, a_lplus1_t);
       }
-//       cout << "a[l+1] = " << a[l+1]->get_column(t) << endl;
       a[l+1]->put_column(t, a_lplus1_t);
+      cout << "a[l+1] = " << a[l+1]->get_column(t) << endl;
    }
+
+   cout << "At end of policy_forward()" << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -180,6 +182,8 @@ void reinforce::discount_rewards()
    {
       running_add = gamma * running_add + reward->get(t);
       discounted_reward->put(t, running_add);
+      cout << "t = " << t << " discounted_reward = "
+           << running_add << endl;
    }
 }
 
@@ -194,12 +198,12 @@ void reinforce::policy_backward()
       delta_nabla_weights[l]->clear_values();
    }
 
+   int curr_layer = n_layers - 1;
    for(int t = 0; t < T; t++)
    {
       
 // Eqn BP1:
 
-      int curr_layer = n_layers - 1;
       for(int j = 0; j < layer_dims[curr_layer]; j++)
       {
          double curr_activation = a[curr_layer]->get(j, t);
@@ -212,10 +216,15 @@ void reinforce::policy_backward()
             j, t, discounted_reward->get(t) * curr_activation);
       }
    } // loop over index t
+   cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
+        << endl;
    
-   for(int curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
+   for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
       int prev_layer = curr_layer - 1;
+
+      cout << "prev_layer = " << prev_layer 
+           << " curr_layer = " << curr_layer << endl;
 
 // Eqn BP2A:
 
@@ -224,6 +233,9 @@ void reinforce::policy_backward()
 
       *delta_prime[prev_layer] = weights[prev_layer]->transpose() * 
          (*delta_prime[curr_layer]);
+
+      cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
+           << endl;
 
 // Eqn BP2B:
       for(int j = 0; j < layer_dims[prev_layer]; j++)
@@ -254,6 +266,9 @@ void reinforce::policy_backward()
 // ---------------------------------------------------------------------
 void reinforce::initialize_episode()
 {
+   outputfunc::enter_continue_char();
+   cout << "Initializing episode ===================================" 
+        << endl;
    for(unsigned int i = 0; i < z.size(); i++)
    {
       z[i]->clear_values();
@@ -273,6 +288,7 @@ void reinforce::initialize_episode()
    }
    
    curr_timestep = 0;
+   T = 0;
 }
 
 // ---------------------------------------------------------------------
@@ -329,13 +345,20 @@ void reinforce::record_reward_for_action(double curr_reward)
 {
    reward_sum += curr_reward;
    reward->put(curr_timestep, curr_reward);
+   cout << "curr_timestep = " << curr_timestep 
+        << " curr_reward = " << curr_reward << endl;
    curr_timestep++;
+   T++;
 }
 
 // ---------------------------------------------------------------------
 void reinforce::update_weights(bool episode_finished_flag)
 {
    if(!episode_finished_flag) return;
+
+   cout << "inside reinforce::update_weights()" << endl;
+   cout << "episode_number = " << episode_number << endl;
+   cout << "T = " << T << endl;
 
 // Compute the discounted reward backwards through time:
 
@@ -350,30 +373,43 @@ void reinforce::update_weights(bool episode_finished_flag)
       mean += discounted_reward->get(t);
    }
    mean /= T;
-      
-   double sigmasqr = 0;
-   for(int t = 0; t < T; t++)
-   {
-      double curr_reward = discounted_reward->get(t) - mean;
-      discounted_reward->put(t, curr_reward);
-      sigmasqr += sqr(curr_reward);
-   }
-   sigmasqr /= T;
-   double sigma = sqrt(sigmasqr);
+   cout << "mean = " << mean << endl;
 
+   double sigma = 1;
+   if(T > 1)
+   {
+      double sigmasqr = 0;
+      for(int t = 0; t < T; t++)
+      {
+         double curr_reward = discounted_reward->get(t) - mean;
+         discounted_reward->put(t, curr_reward);
+         sigmasqr += sqr(curr_reward);
+      }
+      sigmasqr /= T;
+      cout << "sigmasqr = " << sigmasqr << endl;
+      sigma = sqrt(sigmasqr);
+   }
+   
    for(int t = 0; t < T; t++)
    {
       double curr_reward = discounted_reward->get(t) / sigma;
       discounted_reward->put(t, curr_reward);
+
+      cout << "t = " << t << " discounted_reward = "
+           << discounted_reward->get(t) << endl;
    }
 
    policy_backward();
 
 // Accumulate weights' gradients for each network layer:
 
+   cout << "T = " << T << endl;
    for(int l = 0; l < n_layers - 1; l++)
    {
       *nabla_weights[l] += *delta_nabla_weights[l] / T;
+      cout << "l = " << l << " nabla_weights[l] = " << *nabla_weights[l]
+           << endl;
+
       *rmsprop_weights_cache[l] = 
          rmsprop_decay_rate * (*rmsprop_weights_cache[l])
          + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
@@ -381,7 +417,6 @@ void reinforce::update_weights(bool episode_finished_flag)
    
 // Perform RMSprop parameter update every batch_size episodes:
 
-   episode_number++;
    if(episode_number % batch_size == 0)
    {
       for(int l = 0; l < n_layers - 1; l++)
@@ -389,6 +424,9 @@ void reinforce::update_weights(bool episode_finished_flag)
          *rmsprop_weights_cache[l] = 
             rmsprop_decay_rate * (*rmsprop_weights_cache[l])
             + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
+
+         cout << "l = " << l << " rmsprop_weights_cache[l] = "
+              << *rmsprop_weights_cache[l] << endl;
       }
 
 // Update weights and biases for eacy network layer by their nabla
@@ -399,13 +437,15 @@ void reinforce::update_weights(bool episode_finished_flag)
       {
          genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
          denom.hadamard_sum(epsilon);
+         cout << "l = " << l << " denom = " << denom << endl;
+
       
          *weights[l] -= learning_rate * 
             nabla_weights[l]->hadamard_division(denom);
          nabla_weights[l]->clear_values();
-
-//      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
       }
+
+      print_weights();
    } // episode % batch_size == 0 conditional
 
    if(running_reward == 0)
@@ -421,3 +461,14 @@ void reinforce::update_weights(bool episode_finished_flag)
    cout << "Running reward mean = " << running_reward << endl;
    reward_sum = 0;
 }
+
+// ---------------------------------------------------------------------
+void reinforce::print_weights()
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      cout << "layer = " << l << endl;
+      cout << "weights[l] = " << *weights[l] << endl;
+   }
+}
+

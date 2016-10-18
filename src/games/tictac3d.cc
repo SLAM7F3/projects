@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 8/28/16; 8/29/16; 9/12/16; 10/12/16
+// Last modified on 8/29/16; 9/12/16; 10/12/16; 10/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -173,6 +173,12 @@ double tictac3d::get_random_agent_move(bool print_flag)
    int px = mathfunc::getRandomInteger(n_size);
    int py = mathfunc::getRandomInteger(n_size);
    int pz = 0;
+   return set_agent_move(px, py, pz, print_flag);
+}
+
+// ---------------------------------------------------------------------
+double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
+{
 
 // Cell values:
 
