@@ -41,8 +41,8 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 
-//   int n_max_episodes = 1 * 1000000;
-   int n_max_episodes = 200000;
+   int n_max_episodes = 1 * 1000000;
+//   int n_max_episodes = 200000;
    int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;
