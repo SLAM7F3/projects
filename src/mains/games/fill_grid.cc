@@ -23,13 +23,13 @@ int main (int argc, char* argv[])
 
 //    nrfunc::init_time_based_seed();
 
-   int nsize = 3;
-//   int nsize = 4;
+//   int nsize = 3;
+   int nsize = 4;
    int n_zlevels = 1;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    int Din = nsize * nsize;	// Input dimensionality
-   int H = 5;			// Number of hidden layer neurons
+   int H = 200;			// Number of hidden layer neurons
    int Dout = nsize * nsize;	// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
@@ -49,33 +49,41 @@ int main (int argc, char* argv[])
       ttt_ptr->reset_board_state();
       reinforce_ptr->initialize_episode();
 
+      int curr_episode_number = reinforce_ptr->get_episode_number();
+      outputfunc::update_progress_and_remaining_time(
+         reinforce_ptr->get_episode_number(), 1000, n_max_episodes);
+      
       while(true)
       {
          ttt_ptr->get_random_legal_AI_move();
-         ttt_ptr->display_board_state();
-         if(ttt_ptr->get_game_over()) break;
+///          ttt_ptr->display_board_state();
+         if(ttt_ptr->get_game_over())
+         {
+            curr_reward = 1;
+            reinforce_ptr->record_reward_for_action(curr_reward);
+            break;
+         }
 
          int output_action = reinforce_ptr->compute_current_action(
             ttt_ptr->get_board_state_ptr());
-         cout << "output_action = " << output_action << endl;
+//          cout << "output_action = " << output_action << endl;
 
 // Step the environment and then retrieve new reward measurements:
 
          int px = output_action % nsize;
          int py = output_action / nsize;
          int pz = 0;
-
-         cout << "px = " << px << " py = " << py << endl;
+         // cout << "px = " << px << " py = " << py << endl;
 
          curr_reward = ttt_ptr->set_agent_move(px, py, pz);
          reinforce_ptr->record_reward_for_action(curr_reward);
-         cout << "curr_reward = " << curr_reward << endl;
+//          cout << "curr_reward = " << curr_reward << endl;
 
 //         bool print_flag = false;
 //         bool print_flag = true;
 //         ttt_ptr->get_random_agent_move(print_flag);
 
-         ttt_ptr->display_board_state();
+//          ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over())
          {
             break;
