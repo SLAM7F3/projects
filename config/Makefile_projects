@@ -293,10 +293,10 @@ MYLIBS = $(LIBDIR)/libspace.a \
 	 $(LIBDIR)/libgeometry.a \
 	 $(LIBDIR)/libdelaunay.a \
 	 $(LIBDIR)/libnetwork.a \
+	 $(LIBDIR)/libmachinelearning.a \
 	 $(LIBDIR)/libplot.a \
 	 $(LIBDIR)/libwaveform.a \
 	 $(LIBDIR)/libsocket.a \
-	 $(LIBDIR)/libmachinelearning.a \
 	 $(LIBDIR)/libfilter.a \
 	 $(LIBDIR)/libnumerical.a \
 	 $(LIBDIR)/libxml.a \

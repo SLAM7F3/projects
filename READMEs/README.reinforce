@@ -1,0 +1,44 @@
+==========================================================================
+Reinforcement learning notes
+==========================================================================
+Last updated on 10/19/16
+==========================================================================
+
+*.  On 10/19/16, we found the following set of hyperparameters which yields
+perfect agent learning to not place any of its TT pieces into already
+occupied cells in a 4x4 grid:
+
+   batch_size = 10;	// Perform parameter update after this many episodes
+    learning_rate = 3E-4;  // Much better than 1E-4 !!!
+   lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
+   gamma = 0.90;	// Discount factor for reward
+   rmsprop_decay_rate = 0.95; 
+   
+
+   int nsize = 4;
+   int n_zlevels = 1;
+   tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
+
+   int Din = nsize * nsize;	// Input dimensionality
+   int H = 200;			// Number of hidden layer neurons
+   int Dout = nsize * nsize;	// Output dimensionality
+   int Tmax = nsize * nsize * n_zlevels;
+
+   vector<int> layer_dims;
+   layer_dims.push_back(Din);
+   layer_dims.push_back(H);
+   layer_dims.push_back(Dout);
+   reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax)
+
+episode_number = 620000
+  T = 8 +/- 0
+  Running reward mean = 1
+n_filled_cells = 16
+
+ O | X | O | O 
+----------------
+ O | X | X | X 
+----------------
+ O | X | X | O 
+----------------
+ X | O | O | X 

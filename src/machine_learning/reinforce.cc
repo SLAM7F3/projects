@@ -5,11 +5,15 @@
 // ==========================================================================
 
 #include <string>
+#include "filter/filterfuncs.h"
 #include "math/genmatrix.h"
 #include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
+#include "plot/metafile.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
+#include "general/stringfuncs.h"
+#include "general/sysfuncs.h"
 
 using std::cin;
 using std::cout;
@@ -28,6 +32,7 @@ using std::vector;
 
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
+   cum_time_counter = 0;
 
 // This particular set of hyperparameters yields perfect reinforcement
 // learning for an agent not to place any of its pieces into already
@@ -182,6 +187,21 @@ void reinforce::policy_forward(int t, genvector& x_input)
 void reinforce::get_softmax_action_probs(int t) const
 {
    *p_action = a[n_layers-1]->get_column(t);
+}
+
+// ---------------------------------------------------------------------
+double reinforce::compute_loss(int t) const
+{
+   get_softmax_action_probs(t);
+   int a_star = y->get(t);
+   double curr_prob = p_action->get(a_star);
+   double curr_loss = 15;
+   double exp_neg_15 = 3.05902321E-7;
+   if(curr_prob > exp_neg_15)
+   {
+      curr_loss = -log(curr_prob);
+   }
+   return curr_loss;
 }
 
 // ---------------------------------------------------------------------
@@ -348,6 +368,12 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
    }
 
    y->put(curr_timestep, a_star);
+
+   if(cum_time_counter%10000 == 0)
+   {
+      time_samples.push_back(cum_time_counter);
+      loss_values.push_back(compute_loss(curr_timestep));
+   }
    return a_star;
 }
 
@@ -358,6 +384,8 @@ void reinforce::record_reward_for_action(double curr_reward)
    reward->put(curr_timestep, curr_reward);
 //   cout << "curr_timestep = " << curr_timestep 
 //        << " curr_reward = " << curr_reward << endl;
+
+   cum_time_counter++;
    curr_timestep++;
    T++;
 }
@@ -491,5 +519,58 @@ void reinforce::print_weights()
       cout << "layer = " << l << endl;
       cout << "weights[l] = " << *weights[l] << endl;
    }
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of loss values versus time step samples.
+
+void reinforce::plot_loss_history()
+{
+
+// Temporally smooth noisy loss values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   vector<double> smoothed_loss_values;
+   filterfunc::brute_force_filter(
+      loss_values, h, smoothed_loss_values, wrap_around_input_values);
+
+   metafile curr_metafile;
+   string meta_filename="loss_history";
+   string title="Loss vs RMSprop model training";
+   string subtitle=
+      "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "; gamma="+stringfunc::number_to_string(gamma,3)+
+      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   string x_label="Time step";
+   string y_label="Loss";
+   double min_loss = 0;
+   double max_loss = mathfunc::maximal_value(loss_values);
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, time_samples.back(), 
+      min_loss, max_loss);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.5);
+   curr_metafile.set_ysubtic(0.25);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(time_samples, loss_values, colorfunc::red);
+   curr_metafile.write_curve(time_samples, smoothed_loss_values, 
+                             colorfunc::cyan);
+   curr_metafile.set_thickness(3);
+
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
 }
 

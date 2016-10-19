@@ -123,6 +123,12 @@ int main (int argc, char* argv[])
               << " win_frac = " << win_frac
               << endl;
       }
+
+      if(reinforce_ptr->get_episode_number() % 50000 == 0)
+      {
+         reinforce_ptr->plot_loss_history();
+      }
+
    } // n_episodes < n_max_episodes while loop
 
    int n_episodes = reinforce_ptr->get_episode_number();
@@ -132,6 +138,8 @@ int main (int argc, char* argv[])
         << " n_wins = " << n_wins
         << " win_frac = " << win_frac
         << endl;
+
+
 
    delete ttt_ptr;
    delete reinforce_ptr;
