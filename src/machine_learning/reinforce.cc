@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/5/16; 10/11/16; 10/12/16; 10/18/16
+// Last modified on 10/11/16; 10/12/16; 10/18/16; 10/19/16
 // ==========================================================================
 
 #include <string>
@@ -34,7 +34,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   learning_rate = 1E-4;
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
 //   lambda = 0.001;	// L2 regularization coefficient
-   gamma = 0.99;	// Discount factor for reward
+//   gamma = 0.99;	// Discount factor for reward
+   gamma = 0.90;	// Discount factor for reward
    rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
    
@@ -137,7 +138,8 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 
 // ---------------------------------------------------------------------
 // Member function policy_forward returns the output of the network
-// given an input set of values.
+// given an input set of values.  See "Forward & backward propagation
+// for one episode of reinforcement learning" notes dated 10/18/2016.
 
 void reinforce::policy_forward(int t, genvector& x_input)
 {
@@ -190,6 +192,9 @@ void reinforce::discount_rewards()
 }
 
 // ---------------------------------------------------------------------
+// See "Forward & backward propagation for one episode of
+// reinforcement learning" notes dated 10/18/2016.
+
 void reinforce::policy_backward()
 {
 

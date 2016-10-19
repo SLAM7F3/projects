@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 2/9/16; 10/16/16; 10/17/16; 10/18/16
+// Last modified on 10/16/16; 10/17/16; 10/18/16; 10/19/16
 // ==========================================================================
 
 #include <iostream>
@@ -200,7 +200,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
 
 // ==========================================================================
 // Member function feedforward returns the output of the network given
-// an input set of values.
+// an input set of values.  
 
 void neural_net::feedforward(genvector* a_input)
 {
@@ -617,7 +617,8 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 // curr_data_pair.  It returns delta_nabla_biases and
 // delta_nabla_weights representing the gradient for cost function
 // C_x.  delta_nabla_biases and delta_nabla_weights are layer-by-layer
-// sets of genvectors similar to biases and weights.
+// sets of genvectors similar to biases and weights.  See "Cross
+// entropy loss function" notes dated 10/15/2016.
 
 void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 {
