@@ -1771,13 +1771,14 @@ void genmatrix::sparse_SVD_approximation(int k_dims)
    filefunc::deletefile(sparse_binary_filename);
 }
 
-
-
-
 // ==========================================================================
+
+// As of 10/19/16, we believe that tensor class *= and /= operators
+// are more efficient than these deprecated genmatrix versions.
 
 /*
 // Overload *= and /= operators:
+
 
 void genmatrix::operator*= (double a)
 {
@@ -2008,10 +2009,11 @@ genmatrix operator* (const genmatrix& A, const genmatrix& B)
 }
 
 // ---------------------------------------------------------------------
-// These next two implementation of matrix addition and multiplication
-// are intentionally stripped down to run as fast as possible.  They
-// assume that input matrices A and B have correct dimensions to be
-// added/multiplied together and put into *this.
+// These next 3 implementations of matrix addition, matrix
+// multiplication and outer production accumulation are intentionally
+// stripped down to run as fast as possible.  They assume that input
+// matrices A and B have correct dimensions to be added/multiplied
+// together and put into *this.
 
 void genmatrix::matrix_sum(const genmatrix& A,const genmatrix& B)
 {
@@ -2057,3 +2059,4 @@ void genmatrix::accumulate_outerprod(const genvector& A,const genvector& B)
       }
    }
 }
+

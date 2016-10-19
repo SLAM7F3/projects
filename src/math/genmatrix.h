@@ -144,9 +144,6 @@ class genmatrix:public genarray
    void export_to_sparse_binary_format(std::string output_filename);
    void sparse_SVD_approximation(int k_dims);
 
-//   void operator*= (double a);
-//   void operator/= (double a);
-
 // Friend methods:
 
    friend genmatrix operator+ (const genmatrix& A,const genmatrix& B);

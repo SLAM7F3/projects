@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genvector class member function definitions
 // ==========================================================================
-// Last modified on 5/31/13; 8/24/13; 2/8/16; 10/17/16
+// Last modified on 8/24/13; 2/8/16; 10/17/16; 10/19/16
 // ==========================================================================
 
 #include <math.h>
@@ -326,6 +326,12 @@ void genvector::scale(const genvector& X)
    }
 }
 
+// As of 10/19/16, we believe that tensor class +=, -=, *= and /=
+// operators are more efficient than these deprecated genvector
+// versions:
+
+/*
+
 // Overload += operator:
 
 void genvector::operator+= (const genvector& X)
@@ -365,6 +371,7 @@ void genvector::operator/= (double a)
      put(i,get(i)/a);
   }
 }
+*/
 
 // ==========================================================================
 // Note: Keyword friend should appear in class declaration file and not 
@@ -530,4 +537,24 @@ genvector operator* (const genvector& X,const genmatrix& A)
       exit(-1);
    }
 }
+
+// ---------------------------------------------------------------------
+// This next implementation of matrix-vector multiplication is
+// intentionally stripped down to run as fast as possible.  It assumes
+// input matrix A and vector X have correct dimensions to be
+// multiplied together and put into *this.
+
+void genvector::matrix_vector_mult(const genmatrix& A,const genvector& X)
+{
+   for (unsigned int i = 0; i < A.get_mdim(); i++)
+   {
+      double sum = 0;
+      for (unsigned int j = 0; j < A.get_ndim(); j++)
+      {
+         sum += A.get(i,j) * X.get(j);
+      }
+      put(i, sum);
+   }
+}
+
 

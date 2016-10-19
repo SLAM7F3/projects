@@ -162,23 +162,26 @@ void reinforce::policy_forward(int t, genvector& x_input)
    {
 //      cout << "l = " << l << endl;
       genmatrix* curr_weights = weights[l];
-      genvector z_lplus1_t(*curr_weights * a[l]->get_column(t));
-      genvector a_lplus1_t(z_lplus1_t.get_mdim());
+//      genvector z_lplus1_t(*curr_weights * a[l]->get_column(t));
+//      genvector a_lplus1_t(z_lplus1_t.get_mdim());
 
-      z[l+1]->put_column(t, z_lplus1_t);
+//      z[l+1]->put_column(t, z_lplus1_t);
 //      cout << "z[l+1, t] = " << z[l+1]->get_column(t) << endl;
+      *z[l+1] = *curr_weights * (*a[l]);
 
 // Perform soft-max classification on final-layer's weighted inputs:
 
       if(l == n_layers - 2)
       {
-         machinelearning_func::softmax(z_lplus1_t, a_lplus1_t);
+//         machinelearning_func::softmax(z_lplus1_t, a_lplus1_t);
+         machinelearning_func::softmax(*z[l+1], *a[l+1]);
       }
       else // perform ReLU on hidden layer's weight inputs
       {
-         machinelearning_func::ReLU(z_lplus1_t, a_lplus1_t);
+//         machinelearning_func::ReLU(z_lplus1_t, a_lplus1_t);
+         machinelearning_func::ReLU(*z[l+1], *a[l+1]);
       }
-      a[l+1]->put_column(t, a_lplus1_t);
+//      a[l+1]->put_column(t, a_lplus1_t);
 //      cout << "a[l+1] = " << a[l+1]->get_column(t) << endl;
    }
 }

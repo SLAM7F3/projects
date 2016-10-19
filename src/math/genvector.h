@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genvector class 
 // ==========================================================================
-// Last modified on 5/31/13; 8/24/13; 2/8/16; 10/17/16
+// Last modified on 8/24/13; 2/8/16; 10/17/16; 10/19/16
 // ==========================================================================
 
 #ifndef GENVECTOR_H
@@ -69,10 +69,11 @@ class genvector:public genmatrix
    void export_to_sparse_binary_format(std::string output_filename);
 
    void scale(const genvector& X);
-   void operator+= (const genvector& X);
-   void operator-= (const genvector& X);
-   void operator*= (double a);
-   void operator/= (double a);
+
+//   void operator+= (const genvector& X);
+//   void operator-= (const genvector& X);
+//   void operator*= (double a);
+//   void operator/= (double a);
 
 // ---------------------------------------------------------------------
 // Friend functions:
@@ -86,6 +87,8 @@ class genvector:public genmatrix
    friend genvector operator/ (const genvector& X,double a);
    friend genvector operator* (const genmatrix& A,const genvector& X);
    friend genvector operator* (const genvector& X,const genmatrix& A);
+
+   void matrix_vector_mult(const genmatrix& A,const genvector& X);
 
   private: 
 

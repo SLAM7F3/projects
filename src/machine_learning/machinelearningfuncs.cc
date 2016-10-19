@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/12/16; 10/15/16; 10/16/16; 10/17/16
+// Last updated on 10/15/16; 10/16/16; 10/17/16; 10/19/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -81,15 +81,13 @@ namespace machinelearning_func
 
    void ReLU(const genvector& Z, genvector& A)
    {
+      A.clear_values();
       for(unsigned int i = 0; i < Z.get_mdim(); i++)
       {
-         if(Z.get(i) < 0) 
+         double Zi = Z.get(i);
+         if(Zi > 0)
          {
-            A.put(i,0);
-         }
-         else
-         {
-            A.put(i,Z.get(i));
+            A.put(i, Z.get(i));
          }
       }
    }
@@ -101,6 +99,22 @@ namespace machinelearning_func
          for(unsigned int j = 0; j < Z.get_ndim(); j++)
          {
             if(Z.get(i,j) < 0) Z.put(i,j,0);
+         }
+      }
+   }
+
+   void ReLU(const genmatrix& Z, genmatrix& A)
+   {
+      A.clear_values();
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         for (unsigned int j = 0; j < Z.get_ndim(); j++)
+         {
+            double Zij = Z.get(i,j);
+            if(Zij > 0)
+            {
+               A.put(i, j, Zij);
+            }
          }
       }
    }
@@ -129,6 +143,32 @@ namespace machinelearning_func
       {
          A.put(i, A.get(i) / denom);
       }
+   }
+
+// --------------------------------------------------------------------------
+   void softmax(const genmatrix& Z, genmatrix& A)
+   {
+      for(unsigned int j = 0; j < Z.get_ndim(); j++)
+      {
+         double Zmax = NEGATIVEINFINITY;
+         for(unsigned int i = 0; i < Z.get_mdim(); i++)
+         {
+            Zmax = basic_math::max(Zmax, Z.get(i,j));
+         }
+
+         double denom = 0;
+         for(unsigned int i = 0; i < Z.get_mdim(); i++)
+         {
+            double curr_exp = exp(Z.get(i,j) - Zmax);
+            denom += curr_exp;
+            A.put(i, j, curr_exp);
+         }
+      
+         for(unsigned int i = 0; i < A.get_mdim(); i++)
+         {
+            A.put(i, j, A.get(i, j) / denom);
+         }
+      } // loop over index j labeling columns of genmatrices Z and A
    }
 
 // --------------------------------------------------------------------------
@@ -169,7 +209,6 @@ namespace machinelearning_func
       int n_samples, vector<neural_net::DATA_PAIR>& samples)
    {
       const int Din = 2;
-      const double rmax = 2;
 
 // Class 0:
 
