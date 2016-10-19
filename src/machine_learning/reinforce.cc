@@ -51,7 +51,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
    
-   running_reward = 0;
+   running_reward = -1000;
    reward_sum = 0;
    episode_number = 0;
 
@@ -216,6 +216,40 @@ void reinforce::discount_rewards()
 //      cout << "t = " << t << " discounted_reward = "
 //           << running_add << endl;
    }
+
+// Standardize discounted rewards to be unit normal to help control
+// the gradient estimator variance:
+
+   double mean = 0;
+   for(int t = 0; t < T; t++)
+   {
+      mean += discounted_reward->get(t);
+   }
+   mean /= T;
+//   cout << "mean = " << mean << endl;
+
+   double sigma = 1;
+   if(T > 1)
+   {
+      double sigmasqr = 0;
+      for(int t = 0; t < T; t++)
+      {
+         double curr_reward = discounted_reward->get(t) - mean;
+         discounted_reward->put(t, curr_reward);
+         sigmasqr += sqr(curr_reward);
+      }
+      sigmasqr /= T;
+//      cout << "sigmasqr = " << sigmasqr << endl;
+      sigma = sqrt(sigmasqr);
+   }
+   
+   for(int t = 0; t < T; t++)
+   {
+      double curr_reward = discounted_reward->get(t) / sigma;
+      discounted_reward->put(t, curr_reward);
+//      cout << "t = " << t << " discounted_reward = "
+//           << discounted_reward->get(t) << endl;
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -369,7 +403,7 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
 
    y->put(curr_timestep, a_star);
 
-   if(cum_time_counter%2000 == 0)
+   if(cum_time_counter > 0 && cum_time_counter%2000 == 0)
    {
       time_samples.push_back(cum_time_counter);
       loss_values.push_back(compute_loss(curr_timestep));
@@ -408,40 +442,6 @@ void reinforce::update_weights(bool episode_finished_flag)
 
    discount_rewards();
 
-// Standardize discounted rewards to be unit normal to help control
-// the gradient estimator variance:
-
-   double mean = 0;
-   for(int t = 0; t < T; t++)
-   {
-      mean += discounted_reward->get(t);
-   }
-   mean /= T;
-//   cout << "mean = " << mean << endl;
-
-   double sigma = 1;
-   if(T > 1)
-   {
-      double sigmasqr = 0;
-      for(int t = 0; t < T; t++)
-      {
-         double curr_reward = discounted_reward->get(t) - mean;
-         discounted_reward->put(t, curr_reward);
-         sigmasqr += sqr(curr_reward);
-      }
-      sigmasqr /= T;
-//      cout << "sigmasqr = " << sigmasqr << endl;
-      sigma = sqrt(sigmasqr);
-   }
-   
-   for(int t = 0; t < T; t++)
-   {
-      double curr_reward = discounted_reward->get(t) / sigma;
-      discounted_reward->put(t, curr_reward);
-//      cout << "t = " << t << " discounted_reward = "
-//           << discounted_reward->get(t) << endl;
-   }
-
    policy_backward();
 
 // Accumulate weights' gradients for each network layer:
@@ -460,7 +460,7 @@ void reinforce::update_weights(bool episode_finished_flag)
    
 // Perform RMSprop parameter update every batch_size episodes:
 
-   if(episode_number % batch_size == 0)
+   if(episode_number > 0 && episode_number % batch_size == 0)
    {
       for(int l = 0; l < n_layers - 1; l++)
       {
@@ -487,8 +487,12 @@ void reinforce::update_weights(bool episode_finished_flag)
       }
 //       print_weights();
    } // episode % batch_size == 0 conditional
+}
 
-   if(running_reward == 0)
+// ---------------------------------------------------------------------
+void reinforce::update_running_reward()
+{
+   if(episode_number == 0)
    {
       running_reward = reward_sum;
    }

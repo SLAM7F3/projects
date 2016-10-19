@@ -27,14 +27,15 @@ int main (int argc, char* argv[])
 
 //   int nsize = 3;
    int nsize = 4;
-   int n_zlevels = 1;
+//   int n_zlevels = 1;
+   int n_zlevels = 2;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
-   int Din = nsize * nsize;	// Input dimensionality
-   int H = 200;			// Number of hidden layer neurons
+   int Din = nsize * nsize * n_zlevels;	// Input dimensionality
+   int H = 200 * n_zlevels;		// Number of hidden layer neurons
 //   int H = 150;			// Number of hidden layer neurons
 //   int H = 64;			// Number of hidden layer neurons
-   int Dout = nsize * nsize;	// Output dimensionality
+   int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
    vector<int> layer_dims;
@@ -62,7 +63,7 @@ int main (int argc, char* argv[])
       while(true)
       {
          ttt_ptr->get_random_legal_AI_move();
-///          ttt_ptr->display_board_state();
+//          ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over())
          {
             curr_reward = 1;
@@ -76,9 +77,10 @@ int main (int argc, char* argv[])
 
 // Step the environment and then retrieve new reward measurements:
 
-         int px = output_action % nsize;
-         int py = output_action / nsize;
-         int pz = 0;
+         int pz = output_action / (nsize * nsize);
+         int py = (output_action - nsize * nsize * pz) / nsize;
+         int px = (output_action - nsize * nsize * pz - nsize * py);
+
          // cout << "px = " << px << " py = " << py << endl;
 
          curr_reward = ttt_ptr->set_agent_move(px, py, pz);
@@ -107,6 +109,7 @@ int main (int argc, char* argv[])
 
       bool episode_finished_flag = true;
       reinforce_ptr->update_weights(episode_finished_flag);
+      reinforce_ptr->update_running_reward();
       
       reinforce_ptr->increment_episode_number();
       int n_episodes = reinforce_ptr->get_episode_number();
@@ -129,6 +132,8 @@ int main (int argc, char* argv[])
          reinforce_ptr->plot_loss_history();
          reinforce_ptr->plot_reward_history();
       }
+
+//       outputfunc::enter_continue_char();
 
    } // n_episodes < n_max_episodes while loop
 

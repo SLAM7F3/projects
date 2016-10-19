@@ -171,7 +171,7 @@ double tictac3d::get_random_agent_move(bool print_flag)
 {
    int px = mathfunc::getRandomInteger(n_size);
    int py = mathfunc::getRandomInteger(n_size);
-   int pz = 0;
+   int pz = mathfunc::getRandomInteger(n_zlevels);
    return set_agent_move(px, py, pz, print_flag);
 }
 
@@ -240,7 +240,7 @@ void tictac3d::get_random_legal_AI_move()
    {
       int px = mathfunc::getRandomInteger(n_size);
       int py = mathfunc::getRandomInteger(n_size);
-      int pz = 0;
+      int pz = mathfunc::getRandomInteger(n_zlevels);
       if(get_cell_value(px,py,pz) == 0)
       {
          set_cell_value(px,py,pz,AI_value);

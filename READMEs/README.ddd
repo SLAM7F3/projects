@@ -1,0 +1,21 @@
+===========================================================================
+DDD debugger notes
+===========================================================================
+Last updated on 10/19/16
+===========================================================================
+
+
+*.  At (gdb) command prompt, type "run" in order to starting running
+program in debugger
+
+*.  While program is running, press "escape" key in order to interrupt it.
+Then type "where" in order to see call stack.
+
+*.  At (gdb) command prompt, type "continue" in order to resume running of
+program in debugger.
+
+
+*.  See discussion at website below in order about using debugger to
+perform poor-man's profiling of slow C++ programs:
+
+http://stackoverflow.com/questions/375913/what-can-i-use-to-profile-c-code-in-linux
