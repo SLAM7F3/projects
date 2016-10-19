@@ -324,8 +324,14 @@ void reinforce::policy_backward()
 // Eqn BP4:
          *delta_nabla_weights[prev_layer] += 
             delta_prime[curr_layer]->get_column(t).outerproduct(
-               a[prev_layer]->get_column(t)) +
-            2 * lambda * (*weights[prev_layer]);
+               a[prev_layer]->get_column(t));
+
+         const double TINY = 1E-8;
+         if(lambda > TINY)
+         {
+            *delta_nabla_weights[prev_layer] += 
+               2 * lambda * (*weights[prev_layer]);
+         }
       }
 
    } // loop over curr_layer index

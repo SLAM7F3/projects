@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 9/20/16; 10/4/16; 10/12/16; 10/17/16
+// Last modified on 10/4/16; 10/12/16; 10/17/16; 10/19/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -1819,7 +1819,6 @@ void genmatrix::operator/= (double a)
 // Friend methods
 // ==========================================================================
 
-
 // Overload + operator:
 
 genmatrix operator+ (const genmatrix& A,const genmatrix& B)
@@ -2004,5 +2003,44 @@ genmatrix operator* (const genmatrix& A, const genmatrix& B)
    } // loop over index i 
 
    return C;
+}
+
+// ---------------------------------------------------------------------
+// These next two implementation of matrix addition and multiplication
+// are intentionally stripped down to run as fast as possible.  They
+// assumes that input matrices A and B have correct dimensions to be
+// added/multiplied together and put into *this.
+
+void genmatrix::matrix_sum(const genmatrix& A,const genmatrix& B)
+{
+   for (unsigned int i = 0; i < A.mdim; i++)
+   {
+      for (unsigned int j = 0; j < A.ndim; j++)
+      {
+         put(i, j, A.get(i,j) + B.get(i,j));
+      }
+   }
+}
+
+void genmatrix::matrix_mult(const genmatrix& A, const genmatrix& B)
+{
+   clear_values();
+
+   for (unsigned int i = 0; i < A.mdim; i++)
+   {
+      for (unsigned int k = 0; k < A.ndim; k++)
+      {
+         const double* a = A.get_e_ptr() + i * A.ndim + k;
+         const double* b = B.get_e_ptr() + k * B.ndim;
+         double *c = get_e_ptr() + i * B.ndim;
+         double *cMax = c + B.ndim;
+         
+         while(c < cMax)
+         {
+            *c++ += (*a) * (*b++);
+         }
+         
+      } // loop over index k
+   } // loop over index i 
 }
 

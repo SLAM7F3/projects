@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genmatrix class 
 // ==========================================================================
-// Last modified on 2/10/16; 2/15/16; 10/12/16; 10/17/16
+// Last modified on 2/15/16; 10/12/16; 10/17/16; 10/19/16
 // ==========================================================================
 
 #ifndef GENMATRIX_H
@@ -156,6 +156,9 @@ class genmatrix:public genarray
    friend genmatrix operator* (const genmatrix& A,double a);
    friend genmatrix operator/ (const genmatrix& A,double a);
    friend genmatrix operator* (const genmatrix& A, const genmatrix& B);
+
+   void matrix_sum(const genmatrix& A, const genmatrix& B);
+   void matrix_mult(const genmatrix& A, const genmatrix& B);
 
   protected:
 
