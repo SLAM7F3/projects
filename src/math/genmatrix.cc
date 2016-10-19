@@ -1776,6 +1776,7 @@ void genmatrix::sparse_SVD_approximation(int k_dims)
 
 // ==========================================================================
 
+/*
 // Overload *= and /= operators:
 
 void genmatrix::operator*= (double a)
@@ -1801,6 +1802,7 @@ void genmatrix::operator/= (double a)
            << endl;
    }
 }
+*/
 
 // ==========================================================================
 // Note: Keyword friend should appear in class declaration file and not 
@@ -2008,7 +2010,7 @@ genmatrix operator* (const genmatrix& A, const genmatrix& B)
 // ---------------------------------------------------------------------
 // These next two implementation of matrix addition and multiplication
 // are intentionally stripped down to run as fast as possible.  They
-// assumes that input matrices A and B have correct dimensions to be
+// assume that input matrices A and B have correct dimensions to be
 // added/multiplied together and put into *this.
 
 void genmatrix::matrix_sum(const genmatrix& A,const genmatrix& B)
@@ -2044,3 +2046,14 @@ void genmatrix::matrix_mult(const genmatrix& A, const genmatrix& B)
    } // loop over index i 
 }
 
+void genmatrix::accumulate_outerprod(const genvector& A,const genvector& B)
+{
+   for (unsigned int i = 0; i < A.mdim; i++)
+   {
+      double curr_A = A.get(i);
+      for (unsigned int j = 0; j < B.mdim; j++)
+      {
+         put(i, j, get(i, j) + curr_A * B.get(j));
+      }
+   }
+}

@@ -299,8 +299,8 @@ void reinforce::policy_backward()
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
 
-      *delta_prime[prev_layer] = weights[prev_layer]->transpose() * 
-         (*delta_prime[curr_layer]);
+      delta_prime[prev_layer]->matrix_mult(
+         weights[prev_layer]->transpose(), *delta_prime[curr_layer]);
 
 //      cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
 //           << endl;
@@ -322,9 +322,14 @@ void reinforce::policy_backward()
       for(int t = 0; t < T; t++)
       {
 // Eqn BP4:
-         *delta_nabla_weights[prev_layer] += 
-            delta_prime[curr_layer]->get_column(t).outerproduct(
-               a[prev_layer]->get_column(t));
+
+         delta_nabla_weights[prev_layer]->accumulate_outerprod(
+            delta_prime[curr_layer]->get_column(t),
+            a[prev_layer]->get_column(t));
+
+//         *delta_nabla_weights[prev_layer] += 
+//            delta_prime[curr_layer]->get_column(t).outerproduct(
+//               a[prev_layer]->get_column(t));
 
          const double TINY = 1E-8;
          if(lambda > TINY)
@@ -452,16 +457,11 @@ void reinforce::update_weights(bool episode_finished_flag)
 
 // Accumulate weights' gradients for each network layer:
 
-//   cout << "T = " << T << endl;
    for(int l = 0; l < n_layers - 1; l++)
    {
       *nabla_weights[l] += *delta_nabla_weights[l] / T;
 //      cout << "l = " << l << " nabla_weights[l] = " << *nabla_weights[l]
 //           << endl;
-
-      *rmsprop_weights_cache[l] = 
-         rmsprop_decay_rate * (*rmsprop_weights_cache[l])
-         + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
    }
    
 // Perform RMSprop parameter update every batch_size episodes:
