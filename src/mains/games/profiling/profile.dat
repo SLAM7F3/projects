@@ -1,0 +1,242 @@
+1.   where
+
+#0  0x000000000045d238 in operator*(genmatrix const&, genmatrix const&) ()
+#1  0x0000000000438a02 in reinforce::policy_backward() ()
+#2  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#3  0x000000000042fe7b in main ()
+(gdb) continue
+
+========================================================
+
+2.  (gdb) where
+#0  memset () at ../sysdeps/x86_64/memset.S:93
+#1  0x000000000045fc41 in genmatrix::genmatrix(genmatrix const&) ()
+#2  0x000000000045fe9d in operator+(genmatrix const&, genmatrix const&) ()
+#3  0x0000000000438b50 in reinforce::policy_backward() ()
+#4  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#5  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+3.  Program received signal SIGINT, Interrupt.
+0x000000000045fe78 in operator+(genmatrix const&, genmatrix const&) ()
+(gdb) where
+#0  0x000000000045fe78 in operator+(genmatrix const&, genmatrix const&) ()
+#1  0x0000000000438b50 in reinforce::policy_backward() ()
+#2  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#3  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+4.  (gdb) where
+#0  0x000000000045d05a in operator*(double, genmatrix const&) ()
+#1  0x0000000000438eca in reinforce::update_weights(bool) ()
+#2  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+5.  Program received signal SIGINT, Interrupt.
+0x0000000000438bac in reinforce::policy_backward() ()
+(gdb) where
+#0  0x0000000000438bac in reinforce::policy_backward() ()
+#1  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#2  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+6.  (gdb) (gdb) where
+#0  0x00007ffff70c821c in __brk (addr=0x8e4000) at ../sysdeps/unix/sysv/linux/x86_64/brk.c:31
+#1  0x00007ffff70c82b6 in __GI___sbrk (increment=-102400) at sbrk.c:53
+#2  0x00007ffff705c099 in __GI___default_morecore (increment=<optimized out>) at morecore.c:47
+#3  0x00007ffff7054fd5 in systrim (pad=131072, av=0x7ffff7395760 <main_arena>, av=0x7ffff7395760 <main_arena>) at malloc.c:2773
+#4  0x00007ffff70565a8 in _int_free (av=0x7ffff7395760 <main_arena>, p=<optimized out>, have_lock=0) at malloc.c:4063
+#5  0x0000000000462069 in Tensor<double>::~Tensor() ()
+#6  0x0000000000438c2e in reinforce::policy_backward() ()
+#7  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#8  0x000000000042fe7b in main ()
+(gdb) 
+
+
+========================================================
+
+7.  #0  0x00007ffff70c821c in __brk (addr=0x917000) at ../sysdeps/unix/sysv/linux/x86_64/brk.c:31
+#1  0x00007ffff70c82b6 in __GI___sbrk (increment=-204800) at sbrk.c:53
+#2  0x00007ffff705c099 in __GI___default_morecore (increment=<optimized out>) at morecore.c:47
+#3  0x00007ffff7054fd5 in systrim (pad=131072, av=0x7ffff7395760 <main_arena>, av=0x7ffff7395760 <main_arena>) at malloc.c:2773
+#4  0x00007ffff70565a8 in _int_free (av=0x7ffff7395760 <main_arena>, p=<optimized out>, have_lock=0) at malloc.c:4063
+#5  0x0000000000462069 in Tensor<double>::~Tensor() ()
+#6  0x0000000000438c00 in reinforce::policy_backward() ()
+#7  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#8  0x000000000042fe7b in main ()
+(gdb) 
+
+
+========================================================
+
+8.  Program received signal SIGINT, Interrupt.
+memset () at ../sysdeps/x86_64/memset.S:93
+(gdb) where
+#0  memset () at ../sysdeps/x86_64/memset.S:93
+#1  0x000000000045fc41 in genmatrix::genmatrix(genmatrix const&) ()
+#2  0x000000000045fe9d in operator+(genmatrix const&, genmatrix const&) ()
+#3  0x0000000000438b50 in reinforce::policy_backward() ()
+#4  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#5  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+9.  
+file: "../sysdeps/unix/sysv/linux/x86_64/brk.c", line number: 1
+(gdb) file: "../sysdeps/unix/sysv/linux/x86_64/brk.c", line number: 1
+(gdb) (gdb) where
+#0  0x00007ffff70c821c in __brk (addr=0x8e4000) at ../sysdeps/unix/sysv/linux/x86_64/brk.c:31
+#1  0x00007ffff70c82b6 in __GI___sbrk (increment=-102400) at sbrk.c:53
+#2  0x00007ffff705c099 in __GI___default_morecore (increment=<optimized out>) at morecore.c:47
+#3  0x00007ffff7054fd5 in systrim (pad=131072, av=0x7ffff7395760 <main_arena>, av=0x7ffff7395760 <main_arena>) at malloc.c:2773
+#4  0x00007ffff70565a8 in _int_free (av=0x7ffff7395760 <main_arena>, p=<optimized out>, have_lock=0) at malloc.c:4063
+#5  0x0000000000462069 in Tensor<double>::~Tensor() ()
+#6  0x0000000000438c2e in reinforce::policy_backward() ()
+#7  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#8  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+10.  Program received signal SIGINT, Interrupt.
+memset () at ../sysdeps/x86_64/memset.S:93
+(gdb) where
+#0  memset () at ../sysdeps/x86_64/memset.S:93
+#1  0x000000000045fc41 in genmatrix::genmatrix(genmatrix const&) ()
+#2  0x000000000045fe9d in operator+(genmatrix const&, genmatrix const&) ()
+#3  0x0000000000438b50 in reinforce::policy_backward() ()
+#4  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#5  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+11. Program received signal SIGINT, Interrupt.
+0x00007ffff70c821c in __brk (addr=0x917000) at ../sysdeps/unix/sysv/linux/x86_64/brk.c:31
+file: "../sysdeps/unix/sysv/linux/x86_64/brk.c", line number: 1
+(gdb) file: "../sysdeps/unix/sysv/linux/x86_64/brk.c", line number: 1
+(gdb) (gdb) where
+#0  0x00007ffff70c821c in __brk (addr=0x917000) at ../sysdeps/unix/sysv/linux/x86_64/brk.c:31
+#1  0x00007ffff70c82b6 in __GI___sbrk (increment=-102400) at sbrk.c:53
+#2  0x00007ffff705c099 in __GI___default_morecore (increment=<optimized out>) at morecore.c:47
+#3  0x00007ffff7054fd5 in systrim (pad=131072, av=0x7ffff7395760 <main_arena>, av=0x7ffff7395760 <main_arena>) at malloc.c:2773
+#4  0x00007ffff70565a8 in _int_free (av=0x7ffff7395760 <main_arena>, p=<optimized out>, have_lock=0) at malloc.c:4063
+#5  0x0000000000462069 in Tensor<double>::~Tensor() ()
+#6  0x0000000000438f33 in reinforce::update_weights(bool) ()
+#7  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+12.  Program received signal SIGINT, Interrupt.
+0x000000000045ce52 in genmatrix::hadamard_power(double) ()
+(gdb) where
+#0  0x000000000045ce52 in genmatrix::hadamard_power(double) ()
+#1  0x0000000000438eb2 in reinforce::update_weights(bool) ()
+#2  0x000000000042fe7b in main ()
+(gdb) 
+
+
+========================================================
+
+13.  
+Program received signal SIGINT, Interrupt.
+0x000000000045fe78 in operator+(genmatrix const&, genmatrix const&) ()
+(gdb) where
+#0  0x000000000045fe78 in operator+(genmatrix const&, genmatrix const&) ()
+#1  0x0000000000438b50 in reinforce::policy_backward() ()
+#2  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#3  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+14.  
+Program received signal SIGINT, Interrupt.
+0x000000000045d221 in operator*(genmatrix const&, genmatrix const&) ()
+(gdb) where
+#0  0x000000000045d221 in operator*(genmatrix const&, genmatrix const&) ()
+#1  0x0000000000438a02 in reinforce::policy_backward() ()
+#2  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#3  0x000000000042fe7b in main ()
+(gdb) 
+
+
+========================================================
+
+15.  
+
+Program received signal SIGINT, Interrupt.
+0x000000000045d247 in operator*(genmatrix const&, genmatrix const&) ()
+(gdb) where
+#0  0x000000000045d247 in operator*(genmatrix const&, genmatrix const&) ()
+#1  0x0000000000438a02 in reinforce::policy_backward() ()
+#2  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#3  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+16.  Program received signal SIGINT, Interrupt.
+0x000000000046bff5 in genvector::outerproduct(genvector const&) const ()
+(gdb) where
+#0  0x000000000046bff5 in genvector::outerproduct(genvector const&) const ()
+#1  0x0000000000438b33 in reinforce::policy_backward() ()
+#2  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#3  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+17.  Program received signal SIGINT, Interrupt.
+0x000000000045d047 in operator*(double, genmatrix const&) ()
+(gdb) where
+#0  0x000000000045d047 in operator*(double, genmatrix const&) ()
+#1  0x0000000000438eca in reinforce::update_weights(bool) ()
+#2  0x000000000042fe7b in main ()
+(gdb) 
+
+
+========================================================
+
+18.  
+
+0x000000000045d05a in operator*(double, genmatrix const&) ()
+(gdb) where
+#0  0x000000000045d05a in operator*(double, genmatrix const&) ()
+#1  0x0000000000438eca in reinforce::update_weights(bool) ()
+#2  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+19.  
+Program received signal SIGINT, Interrupt.
+0x0000000000438bcf in reinforce::policy_backward() ()
+(gdb) where
+#0  0x0000000000438bcf in reinforce::policy_backward() ()
+#1  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#2  0x000000000042fe7b in main ()
+(gdb) 
+
+========================================================
+
+20.  
+
+(gdb) where
+#0  __memcpy_sse2_unaligned () at ../sysdeps/x86_64/multiarch/memcpy-sse2-unaligned.S:81
+#1  0x000000000045fc98 in genmatrix::genmatrix(genmatrix const&) ()
+#2  0x000000000045fe9d in operator+(genmatrix const&, genmatrix const&) ()
+#3  0x0000000000438b50 in reinforce::policy_backward() ()
+#4  0x0000000000438d93 in reinforce::update_weights(bool) ()
+#5  0x000000000042fe7b in main ()
+(gdb) 
