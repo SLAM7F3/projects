@@ -28,9 +28,16 @@ using std::vector;
 
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
+
+// This particular set of hyperparameters yields perfect reinforcement
+// learning for an agent not to place any of its pieces into already
+// occupied cells within a 4x4 grid !
+
    batch_size = 10;	// Perform parameter update after this many episodes
 //   batch_size = 5;	// Perform parameter update after this many episodes
-   learning_rate = 1E-3;  // Better than 1E-4
+//   learning_rate = 3E-3;  // Seems worse than 1E-4
+//    learning_rate = 1E-3;  // Better than 1E-4
+    learning_rate = 3E-4;  // Much better than 1E-4 !!!
 //   learning_rate = 1E-4;
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
 //   lambda = 0.001;	// L2 regularization coefficient
