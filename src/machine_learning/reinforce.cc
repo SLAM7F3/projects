@@ -369,10 +369,13 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
 
    y->put(curr_timestep, a_star);
 
-   if(cum_time_counter%10000 == 0)
+   if(cum_time_counter%2000 == 0)
    {
       time_samples.push_back(cum_time_counter);
       loss_values.push_back(compute_loss(curr_timestep));
+      double avg_reward = mathfunc::mean(reward_samples);
+      avg_reward_samples.push_back(avg_reward);
+      avg_reward_samples.clear();
    }
    return a_star;
 }
@@ -380,6 +383,8 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
 // ---------------------------------------------------------------------
 void reinforce::record_reward_for_action(double curr_reward)
 {
+   reward_samples.push_back(curr_reward);
+
    reward_sum += curr_reward;
    reward->put(curr_timestep, curr_reward);
 //   cout << "curr_timestep = " << curr_timestep 
@@ -484,7 +489,6 @@ void reinforce::update_weights(bool episode_finished_flag)
             nabla_weights[l]->hadamard_division(denom);
          nabla_weights[l]->clear_values();
       }
-
 //       print_weights();
    } // episode % batch_size == 0 conditional
 
@@ -494,9 +498,9 @@ void reinforce::update_weights(bool episode_finished_flag)
    }
    else
    {
-      running_reward = 0.90 * running_reward + 0.10 * reward_sum;
+      running_reward = 0.95 * running_reward + 0.05 * reward_sum;
    }
-//    cout << "Episode reward total was " << reward_sum << endl;
+   running_reward_snapshots.push_back(running_reward);
    reward_sum = 0;
 
    bool print_flag = false;
@@ -550,8 +554,11 @@ void reinforce::plot_loss_history()
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
    string x_label="Time step";
    string y_label="Loss";
-   double min_loss = 0;
-   double max_loss = mathfunc::maximal_value(loss_values);
+
+   double min_loss, max_loss;
+   mathfunc::lo_hi_values(
+      loss_values, 0.025, 0.975, min_loss, max_loss);
+   min_loss = 0;
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, time_samples.back(), 
@@ -562,9 +569,46 @@ void reinforce::plot_loss_history()
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.write_curve(time_samples, loss_values, colorfunc::red);
-   curr_metafile.write_curve(time_samples, smoothed_loss_values, 
-                             colorfunc::cyan);
+
    curr_metafile.set_thickness(3);
+   curr_metafile.write_curve(time_samples, smoothed_loss_values, 
+                             colorfunc::blue);
+
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of averaged reward values versus time step samples.
+
+void reinforce::plot_reward_history()
+{
+   metafile curr_metafile;
+   string meta_filename="reward_history";
+   string title="Reward vs RMSprop model training";
+   string subtitle=
+      "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "; gamma="+stringfunc::number_to_string(gamma,3)+
+      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   string x_label="Episode number";
+   string y_label="Running reward sum";
+
+   double min_reward = -1;
+   double max_reward = 1;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, get_episode_number(),
+      min_reward, max_reward);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, get_episode_number(), running_reward_snapshots);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";

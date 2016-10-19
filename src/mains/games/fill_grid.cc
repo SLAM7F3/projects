@@ -127,6 +127,7 @@ int main (int argc, char* argv[])
       if(reinforce_ptr->get_episode_number() % 50000 == 0)
       {
          reinforce_ptr->plot_loss_history();
+         reinforce_ptr->plot_reward_history();
       }
 
    } // n_episodes < n_max_episodes while loop

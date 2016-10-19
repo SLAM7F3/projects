@@ -1,7 +1,7 @@
 // ==========================================================================
 // Metafile class member function definitions
 // ==========================================================================
-// Last modified on 3/21/07; 12/4/10; 5/4/13; 9/25/14; 11/1/15
+// Last modified on 5/4/13; 9/25/14; 11/1/15; 10/19/16
 // ==========================================================================
 
 #include "math/basic_math.h"
@@ -379,17 +379,22 @@ void metafile::add_extralines()
 // Plotting member functions
 // ==========================================================================
 
+void metafile::write_curve(double Xstart, double Xstop, const vector<double>& Y)
+{
+   vector<double> X;
+   int n_samples = Y.size();
+
+   for(int i = 0; i < n_samples; i++)
+   {
+      double curr_X = Xstart + i * (Xstop - Xstart) / double(n_samples - 1);
+      X.push_back(curr_X);
+   }
+   write_curve(X,Y,colorfunc::red);
+}
 
 void metafile::write_curve(const vector<double>& X,const vector<double>& Y)
 {
    write_curve(X,Y,colorfunc::red);
-/*
-   metastream << "curve color red" << endl;
-   for (unsigned int i=0; i<X.size(); i++)
-   {
-      metastream << X[i] << "\t" << Y[i] << endl;
-   }
-*/
 }
 
 void metafile::write_curve(const vector<double>& X,const vector<double>& Y,

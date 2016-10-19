@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for METAFILE base class
 // ==========================================================================
-// Last modified on 2/26/06; 3/21/07; 5/4/13; 11/1/15
+// Last modified on 3/21/07; 5/4/13; 11/1/15; 10/19/16
 // ==========================================================================
 
 #ifndef METAFILE_H
@@ -125,6 +125,7 @@ class metafile
 // Plotting member functions:
 
    void write_legendlabel(std::string label);
+   void write_curve(double Xstart, double Xstop, const std::vector<double>& Y);
    void write_curve(const std::vector<double>& X,
                     const std::vector<double>& Y);
    void write_curve(

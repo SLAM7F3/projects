@@ -461,8 +461,10 @@ void neural_net::plot_loss_history()
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.write_curve(e_effective, avg_minibatch_loss, colorfunc::red);
+   
+   curr_metafile.set_thickness(3);
    curr_metafile.write_curve(e_effective, smoothed_minibatch_loss,
-                             colorfunc::cyan);
+                             colorfunc::blue);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";

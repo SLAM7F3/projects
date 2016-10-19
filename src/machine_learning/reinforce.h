@@ -37,6 +37,7 @@ class reinforce
 
    void print_weights();
    void plot_loss_history();
+   void plot_reward_history();
 
   private:
 
@@ -81,11 +82,15 @@ class reinforce
 
    std::vector<double> time_samples;
    std::vector<double> loss_values;
+   std::vector<double> reward_samples;
+   std::vector<double> avg_reward_samples;
+
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
    genvector *discounted_reward;  // T x 1
    double running_reward;
    double reward_sum;
+   std::vector<double> running_reward_snapshots;
    int episode_number;
    
    void policy_forward(int t, genvector& x_input);
