@@ -373,9 +373,7 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
    {
       time_samples.push_back(cum_time_counter);
       loss_values.push_back(compute_loss(curr_timestep));
-      double avg_reward = mathfunc::mean(reward_samples);
-      avg_reward_samples.push_back(avg_reward);
-      avg_reward_samples.clear();
+      running_reward_snapshots.push_back(running_reward);
    }
    return a_star;
 }
@@ -383,8 +381,6 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
 // ---------------------------------------------------------------------
 void reinforce::record_reward_for_action(double curr_reward)
 {
-   reward_samples.push_back(curr_reward);
-
    reward_sum += curr_reward;
    reward->put(curr_timestep, curr_reward);
 //   cout << "curr_timestep = " << curr_timestep 
@@ -500,11 +496,10 @@ void reinforce::update_weights(bool episode_finished_flag)
    {
       running_reward = 0.95 * running_reward + 0.05 * reward_sum;
    }
-   running_reward_snapshots.push_back(running_reward);
    reward_sum = 0;
 
    bool print_flag = false;
-   if(episode_number % 10000 == 0) print_flag = true;
+   if(episode_number > 0 && episode_number % 10000 == 0) print_flag = true;
    if(print_flag)
    {
       double mu_T, sigma_T;
@@ -583,32 +578,51 @@ void reinforce::plot_loss_history()
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of averaged reward values versus time step samples.
+// Generate metafile plot of running reward sum versus episode number.
 
 void reinforce::plot_reward_history()
 {
+
+// Temporally smooth noisy loss values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   vector<double> smoothed_reward_snapshots;
+   filterfunc::brute_force_filter(
+      running_reward_snapshots, h, smoothed_reward_snapshots, 
+      wrap_around_input_values);
+
    metafile curr_metafile;
    string meta_filename="reward_history";
-   string title="Reward vs RMSprop model training";
+   string title="Running reward sum vs RMSprop model training";
    string subtitle=
       "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
-   string x_label="Episode number";
+   string x_label="Time step";
    string y_label="Running reward sum";
 
    double min_reward = -1;
    double max_reward = 1;
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, get_episode_number(),
+      meta_filename, title, x_label, y_label, 0, time_samples.back(),
       min_reward, max_reward);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.set_ytic(0.2);
    curr_metafile.set_ysubtic(0.1);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(0, get_episode_number(), running_reward_snapshots);
+   curr_metafile.write_curve(time_samples, running_reward_snapshots);
+   curr_metafile.set_thickness(3);
+   curr_metafile.write_curve(
+      time_samples, smoothed_reward_snapshots, colorfunc::blue);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";

@@ -82,8 +82,6 @@ class reinforce
 
    std::vector<double> time_samples;
    std::vector<double> loss_values;
-   std::vector<double> reward_samples;
-   std::vector<double> avg_reward_samples;
 
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1

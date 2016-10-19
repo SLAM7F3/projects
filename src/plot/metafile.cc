@@ -379,7 +379,15 @@ void metafile::add_extralines()
 // Plotting member functions
 // ==========================================================================
 
-void metafile::write_curve(double Xstart, double Xstop, const vector<double>& Y)
+void metafile::write_curve(
+   double Xstart, double Xstop, const vector<double>& Y)
+{
+   write_curve(Xstart, Xstop, Y, colorfunc::red);
+}
+
+void metafile::write_curve(
+   double Xstart, double Xstop, const vector<double>& Y,
+   colorfunc::Color curve_color)
 {
    vector<double> X;
    int n_samples = Y.size();
@@ -389,7 +397,7 @@ void metafile::write_curve(double Xstart, double Xstop, const vector<double>& Y)
       double curr_X = Xstart + i * (Xstop - Xstart) / double(n_samples - 1);
       X.push_back(curr_X);
    }
-   write_curve(X,Y,colorfunc::red);
+   write_curve(X,Y,curve_color);
 }
 
 void metafile::write_curve(const vector<double>& X,const vector<double>& Y)

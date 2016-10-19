@@ -126,6 +126,8 @@ class metafile
 
    void write_legendlabel(std::string label);
    void write_curve(double Xstart, double Xstop, const std::vector<double>& Y);
+   void write_curve(double Xstart, double Xstop, const std::vector<double>& Y,
+                    colorfunc::Color curve_color);
    void write_curve(const std::vector<double>& X,
                     const std::vector<double>& Y);
    void write_curve(
