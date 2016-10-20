@@ -79,6 +79,10 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
+      genmatrix *curr_weights_transpose = new genmatrix(
+         layer_dims[l], layer_dims[l+1]);
+      weights_transpose.push_back(curr_weights_transpose);
+
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       nabla_weights.push_back(curr_nabla_weights);
@@ -135,6 +139,7 @@ reinforce::~reinforce()
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       delete weights[l];
+      delete weights_transpose[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
@@ -296,8 +301,10 @@ void reinforce::policy_backward()
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
 
+      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
       delta_prime[prev_layer]->matrix_mult(
-         weights[prev_layer]->transpose(), *delta_prime[curr_layer]);
+         *weights_transpose[prev_layer], *delta_prime[curr_layer]);
+//         weights[prev_layer]->transpose(), *delta_prime[curr_layer]);
 
 //      cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
 //           << endl;

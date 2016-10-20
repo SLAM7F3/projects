@@ -31,7 +31,8 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
-   int H = 200 * n_zlevels;		// Number of hidden layer neurons
+   int H = 200;		// Number of hidden layer neurons (zlevels = 1)
+//   int H = 300; 	// Number of hidden layer neurons (zlevels > 1)
 //   int H = 150;			// Number of hidden layer neurons
 //   int H = 64;			// Number of hidden layer neurons
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality

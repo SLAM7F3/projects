@@ -2018,11 +2018,11 @@ genmatrix operator* (const genmatrix& A, const genmatrix& B)
 }
 
 // ---------------------------------------------------------------------
-// These next 3 implementations of matrix addition, matrix
-// multiplication and outer production accumulation are intentionally
-// stripped down to run as fast as possible.  They assume that input
-// matrices A and B have correct dimensions to be added/multiplied
-// together and put into *this.
+// These next implementations of matrix addition, matrix transpose,
+// matrix multiplication, outer production accumulation, etc are
+// intentionally stripped down to run as fast as possible.  They
+// assume that all input matrices have correct dimensions to be
+// added/multiplied together and put into *this.
 
 void genmatrix::matrix_sum(const genmatrix& A,const genmatrix& B)
 {
@@ -2042,6 +2042,17 @@ void genmatrix::matrix_increment(double alpha, const genmatrix& B)
       for (unsigned int j = 0; j < B.ndim; j++)
       {
          put(i, j, get(i, j) + alpha * B.get(i,j));
+      }
+   }
+}
+
+void genmatrix::matrix_transpose(const genmatrix& A)
+{
+   for (unsigned int i = 0; i < A.mdim; i++)
+   {
+      for (unsigned int j = 0; j < A.ndim; j++)
+      {
+         put(j, i, A.get(i,j));
       }
    }
 }

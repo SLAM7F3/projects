@@ -157,6 +157,7 @@ class genmatrix:public genarray
 
    void matrix_sum(const genmatrix& A, const genmatrix& B);
    void matrix_increment(double alpha, const genmatrix& B);
+   void matrix_transpose(const genmatrix& A);
    void matrix_mult(const genmatrix& A, const genmatrix& B);
    void matrix_column_mult(const genmatrix& A, const genmatrix& B, int bcol);
    void accumulate_outerprod(const genvector& A, const genvector& B);

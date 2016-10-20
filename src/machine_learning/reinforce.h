@@ -56,7 +56,8 @@ class reinforce
    double gamma;	// Discount factor for reward
    double rmsprop_decay_rate; // Decay factor for RMSProp leaky sum of grad**2
 
-   std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
+   std::vector<genmatrix*> weights, weights_transpose;
+   std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
 
