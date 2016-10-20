@@ -27,8 +27,9 @@ int main (int argc, char* argv[])
 
    int nsize = 4;
 //   int n_zlevels = 1;
-   int n_zlevels = 2;
+//   int n_zlevels = 2;
 //   int n_zlevels = 3;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
@@ -45,8 +46,8 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 
-//   int n_max_episodes = 1 * 1000000;
-   int n_max_episodes = 2 * 1000000;
+   int n_max_episodes = 1 * 1000000;
+//   int n_max_episodes = 2 * 1000000;
    int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;

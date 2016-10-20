@@ -53,8 +53,13 @@ learning_rate = 5.196E-4 definitely asymptotes to worse reward than 3E-4
 learning rate = 3E-4 yields quasi-decent but not great reward results
 		for 2 z-levels
 
-learning_rate = 1.73E-4 seems to yield slower learning than 3E-4
+learning_rate = Reward results reach same asymoptotic value as for 3E-4.
+		But learning is considerably slower than for 3E-4.
 
 learning_rate = 1E-4 is much worse than learning rate 3E-4
 
 
+
+*.  Fill_grid with max_n_episodes = 1E6, Din = Dout = 64 and H = 300
+finished (with terrible reward history) after 1 hour running on TM on
+10/20/16.  
