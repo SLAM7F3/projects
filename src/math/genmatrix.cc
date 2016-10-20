@@ -588,18 +588,15 @@ void genmatrix::hadamard_sum(double alpha)
 // Member function hadamard_division() divides each element of *this
 // by its corresponding element in input matrix D.  
 
-genmatrix genmatrix::hadamard_division(const genmatrix& D)
+void genmatrix::hadamard_division(const genmatrix& D)
 {
-   genmatrix B(mdim, ndim);
-   
    for (unsigned int m=0; m<mdim; m++)
    {
       for (unsigned int n=0; n<ndim; n++)
       {
-         B.put(m,n,get(m,n) / D.get(m,n));
+         put(m, n, get(m,n) / D.get(m,n));
       } // loop over index n
    } // loop over index m
-   return B;
 }
 
 // ---------------------------------------------------------------------

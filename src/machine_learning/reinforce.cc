@@ -484,9 +484,8 @@ void reinforce::update_weights(bool episode_finished_flag)
          denom.hadamard_sum(epsilon);
 //         cout << "l = " << l << " denom = " << denom << endl;
 
-//          nabla_weights[l]->hadamard_division(denom);
-         *weights[l] -= learning_rate * 
-            nabla_weights[l]->hadamard_division(denom);
+         nabla_weights[l]->hadamard_division(denom);
+         *weights[l] -= learning_rate * (*nabla_weights[l]);
          nabla_weights[l]->clear_values();
       }
 //       print_weights();
