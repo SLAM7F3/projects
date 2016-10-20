@@ -454,11 +454,10 @@ void reinforce::update_weights(bool episode_finished_flag)
 
 // Accumulate weights' gradients for each network layer:
 
+   double inverse_T = 1.0 / T;
    for(int l = 0; l < n_layers - 1; l++)
    {
-      *nabla_weights[l] += *delta_nabla_weights[l] / T;
-//      cout << "l = " << l << " nabla_weights[l] = " << *nabla_weights[l]
-//           << endl;
+      nabla_weights[l]->matrix_increment(inverse_T, *delta_nabla_weights[l]);
    }
    
 // Perform RMSprop parameter update every batch_size episodes:
@@ -467,11 +466,20 @@ void reinforce::update_weights(bool episode_finished_flag)
    {
       for(int l = 0; l < n_layers - 1; l++)
       {
-         *rmsprop_weights_cache[l] = 
-            rmsprop_decay_rate * (*rmsprop_weights_cache[l])
-            + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
-//         cout << "l = " << l << " rmsprop_weights_cache[l] = "
-//              << *rmsprop_weights_cache[l] << endl;
+//         *rmsprop_weights_cache[l] = 
+//            rmsprop_decay_rate * (*rmsprop_weights_cache[l])
+//            + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
+
+         for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
+         {
+            for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+            {
+               double curr_val = 
+                  rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
+                  + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
+               rmsprop_weights_cache[l]->put(i,j,curr_val);
+            } // loop over index j labeling columns
+         } // loop over index i labeling rows
       }
 
 // Update weights and biases for eacy network layer by their nabla
@@ -480,11 +488,10 @@ void reinforce::update_weights(bool episode_finished_flag)
       const double epsilon = 1E-5;
       for(int l = 0; l < n_layers - 1; l++)
       {
-         genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
-         denom.hadamard_sum(epsilon);
-//         cout << "l = " << l << " denom = " << denom << endl;
+         rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rms_denom[l]->hadamard_sum(epsilon);
+         nabla_weights[l]->hadamard_division(*rms_denom[l]);
 
-         nabla_weights[l]->hadamard_division(denom);
          *weights[l] -= learning_rate * (*nabla_weights[l]);
          nabla_weights[l]->clear_values();
       }

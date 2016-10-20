@@ -67,6 +67,7 @@ class genmatrix:public genarray
    genmatrix power(unsigned int n);
    genmatrix elementwise_product(const genmatrix& M);
    void elementwise_power(const genmatrix& M, double alpha);
+   void hadamard_sqrt(const genmatrix& M);
    genmatrix hadamard_power(double alpha);
    void hadamard_sum(double alpha);
    void hadamard_division(const genmatrix& D);
@@ -155,6 +156,7 @@ class genmatrix:public genarray
    friend genmatrix operator* (const genmatrix& A, const genmatrix& B);
 
    void matrix_sum(const genmatrix& A, const genmatrix& B);
+   void matrix_increment(double alpha, const genmatrix& B);
    void matrix_mult(const genmatrix& A, const genmatrix& B);
    void matrix_column_mult(const genmatrix& A, const genmatrix& B, int bcol);
    void accumulate_outerprod(const genvector& A, const genvector& B);

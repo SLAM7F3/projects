@@ -540,20 +540,17 @@ void genmatrix::elementwise_power(const genmatrix& M, double alpha)
    }
 }
 
-/*
 // ---------------------------------------------------------------------
-void genmatrix::hadamard_sqrt()
+void genmatrix::hadamard_sqrt(const genmatrix& M)
 {
    for (unsigned int m=0; m<mdim; m++)
    {
       for (unsigned int n=0; n<ndim; n++)
       {
-         put(m, n, sqrt(get(m,n)));
+         put(m, n, sqrt(M.get(m,n)));
       } // loop over index n
    } // loop over index m
 }
-*/
-
 
 // ---------------------------------------------------------------------
 genmatrix genmatrix::hadamard_power(double alpha)
@@ -2034,6 +2031,17 @@ void genmatrix::matrix_sum(const genmatrix& A,const genmatrix& B)
       for (unsigned int j = 0; j < A.ndim; j++)
       {
          put(i, j, A.get(i,j) + B.get(i,j));
+      }
+   }
+}
+
+void genmatrix::matrix_increment(double alpha, const genmatrix& B)
+{
+   for (unsigned int i = 0; i < B.mdim; i++)
+   {
+      for (unsigned int j = 0; j < B.ndim; j++)
+      {
+         put(i, j, get(i, j) + alpha * B.get(i,j));
       }
    }
 }
