@@ -25,7 +25,6 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
 //    nrfunc::init_time_based_seed();
 
-//   int nsize = 3;
    int nsize = 4;
    int n_zlevels = 1;
 //   int n_zlevels = 2;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 10/16/16; 10/17/16; 10/18/16; 10/19/16
+// Last modified on 10/17/16; 10/18/16; 10/19/16; 10/20/16
 // ==========================================================================
 
 #include <iostream>
@@ -598,8 +598,9 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
       denom.hadamard_sum(epsilon);
       
 // RMSprop
-      *weights[l] -= learning_rate * 
-         nabla_weights[l]->hadamard_division(denom);
+      nabla_weights[l]->hadamard_division(denom);
+      *weights[l] -= learning_rate * (*nabla_weights[l]);
+//         nabla_weights[l]->hadamard_division(denom);
 
 // Vanilla SGD
 //      *weights[l] -= learning_rate * (*nabla_weights[l]);

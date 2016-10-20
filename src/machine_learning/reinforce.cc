@@ -89,6 +89,9 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          layer_dims[l+1], layer_dims[l]);
       curr_rmsprop_weights->clear_values();
       rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+      genmatrix *curr_rms_denom = 
+         new genmatrix(layer_dims[l+1], layer_dims[l]);
+      rms_denom.push_back(curr_rms_denom);
 
 // Xavier initialize weights connecting network layers l and l+1 to be
 // gaussian random vars distributed according to N(0,1/sqrt(n_in)):
@@ -127,6 +130,15 @@ reinforce::~reinforce()
       delete z[l];
       delete a[l];
       delete delta_prime[l];
+   }
+
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      delete weights[l];
+      delete nabla_weights[l];
+      delete delta_nabla_weights[l];
+      delete rmsprop_weights_cache[l];
+      delete rms_denom[l];
    }
 
    delete p_action;
@@ -472,6 +484,7 @@ void reinforce::update_weights(bool episode_finished_flag)
          denom.hadamard_sum(epsilon);
 //         cout << "l = " << l << " denom = " << denom << endl;
 
+//          nabla_weights[l]->hadamard_division(denom);
          *weights[l] -= learning_rate * 
             nabla_weights[l]->hadamard_division(denom);
          nabla_weights[l]->clear_values();

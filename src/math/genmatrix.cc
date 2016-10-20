@@ -540,6 +540,21 @@ void genmatrix::elementwise_power(const genmatrix& M, double alpha)
    }
 }
 
+/*
+// ---------------------------------------------------------------------
+void genmatrix::hadamard_sqrt()
+{
+   for (unsigned int m=0; m<mdim; m++)
+   {
+      for (unsigned int n=0; n<ndim; n++)
+      {
+         put(m, n, sqrt(get(m,n)));
+      } // loop over index n
+   } // loop over index m
+}
+*/
+
+
 // ---------------------------------------------------------------------
 genmatrix genmatrix::hadamard_power(double alpha)
 {
