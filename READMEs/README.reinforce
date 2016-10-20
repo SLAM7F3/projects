@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/19/16
+Last updated on 10/19/16; 10/20/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -42,3 +42,19 @@ n_filled_cells = 16
  O | X | X | O 
 ----------------
  X | O | O | X 
+
+*.  On 10/20/16, we started experimenting with filling Z=2 levels of 4x4
+grids.  
+
+learning_rate = 1E-3 is much worse than learning rate 3E-4
+
+learning_rate = 5.196E-4 definitely asymptotes to worse reward than 3E-4
+
+learning rate = 3E-4 yields quasi-decent but not great reward results
+		for 2 z-levels
+
+learning_rate = 1.73E-4 seems to yield slower learning than 3E-4
+
+learning_rate = 1E-4 is much worse than learning rate 3E-4
+
+

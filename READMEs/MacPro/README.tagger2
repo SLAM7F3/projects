@@ -39,7 +39,7 @@ variant of Tomas' python script and chant
 	./build_s2d_editor -dst s2d_editor -ver 1000
 
 *.  On 10/5/16, Ross told us that the working directory for Mac apps is
-usually set to AppName.app/Contents/MacOS/.  He suggested plcing external
+usually set to AppName.app/Contents/MacOS/.  He suggested placing external
 chunk data zipfiles into AppName.app/Resources/ .  Then inside of our
 tagger2 pwin code , we are able to refer to those tile data files via
 chanting "../Resources/tile_filename.zip".
