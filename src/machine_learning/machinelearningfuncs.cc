@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/15/16; 10/16/16; 10/17/16; 10/19/16
+// Last updated on 10/16/16; 10/17/16; 10/19/16l 10/20/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -119,6 +119,18 @@ namespace machinelearning_func
       }
    }
 
+   void ReLU(int zcol, const genmatrix& Z, genmatrix& A)
+   {
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         double curr_Z = Z.get(i,zcol);
+         if(curr_Z > 0)
+         {
+            A.put(i, zcol, curr_Z);
+         }
+      }
+   }
+
 // --------------------------------------------------------------------------
    void softmax(const genvector& Z, genvector& A)
    {
@@ -169,6 +181,29 @@ namespace machinelearning_func
             A.put(i, j, A.get(i, j) / denom);
          }
       } // loop over index j labeling columns of genmatrices Z and A
+   }
+
+// --------------------------------------------------------------------------
+   void softmax(int zcol, const genmatrix& Z, genmatrix& A)
+   {
+      double Zmax = NEGATIVEINFINITY;
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         Zmax = basic_math::max(Zmax, Z.get(i,zcol));
+      }
+
+      double denom = 0;
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         double curr_exp = exp(Z.get(i,zcol) - Zmax);
+         denom += curr_exp;
+         A.put(i, zcol, curr_exp);
+      }
+      
+      for(unsigned int i = 0; i < A.get_mdim(); i++)
+      {
+         A.put(i, zcol, A.get(i, zcol) / denom);
+      }
    }
 
 // --------------------------------------------------------------------------

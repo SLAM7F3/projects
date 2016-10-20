@@ -76,8 +76,8 @@ class reinforce
 // Node errors:
    std::vector<genmatrix*> delta_prime;
 
-   genvector *p_action;		// n_actions x 1
-   genvector *pcum_action;	// n_actions x 1
+   genvector *p_action;		// n_actions x 1  
+   genvector *pcum_action;	// n_actions x 1  
 
 // Episode datastructures:
 

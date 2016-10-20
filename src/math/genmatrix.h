@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genmatrix class 
 // ==========================================================================
-// Last modified on 2/15/16; 10/12/16; 10/17/16; 10/19/16
+// Last modified on 10/12/16; 10/17/16; 10/19/16; 10/20/16
 // ==========================================================================
 
 #ifndef GENMATRIX_H
@@ -156,6 +156,7 @@ class genmatrix:public genarray
 
    void matrix_sum(const genmatrix& A, const genmatrix& B);
    void matrix_mult(const genmatrix& A, const genmatrix& B);
+   void matrix_column_mult(const genmatrix& A, const genmatrix& B, int bcol);
    void accumulate_outerprod(const genvector& A, const genvector& B);
 
   protected:

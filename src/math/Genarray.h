@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for templatized genarray class 
 // ==========================================================================
-// Last modified on 6/19/07; 10/17/08; 1/11/13; 3/28/14
+// Last modified on 6/19/07; 10/17/08; 1/11/13; 3/28/14; 10/20/16
 // ==========================================================================
 
 #ifndef T_GENARRAY_H
@@ -60,9 +60,9 @@ class Genarray:public Tensor<A>
 // http://gcc.gnu.org/gcc-3.4/changes.html, it is strongly recommended
 // that such names be made dependent by prefixing them with "this->".
 
-   void put(int m,int n,A value);
+//   void put(int m,int n,A value);
    void increment(int m,int n,A value);
-   A get(int m,int n) const;
+//   A get(int m,int n) const;
    void get_row(int m,A row[]) const;
    std::vector<A> get_row(int m) const;
    void put_row(int m,const std::vector<A>& row);
@@ -186,6 +186,7 @@ template <class A> inline void Genarray<A>::index_to_indices(
 }
 
 // ---------------------------------------------------------------------
+/*
 template <class A> inline void Genarray<A>::put(int m,int n,A value)
 {
 #ifdef DEBUGFLAG   
@@ -195,6 +196,7 @@ template <class A> inline void Genarray<A>::put(int m,int n,A value)
       this->put(ndim*m+n,value);
    }
 }
+*/
 
 template <class A> inline void Genarray<A>::increment(int m,int n,A value)
 {
@@ -206,6 +208,7 @@ template <class A> inline void Genarray<A>::increment(int m,int n,A value)
    }
 }
 
+/*
 template <class A> inline A Genarray<A>::get(int m,int n) const
 {
 #ifdef DEBUGFLAG
@@ -221,6 +224,7 @@ template <class A> inline A Genarray<A>::get(int m,int n) const
    }
 #endif
 }
+*/
 
 template <class A> inline A* Genarray<A>::get_ptr(int m,int n) const
 {

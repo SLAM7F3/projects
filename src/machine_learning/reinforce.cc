@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/11/16; 10/12/16; 10/18/16; 10/19/16
+// Last modified on 10/12/16; 10/18/16; 10/19/16; 10/20/16
 // ==========================================================================
 
 #include <string>
@@ -158,32 +158,14 @@ void reinforce::policy_forward(int t, genvector& x_input)
    a[0]->put_column(t, x_input);
 //   cout << "inside policy_forward, x_input = " << x_input << endl;
 
-   for(int l = 0; l < n_layers-1; l++)
+   for(int l = 0; l < n_layers-2; l++)
    {
-//      cout << "l = " << l << endl;
-      genmatrix* curr_weights = weights[l];
-//      genvector z_lplus1_t(*curr_weights * a[l]->get_column(t));
-//      genvector a_lplus1_t(z_lplus1_t.get_mdim());
-
-//      z[l+1]->put_column(t, z_lplus1_t);
-//      cout << "z[l+1, t] = " << z[l+1]->get_column(t) << endl;
-      *z[l+1] = *curr_weights * (*a[l]);
-
-// Perform soft-max classification on final-layer's weighted inputs:
-
-      if(l == n_layers - 2)
-      {
-//         machinelearning_func::softmax(z_lplus1_t, a_lplus1_t);
-         machinelearning_func::softmax(*z[l+1], *a[l+1]);
-      }
-      else // perform ReLU on hidden layer's weight inputs
-      {
-//         machinelearning_func::ReLU(z_lplus1_t, a_lplus1_t);
-         machinelearning_func::ReLU(*z[l+1], *a[l+1]);
-      }
-//      a[l+1]->put_column(t, a_lplus1_t);
-//      cout << "a[l+1] = " << a[l+1]->get_column(t) << endl;
+      z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+      machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
    }
+
+   z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
+   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
 }
 
 // ---------------------------------------------------------------------
