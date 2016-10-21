@@ -44,13 +44,14 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //    learning_rate = 1E-3;  // Terrible for 2 z-levels
 
 //   learning_rate = 5.196E-4;  
-//   learning_rate = 3E-4;  // Much better than 1E-4 for 1 z-level!!!
-   learning_rate = 1.732E-4;  
+   learning_rate = 3E-4;  // Much better than 1E-4 for 1 z-level!!!
+//   learning_rate = 1.732E-4;  
 //    learning_rate = 1E-4;  // Bad for 2 z-levels
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
 //   lambda = 0.001;	// L2 regularization coefficient
 //   gamma = 0.99;	// Discount factor for reward
-   gamma = 0.90;	// Discount factor for reward
+//   gamma = 0.90;	// Discount factor for reward
+   gamma = 0.70;	// Discount factor for reward
    rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
    
