@@ -65,3 +65,7 @@ than gamma = 0.7
 
 Running reward --> 1 for Z=2 levels with learning_rate = 0.003, gamma = 0.5
 and rmsprop_decay = 0.9 !!!
+
+Z=2 levels with two hidden layers containing 128 nodes, learning_rate =
+0.003, gamma = 0.5 and rmsprop_decay = 0.9 yields terrible results.
+
