@@ -28,8 +28,8 @@ int main (int argc, char* argv[])
 
    int nsize = 4;
 //   int n_zlevels = 1;
-   int n_zlevels = 2;
-//   int n_zlevels = 3;
+//   int n_zlevels = 2;
+   int n_zlevels = 3;
 //   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
@@ -39,24 +39,31 @@ int main (int argc, char* argv[])
    int Tmax = nsize * nsize * n_zlevels;
 
    int H1 = 300;
-//   int H1 = 256;
-   int H2 = 150;
+//   int H2 = 300;
+   int H2 = 100;
 //   int H2 = 128;
 //   int H = 150;			// Number of hidden layer neurons
 
-   string extrainfo="H1="+stringfunc::number_to_string(H1);
+//   string extrainfo="H1="+stringfunc::number_to_string(H1);
+   string extrainfo="H1="+stringfunc::number_to_string(H1)+
+      "; H2="+stringfunc::number_to_string(H2);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
-//   layer_dims.push_back(H2);
+   layer_dims.push_back(H2);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
-   reinforce_ptr->set_learning_rate(3E-4);
+//   reinforce_ptr->set_learning_rate(3E-4);
+   reinforce_ptr->set_learning_rate(1E-4);
+//   reinforce_ptr->set_learning_rate(3E-5);
 
-   int n_max_episodes = 1 * 1000000;
-//  int n_max_episodes = 3 * 1000000;
+//   int n_max_episodes = 1 * 1000000;
+//   int n_max_episodes = 2 * 1000000;
+//   int n_max_episodes = 3 * 1000000;
+//  int n_max_episodes = 4 * 1000000;
+  int n_max_episodes = 6 * 1000000;
    int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;
@@ -131,7 +138,7 @@ int main (int argc, char* argv[])
       {
          cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
               << endl;
-         ttt_ptr->display_board_state();
+//          ttt_ptr->display_board_state();
          
          double win_frac = double(n_wins) / n_episodes;
          cout << "n_episodes = " << n_episodes 
@@ -151,7 +158,7 @@ int main (int argc, char* argv[])
 
       if(reinforce_ptr->get_episode_number() % 50000 == 0)
       {
-
+         reinforce_ptr->compute_weight_distributions();
          reinforce_ptr->plot_loss_history(extrainfo);
          reinforce_ptr->plot_reward_history(extrainfo);
          reinforce_ptr->plot_turns_history(extrainfo);

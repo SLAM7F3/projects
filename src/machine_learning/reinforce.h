@@ -39,6 +39,7 @@ class reinforce
    void update_running_reward();
 
    void print_weights();
+   void compute_weight_distributions();
    void plot_loss_history(std::string extrainfo);
    void plot_reward_history(std::string extrainfo);
    void plot_turns_history(std::string extrainfo);

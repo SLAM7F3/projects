@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/19/16; 10/20/16; 10/21/16
+Last updated on 10/19/16; 10/20/16; 10/21/16; 10/22/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -64,11 +64,16 @@ Discount rate = 0.5 yields even faster (but also no better) convergence
 than gamma = 0.7
 
 Running reward --> 1 for Z=2 levels with learning_rate = 0.003, gamma = 0.5
-and rmsprop_decay = 0.9 !!!
+and rmsprop_decay = 0.9, H1 = 300 !!!  Turns history frac --> 1
+
+Running reward --> 0.6 for Z=2 levels with learning_rate = 0.003, gamma = 0.5
+and rmsprop_decay = 0.9, H1 = 256.  This is definitely not as good as H1 =
+300 !
+
+
 
 Z=2 levels with two hidden layers containing 128 nodes, learning_rate =
 0.003, gamma = 0.5 and rmsprop_decay = 0.9 yields terrible results.
-
 
 
 ------------------------------------------
@@ -80,9 +85,74 @@ falls  - definite worse than learning_rate = 0.0003 !!!
 Z=2 levels with H1 = 256, H2 = 128, learning_rate =
 0.0003, gamma = 0.5 and rmsprop_decay = 0.9: n_turns_frac --> 0.86
 
-
 Z=2 levels with H1 = 256, H2 = 128, learning_rate =
 0.0001, gamma = 0.5 and rmsprop_decay = 0.9 .  Comparable performance to
 learning_rate = 3E-4.
+
+------------------------------------------
+*.  Z=2 levels with H1 = 300, H2 = 300, learning_rate =
+0.0003, gamma = 0.5 and rmsprop_decay = 0.9 .   Turns history frac
+asymptotes to 0.8 and definitely not 1!
+
+*.  Z=2 levels with H1 = 300, H2 = 150, learning_rate =
+0.0003, gamma = 0.5 and rmsprop_decay = 0.9 .   Turns history frac
+asymptotes to 0.8.  
+
+layer = 0 wlo = -2.1208 w_05 = -0.302912 w_25 = -0.0958052
+   w_50 = 0.0241359 w_75 = 0.193846 w_95 = 0.437919 whi = 3.84919
+layer = 1 wlo = -1.39498 w_05 = -0.365861 w_25 = -0.128735
+   w_50 = 0.0142132 w_75 = 0.160051 w_95 = 0.41266 whi = 1.56651
+layer = 2 wlo = -2.33946 w_05 = -0.115958 w_25 = 0.359509
+   w_50 = 1.10251 w_75 = 1.45926 w_95 = 1.82759 whi = 3.02317
+48.74 minutes 
+
+*.  Z=2 levels with H1 = 300, H2 = 150, learning_rate =
+0.0001, gamma = 0.5 and rmsprop_decay = 0.9 .   Turns history frac
+asymptotes to 0.86.  Better than learning_rate = 3E-4.
+
+layer = 0 wlo = -1.49288 w_05 = -0.392911 w_25 = -0.110789
+   w_50 = 0.00682151 w_75 = 0.117715 w_95 = 0.359205 whi = 1.69722
+layer = 1 wlo = -0.733989 w_05 = -0.200402 w_25 = -0.075696
+   w_50 = 0.00378144 w_75 = 0.0886445 w_95 = 0.240782 whi = 0.691564
+layer = 2 wlo = -0.80083 w_05 = 0.340652 w_25 = 0.529501
+   w_50 = 0.659939 w_75 = 0.813973 w_95 = 1.11432 whi = 1.43289
+46.36 minutes 
+
+*.  Z=2 levels with H1 = 300, H2 = 150, learning_rate =
+3E-5, gamma = 0.5 and rmsprop_decay = 0.9 .   Turns history frac
+asymptotes to 0.86.  
+
+*.  Z=2 levels with H1 = 300, H2 = 150, learning_rate =
+1E-5, gamma = 0.5 and rmsprop_decay = 0.9 .   Turns history frac
+reaches 0.6 after 1E6 episodes and appears to keep climbing.
+
+layer = 0 wlo = -1.02333 w_05 = -0.351843 w_25 = -0.117336
+   w_50 = -0.000639077 w_75 = 0.102129 w_95 = 0.335207 whi = 1.11941
+layer = 1 wlo = -0.431056 w_05 = -0.130479 w_25 = -0.0465206
+   w_50 = 0.0104769 w_75 = 0.067586 w_95 = 0.153783 whi = 0.418167
+layer = 2 wlo = -0.545656 w_05 = 0.0155456 w_25 = 0.153152
+   w_50 = 0.246818 w_75 = 0.335681 w_95 = 0.441951 whi = 0.634136
+39 minutes
+
+*.  Z=2 levels with H1 = 300, H2 = 150, learning_rate =
+1E-4, gamma = 0.5 and rmsprop_decay = 0.8 .   Loss function trending 
+downwards after 3E6 time steps.  Turn frac slowly trending upwards after
+3E6 time steps.  Running reward barely trending upwards after 3E6 time
+steps.  
+
+layer = 0 wlo = -1.54267 w_05 = -0.401816 w_25 = -0.0836706
+   w_50 = 0.0355871 w_75 = 0.159377 w_95 = 0.403266 whi = 2.61627
+layer = 1 wlo = -1.56276 w_05 = -0.346325 w_25 = -0.123086
+   w_50 = -0.00198429 w_75 = 0.138039 w_95 = 0.470898 whi = 1.75089
+layer = 2 wlo = -3.11902 w_05 = -0.0498786 w_25 = 1.10344
+   w_50 = 1.97315 w_75 = 2.67847 w_95 = 3.30435 whi = 5.04899
+
+143 minutes
+
+*.  Z=2 levels with H1 = 300, H2 = 100, learning_rate =
+1E-4, gamma = 0.5 and rmsprop_decay = 0.9 .   Loss function trending 
+downwards after 3E6 time steps.  Turn frac slowly trending upwards after
+3E6 time steps.  Running reward barely trending upwards after 3E6 time
+steps.
 
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/12/16; 10/18/16; 10/19/16; 10/20/16
+// Last modified on 10/18/16; 10/19/16; 10/20/16; 10/22/16
 // ==========================================================================
 
 // random comment
@@ -13,6 +13,7 @@
 #include "machine_learning/machinelearningfuncs.h"
 #include "plot/metafile.h"
 #include "numrec/nrfuncs.h"
+#include "math/prob_distribution.h"
 #include "machine_learning/reinforce.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
@@ -53,6 +54,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   lambda = 0.001;	// L2 regularization coefficient
 //   gamma = 0.99;	// Discount factor for reward
    gamma = 0.5;	// Discount factor for reward
+//   rmsprop_decay_rate = 0.8;
    rmsprop_decay_rate = 0.9;
    // rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
@@ -548,6 +550,41 @@ void reinforce::print_weights()
 }
 
 // ---------------------------------------------------------------------
+void reinforce::compute_weight_distributions()
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      vector<double> weight_values;
+      for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+      {
+         for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+         {
+            weight_values.push_back(weights[l]->get(r,c));
+         }
+      }
+      int nbins = 500;
+      double wlo = mathfunc::minimal_value(weight_values);
+      double whi = mathfunc::maximal_value(weight_values);
+      prob_distribution prob_weights(nbins, wlo, whi, weight_values);
+
+      double w_05 = prob_weights.find_x_corresponding_to_pcum(0.05);
+      double w_25 = prob_weights.find_x_corresponding_to_pcum(0.25);
+      double w_median = prob_weights.median();
+      double w_75 = prob_weights.find_x_corresponding_to_pcum(0.75);
+      double w_95 = prob_weights.find_x_corresponding_to_pcum(0.95);
+      cout << "layer = " << l
+           << " wlo = " << wlo
+           << " w_05 = " << w_05
+           << " w_25 = " << w_25 << endl;
+      cout << "   w_50 = " << w_median
+           << " w_75 = " << w_75
+           << " w_95 = " << w_95 
+           << " whi = " << whi
+           << endl;
+   }
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of loss values versus time step samples.
 
 void reinforce::plot_loss_history(std::string extrainfo)
@@ -571,7 +608,7 @@ void reinforce::plot_loss_history(std::string extrainfo)
    string meta_filename="loss_history";
    string title="Loss vs RMSprop model training";
    string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
    subtitle += " "+extrainfo;
@@ -630,7 +667,7 @@ void reinforce::plot_reward_history(std::string extrainfo)
    string meta_filename="reward_history";
    string title="Running reward sum vs RMSprop model training";
    string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
    subtitle += " "+extrainfo;
@@ -686,7 +723,7 @@ void reinforce::plot_turns_history(std::string extrainfo)
    string meta_filename="turns_history";
    string title="Number of AI and agent turns vs episode";
    string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
    subtitle += " "+extrainfo;
