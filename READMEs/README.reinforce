@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/19/16; 10/20/16
+Last updated on 10/19/16; 10/20/16; 10/21/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -58,8 +58,10 @@ learning_rate = Reward results reach same asymoptotic value as for 3E-4.
 
 learning_rate = 1E-4 is much worse than learning rate 3E-4
 
+Discount rate = 0.7 yields faster (but not better) convergence to
+asymptotic running reward sum around 0.4 than discount rate = 0.9.
+Discount rate = 0.5 yields even faster (but also no better) convergence
+than gamma = 0.7
 
-
-*.  Fill_grid with max_n_episodes = 1E6, Din = Dout = 64 and H = 300
-finished (with terrible reward history) after 1 hour running on TM on
-10/20/16.  
+Running reward --> 1 for Z=2 levels with learning_rate = 0.003, gamma = 0.5
+and rmsprop_decay = 0.9 !!!
