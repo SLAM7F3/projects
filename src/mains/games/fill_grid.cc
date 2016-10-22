@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/12/16; 10/18/16
+// Last updated on 10/12/16; 10/18/16; 10/22/16
 // ==========================================================================
 
 #include <iostream>
@@ -31,12 +31,13 @@ int main (int argc, char* argv[])
 //   int n_zlevels = 3;
 //   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
-
+   int n_max_turns = nsize * nsize * n_zlevels;
+   
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
 //   int H = 200;		// Number of hidden layer neurons (zlevels = 1)
 //   int H = 300; 	// Number of hidden layer neurons (zlevels > 1)
-   int H = 500;
-   int H1 = 128;
+//   int H = 500;
+   int H1 = 256;
    int H2 = 128;
 //   int H = 150;			// Number of hidden layer neurons
 //   int H = 64;			// Number of hidden layer neurons
@@ -50,8 +51,8 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 //
-//   int n_max_episodes = 1 * 1000000;
-  int n_max_episodes = 3 * 1000000;
+   int n_max_episodes = 1 * 1000000;
+//  int n_max_episodes = 3 * 1000000;
    int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;
@@ -69,6 +70,7 @@ int main (int argc, char* argv[])
       while(true)
       {
          ttt_ptr->get_random_legal_AI_move();
+         ttt_ptr->increment_n_AI_turns();
 //          ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over())
          {
@@ -80,6 +82,7 @@ int main (int argc, char* argv[])
          int output_action = reinforce_ptr->compute_current_action(
             ttt_ptr->get_board_state_ptr());
 //          cout << "output_action = " << output_action << endl;
+         ttt_ptr->increment_n_agent_turns();
 
 // Step the environment and then retrieve new reward measurements:
 
@@ -103,6 +106,7 @@ int main (int argc, char* argv[])
             break;
          }
       } // !game_over while loop
+
 
       if(ttt_ptr->get_score() == -1)
       {
@@ -133,14 +137,20 @@ int main (int argc, char* argv[])
               << endl;
       }
 
+      if(curr_episode_number % 2000 == 0)
+      {
+         double curr_n_turns_frac = double(
+            ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
+            n_max_turns;
+         reinforce_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
+      }
+
       if(reinforce_ptr->get_episode_number() % 50000 == 0)
       {
          reinforce_ptr->plot_loss_history();
          reinforce_ptr->plot_reward_history();
+         reinforce_ptr->plot_turns_history();
       }
-
-//       outputfunc::enter_continue_char();
-
    } // n_episodes < n_max_episodes while loop
 
    int n_episodes = reinforce_ptr->get_episode_number();

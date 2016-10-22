@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 8/29/16; 9/12/16; 10/12/16; 10/18/16
+// Last modified on 9/12/16; 10/12/16; 10/18/16; 10/22/16
 // ==========================================================================
 
 #include <iostream>
@@ -264,6 +264,7 @@ void tictac3d::get_random_legal_AI_move()
 // ---------------------------------------------------------------------
 void tictac3d::reset_board_state()
 {
+   n_AI_turns = n_agent_turns = 0;
    curr_board_state.clear();
    winning_posns_map.clear();
    for(int pz = 0; pz < n_zlevels; pz++)

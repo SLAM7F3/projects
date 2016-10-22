@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/12/16; 10/17/16; 10/18/16; 10/19/16
+// Last modified on 10/17/16; 10/18/16; 10/19/16; 10/22/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -29,6 +29,7 @@ class reinforce
 
    int get_episode_number() const;
    void increment_episode_number();
+   void append_n_episode_turns_frac(double curr_n_turns_frac);
 
    void initialize_episode();
    int compute_current_action(genvector* input_state_ptr);
@@ -39,6 +40,7 @@ class reinforce
    void print_weights();
    void plot_loss_history();
    void plot_reward_history();
+   void plot_turns_history();
 
   private:
 
@@ -85,6 +87,7 @@ class reinforce
 
    std::vector<double> time_samples;
    std::vector<double> loss_values;
+   std::vector<double> n_episode_turns_frac;
 
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
@@ -118,6 +121,11 @@ inline int reinforce::get_episode_number() const
 inline void reinforce::increment_episode_number() 
 {
    episode_number++;
+}
+
+inline void reinforce::append_n_episode_turns_frac(double frac)
+{
+   n_episode_turns_frac.push_back(frac);
 }
 
 #endif  // reinforce.h

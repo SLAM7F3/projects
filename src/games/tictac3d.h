@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 8/29/16; 9/12/16; 10/12/16; 10/18/16
+// Last modified on 9/12/16; 10/12/16; 10/18/16; 10/22/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -34,6 +34,11 @@ class tictac3d
    bool get_game_over() const;
    genvector* get_board_state_ptr();
 
+   void increment_n_AI_turns();
+   int get_n_AI_turns() const;
+   void increment_n_agent_turns();
+   int get_n_agent_turns() const;
+
    void reset_board_state();
    void randomize_board_state();
    void display_board_state();
@@ -50,6 +55,7 @@ class tictac3d
    bool game_over;
    int n_size;
    int n_zlevels;
+   int n_AI_turns, n_agent_turns;
    double curr_score;
    std::vector<int> curr_board_state;
    genvector* board_state_ptr;
@@ -61,6 +67,7 @@ class tictac3d
 
    void allocate_member_objects();
    void initialize_member_objects();
+
 
    int get_cell_value(triple t) const;
    int get_cell_value(int px, int py, int pz) const;
@@ -106,6 +113,25 @@ inline bool tictac3d::get_game_over() const
    return game_over;
 }
 
+inline void tictac3d::increment_n_AI_turns()
+{
+   n_AI_turns++;
+}
+
+inline int tictac3d::get_n_AI_turns() const
+{
+   return n_AI_turns;
+}
+
+inline void tictac3d::increment_n_agent_turns()
+{
+   n_agent_turns++;
+}
+
+inline int tictac3d::get_n_agent_turns() const
+{
+   return n_agent_turns;
+}
 
 #endif  // tictac3d.h
 

@@ -605,7 +605,7 @@ void reinforce::plot_loss_history()
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of running reward sum versus episode number.
+// Generate metafile plot of running reward sum versus time step samples.
 
 void reinforce::plot_reward_history()
 {
@@ -650,6 +650,62 @@ void reinforce::plot_reward_history()
    curr_metafile.set_thickness(3);
    curr_metafile.write_curve(
       time_samples, smoothed_reward_snapshots, colorfunc::blue);
+
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of total number of turns versus episode number.
+
+void reinforce::plot_turns_history()
+{
+
+// Temporally smooth noisy turns fraction values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   vector<double> smoothed_n_episode_turns_frac;
+   filterfunc::brute_force_filter(
+      n_episode_turns_frac, h, smoothed_n_episode_turns_frac, 
+      wrap_around_input_values);
+
+   metafile curr_metafile;
+   string meta_filename="turns_history";
+   string title="Number of AI and agent turns vs episode";
+   string subtitle=
+      "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "; gamma="+stringfunc::number_to_string(gamma,3)+
+      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   string x_label="Episode";
+   string y_label="Number of AI + agent turns";
+
+   double min_turn_frac = 0;
+   double max_turn_frac = 1;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, episode_number,
+      min_turn_frac, max_turn_frac);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, episode_number, n_episode_turns_frac);
+   curr_metafile.set_thickness(3);
+   curr_metafile.write_curve(
+      0, episode_number, smoothed_n_episode_turns_frac, colorfunc::blue);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
