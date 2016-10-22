@@ -11,6 +11,7 @@
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "machine_learning/reinforce.h"
+#include "general/stringfuncs.h"
 #include "games/tictac3d.h"
 #include "time/timefuncs.h"
 
@@ -32,25 +33,28 @@ int main (int argc, char* argv[])
 //   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
-   
+
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
-//   int H = 200;		// Number of hidden layer neurons (zlevels = 1)
-//   int H = 300; 	// Number of hidden layer neurons (zlevels > 1)
-//   int H = 500;
-   int H1 = 256;
-   int H2 = 128;
-//   int H = 150;			// Number of hidden layer neurons
-//   int H = 64;			// Number of hidden layer neurons
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
+
+   int H1 = 300;
+//   int H1 = 256;
+   int H2 = 150;
+//   int H2 = 128;
+//   int H = 150;			// Number of hidden layer neurons
+
+   string extrainfo="H1="+stringfunc::number_to_string(H1);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
-   layer_dims.push_back(H2);
+//   layer_dims.push_back(H2);
    layer_dims.push_back(Dout);
+
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
-//
+   reinforce_ptr->set_learning_rate(3E-4);
+
    int n_max_episodes = 1 * 1000000;
 //  int n_max_episodes = 3 * 1000000;
    int n_update = 0.01 * n_max_episodes;
@@ -147,9 +151,10 @@ int main (int argc, char* argv[])
 
       if(reinforce_ptr->get_episode_number() % 50000 == 0)
       {
-         reinforce_ptr->plot_loss_history();
-         reinforce_ptr->plot_reward_history();
-         reinforce_ptr->plot_turns_history();
+
+         reinforce_ptr->plot_loss_history(extrainfo);
+         reinforce_ptr->plot_reward_history(extrainfo);
+         reinforce_ptr->plot_turns_history(extrainfo);
       }
    } // n_episodes < n_max_episodes while loop
 

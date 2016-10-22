@@ -43,12 +43,12 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    batch_size = 10;	// Perform parameter update after this many episodes
 //   batch_size = 5;	// Perform parameter update after this many episodes
 //   learning_rate = 3E-3;  // Seems worse than 1E-4
-//    learning_rate = 1E-3;  // Terrible for 2 z-levels
+//   learning_rate = 1E-3;  // Terrible for 2 z-levels
 
 //   learning_rate = 5.196E-4;  
-   learning_rate = 3E-4;  // Much better than 1E-4 for 1 z-level!!!
+//   learning_rate = 3E-4;  // Much better than 1E-4 for 1 z-level!!!
 //   learning_rate = 1.732E-4;  
-//    learning_rate = 1E-4;  // Bad for 2 z-levels
+   learning_rate = 1E-4;  //
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
 //   lambda = 0.001;	// L2 regularization coefficient
 //   gamma = 0.99;	// Discount factor for reward
@@ -550,7 +550,7 @@ void reinforce::print_weights()
 // ---------------------------------------------------------------------
 // Generate metafile plot of loss values versus time step samples.
 
-void reinforce::plot_loss_history()
+void reinforce::plot_loss_history(std::string extrainfo)
 {
 
 // Temporally smooth noisy loss values:
@@ -571,9 +571,10 @@ void reinforce::plot_loss_history()
    string meta_filename="loss_history";
    string title="Loss vs RMSprop model training";
    string subtitle=
-      "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "learning rate="+stringfunc::number_to_string(learning_rate,4)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   subtitle += " "+extrainfo;
    string x_label="Time step";
    string y_label="Loss";
 
@@ -607,7 +608,7 @@ void reinforce::plot_loss_history()
 // ---------------------------------------------------------------------
 // Generate metafile plot of running reward sum versus time step samples.
 
-void reinforce::plot_reward_history()
+void reinforce::plot_reward_history(std::string extrainfo)
 {
 
 // Temporally smooth noisy loss values:
@@ -629,9 +630,10 @@ void reinforce::plot_reward_history()
    string meta_filename="reward_history";
    string title="Running reward sum vs RMSprop model training";
    string subtitle=
-      "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "learning rate="+stringfunc::number_to_string(learning_rate,4)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   subtitle += " "+extrainfo;
    string x_label="Time step";
    string y_label="Running reward sum";
 
@@ -659,11 +661,10 @@ void reinforce::plot_reward_history()
    sysfunc::unix_command(unix_cmd);
 }
 
-
 // ---------------------------------------------------------------------
 // Generate metafile plot of total number of turns versus episode number.
 
-void reinforce::plot_turns_history()
+void reinforce::plot_turns_history(std::string extrainfo)
 {
 
 // Temporally smooth noisy turns fraction values:
@@ -685,9 +686,10 @@ void reinforce::plot_turns_history()
    string meta_filename="turns_history";
    string title="Number of AI and agent turns vs episode";
    string subtitle=
-      "Learning rate="+stringfunc::number_to_string(learning_rate,4)+
+      "learning rate="+stringfunc::number_to_string(learning_rate,4)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   subtitle += " "+extrainfo;
    string x_label="Episode";
    string y_label="Number of AI + agent turns";
 

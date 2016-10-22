@@ -69,3 +69,20 @@ and rmsprop_decay = 0.9 !!!
 Z=2 levels with two hidden layers containing 128 nodes, learning_rate =
 0.003, gamma = 0.5 and rmsprop_decay = 0.9 yields terrible results.
 
+
+
+------------------------------------------
+Z=2 levels with H1 = 256, H2 = 128, learning_rate =
+0.0010, gamma = 0.5 and rmsprop_decay = 0.9.  Turns history rises and then
+falls  - definite worse than learning_rate = 0.0003 !!!
+
+
+Z=2 levels with H1 = 256, H2 = 128, learning_rate =
+0.0003, gamma = 0.5 and rmsprop_decay = 0.9: n_turns_frac --> 0.86
+
+
+Z=2 levels with H1 = 256, H2 = 128, learning_rate =
+0.0001, gamma = 0.5 and rmsprop_decay = 0.9 .  Comparable performance to
+learning_rate = 3E-4.
+
+

@@ -30,6 +30,7 @@ class reinforce
    int get_episode_number() const;
    void increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
+   void set_learning_rate(double rate);
 
    void initialize_episode();
    int compute_current_action(genvector* input_state_ptr);
@@ -38,9 +39,9 @@ class reinforce
    void update_running_reward();
 
    void print_weights();
-   void plot_loss_history();
-   void plot_reward_history();
-   void plot_turns_history();
+   void plot_loss_history(std::string extrainfo);
+   void plot_reward_history(std::string extrainfo);
+   void plot_turns_history(std::string extrainfo);
 
   private:
 
@@ -96,7 +97,7 @@ class reinforce
    double reward_sum;
    std::vector<double> running_reward_snapshots;
    int episode_number;
-   
+
    void policy_forward(int t, genvector& x_input);
    void get_softmax_action_probs(int t) const;
    double compute_loss(int t) const;
@@ -126,6 +127,11 @@ inline void reinforce::increment_episode_number()
 inline void reinforce::append_n_episode_turns_frac(double frac)
 {
    n_episode_turns_frac.push_back(frac);
+}
+
+inline void reinforce::set_learning_rate(double rate)
+{
+   learning_rate = rate;
 }
 
 #endif  // reinforce.h
