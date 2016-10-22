@@ -52,9 +52,9 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
 //   lambda = 0.001;	// L2 regularization coefficient
 //   gamma = 0.99;	// Discount factor for reward
-//   gamma = 0.90;	// Discount factor for reward
-   gamma = 0.70;	// Discount factor for reward
-   rmsprop_decay_rate = 0.95; 
+   gamma = 0.5;	// Discount factor for reward
+   rmsprop_decay_rate = 0.9;
+   // rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
    
    running_reward = -1000;
