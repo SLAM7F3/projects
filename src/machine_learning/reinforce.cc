@@ -55,7 +55,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   gamma = 0.99;	// Discount factor for reward
    gamma = 0.5;	// Discount factor for reward
 //   rmsprop_decay_rate = 0.8;
-   rmsprop_decay_rate = 0.9;
+   rmsprop_decay_rate = 0.85;
+//   rmsprop_decay_rate = 0.9;
    // rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
    

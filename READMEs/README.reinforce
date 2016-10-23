@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/19/16; 10/20/16; 10/21/16; 10/22/16
+Last updated on 10/19/16; 10/20/16; 10/21/16; 10/22/16; 10/23/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -154,5 +154,12 @@ layer = 2 wlo = -3.11902 w_05 = -0.0498786 w_25 = 1.10344
 downwards after 3E6 time steps.  Turn frac slowly trending upwards after
 3E6 time steps.  Running reward barely trending upwards after 3E6 time
 steps.
+
+*.  Z=2 levels with H1 = 300, H2 = 80, learning_rate =
+1E-4, gamma = 0.5 and rmsprop_decay = 0.85, tmax = 10**7.  Ran for 5.9
+hours on m6700 laptop.  Running reward asymptotes around 0.  Loss function
+decreases till t = 8E6.  Turns function asymptotes around 1 around t =
+7E6.  
+
 
 

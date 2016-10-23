@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/12/16; 10/18/16; 10/22/16
+// Last updated on 10/12/16; 10/18/16; 10/22/16; 10/23/16
 // ==========================================================================
 
 #include <iostream>
@@ -29,8 +29,8 @@ int main (int argc, char* argv[])
    int nsize = 4;
 //   int n_zlevels = 1;
 //   int n_zlevels = 2;
-   int n_zlevels = 3;
-//   int n_zlevels = 4;
+//   int n_zlevels = 3;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
 
@@ -40,13 +40,16 @@ int main (int argc, char* argv[])
 
    int H1 = 300;
 //   int H2 = 300;
-   int H2 = 100;
+//   int H2 = 100;
+   int H2 = 64;
+//   int H2 = 80;
 //   int H2 = 128;
 //   int H = 150;			// Number of hidden layer neurons
 
 //   string extrainfo="H1="+stringfunc::number_to_string(H1);
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
-      "; H2="+stringfunc::number_to_string(H2);
+      "; H2="+stringfunc::number_to_string(H2)+
+      "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -63,7 +66,8 @@ int main (int argc, char* argv[])
 //   int n_max_episodes = 2 * 1000000;
 //   int n_max_episodes = 3 * 1000000;
 //  int n_max_episodes = 4 * 1000000;
-  int n_max_episodes = 6 * 1000000;
+//  int n_max_episodes = 10 * 1000000;
+  int n_max_episodes = 15 * 1000000;
    int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;
