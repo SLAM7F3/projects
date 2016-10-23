@@ -38,15 +38,17 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
+//   int H1 = 256;
    int H1 = 300;
+//   int H1 = 700;
 //   int H2 = 300;
 //   int H2 = 100;
-   int H2 = 64;
+//   int H2 = 64;
 //   int H2 = 80;
+   int H2 = 100;
 //   int H2 = 128;
 //   int H = 150;			// Number of hidden layer neurons
 
-//   string extrainfo="H1="+stringfunc::number_to_string(H1);
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
       "; zlevels="+stringfunc::number_to_string(n_zlevels);
@@ -54,11 +56,11 @@ int main (int argc, char* argv[])
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
-   layer_dims.push_back(H2);
+//   layer_dims.push_back(H2);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
-//   reinforce_ptr->set_learning_rate(3E-4);
+//    reinforce_ptr->set_learning_rate(3E-4);
    reinforce_ptr->set_learning_rate(1E-4);
 //   reinforce_ptr->set_learning_rate(3E-5);
 
@@ -80,7 +82,7 @@ int main (int argc, char* argv[])
 
       int curr_episode_number = reinforce_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
-         reinforce_ptr->get_episode_number(), n_update, n_max_episodes);
+         reinforce_ptr->get_episode_number(), 50000, n_max_episodes);
       
       while(true)
       {

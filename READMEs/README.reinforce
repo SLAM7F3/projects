@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/19/16; 10/20/16; 10/21/16; 10/22/16; 10/23/16
+Last updated on 10/20/16; 10/21/16; 10/22/16; 10/23/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -70,11 +70,8 @@ Running reward --> 0.6 for Z=2 levels with learning_rate = 0.003, gamma = 0.5
 and rmsprop_decay = 0.9, H1 = 256.  This is definitely not as good as H1 =
 300 !
 
-
-
 Z=2 levels with two hidden layers containing 128 nodes, learning_rate =
 0.003, gamma = 0.5 and rmsprop_decay = 0.9 yields terrible results.
-
 
 ------------------------------------------
 Z=2 levels with H1 = 256, H2 = 128, learning_rate =
@@ -90,6 +87,9 @@ Z=2 levels with H1 = 256, H2 = 128, learning_rate =
 learning_rate = 3E-4.
 
 ------------------------------------------
+Z = 2 levels
+------------------------------------------
+
 *.  Z=2 levels with H1 = 300, H2 = 300, learning_rate =
 0.0003, gamma = 0.5 and rmsprop_decay = 0.9 .   Turns history frac
 asymptotes to 0.8 and definitely not 1!
@@ -160,6 +160,41 @@ steps.
 hours on m6700 laptop.  Running reward asymptotes around 0.  Loss function
 decreases till t = 8E6.  Turns function asymptotes around 1 around t =
 7E6.  
+
+------------------------------------------
+Z = 3 levels
+------------------------------------------
+
+*.  Z=3 levels with H1 = 400, learning_rate = 1E-4, gamma = 0.5 and
+rmsprop_decay = 0.85.  Ran for 1.8 hours on m6700 laptop.  Turns frac
+barely reached 0.8.  Loss seems to asymptotes to 2.5.  One hidden layer
+with 400 nodes seems clearly insufficient.
+
+*.  Z=3 levels with H1 = 700, learning_rate = 1E-4, gamma = 0.5 and
+rmsprop_decay = 0.85.  After running for 3.4 hours on m6700 laptop, turns
+frac never got beyond 0.8.  Loss again asymptotes to 2.5. 
+
+We conclude one hidden layer CANNOT learn to avoid placing pieces into
+already occupied cells for Z=3 (and most likely Z=4) levels.
+
+------------------------------------------
+Z = 4 levels
+------------------------------------------
+
+*.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on Thinkmate.  After 1.5E7 time steps,
+loss function is roughly 0.9 and continuing to slowly drop.  Turn frac is
+roughly 0.71 and slowly continuing to rise.
+
+*.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 3E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on m6700 laptop.  Loss function drops
+from 4 down to around 1.75 after 60E6 time steps.  Turn frac approaches a
+local maximum around 4E5 episodes, a local minimum around 3.4E6 episodes
+and then starts to slowly rise.  But local max frac is only 0.5.  So we
+terminate this experiment after 5E6 episodes.  
+
+*.  Z=4 levels with H1 = 256, H2 = 64, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on m6700 laptop.
 
 
 
