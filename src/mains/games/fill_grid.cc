@@ -41,13 +41,13 @@ int main (int argc, char* argv[])
 //   int H1 = 256;
    int H1 = 300;
 //   int H1 = 700;
-//   int H2 = 300;
-//   int H2 = 100;
+
+   int H2 = 32;
 //   int H2 = 64;
 //   int H2 = 80;
-   int H2 = 100;
+//   int H2 = 100;
 //   int H2 = 128;
-//   int H = 150;			// Number of hidden layer neurons
+//   int H2 = 300;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
