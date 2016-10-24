@@ -235,12 +235,12 @@ very slowly increasing.  Experiment #6 is a slower version of expt #3.
 and rmsprop_decay = 0.75.   Started running on Thinkmate around 7:35 am.
 
 8.  Z=4 levels with H1 = 64, H2 = 64, H3 = 64, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85.  Running on m6700
+= 0.5 and rmsprop_decay = 0.85.  Started running on Thinkmate around 7:50 am
 
 9.  Z=4 levels with H1 = 128, H2 = 64, H3 = 32, learning_rate = 1E-4, gamma
 = 0.5 and rmsprop_decay = 0.85.  Started running on m6700 at 7:42 am.
 
 10.  Z=4 levels with H1 = 256, H2 = 128, H3 = 64, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85
+= 0.5 and rmsprop_decay = 0.85.  Started running on Thinkmate around 7:50 am.
 
 
