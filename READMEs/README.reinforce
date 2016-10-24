@@ -280,8 +280,7 @@ am.  After 1E6 episodes, turn frac is around 0.55 and increasing.  After
 10E6 time steps, loss is around 2.25.  Running as of 1:50 pm on Mon Oct 24.
 
 14.  Z=4 levels with H1 = 64, H2 = 300, learning_rate = 1E-4, gamma = 0.5
-and rmsprop_decay = 0.85.  Started on Thinkmate around 1:50 pm on Mon Oct
-24.
+and rmsprop_decay = 0.85.  
 
 15.  Z=4 levels with H1 = 64, H2 = 128, H3 = 256, learning_rate = 1E-4,
 gamma = 0.5 and rmsprop_decay = 0.85.  Started on Thinkmate around 1:55 pm
