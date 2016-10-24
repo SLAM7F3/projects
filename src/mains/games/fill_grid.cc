@@ -61,8 +61,8 @@ int main (int argc, char* argv[])
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 //    reinforce_ptr->set_learning_rate(3E-4);
-   reinforce_ptr->set_learning_rate(1E-4);
-//   reinforce_ptr->set_learning_rate(3E-5);
+//   reinforce_ptr->set_learning_rate(1E-4);
+   reinforce_ptr->set_learning_rate(3E-5);
 
 //   int n_max_episodes = 1 * 1000000;
 //   int n_max_episodes = 2 * 1000000;

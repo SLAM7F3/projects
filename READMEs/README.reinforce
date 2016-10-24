@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/20/16; 10/21/16; 10/22/16; 10/23/16
+Last updated on 10/20/16; 10/21/16; 10/22/16; 10/23/16; 10/24/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -181,20 +181,65 @@ already occupied cells for Z=3 (and most likely Z=4) levels.
 Z = 4 levels
 ------------------------------------------
 
-*.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5
-and rmsprop_decay = 0.85.  Running on Thinkmate.  After 1.5E7 time steps,
-loss function is roughly 0.9 and continuing to slowly drop.  Turn frac is
-roughly 0.71 and slowly continuing to rise.
-
-*.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 3E-4, gamma = 0.5
+1.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 3E-4, gamma = 0.5
 and rmsprop_decay = 0.85.  Running on m6700 laptop.  Loss function drops
 from 4 down to around 1.75 after 60E6 time steps.  Turn frac approaches a
 local maximum around 4E5 episodes, a local minimum around 3.4E6 episodes
 and then starts to slowly rise.  But local max frac is only 0.5.  So we
-terminate this experiment after 5E6 episodes.  
+terminated this experiment after 5E6 episodes.  
 
-*.  Z=4 levels with H1 = 256, H2 = 64, learning_rate = 1E-4, gamma = 0.5
-and rmsprop_decay = 0.85.  Running on m6700 laptop.
+2.  Z=4 levels with H1 = 256, H2 = 64, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on m6700 laptop.  Turn frac reaches
+local maximum around 0.55 near 1.8E6 episodes and then turns downwards.
+Loss function seems to continue to decline slowly past 4E6 time steps.
+Terminate this experiment after 4.5E6 time steps.
+
+Note:  It's very possible that we actually did NOT have H2=64 set in this
+last experiment.  Instead, it may have run with just a single layer with H1
+= 256 nodes...
+
+
+3.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on Thinkmate.  After 1.5E7 time steps,
+loss function is roughly 0.9 and continuing to slowly drop.  After 300E6
+time steps, loss function appears to be around 0.5.  Turn frac is roughly
+0.71 after 10E6 episodes.  It then dipped significantly downwrads for 1E6
+episodes but then rose back up to around 0.71 again and stayed around there
+till 15E6 episodes.
+
+*** As of 6:30 am on Mon Oct 24, #3 is our best z=4 level experiment ***
+
+4.  Z=4 levels with H1 = 300, H2 = 100, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on Thinkmate.  After 8E6 episodes, loss
+is around 1.5 and slowly decreasing.  Turns frac approaches 0.5 after 1E5
+episodes and extremely slowly rises to perhaps 0.55 after 5E5 episodes.
+Expt 4 seems overall worse than expt 3.
+
+5.  Z=4 levels with H1 = 300, H2 = 32, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on Thinkmate.  Turns frac reaches
+maximum plateau value near 0.6 around 2.5E5 episodes.  Then it starts to
+fall down to 0.4 around 5.5E5.  Slowly starts rising again around 8E5
+episodes.  Loss falls to around 1 up till 80E6 time steps.  Then starts
+rising again before starting to fall.  Expt 5 seems overall worse than expt
+3 except for speed with which expt 5 initially improves.
+
+6.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 3E-5, gamma = 0.5
+and rmsprop_decay = 0.85.  Running on m6700.  After 9E6 episodes, loss
+function is very slowly decreasing.  Turn frac is also approaching 0.6 and
+very slowly increasing.  Experiment #6 is a slower version of expt #3.  
 
 
 
+7.  Z=4 levels with H1 = 64, H2 = 64, H3 = 64, learning_rate = 1E-4, gamma
+= 0.5 and rmsprop_decay = 0.85.  Running on m6700
+
+
+8.  Z=4 levels with H1 = 128, H2 = 64, H3 = 32, learning_rate = 1E-4, gamma
+= 0.5 and rmsprop_decay = 0.85
+
+9.  Z=4 levels with H1 = 256, H2 = 128, H3 = 64, learning_rate = 1E-4, gamma
+= 0.5 and rmsprop_decay = 0.85
+
+
+7.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.75.  
