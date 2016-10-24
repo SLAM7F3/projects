@@ -38,33 +38,35 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
+   int H1 = 64;
 //    int H1 = 128;
 //   int H1 = 256;
-   int H1 = 300;
+//   int H1 = 300;
 //   int H1 = 700;
 
 //   int H2 = 32;
 //   int H2 = 64;
 //   int H2 = 80;
 //   int H2 = 100;
-//   int H2 = 128;
-   int H2 = 200;
+   int H2 = 128;
+//   int H2 = 200;
 //   int H2 = 300;
 
 //   int H3 = 32;
 //   int H3 = 64;
-   int H3 = 100;
+//   int H3 = 100;
+   int H3 = 256;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
-      "; H3="+stringfunc::number_to_string(H3)+
+//      "; H3="+stringfunc::number_to_string(H3)+
       "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
    layer_dims.push_back(H2);
-   layer_dims.push_back(H3);
+//   layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);

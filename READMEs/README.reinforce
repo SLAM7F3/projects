@@ -235,6 +235,7 @@ very slowly increasing.  Experiment #6 is a slower version of expt #3.
 and rmsprop_decay = 0.75.  Started running on Thinkmate around 7:35 am.
 After 5E6 episode, turns frac has asymptoted below 0.5.  After 60E6 time
 steps, loss is around 1.5.  This is definitely worse than expt #3.
+Terminated.
 
 8.  Z=4 levels with H1 = 64, H2 = 64, H3 = 64, learning_rate = 1E-4, gamma
 = 0.5 and rmsprop_decay = 0.85.  Started running on Thinkmate around 7:50 am
@@ -271,10 +272,18 @@ has asymptoted around 1.8.  Clearly much worse than expt 3.
 12.  Z=4 levels with H1 = 300, H2 = 200, H3 = 100, learning_rate = 3E-4,
 gamma = 0.5 and rmsprop_decay = 0.85.  Started on Thinkmate around 11:13
 am.  After 800K episodes, turn frac is around 0.5.  Loss is around 0.9
-after 10E6 time steps.
+after 10E6 time steps.  Running as of 1:50 pm on Mon Oct 24.
 
 13.  Z=4 levels with H1 = 300, H2 = 150, H3 = 64, learning_rate = 1E-4,
 gamma = 0.5 and rmsprop_decay = 0.85.  Started on Thinkmate around 11:15
 am.  After 1E6 episodes, turn frac is around 0.55 and increasing.  After
-10E6 time steps, loss is around 2.25.
+10E6 time steps, loss is around 2.25.  Running as of 1:50 pm on Mon Oct 24.
+
+14.  Z=4 levels with H1 = 64, H2 = 300, learning_rate = 1E-4, gamma = 0.5
+and rmsprop_decay = 0.85.  Started on Thinkmate around 1:50 pm on Mon Oct
+24.
+
+15.  Z=4 levels with H1 = 64, H2 = 128, H3 = 256, learning_rate = 1E-4,
+gamma = 0.5 and rmsprop_decay = 0.85.  Started on Thinkmate around 1:55 pm
+on Mon Oct 24.
 
