@@ -232,21 +232,21 @@ very slowly increasing.  Experiment #6 is a slower version of expt #3.
 7:30 am on Mon Oct 24 
 
 7.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5
-and rmsprop_decay = 0.75.   Started running on Thinkmate around 7:35 am.
-After 2E6, turns frac is around 0.5.  But this seems lower than expt #3.
-After 30E6 time steps, loss is around 1.2.  This is better than expt #3.
+and rmsprop_decay = 0.75.  Started running on Thinkmate around 7:35 am.
+After 5E6 episode, turns frac has asymptoted below 0.5.  After 60E6 time
+steps, loss is around 1.5.  This is definitely worse than expt #3.
 
 8.  Z=4 levels with H1 = 64, H2 = 64, H3 = 64, learning_rate = 1E-4, gamma
 = 0.5 and rmsprop_decay = 0.85.  Started running on Thinkmate around 7:50 am
 After 6E6 episodes, turn frac is around 0.4 after having risen closer to
 0.5 around 3E6 episodes.  Loss has falled to around 1 after 80E6 steps.
-This seems like an unpromising architecture.
+This seems like an unpromising architecture.  Terminated.
 
 9.  Z=4 levels with H1 = 128, H2 = 64, H3 = 32, learning_rate = 1E-4, gamma
 = 0.5 and rmsprop_decay = 0.85.  Started running on m6700 at 7:42 am.
 After running for 4 hours, turns frac appears to asymptote around 0.52.
 Loss function drops to around 1 and may continue to slowly fall. But this
-expt's results seem significantly worse than those of expt 3. 
+expt's results seem significantly worse than those of expt 3. Terminated.
 
 layer = 0 wlo = -2.03131 w_05 = -0.424748 w_25 = -0.146209
    w_50 = -0.00493972 w_75 = 0.140775 w_95 = 0.390811 whi = 2.61713
@@ -257,18 +257,24 @@ layer = 2 wlo = -1.72718 w_05 = -0.611286 w_25 = -0.191232
 layer = 3 wlo = -1.16897 w_05 = 0.0744037 w_25 = 2.99314
    w_50 = 4.60082 w_75 = 6.35227 w_95 = 8.30674 whi = 9.32921
 
-10.  Z=4 levels with H1 = 256, H2 = 128, H3 = 64, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85.  Started running on Thinkmate around 7:50 am.
-After nearly 2E6 episodes, turn frac has risen to 0.5.  After 25E6
-timesteps, loss is around 1.25.  This seems more promising than expts #8
-and #9.  
+10.  Z=4 levels with H1 = 256, H2 = 128, H3 = 64, learning_rate = 1E-4,
+gamma = 0.5 and rmsprop_decay = 0.85.  Started running on Thinkmate around
+7:50 am.  After nearly 2E6 episodes, turn frac has risen to 0.5.  After
+25E6 timesteps, loss is around 1.25.  This seems more promising than expts
+#8 and #9.  Terminated.
 
-11.  Z=4 levels with H1 = 300, H2 = 200, H3 = 100, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85.  Started running on m6700 at 11 am.
+11.  Z=4 levels with H1 = 300, H2 = 200, H3 = 100, learning_rate = 1E-4,
+gamma = 0.5 and rmsprop_decay = 0.85.  Started running on m6700 at 11 am.
+As of 1:30 pm, it looks like turn frac has asymptoted around 0.5 and loss
+has asymptoted around 1.8.  Clearly much worse than expt 3.  
 
-12.  Z=4 levels with H1 = 300, H2 = 200, H3 = 100, learning_rate = 3E-4, gamma
-= 0.5 and rmsprop_decay = 0.85.  
+12.  Z=4 levels with H1 = 300, H2 = 200, H3 = 100, learning_rate = 3E-4,
+gamma = 0.5 and rmsprop_decay = 0.85.  Started on Thinkmate around 11:13
+am.  After 800K episodes, turn frac is around 0.5.  Loss is around 0.9
+after 10E6 time steps.
 
-12.  Z=4 levels with H1 = 300, H2 = 150, H3 = 64, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85.  
+13.  Z=4 levels with H1 = 300, H2 = 150, H3 = 64, learning_rate = 1E-4,
+gamma = 0.5 and rmsprop_decay = 0.85.  Started on Thinkmate around 11:15
+am.  After 1E6 episodes, turn frac is around 0.55 and increasing.  After
+10E6 time steps, loss is around 2.25.
 
