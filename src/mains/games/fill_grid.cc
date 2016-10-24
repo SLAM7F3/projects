@@ -48,30 +48,30 @@ int main (int argc, char* argv[])
 //   int H2 = 64;
 //   int H2 = 80;
 //   int H2 = 100;
-//   int H2 = 128;
+   int H2 = 128;
 //   int H2 = 200;
-   int H2 = 300;
+//   int H2 = 300;
 
 //   int H3 = 32;
 //   int H3 = 64;
 //   int H3 = 100;
-//   int H3 = 256;
+   int H3 = 256;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
-//      "; H3="+stringfunc::number_to_string(H3)+
+      "; H3="+stringfunc::number_to_string(H3)+
       "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
    layer_dims.push_back(H2);
-//   layer_dims.push_back(H3);
+   layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
-    reinforce_ptr->set_learning_rate(3E-4);
-//   reinforce_ptr->set_learning_rate(1E-4);
+//    reinforce_ptr->set_learning_rate(3E-4);
+   reinforce_ptr->set_learning_rate(1E-4);
 //   reinforce_ptr->set_learning_rate(3E-5);
 
 //   int n_max_episodes = 1 * 1000000;
