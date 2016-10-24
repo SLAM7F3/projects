@@ -55,7 +55,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   gamma = 0.99;	// Discount factor for reward
    gamma = 0.5;	// Discount factor for reward
 //   rmsprop_decay_rate = 0.8;
-   rmsprop_decay_rate = 0.85;
+   rmsprop_decay_rate = 0.75;
 //   rmsprop_decay_rate = 0.9;
    // rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
@@ -427,7 +427,7 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
 
    y->put(curr_timestep, a_star);
 
-   if(cum_time_counter > 0 && cum_time_counter%2000 == 0)
+   if(cum_time_counter > 0 && cum_time_counter%20000 == 0)
    {
       time_samples.push_back(cum_time_counter);
       loss_values.push_back(compute_loss(curr_timestep));

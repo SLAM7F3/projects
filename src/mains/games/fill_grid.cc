@@ -42,8 +42,8 @@ int main (int argc, char* argv[])
    int H1 = 300;
 //   int H1 = 700;
 
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 //   int H2 = 80;
 //   int H2 = 100;
 //   int H2 = 128;
@@ -56,7 +56,7 @@ int main (int argc, char* argv[])
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
-//   layer_dims.push_back(H2);
+   layer_dims.push_back(H2);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
