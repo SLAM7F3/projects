@@ -54,8 +54,9 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   lambda = 0.001;	// L2 regularization coefficient
 //   gamma = 0.99;	// Discount factor for reward
    gamma = 0.5;	// Discount factor for reward
+//   rmsprop_decay_rate = 0.75;
 //   rmsprop_decay_rate = 0.8;
-   rmsprop_decay_rate = 0.75;
+   rmsprop_decay_rate = 0.85;
 //   rmsprop_decay_rate = 0.9;
    // rmsprop_decay_rate = 0.95; 
 //   rmsprop_decay_rate = 0.99; 
@@ -516,7 +517,7 @@ void reinforce::update_weights(bool episode_finished_flag)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::update_running_reward()
+void reinforce::update_running_reward(string extrainfo)
 {
    if(episode_number == 0)
    {
@@ -534,6 +535,11 @@ void reinforce::update_running_reward()
    {
       double mu_T, sigma_T;
       mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
+      cout << "learning rate="+stringfunc::number_to_string(learning_rate,5)
+           << " gamma="+stringfunc::number_to_string(gamma,3)
+           << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
+           << endl;
+      cout << extrainfo << endl;
       cout << "episode_number = " << episode_number << endl;
       cout << "  T = " << mu_T << " +/- " << sigma_T << endl;
       cout << "  Running reward mean = " << running_reward << endl;

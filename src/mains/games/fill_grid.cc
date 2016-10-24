@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/12/16; 10/18/16; 10/22/16; 10/23/16
+// Last updated on 10/18/16; 10/22/16; 10/23/16; 10/24/16
 // ==========================================================================
 
 #include <iostream>
@@ -38,8 +38,10 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
+   int H1 = 64;
+//   int H1 = 128;
 //   int H1 = 256;
-   int H1 = 300;
+//   int H1 = 300;
 //   int H1 = 700;
 
 //   int H2 = 32;
@@ -49,14 +51,19 @@ int main (int argc, char* argv[])
 //   int H2 = 128;
 //   int H2 = 300;
 
+//   int H3 = 32;
+   int H3 = 64;
+
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
+      "; H3="+stringfunc::number_to_string(H3)+
       "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
    layer_dims.push_back(H2);
+   layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
@@ -136,7 +143,7 @@ int main (int argc, char* argv[])
 
       bool episode_finished_flag = true;
       reinforce_ptr->update_weights(episode_finished_flag);
-      reinforce_ptr->update_running_reward();
+      reinforce_ptr->update_running_reward(extrainfo);
       
       reinforce_ptr->increment_episode_number();
       int n_episodes = reinforce_ptr->get_episode_number();

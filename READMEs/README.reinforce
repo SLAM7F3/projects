@@ -228,18 +228,19 @@ and rmsprop_decay = 0.85.  Running on m6700.  After 9E6 episodes, loss
 function is very slowly decreasing.  Turn frac is also approaching 0.6 and
 very slowly increasing.  Experiment #6 is a slower version of expt #3.  
 
-
-
-7.  Z=4 levels with H1 = 64, H2 = 64, H3 = 64, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85.  Running on m6700
-
-
-8.  Z=4 levels with H1 = 128, H2 = 64, H3 = 32, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85
-
-9.  Z=4 levels with H1 = 256, H2 = 128, H3 = 64, learning_rate = 1E-4, gamma
-= 0.5 and rmsprop_decay = 0.85
-
+-----------------
+7:30 am on Mon Oct 24 
 
 7.  Z=4 levels with H1 = 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5
-and rmsprop_decay = 0.75.  
+and rmsprop_decay = 0.75.   Started running on Thinkmate around 7:35 am.
+
+8.  Z=4 levels with H1 = 64, H2 = 64, H3 = 64, learning_rate = 1E-4, gamma
+= 0.5 and rmsprop_decay = 0.85.  Running on m6700
+
+9.  Z=4 levels with H1 = 128, H2 = 64, H3 = 32, learning_rate = 1E-4, gamma
+= 0.5 and rmsprop_decay = 0.85.  Started running on m6700 at 7:42 am.
+
+10.  Z=4 levels with H1 = 256, H2 = 128, H3 = 64, learning_rate = 1E-4, gamma
+= 0.5 and rmsprop_decay = 0.85
+
+
