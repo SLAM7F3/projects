@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/18/16; 10/19/16; 10/22/16; 10/24/16
+// Last modified on 10/19/16; 10/22/16; 10/24/16; 10/25/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -32,6 +32,7 @@ class reinforce
    void append_n_episode_turns_frac(double curr_n_turns_frac);
    void set_learning_rate(double rate);
    void set_batch_size(double bsize);
+   void set_lambda(double lambda);
 
    void initialize_episode();
    int compute_current_action(genvector* input_state_ptr);
@@ -140,6 +141,11 @@ inline void reinforce::set_learning_rate(double rate)
 inline void reinforce::set_batch_size(double bsize)
 {
    batch_size = bsize;
+}
+
+inline void reinforce::set_lambda(double lambda)
+{
+   this->lambda = lambda;
 }
 
 #endif  // reinforce.h

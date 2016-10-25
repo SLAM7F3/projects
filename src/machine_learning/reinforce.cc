@@ -1,10 +1,8 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/19/16; 10/20/16; 10/22/16; 10/24/16
+// Last modified on 10/20/16; 10/22/16; 10/24/16; 10/25/16
 // ==========================================================================
-
-// random comment
 
 #include <string>
 #include "filter/filterfuncs.h"
@@ -539,7 +537,7 @@ void reinforce::update_running_reward(string extrainfo)
            << " gamma="+stringfunc::number_to_string(gamma,3)
            << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
            << endl;
-      cout << "batch_size = " << batch_size << endl;
+      cout << "batch_size = " << batch_size << " lambda = " << lambda << endl;
       cout << extrainfo << endl;
       cout << "episode_number = " << episode_number << endl;
       cout << "  T = " << mu_T << " +/- " << sigma_T << endl;
@@ -626,6 +624,11 @@ void reinforce::plot_loss_history(std::string extrainfo)
    string meta_filename="loss_history";
    string title="Loss vs RMSprop model training; bsize="+
       stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+   }
+   
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
    string x_label="Time step";
@@ -683,6 +686,11 @@ void reinforce::plot_reward_history(std::string extrainfo)
    string meta_filename="reward_history";
    string title="Running reward sum vs RMSprop model training; bsize="+
       stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+   }
+
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
    string x_label="Time step";
@@ -737,6 +745,11 @@ void reinforce::plot_turns_history(std::string extrainfo)
    string meta_filename="turns_history";
    string title="Number of AI and agent turns vs episode; bsize="+
       stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+   }
+
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
    string x_label="Episode";

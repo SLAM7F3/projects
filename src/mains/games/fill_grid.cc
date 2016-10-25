@@ -38,6 +38,7 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
+//   int H1 = 32;
 //   int H1 = 64;
 //    int H1 = 128;
 //   int H1 = 256;
@@ -55,6 +56,7 @@ int main (int argc, char* argv[])
 //   int H3 = 32;
 //   int H3 = 64;
 //   int H3 = 100;
+//   int H3 = 128;
 //   int H3 = 256;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
@@ -70,7 +72,12 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
-   reinforce_ptr->set_batch_size(30);
+
+//   reinforce_ptr->set_lambda(0.01);
+//   reinforce_ptr->set_lambda(0.001);
+//   reinforce_ptr->set_lambda(0.0001);
+
+//   reinforce_ptr->set_batch_size(30);
 //   reinforce_ptr->set_batch_size(100);
 
 //    reinforce_ptr->set_learning_rate(3E-4);
