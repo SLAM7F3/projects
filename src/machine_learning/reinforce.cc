@@ -47,7 +47,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   learning_rate = 5.196E-4;  
 //   learning_rate = 3E-4;  // Much better than 1E-4 for 1 z-level!!!
 //   learning_rate = 1.732E-4;  
-   learning_rate = 1E-4;  //
+   base_learning_rate = 1E-4;  //
+   learning_rate = base_learning_rate;
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
 //   lambda = 0.001;	// L2 regularization coefficient
 //   gamma = 0.99;	// Discount factor for reward
@@ -167,8 +168,8 @@ reinforce::~reinforce()
 ostream& operator<< (ostream& outstream,const reinforce& R)
 {
    outstream << endl;
-   outstream << "batch_size = " << R.batch_size << " learning_rate = "
-             << R.learning_rate << endl;
+   outstream << "batch_size = " << R.batch_size << " base_learning_rate = "
+             << R.base_learning_rate << endl;
    outstream << "gamma = " << R.gamma << endl;
    return outstream;
 }
@@ -533,8 +534,11 @@ void reinforce::update_running_reward(string extrainfo)
    {
       double mu_T, sigma_T;
       mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
-      cout << "learning rate="+stringfunc::number_to_string(learning_rate,5)
-           << " gamma="+stringfunc::number_to_string(gamma,3)
+      cout << "base learning rate="+stringfunc::number_to_string(
+         base_learning_rate,5)
+           << " learning_rate="+stringfunc::number_to_string(
+              learning_rate, 6);
+      cout << " gamma="+stringfunc::number_to_string(gamma,3)
            << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
            << endl;
       cout << "batch_size = " << batch_size << " lambda = " << lambda << endl;
@@ -594,7 +598,7 @@ void reinforce::compute_weight_distributions()
 string reinforce::init_subtitle()
 {
    string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
+      "learning rate="+stringfunc::number_to_string(base_learning_rate,5)+
       "; gamma="+stringfunc::number_to_string(gamma,3)+
       "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
    return subtitle;

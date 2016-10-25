@@ -295,11 +295,20 @@ falling again.  Clearly worse than expt#3 results.  Terminated.
 
 16.  Copy of expt 3 with new batch size: bsize = 30, Z=4 levels with H1 =
 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5 and rmsprop_decay = 0.85.
-Started running on Thinkmate at 10:50 pm on Mon Oct 24.
+Started running on Thinkmate at 10:50 pm on Mon Oct 24.  After 5E6
+episodes, turn frac is approx 0.82 and slowly climbing!  Loss function
+after 10E6 time steps is approximately 1.25 and slowly decreasing.  Still
+running on TM as of Tues, Oct 25 at 6:46 am 
+
+*** As of 6:14 am on Tues, Oct 25, #16 is our best z=4 level experiment ***
 
 17.  Copy of expt 3 with new batch size: bsize = 100, Z=4 levels with H1 =
 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5 and rmsprop_decay = 0.85.
-Started running on Thinkmate at 10:55 pm on Mon Oct 24.
+Started running on Thinkmate at 10:55 pm on Mon Oct 24.  After 5E6
+episodes, turn frac is approx 0.75 and slowly climbing.  Loss function
+after 10E6 time steps is approximately 1.5 and perhaps slowly decreasing.
+Still running on TM as of Tues, Oct 25 at 6:46 am.
+
 
 18.  Z=4 levels with H1 = 32, H2 = 64, H3 = 128, learning_rate = 1E-4,
 gamma = 0.5 and rmsprop_decay = 0.85, batch_size = 10.  Started on
@@ -315,3 +324,15 @@ Started running on m6700 at 4:55 am on Tues Oct 25.
 300, H2 = 64, learning_rate = 1E-4, gamma = 0.5 and rmsprop_decay = 0.85.
 Started running on m6700 at 5:14 am on Tues Oct 25.
 
+
+21.  Copy of expt 16 with variable learning rate: Multiply learning rate by
+0.95 after every 150,000 episodes.  bsize = 30, Z=4 levels with H1 = 300,
+H2 = 64, base learning_rate = 3E-4, gamma = 0.5 and rmsprop_decay = 0.85.
+Started running on Thinkmate at 6:45 am on Tues, Oct 25.
+
+
+22.  Copy of expt 21 with variable learning rate and smaller gamma:
+Multiply learning rate by 0.95 after every 150,000 episodes.  bsize = 30,
+Z=4 levels with H1 = 300, H2 = 64, base learning_rate = 3E-4, gamma = 0.4
+and rmsprop_decay = 0.85.  Started running on Thinkmate at 6:45 am on Tues,
+Oct 25.

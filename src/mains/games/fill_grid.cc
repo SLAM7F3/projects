@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/18/16; 10/22/16; 10/23/16; 10/24/16
+// Last updated on 10/22/16; 10/23/16; 10/24/16; 10/25/16
 // ==========================================================================
 
 #include <iostream>
@@ -73,16 +73,23 @@ int main (int argc, char* argv[])
 
    reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
 
+// Gamma = discount factor for reward:
+
+   reinforce_ptr->set_gamma(0.4);
+//   reinforce_ptr->set_gamma(0.3);
+//   reinforce_ptr->set_gamma(0.2);
+//   reinforce_ptr->set_gamma(0.1);
+
 //   reinforce_ptr->set_lambda(0.01);
 //   reinforce_ptr->set_lambda(0.001);
 //   reinforce_ptr->set_lambda(0.0001);
 
-//   reinforce_ptr->set_batch_size(30);
+   reinforce_ptr->set_batch_size(30);
 //   reinforce_ptr->set_batch_size(100);
 
-//    reinforce_ptr->set_learning_rate(3E-4);
-   reinforce_ptr->set_learning_rate(1E-4);
-//   reinforce_ptr->set_learning_rate(3E-5);
+   reinforce_ptr->set_base_learning_rate(3E-4);
+//   reinforce_ptr->set_base_learning_rate(1E-4);
+//   reinforce_ptr->set_base_learning_rate(3E-5);
 
 //   int n_max_episodes = 1 * 1000000;
 //   int n_max_episodes = 2 * 1000000;
@@ -103,6 +110,12 @@ int main (int argc, char* argv[])
       int curr_episode_number = reinforce_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
          reinforce_ptr->get_episode_number(), 50000, n_max_episodes);
+      
+      if(curr_episode_number > 0 && curr_episode_number%150000 == 0)
+      {
+         reinforce_ptr->set_learning_rate(
+            0.95 * reinforce_ptr->get_learning_rate());
+      }
       
       while(true)
       {

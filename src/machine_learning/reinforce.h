@@ -30,9 +30,12 @@ class reinforce
    int get_episode_number() const;
    void increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
+   void set_base_learning_rate(double rate);
    void set_learning_rate(double rate);
+   double get_learning_rate() const;
    void set_batch_size(double bsize);
    void set_lambda(double lambda);
+   void set_gamma(double gamma);
 
    void initialize_episode();
    int compute_current_action(genvector* input_state_ptr);
@@ -58,6 +61,7 @@ class reinforce
    std::deque<double> T_values;  // Holds latest T values
    int Tmax;
    int batch_size;  	// Perform parameter update after this many episodes
+   double base_learning_rate;
    double learning_rate;
    double lambda;	// L2 regularization coefficient
    double gamma;	// Discount factor for reward
@@ -133,9 +137,20 @@ inline void reinforce::append_n_episode_turns_frac(double frac)
    n_episode_turns_frac.push_back(frac);
 }
 
+inline void reinforce::set_base_learning_rate(double rate)
+{
+   base_learning_rate = rate;
+   learning_rate = rate;
+}
+
 inline void reinforce::set_learning_rate(double rate)
 {
    learning_rate = rate;
+}
+
+inline double reinforce::get_learning_rate() const
+{
+   return learning_rate;
 }
 
 inline void reinforce::set_batch_size(double bsize)
@@ -146,6 +161,11 @@ inline void reinforce::set_batch_size(double bsize)
 inline void reinforce::set_lambda(double lambda)
 {
    this->lambda = lambda;
+}
+
+inline void reinforce::set_gamma(double gamma)
+{
+   this->gamma=gamma;
 }
 
 #endif  // reinforce.h
