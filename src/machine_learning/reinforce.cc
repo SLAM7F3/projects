@@ -539,6 +539,7 @@ void reinforce::update_running_reward(string extrainfo)
            << " gamma="+stringfunc::number_to_string(gamma,3)
            << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
            << endl;
+      cout << "batch_size = " << batch_size << endl;
       cout << extrainfo << endl;
       cout << "episode_number = " << episode_number << endl;
       cout << "  T = " << mu_T << " +/- " << sigma_T << endl;
@@ -592,6 +593,16 @@ void reinforce::compute_weight_distributions()
 }
 
 // ---------------------------------------------------------------------
+string reinforce::init_subtitle()
+{
+   string subtitle=
+      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
+      "; gamma="+stringfunc::number_to_string(gamma,3)+
+      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   return subtitle;
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of loss values versus time step samples.
 
 void reinforce::plot_loss_history(std::string extrainfo)
@@ -613,11 +624,9 @@ void reinforce::plot_loss_history(std::string extrainfo)
 
    metafile curr_metafile;
    string meta_filename="loss_history";
-   string title="Loss vs RMSprop model training";
-   string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
-      "; gamma="+stringfunc::number_to_string(gamma,3)+
-      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   string title="Loss vs RMSprop model training; bsize="+
+      stringfunc::number_to_string(batch_size);
+   string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
    string x_label="Time step";
    string y_label="Loss";
@@ -672,11 +681,9 @@ void reinforce::plot_reward_history(std::string extrainfo)
 
    metafile curr_metafile;
    string meta_filename="reward_history";
-   string title="Running reward sum vs RMSprop model training";
-   string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
-      "; gamma="+stringfunc::number_to_string(gamma,3)+
-      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   string title="Running reward sum vs RMSprop model training; bsize="+
+      stringfunc::number_to_string(batch_size);
+   string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
    string x_label="Time step";
    string y_label="Running reward sum";
@@ -728,11 +735,9 @@ void reinforce::plot_turns_history(std::string extrainfo)
 
    metafile curr_metafile;
    string meta_filename="turns_history";
-   string title="Number of AI and agent turns vs episode";
-   string subtitle=
-      "learning rate="+stringfunc::number_to_string(learning_rate,5)+
-      "; gamma="+stringfunc::number_to_string(gamma,3)+
-      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+   string title="Number of AI and agent turns vs episode; bsize="+
+      stringfunc::number_to_string(batch_size);
+   string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
    string x_label="Episode";
    string y_label="Number of AI + agent turns";

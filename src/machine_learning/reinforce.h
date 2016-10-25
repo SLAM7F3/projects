@@ -31,6 +31,7 @@ class reinforce
    void increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
    void set_learning_rate(double rate);
+   void set_batch_size(double bsize);
 
    void initialize_episode();
    int compute_current_action(genvector* input_state_ptr);
@@ -40,6 +41,7 @@ class reinforce
 
    void print_weights();
    void compute_weight_distributions();
+   std::string init_subtitle();
    void plot_loss_history(std::string extrainfo);
    void plot_reward_history(std::string extrainfo);
    void plot_turns_history(std::string extrainfo);
@@ -133,6 +135,11 @@ inline void reinforce::append_n_episode_turns_frac(double frac)
 inline void reinforce::set_learning_rate(double rate)
 {
    learning_rate = rate;
+}
+
+inline void reinforce::set_batch_size(double bsize)
+{
+   batch_size = bsize;
 }
 
 #endif  // reinforce.h
