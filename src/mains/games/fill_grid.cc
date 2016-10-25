@@ -75,28 +75,29 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-   reinforce_ptr->set_gamma(0.4);
+//   reinforce_ptr->set_gamma(0.4);
 //   reinforce_ptr->set_gamma(0.3);
-//   reinforce_ptr->set_gamma(0.2);
+   reinforce_ptr->set_gamma(0.25);
 //   reinforce_ptr->set_gamma(0.1);
 
-//   reinforce_ptr->set_lambda(0.01);
+//   reinforce_ptr->set_lambda(0.01);// 0 = best lambda value as of Tues Oct 25
 //   reinforce_ptr->set_lambda(0.001);
 //   reinforce_ptr->set_lambda(0.0001);
 
-   reinforce_ptr->set_batch_size(30);
+   reinforce_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
 //   reinforce_ptr->set_batch_size(100);
 
    reinforce_ptr->set_base_learning_rate(3E-4);
 //   reinforce_ptr->set_base_learning_rate(1E-4);
 //   reinforce_ptr->set_base_learning_rate(3E-5);
+   double min_learning_rate = 3E-5;
 
 //   int n_max_episodes = 1 * 1000000;
 //   int n_max_episodes = 2 * 1000000;
 //   int n_max_episodes = 3 * 1000000;
 //  int n_max_episodes = 4 * 1000000;
-//  int n_max_episodes = 10 * 1000000;
-  int n_max_episodes = 15 * 1000000;
+  int n_max_episodes = 10 * 1000000;
+//  int n_max_episodes = 15 * 1000000;
    int n_update = 0.01 * n_max_episodes;
    int n_losses = 0;
    int n_wins = 0;
@@ -111,10 +112,16 @@ int main (int argc, char* argv[])
       outputfunc::update_progress_and_remaining_time(
          reinforce_ptr->get_episode_number(), 50000, n_max_episodes);
       
+// Periodically decrease learning rate down to some minimal floor
+// value:
+
       if(curr_episode_number > 0 && curr_episode_number%150000 == 0)
       {
-         reinforce_ptr->set_learning_rate(
-            0.95 * reinforce_ptr->get_learning_rate());
+         double curr_learning_rate = reinforce_ptr->get_learning_rate();
+         if(curr_learning_rate > min_learning_rate)
+         {
+            reinforce_ptr->set_learning_rate(0.95 * curr_learning_rate);
+         }
       }
       
       while(true)
