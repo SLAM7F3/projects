@@ -386,18 +386,20 @@ Oct 25.  Turn frac asymptotes to 0.94.  Better turn frac results than expt
 27.  Terminated.
 
 
-29.  Base learning rate = 1E-3.  Multiply learning rate by 0.95 after every
-200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+
+
+29.  Base learning rate = 3E-3.  Multiply learning rate by 0.8 after every
+100,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.85.  Started running on
-m6700 around 3:30 am on Weds, Oct 26.
+m6700 around 4:14 am on Weds, Oct 26.
 
-30.  Base learning rate = 1E-3.  Multiply learning rate by 0.95 after every
-200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+30.  Base learning rate = 3E-3.  Multiply learning rate by 0.8 after every
+100,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.33 and rmsprop_decay = 0.85.  Started running on
-m6700 around 3:33 am on Weds, Oct 26.
+m6700 around 4:15 am on Weds, Oct 26.
 
-31.  Base learning rate = 1E-3.  Multiply learning rate by 0.95 after every
+31.  Base learning rate = 3E-3.  Multiply learning rate by 0.95 after every
 200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.90.  Started running on
-m6700 around 3:40 am on Weds, Oct 26.
+m6700 around 4:16 am on Weds, Oct 26.
 

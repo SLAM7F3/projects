@@ -120,15 +120,16 @@ int main (int argc, char* argv[])
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
+      int n_episodes_period = 100 * 1000;
 //      int n_episodes_period = 150 * 1000;
-      int n_episodes_period = 200 * 1000;
+//      int n_episodes_period = 200 * 1000;
 //      int n_episodes_period = 250 * 1000;
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
-            reinforce_ptr->set_learning_rate(0.95 * curr_learning_rate);
+            reinforce_ptr->set_learning_rate(0.8 * curr_learning_rate);
          }
       }
       
