@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/20/16; 10/22/16; 10/24/16; 10/25/16
+// Last modified on 10/22/16; 10/24/16; 10/25/16; 10/26/16
 // ==========================================================================
 
 #include <string>
@@ -668,7 +668,8 @@ void reinforce::plot_loss_history(std::string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of running reward sum versus time step samples.
 
-void reinforce::plot_reward_history(std::string extrainfo)
+void reinforce::plot_reward_history(
+   std::string extrainfo, double min_reward, double max_reward)
 {
 
 // Temporally smooth noisy loss values:
@@ -700,15 +701,13 @@ void reinforce::plot_reward_history(std::string extrainfo)
    string x_label="Time step";
    string y_label="Running reward sum";
 
-   double min_reward = -1;
-   double max_reward = 1;
-
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, time_samples.back(),
       min_reward, max_reward);
    curr_metafile.set_subtitle(subtitle);
-   curr_metafile.set_ytic(0.2);
-   curr_metafile.set_ysubtic(0.1);
+   double ytic = 0.1 * (max_reward - min_reward);
+   curr_metafile.set_ytic(ytic);
+   curr_metafile.set_ysubtic(0.5 * ytic);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.write_curve(time_samples, running_reward_snapshots);

@@ -8,10 +8,12 @@
 #include <string>
 #include "color/colortext.h"
 #include "general/filefuncs.h"
+#include "plot/metafile.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "math/prob_distribution.h"
 #include "general/stringfuncs.h"
+#include "general/sysfuncs.h"
 #include "games/tictac3d.h"
 
 using std::cin;
@@ -176,6 +178,10 @@ double tictac3d::get_random_agent_move(bool print_flag)
 }
 
 // ---------------------------------------------------------------------
+// Return score = -1 if agent puts piece into previously occupied
+// cell.  Return score = 1 if agent's last move fills entire
+// gameboard.  Otherwise return score = 0.
+
 double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
 {
 
@@ -444,7 +450,7 @@ void tictac3d::print_winning_pattern()
 // Boolean member function check_player_win() returns true if input
 // player_ID has a winning board state.
 
-int tictac3d::check_player_win(int player_ID)
+int tictac3d::check_player_win(int player_ID, bool print_flag)
 {
    int win_in_zplane = 1;
    int win_in_zcolumn = 2;
@@ -455,7 +461,7 @@ int tictac3d::check_player_win(int player_ID)
 // Check if player wins via 4 corner-to-corner diagonals:
    if(corner_2_corner_win(player_ID))
    {
-      print_winning_pattern();
+      if(print_flag) print_winning_pattern();
       game_over = true;
       return win_in_corner_diag;
    }
@@ -466,7 +472,7 @@ int tictac3d::check_player_win(int player_ID)
    {
       if(Zslant_xconst_win(player_ID,px))
       {
-         print_winning_pattern();
+         if(print_flag) print_winning_pattern();
          game_over = true;
          return win_in_zslant;
       }
@@ -476,7 +482,7 @@ int tictac3d::check_player_win(int player_ID)
    {
       if(Zslant_yconst_win(player_ID,py))
       {
-         print_winning_pattern();
+         if(print_flag) print_winning_pattern();
          game_over = true;
          return win_in_zslant;
       }
@@ -489,7 +495,7 @@ int tictac3d::check_player_win(int player_ID)
       {
          if(Zcolumn_win(player_ID, px, py))
          {
-            print_winning_pattern();
+            if(print_flag) print_winning_pattern();
             game_over = true;
             return win_in_zcolumn;
          }
@@ -501,7 +507,7 @@ int tictac3d::check_player_win(int player_ID)
    {
       if(Zplane_win(player_ID, pz))
       {
-         print_winning_pattern();
+         if(print_flag) print_winning_pattern();
          game_over = true;
          return win_in_zplane;
       }
@@ -916,3 +922,58 @@ bool tictac3d::corner_2_corner_win(int player_ID)
 
    return false;
 }
+
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of game_loss_frac, game_illegal_frac,
+// game_stalemate_frac and game_win_frac versus episodes
+
+void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
+{
+
+/*
+// Temporally smooth noisy loss values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   vector<double> h;
+   h.reserve(gaussian_size);
+   filterfunc::gaussian_filter(dx, sigma, h);
+
+   bool wrap_around_input_values = false;
+   vector<double> smoothed_loss_values;
+   filterfunc::brute_force_filter(
+      loss_values, h, smoothed_loss_values, wrap_around_input_values);
+*/
+
+   metafile curr_metafile;
+   string meta_filename="game_loss_history";
+   string title="Game loss vs episode";
+   string x_label="Time step";
+   string y_label="Game loss fraction";
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, n_episodes, 0, 1);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+
+   curr_metafile.write_curve(0, n_episodes, game_loss_frac, colorfunc::red);
+   curr_metafile.write_curve(0, n_episodes, game_illegal_frac, colorfunc::purple);
+   curr_metafile.write_curve(0, n_episodes, game_stalemate_frac, colorfunc::cyan);
+   curr_metafile.write_curve(0, n_episodes, game_win_frac, colorfunc::green);
+
+//   curr_metafile.write_curve(time_samples, smoothed_loss_values, 
+//                             colorfunc::blue);
+
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+

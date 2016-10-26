@@ -48,7 +48,8 @@ class reinforce
    void compute_weight_distributions();
    std::string init_subtitle();
    void plot_loss_history(std::string extrainfo);
-   void plot_reward_history(std::string extrainfo);
+   void plot_reward_history(
+      std::string extrainfo, double min_reward, double max_reward);
    void plot_turns_history(std::string extrainfo);
 
   private:

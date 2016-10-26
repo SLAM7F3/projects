@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 9/12/16; 10/12/16; 10/18/16; 10/22/16
+// Last modified on 10/12/16; 10/18/16; 10/22/16; 10/26/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -44,11 +44,19 @@ class tictac3d
    void display_board_state();
    void enter_human_move();
    int get_n_filled_cells() const;
-   int check_player_win(int player_ID);
+   int check_player_win(int player_ID, bool print_flag = false);
 
    double get_random_agent_move(bool print_flag = false);
    double set_agent_move(int px, int py, int pz, bool print_flag = false);
    void get_random_legal_AI_move();
+
+   void append_game_loss_frac(double frac);
+   void append_game_illegal_frac(double frac);
+   void append_game_stalemate_frac(double frac);
+   void append_game_win_frac(double frac);
+
+   void plot_game_frac_histories(int n_episodes, std::string extrainfo);
+
 
   private: 
 
@@ -59,6 +67,9 @@ class tictac3d
    double curr_score;
    std::vector<int> curr_board_state;
    genvector* board_state_ptr;
+
+   std::vector<double> game_loss_frac, game_illegal_frac;
+   std::vector<double> game_stalemate_frac, game_win_frac;
 
    std::vector<std::vector<triple> > winnable_paths;
 
@@ -132,6 +143,27 @@ inline int tictac3d::get_n_agent_turns() const
 {
    return n_agent_turns;
 }
+
+inline void tictac3d::append_game_loss_frac(double frac)
+{
+   game_loss_frac.push_back(frac);
+}
+
+inline void tictac3d::append_game_illegal_frac(double frac)
+{
+   game_illegal_frac.push_back(frac);
+}
+
+inline void tictac3d::append_game_stalemate_frac(double frac)
+{
+   game_stalemate_frac.push_back(frac);
+}
+
+inline void tictac3d::append_game_win_frac(double frac)
+{
+   game_win_frac.push_back(frac);
+}
+
 
 #endif  // tictac3d.h
 

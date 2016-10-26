@@ -352,16 +352,24 @@ Tues, Oct 25.   After 3.5E6 episodes, turn frac is approximately 0.897 and
 perhaps still slowly increasing.  Terminated.
 
 
-
 24.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
 150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.5 and rmsprop_decay = 0.85.  Started running on
-Thinkmate around 5:50 pm on Tues, Oct 25.  
+Thinkmate around 5:50 pm on Tues, Oct 25. After 6E6 episodes, turn frac
+asymptotes to 0.89.  Definitely not as good as expt #25.   Terminated.
 
 25.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
 150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.85.  Started running on
-Thinkmate around 5:50 pm on Tues, Oct 25.  
+Thinkmate around 5:50 pm on Tues, Oct 25.  After 6E6 episodes, turn frac
+asymptotes to 0.92.  Terminated.
+
+layer = 0 wlo = -2.52149 w_05 = -0.207983 w_25 = -0.0441196
+   w_50 = 0.0352673 w_75 = 0.114168 w_95 = 0.260796 whi = 2.4514
+layer = 1 wlo = -1.65326 w_05 = -0.412146 w_25 = -0.141895
+   w_50 = 0.000682767 w_75 = 0.169127 w_95 = 0.547689 whi = 1.73701
+layer = 2 wlo = -6.44991 w_05 = 0.410817 w_25 = 1.79034
+   w_50 = 2.12907 w_75 = 2.4182 w_95 = 3.06846 whi = 5.55676
 
 *** As of 3:15 am on Weds, Oct 27, expt #25 is our best z=4 level
 experiment ***
@@ -370,7 +378,8 @@ experiment ***
 26.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
 150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.10 and rmsprop_decay = 0.85.  Started running on
-Thinkmate around 5:51 pm on Tues, Oct 25.  
+Thinkmate around 5:51 pm on Tues, Oct 25.  After 6E6 episodes, turn frac
+asymptotes to 0.90.  Not quite as good as expt 25.  Terminated.
 
 27.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
 150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
@@ -399,7 +408,21 @@ m6700 around 4:14 am on Weds, Oct 26.
 m6700 around 4:15 am on Weds, Oct 26.
 
 31.  Base learning rate = 3E-3.  Multiply learning rate by 0.95 after every
-200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+100,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
 = 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.90.  Started running on
 m6700 around 4:16 am on Weds, Oct 26.
 
+
+32.  Base learning rate = 2E-3.  Multiply learning rate by 0.8 after every
+n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
+1.2; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1 = 300, H2 =
+64, gamma = 0.25 and rmsprop_decay = 0.90.  Started running on Thinkmate
+around 5:30 am on Weds, Oct 26.
+
+33.   Base learning rate = 2E-3.  Multiply learning rate by 0.8 after every
+n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
+1.2; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1 = 300, H2 =
+64, gamma = 0.25 and rmsprop_decay = 0.90.  Game over if AI/agent randomly
+wins or loses.
+
+Started running on Thinkmate around 6:22 am on Weds, Oct 26.
