@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 9/12/16; 10/12/16; 10/18/16; 10/22/16
+// Last modified on 10/12/16; 10/18/16; 10/22/16; 10/26/16
 // ==========================================================================
 
 #include <iostream>
@@ -923,50 +923,37 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    return false;
 }
 
-
 // ---------------------------------------------------------------------
-// Generate metafile plot of game_loss_frac, game_illegal_frac,
+// Generate metafile plot of game_illegal_frac, game_loss_frac,
 // game_stalemate_frac and game_win_frac versus episodes
 
 void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
 {
-
-/*
-// Temporally smooth noisy loss values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
-   vector<double> h;
-   h.reserve(gaussian_size);
-   filterfunc::gaussian_filter(dx, sigma, h);
-
-   bool wrap_around_input_values = false;
-   vector<double> smoothed_loss_values;
-   filterfunc::brute_force_filter(
-      loss_values, h, smoothed_loss_values, wrap_around_input_values);
-*/
-
    metafile curr_metafile;
-   string meta_filename="game_loss_history";
-   string title="Game loss vs episode";
+   string meta_filename="game_histories";
+   string title="Game histories vs episode";
    string x_label="Time step";
-   string y_label="Game loss fraction";
+   string y_label="Game history fractions";
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, n_episodes, 0, 1);
    curr_metafile.set_ytic(0.2);
    curr_metafile.set_ysubtic(0.1);
+   curr_metafile.set_legend_flag(true);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
 
-   curr_metafile.write_curve(0, n_episodes, game_loss_frac, colorfunc::red);
-   curr_metafile.write_curve(0, n_episodes, game_illegal_frac, colorfunc::purple);
-   curr_metafile.write_curve(0, n_episodes, game_stalemate_frac, colorfunc::cyan);
-   curr_metafile.write_curve(0, n_episodes, game_win_frac, colorfunc::green);
+   curr_metafile.set_legendlabel("Illegal");
+   curr_metafile.write_curve(0, n_episodes, game_illegal_frac, colorfunc::red);
 
-//   curr_metafile.write_curve(time_samples, smoothed_loss_values, 
-//                             colorfunc::blue);
+   curr_metafile.set_legendlabel("Loss");
+   curr_metafile.write_curve(0, n_episodes, game_loss_frac, colorfunc::blue);
+
+   curr_metafile.set_legendlabel("Stalemate");
+   curr_metafile.write_curve(0, n_episodes, game_stalemate_frac, colorfunc::cyan);
+
+   curr_metafile.set_legendlabel("Win");
+   curr_metafile.write_curve(0, n_episodes, game_win_frac, colorfunc::green);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";

@@ -121,8 +121,15 @@ int main (int argc, char* argv[])
 //      int n_episodes_period = 200 * 1000;
 //      int n_episodes_period = 250 * 1000;
 
+   bool check_genuine_game_wins_flag = true; 
    while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
+
+// For 50% of all training games, set check_genuine_game_wins_flag =
+// false so that agent will learn to not make illegal moves:
+
+      check_genuine_game_wins_flag = !check_genuine_game_wins_flag;
+
       ttt_ptr->reset_board_state();
       reinforce_ptr->initialize_episode();
 
@@ -139,14 +146,16 @@ int main (int argc, char* argv[])
             n_episodes_period *= 1.2;
          }
       }
-      
+
+// Current episode starts here:
+
       while(true)
       {
          ttt_ptr->get_random_legal_AI_move();
          ttt_ptr->increment_n_AI_turns();
-         if(ttt_ptr->check_player_win(-1) > 0)
+         if(check_genuine_game_wins_flag && ttt_ptr->check_player_win(-1) > 0)
          {
-            curr_reward = min_reward; // Agent loses!
+            curr_reward = -1; // Agent loses!
             reinforce_ptr->record_reward_for_action(curr_reward);
             break;
          }
@@ -173,11 +182,16 @@ int main (int argc, char* argv[])
          // cout << "px = " << px << " py = " << py << endl;
 
          curr_reward = ttt_ptr->set_agent_move(px, py, pz);
-         if(ttt_ptr->check_player_win(1) > 0)
+         if(check_genuine_game_wins_flag && ttt_ptr->check_player_win(1) > 0)
          {
             curr_reward = max_reward;	 // Agent wins!
          }
          
+         if(curr_reward < 0) // Agent commits illegal move
+         {
+            curr_reward = min_reward;
+         }
+
          reinforce_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
 
@@ -195,11 +209,11 @@ int main (int argc, char* argv[])
 
       if(nearly_equal(curr_reward, min_reward))
       {
-         n_losses++;
-      }
-      else if(nearly_equal(ttt_ptr->get_score(), -1))
-      {
          n_illegal_moves++;
+      }
+      else if(nearly_equal(curr_reward, -1))
+      {
+         n_losses++;
       }
       else if (nearly_equal(curr_reward, 1))
       {
@@ -246,12 +260,12 @@ int main (int argc, char* argv[])
             n_max_turns;
          reinforce_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
 
-         double loss_frac = double(n_losses) / n_episodes;
          double illegal_frac = double(n_illegal_moves) / n_episodes;
+         double loss_frac = double(n_losses) / n_episodes;
          double stalemate_frac = double(n_stalemates) / n_episodes;
          double win_frac = double(n_wins) / n_episodes;
-         ttt_ptr->append_game_loss_frac(loss_frac);
          ttt_ptr->append_game_illegal_frac(illegal_frac);
+         ttt_ptr->append_game_loss_frac(loss_frac);
          ttt_ptr->append_game_stalemate_frac(stalemate_frac);
          ttt_ptr->append_game_win_frac(win_frac);
       }
