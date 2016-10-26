@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/22/16; 10/23/16; 10/24/16; 10/25/16
+Last updated on 10/23/16; 10/24/16; 10/25/16; 10/26/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -350,3 +350,54 @@ Z=4 levels with H1 = 300, H2 = 64, base learning_rate = 3E-4, gamma = 0.2
 and rmsprop_decay = 0.85.  Started running on Thinkmate around noontime on
 Tues, Oct 25.   After 3.5E6 episodes, turn frac is approximately 0.897 and
 perhaps still slowly increasing.  Terminated.
+
+
+
+24.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
+150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.5 and rmsprop_decay = 0.85.  Started running on
+Thinkmate around 5:50 pm on Tues, Oct 25.  
+
+25.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
+150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.85.  Started running on
+Thinkmate around 5:50 pm on Tues, Oct 25.  
+
+*** As of 3:15 am on Weds, Oct 27, expt #25 is our best z=4 level
+experiment ***
+
+
+26.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
+150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.10 and rmsprop_decay = 0.85.  Started running on
+Thinkmate around 5:51 pm on Tues, Oct 25.  
+
+27.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
+150,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.85.  Rescale reward by
+n_AI_turns + n_agent_turns.  Started running on m6700 around 6 pm on Tues,
+Oct 25.  Turn frac asymptotes to 0.92.  Terminated.
+
+28.  Base learning rate = 3E-4.  Multiply learning rate by 0.95 after every
+250,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.85.  Rescale reward by
+n_AI_turns + n_agent_turns.  Started running on m6700 around 8 pm on Tues,
+Oct 25.  Turn frac asymptotes to 0.94.  Better turn frac results than expt
+27.  Terminated.
+
+
+29.  Base learning rate = 1E-3.  Multiply learning rate by 0.95 after every
+200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.85.  Started running on
+m6700 around 3:30 am on Weds, Oct 26.
+
+30.  Base learning rate = 1E-3.  Multiply learning rate by 0.95 after every
+200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.33 and rmsprop_decay = 0.85.  Started running on
+m6700 around 3:33 am on Weds, Oct 26.
+
+31.  Base learning rate = 1E-3.  Multiply learning rate by 0.95 after every
+200,000 episodes; min learning rate = 3E-5.  bsize = 30, Z=4 levels with H1
+= 300, H2 = 64, gamma = 0.25 and rmsprop_decay = 0.90.  Started running on
+m6700 around 3:40 am on Weds, Oct 26.
+

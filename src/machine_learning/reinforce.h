@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/19/16; 10/22/16; 10/24/16; 10/25/16
+// Last modified on 10/22/16; 10/24/16; 10/25/16; 10/26/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -36,6 +36,7 @@ class reinforce
    void set_batch_size(double bsize);
    void set_lambda(double lambda);
    void set_gamma(double gamma);
+   void set_rmsprop_decay_rate(double rate);
 
    void initialize_episode();
    int compute_current_action(genvector* input_state_ptr);
@@ -166,6 +167,11 @@ inline void reinforce::set_lambda(double lambda)
 inline void reinforce::set_gamma(double gamma)
 {
    this->gamma=gamma;
+}
+
+inline void reinforce::set_rmsprop_decay_rate(double rate)
+{
+   rmsprop_decay_rate = rate;
 }
 
 #endif  // reinforce.h

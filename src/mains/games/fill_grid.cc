@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/22/16; 10/23/16; 10/24/16; 10/25/16
+// Last updated on 10/23/16; 10/24/16; 10/25/16; 10/26/16
 // ==========================================================================
 
 #include <iostream>
@@ -77,6 +77,7 @@ int main (int argc, char* argv[])
 
 //   reinforce_ptr->set_gamma(0.4);
 //   reinforce_ptr->set_gamma(0.3);
+//   reinforce_ptr->set_gamma(0.33);
    reinforce_ptr->set_gamma(0.25);
 //   reinforce_ptr->set_gamma(0.1);
 
@@ -87,7 +88,11 @@ int main (int argc, char* argv[])
    reinforce_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
 //   reinforce_ptr->set_batch_size(100);
 
-   reinforce_ptr->set_base_learning_rate(3E-4);
+//   reinforce_ptr->set_rmsprop_decay_rate(0.85);
+   reinforce_ptr->set_rmsprop_decay_rate(0.9);
+
+   reinforce_ptr->set_base_learning_rate(3E-3);
+//   reinforce_ptr->set_base_learning_rate(3E-4);
 //   reinforce_ptr->set_base_learning_rate(1E-4);
 //   reinforce_ptr->set_base_learning_rate(3E-5);
    double min_learning_rate = 3E-5;
@@ -115,7 +120,10 @@ int main (int argc, char* argv[])
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
-      if(curr_episode_number > 0 && curr_episode_number%150000 == 0)
+//      int n_episodes_period = 150 * 1000;
+      int n_episodes_period = 200 * 1000;
+//      int n_episodes_period = 250 * 1000;
+      if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
@@ -132,6 +140,10 @@ int main (int argc, char* argv[])
          if(ttt_ptr->get_game_over())
          {
             curr_reward = 1;
+
+//            curr_reward *= (ttt_ptr->get_n_AI_turns() + 
+//                            ttt_ptr->get_n_agent_turns());
+
             reinforce_ptr->record_reward_for_action(curr_reward);
             break;
          }
@@ -150,6 +162,10 @@ int main (int argc, char* argv[])
          // cout << "px = " << px << " py = " << py << endl;
 
          curr_reward = ttt_ptr->set_agent_move(px, py, pz);
+
+//         curr_reward *= (ttt_ptr->get_n_AI_turns() + 
+//                         ttt_ptr->get_n_agent_turns());
+
          reinforce_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
 
