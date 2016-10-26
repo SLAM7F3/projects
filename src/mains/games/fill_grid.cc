@@ -91,11 +91,13 @@ int main (int argc, char* argv[])
    reinforce_ptr->set_rmsprop_decay_rate(0.85);
 //   reinforce_ptr->set_rmsprop_decay_rate(0.9);
 
-   reinforce_ptr->set_base_learning_rate(2E-3);
+//   reinforce_ptr->set_base_learning_rate(2E-3);
+   reinforce_ptr->set_base_learning_rate(10E-4);
 //   reinforce_ptr->set_base_learning_rate(3E-4);
 //   reinforce_ptr->set_base_learning_rate(1E-4);
 //   reinforce_ptr->set_base_learning_rate(3E-5);
-   double min_learning_rate = 3E-5;
+   double min_learning_rate = 0.5E-4;
+//   double min_learning_rate = 3E-5;
 
 //   int n_max_episodes = 1 * 1000000;
 //   int n_max_episodes = 2 * 1000000;
@@ -121,15 +123,21 @@ int main (int argc, char* argv[])
 //      int n_episodes_period = 200 * 1000;
 //      int n_episodes_period = 250 * 1000;
 
-   bool check_genuine_game_wins_flag = true; 
+   bool check_genuine_game_wins_flag = false;
+   int min_illegal_training_episodes = 1000 * 1000;
+   
    while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
 
-// For 50% of all training games, set check_genuine_game_wins_flag =
-// false so that agent will learn to not make illegal moves:
+// For 50% of all training games beyond some initial minimal number of
+// illegal trianing episodes, set check_genuine_game_wins_flag = false
+// so that agent will learn to not make illegal moves:
 
-      check_genuine_game_wins_flag = !check_genuine_game_wins_flag;
-
+      if(reinforce_ptr->get_episode_number() > min_illegal_training_episodes)
+      {
+         check_genuine_game_wins_flag = !check_genuine_game_wins_flag;
+      }
+      
       ttt_ptr->reset_board_state();
       reinforce_ptr->initialize_episode();
 
@@ -211,7 +219,7 @@ int main (int argc, char* argv[])
       {
          n_illegal_moves++;
       }
-      else if(nearly_equal(curr_reward, -1))
+      else if(check_genuine_game_wins_flag && nearly_equal(curr_reward, -1))
       {
          n_losses++;
       }
@@ -219,7 +227,8 @@ int main (int argc, char* argv[])
       {
          n_stalemates++;
       }
-      else if (nearly_equal(curr_reward, max_reward))
+      else if (check_genuine_game_wins_flag && 
+               nearly_equal(curr_reward, max_reward))
       {
          n_wins++;
       }

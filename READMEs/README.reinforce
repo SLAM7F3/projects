@@ -426,7 +426,9 @@ n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
 64, gamma = 0.25 and rmsprop_decay = 0.85.  Game over if AI/agent randomly
 wins or loses.  Reward = -2 if AI wins; Reward = -1 if illegal move.
 
-Started running on Thinkmate around 6:57 am on Weds, Oct 26.
+Started running on Thinkmate around 6:57 am on Weds, Oct 26.  Terminated.
+
+
 
 34.   Base learning rate = 2E-3.  Multiply learning rate by 0.8 after every
 n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
@@ -434,7 +436,7 @@ n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
 64, gamma = 0.25 and rmsprop_decay = 0.85.  Game over if AI/agent randomly
 wins or loses.  Reward = -1 if AI wins; Reward = -2 if illegal move.
 
-Started running on Thinkmate around 6:59 am on Weds, Oct 26.
+Started running on Thinkmate around 6:59 am on Weds, Oct 26.  TErminated.
 
 35.   Base learning rate = 2E-3.  Multiply learning rate by 0.8 after every
 n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
@@ -444,5 +446,17 @@ wins or loses.  Reward = -1 if AI wins; Reward = -2 if illegal move.  Check
 for genuine game wins/losses in only 50% of episodes to better teach agent
 to not make illegal moves.
 
-Started running on Thinkmate around 6:59 am on Weds, Oct 26.
+Started running on Thinkmate around 6:59 am on Weds, Oct 26.  Terminated.
+
+
+36.  Base learning rate = 1E-3.  Multiply learning rate by 0.8 after every
+n_episodes_period = 100,000 episodes ; also increase n_episodes_period by
+1.2; min learning rate = 5E-5.  bsize = 30, Z=4 levels with H1 = 300, H2 =
+64, gamma = 0.25 and rmsprop_decay = 0.85.  Game over if AI/agent randomly
+wins or loses.  Reward = -1 if AI wins; Reward = -2 if illegal move.  Train
+for 1E6 episodes with no genuine win/loss game termination.  Then check for
+genuine game wins/losses in only 50% of episodes to better teach agent to
+not make illegal moves.
+
+Started running on Thinkmate around 8:03 am on Weds, Oct 26.  Terminated.
 
