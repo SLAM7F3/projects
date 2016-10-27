@@ -136,6 +136,13 @@ int tictac3d::get_n_filled_cells() const
 }
 
 // ---------------------------------------------------------------------
+int tictac3d::get_n_empty_cells() const
+{
+   int n_total_cells = n_zlevels * n_size * n_size;
+   return n_total_cells - get_n_filled_cells();
+}
+
+// ---------------------------------------------------------------------
 void tictac3d::enter_human_move()
 {
    int px, py, pz = 0;
@@ -159,8 +166,7 @@ void tictac3d::enter_human_move()
    }
    else
    {
-      int n_total_cells = n_zlevels * n_size * n_size;
-      if(get_n_filled_cells() == n_total_cells)
+      if(get_n_empty_cells() == 0)
       {
          curr_score = 1;
          game_over = true;
@@ -178,10 +184,48 @@ double tictac3d::get_random_agent_move(bool print_flag)
 }
 
 // ---------------------------------------------------------------------
-// Return score = -1 if agent puts piece into previously occupied
-// cell.  Return score = 1 if agent's last move fills entire
-// gameboard.  Otherwise return score = 0.
+// Boolean member function legal_agent_move() returns false if
+// cell corresponding to input (px,py,pz) is already occupied.
 
+bool tictac3d::legal_agent_move(int px, int py, int pz, bool print_flag)
+{
+
+// Cell values:
+
+// -1   --> AI
+// 0    --> empty
+// 1    --> agent
+// 2    --> 2 agent (illegal)
+// 3    --> agent + AI (illegal)
+
+   int curr_cell_value = get_cell_value(px, py, pz);
+   if(curr_cell_value == -1)
+   {
+      if(print_flag)
+      {
+         cout << "Agent attempted illegal move into row = " << py 
+              << " column = " << px << endl;
+         cout << "Cell is already occupied by X" << endl;
+      }
+      return false;
+   }
+   else if (curr_cell_value == 1)
+   {
+      if(print_flag)
+      {
+         cout << "Agent attempted illegal move into row = " << py 
+              << " column = " << px << endl;
+         cout << "Cell is already occupied by O" << endl;
+      }
+      return false;
+   }
+   else
+   {
+      return true;
+   }
+}
+
+// ---------------------------------------------------------------------
 double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
 {
 
@@ -226,8 +270,7 @@ double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
    else
    {
       set_cell_value(px, py, pz, agent_value);
-      int n_total_cells = n_zlevels * n_size * n_size;
-      if(get_n_filled_cells() == n_total_cells)
+      if(get_n_empty_cells() == 0)
       {
          curr_score = 1;
          game_over = true;
@@ -259,8 +302,7 @@ void tictac3d::get_random_legal_AI_move()
    }
    while(!legal_move_flag);
 
-   int n_total_cells = n_zlevels * n_size * n_size;
-   if(get_n_filled_cells() == n_total_cells)
+   if(get_n_empty_cells() == 0)
    {
       curr_score = 1;
       game_over = true;
@@ -932,7 +974,7 @@ void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
    metafile curr_metafile;
    string meta_filename="game_histories";
    string title="Game histories vs episode";
-   string x_label="Time step";
+   string x_label="Episode number";
    string y_label="Game history fractions";
 
    curr_metafile.set_parameters(
@@ -943,15 +985,19 @@ void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
    curr_metafile.openmetafile();
    curr_metafile.write_header();
 
+   curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Illegal");
-   curr_metafile.write_curve(0, n_episodes, game_illegal_frac, colorfunc::red);
+   curr_metafile.write_curve(0, n_episodes, game_illegal_frac, colorfunc::purple);
 
+   curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Loss");
-   curr_metafile.write_curve(0, n_episodes, game_loss_frac, colorfunc::blue);
+   curr_metafile.write_curve(0, n_episodes, game_loss_frac, colorfunc::red);
 
+   curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Stalemate");
    curr_metafile.write_curve(0, n_episodes, game_stalemate_frac, colorfunc::cyan);
 
+   curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Win");
    curr_metafile.write_curve(0, n_episodes, game_win_frac, colorfunc::green);
 

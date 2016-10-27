@@ -39,7 +39,12 @@ class reinforce
    void set_rmsprop_decay_rate(double rate);
 
    void initialize_episode();
+   void compute_cumulative_action_distribution(genvector* input_state_ptr);
+   void reset_pcum_action(int a_star);
+   void print_p_action();
+   int get_candidate_current_action();
    int compute_current_action(genvector* input_state_ptr);
+   void set_current_action(int output_action);
    void record_reward_for_action(double curr_reward);
    void update_weights(bool episode_finished_flag);
    void update_running_reward(std::string extrainfo);

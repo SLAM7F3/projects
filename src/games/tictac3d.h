@@ -44,9 +44,11 @@ class tictac3d
    void display_board_state();
    void enter_human_move();
    int get_n_filled_cells() const;
+   int get_n_empty_cells() const;
    int check_player_win(int player_ID, bool print_flag = false);
 
    double get_random_agent_move(bool print_flag = false);
+   bool legal_agent_move(int px, int py, int pz, bool print_flag = false);
    double set_agent_move(int px, int py, int pz, bool print_flag = false);
    void get_random_legal_AI_move();
 

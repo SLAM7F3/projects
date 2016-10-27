@@ -386,7 +386,8 @@ void reinforce::initialize_episode()
 // probabilistically selected based upon the current softmax action
 // distribution.
 
-int reinforce::compute_current_action(genvector* input_state_ptr)
+void reinforce::compute_cumulative_action_distribution(
+   genvector* input_state_ptr)
 {
    policy_forward(curr_timestep, *input_state_ptr);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
@@ -410,6 +411,46 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
 //           << " pcum_action = " << pcum_action->get(a) << endl;
    }
 
+   if(pcum < 0.9)
+   {
+      cout << "denom = " << denom << endl;
+      cout << "episode_number = " << get_episode_number() << endl;
+      print_p_action();
+      cout << "denom = " << denom << endl;
+      cout << "episode_number = " << get_episode_number() << endl;
+      outputfunc::enter_continue_char();
+   }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::reset_pcum_action(int a_star)
+{
+//   cout << "inside reset_pcum_action, a_star = " << a_star << endl;
+   if(a_star > 0)
+   {
+      pcum_action->put(a_star, pcum_action->get(a_star-1));
+   }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::print_p_action()
+{
+   for(int a = 0; a < n_actions; a++)
+   {
+      cout << "a = " << a << " p_action = " << p_action->get(a)
+           << " p_cum = " << pcum_action->get(a)
+           << endl;
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function get_candidate_current_action() returns the index
+// for the action which is probabilistically selected based upon the
+// current softmax action distribution.
+
+int reinforce::get_candidate_current_action()
+{
+
 // Generate uniformly-distributed random variable.  Use it to
 // inversely sample cumulative probability distribution to set action
 // a_star:
@@ -421,10 +462,14 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
       if(q >= pcum_action->get(a) && q < pcum_action->get(a+1))
       {
          a_star = a + 1;
-         break;
       }
    }
+   return a_star;
+}
 
+// ---------------------------------------------------------------------
+void reinforce::set_current_action(int a_star)
+{
    y->put(curr_timestep, a_star);
 
    if(cum_time_counter > 0 && cum_time_counter%20000 == 0)
@@ -433,7 +478,6 @@ int reinforce::compute_current_action(genvector* input_state_ptr)
       loss_values.push_back(compute_loss(curr_timestep));
       running_reward_snapshots.push_back(running_reward);
    }
-   return a_star;
 }
 
 // ---------------------------------------------------------------------
