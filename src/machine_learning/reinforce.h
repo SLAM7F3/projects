@@ -46,6 +46,7 @@ class reinforce
    int get_candidate_current_action();
    int compute_current_action(genvector* input_state_ptr);
    void set_current_action(int output_action);
+   void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
    void update_weights(bool episode_finished_flag);
    void update_running_reward(std::string extrainfo);

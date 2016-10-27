@@ -130,8 +130,10 @@ int main (int argc, char* argv[])
       reinforce_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_ptr->get_episode_number();
+
+
       outputfunc::update_progress_and_remaining_time(
-         reinforce_ptr->get_episode_number(), 10000, n_max_episodes);
+         curr_episode_number, 10000, n_max_episodes);
       
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
@@ -189,7 +191,6 @@ int main (int argc, char* argv[])
                output_action = nrfunc::ran1() * Dout;
             }
             
-
             pz = output_action / (nsize * nsize);
             py = (output_action - nsize * nsize * pz) / nsize;
             px = (output_action - nsize * nsize * pz - nsize * py);
@@ -240,8 +241,8 @@ int main (int argc, char* argv[])
       reinforce_ptr->update_running_reward(extrainfo);
       
       reinforce_ptr->increment_episode_number();
-      int n_episodes = reinforce_ptr->get_episode_number();
-      if(curr_episode_number % n_update == 0)
+      int n_episodes = curr_episode_number;
+      if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
          cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
               << endl;
@@ -261,12 +262,13 @@ int main (int argc, char* argv[])
               << endl;
       }
 
-      if(curr_episode_number % 2000 == 0)
+      if(curr_episode_number > 10 && curr_episode_number % 500 == 0)
       {
          double curr_n_turns_frac = double(
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
          reinforce_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
+         reinforce_ptr->snapshot_running_reward();
 
          double loss_frac = double(n_losses) / n_episodes;
          double stalemate_frac = double(n_stalemates) / n_episodes;
@@ -276,14 +278,13 @@ int main (int argc, char* argv[])
          ttt_ptr->append_game_win_frac(win_frac);
       }
 
-      if(reinforce_ptr->get_episode_number() % 10000 == 0)
+      if(curr_episode_number > 10 && curr_episode_number % 10000 == 0)
       {
          reinforce_ptr->compute_weight_distributions();
          reinforce_ptr->plot_loss_history(extrainfo);
          reinforce_ptr->plot_reward_history(extrainfo, min_reward, max_reward);
          reinforce_ptr->plot_turns_history(extrainfo);
-         ttt_ptr->plot_game_frac_histories(reinforce_ptr->get_episode_number(),
-                                           extrainfo);
+         ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
       }
    } // n_episodes < n_max_episodes while loop
 

@@ -508,12 +508,17 @@ void reinforce::set_current_action(int a_star)
 {
    y->put(curr_timestep, a_star);
 
-   if(cum_time_counter > 0 && cum_time_counter%20000 == 0)
+   if(cum_time_counter > 0 && cum_time_counter%10000 == 0)
    {
       time_samples.push_back(cum_time_counter);
       loss_values.push_back(compute_loss(curr_timestep));
-      running_reward_snapshots.push_back(running_reward);
    }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::snapshot_running_reward()
+{
+   running_reward_snapshots.push_back(running_reward);
 }
 
 // ---------------------------------------------------------------------
@@ -689,21 +694,8 @@ string reinforce::init_subtitle()
 
 void reinforce::plot_loss_history(std::string extrainfo)
 {
-
-// Temporally smooth noisy loss values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
-   vector<double> h;
-   h.reserve(gaussian_size);
-   filterfunc::gaussian_filter(dx, sigma, h);
-
-   bool wrap_around_input_values = false;
-   vector<double> smoothed_loss_values;
-   filterfunc::brute_force_filter(
-      loss_values, h, smoothed_loss_values, wrap_around_input_values);
-
+   cout << "inside reinforce::plot_loss_history()" << endl;
+   
    metafile curr_metafile;
    string meta_filename="loss_history";
    string title="Loss vs RMSprop model training; bsize="+
@@ -719,12 +711,13 @@ void reinforce::plot_loss_history(std::string extrainfo)
    string y_label="Loss";
 
    double min_loss, max_loss;
-   mathfunc::lo_hi_values(
-      loss_values, 0.025, 0.975, min_loss, max_loss);
+   mathfunc::lo_hi_values(loss_values, 0.025, 0.975, min_loss, max_loss);
    min_loss = 0;
+   cout << "max_loss = " << max_loss << endl;
+
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, time_samples.back(), 
+      meta_filename, title, x_label, y_label, 0, time_samples.back(),
       min_loss, max_loss);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.set_ytic(0.5);
@@ -733,9 +726,27 @@ void reinforce::plot_loss_history(std::string extrainfo)
    curr_metafile.write_header();
    curr_metafile.write_curve(time_samples, loss_values, colorfunc::red);
 
-   curr_metafile.set_thickness(3);
-   curr_metafile.write_curve(time_samples, smoothed_loss_values, 
-                             colorfunc::blue);
+// Temporally smooth noisy loss values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   if(gaussian_size < int(loss_values.size()))
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_loss_values;
+      filterfunc::brute_force_filter(
+         loss_values, h, smoothed_loss_values, wrap_around_input_values);
+
+      curr_metafile.set_thickness(3);
+      curr_metafile.write_curve(time_samples, smoothed_loss_values, 
+                                colorfunc::blue);
+   }
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
@@ -751,22 +762,6 @@ void reinforce::plot_loss_history(std::string extrainfo)
 void reinforce::plot_reward_history(
    std::string extrainfo, double min_reward, double max_reward)
 {
-
-// Temporally smooth noisy loss values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
-   vector<double> h;
-   h.reserve(gaussian_size);
-   filterfunc::gaussian_filter(dx, sigma, h);
-
-   bool wrap_around_input_values = false;
-   vector<double> smoothed_reward_snapshots;
-   filterfunc::brute_force_filter(
-      running_reward_snapshots, h, smoothed_reward_snapshots, 
-      wrap_around_input_values);
-
    metafile curr_metafile;
    string meta_filename="reward_history";
    string title="Running reward sum vs RMSprop model training; bsize="+
@@ -778,11 +773,11 @@ void reinforce::plot_reward_history(
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
-   string x_label="Time step";
+   string x_label="Episode";
    string y_label="Running reward sum";
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, time_samples.back(),
+      meta_filename, title, x_label, y_label, 0, episode_number,
       min_reward, max_reward);
    curr_metafile.set_subtitle(subtitle);
    double ytic = 0.1 * (max_reward - min_reward);
@@ -790,10 +785,30 @@ void reinforce::plot_reward_history(
    curr_metafile.set_ysubtic(0.5 * ytic);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(time_samples, running_reward_snapshots);
-   curr_metafile.set_thickness(3);
-   curr_metafile.write_curve(
-      time_samples, smoothed_reward_snapshots, colorfunc::blue);
+   curr_metafile.write_curve(0, episode_number, running_reward_snapshots);
+
+// Temporally smooth noisy loss values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   vector<double> smoothed_reward_snapshots;
+   if(gaussian_size < int(running_reward_snapshots.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+      
+      bool wrap_around_input_values = false;
+      filterfunc::brute_force_filter(
+         running_reward_snapshots, h, smoothed_reward_snapshots, 
+         wrap_around_input_values);
+
+      curr_metafile.set_thickness(3);
+      curr_metafile.write_curve(
+         0, episode_number, smoothed_reward_snapshots, colorfunc::blue);
+   }
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
@@ -813,7 +828,7 @@ void reinforce::plot_turns_history(std::string extrainfo)
 
    double sigma = 10;
    double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
    vector<double> h;
    h.reserve(gaussian_size);
    filterfunc::gaussian_filter(dx, sigma, h);
