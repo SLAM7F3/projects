@@ -40,8 +40,8 @@ class reinforce
 
    void initialize_episode();
    void compute_unrenorm_action_probs(genvector* input_state_ptr);
-   void renormalize_action_distribution();
-   void zero_p_action(int a_star);
+   bool renormalize_action_distribution();
+   bool zero_p_action(int a_star);
    void print_p_action();
    int get_candidate_current_action();
    int compute_current_action(genvector* input_state_ptr);
@@ -57,6 +57,9 @@ class reinforce
    void plot_reward_history(
       std::string extrainfo, double min_reward, double max_reward);
    void plot_turns_history(std::string extrainfo);
+
+   void export_snapshot();
+   void import_snapshot();
 
   private:
 

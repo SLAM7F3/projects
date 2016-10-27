@@ -5,6 +5,7 @@
 // ==========================================================================
 
 #include <string>
+#include "general/filefuncs.h"
 #include "filter/filterfuncs.h"
 #include "math/genmatrix.h"
 #include "math/genvector.h"
@@ -20,6 +21,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::flush;
+using std::ifstream;
 using std::map;
 using std::ofstream;
 using std::ostream;
@@ -395,12 +397,28 @@ void reinforce::compute_unrenorm_action_probs(genvector* input_state_ptr)
 // renormalizes action probabilities and computes their cumulative
 // probability distribution.
 
-void reinforce::renormalize_action_distribution()
+bool reinforce::renormalize_action_distribution()
 {
    double denom = 0;
    for(int a = 0; a < n_actions; a++)
    {
       denom += p_action->get(a);
+   }
+
+
+   const double TINY=1E-40;
+   if(denom < TINY)
+   {
+      cout << "Trouble in reinforce::renormalize_action_distribution()"
+           << endl;
+      for(int a = 0; a < n_actions; a++)
+      {
+         cout << "a = " << a << " p_action = " << p_action->get(a)
+              << endl;
+      }
+
+      cout << "episode_number = " << get_episode_number() << endl;
+      cout << "denom = " << denom << endl;
    }
 
    double pcum = 0;
@@ -409,18 +427,30 @@ void reinforce::renormalize_action_distribution()
       p_action->put(a, p_action->get(a) / denom);
       pcum += p_action->get(a);
       pcum_action->put(a, pcum);
-//      cout << "a = " << a 
-//           << " p_action = " << p_action->get(a) 
-//           << " pcum_action = " << pcum_action->get(a) << endl;
+      
+      if(denom < TINY)
+      {
+         cout << "a = " << a 
+              << " p_action = " << p_action->get(a) 
+              << " pcum_action = " << pcum_action->get(a) << endl;
+      }
    }
+
+   bool OK_flag = true;
+   if(pcum < 0.99 || pcum > 1.01)
+   {
+      OK_flag = false;
+   }   
+
+   return OK_flag;
 }
 
 // ---------------------------------------------------------------------
-void reinforce::zero_p_action(int a_star)
+bool reinforce::zero_p_action(int a_star)
 {
 //   cout << "inside zero_p_action, a_star = " << a_star << endl;
    p_action->put(a_star, 0);
-   renormalize_action_distribution();
+   return renormalize_action_distribution();
 }
 
 // ---------------------------------------------------------------------
@@ -834,3 +864,99 @@ void reinforce::plot_turns_history(std::string extrainfo)
    sysfunc::unix_command(unix_cmd);
 }
 
+
+
+// ---------------------------------------------------------------------
+// 
+
+void reinforce::export_snapshot()
+{
+   string snapshot_filename="snapshot.binary";
+   ofstream outstream;
+   
+   cout << "inside reinforce::export_snapshot()" << endl;
+   cout << "n_layers = " << n_layers << " n_actions = " << n_actions
+        << endl;
+
+   filefunc::open_binaryfile(snapshot_filename,outstream);
+   outstream << n_layers << endl;
+   outstream << n_actions << endl;
+   for(unsigned int i = 0; i < layer_dims.size(); i++)
+   {
+      outstream << layer_dims[i] << endl;
+      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
+   }
+   
+   outstream << batch_size << endl;
+   outstream << base_learning_rate << endl;
+   outstream << learning_rate << endl;
+   outstream << lambda << endl;
+   outstream << gamma << endl;
+   outstream << rmsprop_decay_rate << endl;
+
+   cout << "batch_size = " << batch_size << endl;
+   cout << "base_learning_rate = " << base_learning_rate << endl;
+   cout << "learning_rate = " << learning_rate << endl;
+   cout << "lambda = " << lambda << endl;
+   cout << "gamma = " << gamma << endl;
+   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
+
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      genmatrix* curr_weights_ptr = weights[l];
+      for(unsigned int py = 0; py < curr_weights_ptr->get_mdim(); py++)
+      {
+         for(unsigned int px = 0; px < curr_weights_ptr->get_ndim(); px++)
+         {
+         }
+      }
+   } // loop over index l labeling weight matrices
+   
+   
+
+   filefunc::closefile(snapshot_filename,outstream);
+}
+
+// ---------------------------------------------------------------------
+// 
+
+void reinforce::import_snapshot()
+{
+   string snapshot_filename="snapshot.binary";
+   ifstream instream;
+
+   cout << "inside reinforce::import_snapshot()" << endl;
+   
+   filefunc::open_binaryfile(snapshot_filename,instream);
+   instream >> n_layers;
+   instream >> n_actions;
+   cout << "n_layers = " << n_layers << " n_actions = " << n_actions 
+        << endl;
+
+   layer_dims.clear();
+   for(int i = 0; i < n_layers; i++)
+   {
+      int curr_layer_dim;
+      instream >> curr_layer_dim;
+      layer_dims.push_back(curr_layer_dim);
+      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
+   }
+
+   instream >> batch_size;
+   instream >> base_learning_rate;
+   instream >> learning_rate;
+   instream >> lambda;
+   instream >> gamma;
+   instream >> rmsprop_decay_rate;
+
+
+   cout << "batch_size = " << batch_size << endl;
+   cout << "base_learning_rate = " << base_learning_rate << endl;
+   cout << "learning_rate = " << learning_rate << endl;
+   cout << "lambda = " << lambda << endl;
+   cout << "gamma = " << gamma << endl;
+   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
+
+
+   filefunc::closefile(snapshot_filename,instream);
+}

@@ -171,7 +171,7 @@ int main (int argc, char* argv[])
 //          ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over())
          {
-             curr_reward = 1; // Entire 3D board is filled - stalemate
+            curr_reward = 1; // Entire 3D board is filled - stalemate
             reinforce_ptr->record_reward_for_action(curr_reward);
             break;
          }

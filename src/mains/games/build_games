@@ -1,2 +1,3 @@
 ~/bin/MAKE program=3d_ttt
 ~/bin/MAKE program=fill_grid
+~/bin/MAKE program=ttt

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TTT
 // ==========================================================================
-// Last updated on 10/23/16; 10/24/16; 10/25/16; 10/26/16
+// Last updated on 10/24/16; 10/25/16; 10/26/16; 10/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -112,7 +112,7 @@ int main (int argc, char* argv[])
    int n_losses = 0;
    int n_stalemates = 0;
    int n_wins = 0;
-   double curr_reward;
+   double curr_reward = -999;
    double max_reward = 1;
    double min_reward = -1;
 
@@ -126,7 +126,6 @@ int main (int argc, char* argv[])
 
    while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
-
       ttt_ptr->reset_board_state();
       reinforce_ptr->initialize_episode();
 
@@ -163,16 +162,30 @@ int main (int argc, char* argv[])
          
          if(ttt_ptr->get_game_over())
          {
-             curr_reward = 1; // Entire 3D board is filled - stalemate
+            curr_reward = 1; // Entire 3D board is filled - stalemate
             reinforce_ptr->record_reward_for_action(curr_reward);
             break;
          }
 
 // Agent move:
 
+         if(ttt_ptr->get_n_empty_cells() == 0)
+         {
+            cout << "Trouble in ttt.cc" << endl;
+            cout << "n_empty_cells = 0 " << endl;
+            outputfunc::enter_continue_char();
+            break;
+         }
+         
          reinforce_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
-         reinforce_ptr->renormalize_action_distribution();
+         if(!reinforce_ptr->renormalize_action_distribution())
+         {
+            cout << "n_empty_cells = " << ttt_ptr->get_n_empty_cells()
+                 << endl;
+            outputfunc::enter_continue_char();
+         }
+         
 
          int output_action = -99;
          int px, py, pz;
@@ -188,7 +201,13 @@ int main (int argc, char* argv[])
             px = (output_action - nsize * nsize * pz - nsize * py);
             legal_move = ttt_ptr->legal_agent_move(px, py, pz);
 
-            reinforce_ptr->zero_p_action(output_action);
+            if(!reinforce_ptr->zero_p_action(output_action))
+            {
+               cout << "n_empty_cells = " << ttt_ptr->get_n_empty_cells()
+                    << endl;
+               outputfunc::enter_continue_char();
+            }
+            
 
             if(n_illegal_moves > 1000)
             {

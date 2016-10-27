@@ -151,10 +151,27 @@ namespace machinelearning_func
          A.put(i, curr_exp);
       }
       
+//      double psum = 0;
       for(unsigned int i = 0; i < A.get_mdim(); i++)
       {
          A.put(i, A.get(i) / denom);
+//         psum += A.get(i);
       }
+
+/*
+      if(psum < 0.99 || psum > 1.01)
+      {
+         cout << "Trouble in machinelearningfunc::softmax()" << endl;
+
+         for(unsigned int i = 0; i < A.get_mdim(); i++)
+         {
+            cout << "i = " << i << " A.get(i) = " << A.get(i) << endl;
+         }
+         cout << "denom = " << denom << endl;
+         cout << "psum = " << psum << endl;
+         outputfunc::enter_continue_char();
+      }
+*/
    }
 
 // --------------------------------------------------------------------------
