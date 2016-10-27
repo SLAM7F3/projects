@@ -460,3 +460,7 @@ not make illegal moves.
 
 Started running on Thinkmate around 8:03 am on Weds, Oct 26.  Terminated.
 
+
+37.  Trying to reproduce latest best expt #25.  But set H1 = 5 * 64 = 320 rather than 300.  Started running on TM at 10:25 am.
+
+
