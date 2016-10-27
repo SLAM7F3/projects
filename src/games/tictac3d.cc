@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/12/16; 10/18/16; 10/22/16; 10/26/16
+// Last modified on 10/18/16; 10/22/16; 10/26/16; 10/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -143,33 +143,30 @@ int tictac3d::get_n_empty_cells() const
 }
 
 // ---------------------------------------------------------------------
-void tictac3d::enter_human_move()
+void tictac3d::enter_player_move(int player_value)
 {
    int px, py, pz = 0;
-   if(n_zlevels > 1)
+   bool legal_move = false;
+   while(!legal_move)
    {
-      cout << "Enter Z level:" << endl;
-      cin >> pz;
-      if (pz >= n_zlevels) pz = n_zlevels - 1;
-   }
-
-   cout << "Enter X: " << endl;
-   cin >> px;
-   cout << "Enter Y: " << endl;
-   cin >> py;
-   int human_value = 1;
-   curr_score = 0;
-   if(!set_cell_value(px,py,pz,human_value))
-   {
-      curr_score = -1;
-      game_over = true;
-   }
-   else
-   {
-      if(get_n_empty_cells() == 0)
+      if(n_zlevels > 1)
       {
-         curr_score = 1;
-         game_over = true;
+         cout << "Enter Z level:" << endl;
+         cin >> pz;
+         if (pz >= n_zlevels) pz = n_zlevels - 1;
+      }
+
+      cout << "Enter X: " << endl;
+      cin >> px;
+      cout << "Enter Y: " << endl;
+      cin >> py;
+      curr_score = 0;
+
+
+      legal_move = set_cell_value(px,py,pz,player_value);
+      if(!legal_move)
+      {
+         cout << "Cell is already occupied.  Please try again" << endl;
       }
    }
 }
@@ -280,9 +277,9 @@ double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
 }
 
 // ---------------------------------------------------------------------
-void tictac3d::get_random_legal_AI_move()
+void tictac3d::get_random_legal_player_move(int player_value)
 {
-   int AI_value = -1;
+//   int AI_value = -1;
    bool legal_move_flag = true;
 
    do
@@ -292,7 +289,7 @@ void tictac3d::get_random_legal_AI_move()
       int pz = mathfunc::getRandomInteger(n_zlevels);
       if(get_cell_value(px,py,pz) == 0)
       {
-         set_cell_value(px,py,pz,AI_value);
+         set_cell_value(px,py,pz,player_value);
          legal_move_flag = true;
       }
       else

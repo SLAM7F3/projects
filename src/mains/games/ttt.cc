@@ -28,8 +28,6 @@ int main (int argc, char* argv[])
 
    int nsize = 4;
 //   int n_zlevels = 1;
-//   int n_zlevels = 2;
-//   int n_zlevels = 3;
    int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
@@ -262,13 +260,14 @@ int main (int argc, char* argv[])
               << endl;
       }
 
-      if(curr_episode_number > 10 && curr_episode_number % 500 == 0)
+      if(curr_episode_number > 10 && curr_episode_number % 1000 == 0)
       {
          double curr_n_turns_frac = double(
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
          reinforce_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
          reinforce_ptr->snapshot_running_reward();
+         reinforce_ptr->export_snapshot();
 
          double loss_frac = double(n_losses) / n_episodes;
          double stalemate_frac = double(n_stalemates) / n_episodes;

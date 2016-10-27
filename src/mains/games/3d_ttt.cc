@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program 3D_TTT
 // ==========================================================================
-// Last updated on 8/29/16; 9/12/16; 10/4/16; 10/5/16; 10/18/16
+// Last updated on 10/4/16; 10/5/16; 10/18/16; 10/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -21,49 +21,39 @@ int main (int argc, char* argv[])
    using std::vector;
 
    nrfunc::init_time_based_seed();
-//   tictac3d* ttt_ptr = new tictac3d(4,4);
-//   tictac3d* ttt_ptr = new tictac3d(2,1);
-   tictac3d* ttt_ptr = new tictac3d(4,1);
 
-   int Din = 4 * 4;	// Input dimensionality
-   int H = 200;		// Number of hidden layer neurons
-   int Dout = 4 * 4;	// Output dimensionality
-   int Tmax = 64;
+   int nsize = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
+   tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
-   vector<int> layer_dims;
-   layer_dims.push_back(Din);
-   layer_dims.push_back(H);
-   layer_dims.push_back(Dout);
-
-   reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
-   cout << "*reinforce_ptr = " << *reinforce_ptr << endl;
-   reinforce_ptr->initialize_episode();
+//   reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
+//   reinforce_ptr->initialize_episode();
 
    while(!ttt_ptr->get_game_over())
    {
-//       ttt_ptr->randomize_board_state();
-      ttt_ptr->display_board_state();
-      
-      ttt_ptr->enter_human_move();
 
-/*
-      if(ttt_ptr->check_player_win(1))
-      {
-         game_over = true;
-      }
+// Human move:
+
+      ttt_ptr->display_board_state();
+
+      int human_value = -1;
+      ttt_ptr->enter_player_move(human_value);
+      ttt_ptr->check_player_win(human_value);
       
-      if(ttt_ptr->check_player_win(-1))
-      {
-         game_over = true;
-      }
-*/
+// Agent move:
+
+      int agent_value = 1;
+      ttt_ptr->display_board_state();
+      ttt_ptr->get_random_legal_player_move(agent_value);
+      ttt_ptr->check_player_win(agent_value);
 
    } // !game_over while loop
    cout << "Final score = " << ttt_ptr->get_score() << endl;
    cout << "GAME OVER" << endl << endl;
 
    delete ttt_ptr;
-   delete reinforce_ptr;
+//    delete reinforce_ptr;
 }
 
 

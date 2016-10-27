@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/12/16; 10/18/16; 10/22/16; 10/26/16
+// Last modified on 10/18/16; 10/22/16; 10/26/16; 10/27/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -42,7 +42,7 @@ class tictac3d
    void reset_board_state();
    void randomize_board_state();
    void display_board_state();
-   void enter_human_move();
+   void enter_player_move(int player_value);
    int get_n_filled_cells() const;
    int get_n_empty_cells() const;
    int check_player_win(int player_ID, bool print_flag = false);
@@ -50,7 +50,7 @@ class tictac3d
    double get_random_agent_move(bool print_flag = false);
    bool legal_agent_move(int px, int py, int pz, bool print_flag = false);
    double set_agent_move(int px, int py, int pz, bool print_flag = false);
-   void get_random_legal_AI_move();
+   void get_random_legal_player_move(int player_value);
 
    void append_game_loss_frac(double frac);
    void append_game_illegal_frac(double frac);

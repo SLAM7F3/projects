@@ -877,14 +877,16 @@ void reinforce::plot_turns_history(std::string extrainfo)
    sysfunc::unix_command(unix_cmd);
 }
 
-
-
 // ---------------------------------------------------------------------
-// 
+// Member function export_snapshot()
 
 void reinforce::export_snapshot()
 {
-   string snapshot_filename="snapshot.binary";
+   string snapshots_subdir = "./snapshots/";
+   filefunc::dircreate(snapshots_subdir);
+
+   string snapshot_filename=snapshots_subdir+"snapshot_"+
+      stringfunc::integer_to_string(episode_number, 5)+".binary";
    ofstream outstream;
    
    cout << "inside reinforce::export_snapshot()" << endl;
@@ -939,10 +941,12 @@ void reinforce::export_snapshot()
 
 // ---------------------------------------------------------------------
 // 
-
 void reinforce::import_snapshot()
 {
-   string snapshot_filename="snapshot.binary";
+   string snapshots_subdir = "./snapshots/";
+   filefunc::dircreate(snapshots_subdir);
+
+   string snapshot_filename=snapshots_subdir+"snapshot.binary";
    ifstream instream;
 
    cout << "inside reinforce::import_snapshot()" << endl;
@@ -964,7 +968,6 @@ void reinforce::import_snapshot()
    }
 
    initialize_member_objects(n_nodes_per_layer);
-
 
    instream >> batch_size;
    instream >> base_learning_rate;
@@ -1007,4 +1010,6 @@ void reinforce::import_snapshot()
    
 
    filefunc::closefile(snapshot_filename,instream);
+   cout << "Exported " << snapshot_filename << endl;
+
 }
