@@ -169,58 +169,37 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         if(ttt_ptr->get_n_empty_cells() == 0)
-         {
-            cout << "Trouble in ttt.cc" << endl;
-            cout << "n_empty_cells = 0 " << endl;
-            outputfunc::enter_continue_char();
-            break;
-         }
-         
          reinforce_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
-         if(!reinforce_ptr->renormalize_action_distribution())
-         {
-            cout << "n_empty_cells = " << ttt_ptr->get_n_empty_cells()
-                 << endl;
-            outputfunc::enter_continue_char();
-         }
+         bool reasonable_action_prob_distribution_flag = 
+            reinforce_ptr->renormalize_action_distribution();
          
-
          int output_action = -99;
          int px, py, pz;
          bool legal_move = false;
 
-         int n_illegal_moves = -1;
          while(!legal_move)
          {
-            n_illegal_moves++;
-            output_action = reinforce_ptr->get_candidate_current_action();
+            if(reasonable_action_prob_distribution_flag)
+            {
+               output_action = reinforce_ptr->get_candidate_current_action();
+            }
+            else
+            {
+               output_action = nrfunc::ran1() * Dout;
+            }
+            
+
             pz = output_action / (nsize * nsize);
             py = (output_action - nsize * nsize * pz) / nsize;
             px = (output_action - nsize * nsize * pz - nsize * py);
             legal_move = ttt_ptr->legal_agent_move(px, py, pz);
 
-            if(!reinforce_ptr->zero_p_action(output_action))
-            {
-               cout << "n_empty_cells = " << ttt_ptr->get_n_empty_cells()
-                    << endl;
-               outputfunc::enter_continue_char();
-            }
-            
-
-            if(n_illegal_moves > 1000)
-            {
-               cout << "n_illegal_moves = " << n_illegal_moves
-                    << endl;
-               reinforce_ptr->print_p_action();
-               outputfunc::enter_continue_char();
-            }
+            reasonable_action_prob_distribution_flag = 
+               reinforce_ptr->zero_p_action(output_action);
          } // !legal_move conditional
          reinforce_ptr->set_current_action(output_action);
 
-//         cout << " n_illegal_moves = " << n_illegal_moves 
-//              << " before output_action = " << output_action << endl;
          ttt_ptr->increment_n_agent_turns();
 
 // Step the environment and then retrieve new reward measurements:

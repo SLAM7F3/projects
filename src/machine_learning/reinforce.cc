@@ -405,10 +405,10 @@ bool reinforce::renormalize_action_distribution()
       denom += p_action->get(a);
    }
 
-
-   const double TINY=1E-40;
+   const double TINY=1E-100;
    if(denom < TINY)
    {
+/*
       cout << "Trouble in reinforce::renormalize_action_distribution()"
            << endl;
       for(int a = 0; a < n_actions; a++)
@@ -416,9 +416,10 @@ bool reinforce::renormalize_action_distribution()
          cout << "a = " << a << " p_action = " << p_action->get(a)
               << endl;
       }
-
-      cout << "episode_number = " << get_episode_number() << endl;
-      cout << "denom = " << denom << endl;
+*/
+      cout << "In renormalize_action_dist(), denom = " << denom
+           << " for episode_number = " << get_episode_number() << endl;
+      return false;
    }
 
    double pcum = 0;
@@ -428,12 +429,9 @@ bool reinforce::renormalize_action_distribution()
       pcum += p_action->get(a);
       pcum_action->put(a, pcum);
       
-      if(denom < TINY)
-      {
-         cout << "a = " << a 
-              << " p_action = " << p_action->get(a) 
-              << " pcum_action = " << pcum_action->get(a) << endl;
-      }
+//      cout << "a = " << a 
+//           << " p_action = " << p_action->get(a) 
+//           << " pcum_action = " << pcum_action->get(a) << endl;
    }
 
    bool OK_flag = true;
@@ -904,14 +902,21 @@ void reinforce::export_snapshot()
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       genmatrix* curr_weights_ptr = weights[l];
+      outstream << curr_weights_ptr->get_mdim() << endl;
+      outstream << curr_weights_ptr->get_ndim() << endl;
+      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
+           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
+
       for(unsigned int py = 0; py < curr_weights_ptr->get_mdim(); py++)
       {
          for(unsigned int px = 0; px < curr_weights_ptr->get_ndim(); px++)
          {
+            outstream << curr_weights_ptr->get(px,py) << endl;
+//            cout << "px = " << px << " py = " << py 
+//                 << " weights[l] = " << curr_weights_ptr->get(px,py) << endl;
          }
       }
    } // loop over index l labeling weight matrices
-   
    
 
    filefunc::closefile(snapshot_filename,outstream);
@@ -933,14 +938,18 @@ void reinforce::import_snapshot()
    cout << "n_layers = " << n_layers << " n_actions = " << n_actions 
         << endl;
 
-   layer_dims.clear();
+   vector<int> n_nodes_per_layer;
    for(int i = 0; i < n_layers; i++)
    {
       int curr_layer_dim;
       instream >> curr_layer_dim;
-      layer_dims.push_back(curr_layer_dim);
-      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
+      n_nodes_per_layer.push_back(curr_layer_dim);
+      cout << "i = " << i << " n_nodes_per_layer = " << n_nodes_per_layer[i] 
+           << endl;
    }
+
+   initialize_member_objects(n_nodes_per_layer);
+
 
    instream >> batch_size;
    instream >> base_learning_rate;
@@ -957,6 +966,30 @@ void reinforce::import_snapshot()
    cout << "gamma = " << gamma << endl;
    cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
 
+
+   for(int l = 0; l < n_layers-1; l++)
+   {
+      int mdim, ndim;
+      instream >> mdim;
+      instream >> ndim;
+      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
+           << endl;
+
+      for(int py = 0; py < mdim; py++)
+      {
+         for(int px = 0; px < ndim; px++)
+         {
+            double curr_weight;
+            instream >> curr_weight;
+            weights[l]->put(px, py, curr_weight);
+//            cout << "px = " << px << " py = " << py 
+//                 << " weights[l] = " << weights[l]->get(px,py) << endl;
+         }
+      }
+
+      
+   } // loop over index l labeling weight matrices
+   
 
    filefunc::closefile(snapshot_filename,instream);
 }
