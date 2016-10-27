@@ -170,8 +170,9 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         reinforce_ptr->compute_cumulative_action_distribution(
+         reinforce_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
+         reinforce_ptr->renormalize_action_distribution();
 
          int output_action = -99;
          int px, py, pz;
@@ -187,7 +188,7 @@ int main (int argc, char* argv[])
             px = (output_action - nsize * nsize * pz - nsize * py);
             legal_move = ttt_ptr->legal_agent_move(px, py, pz);
 
-            reinforce_ptr->reset_pcum_action(output_action);
+            reinforce_ptr->zero_p_action(output_action);
 
             if(n_illegal_moves > 1000)
             {

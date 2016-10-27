@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/22/16; 10/24/16; 10/25/16; 10/26/16
+// Last modified on 10/24/16; 10/25/16; 10/26/16; 10/27/16
 // ==========================================================================
 
 #include <string>
@@ -381,19 +381,22 @@ void reinforce::initialize_episode()
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_current_action() imports an input state
-// vector.  It returns the index for the action which is
-// probabilistically selected based upon the current softmax action
-// distribution.
+// Member function compute_unrenorm_action_probs() imports an input
+// state vector.  
 
-void reinforce::compute_cumulative_action_distribution(
-   genvector* input_state_ptr)
+void reinforce::compute_unrenorm_action_probs(genvector* input_state_ptr)
 {
    policy_forward(curr_timestep, *input_state_ptr);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
+}
 
-// Renormalize action probabilities:
+// ---------------------------------------------------------------------
+// Member function normalize_action_distribution()
+// renormalizes action probabilities and computes their cumulative
+// probability distribution.
 
+void reinforce::renormalize_action_distribution()
+{
    double denom = 0;
    for(int a = 0; a < n_actions; a++)
    {
@@ -410,26 +413,14 @@ void reinforce::compute_cumulative_action_distribution(
 //           << " p_action = " << p_action->get(a) 
 //           << " pcum_action = " << pcum_action->get(a) << endl;
    }
-
-   if(pcum < 0.9)
-   {
-      cout << "denom = " << denom << endl;
-      cout << "episode_number = " << get_episode_number() << endl;
-      print_p_action();
-      cout << "denom = " << denom << endl;
-      cout << "episode_number = " << get_episode_number() << endl;
-      outputfunc::enter_continue_char();
-   }
 }
 
 // ---------------------------------------------------------------------
-void reinforce::reset_pcum_action(int a_star)
+void reinforce::zero_p_action(int a_star)
 {
-//   cout << "inside reset_pcum_action, a_star = " << a_star << endl;
-   if(a_star > 0)
-   {
-      pcum_action->put(a_star, pcum_action->get(a_star-1));
-   }
+//   cout << "inside zero_p_action, a_star = " << a_star << endl;
+   p_action->put(a_star, 0);
+   renormalize_action_distribution();
 }
 
 // ---------------------------------------------------------------------
@@ -457,11 +448,28 @@ int reinforce::get_candidate_current_action()
 
    int a_star = 0;
    double q = nrfunc::ran1();
-   for(int a = 0; a < n_actions - 1; a++)
+   for(int a = 0; a < n_actions; a++)
    {
-      if(q >= pcum_action->get(a) && q < pcum_action->get(a+1))
+      double plo, phi;
+      if(a == 0)
       {
-         a_star = a + 1;
+         plo = 0;
+         phi = pcum_action->get(a);
+      }
+      else if (a == n_actions - 1)
+      {
+         plo = pcum_action->get(a - 1);
+         phi = 1.01;
+      }
+      else
+      {
+         plo = pcum_action->get(a - 1);
+         phi = pcum_action->get(a);
+      }
+
+      if(q >= plo && q < phi)
+      {
+         a_star = a;
       }
    }
    return a_star;
