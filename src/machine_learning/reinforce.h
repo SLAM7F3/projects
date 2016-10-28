@@ -28,6 +28,7 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
+   int get_curr_timestep() const;
    int get_episode_number() const;
    void increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
@@ -137,6 +138,11 @@ class reinforce
 // ==========================================================================
 
 // Set and get member functions:
+
+inline int reinforce::get_curr_timestep() const
+{
+   return curr_timestep;
+}
 
 inline int reinforce::get_episode_number() const
 {

@@ -473,3 +473,12 @@ AI_value = -1.  Running reward converges to 1 after 100K episodes.
 
 41.  RI agent learns against random AI on genuine 3D TTT.  Agent and AI
 values switch between 1 & -1 every 10K episodes.
+
+42.  RI agent learns against 1-round AI.  Agent and AI values switch
+between 1 and -1 every 10K episodes.  Started on TM around 7 am.
+Terminated.
+
+43.  RI agent learns against random AI.  AI = X, agent = O.  Starting
+player switches every 10K episodes.  Started on TM around 7:20 am.  Running
+reward converges to 1 after 90K episodes.  Terminated.
+

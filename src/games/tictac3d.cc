@@ -34,6 +34,7 @@ using std::vector;
 void tictac3d::allocate_member_objects()
 {
    board_state_ptr = new genvector(n_size * n_size * n_zlevels);
+   inverse_board_state_ptr = new genvector(n_size * n_size * n_zlevels);
 }		       
 
 void tictac3d::initialize_member_objects()
@@ -66,6 +67,7 @@ tictac3d::tictac3d(const tictac3d& T)
 tictac3d::~tictac3d()
 {
    delete board_state_ptr;
+   delete inverse_board_state_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -88,6 +90,20 @@ genvector* tictac3d::get_board_state_ptr()
    return board_state_ptr;
 }
 
+// ---------------------------------------------------------------------
+// Member function get_inverse_board_state_ptr() returns the board
+// state vector after swapping all "X" and "O" pieces.
+
+genvector* tictac3d::get_inverse_board_state_ptr()
+{
+   for(unsigned int p = 0; p < curr_board_state.size(); p++)
+   {
+      inverse_board_state_ptr->put(p, -curr_board_state.at(p));
+   }
+   return inverse_board_state_ptr;
+}
+
+// ---------------------------------------------------------------------
 int tictac3d::get_cell_value(triple t) const
 {
    return get_cell_value(t.first, t.second, t.third);

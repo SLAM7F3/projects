@@ -34,6 +34,7 @@ class tictac3d
    double get_score() const;
    bool get_game_over() const;
    genvector* get_board_state_ptr();
+   genvector* get_inverse_board_state_ptr();
 
    void increment_n_AI_turns();
    int get_n_AI_turns() const;
@@ -72,7 +73,8 @@ class tictac3d
    int n_AI_turns, n_agent_turns;
    double curr_score;
    std::vector<int> curr_board_state;
-   genvector* board_state_ptr;
+   genvector *board_state_ptr;
+   genvector *inverse_board_state_ptr;
 
    std::vector<double> game_loss_frac, game_illegal_frac;
    std::vector<double> game_stalemate_frac, game_win_frac;

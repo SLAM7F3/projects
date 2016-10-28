@@ -20,7 +20,7 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
                      int AI_value)
 {
    reinforce_AI_ptr->compute_unrenorm_action_probs(
-      ttt_ptr->get_board_state_ptr());
+      ttt_ptr->get_inverse_board_state_ptr());
    bool reasonable_action_prob_distribution_flag = 
       reinforce_AI_ptr->renormalize_action_distribution();
 
@@ -162,10 +162,11 @@ int main (int argc, char* argv[])
 //      int n_episodes_period = 200 * 1000;
 //      int n_episodes_period = 250 * 1000;
 
+   bool AI_moves_first = true;
    int AI_value = -1;
    int agent_value = 1;
-//   bool periodically_switch_player_values = false;
-   bool periodically_switch_player_values = true;
+   bool periodically_switch_starting_player = true;
+   bool periodically_switch_player_values = false;
 
 // Import previously trained TTT network to guide AI play:
 
@@ -197,6 +198,11 @@ int main (int argc, char* argv[])
             agent_value *= -1;
          }
       }
+
+      if(periodically_switch_starting_player)
+      {
+         AI_moves_first = !AI_moves_first;
+      }
   
 // Current episode starts here:
 
@@ -205,36 +211,39 @@ int main (int argc, char* argv[])
 
 // AI move:
 
+         if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
+            || reinforce_agent_ptr->get_curr_timestep() > 0)
+         {
+            if(nrfunc::ran1() > 0.1)
+            {
+               compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
+            }
+            else
+            {
+               ttt_ptr->get_random_legal_player_move(AI_value);
+            }
 
-         if(nrfunc::ran1() > 0.1)
-         {
-            compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
-         }
-         else
-         {
-            ttt_ptr->get_random_legal_player_move(AI_value);
-         }
-
-         if(curr_episode_number%1000 == 0)
-         {
-            ttt_ptr->display_board_state();
-         }
+            if(curr_episode_number%1000 == 0)
+            {
+               ttt_ptr->display_board_state();
+            }
          
-
-         ttt_ptr->increment_n_AI_turns();
-         if(ttt_ptr->check_player_win(AI_value) > 0)
-         {
-            curr_reward = -1; // Agent loses!
-            reinforce_agent_ptr->record_reward_for_action(curr_reward);
-            break;
-         }
+            ttt_ptr->increment_n_AI_turns();
+            if(ttt_ptr->check_player_win(AI_value) > 0)
+            {
+               curr_reward = -1; // Agent loses!
+               reinforce_agent_ptr->record_reward_for_action(curr_reward);
+               break;
+            }
          
-         if(ttt_ptr->get_game_over())
-         {
-            curr_reward = 0; // Entire 3D board is filled - stalemate
-            reinforce_agent_ptr->record_reward_for_action(curr_reward);
-            break;
-         }
+            if(ttt_ptr->get_game_over())
+            {
+               curr_reward = 0; // Entire 3D board is filled - stalemate
+               reinforce_agent_ptr->record_reward_for_action(curr_reward);
+               break;
+            }
+
+         } // AI_moves_first || timestep > 0 conditional
 
 // Agent move:
 
@@ -329,9 +338,17 @@ int main (int argc, char* argv[])
          {
             cout << "AI = O    agent = X" << endl;
          }
+         if(AI_moves_first)
+         {
+            cout << "AI moves first " << endl;
+         }
+         else
+         {
+            cout << "Agent moves first" << endl;
+         }
          
-         cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
-              << endl;
+//         cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
+//              << endl;
 //          ttt_ptr->display_board_state();
          
          double loss_frac = double(n_losses) / n_episodes;
