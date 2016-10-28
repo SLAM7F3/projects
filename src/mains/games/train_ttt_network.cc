@@ -165,7 +165,8 @@ int main (int argc, char* argv[])
    bool AI_moves_first = true;
    int AI_value = -1;
    int agent_value = 1;
-   bool periodically_switch_starting_player = true;
+   bool periodically_switch_starting_player = false;
+//   bool periodically_switch_starting_player = true;
    bool periodically_switch_player_values = false;
 
 // Import previously trained TTT network to guide AI play:
