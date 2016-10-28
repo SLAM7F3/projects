@@ -1,10 +1,11 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/24/16; 10/25/16; 10/26/16; 10/27/16
+// Last modified on 10/25/16; 10/26/16; 10/27/16; 10/28/16
 // ==========================================================================
 
 #include <string>
+#include "astro_geo/Clock.h"
 #include "general/filefuncs.h"
 #include "filter/filterfuncs.h"
 #include "math/genmatrix.h"
@@ -120,8 +121,11 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       } // loop over index i labeling node in current layer
 
    } // loop over index l labeling neural net layers
+
+   snapshots_subdir="";
 }
 
+// ---------------------------------------------------------------------
 void reinforce::allocate_member_objects()
 {
    y = new genvector(Tmax);
@@ -135,6 +139,14 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax)
    this->Tmax = Tmax;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
+}
+
+// ---------------------------------------------------------------------
+reinforce::reinforce()
+{
+   Tmax = 1;
+   allocate_member_objects();
+   import_snapshot();
 }
 
 // ---------------------------------------------------------------------
@@ -388,6 +400,7 @@ void reinforce::initialize_episode()
 
 void reinforce::compute_unrenorm_action_probs(genvector* input_state_ptr)
 {
+//   cout << "curr_timestep = " << curr_timestep << endl;
    policy_forward(curr_timestep, *input_state_ptr);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
 }
@@ -880,18 +893,28 @@ void reinforce::plot_turns_history(std::string extrainfo)
 // ---------------------------------------------------------------------
 // Member function export_snapshot()
 
+void reinforce::create_snapshots_subdir()
+{
+   Clock clock;
+   clock.set_time_based_on_local_computer_clock();
+   string timestamp_str = clock.YYYY_MM_DD_H_M_S("_","_",false,0);
+   string timestamp_substr = timestamp_str.substr(0,16);
+
+   snapshots_subdir = "./snapshots/"+timestamp_substr+"/";
+   filefunc::dircreate(snapshots_subdir);
+}
+
 void reinforce::export_snapshot()
 {
-   string snapshots_subdir = "./snapshots/";
-   filefunc::dircreate(snapshots_subdir);
-
+   if(snapshots_subdir.size() == 0) create_snapshots_subdir();
+   
    string snapshot_filename=snapshots_subdir+"snapshot_"+
       stringfunc::integer_to_string(episode_number, 5)+".binary";
    ofstream outstream;
    
-   cout << "inside reinforce::export_snapshot()" << endl;
-   cout << "n_layers = " << n_layers << " n_actions = " << n_actions
-        << endl;
+//   cout << "inside reinforce::export_snapshot()" << endl;
+//   cout << "n_layers = " << n_layers << " n_actions = " << n_actions
+//        << endl;
 
    filefunc::open_binaryfile(snapshot_filename,outstream);
    outstream << n_layers << endl;
@@ -899,7 +922,7 @@ void reinforce::export_snapshot()
    for(unsigned int i = 0; i < layer_dims.size(); i++)
    {
       outstream << layer_dims[i] << endl;
-      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
+//      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
    }
    
    outstream << batch_size << endl;
@@ -909,20 +932,20 @@ void reinforce::export_snapshot()
    outstream << gamma << endl;
    outstream << rmsprop_decay_rate << endl;
 
-   cout << "batch_size = " << batch_size << endl;
-   cout << "base_learning_rate = " << base_learning_rate << endl;
-   cout << "learning_rate = " << learning_rate << endl;
-   cout << "lambda = " << lambda << endl;
-   cout << "gamma = " << gamma << endl;
-   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
+//   cout << "batch_size = " << batch_size << endl;
+//   cout << "base_learning_rate = " << base_learning_rate << endl;
+//   cout << "learning_rate = " << learning_rate << endl;
+//   cout << "lambda = " << lambda << endl;
+//   cout << "gamma = " << gamma << endl;
+//   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
 
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       genmatrix* curr_weights_ptr = weights[l];
       outstream << curr_weights_ptr->get_mdim() << endl;
       outstream << curr_weights_ptr->get_ndim() << endl;
-      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
-           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
+//      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
+//           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
 
       for(unsigned int py = 0; py < curr_weights_ptr->get_mdim(); py++)
       {
@@ -934,22 +957,22 @@ void reinforce::export_snapshot()
          }
       }
    } // loop over index l labeling weight matrices
-   
-
    filefunc::closefile(snapshot_filename,outstream);
+   cout << "Exported " << snapshot_filename << endl;
 }
 
 // ---------------------------------------------------------------------
-// 
+// Member function import_snapshot()
+
 void reinforce::import_snapshot()
 {
+   cout << "inside reinforce::import_snapshot()" << endl;
+
    string snapshots_subdir = "./snapshots/";
    filefunc::dircreate(snapshots_subdir);
 
    string snapshot_filename=snapshots_subdir+"snapshot.binary";
    ifstream instream;
-
-   cout << "inside reinforce::import_snapshot()" << endl;
    
    filefunc::open_binaryfile(snapshot_filename,instream);
    instream >> n_layers;
@@ -976,14 +999,12 @@ void reinforce::import_snapshot()
    instream >> gamma;
    instream >> rmsprop_decay_rate;
 
-
    cout << "batch_size = " << batch_size << endl;
    cout << "base_learning_rate = " << base_learning_rate << endl;
    cout << "learning_rate = " << learning_rate << endl;
    cout << "lambda = " << lambda << endl;
    cout << "gamma = " << gamma << endl;
    cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
-
 
    for(int l = 0; l < n_layers-1; l++)
    {
@@ -1004,12 +1025,8 @@ void reinforce::import_snapshot()
 //                 << " weights[l] = " << weights[l]->get(px,py) << endl;
          }
       }
-
-      
    } // loop over index l labeling weight matrices
    
-
    filefunc::closefile(snapshot_filename,instream);
-   cout << "Exported " << snapshot_filename << endl;
-
+   cout << "Imported " << snapshot_filename << endl;
 }

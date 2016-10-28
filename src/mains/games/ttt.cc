@@ -122,14 +122,15 @@ int main (int argc, char* argv[])
 //      int n_episodes_period = 200 * 1000;
 //      int n_episodes_period = 250 * 1000;
 
+   int AI_value = -1;
+   int agent_value = 1;
+
    while(reinforce_ptr->get_episode_number() < n_max_episodes)
    {
       ttt_ptr->reset_board_state();
       reinforce_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_ptr->get_episode_number();
-
-
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, 10000, n_max_episodes);
       
@@ -145,15 +146,17 @@ int main (int argc, char* argv[])
 
 // Current episode starts here:
 
+//      AI_value *= -1;
+//      agent_value *= -1;
 
       while(true)
       {
 
 // AI move:
 
-         ttt_ptr->get_random_legal_AI_move();
+         ttt_ptr->get_random_legal_player_move(AI_value);
          ttt_ptr->increment_n_AI_turns();
-         if(ttt_ptr->check_player_win(-1) > 0)
+         if(ttt_ptr->check_player_win(AI_value) > 0)
          {
             curr_reward = -1; // Agent loses!
             reinforce_ptr->record_reward_for_action(curr_reward);
@@ -162,7 +165,7 @@ int main (int argc, char* argv[])
          
          if(ttt_ptr->get_game_over())
          {
-            curr_reward = 1; // Entire 3D board is filled - stalemate
+            curr_reward = 0; // Entire 3D board is filled - stalemate
             reinforce_ptr->record_reward_for_action(curr_reward);
             break;
          }
@@ -205,14 +208,13 @@ int main (int argc, char* argv[])
 
          curr_reward = ttt_ptr->set_agent_move(px, py, pz);
 
-         if(ttt_ptr->check_player_win(1) > 0)
+         if(ttt_ptr->check_player_win(agent_value) > 0)
          {
             curr_reward = max_reward;	 // Agent wins!
          }
          
          reinforce_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
-
 
 //          ttt_ptr->display_board_state();
          if(ttt_ptr->get_game_over())

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/24/16; 10/25/16; 10/26/16; 10/27/16
+// Last modified on 10/25/16; 10/26/16; 10/27/16; 10/28/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -23,6 +23,7 @@ class reinforce
 // Initialization, constructor and destructor functions:
 
    reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax);
+   reinforce();
    ~reinforce();
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
@@ -59,6 +60,7 @@ class reinforce
       std::string extrainfo, double min_reward, double max_reward);
    void plot_turns_history(std::string extrainfo);
 
+   void create_snapshots_subdir();
    void export_snapshot();
    void import_snapshot();
 
@@ -117,6 +119,8 @@ class reinforce
    double reward_sum;
    std::vector<double> running_reward_snapshots;
    int episode_number;
+
+   std::string snapshots_subdir;
 
    void policy_forward(int t, genvector& x_input);
    void get_softmax_action_probs(int t) const;

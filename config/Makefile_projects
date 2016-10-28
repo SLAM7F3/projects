@@ -288,12 +288,12 @@ MYLIBS = $(LIBDIR)/libspace.a \
 	 $(LIBDIR)/libgraph.a \
 	 $(LIBDIR)/libpostgres.a \
 	 $(LIBDIR)/libpasses.a \
+	 $(LIBDIR)/libmachinelearning.a \
 	 $(LIBDIR)/libastrogeo.a \
 	 $(LIBDIR)/libmodels.a \
 	 $(LIBDIR)/libgeometry.a \
 	 $(LIBDIR)/libdelaunay.a \
 	 $(LIBDIR)/libnetwork.a \
-	 $(LIBDIR)/libmachinelearning.a \
 	 $(LIBDIR)/libplot.a \
 	 $(LIBDIR)/libwaveform.a \
 	 $(LIBDIR)/libsocket.a \

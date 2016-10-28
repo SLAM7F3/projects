@@ -134,8 +134,6 @@ namespace machinelearning_func
 // --------------------------------------------------------------------------
    void softmax(const genvector& Z, genvector& A)
    {
-//      cout << "inside softmax" << endl;
-
       double Zmax = NEGATIVEINFINITY;
       for(unsigned int i = 0; i < Z.get_mdim(); i++)
       {
@@ -157,6 +155,7 @@ namespace machinelearning_func
          A.put(i, A.get(i) / denom);
 //         psum += A.get(i);
       }
+//      cout << "psum = " << psum << endl;
 
 /*
       if(psum < 0.99 || psum > 1.01)

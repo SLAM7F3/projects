@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/18/16; 10/22/16; 10/26/16; 10/27/16
+// Last modified on 10/22/16; 10/26/16; 10/27/16; 10/28/16
 // ==========================================================================
 
 #include <iostream>
@@ -357,6 +357,8 @@ void tictac3d::randomize_board_state()
 // ---------------------------------------------------------------------
 void tictac3d::display_board_state()
 {
+   sysfunc::clearscreen();
+   cout << "......................................................." << endl;
    for(int pz = 0; pz < n_zlevels; pz++)
    {
       cout << endl;
@@ -366,7 +368,7 @@ void tictac3d::display_board_state()
       }
       display_Zgrid_state(pz);
    } // loop over pz index
-   cout << "curr_score = " << curr_score << endl;
+//   cout << "curr_score = " << curr_score << endl;
 }
 
 void tictac3d::display_Zgrid_state(int pz)
@@ -459,6 +461,8 @@ bool tictac3d::winning_cell_posn(int player_ID, int px, int py, int pz)
 // ---------------------------------------------------------------------
 void tictac3d::print_winning_pattern()
 {
+//   cout << "inside print_winning_pattern()" << endl;
+   
    int winner_ID = 0;
    for(winning_posns_iter = winning_posns_map.begin();
        winning_posns_iter != winning_posns_map.end();
@@ -469,6 +473,7 @@ void tictac3d::print_winning_pattern()
 //           << " Z = " << winning_posns_iter->first.third
 //           << endl;
       winner_ID = winning_posns_iter->second;
+//      cout << "winner_ID = " << winner_ID << endl;
    }
 
    string winner_symbol = " X ";
@@ -477,12 +482,14 @@ void tictac3d::print_winning_pattern()
       winner_symbol = " O ";
    }
 
+   display_board_state();
+
    cout << endl;
    cout << "*****************************************" << endl;
    cout << "Player" << winner_symbol << "wins!" << endl;
    cout << "*****************************************" << endl;
-
-   display_board_state();
+   cout << endl;
+   cout << "GAME OVER" << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -491,6 +498,8 @@ void tictac3d::print_winning_pattern()
 
 int tictac3d::check_player_win(int player_ID, bool print_flag)
 {
+//   cout << "inside check_player_win(), player_ID = " << player_ID << endl;
+
    int win_in_zplane = 1;
    int win_in_zcolumn = 2;
    int win_in_zslant = 3;
@@ -710,6 +719,7 @@ bool tictac3d::Zplane_win(int player_ID, int pz)
    }
    if(diagonal_win) return true;   
    
+   winning_posns_map.clear();
    return false;
 }
 
@@ -742,7 +752,11 @@ bool tictac3d::Zcolumn_win(int player_ID, int px, int py)
          column_win = false;
       }
    }
-   return column_win;
+
+   if(column_win) return true;
+
+   winning_posns_map.clear();
+   return false;
 }
 
 // ---------------------------------------------------------------------
@@ -821,6 +835,7 @@ bool tictac3d::Zslant_xconst_win(int player_ID, int px)
    }
    if(slant_win) return slant_win;
 
+   winning_posns_map.clear();
    return false;
 }
 
@@ -853,6 +868,7 @@ bool tictac3d::Zslant_yconst_win(int player_ID, int py)
    }
    if(slant_win) return slant_win;
 
+   winning_posns_map.clear();
    return false;
 }
 
@@ -959,6 +975,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    }
    if(corner_diag_win) return true;
 
+   winning_posns_map.clear();
    return false;
 }
 

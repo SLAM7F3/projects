@@ -46,6 +46,7 @@ class tictac3d
    int get_n_filled_cells() const;
    int get_n_empty_cells() const;
    int check_player_win(int player_ID, bool print_flag = false);
+   void print_winning_pattern();
 
    double get_random_agent_move(bool print_flag = false);
    bool legal_agent_move(int px, int py, int pz, bool print_flag = false);
@@ -58,7 +59,6 @@ class tictac3d
    void append_game_win_frac(double frac);
 
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
-
 
   private: 
 
@@ -89,7 +89,7 @@ class tictac3d
    void display_Zgrid_state(int pz);
 
    bool winning_cell_posn(int player_ID, int px, int py, int pz);
-   void print_winning_pattern();
+
 
    void generate_all_winnable_paths();
    void generate_winnable_Zplane_paths(int pz);
