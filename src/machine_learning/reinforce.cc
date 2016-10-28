@@ -430,8 +430,12 @@ bool reinforce::renormalize_action_distribution()
               << endl;
       }
 */
-      cout << "In renormalize_action_dist(), denom = " << denom
-           << " for episode_number = " << get_episode_number() << endl;
+      if(nrfunc::ran1() < 0.001)
+      {
+         cout << "In renormalize_action_dist(), denom = " << denom
+              << " for episode_number = " << get_episode_number() << endl;
+
+      }
       return false;
    }
 

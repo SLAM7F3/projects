@@ -74,14 +74,14 @@ int main (int argc, char* argv[])
          pz = output_action / (nsize * nsize);
          py = (output_action - nsize * nsize * pz) / nsize;
          px = (output_action - nsize * nsize * pz - nsize * py);
-         legal_move = ttt_ptr->legal_agent_move(px, py, pz);
+         legal_move = ttt_ptr->legal_player_move(px, py, pz);
 
          reasonable_action_prob_distribution_flag = 
             reinforce_ptr->zero_p_action(output_action);
       } // !legal_move conditional
       reinforce_ptr->set_current_action(output_action);
 
-      ttt_ptr->set_agent_move(px, py, pz);
+      ttt_ptr->set_player_move(px, py, pz, agent_value);
       ttt_ptr->display_board_state();
       ttt_ptr->increment_n_agent_turns();
 

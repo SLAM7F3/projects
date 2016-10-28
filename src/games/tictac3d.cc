@@ -115,6 +115,13 @@ bool tictac3d::set_cell_value(int px, int py, int pz, int value)
    return cell_unoccupied;
 }
 
+// ---------------------------------------------------------------------
+int tictac3d::get_n_total_cells() const
+{
+   return n_zlevels * n_size * n_size;
+}
+
+// ---------------------------------------------------------------------
 int tictac3d::get_n_filled_cells() const
 {
    int n_filled_cells = 0;
@@ -138,8 +145,7 @@ int tictac3d::get_n_filled_cells() const
 // ---------------------------------------------------------------------
 int tictac3d::get_n_empty_cells() const
 {
-   int n_total_cells = n_zlevels * n_size * n_size;
-   return n_total_cells - get_n_filled_cells();
+   return get_n_total_cells() - get_n_filled_cells();
 }
 
 // ---------------------------------------------------------------------
@@ -153,16 +159,29 @@ void tictac3d::enter_player_move(int player_value)
       {
          cout << "Enter Z level:" << endl;
          cin >> pz;
-         if (pz >= n_zlevels) pz = n_zlevels - 1;
+         if(pz < 0 || pz >= n_zlevels)
+         {
+            cout << "Invalid Z value.  Please try again:" << endl;
+            continue;
+         }
       }
 
       cout << "Enter X: " << endl;
       cin >> px;
+      if(px < 0 || px >= n_size)
+      {
+         cout << "Illegal X value.  Please try again" << endl;
+         continue;
+      }
+      
       cout << "Enter Y: " << endl;
       cin >> py;
-      curr_score = 0;
-
-
+      if(py < 0 || py >= n_size)
+      {
+         cout << "Illegal Y value.  Please try again" << endl;
+         continue;
+      }
+      
       legal_move = set_cell_value(px,py,pz,player_value);
       if(!legal_move)
       {
@@ -172,19 +191,19 @@ void tictac3d::enter_player_move(int player_value)
 }
 
 // ---------------------------------------------------------------------
-double tictac3d::get_random_agent_move(bool print_flag)
+double tictac3d::get_random_player_move(int player_value, bool print_flag)
 {
    int px = mathfunc::getRandomInteger(n_size);
    int py = mathfunc::getRandomInteger(n_size);
    int pz = mathfunc::getRandomInteger(n_zlevels);
-   return set_agent_move(px, py, pz, print_flag);
+   return set_player_move(px, py, pz, player_value, print_flag);
 }
 
 // ---------------------------------------------------------------------
-// Boolean member function legal_agent_move() returns false if
+// Boolean member function legal_player_move() returns false if
 // cell corresponding to input (px,py,pz) is already occupied.
 
-bool tictac3d::legal_agent_move(int px, int py, int pz, bool print_flag)
+bool tictac3d::legal_player_move(int px, int py, int pz, bool print_flag)
 {
 
 // Cell values:
@@ -223,7 +242,8 @@ bool tictac3d::legal_agent_move(int px, int py, int pz, bool print_flag)
 }
 
 // ---------------------------------------------------------------------
-double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
+double tictac3d::set_player_move(int px, int py, int pz, int player_value, 
+                                 bool print_flag)
 {
 
 // Cell values:
@@ -234,7 +254,6 @@ double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
 // 2    --> 2 agent (illegal)
 // 3    --> agent + AI (illegal)
 
-   int agent_value = 1;
    curr_score = 0;
    int curr_cell_value = get_cell_value(px, py, pz);
    if(curr_cell_value == -1)
@@ -262,11 +281,10 @@ double tictac3d::set_agent_move(int px, int py, int pz, bool print_flag)
               << " column = " << px << endl;
          cout << "Cell is already occupied by O" << endl;
       }
-
    }
    else
    {
-      set_cell_value(px, py, pz, agent_value);
+      set_cell_value(px, py, pz, player_value);
       if(get_n_empty_cells() == 0)
       {
          curr_score = 1;

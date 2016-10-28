@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/24/16; 10/25/16; 10/26/16; 10/27/16
+Last updated on 10/25/16; 10/26/16; 10/27/16; 10/28/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -466,3 +466,10 @@ Started running on Thinkmate around 8:03 am on Weds, Oct 26.  Terminated.
 39.  RI agent learns against random AI on genuine 3D TTT.  Action probs are
 hacked so that they cannot yield illegal agent moves.  Running reward
 approaches 1 after roughly 60K episodes.
+
+
+40.  RI agent learns against random AI on genuine 3D TTT.  agent_value = 1,
+AI_value = -1.  Running reward converges to 1 after 100K episodes.
+
+41.  RI agent learns against random AI on genuine 3D TTT.  Agent and AI
+values switch between 1 & -1 every 10K episodes.

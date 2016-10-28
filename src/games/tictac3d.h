@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/18/16; 10/22/16; 10/26/16; 10/27/16
+// Last modified on 10/22/16; 10/26/16; 10/27/16; 10/28/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -29,6 +29,7 @@ class tictac3d
    friend std::ostream& operator<< 
       (std::ostream& outstream,const tictac3d& C);
 
+   int get_n_size() const;
    void set_n_zlevels(int n);
    double get_score() const;
    bool get_game_over() const;
@@ -43,14 +44,17 @@ class tictac3d
    void randomize_board_state();
    void display_board_state();
    void enter_player_move(int player_value);
+
+   int get_n_total_cells() const;
    int get_n_filled_cells() const;
    int get_n_empty_cells() const;
    int check_player_win(int player_ID, bool print_flag = false);
    void print_winning_pattern();
 
-   double get_random_agent_move(bool print_flag = false);
-   bool legal_agent_move(int px, int py, int pz, bool print_flag = false);
-   double set_agent_move(int px, int py, int pz, bool print_flag = false);
+   double get_random_player_move(int agent_value, bool print_flag = false);
+   bool legal_player_move(int px, int py, int pz, bool print_flag = false);
+   double set_player_move(int px, int py, int pz, int agent_value, 
+                          bool print_flag = false);
    void get_random_legal_player_move(int player_value);
 
    void append_game_loss_frac(double frac);
@@ -110,6 +114,11 @@ class tictac3d
 // ==========================================================================
 
 // Set and get member functions:
+
+inline int tictac3d::get_n_size() const
+{
+   return n_size;
+}
 
 inline void tictac3d::set_n_zlevels(int n)
 {
