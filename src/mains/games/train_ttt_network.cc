@@ -178,8 +178,6 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, 10000, n_max_episodes);
       
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
@@ -298,6 +296,8 @@ int main (int argc, char* argv[])
       if(curr_episode_number%1000 == 0)
       {
          ttt_ptr->display_board_state();
+         outputfunc::update_progress_and_remaining_time(
+            curr_episode_number, 1000, n_max_episodes);
       }
 
       if(ttt_ptr->get_n_empty_cells() == 0)
@@ -321,8 +321,15 @@ int main (int argc, char* argv[])
       int n_episodes = curr_episode_number;
       if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
-         cout << "AI_value = " << AI_value << " agent_value = "
-              << agent_value << endl;
+         if(AI_value == -1)
+         {
+            cout << "AI = X    agent = O" << endl;
+         }
+         else
+         {
+            cout << "AI = O    agent = X" << endl;
+         }
+         
          cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
               << endl;
 //          ttt_ptr->display_board_state();
@@ -366,6 +373,8 @@ int main (int argc, char* argv[])
             extrainfo, min_reward, max_reward);
          reinforce_agent_ptr->plot_turns_history(extrainfo);
          ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
+
+
       }
    } // n_episodes < n_max_episodes while loop
 

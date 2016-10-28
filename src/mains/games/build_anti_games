@@ -1,3 +1,3 @@
-/bin/rm ./3d_ttt
 /bin/rm ./fill_grid
-/bin/rm ./ttt
+/bin/rm ./test_ttt_network
+/bin/rm ./train_ttt_network
