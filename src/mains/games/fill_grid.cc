@@ -105,7 +105,7 @@ int main (int argc, char* argv[])
 //  int n_max_episodes = 4 * 1000000;
    int n_max_episodes = 10 * 1000000;
 //  int n_max_episodes = 15 * 1000000;
-   int n_update = 50000;
+   int n_update = 1000;
 
    int n_losses = 0;
    int n_illegal_moves = 0;
@@ -143,6 +143,7 @@ int main (int argc, char* argv[])
          }
       }
 
+// -----------------------------------------------------------------------
 // Current episode starts here:
 
       while(!ttt_ptr->get_game_over())
@@ -160,9 +161,12 @@ int main (int argc, char* argv[])
          }
 
 // Agent move:
+
          reinforce_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
          reinforce_ptr->renormalize_action_distribution();
+         ttt_ptr->display_p_action(reinforce_ptr->get_p_action());
+
          int output_action = reinforce_ptr->get_candidate_current_action();
 
          ttt_ptr->increment_n_agent_turns();
@@ -172,7 +176,7 @@ int main (int argc, char* argv[])
          int pz = output_action / (nsize * nsize);
          int py = (output_action - nsize * nsize * pz) / nsize;
          int px = (output_action - nsize * nsize * pz - nsize * py);
-//         cout << "px = " << px << " py = " << py << endl;
+         cout << "px = " << px << " py = " << py << endl;
          bool legal_move = ttt_ptr->set_player_move(px, py, pz, agent_value);
 
          curr_reward = 0;
@@ -186,11 +190,11 @@ int main (int argc, char* argv[])
             curr_reward = 1;
          }
          reinforce_ptr->record_reward_for_action(curr_reward);
-//         ttt_ptr->display_board_state();
 
-      } // infinite while loop
+         ttt_ptr->display_board_state();
 
-//      cout << "Game over   curr_reward = " << curr_reward << endl;
+      } // !game_over while loop
+// -----------------------------------------------------------------------
 
       if(nearly_equal(curr_reward, -1))
       {
@@ -205,11 +209,15 @@ int main (int argc, char* argv[])
       bool ignore_zero_valued_final_nodes = false;
       reinforce_ptr->update_weights(
          episode_finished_flag, ignore_zero_valued_final_nodes);
-
       reinforce_ptr->update_running_reward(extrainfo);
+
+      cout << "Game over   curr_reward = " << curr_reward << endl;
+      ttt_ptr->display_board_state();
+      ttt_ptr->display_p_action(reinforce_ptr->get_p_action());
+      outputfunc::enter_continue_char();
       
       reinforce_ptr->increment_episode_number();
-      int n_episodes = curr_episode_number;
+      int n_episodes = curr_episode_number + 1;
       if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
          double loss_frac = double(n_losses) / n_episodes;
@@ -227,26 +235,20 @@ int main (int argc, char* argv[])
               << " stalemate_frac = " << stalemate_frac
               << " win_frac = " << win_frac
               << endl;
-      }
 
-      if(curr_episode_number > 10 && curr_episode_number % 2000 == 0)
-      {
          double curr_n_turns_frac = double(
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
          reinforce_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
+         reinforce_ptr->snapshot_running_reward();
 
-         double illegal_frac = double(n_illegal_moves) / n_episodes;
-         double loss_frac = double(n_losses) / n_episodes;
-         double stalemate_frac = double(n_stalemates) / n_episodes;
-         double win_frac = double(n_wins) / n_episodes;
          ttt_ptr->append_game_illegal_frac(illegal_frac);
          ttt_ptr->append_game_loss_frac(loss_frac);
          ttt_ptr->append_game_stalemate_frac(stalemate_frac);
          ttt_ptr->append_game_win_frac(win_frac);
       }
 
-      if(curr_episode_number > 10 && curr_episode_number % 50000 == 0)
+      if(curr_episode_number > 10 && curr_episode_number % 10000 == 0)
       {
          reinforce_ptr->compute_weight_distributions();
          reinforce_ptr->plot_loss_history(extrainfo);

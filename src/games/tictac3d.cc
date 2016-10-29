@@ -283,15 +283,21 @@ bool tictac3d::set_player_move(int px, int py, int pz, int player_value)
 // 2    --> 2 agent (illegal)
 // 3    --> agent + AI (illegal)
 
+   bool legal_move = true;
    if(!legal_player_move(px, py, pz))
    {
-      return false;
+      legal_move = false;
+      if(get_cell_value(px,py,pz) == -1)
+      {
+         player_value = 3;
+      }
+      else if(get_cell_value(px,py,pz) == 1)
+      {
+         player_value = 2;
+      }
    }
-   else
-   {
-      set_cell_value(px, py, pz, player_value);
-      return true;
-   }
+   set_cell_value(px, py, pz, player_value);
+   return legal_move;
 }
 
 // ---------------------------------------------------------------------
@@ -372,6 +378,42 @@ void tictac3d::randomize_board_state()
 }		       
 
 // ---------------------------------------------------------------------
+void tictac3d::display_p_action(genvector* p_action)
+{
+   double p_sum = 0;
+   for(int pz = 0; pz < n_zlevels; pz++)
+   {
+      cout << endl;
+      if(n_zlevels > 1)
+      {
+         cout << "Z = " << pz << endl << endl;
+      }
+      for(int py = 0; py < n_size; py++)
+      {
+         for(int px = 0; px < n_size; px++)
+         {
+            int p = n_size * n_size * pz + n_size * py + px;
+            double curr_prob = p_action->get(p);
+            p_sum += curr_prob;
+            cout << stringfunc::number_to_string(curr_prob,3) << "  ";
+         } // loop over px index
+         cout << endl;
+
+         if(py < n_size - 1)
+         {
+            for(int px = 0; px < n_size; px++)
+            {
+               cout << "------" << flush;
+            }
+            cout << endl;
+         }
+         
+      } // loop over py index
+   } // loop over pz index
+   cout << "p_sum = " << p_sum << endl;
+}
+
+// ---------------------------------------------------------------------
 void tictac3d::display_board_state()
 {
 //   sysfunc::clearscreen();
@@ -387,6 +429,7 @@ void tictac3d::display_board_state()
    } // loop over pz index
 }
 
+// ---------------------------------------------------------------------
 void tictac3d::display_Zgrid_state(int pz)
 {
    Color::Modifier green(Color::FG_GREEN);

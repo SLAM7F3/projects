@@ -219,9 +219,9 @@ void reinforce::policy_forward(int t, genvector& x_input)
    }
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
-//   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
-   machinelearning_func::constrained_softmax(
-      t, x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
+   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
+//   machinelearning_func::constrained_softmax(
+//      t, x_input, *z[n_layers-1], *a[n_layers-1], <debug_flag);
 }
 
 // ---------------------------------------------------------------------
@@ -506,8 +506,8 @@ bool reinforce::zero_p_action(int a_star)
 
 // ---------------------------------------------------------------------
 void reinforce::print_p_action()
-{
-   for(int a = 0; a < n_actions; a++)
+{ 
+  for(int a = 0; a < n_actions; a++)
    {
       cout << "a = " << a << " p_action = " << p_action->get(a)
            << " p_cum = " << pcum_action->get(a)
@@ -562,12 +562,6 @@ int reinforce::get_candidate_current_action()
 void reinforce::set_current_action(int a_star)
 {
    y->put(curr_timestep, a_star);
-
-   if(cum_time_counter > 0 && cum_time_counter%3000 == 0)
-   {
-      time_samples.push_back(cum_time_counter);
-      loss_values.push_back(compute_loss(curr_timestep));
-   }
 }
 
 // ---------------------------------------------------------------------
@@ -584,9 +578,20 @@ void reinforce::record_reward_for_action(double curr_reward)
 //   cout << "curr_timestep = " << curr_timestep 
 //        << " curr_reward = " << curr_reward << endl;
 
+   periodically_snapshot_loss_value();
    cum_time_counter++;
    curr_timestep++;
    T++;
+}
+
+// ---------------------------------------------------------------------
+void reinforce::periodically_snapshot_loss_value()
+{
+   if(cum_time_counter > 0 && cum_time_counter%3000 == 0)
+   {
+      time_samples.push_back(cum_time_counter);
+      loss_values.push_back(compute_loss(curr_timestep));
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -595,7 +600,7 @@ void reinforce::update_weights(bool episode_finished_flag,
 {
    if(!episode_finished_flag) return;
 
-//   cout << "inside reinforce::update_weights()" << endl;
+   cout << "inside reinforce::update_weights(), curr T = " << T << endl;
 
    T_values.push_back(T);
    if(T_values.size() > 1000)
@@ -603,6 +608,10 @@ void reinforce::update_weights(bool episode_finished_flag,
       T_values.pop_front();
    }
    
+   double mu_T, sigma_T;
+   mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
+   cout << "  avg T = " << mu_T << " +/- " << sigma_T << endl;
+
 // Compute the discounted reward backwards through time:
 
    discount_rewards();
@@ -623,10 +632,6 @@ void reinforce::update_weights(bool episode_finished_flag,
    {
       for(int l = 0; l < n_layers - 1; l++)
       {
-//         *rmsprop_weights_cache[l] = 
-//            rmsprop_decay_rate * (*rmsprop_weights_cache[l])
-//            + (1 - rmsprop_decay_rate) * nabla_weights[l]->hadamard_power(2);
-
          for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
          {
             for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
@@ -750,7 +755,10 @@ string reinforce::init_subtitle()
 
 void reinforce::plot_loss_history(std::string extrainfo)
 {
-   if(loss_values.size() < 5) return;
+   cout << "inside plot_loss_history(), loss_values.size() = "
+        << loss_values.size() << endl;
+
+   if(loss_values.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename="loss_history";
@@ -766,9 +774,23 @@ void reinforce::plot_loss_history(std::string extrainfo)
    string x_label="Time step";
    string y_label="Loss";
 
+   double extremal_min_loss = mathfunc::minimal_value(loss_values);
+   double extremal_max_loss = mathfunc::maximal_value(loss_values);
    double min_loss, max_loss;
-   mathfunc::lo_hi_values(loss_values, 0.025, 0.975, min_loss, max_loss);
+
+   if(nearly_equal(extremal_min_loss, extremal_max_loss))
+   {
+      max_loss = extremal_max_loss + 1;
+   }
+   else
+   {
+      mathfunc::lo_hi_values(loss_values, 0.025, 0.975, min_loss, max_loss);
+   }
    min_loss = 0;
+
+   cout << "loss_values.size() = " << loss_values.size() << endl;
+   cout << "min_loss = " << min_loss
+        << " max_loss = " << max_loss << endl;
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, time_samples.back(),

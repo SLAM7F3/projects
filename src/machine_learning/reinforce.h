@@ -41,6 +41,7 @@ class reinforce
    void set_lambda(double lambda);
    void set_gamma(double gamma);
    void set_rmsprop_decay_rate(double rate);
+   genvector* get_p_action();
 
    void initialize_episode();
    void compute_unrenorm_action_probs(genvector* input_state_ptr);
@@ -50,6 +51,7 @@ class reinforce
    int get_candidate_current_action();
    int compute_current_action(genvector* input_state_ptr);
    void set_current_action(int output_action);
+   void periodically_snapshot_loss_value();
    void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
    void update_weights(
@@ -208,6 +210,12 @@ inline void reinforce::set_rmsprop_decay_rate(double rate)
 {
    rmsprop_decay_rate = rate;
 }
+
+inline genvector* reinforce::get_p_action()
+{
+   return p_action;
+}
+
 
 #endif  // reinforce.h
 

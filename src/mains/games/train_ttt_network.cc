@@ -146,7 +146,6 @@ int main (int argc, char* argv[])
    int n_max_episodes = 10 * 1000000;
 //  int n_max_episodes = 15 * 1000000;
    int n_update = 1000;
-//   int n_update = 50000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -211,7 +210,7 @@ int main (int argc, char* argv[])
   
 // Current episode starts here:
 
-      while(true)
+      while(!ttt_ptr->get_game_over())
       {
 
 // AI move:
@@ -236,7 +235,7 @@ int main (int argc, char* argv[])
             ttt_ptr->increment_n_AI_turns();
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
-               curr_reward = -1; // Agent loses!
+               curr_reward = min_reward; // Agent loses!
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
@@ -307,17 +306,13 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
 
-         if(ttt_ptr->get_game_over())
-         {
-            break;
-         }
       } // !game_over while loop
 
       if(curr_episode_number%1000 == 0)
       {
          ttt_ptr->display_board_state();
          outputfunc::update_progress_and_remaining_time(
-            curr_episode_number, 1000, n_max_episodes);
+            curr_episode_number, n_update, n_max_episodes);
       }
 
       if(ttt_ptr->get_n_empty_cells() == 0)
@@ -343,7 +338,7 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->update_running_reward(extrainfo);
       
       reinforce_agent_ptr->increment_episode_number();
-      int n_episodes = curr_episode_number;
+      int n_episodes = curr_episode_number + 1;
       if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
          if(AI_value == -1)
@@ -382,10 +377,7 @@ int main (int argc, char* argv[])
               << " win_frac = " << win_frac
               << endl;
          n_recent_losses = n_recent_stalemates = n_recent_wins = 0;
-      }
 
-      if(curr_episode_number > 10 && curr_episode_number % 1000 == 0)
-      {
          double curr_n_turns_frac = double(
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
@@ -393,9 +385,6 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->snapshot_running_reward();
          reinforce_agent_ptr->export_snapshot();
 
-         double loss_frac = double(n_losses) / n_episodes;
-         double stalemate_frac = double(n_stalemates) / n_episodes;
-         double win_frac = double(n_wins) / n_episodes;
          ttt_ptr->append_game_loss_frac(loss_frac);
          ttt_ptr->append_game_stalemate_frac(stalemate_frac);
          ttt_ptr->append_game_win_frac(win_frac);

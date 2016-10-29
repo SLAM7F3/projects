@@ -45,6 +45,7 @@ class tictac3d
 
    void reset_board_state();
    void randomize_board_state();
+   void display_p_action(genvector* p_action);
    void display_board_state();
    void enter_player_move(int player_value);
 
