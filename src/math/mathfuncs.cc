@@ -1,7 +1,7 @@
 // ==========================================================================
 // "Primitive" math functions 
 // ==========================================================================
-// Last updated on 8/12/15; 2/10/16; 8/23/16; 10/18/16
+// Last updated on 2/10/16; 8/23/16; 10/18/16; 10/29/16
 // ==========================================================================
 
 #include <algorithm>
@@ -2274,6 +2274,13 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
       double& lo_value,double& hi_value)
    {
       unsigned int nbins=A.size();
+      if(nbins == 0) 
+      {
+         cout << "Error in mathfunc::lo_hi_values()!" << endl;
+         cout << "A.size() = 0" << endl;
+         exit(-1);
+      }
+      
       vector<double> Acopy;
       for (unsigned int i=0; i<nbins; i++)
       {

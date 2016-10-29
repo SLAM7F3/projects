@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/25/16; 10/26/16; 10/27/16; 10/28/16
+// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -28,6 +28,8 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
+   void set_debug_flag(bool flag);
+   bool get_debug_flag() const;
    int get_curr_timestep() const;
    int get_episode_number() const;
    void increment_episode_number();
@@ -50,7 +52,8 @@ class reinforce
    void set_current_action(int output_action);
    void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
-   void update_weights(bool episode_finished_flag);
+   void update_weights(
+      bool episode_finished_flag, bool ignore_zero_valued_final_nodes);
    void update_running_reward(std::string extrainfo);
 
    void print_weights();
@@ -67,6 +70,7 @@ class reinforce
 
   private:
 
+   bool debug_flag;
    int n_layers, n_actions;
    std::vector<int> layer_dims;
 
@@ -102,7 +106,7 @@ class reinforce
    std::vector<genmatrix*> a;
 
 // Node errors:
-   std::vector<genmatrix*> delta_prime;
+   std::vector<genmatrix*> delta_prime; // n_actions x T
 
    genvector *p_action;		// n_actions x 1  
    genvector *pcum_action;	// n_actions x 1  
@@ -127,7 +131,7 @@ class reinforce
    void get_softmax_action_probs(int t) const;
    double compute_loss(int t) const;
    void discount_rewards();
-   void policy_backward();
+   void policy_backward(bool ignore_zerovalued_final_nodes);
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
@@ -138,6 +142,16 @@ class reinforce
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void reinforce::set_debug_flag(bool flag)
+{
+   debug_flag = flag;
+}
+
+inline bool reinforce::get_debug_flag() const
+{
+   return debug_flag;
+}
 
 inline int reinforce::get_curr_timestep() const
 {

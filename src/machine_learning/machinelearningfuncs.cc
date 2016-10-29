@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/16/16; 10/17/16; 10/19/16l 10/20/16
+// Last updated on 10/17/16; 10/19/16; 10/20/16; 10/29/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -220,6 +220,70 @@ namespace machinelearning_func
       {
          A.put(i, zcol, A.get(i, zcol) / denom);
       }
+   }
+
+
+// --------------------------------------------------------------------------
+// Method constrained_softmax imports genvector x_input whose values
+// are assumed to equal -1, 0 or 1.  Output cells within the column of
+// matrix A corresponding to occupied x_input cells with 1 or -1
+// values are forced to equal 0 and ignored within the softmax
+// computation.  
+ 
+   void constrained_softmax(int zcol, const genvector& x_input, 
+                            const genmatrix& Z, genmatrix& A, 
+                            bool debug_flag)
+   {
+      const double SMALL = 0.1;
+      double Zmax = NEGATIVEINFINITY;
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         if(fabs(x_input.get(i)) > SMALL) continue;
+         Zmax = basic_math::max(Zmax, Z.get(i,zcol));
+      }
+
+      double denom = 0;
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+/*
+         if(debug_flag)
+         {
+            cout << "i = " << i << " x_input[i] = " << x_input.get(i)
+                 << " Z(i,zcol) = " << Z.get(i,zcol)
+                 << " denom = " << denom 
+                 << endl;
+         }
+*/
+       
+         if(fabs(x_input.get(i)) > SMALL)
+         {
+            A.put(i,0);
+         }
+         else
+         {
+            double curr_exp = exp(Z.get(i,zcol) - Zmax);
+            denom += curr_exp;
+            A.put(i, zcol, curr_exp);
+         }
+      }
+      
+
+      for(unsigned int i = 0; i < A.get_mdim(); i++)
+      {
+         A.put(i, zcol, A.get(i, zcol) / denom);
+      }
+
+/*
+      if(debug_flag)
+      {
+         cout << "inside constrained_softmax, denom = " << denom << endl;
+         cout << "zcol = " << zcol << endl;
+         cout << "Zmax = " << Zmax << endl;
+         cout << "A = " << A << endl;
+         outputfunc::enter_continue_char();
+      }
+*/
+
    }
 
 // --------------------------------------------------------------------------

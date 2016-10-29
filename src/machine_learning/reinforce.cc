@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/25/16; 10/26/16; 10/27/16; 10/28/16
+// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
 // ==========================================================================
 
 #include <string>
@@ -36,6 +36,7 @@ using std::vector;
 
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
+   debug_flag = false;
    cum_time_counter = 0;
 
 // This particular set of hyperparameters yields perfect reinforcement
@@ -196,16 +197,31 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 void reinforce::policy_forward(int t, genvector& x_input)
 {
    a[0]->put_column(t, x_input);
-//   cout << "inside policy_forward, x_input = " << x_input << endl;
-
+/*
+   if(debug_flag)
+   {
+      cout << "inside policy_forward, x_input = " << x_input << endl;
+   }
+*/
+ 
    for(int l = 0; l < n_layers-2; l++)
    {
+      if(debug_flag)
+      {
+//         cout << "l = " << l << " a[l] = " << *a[l] << endl;
+//         cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
+//         outputfunc::enter_continue_char();
+      }
+
       z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+      
       machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
    }
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
-   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
+//   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
+   machinelearning_func::constrained_softmax(
+      t, x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
 }
 
 // ---------------------------------------------------------------------
@@ -281,7 +297,7 @@ void reinforce::discount_rewards()
 // See "Forward & backward propagation for one episode of
 // reinforcement learning" notes dated 10/18/2016.
 
-void reinforce::policy_backward()
+void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
 {
 
 // Initialize "episode" weight gradients to zero:
@@ -300,24 +316,43 @@ void reinforce::policy_backward()
       for(int j = 0; j < layer_dims[curr_layer]; j++)
       {
          double curr_activation = a[curr_layer]->get(j, t);
-         if(j == y->get(t)) curr_activation -= 1.0;
+
+         if(ignore_zero_valued_final_nodes)
+         {
+         }
+         else
+         {
+            if(j == y->get(t)) curr_activation -= 1.0;
+         }
 
 // Modulate the gradient with advantage (Policy Gradient magic happens
 // right here):
 
          delta_prime[curr_layer]->put(
             j, t, discounted_reward->get(t) * curr_activation);
+
       }
    } // loop over index t
-//   cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
-//        << endl;
-   
+
+/*
+   if(debug_flag)
+   {
+      cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
+           << endl;
+   }
+*/
+ 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
       int prev_layer = curr_layer - 1;
 
-//      cout << "prev_layer = " << prev_layer 
-//           << " curr_layer = " << curr_layer << endl;
+/*
+      if(debug_flag)
+      {
+         cout << "prev_layer = " << prev_layer 
+              << " curr_layer = " << curr_layer << endl;
+      }
+*/
 
 // Eqn BP2A:
 
@@ -327,10 +362,14 @@ void reinforce::policy_backward()
       weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
       delta_prime[prev_layer]->matrix_mult(
          *weights_transpose[prev_layer], *delta_prime[curr_layer]);
-//         weights[prev_layer]->transpose(), *delta_prime[curr_layer]);
 
-//      cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
-//           << endl;
+/*
+      if(debug_flag)
+      {
+         cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
+              << endl;
+      }
+*/
 
 // Eqn BP2B:
       for(int j = 0; j < layer_dims[prev_layer]; j++)
@@ -353,10 +392,6 @@ void reinforce::policy_backward()
          delta_nabla_weights[prev_layer]->accumulate_outerprod(
             delta_prime[curr_layer]->get_column(t),
             a[prev_layer]->get_column(t));
-
-//         *delta_nabla_weights[prev_layer] += 
-//            delta_prime[curr_layer]->get_column(t).outerproduct(
-//               a[prev_layer]->get_column(t));
 
          const double TINY = 1E-8;
          if(lambda > TINY)
@@ -401,6 +436,7 @@ void reinforce::initialize_episode()
 void reinforce::compute_unrenorm_action_probs(genvector* input_state_ptr)
 {
 //   cout << "curr_timestep = " << curr_timestep << endl;
+//   cout << "*input_state_ptr = " << *input_state_ptr << endl;
    policy_forward(curr_timestep, *input_state_ptr);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
 }
@@ -491,6 +527,8 @@ int reinforce::get_candidate_current_action()
 // inversely sample cumulative probability distribution to set action
 // a_star:
 
+//   if(debug_flag) print_p_action();
+
    int a_star = 0;
    double q = nrfunc::ran1();
    for(int a = 0; a < n_actions; a++)
@@ -525,7 +563,7 @@ void reinforce::set_current_action(int a_star)
 {
    y->put(curr_timestep, a_star);
 
-   if(cum_time_counter > 0 && cum_time_counter%10000 == 0)
+   if(cum_time_counter > 0 && cum_time_counter%3000 == 0)
    {
       time_samples.push_back(cum_time_counter);
       loss_values.push_back(compute_loss(curr_timestep));
@@ -552,7 +590,8 @@ void reinforce::record_reward_for_action(double curr_reward)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::update_weights(bool episode_finished_flag)
+void reinforce::update_weights(bool episode_finished_flag,
+                               bool ignore_zero_valued_final_nodes)
 {
    if(!episode_finished_flag) return;
 
@@ -568,7 +607,7 @@ void reinforce::update_weights(bool episode_finished_flag)
 
    discount_rewards();
 
-   policy_backward();
+   policy_backward(ignore_zero_valued_final_nodes);
 
 // Accumulate weights' gradients for each network layer:
 
@@ -711,8 +750,8 @@ string reinforce::init_subtitle()
 
 void reinforce::plot_loss_history(std::string extrainfo)
 {
-   cout << "inside reinforce::plot_loss_history()" << endl;
-   
+   if(loss_values.size() < 5) return;
+
    metafile curr_metafile;
    string meta_filename="loss_history";
    string title="Loss vs RMSprop model training; bsize="+
@@ -730,8 +769,6 @@ void reinforce::plot_loss_history(std::string extrainfo)
    double min_loss, max_loss;
    mathfunc::lo_hi_values(loss_values, 0.025, 0.975, min_loss, max_loss);
    min_loss = 0;
-   cout << "max_loss = " << max_loss << endl;
-
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, time_samples.back(),
@@ -779,6 +816,8 @@ void reinforce::plot_loss_history(std::string extrainfo)
 void reinforce::plot_reward_history(
    std::string extrainfo, double min_reward, double max_reward)
 {
+   if(running_reward_snapshots.size() < 5) return;
+
    metafile curr_metafile;
    string meta_filename="reward_history";
    string title="Running reward sum vs RMSprop model training; bsize="+
@@ -840,21 +879,7 @@ void reinforce::plot_reward_history(
 
 void reinforce::plot_turns_history(std::string extrainfo)
 {
-
-// Temporally smooth noisy turns fraction values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
-   vector<double> h;
-   h.reserve(gaussian_size);
-   filterfunc::gaussian_filter(dx, sigma, h);
-
-   bool wrap_around_input_values = false;
-   vector<double> smoothed_n_episode_turns_frac;
-   filterfunc::brute_force_filter(
-      n_episode_turns_frac, h, smoothed_n_episode_turns_frac, 
-      wrap_around_input_values);
+   if(n_episode_turns_frac.size() < 5) return;
 
    metafile curr_metafile;
    string meta_filename="turns_history";
@@ -883,9 +908,30 @@ void reinforce::plot_turns_history(std::string extrainfo)
    curr_metafile.write_header();
    curr_metafile.write_curve(0, episode_number, n_episode_turns_frac);
    curr_metafile.set_thickness(3);
-   curr_metafile.write_curve(
-      0, episode_number, smoothed_n_episode_turns_frac, colorfunc::blue);
 
+// Temporally smooth noisy turns fraction values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   vector<double> smoothed_n_episode_turns_frac;
+   if(gaussian_size < int(n_episode_turns_frac.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_n_episode_turns_frac;
+      filterfunc::brute_force_filter(
+         n_episode_turns_frac, h, smoothed_n_episode_turns_frac, 
+         wrap_around_input_values);
+
+      curr_metafile.write_curve(
+         0, episode_number, smoothed_n_episode_turns_frac, colorfunc::blue);
+   }
+   
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);

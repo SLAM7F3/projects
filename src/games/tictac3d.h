@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/22/16; 10/26/16; 10/27/16; 10/28/16
+// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -31,10 +31,12 @@ class tictac3d
 
    int get_n_size() const;
    void set_n_zlevels(int n);
-   double get_score() const;
+//    double get_score() const;
+   void set_game_over(bool flag);
    bool get_game_over() const;
    genvector* get_board_state_ptr();
    genvector* get_inverse_board_state_ptr();
+   bool check_filled_board();
 
    void increment_n_AI_turns();
    int get_n_AI_turns() const;
@@ -52,10 +54,9 @@ class tictac3d
    int check_player_win(int player_ID, bool print_flag = false);
    void print_winning_pattern();
 
-   double get_random_player_move(int agent_value, bool print_flag = false);
+   double get_random_player_move(int agent_value);
    bool legal_player_move(int px, int py, int pz, bool print_flag = false);
-   double set_player_move(int px, int py, int pz, int agent_value, 
-                          bool print_flag = false);
+   bool set_player_move(int px, int py, int pz, int player_value);
    void get_random_legal_player_move(int player_value);
 
    void append_game_loss_frac(double frac);
@@ -127,9 +128,16 @@ inline void tictac3d::set_n_zlevels(int n)
    n_zlevels = n;
 }
 
+/*
 inline double tictac3d::get_score() const
 {
    return curr_score;
+}
+*/
+
+inline void tictac3d::set_game_over(bool flag)
+{
+   game_over = flag;
 }
 
 inline bool tictac3d::get_game_over() const

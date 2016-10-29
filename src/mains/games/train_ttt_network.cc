@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 10/25/16; 10/26/16; 10/27/16; 10/28/16
+// Last updated on 10/26/16; 10/27/16; 10/28/16; 10/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -14,6 +14,12 @@
 #include "general/stringfuncs.h"
 #include "games/tictac3d.h"
 #include "time/timefuncs.h"
+
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
 // ==========================================================================
 void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr, 
@@ -55,24 +61,19 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
 // ==========================================================================
 int main (int argc, char* argv[])
 {
-   using std::cin;
-   using std::cout;
-   using std::endl;
-   using std::string;
-   using std::vector;
 
    timefunc::initialize_timeofday_clock();
 //    nrfunc::init_time_based_seed();
 
    int nsize = 4;
-//   int n_zlevels = 1;
-   int n_zlevels = 4;
+   int n_zlevels = 1;
+//   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
-   int Tmax = nsize * nsize * n_zlevels;
+   int Tmax = nsize * nsize * n_zlevels / 2;
 
 //   int H1 = 32;
 //   int H1 = 64;
@@ -128,8 +129,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.9);
 
-//   reinforce_agent_ptr->set_base_learning_rate(2E-3);
-   reinforce_agent_ptr->set_base_learning_rate(10E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
@@ -150,6 +151,9 @@ int main (int argc, char* argv[])
    int n_losses = 0;
    int n_stalemates = 0;
    int n_wins = 0;
+   int n_recent_losses = 0;
+   int n_recent_stalemates = 0;
+   int n_recent_wins = 0;
    double curr_reward = -999;
    double max_reward = 1;
    double min_reward = -1;
@@ -165,14 +169,14 @@ int main (int argc, char* argv[])
    bool AI_moves_first = true;
    int AI_value = -1;
    int agent_value = 1;
-   bool periodically_switch_starting_player = false;
-//   bool periodically_switch_starting_player = true;
+//   bool periodically_switch_starting_player = false;
+   bool periodically_switch_starting_player = true;
    bool periodically_switch_player_values = false;
 
 // Import previously trained TTT network to guide AI play:
 
-//   reinforce* reinforce_AI_ptr = NULL;
-   reinforce* reinforce_AI_ptr = new reinforce();
+   reinforce* reinforce_AI_ptr = NULL;
+//   reinforce* reinforce_AI_ptr = new reinforce();
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -180,7 +184,7 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      
+
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
@@ -215,7 +219,7 @@ int main (int argc, char* argv[])
          if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
             || reinforce_agent_ptr->get_curr_timestep() > 0)
          {
-            if(nrfunc::ran1() > 0.1)
+            if(reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.1)
             {
                compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
             }
@@ -256,16 +260,20 @@ int main (int argc, char* argv[])
          int output_action = -99;
          int px, py, pz;
          bool legal_move = false;
+         int n_attempts = 0;
+         int max_n_attempts = 2 * Dout;
 
          while(!legal_move)
          {
-            if(reasonable_action_prob_distribution_flag)
+            if(n_attempts < max_n_attempts && 
+               reasonable_action_prob_distribution_flag)
             {
                output_action = reinforce_agent_ptr->
                   get_candidate_current_action();
             }
             else
             {
+               cout << "n_attempts = " << n_attempts << endl;
                output_action = nrfunc::ran1() * Dout;
             }
             
@@ -276,6 +284,8 @@ int main (int argc, char* argv[])
 
             reasonable_action_prob_distribution_flag = 
                reinforce_agent_ptr->zero_p_action(output_action);
+
+            n_attempts++;
          } // !legal_move conditional
          reinforce_agent_ptr->set_current_action(output_action);
 
@@ -313,18 +323,23 @@ int main (int argc, char* argv[])
       if(ttt_ptr->get_n_empty_cells() == 0)
       {
          n_stalemates++;
+         n_recent_stalemates++;
       }
       else if(nearly_equal(curr_reward, min_reward))
       {
          n_losses++;
+         n_recent_losses++;
       }
       else if (nearly_equal(curr_reward, max_reward))
       {
          n_wins++;
+         n_recent_wins++;
       }
 
       bool episode_finished_flag = true;
-      reinforce_agent_ptr->update_weights(episode_finished_flag);
+      bool ignore_zero_valued_final_nodes = true;
+      reinforce_agent_ptr->update_weights(
+         episode_finished_flag, ignore_zero_valued_final_nodes);
       reinforce_agent_ptr->update_running_reward(extrainfo);
       
       reinforce_agent_ptr->increment_episode_number();
@@ -348,22 +363,25 @@ int main (int argc, char* argv[])
             cout << "Agent moves first" << endl;
          }
          
-//         cout << "n_filled_cells = " << ttt_ptr->get_n_filled_cells()
-//              << endl;
-//          ttt_ptr->display_board_state();
-         
+         double recent_loss_frac = double(n_recent_losses) / n_update;
+         double recent_stalemate_frac = double(n_recent_stalemates) / n_update;
+         double recent_win_frac = double(n_recent_wins) / n_update;
          double loss_frac = double(n_losses) / n_episodes;
-         double stalemate_frac = double(n_stalemates) / n_episodes;
+         double stalemate_frac = double(n_losses) / n_episodes;
          double win_frac = double(n_wins) / n_episodes;
          cout << "n_episodes = " << n_episodes 
-              << " n_losses = " << n_losses
-              << " n_stalemates = " << n_stalemates
-              << " n_wins = " << n_wins
+              << " n_recent_losses = " << n_recent_losses
+              << " n_recent_stalemates = " << n_recent_stalemates
+              << " n_recent_wins = " << n_recent_wins
               << endl;
+         cout << " recent loss frac = " << recent_loss_frac
+              << " recent stalemate frac = " << recent_stalemate_frac 
+              << " recent win frac = " << recent_win_frac << endl;
          cout << " loss_frac = " << loss_frac
               << " stalemate_frac = " << stalemate_frac
               << " win_frac = " << win_frac
               << endl;
+         n_recent_losses = n_recent_stalemates = n_recent_wins = 0;
       }
 
       if(curr_episode_number > 10 && curr_episode_number % 1000 == 0)
