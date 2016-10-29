@@ -222,7 +222,6 @@ namespace machinelearning_func
       }
    }
 
-
 // --------------------------------------------------------------------------
 // Method constrained_softmax imports genvector x_input whose values
 // are assumed to equal -1, 0 or 1.  Output cells within the column of

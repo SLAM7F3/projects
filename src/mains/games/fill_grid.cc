@@ -28,8 +28,6 @@ int main (int argc, char* argv[])
 
    int nsize = 4;
    int n_zlevels = 1;
-//   int n_zlevels = 2;
-//   int n_zlevels = 3;
 //   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
@@ -38,74 +36,39 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
-//   int H1 = 32;
-//   int H1 = 64;
-//    int H1 = 128;
-//   int H1 = 256;
    int H1 = 300;
-//   int H1 = 700;
-
-//   int H2 = 32;
    int H2 = 64;
-//   int H2 = 80;
-//   int H2 = 100;
-//   int H2 = 128;
-//   int H2 = 200;
-//   int H2 = 300;
-
-//   int H3 = 32;
-//   int H3 = 64;
-//   int H3 = 100;
-//   int H3 = 128;
-//   int H3 = 256;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
-//      "; H3="+stringfunc::number_to_string(H3)+
       "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
    layer_dims.push_back(H2);
-//   layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
 
-   reinforce* reinforce_ptr = new reinforce(layer_dims, Tmax);
+   reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
 
 // Gamma = discount factor for reward:
 
-//   reinforce_ptr->set_gamma(0.4);
-//   reinforce_ptr->set_gamma(0.3);
-//   reinforce_ptr->set_gamma(0.33);
-   reinforce_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
-//   reinforce_ptr->set_gamma(0.1);
+   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
+   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
-//   reinforce_ptr->set_lambda(0.01);// 0 = best lambda value as of Tues Oct 25
-//   reinforce_ptr->set_lambda(0.001);
-//   reinforce_ptr->set_lambda(0.0001);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+//   double min_learning_rate = 0.5E-4;
+   double min_learning_rate = 3E-5;
 
-   reinforce_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
-//   reinforce_ptr->set_batch_size(100);
-
-   reinforce_ptr->set_rmsprop_decay_rate(0.85);
-//   reinforce_ptr->set_rmsprop_decay_rate(0.9);
-
-//   reinforce_ptr->set_base_learning_rate(2E-3);
-   reinforce_ptr->set_base_learning_rate(10E-4);
-//   reinforce_ptr->set_base_learning_rate(3E-4);
-//   reinforce_ptr->set_base_learning_rate(1E-4);
-//   reinforce_ptr->set_base_learning_rate(3E-5);
-   double min_learning_rate = 0.5E-4;
-//   double min_learning_rate = 3E-5;
-
-//   int n_max_episodes = 1 * 1000000;
-//   int n_max_episodes = 2 * 1000000;
-//   int n_max_episodes = 3 * 1000000;
+   int n_max_episodes = 1 * 1000000;
 //  int n_max_episodes = 4 * 1000000;
-   int n_max_episodes = 10 * 1000000;
-//  int n_max_episodes = 15 * 1000000;
+//   int n_max_episodes = 10 * 1000000;
    int n_update = 1000;
+   int n_summarize = 25000;
 
    int n_losses = 0;
    int n_illegal_moves = 0;
@@ -118,27 +81,25 @@ int main (int argc, char* argv[])
 
    int n_episodes_period = 100 * 1000;
 //      int n_episodes_period = 150 * 1000;
-//      int n_episodes_period = 200 * 1000;
-//      int n_episodes_period = 250 * 1000;
 
    int AI_value = -1;
    int agent_value = 1;
 
-   while(reinforce_ptr->get_episode_number() < n_max_episodes)
+   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
       ttt_ptr->reset_board_state();
-      reinforce_ptr->initialize_episode();
+      reinforce_agent_ptr->initialize_episode();
 
-      int curr_episode_number = reinforce_ptr->get_episode_number();
+      int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, 50000, n_max_episodes);
+         curr_episode_number, n_summarize, n_max_episodes);
       
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
-         double curr_learning_rate = reinforce_ptr->get_learning_rate();
+         double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
-            reinforce_ptr->set_learning_rate(0.8 * curr_learning_rate);
+            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
             n_episodes_period *= 1.2;
          }
       }
@@ -156,18 +117,18 @@ int main (int argc, char* argv[])
          if(ttt_ptr->get_game_over())
          {
             curr_reward = 1; // Entire 3D board is filled - stalemate
-            reinforce_ptr->record_reward_for_action(curr_reward);
+            reinforce_agent_ptr->record_reward_for_action(curr_reward);
             break;
          }
 
 // Agent move:
 
-         reinforce_ptr->compute_unrenorm_action_probs(
+         reinforce_agent_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
-         reinforce_ptr->renormalize_action_distribution();
-         ttt_ptr->display_p_action(reinforce_ptr->get_p_action());
-
-         int output_action = reinforce_ptr->get_candidate_current_action();
+         reinforce_agent_ptr->renormalize_action_distribution();
+//         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+         int output_action = reinforce_agent_ptr->get_candidate_current_action();
+         reinforce_agent_ptr->set_current_action(output_action);
 
          ttt_ptr->increment_n_agent_turns();
 
@@ -176,7 +137,7 @@ int main (int argc, char* argv[])
          int pz = output_action / (nsize * nsize);
          int py = (output_action - nsize * nsize * pz) / nsize;
          int px = (output_action - nsize * nsize * pz - nsize * py);
-         cout << "px = " << px << " py = " << py << endl;
+//         cout << "px = " << px << " py = " << py << endl;
          bool legal_move = ttt_ptr->set_player_move(px, py, pz, agent_value);
 
          curr_reward = 0;
@@ -189,10 +150,8 @@ int main (int argc, char* argv[])
          {
             curr_reward = 1;
          }
-         reinforce_ptr->record_reward_for_action(curr_reward);
-
-         ttt_ptr->display_board_state();
-
+         reinforce_agent_ptr->record_reward_for_action(curr_reward);
+//         ttt_ptr->display_board_state();
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
@@ -207,16 +166,16 @@ int main (int argc, char* argv[])
 
       bool episode_finished_flag = true;
       bool ignore_zero_valued_final_nodes = false;
-      reinforce_ptr->update_weights(
+      reinforce_agent_ptr->update_weights(
          episode_finished_flag, ignore_zero_valued_final_nodes);
-      reinforce_ptr->update_running_reward(extrainfo);
+      reinforce_agent_ptr->update_running_reward(extrainfo);
 
-      cout << "Game over   curr_reward = " << curr_reward << endl;
-      ttt_ptr->display_board_state();
-      ttt_ptr->display_p_action(reinforce_ptr->get_p_action());
-      outputfunc::enter_continue_char();
+//      cout << "Game over   curr_reward = " << curr_reward << endl;
+//      ttt_ptr->display_board_state();
+//      ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+//      outputfunc::enter_continue_char();
       
-      reinforce_ptr->increment_episode_number();
+      reinforce_agent_ptr->increment_episode_number();
       int n_episodes = curr_episode_number + 1;
       if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
@@ -239,8 +198,8 @@ int main (int argc, char* argv[])
          double curr_n_turns_frac = double(
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
-         reinforce_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
-         reinforce_ptr->snapshot_running_reward();
+         reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
+         reinforce_agent_ptr->snapshot_running_reward();
 
          ttt_ptr->append_game_illegal_frac(illegal_frac);
          ttt_ptr->append_game_loss_frac(loss_frac);
@@ -248,18 +207,18 @@ int main (int argc, char* argv[])
          ttt_ptr->append_game_win_frac(win_frac);
       }
 
-      if(curr_episode_number > 10 && curr_episode_number % 10000 == 0)
+      if(curr_episode_number > 10 && curr_episode_number % n_summarize == 0)
       {
-         reinforce_ptr->compute_weight_distributions();
-         reinforce_ptr->plot_loss_history(extrainfo);
-         reinforce_ptr->plot_reward_history(extrainfo, -1, 1);
-         reinforce_ptr->plot_turns_history(extrainfo);
+         reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->plot_loss_history(extrainfo);
+         reinforce_agent_ptr->plot_reward_history(extrainfo, -1, 1);
+         reinforce_agent_ptr->plot_turns_history(extrainfo);
          ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
       }
    } // n_episodes < n_max_episodes while loop
 
    delete ttt_ptr;
-   delete reinforce_ptr;
+   delete reinforce_agent_ptr;
 }
 
 

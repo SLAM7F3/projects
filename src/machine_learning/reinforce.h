@@ -131,6 +131,7 @@ class reinforce
 
    void policy_forward(int t, genvector& x_input);
    void get_softmax_action_probs(int t) const;
+//    void get_fake_softmax_action_probs(int t) const;
    double compute_loss(int t) const;
    void discount_rewards();
    void policy_backward(bool ignore_zerovalued_final_nodes);

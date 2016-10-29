@@ -214,14 +214,13 @@ void reinforce::policy_forward(int t, genvector& x_input)
       }
 
       z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
-      
       machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
    }
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
    machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
 //   machinelearning_func::constrained_softmax(
-//      t, x_input, *z[n_layers-1], *a[n_layers-1], <debug_flag);
+//      t, x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
 }
 
 // ---------------------------------------------------------------------
@@ -229,6 +228,15 @@ void reinforce::get_softmax_action_probs(int t) const
 {
    *p_action = a[n_layers-1]->get_column(t);
 }
+
+/*
+void reinforce::get_fake_softmax_action_probs(int t) const
+{
+   int a_star = nrfunc::ran1() * 16;
+   p_action->clear_values();
+   p_action->put(a_star, 1);
+}
+*/
 
 // ---------------------------------------------------------------------
 double reinforce::compute_loss(int t) const
@@ -270,6 +278,7 @@ void reinforce::discount_rewards()
 //   cout << "mean = " << mean << endl;
 
    double sigma = 1;
+
    if(T > 1)
    {
       double sigmasqr = 0;
@@ -283,7 +292,7 @@ void reinforce::discount_rewards()
 //      cout << "sigmasqr = " << sigmasqr << endl;
       sigma = sqrt(sigmasqr);
    }
-   
+ 
    for(int t = 0; t < T; t++)
    {
       double curr_reward = discounted_reward->get(t) / sigma;
@@ -317,13 +326,13 @@ void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
       {
          double curr_activation = a[curr_layer]->get(j, t);
 
-         if(ignore_zero_valued_final_nodes)
-         {
-         }
-         else
-         {
+//         if(ignore_zero_valued_final_nodes)
+//         {
+//         }
+//         else
+//         {
             if(j == y->get(t)) curr_activation -= 1.0;
-         }
+//         }
 
 // Modulate the gradient with advantage (Policy Gradient magic happens
 // right here):
@@ -491,6 +500,8 @@ bool reinforce::renormalize_action_distribution()
    if(pcum < 0.99 || pcum > 1.01)
    {
       OK_flag = false;
+      cout << "pcum = " << pcum << " doesn't equal 1 !!!" << endl;
+      outputfunc::enter_continue_char();
    }   
 
    return OK_flag;
@@ -600,18 +611,12 @@ void reinforce::update_weights(bool episode_finished_flag,
 {
    if(!episode_finished_flag) return;
 
-   cout << "inside reinforce::update_weights(), curr T = " << T << endl;
-
    T_values.push_back(T);
    if(T_values.size() > 1000)
    {
       T_values.pop_front();
    }
    
-   double mu_T, sigma_T;
-   mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
-   cout << "  avg T = " << mu_T << " +/- " << sigma_T << endl;
-
 // Compute the discounted reward backwards through time:
 
    discount_rewards();
@@ -755,9 +760,6 @@ string reinforce::init_subtitle()
 
 void reinforce::plot_loss_history(std::string extrainfo)
 {
-   cout << "inside plot_loss_history(), loss_values.size() = "
-        << loss_values.size() << endl;
-
    if(loss_values.size() < 3) return;
 
    metafile curr_metafile;
@@ -787,10 +789,6 @@ void reinforce::plot_loss_history(std::string extrainfo)
       mathfunc::lo_hi_values(loss_values, 0.025, 0.975, min_loss, max_loss);
    }
    min_loss = 0;
-
-   cout << "loss_values.size() = " << loss_values.size() << endl;
-   cout << "min_loss = " << min_loss
-        << " max_loss = " << max_loss << endl;
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, time_samples.back(),
