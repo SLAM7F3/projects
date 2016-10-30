@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 10/26/16; 10/27/16; 10/28/16; 10/29/16
+// Last updated on 10/27/16; 10/28/16; 10/29/16; 10/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -48,13 +48,13 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
 // ==========================================================================
 int main (int argc, char* argv[])
 {
-
    timefunc::initialize_timeofday_clock();
 //    nrfunc::init_time_based_seed();
 
-   int nsize = 4;
 //   int n_zlevels = 1;
    int n_zlevels = 4;
+
+   int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
 
@@ -67,11 +67,17 @@ int main (int argc, char* argv[])
    int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
-//   int H2 = 0;
-   int H2 = 1 * 64;
+   int H2 = 0;
+//   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
 //   int H2 = 5 * 64;
 
+   if(n_zlevels == 4)
+   {
+      H1 = 5 * 64;
+      H2 = 1 * 64;
+   }
+   
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
@@ -115,11 +121,11 @@ int main (int argc, char* argv[])
    double min_learning_rate = 0.5E-4;
 //   double min_learning_rate = 3E-5;
 
-  int n_max_episodes = 1 * 1000000;
+//  int n_max_episodes = 1 * 1000000;
 //  int n_max_episodes = 2 * 1000000;
-//  int n_max_episodes = 4 * 1000000;
+   int n_max_episodes = 5 * 1000000;
 //   int n_max_episodes = 10 * 1000000;
-   int n_update = 10000;
+   int n_update = 25000;
    int n_summarize = 50000;
 
    int n_losses = 0;
@@ -129,8 +135,10 @@ int main (int argc, char* argv[])
    int n_recent_stalemates = 0;
    int n_recent_wins = 0;
    double curr_reward = -999;
-   double max_reward = 1;
-   double min_reward = -1;
+   double win_reward = 1;
+   double stalemate_reward = -0.5;
+   double lose_reward = -2;
+//   double lose_reward = -1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -147,8 +155,8 @@ int main (int argc, char* argv[])
 
 // Import previously trained TTT network to guide AI play:
 
-   reinforce* reinforce_AI_ptr = NULL;
-//   reinforce* reinforce_AI_ptr = new reinforce();
+//   reinforce* reinforce_AI_ptr = NULL;
+   reinforce* reinforce_AI_ptr = new reinforce();
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -208,16 +216,14 @@ int main (int argc, char* argv[])
 
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
-               curr_reward = min_reward; // Agent loses!
+               curr_reward = lose_reward; // Agent loses!
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
          
             if(ttt_ptr->check_filled_board())
             {
-               curr_reward = 0.5 * min_reward; 
-			// Entire 3D board is filled - stalemate
-//               curr_reward = 0; // Entire 3D board is filled - stalemate
+               curr_reward = stalemate_reward; // Entire board filled
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
@@ -248,12 +254,11 @@ int main (int argc, char* argv[])
          curr_reward = 0;
          if(ttt_ptr->check_player_win(agent_value) > 0)
          {
-            curr_reward = max_reward;	 // Agent wins!
+            curr_reward = win_reward;	 // Agent wins!
          }
          else if (ttt_ptr->check_filled_board())
          {
-            curr_reward = 0.5 * min_reward;
-//            curr_reward = 0;
+            curr_reward = stalemate_reward;
          }
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
@@ -266,12 +271,12 @@ int main (int argc, char* argv[])
          ttt_ptr->display_board_state();
       }
 
-      if(nearly_equal(curr_reward, min_reward))
+      if(nearly_equal(curr_reward, lose_reward))
       {
          n_losses++;
          n_recent_losses++;
       }
-      else if (nearly_equal(curr_reward, max_reward))
+      else if (nearly_equal(curr_reward, win_reward))
       {
          n_wins++;
          n_recent_wins++;
@@ -345,7 +350,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_loss_history(extrainfo);
          reinforce_agent_ptr->plot_reward_history(
-            extrainfo, min_reward, max_reward);
+            extrainfo, lose_reward, win_reward);
          reinforce_agent_ptr->plot_turns_history(extrainfo);
          reinforce_agent_ptr->export_snapshot();
          ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
