@@ -51,8 +51,8 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
 //    nrfunc::init_time_based_seed();
 
-//   int n_zlevels = 1;
-   int n_zlevels = 4;
+   int n_zlevels = 1;
+//   int n_zlevels = 4;
 
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
@@ -136,7 +136,7 @@ int main (int argc, char* argv[])
    int n_recent_wins = 0;
    double curr_reward = -999;
    double win_reward = 1;
-   double stalemate_reward = -0.5;
+   double stalemate_reward = 0.25;
    double lose_reward = -2;
 //   double lose_reward = -1;
 
@@ -201,7 +201,7 @@ int main (int argc, char* argv[])
          if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
             || reinforce_agent_ptr->get_curr_timestep() > 0)
          {
-            if(reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.1)
+            if(reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.05)
             {
                compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
             }
@@ -232,19 +232,26 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         reinforce_agent_ptr->compute_unrenorm_action_probs(
-            ttt_ptr->get_board_state_ptr());
-         reinforce_agent_ptr->renormalize_action_distribution();
+         if(nrfunc::ran1() > 0.05)
+         {
+            reinforce_agent_ptr->compute_unrenorm_action_probs(
+               ttt_ptr->get_board_state_ptr());
+            reinforce_agent_ptr->renormalize_action_distribution();
 //         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
 
-         int output_action = 
-            reinforce_agent_ptr->get_candidate_current_action();
-         int pz = output_action / (nsize * nsize);
-         int py = (output_action - nsize * nsize * pz) / nsize;
-         int px = (output_action - nsize * nsize * pz - nsize * py);
+            int output_action = 
+               reinforce_agent_ptr->get_candidate_current_action();
+            int pz = output_action / (nsize * nsize);
+            int py = (output_action - nsize * nsize * pz) / nsize;
+            int px = (output_action - nsize * nsize * pz - nsize * py);
 
-         reinforce_agent_ptr->set_current_action(output_action);
-         ttt_ptr->set_player_move(px, py, pz, agent_value);
+            reinforce_agent_ptr->set_current_action(output_action);
+            ttt_ptr->set_player_move(px, py, pz, agent_value);
+         }
+         else
+         {
+            ttt_ptr->get_random_legal_player_move(agent_value);
+         }
          ttt_ptr->increment_n_agent_turns();
 
 //         ttt_ptr->display_board_state();

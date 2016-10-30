@@ -303,7 +303,6 @@ bool tictac3d::set_player_move(int px, int py, int pz, int player_value)
 // ---------------------------------------------------------------------
 void tictac3d::get_random_legal_player_move(int player_value)
 {
-//   int AI_value = -1;
    bool legal_move_flag = true;
 
    do
@@ -322,11 +321,6 @@ void tictac3d::get_random_legal_player_move(int player_value)
       }
    }
    while(!legal_move_flag);
-
-   if(get_n_empty_cells() == 0)
-   {
-      game_over = true;
-   }
 }
 
 // ---------------------------------------------------------------------
