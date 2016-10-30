@@ -1,7 +1,7 @@
 ============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 10/11/16
+Last updated on 10/11/16; 10/30/16
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -66,3 +66,40 @@ recommends setting priority = 3 (important).  Finally, press File --> Save
 in order to send out radar and its ccs.
 
 
+*.  Procedure for uploading new S2D job to PR admin
+
+
+i.  Generate a test_tile.json file which looks something like
+
+{
+    "prjname":"peter_debug3",
+    "task":"s2d_tagger2",
+    "rev":"rev0",
+    "files":[
+	"https://flyover-static.geo.apple.com/startown-gpfs/sputnik03/supersize/devdata/pcho/s2d_tiles/test_tile.zip"
+    ]
+}
+
+ii.  Use following curl command to upload this json file's contents to
+flyover admin:
+
+curl -H "Content-Type: application/json" -u pcho:@Beebop12 --data @test_tile.json https://pr-admin-3dv.usspk02.orchard.apple.com/upload-job
+
+
+iii.  Open browser to
+https://pr-admin-3dv.usspk02.orchard.apple.com/admin/job/
+
+username = pcho
+password = @Beebop12
+
+Find the name of our PR Admin job (e.g. peter_debug3).  Its Import State
+should automatically equal "complete".  Change its "State" to "debug".
+Default "Mode" = "Regular" is OK.  
+
+iv.  Change "#if 0" to "#if 1" in tg_work_scheduler.cpp.  Also be sure to
+hardwire the prjname (e.g. "peter_debug3") in this same section of
+tg_work_scheduler.cpp !!!
+
+v.  Splash page now reads "Tagger2" and no longer "S2D Editor".  After
+selecting debug option, we should see our hand-selected tile appear in the
+S2D editor window.  
