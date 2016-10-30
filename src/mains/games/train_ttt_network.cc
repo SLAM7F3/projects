@@ -53,8 +53,8 @@ int main (int argc, char* argv[])
 //    nrfunc::init_time_based_seed();
 
    int nsize = 4;
-   int n_zlevels = 1;
-//   int n_zlevels = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
 
@@ -67,8 +67,8 @@ int main (int argc, char* argv[])
    int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
-   int H2 = 0;
-//   int H2 = 1 * 64;
+//   int H2 = 0;
+   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
 //   int H2 = 5 * 64;
 
@@ -116,6 +116,7 @@ int main (int argc, char* argv[])
 //   double min_learning_rate = 3E-5;
 
   int n_max_episodes = 1 * 1000000;
+//  int n_max_episodes = 2 * 1000000;
 //  int n_max_episodes = 4 * 1000000;
 //   int n_max_episodes = 10 * 1000000;
    int n_update = 10000;
@@ -146,8 +147,8 @@ int main (int argc, char* argv[])
 
 // Import previously trained TTT network to guide AI play:
 
-//   reinforce* reinforce_AI_ptr = NULL;
-   reinforce* reinforce_AI_ptr = new reinforce();
+   reinforce* reinforce_AI_ptr = NULL;
+//   reinforce* reinforce_AI_ptr = new reinforce();
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
