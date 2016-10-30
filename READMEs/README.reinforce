@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/25/16; 10/26/16; 10/27/16; 10/28/16
+Last updated on 10/26/16; 10/27/16; 10/28/16; 10/29/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -482,3 +482,5 @@ Terminated.
 player switches every 10K episodes.  Started on TM around 7:20 am.  Running
 reward converges to 1 after 90K episodes.  Terminated.
 
+44. Fill grid for Z=1 level.  H1=300, H2 = 64.  Reward --> 0.8 after 1E6
+episodes.

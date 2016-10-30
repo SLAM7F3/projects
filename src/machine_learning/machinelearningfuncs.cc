@@ -149,13 +149,10 @@ namespace machinelearning_func
          A.put(i, curr_exp);
       }
       
-//      double psum = 0;
       for(unsigned int i = 0; i < A.get_mdim(); i++)
       {
          A.put(i, A.get(i) / denom);
-//         psum += A.get(i);
       }
-//      cout << "psum = " << psum << endl;
 
 /*
       if(psum < 0.99 || psum > 1.01)
@@ -241,22 +238,14 @@ namespace machinelearning_func
          Zmax = basic_math::max(Zmax, Z.get(i,zcol));
       }
 
+      int n_occupied_cells = 0;
       double denom = 0;
       for(unsigned int i = 0; i < Z.get_mdim(); i++)
       {
-/*
-         if(debug_flag)
-         {
-            cout << "i = " << i << " x_input[i] = " << x_input.get(i)
-                 << " Z(i,zcol) = " << Z.get(i,zcol)
-                 << " denom = " << denom 
-                 << endl;
-         }
-*/
-       
          if(fabs(x_input.get(i)) > SMALL)
          {
             A.put(i,0);
+            n_occupied_cells++;
          }
          else
          {
@@ -266,23 +255,37 @@ namespace machinelearning_func
          }
       }
       
-
+      double p_sum = 0;
       for(unsigned int i = 0; i < A.get_mdim(); i++)
       {
          A.put(i, zcol, A.get(i, zcol) / denom);
+         p_sum += A.get(i,zcol);
       }
 
-/*
-      if(debug_flag)
+// On 10/29/16, we empirically observed that p_sum can sometimes
+// remain at zero.  In this case, we uniformely populate all entries
+// in A which correspond to unoccupied cells:
+
+      if(nearly_equal(p_sum,0))
       {
-         cout << "inside constrained_softmax, denom = " << denom << endl;
-         cout << "zcol = " << zcol << endl;
-         cout << "Zmax = " << Zmax << endl;
-         cout << "A = " << A << endl;
-         outputfunc::enter_continue_char();
+         int n_unoccupied_cells = A.get_mdim() - n_occupied_cells;
+         for(unsigned int i = 0; i < A.get_mdim(); i++)
+         {
+            if(fabs(x_input.get(i)) > SMALL)
+            {
+               A.put(i, zcol, 0);
+            }
+            else
+            {
+               A.put(i, zcol, 1.0 / n_unoccupied_cells);
+            }
+         }
       }
-*/
 
+//      for(unsigned int i = 0; i < A.get_mdim(); i++)
+//      {
+//         cout << "i = " << i << " A = " << A.get(i, zcol) << endl;
+//      }
    }
 
 // --------------------------------------------------------------------------

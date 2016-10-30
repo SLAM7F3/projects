@@ -74,7 +74,7 @@ int main (int argc, char* argv[])
    int n_illegal_moves = 0;
    int n_stalemates = 0;
    int n_wins = 0;
-   double curr_reward;
+   double curr_reward=-999;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -113,6 +113,7 @@ int main (int argc, char* argv[])
 // AI move:
 
          ttt_ptr->get_random_legal_player_move(AI_value);
+         ttt_ptr->display_board_state();
          ttt_ptr->increment_n_AI_turns();
          if(ttt_ptr->get_game_over())
          {
@@ -126,8 +127,9 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
          reinforce_agent_ptr->renormalize_action_distribution();
-//         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
-         int output_action = reinforce_agent_ptr->get_candidate_current_action();
+         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+         int output_action = reinforce_agent_ptr->
+            get_candidate_current_action();
          reinforce_agent_ptr->set_current_action(output_action);
 
          ttt_ptr->increment_n_agent_turns();
@@ -151,7 +153,7 @@ int main (int argc, char* argv[])
             curr_reward = 1;
          }
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
-//         ttt_ptr->display_board_state();
+         ttt_ptr->display_board_state();
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
@@ -170,10 +172,10 @@ int main (int argc, char* argv[])
          episode_finished_flag, ignore_zero_valued_final_nodes);
       reinforce_agent_ptr->update_running_reward(extrainfo);
 
-//      cout << "Game over   curr_reward = " << curr_reward << endl;
-//      ttt_ptr->display_board_state();
-//      ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
-//      outputfunc::enter_continue_char();
+      cout << "Game over   curr_reward = " << curr_reward << endl;
+      ttt_ptr->display_board_state();
+      ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+      outputfunc::enter_continue_char();
       
       reinforce_agent_ptr->increment_episode_number();
       int n_episodes = curr_episode_number + 1;

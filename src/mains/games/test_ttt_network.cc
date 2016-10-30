@@ -3,7 +3,7 @@
 // reinforcement learning in program TTT.  It then uses the trained
 // network to play against a human opponent.
 // ==========================================================================
-// Last updated on 10/5/16; 10/18/16; 10/27/16; 10/28/16
+// Last updated on 10/18/16; 10/27/16; 10/28/16; 10/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -29,7 +29,6 @@ int main (int argc, char* argv[])
 //   int n_zlevels = 1;
    int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
-   int Dout = nsize * nsize * n_zlevels;  // Output dimensionality
 
    ttt_ptr->reset_board_state();
    reinforce* reinforce_ptr = new reinforce();
@@ -53,32 +52,12 @@ int main (int argc, char* argv[])
 
       reinforce_ptr->compute_unrenorm_action_probs(
          ttt_ptr->get_board_state_ptr());
-      bool reasonable_action_prob_distribution_flag = 
-         reinforce_ptr->renormalize_action_distribution();
+      reinforce_ptr->renormalize_action_distribution();
          
-      int output_action = -99;
-      int px, py, pz;
-      bool legal_move = false;
-
-      while(!legal_move)
-      {
-         if(reasonable_action_prob_distribution_flag)
-         {
-            output_action = reinforce_ptr->get_candidate_current_action();
-         }
-         else
-         {
-            output_action = nrfunc::ran1() * Dout;
-         }
-            
-         pz = output_action / (nsize * nsize);
-         py = (output_action - nsize * nsize * pz) / nsize;
-         px = (output_action - nsize * nsize * pz - nsize * py);
-         legal_move = ttt_ptr->legal_player_move(px, py, pz);
-
-         reasonable_action_prob_distribution_flag = 
-            reinforce_ptr->zero_p_action(output_action);
-      } // !legal_move conditional
+      int output_action = reinforce_ptr->get_candidate_current_action();
+      int pz = output_action / (nsize * nsize);
+      int py = (output_action - nsize * nsize * pz) / nsize;
+      int px = (output_action - nsize * nsize * pz - nsize * py);
       reinforce_ptr->set_current_action(output_action);
 
       ttt_ptr->set_player_move(px, py, pz, agent_value);

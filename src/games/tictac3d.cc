@@ -410,7 +410,7 @@ void tictac3d::display_p_action(genvector* p_action)
          
       } // loop over py index
    } // loop over pz index
-   cout << "p_sum = " << p_sum << endl;
+//   cout << "p_sum = " << p_sum << endl;
 }
 
 // ---------------------------------------------------------------------

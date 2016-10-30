@@ -27,8 +27,7 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
 {
    reinforce_AI_ptr->compute_unrenorm_action_probs(
       ttt_ptr->get_inverse_board_state_ptr());
-   bool reasonable_action_prob_distribution_flag = 
-      reinforce_AI_ptr->renormalize_action_distribution();
+   reinforce_AI_ptr->renormalize_action_distribution();
 
    int nsize = ttt_ptr->get_n_size();         
    int output_action = -99;
@@ -37,22 +36,14 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
 
    while(!legal_move)
    {
-      if(reasonable_action_prob_distribution_flag)
-      {
-         output_action = reinforce_AI_ptr->get_candidate_current_action();
-      }
-      else
-      {
-         output_action = nrfunc::ran1() * ttt_ptr->get_n_total_cells();
-      }
+      output_action = reinforce_AI_ptr->get_candidate_current_action();
             
       pz = output_action / (nsize * nsize);
       py = (output_action - nsize * nsize * pz) / nsize;
       px = (output_action - nsize * nsize * pz - nsize * py);
       legal_move = ttt_ptr->legal_player_move(px, py, pz);
 
-      reasonable_action_prob_distribution_flag = 
-         reinforce_AI_ptr->zero_p_action(output_action);
+      reinforce_AI_ptr->zero_p_action(output_action);
    } // !legal_move conditional
    reinforce_AI_ptr->set_current_action(output_action);
    ttt_ptr->set_player_move(px, py, pz, AI_value);
@@ -75,77 +66,41 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels / 2;
 
-//   int H1 = 32;
-//   int H1 = 64;
-//    int H1 = 128;
-//   int H1 = 256;
-//   int H1 = 300;
    int H1 = 5 * 64;	//  = 320
-//   int H1 = 700;
-
-//   int H2 = 32;
    int H2 = 64;
-//   int H2 = 80;
-//   int H2 = 100;
-//   int H2 = 128;
-//   int H2 = 200;
-//   int H2 = 300;
-
-//   int H3 = 32;
-//   int H3 = 64;
-//   int H3 = 100;
-//   int H3 = 128;
-//   int H3 = 256;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1)+
       "; H2="+stringfunc::number_to_string(H2)+
-//      "; H3="+stringfunc::number_to_string(H3)+
       "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
    layer_dims.push_back(H2);
-//   layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
 
 // Gamma = discount factor for reward:
 
-//   reinforce_agent_ptr->set_gamma(0.4);
-//   reinforce_agent_ptr->set_gamma(0.3);
-//   reinforce_agent_ptr->set_gamma(0.33);
    reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
-//   reinforce_agent_ptr->set_gamma(0.1);
-
-//   reinforce_agent_ptr->set_lambda(0.01);// 0 = best lambda value as of Tues Oct 25
-//   reinforce_agent_ptr->set_lambda(0.001);
-//   reinforce_agent_ptr->set_lambda(0.0001);
-
    reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
-//   reinforce_agent_ptr->set_batch_size(100);
-
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.9);
+
 
    reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
    double min_learning_rate = 0.5E-4;
 //   double min_learning_rate = 3E-5;
 
-//   int n_max_episodes = 200 * 1000;
-//   int n_max_episodes = 1 * 1000000;
-//   int n_max_episodes = 2 * 1000000;
-//   int n_max_episodes = 3 * 1000000;
 //  int n_max_episodes = 4 * 1000000;
    int n_max_episodes = 10 * 1000000;
-//  int n_max_episodes = 15 * 1000000;
-   int n_update = 1000;
+   int n_update = 2000;
+   int n_summarize = 10000;
+//   int n_summarize = 25000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -162,8 +117,6 @@ int main (int argc, char* argv[])
 
    int n_episodes_period = 100 * 1000;
 //      int n_episodes_period = 150 * 1000;
-//      int n_episodes_period = 200 * 1000;
-//      int n_episodes_period = 250 * 1000;
 
    bool AI_moves_first = true;
    int AI_value = -1;
@@ -183,6 +136,14 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
+      if(curr_episode_number >= 30)
+      {
+         reinforce_agent_ptr->set_debug_flag(true);
+      }
+      
+
+      outputfunc::update_progress_and_remaining_time(
+         curr_episode_number, n_summarize, n_max_episodes);
 
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
@@ -207,14 +168,14 @@ int main (int argc, char* argv[])
       {
          AI_moves_first = !AI_moves_first;
       }
-  
+
+// -----------------------------------------------------------------------
 // Current episode starts here:
 
       while(!ttt_ptr->get_game_over())
       {
 
 // AI move:
-
          if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
             || reinforce_agent_ptr->get_curr_timestep() > 0)
          {
@@ -226,13 +187,11 @@ int main (int argc, char* argv[])
             {
                ttt_ptr->get_random_legal_player_move(AI_value);
             }
-
-            if(curr_episode_number%1000 == 0)
-            {
-               ttt_ptr->display_board_state();
-            }
-         
             ttt_ptr->increment_n_AI_turns();
+
+//            ttt_ptr->display_board_state();
+//            ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
                curr_reward = min_reward; // Agent loses!
@@ -240,9 +199,11 @@ int main (int argc, char* argv[])
                break;
             }
          
-            if(ttt_ptr->get_game_over())
+            if(ttt_ptr->check_filled_board())
             {
-               curr_reward = 0; // Entire 3D board is filled - stalemate
+               curr_reward = 0.5 * min_reward; 
+			// Entire 3D board is filled - stalemate
+//               curr_reward = 0; // Entire 3D board is filled - stalemate
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
@@ -253,74 +214,45 @@ int main (int argc, char* argv[])
 
          reinforce_agent_ptr->compute_unrenorm_action_probs(
             ttt_ptr->get_board_state_ptr());
-         bool reasonable_action_prob_distribution_flag = 
-            reinforce_agent_ptr->renormalize_action_distribution();
-         
-         int output_action = -99;
-         int px, py, pz;
-         bool legal_move = false;
-         int n_attempts = 0;
-         int max_n_attempts = 2 * Dout;
+         reinforce_agent_ptr->renormalize_action_distribution();
+//         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
 
-         while(!legal_move)
-         {
-            if(n_attempts < max_n_attempts && 
-               reasonable_action_prob_distribution_flag)
-            {
-               output_action = reinforce_agent_ptr->
-                  get_candidate_current_action();
-            }
-            else
-            {
-               cout << "n_attempts = " << n_attempts << endl;
-               output_action = nrfunc::ran1() * Dout;
-            }
-            
-            pz = output_action / (nsize * nsize);
-            py = (output_action - nsize * nsize * pz) / nsize;
-            px = (output_action - nsize * nsize * pz - nsize * py);
-            legal_move = ttt_ptr->legal_player_move(px, py, pz);
+         int output_action = 
+            reinforce_agent_ptr->get_candidate_current_action();
+         int pz = output_action / (nsize * nsize);
+         int py = (output_action - nsize * nsize * pz) / nsize;
+         int px = (output_action - nsize * nsize * pz - nsize * py);
 
-            reasonable_action_prob_distribution_flag = 
-               reinforce_agent_ptr->zero_p_action(output_action);
-
-            n_attempts++;
-         } // !legal_move conditional
          reinforce_agent_ptr->set_current_action(output_action);
-
+         ttt_ptr->set_player_move(px, py, pz, agent_value);
          ttt_ptr->increment_n_agent_turns();
+
+//         ttt_ptr->display_board_state();
 
 // Step the environment and then retrieve new reward measurements:
 
-         curr_reward = ttt_ptr->set_player_move(px, py, pz, agent_value);
-         if(curr_episode_number%1000 == 0)
-         {
-            ttt_ptr->display_board_state();
-         }
-
+         curr_reward = 0;
          if(ttt_ptr->check_player_win(agent_value) > 0)
          {
             curr_reward = max_reward;	 // Agent wins!
          }
-         
+         else if (ttt_ptr->check_filled_board())
+         {
+            curr_reward = 0.5 * min_reward;
+//            curr_reward = 0;
+         }
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
 
       } // !game_over while loop
+// -----------------------------------------------------------------------
 
-      if(curr_episode_number%1000 == 0)
+      if(curr_episode_number > 0 && curr_episode_number%1000 == 0)
       {
          ttt_ptr->display_board_state();
-         outputfunc::update_progress_and_remaining_time(
-            curr_episode_number, n_update, n_max_episodes);
       }
 
-      if(ttt_ptr->get_n_empty_cells() == 0)
-      {
-         n_stalemates++;
-         n_recent_stalemates++;
-      }
-      else if(nearly_equal(curr_reward, min_reward))
+      if(nearly_equal(curr_reward, min_reward))
       {
          n_losses++;
          n_recent_losses++;
@@ -329,6 +261,11 @@ int main (int argc, char* argv[])
       {
          n_wins++;
          n_recent_wins++;
+      }
+      else if(ttt_ptr->get_n_empty_cells() == 0)
+      {
+         n_stalemates++;
+         n_recent_stalemates++;
       }
 
       bool episode_finished_flag = true;
@@ -339,7 +276,8 @@ int main (int argc, char* argv[])
       
       reinforce_agent_ptr->increment_episode_number();
       int n_episodes = curr_episode_number + 1;
-      if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
+      if(curr_episode_number >= n_update-1 && 
+         curr_episode_number % n_update == 0)
       {
          if(AI_value == -1)
          {
@@ -362,7 +300,7 @@ int main (int argc, char* argv[])
          double recent_stalemate_frac = double(n_recent_stalemates) / n_update;
          double recent_win_frac = double(n_recent_wins) / n_update;
          double loss_frac = double(n_losses) / n_episodes;
-         double stalemate_frac = double(n_losses) / n_episodes;
+         double stalemate_frac = double(n_stalemates) / n_episodes;
          double win_frac = double(n_wins) / n_episodes;
          cout << "n_episodes = " << n_episodes 
               << " n_recent_losses = " << n_recent_losses
@@ -390,7 +328,8 @@ int main (int argc, char* argv[])
          ttt_ptr->append_game_win_frac(win_frac);
       }
 
-      if(curr_episode_number > 10 && curr_episode_number % 10000 == 0)
+      if(curr_episode_number >= n_summarize - 1 && 
+         curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_loss_history(extrainfo);
@@ -398,9 +337,8 @@ int main (int argc, char* argv[])
             extrainfo, min_reward, max_reward);
          reinforce_agent_ptr->plot_turns_history(extrainfo);
          ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
-
-
       }
+
    } // n_episodes < n_max_episodes while loop
 
    delete ttt_ptr;

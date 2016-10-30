@@ -44,12 +44,13 @@ class reinforce
    genvector* get_p_action();
 
    void initialize_episode();
-   void compute_unrenorm_action_probs(genvector* input_state_ptr);
-   bool renormalize_action_distribution();
-   bool zero_p_action(int a_star);
-   void print_p_action();
+   void compute_unrenorm_action_probs(genvector* x_input);
+   void renormalize_action_distribution();
+
+   void redistribute_action_probs();
+   void zero_p_action(int a_star);
+   void print_p_action() const;
    int get_candidate_current_action();
-   int compute_current_action(genvector* input_state_ptr);
    void set_current_action(int output_action);
    void periodically_snapshot_loss_value();
    void snapshot_running_reward();
@@ -110,6 +111,7 @@ class reinforce
 // Node errors:
    std::vector<genmatrix*> delta_prime; // n_actions x T
 
+   genvector *x_input;          // n_actions x 1
    genvector *p_action;		// n_actions x 1  
    genvector *pcum_action;	// n_actions x 1  
 
@@ -129,10 +131,10 @@ class reinforce
 
    std::string snapshots_subdir;
 
-   void policy_forward(int t, genvector& x_input);
-   void get_softmax_action_probs(int t) const;
-//    void get_fake_softmax_action_probs(int t) const;
-   double compute_loss(int t) const;
+   void policy_forward(int t);
+   void get_softmax_action_probs(int t);
+   void compute_cumulative_action_dist();
+   double compute_loss(int t);
    void discount_rewards();
    void policy_backward(bool ignore_zerovalued_final_nodes);
 

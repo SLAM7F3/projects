@@ -194,52 +194,32 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 // given an input set of values.  See "Forward & backward propagation
 // for one episode of reinforcement learning" notes dated 10/18/2016.
 
-void reinforce::policy_forward(int t, genvector& x_input)
+void reinforce::policy_forward(int t)
 {
-   a[0]->put_column(t, x_input);
-/*
-   if(debug_flag)
-   {
-      cout << "inside policy_forward, x_input = " << x_input << endl;
-   }
-*/
+//   cout << "inside policy_forward(), t = " << t << endl;
+   a[0]->put_column(t, *x_input);
  
    for(int l = 0; l < n_layers-2; l++)
    {
-      if(debug_flag)
-      {
-//         cout << "l = " << l << " a[l] = " << *a[l] << endl;
-//         cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
-//         outputfunc::enter_continue_char();
-      }
-
       z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
       machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
    }
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
-   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
-//   machinelearning_func::constrained_softmax(
-//      t, x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
+//   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
+   machinelearning_func::constrained_softmax(
+      t, *x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
 }
 
 // ---------------------------------------------------------------------
-void reinforce::get_softmax_action_probs(int t) const
+void reinforce::get_softmax_action_probs(int t)
 {
    *p_action = a[n_layers-1]->get_column(t);
+   compute_cumulative_action_dist();
 }
-
-/*
-void reinforce::get_fake_softmax_action_probs(int t) const
-{
-   int a_star = nrfunc::ran1() * 16;
-   p_action->clear_values();
-   p_action->put(a_star, 1);
-}
-*/
 
 // ---------------------------------------------------------------------
-double reinforce::compute_loss(int t) const
+double reinforce::compute_loss(int t) 
 {
    get_softmax_action_probs(t);
    int a_star = y->get(t);
@@ -262,8 +242,6 @@ void reinforce::discount_rewards()
    {
       running_add = gamma * running_add + reward->get(t);
       discounted_reward->put(t, running_add);
-//      cout << "t = " << t << " discounted_reward = "
-//           << running_add << endl;
    }
 
 // Standardize discounted rewards to be unit normal to help control
@@ -275,10 +253,8 @@ void reinforce::discount_rewards()
       mean += discounted_reward->get(t);
    }
    mean /= T;
-//   cout << "mean = " << mean << endl;
 
    double sigma = 1;
-
    if(T > 1)
    {
       double sigmasqr = 0;
@@ -289,17 +265,20 @@ void reinforce::discount_rewards()
          sigmasqr += sqr(curr_reward);
       }
       sigmasqr /= T;
-//      cout << "sigmasqr = " << sigmasqr << endl;
       sigma = sqrt(sigmasqr);
    }
- 
-   for(int t = 0; t < T; t++)
+
+   if(sigma > 0)
    {
-      double curr_reward = discounted_reward->get(t) / sigma;
-      discounted_reward->put(t, curr_reward);
+      for(int t = 0; t < T; t++)
+      {
+         double curr_reward = discounted_reward->get(t) / sigma;
+         discounted_reward->put(t, curr_reward);
 //      cout << "t = " << t << " discounted_reward = "
 //           << discounted_reward->get(t) << endl;
-   }
+      }
+   } // sigma > 0 conditional
+   
 }
 
 // ---------------------------------------------------------------------
@@ -308,6 +287,7 @@ void reinforce::discount_rewards()
 
 void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
 {
+//   cout << "inside policy_backward()"  << endl;
 
 // Initialize "episode" weight gradients to zero:
 
@@ -325,43 +305,37 @@ void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
       for(int j = 0; j < layer_dims[curr_layer]; j++)
       {
          double curr_activation = a[curr_layer]->get(j, t);
-
-//         if(ignore_zero_valued_final_nodes)
-//         {
-//         }
-//         else
-//         {
+         if(ignore_zero_valued_final_nodes)
+         {
+         }
+         else
+         {
             if(j == y->get(t)) curr_activation -= 1.0;
-//         }
+         }
 
 // Modulate the gradient with advantage (Policy Gradient magic happens
 // right here):
 
          delta_prime[curr_layer]->put(
             j, t, discounted_reward->get(t) * curr_activation);
-
       }
    } // loop over index t
 
-/*
-   if(debug_flag)
-   {
-      cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
-           << endl;
-   }
-*/
+//   if(debug_flag)
+//   {
+//      cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
+//           << endl;
+//   }
  
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
       int prev_layer = curr_layer - 1;
 
-/*
-      if(debug_flag)
-      {
-         cout << "prev_layer = " << prev_layer 
-              << " curr_layer = " << curr_layer << endl;
-      }
-*/
+//      if(debug_flag)
+//      {
+//         cout << "prev_layer = " << prev_layer 
+//              << " curr_layer = " << curr_layer << endl;
+//      }
 
 // Eqn BP2A:
 
@@ -372,13 +346,11 @@ void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
       delta_prime[prev_layer]->matrix_mult(
          *weights_transpose[prev_layer], *delta_prime[curr_layer]);
 
-/*
-      if(debug_flag)
-      {
-         cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
-              << endl;
-      }
-*/
+//      if(debug_flag)
+//      {
+//         cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
+//              << endl;
+//      }
 
 // Eqn BP2B:
       for(int j = 0; j < layer_dims[prev_layer]; j++)
@@ -408,7 +380,8 @@ void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
             *delta_nabla_weights[prev_layer] += 
                2 * lambda * (*weights[prev_layer]);
          }
-      }
+      } // loop over index t 
+      
 
    } // loop over curr_layer index
 } 
@@ -442,11 +415,11 @@ void reinforce::initialize_episode()
 // Member function compute_unrenorm_action_probs() imports an input
 // state vector.  
 
-void reinforce::compute_unrenorm_action_probs(genvector* input_state_ptr)
+void reinforce::compute_unrenorm_action_probs(genvector *x_input)
 {
 //   cout << "curr_timestep = " << curr_timestep << endl;
-//   cout << "*input_state_ptr = " << *input_state_ptr << endl;
-   policy_forward(curr_timestep, *input_state_ptr);
+   this->x_input = x_input;
+   policy_forward(curr_timestep);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
 }
 
@@ -455,68 +428,85 @@ void reinforce::compute_unrenorm_action_probs(genvector* input_state_ptr)
 // renormalizes action probabilities and computes their cumulative
 // probability distribution.
 
-bool reinforce::renormalize_action_distribution()
+void reinforce::renormalize_action_distribution()
 {
+//   cout << "inside renormalize_action_dist()" << endl;
    double denom = 0;
    for(int a = 0; a < n_actions; a++)
    {
       denom += p_action->get(a);
    }
+//    print_p_action();
 
    const double TINY=1E-100;
    if(denom < TINY)
    {
-/*
-      cout << "Trouble in reinforce::renormalize_action_distribution()"
-           << endl;
+      cout << "denom = " << denom << endl;
+      redistribute_action_probs();
+   }
+   else
+   {
       for(int a = 0; a < n_actions; a++)
       {
-         cout << "a = " << a << " p_action = " << p_action->get(a)
-              << endl;
+         p_action->put(a, p_action->get(a) / denom);
       }
-*/
-      if(nrfunc::ran1() < 0.001)
-      {
-         cout << "In renormalize_action_dist(), denom = " << denom
-              << " for episode_number = " << get_episode_number() << endl;
-
-      }
-      return false;
    }
 
+   compute_cumulative_action_dist();
+}
+
+// ---------------------------------------------------------------------
+void reinforce::compute_cumulative_action_dist()
+{
+//   cout << "inside compute_cum_action_dist()" << endl;
    double pcum = 0;
    for(int a = 0; a < n_actions; a++)
    {
-      p_action->put(a, p_action->get(a) / denom);
       pcum += p_action->get(a);
       pcum_action->put(a, pcum);
-      
-//      cout << "a = " << a 
-//           << " p_action = " << p_action->get(a) 
-//           << " pcum_action = " << pcum_action->get(a) << endl;
    }
+//   cout << "pcum = " << pcum << endl;
 
-   bool OK_flag = true;
-   if(pcum < 0.99 || pcum > 1.01)
+   if(pcum < 0.999 || pcum > 1.001)
    {
-      OK_flag = false;
-      cout << "pcum = " << pcum << " doesn't equal 1 !!!" << endl;
-      outputfunc::enter_continue_char();
+//      cout << "Danger in compute_cum_action_dist(): pcum = " << pcum << endl;
+      redistribute_action_probs();
    }   
-
-   return OK_flag;
 }
 
 // ---------------------------------------------------------------------
-bool reinforce::zero_p_action(int a_star)
+void reinforce::redistribute_action_probs()
+{
+   int n_unoccupied_cells = 0;
+   for(unsigned int i = 0; i < x_input->get_mdim(); i++)
+   {
+      if(nearly_equal(x_input->get(i), 0))
+      {
+         n_unoccupied_cells++;
+      }
+   }
+
+   p_action->clear_values();
+   for(unsigned int i = 0; i < x_input->get_mdim(); i++)
+   {
+      if(nearly_equal(x_input->get(i), 0))
+      {
+         p_action->put(i, 1.0 / n_unoccupied_cells);
+      }
+   }
+   compute_cumulative_action_dist();
+}
+
+// ---------------------------------------------------------------------
+void reinforce::zero_p_action(int a_star)
 {
 //   cout << "inside zero_p_action, a_star = " << a_star << endl;
    p_action->put(a_star, 0);
-   return renormalize_action_distribution();
+   renormalize_action_distribution();
 }
 
 // ---------------------------------------------------------------------
-void reinforce::print_p_action()
+void reinforce::print_p_action() const
 { 
   for(int a = 0; a < n_actions; a++)
    {
