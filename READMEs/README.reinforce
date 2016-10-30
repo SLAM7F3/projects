@@ -547,9 +547,14 @@ snapshot from expt 64 on TM at 12:38 pm
 
 64e.  Z = 4 TTT, H1 = 320, H2 = 64, base learning rate = 1E-3, gamma = 0.99,
 rms_decay = 0.85.  Batch size = 30. Started training against round 3
-snapshot from expt 64 on TM at 12:38 pm
+snapshot from expt 64 on TM at 12:38 pm.  
 
+	After 250K episodes, running reward --> 1
+	win frac --> 0.94
+	lose frac --> 0.06
 
+*** As of 1 pm on Sun Oct 30, this is our best trained model for 3D TTT
+with Z=4 levels ***
 
 
 
