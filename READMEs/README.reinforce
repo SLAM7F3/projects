@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/26/16; 10/27/16; 10/28/16; 10/29/16
+Last updated on 10/27/16; 10/28/16; 10/29/16; 10/30/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -484,3 +484,21 @@ reward converges to 1 after 90K episodes.  Terminated.
 
 44. Fill grid for Z=1 level.  H1=300, H2 = 64.  Reward --> 0.8 after 1E6
 episodes.
+
+49.  Z = 1 TTT, H1 = 320 learning against random AI.  learning rate = 3E-4,
+gamma = 0.99, rms_decay = 0.85.  Reward --> 0.8 after 1E6 episodes.  Win
+frac --> 0.8, Stalemat frac --> 0.05, Loss frac --> 0.15.  
+
+*** Best Z=1 TTT as of Sun Oct 30 at 4 am ***
+
+50-52.  Z=1 TTT. H1 = 300, H2 = 64.  base learning rate = 3E-4, 1E-3,
+3E-3.  All results are MUCH worse than for a single-layer network with H1 = 300.
+
+53 - 55.  Z=1 TTT, H1 = 5*64. H2 = 0.  base learning rate = 1E-4, 1E-3 and
+3E-3.  gamma = 0.99, rms_decay = 0.85.  All 3 of these expts yield worse
+running reward and game history results than expt 49.
+
+
+56 - 58: Z = 1 TTT, H1 = 3, 5, 7 * 64, H2 = 0. base learning rate = 3E-4.  
+gamma = 0.99, rms_decay = 0.85.
+

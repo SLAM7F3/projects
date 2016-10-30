@@ -57,8 +57,8 @@ int main (int argc, char* argv[])
 //    nrfunc::init_time_based_seed();
 
    int nsize = 4;
-   int n_zlevels = 1;
-//   int n_zlevels = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
 
@@ -66,10 +66,15 @@ int main (int argc, char* argv[])
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
    int Tmax = nsize * nsize * n_zlevels;
 
-   int H1 = 1 * 64;	// 
-//   int H1 = 5 * 64;	//  = 320
-   int H2 = 0;
-//   int H2 = 64;
+//   int H1 = 1 * 64;	// 
+//   int H1 = 3 * 64;	//  
+   int H1 = 5 * 64;	//  = 320
+//   int H1 = 7 * 64;	//  
+
+//   int H2 = 0;
+   int H2 = 1 * 64;
+//   int H2 = 3 * 64;
+//   int H2 = 5 * 64;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -91,18 +96,15 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
+   double gamma = 0.99;
+//   double gamma = 0.95;
 //   double gamma = 0.9;
-   double gamma = 0.5;
-//   double gamma = 0.25 + nrfunc::ran1() * 0.75;
+//   double gamma = 0.5;
    reinforce_agent_ptr->set_gamma(gamma);  
 
 //   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
 
-   int batch_size = 30;
-//   int batch_size = 100;
-//   int batch_size = 30 + nrfunc::ran1() * 270;
-   reinforce_agent_ptr->set_batch_size(batch_size);
-//   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
 
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
