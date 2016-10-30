@@ -55,8 +55,7 @@ class reinforce
    void periodically_snapshot_loss_value();
    void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
-   void update_weights(
-      bool episode_finished_flag, bool ignore_zero_valued_final_nodes);
+   void update_weights(bool episode_finished_flag);
    void update_running_reward(std::string extrainfo);
 
    void print_weights();
@@ -136,7 +135,7 @@ class reinforce
    void compute_cumulative_action_dist();
    double compute_loss(int t);
    void discount_rewards();
-   void policy_backward(bool ignore_zerovalued_final_nodes);
+   void policy_backward();
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);

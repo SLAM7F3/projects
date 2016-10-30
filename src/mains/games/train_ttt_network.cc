@@ -64,43 +64,64 @@ int main (int argc, char* argv[])
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
-   int Tmax = nsize * nsize * n_zlevels / 2;
+   int Tmax = nsize * nsize * n_zlevels;
 
-   int H1 = 5 * 64;	//  = 320
-   int H2 = 64;
+   int H1 = 1 * 64;	// 
+//   int H1 = 5 * 64;	//  = 320
+   int H2 = 0;
+//   int H2 = 64;
 
-   string extrainfo="H1="+stringfunc::number_to_string(H1)+
-      "; H2="+stringfunc::number_to_string(H2)+
-      "; zlevels="+stringfunc::number_to_string(n_zlevels);
+   string extrainfo="H1="+stringfunc::number_to_string(H1);
+   if(H2 > 0)
+   {
+      extrainfo += "; H2="+stringfunc::number_to_string(H2);
+   }
+   extrainfo += "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
-   layer_dims.push_back(H2);
+   if(H2 > 0)
+   {
+      layer_dims.push_back(H2);
+   }
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
 
 // Gamma = discount factor for reward:
 
-   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
-   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+//   double gamma = 0.9;
+   double gamma = 0.5;
+//   double gamma = 0.25 + nrfunc::ran1() * 0.75;
+   reinforce_agent_ptr->set_gamma(gamma);  
+
+//   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
+
+   int batch_size = 30;
+//   int batch_size = 100;
+//   int batch_size = 30 + nrfunc::ran1() * 270;
+   reinforce_agent_ptr->set_batch_size(batch_size);
+//   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
+//   double base_learning_rate = 0.001 + nrfunc::ran1() * 0.004;
+//   reinforce_agent_ptr->set_base_learning_rate(base_learning_rate);
 
-   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    double min_learning_rate = 0.5E-4;
 //   double min_learning_rate = 3E-5;
 
+  int n_max_episodes = 1 * 1000000;
 //  int n_max_episodes = 4 * 1000000;
-   int n_max_episodes = 10 * 1000000;
-   int n_update = 2000;
-   int n_summarize = 10000;
-//   int n_summarize = 25000;
+//   int n_max_episodes = 10 * 1000000;
+   int n_update = 10000;
+   int n_summarize = 50000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -136,12 +157,6 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      if(curr_episode_number >= 30)
-      {
-         reinforce_agent_ptr->set_debug_flag(true);
-      }
-      
-
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_summarize, n_max_episodes);
 
@@ -247,7 +262,7 @@ int main (int argc, char* argv[])
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
-      if(curr_episode_number > 0 && curr_episode_number%1000 == 0)
+      if(curr_episode_number > 0 && curr_episode_number% n_update == 0)
       {
          ttt_ptr->display_board_state();
       }
@@ -269,14 +284,12 @@ int main (int argc, char* argv[])
       }
 
       bool episode_finished_flag = true;
-      bool ignore_zero_valued_final_nodes = true;
-      reinforce_agent_ptr->update_weights(
-         episode_finished_flag, ignore_zero_valued_final_nodes);
+      reinforce_agent_ptr->update_weights(episode_finished_flag);
       reinforce_agent_ptr->update_running_reward(extrainfo);
       
       reinforce_agent_ptr->increment_episode_number();
       int n_episodes = curr_episode_number + 1;
-      if(curr_episode_number >= n_update-1 && 
+      if(curr_episode_number >= n_update - 1 && 
          curr_episode_number % n_update == 0)
       {
          if(AI_value == -1)

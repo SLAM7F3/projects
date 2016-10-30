@@ -285,7 +285,7 @@ void reinforce::discount_rewards()
 // See "Forward & backward propagation for one episode of
 // reinforcement learning" notes dated 10/18/2016.
 
-void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
+void reinforce::policy_backward()
 {
 //   cout << "inside policy_backward()"  << endl;
 
@@ -305,13 +305,7 @@ void reinforce::policy_backward(bool ignore_zero_valued_final_nodes)
       for(int j = 0; j < layer_dims[curr_layer]; j++)
       {
          double curr_activation = a[curr_layer]->get(j, t);
-         if(ignore_zero_valued_final_nodes)
-         {
-         }
-         else
-         {
-            if(j == y->get(t)) curr_activation -= 1.0;
-         }
+         if(j == y->get(t)) curr_activation -= 1.0;
 
 // Modulate the gradient with advantage (Policy Gradient magic happens
 // right here):
@@ -596,8 +590,7 @@ void reinforce::periodically_snapshot_loss_value()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::update_weights(bool episode_finished_flag,
-                               bool ignore_zero_valued_final_nodes)
+void reinforce::update_weights(bool episode_finished_flag)
 {
    if(!episode_finished_flag) return;
 
@@ -611,7 +604,7 @@ void reinforce::update_weights(bool episode_finished_flag,
 
    discount_rewards();
 
-   policy_backward(ignore_zero_valued_final_nodes);
+   policy_backward();
 
 // Accumulate weights' gradients for each network layer:
 
