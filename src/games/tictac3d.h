@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
+// Last modified on 10/27/16; 10/28/16; 10/29/16; 10/30/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -31,7 +31,6 @@ class tictac3d
 
    int get_n_size() const;
    void set_n_zlevels(int n);
-//    double get_score() const;
    void set_game_over(bool flag);
    bool get_game_over() const;
    genvector* get_board_state_ptr();
@@ -73,7 +72,6 @@ class tictac3d
    int n_size;
    int n_zlevels;
    int n_AI_turns, n_agent_turns;
-   double curr_score;
    std::vector<int> curr_board_state;
    genvector *board_state_ptr;
    genvector *inverse_board_state_ptr;
@@ -128,13 +126,6 @@ inline void tictac3d::set_n_zlevels(int n)
 {
    n_zlevels = n;
 }
-
-/*
-inline double tictac3d::get_score() const
-{
-   return curr_score;
-}
-*/
 
 inline void tictac3d::set_game_over(bool flag)
 {

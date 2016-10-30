@@ -49,10 +49,10 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
 int main (int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
-//    nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
-   int n_zlevels = 1;
-//   int n_zlevels = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
 
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
@@ -76,6 +76,12 @@ int main (int argc, char* argv[])
    {
       H1 = 5 * 64;
       H2 = 1 * 64;
+
+//      H1 = 3 * 64;
+//      H2 = 3 * 64;
+
+//      H1 = 1 * 64;
+//      H2 = 5 * 64;
    }
    
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -107,6 +113,8 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
 
    reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+//   reinforce_agent_ptr->set_batch_size(60);   
+//   reinforce_agent_ptr->set_batch_size(120);  
 
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
@@ -114,9 +122,9 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(base_learning_rate);
 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    double min_learning_rate = 0.5E-4;
 //   double min_learning_rate = 3E-5;
@@ -201,7 +209,7 @@ int main (int argc, char* argv[])
          if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
             || reinforce_agent_ptr->get_curr_timestep() > 0)
          {
-            if(reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.05)
+            if(reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.025)
             {
                compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
             }
@@ -232,7 +240,7 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         if(nrfunc::ran1() > 0.05)
+         if(nrfunc::ran1() > 0.025)
          {
             reinforce_agent_ptr->compute_unrenorm_action_probs(
                ttt_ptr->get_board_state_ptr());

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/24/16; 10/25/16; 10/26/16; 10/29/16
+// Last updated on 10/25/16; 10/26/16; 10/29/16; 10/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -167,9 +167,7 @@ int main (int argc, char* argv[])
       }
 
       bool episode_finished_flag = true;
-      bool ignore_zero_valued_final_nodes = false;
-      reinforce_agent_ptr->update_weights(
-         episode_finished_flag, ignore_zero_valued_final_nodes);
+      reinforce_agent_ptr->update_weights(episode_finished_flag);
       reinforce_agent_ptr->update_running_reward(extrainfo);
 
       cout << "Game over   curr_reward = " << curr_reward << endl;

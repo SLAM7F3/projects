@@ -507,3 +507,58 @@ yields best results.  Consistent with expt 49.
 rate = 3E-4, gamma = 0.99, rms_decay = 0.85.  Started on TM around 5:20 am,
 Sun Oct 30.  
 
+64.  Z = 4 TTT, H1 = 320, H2 = 64, base learning rate = 3E-4, gamma = 0.99,
+rms_decay = 0.85.  Batch size = 30. 
+
+Round 0:  running reward --> 1
+	  win frac --> 0.97
+  	  lose frac --> 0.03
+
+Round 1:  running reward --> 0.457
+          win frac --> 0.80
+	  lose frac --> 0.20
+
+Round 2:  Restarted on TM at 11:38 am
+	  running reward --> 1.0
+	  win frac --> 0.93
+	  lose frac --> 0.07
+
+Round 3:  Started on TM at 12:03 pm
+	  After 150K episodes, running reward --> 1
+	  win frac --> 0.95
+	  lose frac --> 0.05
+
+Round 4:  Started on TM at 12:33 pm
+	
+
+64b.  Z = 4 TTT, H1 = 320, H2 = 64, base learning rate = 3E-4, gamma =
+0.99, rms_decay = 0.85.  Batch size = 60.  Started training against round 2
+snapshot from expt 64 on TM at 12:05 pm.  Worse performance than expt 64.
+Terminated.
+
+64c.  Z = 4 TTT, H1 = 320, H2 = 64, base learning rate = 3E-4, gamma =
+0.99, rms_decay = 0.85.  Batch size = 120.  Started training against round
+2 snapshot from expt 64 on TM at 12:06 pm.  Worse performance than expt 64.
+Terminated.
+
+64d.  Z = 4 TTT, H1 = 320, H2 = 64, base learning rate = 1E-4, gamma = 0.99,
+rms_decay = 0.85.  Batch size = 30. Started training against round 3
+snapshot from expt 64 on TM at 12:38 pm
+
+64e.  Z = 4 TTT, H1 = 320, H2 = 64, base learning rate = 1E-3, gamma = 0.99,
+rms_decay = 0.85.  Batch size = 30. Started training against round 3
+snapshot from expt 64 on TM at 12:38 pm
+
+
+
+
+
+
+65.  Z = 4 TTT, H1 = 3 * 64, H2 = 3 * 64, base learning rate = 3E-4, gamma
+= 0.99, rms_decay = 0.85.  Started training against round 1 snapshot from
+expt 64 on TM at 11:27 am Worse performance than expt 64.  Terminated.
+
+66.  Z = 4 TTT, H1 = 1 * 64, H2 = 5 * 64, base learning rate = 3E-4, gamma
+= 0.99, rms_decay = 0.85.  Started training against round 1 snapshot from
+expt 64 on TM at 11:28 am.  Worse performance than expt 64.  Terminated.
+

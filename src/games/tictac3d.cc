@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
+// Last modified on 10/27/16; 10/28/16; 10/29/16; 10/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -196,28 +196,29 @@ void tictac3d::enter_player_move(int player_value)
          }
       }
 
-      cout << "Enter X: " << endl;
+      cout << "Enter column: " << endl;
       cin >> px;
       if(px < 0 || px >= n_size)
       {
-         cout << "Illegal X value.  Please try again" << endl;
+         cout << "Illegal column value.  Please try again" << endl;
          continue;
       }
       
-      cout << "Enter Y: " << endl;
+      cout << "Enter row: " << endl;
       cin >> py;
       if(py < 0 || py >= n_size)
       {
-         cout << "Illegal Y value.  Please try again" << endl;
+         cout << "Illegal row value.  Please try again" << endl;
          continue;
       }
       
-      legal_move = set_cell_value(px,py,pz,player_value);
+      legal_move = legal_player_move(px, py, pz);
       if(!legal_move)
       {
          cout << "Cell is already occupied.  Please try again" << endl;
       }
-   }
+   } // while !legal_move loop
+   set_cell_value(px, py, pz, player_value);
 }
 
 // ---------------------------------------------------------------------
@@ -410,7 +411,7 @@ void tictac3d::display_p_action(genvector* p_action)
 // ---------------------------------------------------------------------
 void tictac3d::display_board_state()
 {
-//   sysfunc::clearscreen();
+   sysfunc::clearscreen();
    cout << "......................................................." << endl;
    for(int pz = 0; pz < n_zlevels; pz++)
    {
