@@ -30,21 +30,17 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
    reinforce_AI_ptr->renormalize_action_distribution();
 
    int nsize = ttt_ptr->get_n_size();         
-   int output_action = -99;
-   int px, py, pz;
-   bool legal_move = false;
+   int output_action = reinforce_AI_ptr->get_candidate_current_action();
+   int pz = output_action / (nsize * nsize);
+   int py = (output_action - nsize * nsize * pz) / nsize;
+   int px = (output_action - nsize * nsize * pz - nsize * py);
 
-   while(!legal_move)
+   bool legal_move = ttt_ptr->legal_player_move(px, py, pz);
+   if(!legal_move)
    {
-      output_action = reinforce_AI_ptr->get_candidate_current_action();
-            
-      pz = output_action / (nsize * nsize);
-      py = (output_action - nsize * nsize * pz) / nsize;
-      px = (output_action - nsize * nsize * pz - nsize * py);
-      legal_move = ttt_ptr->legal_player_move(px, py, pz);
-
-      reinforce_AI_ptr->zero_p_action(output_action);
-   } // !legal_move conditional
+      cout << "legal AI move = " << legal_move << endl;
+   }
+   
    reinforce_AI_ptr->set_current_action(output_action);
    ttt_ptr->set_player_move(px, py, pz, AI_value);
 }
@@ -57,8 +53,8 @@ int main (int argc, char* argv[])
 //    nrfunc::init_time_based_seed();
 
    int nsize = 4;
-//   int n_zlevels = 1;
-   int n_zlevels = 4;
+   int n_zlevels = 1;
+//   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
 
@@ -71,8 +67,8 @@ int main (int argc, char* argv[])
    int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
-//   int H2 = 0;
-   int H2 = 1 * 64;
+   int H2 = 0;
+//   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
 //   int H2 = 5 * 64;
 
@@ -150,8 +146,8 @@ int main (int argc, char* argv[])
 
 // Import previously trained TTT network to guide AI play:
 
-   reinforce* reinforce_AI_ptr = NULL;
-//   reinforce* reinforce_AI_ptr = new reinforce();
+//   reinforce* reinforce_AI_ptr = NULL;
+   reinforce* reinforce_AI_ptr = new reinforce();
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -336,7 +332,6 @@ int main (int argc, char* argv[])
             n_max_turns;
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
          reinforce_agent_ptr->snapshot_running_reward();
-         reinforce_agent_ptr->export_snapshot();
 
          ttt_ptr->append_game_loss_frac(loss_frac);
          ttt_ptr->append_game_stalemate_frac(stalemate_frac);
@@ -351,6 +346,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->plot_reward_history(
             extrainfo, min_reward, max_reward);
          reinforce_agent_ptr->plot_turns_history(extrainfo);
+         reinforce_agent_ptr->export_snapshot();
          ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
       }
 

@@ -91,6 +91,12 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    {
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
+
+      int mdim = layer_dims[l+1];
+      int ndim = layer_dims[l];
+      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
+           << endl;
+      
       weights.push_back(curr_weights);
       genmatrix *curr_weights_transpose = new genmatrix(
          layer_dims[l], layer_dims[l+1]);
@@ -999,14 +1005,15 @@ void reinforce::export_snapshot()
       outstream << curr_weights_ptr->get_ndim() << endl;
 //      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
 //           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
+//      cout << "*curr_weights_ptr = " << *curr_weights_ptr << endl;
 
-      for(unsigned int py = 0; py < curr_weights_ptr->get_mdim(); py++)
+      for(unsigned int row = 0; row < curr_weights_ptr->get_mdim(); row++)
       {
-         for(unsigned int px = 0; px < curr_weights_ptr->get_ndim(); px++)
+         for(unsigned int col = 0; col < curr_weights_ptr->get_ndim(); col++)
          {
-            outstream << curr_weights_ptr->get(px,py) << endl;
-//            cout << "px = " << px << " py = " << py 
-//                 << " weights[l] = " << curr_weights_ptr->get(px,py) << endl;
+            outstream << curr_weights_ptr->get(row,col) << endl;
+//            cout << "row = " << row << " col = " << col
+//                 << " weights[l] = " << curr_weights_ptr->get(row,col) << endl;
          }
       }
    } // loop over index l labeling weight matrices
@@ -1064,22 +1071,29 @@ void reinforce::import_snapshot()
       int mdim, ndim;
       instream >> mdim;
       instream >> ndim;
-      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
-           << endl;
 
-      for(int py = 0; py < mdim; py++)
+//      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
+//           << endl;
+
+      for(int row = 0; row < mdim; row++)
       {
-         for(int px = 0; px < ndim; px++)
+         for(int col = 0; col < ndim; col++)
          {
             double curr_weight;
             instream >> curr_weight;
-            weights[l]->put(px, py, curr_weight);
-//            cout << "px = " << px << " py = " << py 
-//                 << " weights[l] = " << weights[l]->get(px,py) << endl;
+//            cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
+//                 << " col = " << col << " row = " << row << endl;
+//            cout << "  curr_weight = " << curr_weight << endl;
+//            cout << "  weights[l].mdim = " << weights[l]->get_mdim()
+//                 << " weights[l].ndim = " << weights[l]->get_ndim()
+//                 << endl;
+            weights[l]->put(row, col, curr_weight);
          }
       }
+//      cout << "weights[l] = " << *weights[l] << endl;
    } // loop over index l labeling weight matrices
    
    filefunc::closefile(snapshot_filename,instream);
    cout << "Imported " << snapshot_filename << endl;
 }
+
