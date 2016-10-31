@@ -27,6 +27,10 @@ class tictac3d
 // dependent int: path occupancy for player_value  
 //           (-1 if occupied by both players)
 
+   typedef std::map<int, int> LATEST_MOVE_MAP;
+// independent int: 1 or -1 player value
+// dependent int: cell index
+
 // Initialization, constructor and destructor functions:
 
    tictac3d(int n_size, int n_zlevels);
@@ -64,8 +68,11 @@ class tictac3d
 
    double get_random_player_move(int agent_value);
    bool legal_player_move(int px, int py, int pz, bool print_flag = false);
+   bool set_player_move(triple t, int player_value);
    bool set_player_move(int px, int py, int pz, int player_value);
    void get_random_legal_player_move(int player_value);
+   void record_latest_move(int player_value, triple t);
+   void record_latest_move(int player_value, int px, int py, int pz);
 
    void append_game_loss_frac(double frac);
    void append_game_illegal_frac(double frac);
@@ -73,7 +80,7 @@ class tictac3d
    void append_game_win_frac(double frac);
 
 
-   void max_move(int player_value, triple& best_xyz, triple& worst_xyz);
+   void max_move(int player_value, triple& best_xyz);
    void minimax_move(int player_value, triple& best_xyz);
 
 
@@ -104,12 +111,17 @@ class tictac3d
    PATH_OCCUPANCY_MAP path_occupancy_map;
    PATH_OCCUPANCY_MAP::iterator path_occupancy_iter;
 
+   LATEST_MOVE_MAP latest_move_map;
+   LATEST_MOVE_MAP::iterator latest_move_iter;
+
+   triple latest_O, latest_X;
+
    void allocate_member_objects();
    void initialize_member_objects();
 
-
    int get_cell_value(triple t) const;
    int get_cell_value(int px, int py, int pz) const;
+   triple decompose_cell_index(int p);
    bool set_cell_value(int px, int py, int pz, int value);
 
    void display_Zgrid_state(int pz);

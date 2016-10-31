@@ -43,17 +43,6 @@ int main (int argc, char* argv[])
 
       int human_value = -1;
 
-      double best_path_score, worst_path_score;
-      ttt_ptr->evaluate_winnable_paths(
-         human_value, best_path_score, worst_path_score);
-
-      triple best_xyz, worst_xyz;
-//      ttt_ptr->max_move(human_value, best_xyz, worst_xyz);
-      ttt_ptr->minimax_move(human_value, best_xyz);
-      cout << "Best move:  Z = " << best_xyz.third
-           << " col = " << best_xyz.first << " row = " << best_xyz.second 
-           << endl;
-
       ttt_ptr->enter_player_move(human_value);
       ttt_ptr->display_board_state();
       if(ttt_ptr->check_player_win(human_value) > 0) break;
@@ -62,7 +51,12 @@ int main (int argc, char* argv[])
 // Agent move:
 
       int agent_value = 1;
+      triple best_xyz;
+      ttt_ptr->minimax_move(agent_value, best_xyz);
+      ttt_ptr->set_player_move(best_xyz, agent_value);
+      ttt_ptr->record_latest_move(agent_value, best_xyz);
 
+/*
       reinforce_agent_ptr->compute_unrenorm_action_probs(
          ttt_ptr->get_board_state_ptr());
       reinforce_agent_ptr->renormalize_action_distribution();
@@ -74,6 +68,9 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->set_current_action(output_action);
 
       ttt_ptr->set_player_move(px, py, pz, agent_value);
+*/
+
+
       ttt_ptr->display_board_state();
       ttt_ptr->increment_n_agent_turns();
 

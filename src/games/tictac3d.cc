@@ -155,6 +155,21 @@ int tictac3d::get_cell_value(int px, int py, int pz) const
    return curr_board_state.at(p);
 }
 
+// ---------------------------------------------------------------------
+// Member function decompose_cell_index() returns triple (px,py,pz)
+// corresponding to cell index p.
+
+triple tictac3d::decompose_cell_index(int p)
+{
+   int pz = p / (n_size * n_size);
+   p -= n_size * n_size * pz;
+   int py = p / n_size;
+   p -= n_size * py;
+   int px = p;
+   return triple(px,py,pz);
+}
+
+// ---------------------------------------------------------------------
 // Boolean member function set_cell_value() returns false if specified
 // cell is already occupied
 
@@ -169,6 +184,28 @@ bool tictac3d::set_cell_value(int px, int py, int pz, int value)
 
    curr_board_state[p] = value;
    return cell_unoccupied;
+}
+
+// ---------------------------------------------------------------------
+// Member function record_latest_move()
+
+void tictac3d::record_latest_move(int player_value, triple t)
+{
+   record_latest_move(player_value, t.first, t.second, t.third);
+}
+
+void tictac3d::record_latest_move(int player_value, int px, int py, int pz)
+{
+   int p = n_size * n_size * pz + n_size * py + px;   
+   latest_move_iter = latest_move_map.find(player_value);
+   if(latest_move_iter == latest_move_map.end())
+   {
+      latest_move_map[player_value] = p;
+   }
+   else
+   {
+      latest_move_iter->second = p;
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -245,6 +282,7 @@ void tictac3d::enter_player_move(int player_value)
       }
    } // while !legal_move loop
    set_cell_value(px, py, pz, player_value);
+   record_latest_move(player_value, px, py, pz);
 }
 
 // ---------------------------------------------------------------------
@@ -299,6 +337,11 @@ bool tictac3d::legal_player_move(int px, int py, int pz, bool print_flag)
 }
 
 // ---------------------------------------------------------------------
+bool tictac3d::set_player_move(triple t, int player_value)
+{
+   return set_player_move(t.first, t.second, t.third, player_value);
+}
+
 bool tictac3d::set_player_move(int px, int py, int pz, int player_value)
 {
 
@@ -439,6 +482,33 @@ void tictac3d::display_board_state()
 {
    sysfunc::clearscreen();
    cout << "......................................................." << endl;
+
+// First retrieve cells containing latest X and O moves:
+
+   latest_O = triple(-1,-1,-1);
+   latest_move_iter = latest_move_map.find(1);
+   if(latest_move_iter != latest_move_map.end())
+   {
+      int latest_O_move = latest_move_iter->second;
+      cout << "latest_O_move = " << latest_O_move << endl;
+      latest_O = decompose_cell_index(latest_O_move);
+      cout << "latest_O: px = " << latest_O.first
+           << " py = " << latest_O.second
+           << " pz = " << latest_O.third << endl;
+   }
+
+   latest_X = triple(-1,-1,-1);
+   latest_move_iter = latest_move_map.find(-1);
+   if(latest_move_iter != latest_move_map.end())
+   {
+      int latest_X_move = latest_move_iter->second;
+      cout << "latest_X_move = " << latest_X_move << endl;
+      latest_X = decompose_cell_index(latest_X_move);
+      cout << "latest_X: px = " << latest_X.first
+           << " py = " << latest_X.second
+           << " pz = " << latest_X.third << endl;
+   }
+
    for(int pz = 0; pz < n_zlevels; pz++)
    {
       cout << endl;
@@ -461,7 +531,7 @@ void tictac3d::display_Zgrid_state(int pz)
    Color::Modifier cyan(Color::FG_CYAN);
    Color::Modifier def(Color::FG_DEFAULT);
    Color::Modifier winning_color(Color::FG_CYAN);
-   
+
    for(int py = 0; py < n_size; py++)
    {
       for(int px = 0; px < n_size; px++)
@@ -481,6 +551,11 @@ void tictac3d::display_Zgrid_state(int pz)
             {
                cout << winning_color;
             }
+            else if (px == latest_X.first && py == latest_X.second &&
+                     pz == latest_X.third)
+            {
+               cout << purple;
+            }
             else
             {
                cout << red;
@@ -493,6 +568,11 @@ void tictac3d::display_Zgrid_state(int pz)
             if(winning_cell_posn(1, px, py, pz))
             {
                cout << winning_color;
+            }
+            else if (px == latest_O.first && py == latest_O.second &&
+                     pz == latest_O.third)
+            {
+               cout << purple;
             }
             else
             {
@@ -1072,11 +1152,9 @@ bool tictac3d::corner_2_corner_win(int player_ID)
 // ---------------------------------------------------------------------
 // Member function max_move()
 
-void tictac3d::max_move(
-   int player_value, triple& best_xyz, triple& worst_xyz)
+void tictac3d::max_move(int player_value, triple& best_xyz)
 {
    double best_action_score = NEGATIVEINFINITY;
-   double worst_action_score = POSITIVEINFINITY;
    for(int pz = 0; pz < n_zlevels; pz++)
    {
       for(int py = 0; py < n_size; py++)
@@ -1102,17 +1180,8 @@ void tictac3d::max_move(
 //                    << " best action score = " << best_action_score
 //                    << endl;
             }
-            
-            if(worst_path_score < worst_action_score)
-            {
-               worst_action_score = worst_path_score;
-               worst_xyz.first = px;
-               worst_xyz.second = py;
-               worst_xyz.third = pz;
-            }
 
             pop_genuine_board_state();
-
          } // loop over px
       } // loop over py
    } // loop over pz
