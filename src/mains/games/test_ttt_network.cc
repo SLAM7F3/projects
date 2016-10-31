@@ -23,7 +23,7 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
    int nsize = 4;
 //   int n_zlevels = 1;
@@ -42,6 +42,18 @@ int main (int argc, char* argv[])
 // Human move:
 
       int human_value = -1;
+
+      double best_path_score, worst_path_score;
+      ttt_ptr->evaluate_winnable_paths(
+         human_value, best_path_score, worst_path_score);
+
+      triple best_xyz, worst_xyz;
+//      ttt_ptr->max_move(human_value, best_xyz, worst_xyz);
+      ttt_ptr->minimax_move(human_value, best_xyz);
+      cout << "Best move:  Z = " << best_xyz.third
+           << " col = " << best_xyz.first << " row = " << best_xyz.second 
+           << endl;
+
       ttt_ptr->enter_player_move(human_value);
       ttt_ptr->display_board_state();
       if(ttt_ptr->check_player_win(human_value) > 0) break;

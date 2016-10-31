@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/27/16; 10/28/16; 10/29/16; 10/30/16
+// Last modified on 10/28/16; 10/29/16; 10/30/16; 10/31/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -9,6 +9,7 @@
 
 #include <map>
 #include <vector>
+#include "math/ltduple.h"
 #include "math/lttriple.h"
 #include "math/threevector.h"
 
@@ -20,6 +21,11 @@ class tictac3d
    typedef std::map<triple, int, lttriple> WINNING_POSNS_MAP;
 // independent triple:  winning board posns
 // dependent int:  winner ID
+
+   typedef std::map<DUPLE, int, ltduple> PATH_OCCUPANCY_MAP;
+// independent duple: (player_value, path index)
+// dependent int: path occupancy for player_value  
+//           (-1 if occupied by both players)
 
 // Initialization, constructor and destructor functions:
 
@@ -35,6 +41,8 @@ class tictac3d
    bool get_game_over() const;
    genvector* get_board_state_ptr();
    genvector* get_inverse_board_state_ptr();
+   void push_genuine_board_state();
+   void pop_genuine_board_state();
    bool check_filled_board();
 
    void increment_n_AI_turns();
@@ -64,6 +72,14 @@ class tictac3d
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
 
+
+   void max_move(int player_value, triple& best_xyz, triple& worst_xyz);
+   void minimax_move(int player_value, triple& best_xyz);
+
+
+   void evaluate_winnable_paths(
+      int player_value, double& best_path_score, double& worst_path_score);
+   void compute_winnable_path_occupancies(int player_value);
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
 
   private: 
@@ -73,6 +89,7 @@ class tictac3d
    int n_zlevels;
    int n_AI_turns, n_agent_turns;
    std::vector<int> curr_board_state;
+   std::vector<std::vector<int> > genuine_board_state;
    genvector *board_state_ptr;
    genvector *inverse_board_state_ptr;
 
@@ -83,6 +100,9 @@ class tictac3d
 
    WINNING_POSNS_MAP winning_posns_map;
    WINNING_POSNS_MAP::iterator winning_posns_iter;
+
+   PATH_OCCUPANCY_MAP path_occupancy_map;
+   PATH_OCCUPANCY_MAP::iterator path_occupancy_iter;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -179,5 +199,7 @@ inline void tictac3d::append_game_win_frac(double frac)
 
 
 #endif  // tictac3d.h
+
+
 
 
