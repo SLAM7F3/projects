@@ -51,8 +51,8 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
    nrfunc::init_time_based_seed();
 
-//   int n_zlevels = 1;
-   int n_zlevels = 4;
+   int n_zlevels = 1;
+//   int n_zlevels = 4;
 
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
@@ -129,10 +129,14 @@ int main (int argc, char* argv[])
    double min_learning_rate = 0.5E-4;
 //   double min_learning_rate = 3E-5;
 
-//  int n_max_episodes = 1 * 1000000;
+   int n_max_episodes = 1 * 1000000;
+   if(n_zlevels > 1)
+   {
 //  int n_max_episodes = 2 * 1000000;
-   int n_max_episodes = 5 * 1000000;
+      n_max_episodes = 5 * 1000000;
 //   int n_max_episodes = 10 * 1000000;
+   }
+
    int n_update = 25000;
    int n_summarize = 50000;
 
@@ -204,12 +208,17 @@ int main (int argc, char* argv[])
 
       while(!ttt_ptr->get_game_over())
       {
+         int curr_timestep = reinforce_agent_ptr->get_curr_timestep();
 
 // AI move:
          if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
-            || reinforce_agent_ptr->get_curr_timestep() > 0)
+            || curr_timestep > 0)
          {
-            if(reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.025)
+
+// Experiment with forcing very first move to be random:
+
+            if(curr_timestep > 0 && 
+               reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.1)
             {
                compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
             }
@@ -240,7 +249,9 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         if(nrfunc::ran1() > 0.025)
+// Experiment with forcing very first move to be random:
+
+         if(nrfunc::ran1() > 0.1 && curr_timestep > 0)
          {
             reinforce_agent_ptr->compute_unrenorm_action_probs(
                ttt_ptr->get_board_state_ptr());
