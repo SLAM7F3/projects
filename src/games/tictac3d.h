@@ -84,8 +84,10 @@ class tictac3d
    void minimax_move(int player_value, triple& best_xyz);
 
 
-   void evaluate_winnable_paths(
-      int player_value, double& best_path_score, double& worst_path_score);
+   double get_max_best_player_score(int player_value, triple& t);
+   double get_min_best_opponent_score(int player_value);
+   
+   double best_winnable_path(int player_value);
    void compute_winnable_path_occupancies(int player_value);
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
 

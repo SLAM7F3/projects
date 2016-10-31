@@ -1166,10 +1166,7 @@ void tictac3d::max_move(int player_value, triple& best_xyz)
             push_genuine_board_state();
             set_cell_value(px, py, pz, player_value);
 
-            double best_path_score, worst_path_score;
-            evaluate_winnable_paths(
-               player_value, best_path_score, worst_path_score);
-
+            double best_path_score = best_winnable_path(player_value);
             if(best_path_score > best_action_score)
             {
                best_action_score = best_path_score;
@@ -1203,36 +1200,17 @@ void tictac3d::minimax_move(int player_value, triple& best_xyz)
 
             push_genuine_board_state();
             set_cell_value(px, py, pz, player_value);
- 
-            for(int qz = 0; qz < n_zlevels; qz++)
+
+            double curr_min_best_opponent_score = 
+               get_min_best_opponent_score(player_value);
+            
+            if(curr_min_best_opponent_score < min_best_opponent_score)
             {
-               for(int qy = 0; qy < n_size; qy++)
-               {
-                  for(int qx = 0; qx < n_size; qx++)
-                  {
-                     if(!legal_player_move(qx, qy, qz)) continue;
-
-                     push_genuine_board_state();
-                     set_cell_value(qx, qy, qz, -player_value);
-
-                     double best_opponent_score, worst_opponent_score;
-                     evaluate_winnable_paths(
-                        -player_value, best_opponent_score, 
-                        worst_opponent_score);
-
-                     if(best_opponent_score < min_best_opponent_score)
-                     {
-                        min_best_opponent_score = best_opponent_score;
-                        best_xyz.first = px;
-                        best_xyz.second = py;
-                        best_xyz.third = pz;
-                     }
-
-                     pop_genuine_board_state();
-
-                  } // loop over qx
-               } // loop over qy
-            } // loop over qz
+               min_best_opponent_score = curr_min_best_opponent_score;
+               best_xyz.first = px;
+               best_xyz.second = py;
+               best_xyz.third = pz;
+            }
             
             pop_genuine_board_state();
 
@@ -1242,23 +1220,78 @@ void tictac3d::minimax_move(int player_value, triple& best_xyz)
 }
 
 // ---------------------------------------------------------------------
-// Member function evaluate_winnable_paths() computes the winnable
-// paths with the best and worst scores for the specified input player
-// given the current board state.  It returns the IDs and scores for
-// these best and worst winnable paths.
-
-void tictac3d::evaluate_winnable_paths(
-   int player_value, double& best_path_score, double& worst_path_score)
+double tictac3d::get_max_best_player_score(int player_value, triple& t)
 {
-//   cout << "inside evaluate_winnable_paths()" << endl;
+   double max_best_player_score = NEGATIVEINFINITY;
+
+   for(int pz = 0; pz < n_zlevels; pz++)
+   {
+      for(int py = 0; py < n_size; py++)
+      {
+         for(int px = 0; px < n_size; px++)
+         {
+            if(!legal_player_move(px, py, pz)) continue;
+
+            push_genuine_board_state();
+            set_cell_value(px, py, pz, player_value);
+
+            double best_player_score = best_winnable_path(player_value);
+            if(best_player_score < max_best_player_score)
+            {
+               max_best_player_score = best_player_score;
+               t = triple(px, py, pz);
+            }
+            pop_genuine_board_state();
+
+         } // loop over qx
+      } // loop over qy
+   } // loop over qz
+   return max_best_player_score;
+}
+
+// ---------------------------------------------------------------------
+double tictac3d::get_min_best_opponent_score(int player_value)
+{
+   double min_best_opponent_score = POSITIVEINFINITY;
+
+   for(int qz = 0; qz < n_zlevels; qz++)
+   {
+      for(int qy = 0; qy < n_size; qy++)
+      {
+         for(int qx = 0; qx < n_size; qx++)
+         {
+            if(!legal_player_move(qx, qy, qz)) continue;
+
+            push_genuine_board_state();
+            set_cell_value(qx, qy, qz, -player_value);
+
+            double best_opponent_score = best_winnable_path(-player_value);
+            if(best_opponent_score < min_best_opponent_score)
+            {
+               min_best_opponent_score = best_opponent_score;
+            }
+            pop_genuine_board_state();
+
+         } // loop over qx
+      } // loop over qy
+   } // loop over qz
+   return min_best_opponent_score;
+}
+
+// ---------------------------------------------------------------------
+// Member function best_winnable_path() returns the winnable paths
+// with the best score for the specified input player given the
+// current board state.
+
+double tictac3d::best_winnable_path(int player_value)
+{
+//   cout << "inside best_winnable_path()" << endl;
    int n_winnable_paths = winnable_paths.size();
    compute_winnable_path_occupancies(player_value);
    compute_winnable_path_occupancies(-player_value);
 
    int best_path_ID = 0;
-   int worst_path_ID = 0;
-   best_path_score = NEGATIVEINFINITY;
-   worst_path_score = POSITIVEINFINITY;
+   double best_path_score = NEGATIVEINFINITY;
 
    for(path_occupancy_iter = path_occupancy_map.begin();
        path_occupancy_iter != path_occupancy_map.end(); path_occupancy_iter++)
@@ -1282,14 +1315,7 @@ void tictac3d::evaluate_winnable_paths(
          best_path_ID = curr_duple.second;
       }
 
-      if(curr_path_score < worst_path_score)
-      {
-         worst_path_score = curr_path_score;
-         worst_path_ID = curr_duple.second;
-      }
-
    } // loop over path_occupancy_iter
-
 
 /*
    cout << "Player " << player_value << endl;
@@ -1304,20 +1330,9 @@ void tictac3d::evaluate_winnable_paths(
       int pz = best_path[i].third;
       cout << "Z = " << pz << " row = " << py << " col = " << px << endl;
    }
-
-   cout << "worst_path_ID = " << worst_path_ID << endl;
-   cout << "worst_path_score = " << worst_path_score << endl;
-
-   vector<triple> worst_path = winnable_paths[worst_path_ID];
-   for(unsigned int i = 0; i < worst_path.size(); i++)
-   {
-      int px = worst_path[i].first;
-      int py = worst_path[i].second;
-      int pz = worst_path[i].third;
-      cout << "Z = " << pz << " row = " << py << " col = " << px << endl;
-   }
 */
 
+   return best_path_score;
 }
 
 // ---------------------------------------------------------------------

@@ -1,7 +1,7 @@
 ============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 10/11/16; 10/30/16
+Last updated on 10/11/16; 10/30/16; 10/31/16
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -103,3 +103,7 @@ tg_work_scheduler.cpp !!!
 v.  Splash page now reads "Tagger2" and no longer "S2D Editor".  After
 selecting debug option, we should see our hand-selected tile appear in the
 S2D editor window.  
+
+*.  As of 10/31/2016, remote branch origin/tagger2_ext will be delivered to
+new ninjas by end of Fri, Nov 4, 2016.
+
