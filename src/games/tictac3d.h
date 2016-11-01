@@ -81,11 +81,13 @@ class tictac3d
 
    int get_recursive_minimax_move(int player_value, int depth);
    double get_minimax_move_score(
-      int curr_node, int depth, int player_value);
+      int curr_node, int depth, int player_value, bool maximizing_flag);
    double get_alphabeta_minimax_move_score(
-      int curr_node, int depth, double alpha, double beta, int player_value);
+      int curr_node, int depth, double alpha, double beta, int player_value,
+      bool maximizing_flag);
 
-   double best_winnable_path(int player_value);
+   void extremal_winnable_path_scores(
+      int player_value, double& min_path_score, double& max_path_score);
    void compute_winnable_path_occupancies(int player_value);
 
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
