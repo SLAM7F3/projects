@@ -1151,6 +1151,7 @@ double tictac3d::get_minimax_move_score(
 
 // ---------------------------------------------------------------------
 // Member function get_alphabeta_minimax_move_score()
+// See https://www.cs.cornell.edu/courses/cs312/2002sp/lectures/rec21.htm
 
 double tictac3d::get_alphabeta_minimax_move_score(
    int curr_node, int depth, double min_value, double max_value, 
