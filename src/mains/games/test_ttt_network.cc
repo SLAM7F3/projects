@@ -31,8 +31,8 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    ttt_ptr->reset_board_state();
-   ttt_ptr->set_recursive_depth(1);
-//   ttt_ptr->set_recursive_depth(3);
+//   ttt_ptr->set_recursive_depth(1);
+   ttt_ptr->set_recursive_depth(3);
 //   ttt_ptr->set_recursive_depth(5);
    
    reinforce* reinforce_agent_ptr = new reinforce();

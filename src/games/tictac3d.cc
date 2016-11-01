@@ -45,6 +45,11 @@ void tictac3d::initialize_member_objects()
 {
    game_over = false;
    generate_all_winnable_paths();
+   correlate_cells_with_winnable_paths();
+   print_cell_ID_vs_winnable_path_IDs();
+   exit(-1);
+
+
    board_state_ptr->clear_values();
    genuine_board_state_ptrs = NULL;
 
@@ -91,13 +96,12 @@ tictac3d::~tictac3d()
 
    if(genuine_board_state_ptrs != NULL)
    {
-      for(int d = 0; d < recursive_depth; d++)
+      for(int d = 0; d < recursive_depth + 1; d++)
       {
          delete genuine_board_state_ptrs[d];
       }
       delete genuine_board_state_ptrs;
    }
-
 }
 
 // ---------------------------------------------------------------------
@@ -115,8 +119,8 @@ void tictac3d::set_recursive_depth(int d)
 {
    recursive_depth = d;
 
-   genuine_board_state_ptrs = new int*[recursive_depth+1];
-   for(int d = 0; d < recursive_depth+1; d++)
+   genuine_board_state_ptrs = new int*[recursive_depth + 1];
+   for(int d = 0; d < recursive_depth + 1; d++)
    {
       genuine_board_state_ptrs[d] = new int[n_cells];
    }
@@ -151,14 +155,6 @@ genvector* tictac3d::get_inverse_board_state_ptr()
 
 void tictac3d::push_genuine_board_state()
 {
-//   cout << "inside push_genuine_board_state()" << endl;
-   vector<int> current_board_state;
-   for(int p = 0; p < n_cells; p++)
-   {
-      current_board_state.push_back(curr_board_state[p]);
-   }
-   genuine_board_state.push_back(current_board_state);
-
    int g = Genuine_Board_states.size();
    memcpy(genuine_board_state_ptrs[g], curr_board_state,
           n_cells * sizeof(int));
@@ -167,13 +163,6 @@ void tictac3d::push_genuine_board_state()
 
 void tictac3d::pop_genuine_board_state()
 {
-   for(int p = 0; p < n_cells; p++)
-   {
-      curr_board_state[p] = genuine_board_state.back()[p];
-   }
-   genuine_board_state.pop_back();
-
-
    int g = Genuine_Board_states.size();
    memcpy(curr_board_state, genuine_board_state_ptrs[g-1],
           n_cells * sizeof(int));
@@ -637,6 +626,53 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
    } // loop over pz
 
    return 0;
+}
+
+// ---------------------------------------------------------------------
+// Member function correlate_cells_with_winnable_paths()
+
+void tictac3d::correlate_cells_with_winnable_paths()
+{
+   for(unsigned int w = 0; w < winnable_paths.size(); w++)
+   {
+      winnable_path_t curr_winnable_path = winnable_paths[w];
+      for(unsigned int i = 0; i < curr_winnable_path.path.size(); i++)
+      {
+         int cell_ID = curr_winnable_path.path[i];
+         cell_winnable_paths_iter = cell_winnable_paths_map.find(cell_ID);
+         if(cell_winnable_paths_iter == cell_winnable_paths_map.end())
+         {
+            vector<int> V;
+            V.push_back(w);
+            cell_winnable_paths_map[cell_ID] = V;
+         }
+         else
+         {
+            cell_winnable_paths_iter->second.push_back(w);
+         }
+      } // loop over index i labeling cells in curr_winnable_path
+   } // loop over index w labeling winnable paths
+}
+
+// ---------------------------------------------------------------------
+vector<int>* tictac3d::get_winnable_path_IDs(int cell_ID)
+{
+   cell_winnable_paths_iter = cell_winnable_paths_map.find(cell_ID);
+   return &cell_winnable_paths_iter->second;
+}
+
+// ---------------------------------------------------------------------
+void tictac3d::print_cell_ID_vs_winnable_path_IDs()
+{
+   for(int cell_ID = 0; cell_ID < n_cells; cell_ID++)
+   {
+      cout << "cell_ID = " << cell_ID << endl;
+      vector<int>* winnable_path_IDs = get_winnable_path_IDs(cell_ID);
+      for (unsigned int j = 0; j < winnable_path_IDs->size(); j++)
+      {
+         cout << "   winnable path ID = " << winnable_path_IDs->at(j) << endl;
+      }
+   }
 }
 
 // ---------------------------------------------------------------------

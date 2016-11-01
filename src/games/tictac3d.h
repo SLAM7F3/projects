@@ -22,6 +22,10 @@ class tictac3d
 // independent int:  winning board cell indices
 // dependent int:  winner ID
 
+   typedef std::map<int, std::vector<int> > CELL_WINNABLE_PATHS_MAP;
+// independent int: cell ID
+// winnable path IDs in which cell participates
+
    typedef std::map<DUPLE, int, ltduple> PATH_OCCUPANCY_MAP;
 // independent duple: (player_value, path index)
 // dependent int: path occupancy for player_value  
@@ -101,7 +105,6 @@ class tictac3d
    int recursive_depth;
    int n_AI_turns, n_agent_turns;
    int* curr_board_state;
-   std::vector<std::vector<int> > genuine_board_state;
    std::vector<int*> Genuine_Board_states;
    int** genuine_board_state_ptrs;
 
@@ -128,6 +131,9 @@ class tictac3d
    WINNING_POSNS_MAP winning_posns_map;
    WINNING_POSNS_MAP::iterator winning_posns_iter;
 
+   CELL_WINNABLE_PATHS_MAP cell_winnable_paths_map;
+   CELL_WINNABLE_PATHS_MAP::iterator cell_winnable_paths_iter;
+   
    PATH_OCCUPANCY_MAP path_occupancy_map;
    PATH_OCCUPANCY_MAP::iterator path_occupancy_iter;
 
@@ -146,6 +152,10 @@ class tictac3d
    bool winning_cell_posn(int player_ID, int px, int py, int pz);
 
    void generate_all_winnable_paths();
+   void correlate_cells_with_winnable_paths();
+   std::vector<int>* get_winnable_path_IDs(int cell_ID);
+   void print_cell_ID_vs_winnable_path_IDs();
+
    void generate_winnable_Zplane_paths(int pz);
    void generate_winnable_Zcolumn_path(int px, int py);
    void generate_Zslant_xconst_winnable_paths(int px);
