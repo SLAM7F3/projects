@@ -46,7 +46,7 @@ void tictac3d::initialize_member_objects()
    game_over = false;
    generate_all_winnable_paths();
    board_state_ptr->clear_values();
-//    genuine_board_state_ptrs = NULL;
+   genuine_board_state_ptrs = NULL;
 
 // Load cell_decomposition vector with (px,py,pz) triples
 // corresponding to p = 0 --> n_cells - 1:
@@ -116,7 +116,7 @@ void tictac3d::set_recursive_depth(int d)
    recursive_depth = d;
 
    genuine_board_state_ptrs = new int*[recursive_depth+1];
-   for(int d = 0; d < recursive_depth; d++)
+   for(int d = 0; d < recursive_depth+1; d++)
    {
       genuine_board_state_ptrs[d] = new int[n_cells];
    }
@@ -151,31 +151,18 @@ genvector* tictac3d::get_inverse_board_state_ptr()
 
 void tictac3d::push_genuine_board_state()
 {
-   cout << "inside push_genuine_board_state()" << endl;
+//   cout << "inside push_genuine_board_state()" << endl;
    vector<int> current_board_state;
    for(int p = 0; p < n_cells; p++)
    {
-      cout << "p = " << p << " curr_board_state[p] = "
-           << curr_board_state[p] << endl;
       current_board_state.push_back(curr_board_state[p]);
    }
    genuine_board_state.push_back(current_board_state);
 
    int g = Genuine_Board_states.size();
-   cout << "g = " << g << endl;
-//   memcpy(curr_board_state, genuine_board_state_ptrs[g], 
-//          n_cells * sizeof(int));
-   for(int j = 0; j < n_cells; j++)
-   {
-      cout << "j = " << j 
-           << " curr_board_state[j] = " << curr_board_state[j]
-//           << " genuine_board_state_ptrs[g][j] = "
-//           << genuine_board_state_ptrs[g][j] 
-           << endl;
-   }
-   
-//   Genuine_Board_states.push_back(genuine_board_state_ptrs[g]);
-   cout << "at end of push_genuine_board_state()" << endl;
+   memcpy(genuine_board_state_ptrs[g], curr_board_state,
+          n_cells * sizeof(int));
+   Genuine_Board_states.push_back(genuine_board_state_ptrs[g]);
 }
 
 void tictac3d::pop_genuine_board_state()
@@ -186,13 +173,11 @@ void tictac3d::pop_genuine_board_state()
    }
    genuine_board_state.pop_back();
 
-/*
+
    int g = Genuine_Board_states.size();
-   memcpy(genuine_board_state_ptrs[g-1], curr_board_state, 
+   memcpy(curr_board_state, genuine_board_state_ptrs[g-1],
           n_cells * sizeof(int));
    Genuine_Board_states.pop_back();
-*/
-
 }
 
 // ---------------------------------------------------------------------
