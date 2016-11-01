@@ -34,13 +34,14 @@ using std::vector;
 
 void tictac3d::allocate_member_objects()
 {
-   board_state_ptr = new genvector(n_size * n_size * n_zlevels);
-   inverse_board_state_ptr = new genvector(n_size * n_size * n_zlevels);
+   n_size_sqr = n_size * n_size;
+   n_cells = n_size_sqr * n_zlevels;
+   board_state_ptr = new genvector(n_cells);
+   inverse_board_state_ptr = new genvector(n_cells);
 }		       
 
 void tictac3d::initialize_member_objects()
 {
-   n_cells = n_size * n_size * n_zlevels;
    game_over = false;
    generate_all_winnable_paths();
    board_state_ptr->clear_values();
@@ -51,8 +52,8 @@ void tictac3d::initialize_member_objects()
    for(int q = 0; q < n_cells; q++)
    {
       int p = q;
-      int pz = p / (n_size * n_size);
-      p -= n_size * n_size * pz;
+      int pz = p / (n_size_sqr);
+      p -= n_size_sqr * pz;
       int py = p / n_size;
       p -= n_size * py;
       int px = p;
@@ -223,6 +224,11 @@ void tictac3d::record_latest_move(int player_value, triple t)
 void tictac3d::record_latest_move(int player_value, int px, int py, int pz)
 {
    int p = n_size * n_size * pz + n_size * py + px;   
+   record_latest_move(player_value, p);
+}
+
+void tictac3d::record_latest_move(int player_value, int p)
+{
    latest_move_iter = latest_move_map.find(player_value);
    if(latest_move_iter == latest_move_map.end())
    {
@@ -300,7 +306,7 @@ void tictac3d::enter_player_move(int player_value)
          cout << "Illegal row value.  Please try again" << endl;
          continue;
       }
-      
+
       legal_move = legal_player_move(px, py, pz);
       if(!legal_move)
       {
@@ -1208,7 +1214,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
 // ---------------------------------------------------------------------
 // Member function get_recursive_minimax_move_score()
 
-triple tictac3d::get_recursive_minimax_move(int player_value, int depth)
+int tictac3d::get_recursive_minimax_move(int player_value, int depth)
 {
    cout << "inside get_recursive_minimax_move, player_value = " 
         << player_value << " depth = " << depth << endl;
@@ -1216,7 +1222,7 @@ triple tictac3d::get_recursive_minimax_move(int player_value, int depth)
    timefunc::initialize_timeofday_clock();   
    bool maximizing_player = false;
    double best_value;
-   triple best_move(-1,-1,-1);
+   int best_move = -1;
 
    if(depth%2 == 0)
    {
@@ -1229,38 +1235,30 @@ triple tictac3d::get_recursive_minimax_move(int player_value, int depth)
       best_value = POSITIVEINFINITY;
    }
    
-   for(int pz = 0; pz < n_zlevels; pz++)
+   for(int curr_node = 0; curr_node < n_cells; curr_node++)
    {
-      for(int py = 0; py < n_size; py++)
+      if(!legal_player_move(curr_node)) continue;
+
+      double curr_value = get_minimax_move_score(
+         curr_node, depth, player_value);
+
+      if(maximizing_player)
       {
-         for(int px = 0; px < n_size; px++)
+         if(best_value < curr_value)
          {
-            if(!legal_player_move(px, py, pz)) continue;
-
-            triple curr_node(px, py, pz);
-            double curr_value = get_minimax_move_score(
-               curr_node, depth, player_value);
-
-            if(maximizing_player)
-            {
-               if(best_value < curr_value)
-               {
-                  best_value = curr_value;
-                  best_move = curr_node;
-               }
-            }
-            else
-            {
-               if(best_value > curr_value)
-               {
-                  best_value = curr_value;
-                  best_move = curr_node;
-               }
-            } // maximizing player conditional
-
-         } // loop over px
-      } // loop over py
-   } // loop over pz
+            best_value = curr_value;
+            best_move = curr_node;
+         }
+      }
+      else
+      {
+         if(best_value > curr_value)
+         {
+            best_value = curr_value;
+            best_move = curr_node;
+         }
+      } // maximizing player conditional
+   } // loop over curr_node
    double elapsed_secs = timefunc::elapsed_timeofday_time();   
    cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
 
@@ -1271,7 +1269,7 @@ triple tictac3d::get_recursive_minimax_move(int player_value, int depth)
 // Member function get_minimax_move_score()
 
 double tictac3d::get_minimax_move_score(
-   triple& curr_node, int depth, int player_value)
+   int curr_node, int depth, int player_value)
 {
    push_genuine_board_state();
    set_cell_value(curr_node, player_value);
@@ -1290,41 +1288,25 @@ double tictac3d::get_minimax_move_score(
    if(maximizing_player)
    {
       best_value = NEGATIVEINFINITY;
-      for(int pz = 0; pz < n_zlevels; pz++)
+      for(int next_node = 0; next_node < n_cells; next_node++)
       {
-         for(int py = 0; py < n_size; py++)
-         {
-            for(int px = 0; px < n_size; px++)
-            {
-               if(!legal_player_move(px, py, pz)) continue;
-
-               triple next_node(px, py, pz);
-               double curr_value = get_minimax_move_score(
-                  next_node, depth - 1, -player_value);
-               best_value = basic_math::max(best_value, curr_value);
-            } // loop over px
-         } // loop over py
-      } // loop over pz
+         if(!legal_player_move(next_node)) continue;
+         double curr_value = get_minimax_move_score(
+            next_node, depth - 1, -player_value);
+         best_value = basic_math::max(best_value, curr_value);
+      } // loop over next_node
       pop_genuine_board_state();
    }
    else if (!maximizing_player)
    {
       best_value = POSITIVEINFINITY;
-      for(int pz = 0; pz < n_zlevels; pz++)
+      for(int next_node = 0; next_node < n_cells; next_node++)
       {
-         for(int py = 0; py < n_size; py++)
-         {
-            for(int px = 0; px < n_size; px++)
-            {
-               if(!legal_player_move(px, py, pz)) continue;
-
-               triple next_node(px, py, pz);
-               double curr_value = get_minimax_move_score(
-                  next_node, depth - 1, -player_value);
-               best_value = basic_math::min(best_value, curr_value);
-            } // loop over px
-         } // loop over py
-      } // loop over pz
+         if(!legal_player_move(next_node)) continue;
+         double curr_value = get_minimax_move_score(
+            next_node, depth - 1, -player_value);
+         best_value = basic_math::min(best_value, curr_value);
+      } // loop over next_node
       pop_genuine_board_state();
    }
    return best_value;

@@ -41,6 +41,7 @@ class tictac3d
 
    int get_n_size() const;
    void set_n_zlevels(int n);
+   int get_cell(int px, int py, int pz);
    void set_game_over(bool flag);
    bool get_game_over() const;
    genvector* get_board_state_ptr();
@@ -67,23 +68,28 @@ class tictac3d
    void print_winning_pattern();
 
    double get_random_player_move(int agent_value);
+
    bool legal_player_move(int px, int py, int pz, bool print_flag = false);
    bool legal_player_move(int p);
+
    bool set_player_move(triple t, int player_value);
    bool set_player_move(int px, int py, int pz, int player_value);
    bool set_player_move(int p, int player_value);
+
    void get_random_legal_player_move(int player_value);
+
    void record_latest_move(int player_value, triple t);
    void record_latest_move(int player_value, int px, int py, int pz);
+   void record_latest_move(int player_value, int p);
 
    void append_game_loss_frac(double frac);
    void append_game_illegal_frac(double frac);
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
 
-   triple get_recursive_minimax_move(int player_value, int depth);
+   int get_recursive_minimax_move(int player_value, int depth);
    double get_minimax_move_score(
-      triple& curr_node, int depth, int player_value);
+      int curr_node, int depth, int player_value);
    double best_winnable_path(int player_value);
    void compute_winnable_path_occupancies(int player_value);
 
@@ -92,7 +98,7 @@ class tictac3d
   private: 
 
    bool game_over;
-   int n_size, n_zlevels, n_cells;
+   int n_size, n_size_sqr, n_zlevels, n_cells;
    int n_AI_turns, n_agent_turns;
    std::vector<int> curr_board_state;
    std::vector<std::vector<int> > genuine_board_state;
@@ -166,6 +172,11 @@ inline void tictac3d::set_n_zlevels(int n)
    n_zlevels = n;
 }
 
+inline int tictac3d::get_cell(int px, int py, int pz)
+{
+   return n_size * n_size * pz + n_size * py + px;
+}
+
 inline void tictac3d::set_game_over(bool flag)
 {
    game_over = flag;
@@ -215,6 +226,8 @@ inline void tictac3d::append_game_win_frac(double frac)
 {
    game_win_frac.push_back(frac);
 }
+
+
 
 
 #endif  // tictac3d.h

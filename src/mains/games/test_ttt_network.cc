@@ -55,15 +55,15 @@ int main (int argc, char* argv[])
 //      int depth = 1;
 //      int depth = 2;
       int depth = 3;
-      triple best_xyz = ttt_ptr->get_recursive_minimax_move(agent_value,depth);
+      int best_move = ttt_ptr->get_recursive_minimax_move(agent_value,depth);
 
 //      ttt_ptr->max_move(agent_value, best_xyz);
 //      cout << "max move best_xyz = " << best_xyz << endl;
 //      ttt_ptr->minimax_move(agent_value, best_xyz);
 //      cout << "minimax move best_xyz = " << best_xyz << endl;
 
-      ttt_ptr->set_player_move(best_xyz, agent_value);
-      ttt_ptr->record_latest_move(agent_value, best_xyz);
+      ttt_ptr->set_player_move(best_move, agent_value);
+      ttt_ptr->record_latest_move(agent_value, best_move);
 
 /*
       reinforce_agent_ptr->compute_unrenorm_action_probs(
