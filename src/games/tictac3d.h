@@ -69,17 +69,9 @@ class tictac3d
 
    double get_random_player_move(int agent_value);
 
-   bool legal_player_move(int px, int py, int pz, bool print_flag = false);
    bool legal_player_move(int p);
-
-   bool set_player_move(triple t, int player_value);
-   bool set_player_move(int px, int py, int pz, int player_value);
    bool set_player_move(int p, int player_value);
-
    void get_random_legal_player_move(int player_value);
-
-   void record_latest_move(int player_value, triple t);
-   void record_latest_move(int player_value, int px, int py, int pz);
    void record_latest_move(int player_value, int p);
 
    void append_game_loss_frac(double frac);
@@ -129,13 +121,9 @@ class tictac3d
    void allocate_member_objects();
    void initialize_member_objects();
 
-   int get_cell_value(triple& t) const;
-   int get_cell_value(int px, int py, int pz) const;
    int get_cell_value(int p) const;
    triple decompose_cell_index(int p);
-   bool set_cell_value(triple& t, int value);
-   bool set_cell_value(int px, int py, int pz, int value);
-   bool set_cell_value(int p, int value);
+   void set_cell_value(int p, int value);
 
    void display_Zgrid_state(int pz);
 
@@ -227,7 +215,24 @@ inline void tictac3d::append_game_win_frac(double frac)
    game_win_frac.push_back(frac);
 }
 
+// ---------------------------------------------------------------------
+// Boolean member function legal_player_move() returns false if
+// cell corresponding to input p --> (px,py,pz) is already occupied.
 
+inline bool tictac3d::legal_player_move(int p)
+{
+   return (curr_board_state.at(p) == 0);
+}
+
+inline void tictac3d::set_cell_value(int p, int value)
+{
+   curr_board_state[p] = value;
+}
+
+inline int tictac3d::get_cell_value(int p) const
+{
+   return curr_board_state.at(p);
+}
 
 
 #endif  // tictac3d.h

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/25/16; 10/26/16; 10/29/16; 10/30/16
+// Last updated on 10/26/16; 10/29/16; 10/30/16; 11/1/16
 // ==========================================================================
 
 #include <iostream>
@@ -136,11 +136,7 @@ int main (int argc, char* argv[])
 
 // Step the environment and then retrieve new reward measurements:
 
-         int pz = output_action / (nsize * nsize);
-         int py = (output_action - nsize * nsize * pz) / nsize;
-         int px = (output_action - nsize * nsize * pz - nsize * py);
-//         cout << "px = " << px << " py = " << py << endl;
-         bool legal_move = ttt_ptr->set_player_move(px, py, pz, agent_value);
+         bool legal_move = ttt_ptr->set_player_move(output_action,agent_value);
 
          curr_reward = 0;
          if(!legal_move)

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 10/27/16; 10/28/16; 10/29/16; 10/30/16
+// Last updated on 10/28/16; 10/29/16; 10/30/16; 11/1/16
 // ==========================================================================
 
 #include <iostream>
@@ -29,20 +29,15 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
       ttt_ptr->get_inverse_board_state_ptr());
    reinforce_AI_ptr->renormalize_action_distribution();
 
-   int nsize = ttt_ptr->get_n_size();         
    int output_action = reinforce_AI_ptr->get_candidate_current_action();
-   int pz = output_action / (nsize * nsize);
-   int py = (output_action - nsize * nsize * pz) / nsize;
-   int px = (output_action - nsize * nsize * pz - nsize * py);
-
-   bool legal_move = ttt_ptr->legal_player_move(px, py, pz);
+   bool legal_move = ttt_ptr->legal_player_move(output_action);
    if(!legal_move)
    {
       cout << "legal AI move = " << legal_move << endl;
    }
    
    reinforce_AI_ptr->set_current_action(output_action);
-   ttt_ptr->set_player_move(px, py, pz, AI_value);
+   ttt_ptr->set_player_move(output_action, AI_value);
 }
 
 // ==========================================================================
@@ -260,12 +255,8 @@ int main (int argc, char* argv[])
 
             int output_action = 
                reinforce_agent_ptr->get_candidate_current_action();
-            int pz = output_action / (nsize * nsize);
-            int py = (output_action - nsize * nsize * pz) / nsize;
-            int px = (output_action - nsize * nsize * pz - nsize * py);
-
             reinforce_agent_ptr->set_current_action(output_action);
-            ttt_ptr->set_player_move(px, py, pz, agent_value);
+            ttt_ptr->set_player_move(output_action, agent_value);
          }
          else
          {
