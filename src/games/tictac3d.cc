@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/27/16; 10/28/16; 10/29/16; 10/30/16
+// Last modified on 10/28/16; 10/29/16; 10/30/16; 10/31/16
 // ==========================================================================
 
 #include <iostream>
@@ -15,6 +15,7 @@
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
 #include "games/tictac3d.h"
+#include "time/timefuncs.h"
 
 using std::cin;
 using std::cout;
@@ -495,11 +496,11 @@ void tictac3d::display_board_state()
    if(latest_move_iter != latest_move_map.end())
    {
       int latest_O_move = latest_move_iter->second;
-      cout << "latest_O_move = " << latest_O_move << endl;
+//      cout << "latest_O_move = " << latest_O_move << endl;
       latest_O = decompose_cell_index(latest_O_move);
-      cout << "latest_O: px = " << latest_O.first
-           << " py = " << latest_O.second
-           << " pz = " << latest_O.third << endl;
+//      cout << "latest_O: px = " << latest_O.first
+//           << " py = " << latest_O.second
+//           << " pz = " << latest_O.third << endl;
    }
 
    latest_X = triple(-1,-1,-1);
@@ -507,11 +508,11 @@ void tictac3d::display_board_state()
    if(latest_move_iter != latest_move_map.end())
    {
       int latest_X_move = latest_move_iter->second;
-      cout << "latest_X_move = " << latest_X_move << endl;
+//      cout << "latest_X_move = " << latest_X_move << endl;
       latest_X = decompose_cell_index(latest_X_move);
-      cout << "latest_X: px = " << latest_X.first
-           << " py = " << latest_X.second
-           << " pz = " << latest_X.third << endl;
+//      cout << "latest_X: px = " << latest_X.first
+//           << " py = " << latest_X.second
+//           << " pz = " << latest_X.third << endl;
    }
 
    for(int pz = 0; pz < n_zlevels; pz++)
@@ -1153,84 +1154,15 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    return false;
 }
 
-
 // ---------------------------------------------------------------------
-// Member function max_move()
-
-void tictac3d::max_move(int player_value, triple& best_xyz)
-{
-   double max_best_player_score = NEGATIVEINFINITY;
-   for(int pz = 0; pz < n_zlevels; pz++)
-   {
-      for(int py = 0; py < n_size; py++)
-      {
-         for(int px = 0; px < n_size; px++)
-         {
-            if(!legal_player_move(px, py, pz)) continue;
-
-            push_genuine_board_state();
-            set_cell_value(px, py, pz, player_value);
-
-            double best_path_score = best_winnable_path(player_value);
-            if(best_path_score > max_best_player_score)
-            {
-               max_best_player_score = best_path_score;
-               best_xyz.first = px;
-               best_xyz.second = py;
-               best_xyz.third = pz;
-//               cout << "px = " << px << " py = " << py << " pz = " << pz
-//                    << " best action score = " << best_action_score
-//                    << endl;
-            }
-
-            pop_genuine_board_state();
-         } // loop over px
-      } // loop over py
-   } // loop over pz
-}
-
-// ---------------------------------------------------------------------
-// Member function minmax_move()
-
-void tictac3d::minimax_move(int player_value, triple& best_xyz)
-{
-   double min_best_opponent_score = POSITIVEINFINITY;
-   for(int pz = 0; pz < n_zlevels; pz++)
-   {
-      for(int py = 0; py < n_size; py++)
-      {
-         for(int px = 0; px < n_size; px++)
-         {
-            if(!legal_player_move(px, py, pz)) continue;
-
-            push_genuine_board_state();
-            set_cell_value(px, py, pz, player_value);
-
-            double curr_min_best_opponent_score = 
-               get_min_best_opponent_score(player_value);
-            
-            if(curr_min_best_opponent_score < min_best_opponent_score)
-            {
-               min_best_opponent_score = curr_min_best_opponent_score;
-               best_xyz.first = px;
-               best_xyz.second = py;
-               best_xyz.third = pz;
-            }
-            
-            pop_genuine_board_state();
-
-         } // loop over px
-      } // loop over py
-   } // loop over pz
-}
-
-// ---------------------------------------------------------------------
-// Member function get_minimax_move_score()
+// Member function get_recursive_minimax_move_score()
 
 triple tictac3d::get_recursive_minimax_move(int player_value, int depth)
 {
    cout << "inside get_recursive_minimax_move, player_value = " 
         << player_value << " depth = " << depth << endl;
+
+   timefunc::initialize_timeofday_clock();   
    bool maximizing_player = false;
    double best_value;
    triple best_move(-1,-1,-1);
@@ -1278,10 +1210,11 @@ triple tictac3d::get_recursive_minimax_move(int player_value, int depth)
          } // loop over px
       } // loop over py
    } // loop over pz
+   double elapsed_secs = timefunc::elapsed_timeofday_time();   
+   cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
 
    return best_move;
 }
-
 
 // ---------------------------------------------------------------------
 // Member function get_minimax_move_score()
@@ -1347,65 +1280,6 @@ double tictac3d::get_minimax_move_score(
 }
 
 // ---------------------------------------------------------------------
-double tictac3d::get_max_best_player_score(int player_value, triple& t)
-{
-   double max_best_player_score = NEGATIVEINFINITY;
-
-   for(int pz = 0; pz < n_zlevels; pz++)
-   {
-      for(int py = 0; py < n_size; py++)
-      {
-         for(int px = 0; px < n_size; px++)
-         {
-            if(!legal_player_move(px, py, pz)) continue;
-
-            push_genuine_board_state();
-            set_cell_value(px, py, pz, player_value);
-
-            double best_player_score = best_winnable_path(player_value);
-            if(best_player_score < max_best_player_score)
-            {
-               max_best_player_score = best_player_score;
-               t = triple(px, py, pz);
-            }
-            pop_genuine_board_state();
-
-         } // loop over qx
-      } // loop over qy
-   } // loop over qz
-   return max_best_player_score;
-}
-
-// ---------------------------------------------------------------------
-double tictac3d::get_min_best_opponent_score(int player_value)
-{
-   double min_best_opponent_score = POSITIVEINFINITY;
-
-   for(int qz = 0; qz < n_zlevels; qz++)
-   {
-      for(int qy = 0; qy < n_size; qy++)
-      {
-         for(int qx = 0; qx < n_size; qx++)
-         {
-            if(!legal_player_move(qx, qy, qz)) continue;
-
-            push_genuine_board_state();
-            set_cell_value(qx, qy, qz, -player_value);
-
-            double best_opponent_score = best_winnable_path(-player_value);
-            if(best_opponent_score < min_best_opponent_score)
-            {
-               min_best_opponent_score = best_opponent_score;
-            }
-            pop_genuine_board_state();
-
-         } // loop over qx
-      } // loop over qy
-   } // loop over qz
-   return min_best_opponent_score;
-}
-
-// ---------------------------------------------------------------------
 // Member function best_winnable_path() returns the best score among
 // all winnable paths for the specified input player given the
 // current board state.
@@ -1415,7 +1289,6 @@ double tictac3d::best_winnable_path(int player_value)
 //   cout << "inside best_winnable_path()" << endl;
    int n_winnable_paths = winnable_paths.size();
    compute_winnable_path_occupancies(player_value);
-   compute_winnable_path_occupancies(-player_value);
 
 //   int best_path_ID = 0;
    double best_path_score = NEGATIVEINFINITY;
@@ -1469,14 +1342,15 @@ double tictac3d::best_winnable_path(int player_value)
 
 void tictac3d::compute_winnable_path_occupancies(int player_value)
 {
-   DUPLE D;
-   D.first = player_value;
+   DUPLE D1, D2;
+   D1.first = player_value;
+   D2.first = -player_value;
    
    int n_winnable_paths = winnable_paths.size();
-
    for(int p = 0; p < n_winnable_paths; p++)
    {
-      D.second = p;
+      D1.second = p;
+      D2.second = p;
 
       int n_player_pieces_in_path = 0;
       int n_opponent_pieces_in_path = 0;
@@ -1494,15 +1368,22 @@ void tictac3d::compute_winnable_path_occupancies(int player_value)
 
          if(n_player_pieces_in_path > 0 && n_opponent_pieces_in_path > 0)
          {
-            path_occupancy_map[D] = -1;
+            path_occupancy_map[D1] = -1;
+            path_occupancy_map[D2] = -1;
             break;
          }
       }
 
       if(n_opponent_pieces_in_path == 0)
       {
-         path_occupancy_map[D] = n_player_pieces_in_path;
+         path_occupancy_map[D1] = n_player_pieces_in_path;
       }
+
+      if(n_player_pieces_in_path == 0)
+      {
+         path_occupancy_map[D2] = n_opponent_pieces_in_path;
+      }
+
    } // loop over index p labeling all winnable paths
 }
 

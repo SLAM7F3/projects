@@ -79,18 +79,12 @@ class tictac3d
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
 
-   void max_move(int player_value, triple& best_xyz);
-   void minimax_move(int player_value, triple& best_xyz);
-   
    triple get_recursive_minimax_move(int player_value, int depth);
    double get_minimax_move_score(
       triple& curr_node, int depth, int player_value);
-
-   double get_max_best_player_score(int player_value, triple& t);
-   double get_min_best_opponent_score(int player_value);
-   
    double best_winnable_path(int player_value);
    void compute_winnable_path_occupancies(int player_value);
+
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
 
   private: 

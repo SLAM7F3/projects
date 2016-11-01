@@ -3,7 +3,7 @@
 // reinforcement learning in program TTT.  It then uses the trained
 // network to play against a human opponent.
 // ==========================================================================
-// Last updated on 10/27/16; 10/28/16; 10/29/16; 10/30/16
+// Last updated on 10/28/16; 10/29/16; 10/30/16; 10/31/16
 // ==========================================================================
 
 #include <iostream>
@@ -53,8 +53,8 @@ int main (int argc, char* argv[])
       int agent_value = 1;
 //      int depth = 0;
 //      int depth = 1;
-      int depth = 2;
-//      int depth = 3;
+//      int depth = 2;
+      int depth = 3;
       triple best_xyz = ttt_ptr->get_recursive_minimax_move(agent_value,depth);
 
 //      ttt_ptr->max_move(agent_value, best_xyz);
