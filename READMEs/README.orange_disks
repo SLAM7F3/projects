@@ -1,7 +1,7 @@
 ========================================================================
 Contents of orange LACIE "backpack" drives
 ========================================================================
-Last updated on 1/2/16; 1/7/16; 1/17/16; 7/24/16
+Last updated on 1/7/16; 1/17/16; 7/24/16; 11/1/16
 ========================================================================
 
 500 GByte VFAT Drive #1: (last updated on 12/11/12)
@@ -228,13 +228,14 @@ faces/                  lost+found/
 
 --------------------------------------------------------------------------
 Thin 1 TByte EXT4 Drive #13
-(last updated on 1/9/14; 12/3/15; 1/7/16; 1/17/16)
+(last updated on 12/3/15; 1/7/16; 1/17/16; 11/1/16)
 389 Gbytes available on 917 Gbyte drive
 
 Automounts on Big laptop as /media/MoreData/
 
-bundler/  deeplab/        learning/    MacPro/      screen_shots/
-caffe/    falcon_laptop/  lost+found/  new_laptop/  TrainingImagery/
+bundler/  falcon_laptop/  MacPro/      screen_shots/
+caffe/    learning/       more_faces/  syntext/
+deeplab/  lost+found/     new_laptop/  TrainingImagery/
 
 --------------------------------------------------------------------------
 Big 1 TByte VFAT Drive
