@@ -107,3 +107,19 @@ S2D editor window.
 *.  As of 10/31/2016, remote branch origin/tagger2_ext will be delivered to
 new ninjas by end of Fri, Nov 4, 2016.
 
+*.  In order to force binary-store version of tagger2/s2d editor tool to 
+work in "editing" rather than "thumbs up/down labeling" mode, we need to 
+hardwire 
+
+_editor->get_current_s2d_context()->_thumbs_up_down_mode = false
+
+at the very start of TGEditorModule_Polylines_S2D::initialize_polygons()
+inside tg_editor_module_polylines_s2d.cpp
+
+
+*.  In order to force export of an m2d shape file from binary store version
+of tagger2/s2d editor, call "S2DContext::save_s2d_polygons()" by adding
+some new key stroke within ::update().  Also be sure to exit(-1) after
+printf("Exporting S2D polygons to %s \n", output_shape_filename).
+
+

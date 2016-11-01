@@ -41,6 +41,8 @@ class tictac3d
 
    int get_n_size() const;
    void set_n_zlevels(int n);
+   void set_recursive_depth(int d);
+
    int get_cell(int px, int py, int pz);
    void set_game_over(bool flag);
    bool get_game_over() const;
@@ -79,7 +81,7 @@ class tictac3d
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
 
-   int get_recursive_minimax_move(int player_value, int depth);
+   int get_recursive_minimax_move(int player_value);
    double get_minimax_move_score(
       int curr_node, int depth, int player_value, bool maximizing_flag);
    double get_alphabeta_minimax_move_score(
@@ -96,9 +98,12 @@ class tictac3d
 
    bool game_over;
    int n_size, n_size_sqr, n_zlevels, n_cells;
+   int recursive_depth;
    int n_AI_turns, n_agent_turns;
-   std::vector<int> curr_board_state;
+   int* curr_board_state;
    std::vector<std::vector<int> > genuine_board_state;
+   std::vector<int*> Genuine_Board_states;
+   int** genuine_board_state_ptrs;
 
    std::vector<triple> cell_decomposition;
 // independent int: p
@@ -231,7 +236,7 @@ inline void tictac3d::append_game_win_frac(double frac)
 
 inline bool tictac3d::legal_player_move(int p)
 {
-   return (curr_board_state.at(p) == 0);
+   return (curr_board_state[p] == 0);
 }
 
 inline void tictac3d::set_cell_value(int p, int value)
@@ -241,7 +246,7 @@ inline void tictac3d::set_cell_value(int p, int value)
 
 inline int tictac3d::get_cell_value(int p) const
 {
-   return curr_board_state.at(p);
+   return curr_board_state[p];
 }
 
 

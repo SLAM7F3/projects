@@ -31,6 +31,10 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    ttt_ptr->reset_board_state();
+   ttt_ptr->set_recursive_depth(1);
+//   ttt_ptr->set_recursive_depth(3);
+//   ttt_ptr->set_recursive_depth(5);
+   
    reinforce* reinforce_agent_ptr = new reinforce();
    reinforce_agent_ptr->initialize_episode();
 
@@ -51,12 +55,7 @@ int main (int argc, char* argv[])
 // Agent move:
 
       int agent_value = 1;
-//      int depth = 0;
-      //      int depth = 1;
-//      int depth = 2;
-      int depth = 3;
-//      int depth = 5;
-      int best_move = ttt_ptr->get_recursive_minimax_move(agent_value,depth);
+      int best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
       ttt_ptr->set_player_move(best_move, agent_value);
       ttt_ptr->record_latest_move(agent_value, best_move);
 

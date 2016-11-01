@@ -36,6 +36,7 @@ void tictac3d::allocate_member_objects()
 {
    n_size_sqr = n_size * n_size;
    n_cells = n_size_sqr * n_zlevels;
+   curr_board_state = new int[n_cells];
    board_state_ptr = new genvector(n_cells);
    inverse_board_state_ptr = new genvector(n_cells);
 }		       
@@ -45,6 +46,7 @@ void tictac3d::initialize_member_objects()
    game_over = false;
    generate_all_winnable_paths();
    board_state_ptr->clear_values();
+//    genuine_board_state_ptrs = NULL;
 
 // Load cell_decomposition vector with (px,py,pz) triples
 // corresponding to p = 0 --> n_cells - 1:
@@ -83,8 +85,19 @@ tictac3d::tictac3d(const tictac3d& T)
 // ---------------------------------------------------------------------
 tictac3d::~tictac3d()
 {
+   delete [] curr_board_state;
    delete board_state_ptr;
    delete inverse_board_state_ptr;
+
+   if(genuine_board_state_ptrs != NULL)
+   {
+      for(int d = 0; d < recursive_depth; d++)
+      {
+         delete genuine_board_state_ptrs[d];
+      }
+      delete genuine_board_state_ptrs;
+   }
+
 }
 
 // ---------------------------------------------------------------------
@@ -98,11 +111,22 @@ ostream& operator<< (ostream& outstream,const tictac3d& T)
 
 // ==========================================================================
 
+void tictac3d::set_recursive_depth(int d)
+{
+   recursive_depth = d;
+
+   genuine_board_state_ptrs = new int*[recursive_depth+1];
+   for(int d = 0; d < recursive_depth; d++)
+   {
+      genuine_board_state_ptrs[d] = new int[n_cells];
+   }
+}
+
 genvector* tictac3d::get_board_state_ptr()
 {
-   for(unsigned int p = 0; p < curr_board_state.size(); p++)
+   for(int p = 0; p < n_cells; p++)
    {
-      board_state_ptr->put(p, curr_board_state.at(p));
+      board_state_ptr->put(p, curr_board_state[p]);
    }
    return board_state_ptr;
 }
@@ -113,9 +137,9 @@ genvector* tictac3d::get_board_state_ptr()
 
 genvector* tictac3d::get_inverse_board_state_ptr()
 {
-   for(unsigned int p = 0; p < curr_board_state.size(); p++)
+   for(int p = 0; p < n_cells; p++)
    {
-      inverse_board_state_ptr->put(p, -curr_board_state.at(p));
+      inverse_board_state_ptr->put(p, -curr_board_state[p]);
    }
    return inverse_board_state_ptr;
 }
@@ -127,23 +151,48 @@ genvector* tictac3d::get_inverse_board_state_ptr()
 
 void tictac3d::push_genuine_board_state()
 {
+   cout << "inside push_genuine_board_state()" << endl;
    vector<int> current_board_state;
-   for(unsigned int p = 0; p < curr_board_state.size(); p++)
+   for(int p = 0; p < n_cells; p++)
    {
+      cout << "p = " << p << " curr_board_state[p] = "
+           << curr_board_state[p] << endl;
       current_board_state.push_back(curr_board_state[p]);
    }
    genuine_board_state.push_back(current_board_state);
 
+   int g = Genuine_Board_states.size();
+   cout << "g = " << g << endl;
+//   memcpy(curr_board_state, genuine_board_state_ptrs[g], 
+//          n_cells * sizeof(int));
+   for(int j = 0; j < n_cells; j++)
+   {
+      cout << "j = " << j 
+           << " curr_board_state[j] = " << curr_board_state[j]
+//           << " genuine_board_state_ptrs[g][j] = "
+//           << genuine_board_state_ptrs[g][j] 
+           << endl;
+   }
+   
+//   Genuine_Board_states.push_back(genuine_board_state_ptrs[g]);
+   cout << "at end of push_genuine_board_state()" << endl;
 }
 
 void tictac3d::pop_genuine_board_state()
 {
-   curr_board_state.clear();
-   for(unsigned int p = 0; p < genuine_board_state.back().size(); p++)
+   for(int p = 0; p < n_cells; p++)
    {
-      curr_board_state.push_back(genuine_board_state.back()[p]);
+      curr_board_state[p] = genuine_board_state.back()[p];
    }
    genuine_board_state.pop_back();
+
+/*
+   int g = Genuine_Board_states.size();
+   memcpy(genuine_board_state_ptrs[g-1], curr_board_state, 
+          n_cells * sizeof(int));
+   Genuine_Board_states.pop_back();
+*/
+
 }
 
 // ---------------------------------------------------------------------
@@ -306,10 +355,9 @@ void tictac3d::reset_board_state()
 {
    n_AI_turns = n_agent_turns = 0;
    winning_posns_map.clear();
-   curr_board_state.clear();
    for(int p = 0; p < n_cells; p++)
    {
-      curr_board_state.push_back(0);
+      curr_board_state[p] = 0;
    } 
    game_over = false;
 }		       
@@ -317,7 +365,6 @@ void tictac3d::reset_board_state()
 // ---------------------------------------------------------------------
 void tictac3d::randomize_board_state()
 {
-   curr_board_state.clear();
    winning_posns_map.clear();
    for(int p = 0; p < n_cells; p++)
    {
@@ -332,7 +379,7 @@ void tictac3d::randomize_board_state()
          curr_val = 1;
       }
       
-      curr_board_state.push_back(curr_val);
+      curr_board_state[p] = curr_val;
    }
 }		       
 
@@ -1047,17 +1094,17 @@ bool tictac3d::corner_2_corner_win(int player_ID)
 // ---------------------------------------------------------------------
 // Member function get_recursive_minimax_move_score()
 
-int tictac3d::get_recursive_minimax_move(int player_value, int depth)
+int tictac3d::get_recursive_minimax_move(int player_value)
 {
    cout << "inside get_recursive_minimax_move, player_value = " 
-        << player_value << " depth = " << depth << endl;
+        << player_value << " recursive_depth = " << recursive_depth << endl;
 
    timefunc::initialize_timeofday_clock();   
    bool maximizing_player = false;
    double best_value;
    int best_move = -1;
 
-   if(depth%2 == 0)
+   if(recursive_depth%2 == 0)
    {
       maximizing_player = true;
       best_value = NEGATIVEINFINITY;
@@ -1073,12 +1120,12 @@ int tictac3d::get_recursive_minimax_move(int player_value, int depth)
       if(!legal_player_move(curr_node)) continue;
 
 //      double curr_value = get_minimax_move_score(
-//         curr_node, depth, player_value, maximizing_player);
+//         curr_node, recursive_depth, player_value, maximizing_player);
 
       double min_value = NEGATIVEINFINITY;
       double max_value = POSITIVEINFINITY;
       double curr_value = get_alphabeta_minimax_move_score(
-         curr_node, depth, min_value, max_value, player_value, 
+         curr_node, recursive_depth, min_value, max_value, player_value, 
          maximizing_player);
 
       if(maximizing_player)
