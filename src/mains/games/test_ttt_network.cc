@@ -52,9 +52,10 @@ int main (int argc, char* argv[])
 
       int agent_value = 1;
 //      int depth = 0;
-      int depth = 1;
+      //      int depth = 1;
 //      int depth = 2;
-//      int depth = 3;
+      int depth = 3;
+//      int depth = 5;
       int best_move = ttt_ptr->get_recursive_minimax_move(agent_value,depth);
       ttt_ptr->set_player_move(best_move, agent_value);
       ttt_ptr->record_latest_move(agent_value, best_move);

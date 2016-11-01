@@ -18,8 +18,8 @@ class tictac3d
    
   public:
 
-   typedef std::map<triple, int, lttriple> WINNING_POSNS_MAP;
-// independent triple:  winning board posns
+   typedef std::map<int, int> WINNING_POSNS_MAP;
+// independent int:  winning board cell indices
 // dependent int:  winner ID
 
    typedef std::map<DUPLE, int, ltduple> PATH_OCCUPANCY_MAP;
@@ -82,6 +82,9 @@ class tictac3d
    int get_recursive_minimax_move(int player_value, int depth);
    double get_minimax_move_score(
       int curr_node, int depth, int player_value);
+   double get_alphabeta_minimax_move_score(
+      int curr_node, int depth, double alpha, double beta, int player_value);
+
    double best_winnable_path(int player_value);
    void compute_winnable_path_occupancies(int player_value);
 
@@ -105,7 +108,15 @@ class tictac3d
    std::vector<double> game_loss_frac, game_illegal_frac;
    std::vector<double> game_stalemate_frac, game_win_frac;
 
-   std::vector<std::vector<triple> > winnable_paths;
+   typedef struct
+   {
+      std::vector<int> path;  // Holds cell indices for winnable path
+      double X_score;
+      double O_score;
+   } winnable_path_t;
+   
+   int n_winnable_paths;
+   std::vector<winnable_path_t> winnable_paths;
 
    WINNING_POSNS_MAP winning_posns_map;
    WINNING_POSNS_MAP::iterator winning_posns_iter;
@@ -116,19 +127,16 @@ class tictac3d
    LATEST_MOVE_MAP latest_move_map;
    LATEST_MOVE_MAP::iterator latest_move_iter;
 
-   triple latest_O, latest_X;
+   int latest_O_move, latest_X_move;
 
    void allocate_member_objects();
    void initialize_member_objects();
 
    int get_cell_value(int p) const;
-   triple decompose_cell_index(int p);
    void set_cell_value(int p, int value);
 
    void display_Zgrid_state(int pz);
-
    bool winning_cell_posn(int player_ID, int px, int py, int pz);
-
 
    void generate_all_winnable_paths();
    void generate_winnable_Zplane_paths(int pz);
