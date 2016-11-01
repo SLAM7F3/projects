@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/28/16; 10/29/16; 10/30/16; 10/31/16
+// Last modified on 10/29/16; 10/30/16; 10/31/16; 11/1/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -68,8 +68,10 @@ class tictac3d
 
    double get_random_player_move(int agent_value);
    bool legal_player_move(int px, int py, int pz, bool print_flag = false);
+   bool legal_player_move(int p);
    bool set_player_move(triple t, int player_value);
    bool set_player_move(int px, int py, int pz, int player_value);
+   bool set_player_move(int p, int player_value);
    void get_random_legal_player_move(int player_value);
    void record_latest_move(int player_value, triple t);
    void record_latest_move(int player_value, int px, int py, int pz);
@@ -90,11 +92,15 @@ class tictac3d
   private: 
 
    bool game_over;
-   int n_size;
-   int n_zlevels;
+   int n_size, n_zlevels, n_cells;
    int n_AI_turns, n_agent_turns;
    std::vector<int> curr_board_state;
    std::vector<std::vector<int> > genuine_board_state;
+
+   std::vector<triple> cell_decomposition;
+// independent int: p
+// dependent triple: px, py, pz	
+
    genvector *board_state_ptr;
    genvector *inverse_board_state_ptr;
 
@@ -119,9 +125,11 @@ class tictac3d
 
    int get_cell_value(triple& t) const;
    int get_cell_value(int px, int py, int pz) const;
+   int get_cell_value(int p) const;
    triple decompose_cell_index(int p);
    bool set_cell_value(triple& t, int value);
    bool set_cell_value(int px, int py, int pz, int value);
+   bool set_cell_value(int p, int value);
 
    void display_Zgrid_state(int pz);
 
