@@ -79,10 +79,12 @@ class tictac3d
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
 
-
    void max_move(int player_value, triple& best_xyz);
    void minimax_move(int player_value, triple& best_xyz);
-
+   
+   triple get_recursive_minimax_move(int player_value, int depth);
+   double get_minimax_move_score(
+      triple& curr_node, int depth, int player_value);
 
    double get_max_best_player_score(int player_value, triple& t);
    double get_min_best_opponent_score(int player_value);
@@ -121,9 +123,10 @@ class tictac3d
    void allocate_member_objects();
    void initialize_member_objects();
 
-   int get_cell_value(triple t) const;
+   int get_cell_value(triple& t) const;
    int get_cell_value(int px, int py, int pz) const;
    triple decompose_cell_index(int p);
+   bool set_cell_value(triple& t, int value);
    bool set_cell_value(int px, int py, int pz, int value);
 
    void display_Zgrid_state(int pz);

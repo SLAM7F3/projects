@@ -51,8 +51,17 @@ int main (int argc, char* argv[])
 // Agent move:
 
       int agent_value = 1;
-      triple best_xyz;
-      ttt_ptr->minimax_move(agent_value, best_xyz);
+//      int depth = 0;
+//      int depth = 1;
+      int depth = 2;
+//      int depth = 3;
+      triple best_xyz = ttt_ptr->get_recursive_minimax_move(agent_value,depth);
+
+//      ttt_ptr->max_move(agent_value, best_xyz);
+//      cout << "max move best_xyz = " << best_xyz << endl;
+//      ttt_ptr->minimax_move(agent_value, best_xyz);
+//      cout << "minimax move best_xyz = " << best_xyz << endl;
+
       ttt_ptr->set_player_move(best_xyz, agent_value);
       ttt_ptr->record_latest_move(agent_value, best_xyz);
 
