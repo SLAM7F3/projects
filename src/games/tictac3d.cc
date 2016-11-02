@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/29/16; 10/30/16; 10/31/16; 11/1/16
+// Last modified on 10/30/16; 10/31/16; 11/1/16; 11/2/16
 // ==========================================================================
 
 #include <iostream>
@@ -46,9 +46,7 @@ void tictac3d::initialize_member_objects()
    game_over = false;
    generate_all_winnable_paths();
    correlate_cells_with_winnable_paths();
-   print_cell_ID_vs_winnable_path_IDs();
-   exit(-1);
-
+//    print_cell_ID_vs_winnable_path_IDs();
 
    board_state_ptr->clear_values();
    genuine_board_state_ptrs = NULL;
@@ -358,6 +356,86 @@ void tictac3d::randomize_board_state()
 }		       
 
 // ---------------------------------------------------------------------
+void tictac3d::display_minimax_scores(int player_value)
+{
+   Color::Modifier green(Color::FG_GREEN);
+   Color::Modifier purple(Color::FG_PURPLE);
+   Color::Modifier yellow(Color::FG_YELLOW);
+   Color::Modifier grey(Color::FG_GREY);
+   Color::Modifier red(Color::FG_RED);
+   Color::Modifier cyan(Color::FG_CYAN);
+   Color::Modifier def(Color::FG_DEFAULT);
+   Color::Modifier winning_color(Color::FG_CYAN);
+
+   bool maximizing_player;
+   if(recursive_depth%2 == 0)
+   {
+      maximizing_player = true;
+   }
+   else
+   {
+      maximizing_player = false;
+   }
+
+   vector<double> minimax_scores;
+   for(int curr_node = 0; curr_node < n_cells; curr_node++)
+   {
+      minimax_scores.push_back(
+         get_minimax_move_score(
+            curr_node, recursive_depth, player_value, maximizing_player));
+   }
+   double max_score = mathfunc::maximal_value(minimax_scores);
+
+// Renormalize minimax scores so that maximal value --> 1
+
+   for(int curr_node = 0; curr_node < n_cells; curr_node++)
+   {
+      minimax_scores[curr_node] /= max_score;
+   }
+
+   for(int pz = 0; pz < n_zlevels; pz++)
+   {
+      cout << endl;
+      if(n_zlevels > 1)
+      {
+         cout << "Z = " << pz << endl << endl;
+      }
+      for(int py = 0; py < n_size; py++)
+      {
+         for(int px = 0; px < n_size; px++)
+         {
+            int p = get_cell(px, py, pz);
+            int cell_value = get_cell_value(p);
+            if(cell_value == 1)
+            {
+               cout << yellow << "   O   " << def << flush;
+            }
+            else if (cell_value == -1)
+            {
+               cout << red << "   X   " << def << flush;
+            }
+            else
+            {
+               cout << stringfunc::number_to_string(minimax_scores[p],3) 
+                    << "  ";
+            }
+         } // loop over px index
+         cout << endl;
+
+         if(py < n_size - 1)
+         {
+            for(int px = 0; px < n_size; px++)
+            {
+               cout << "------" << flush;
+            }
+            cout << endl;
+         }
+         
+      } // loop over py index
+   } // loop over pz index
+}
+
+// ---------------------------------------------------------------------
 void tictac3d::display_p_action(genvector* p_action)
 {
    double p_sum = 0;
@@ -629,7 +707,9 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
 }
 
 // ---------------------------------------------------------------------
-// Member function correlate_cells_with_winnable_paths()
+// Member function correlate_cells_with_winnable_paths() fills STL map
+// cell_winnable_paths_map with key = cell ID and value =
+// vector<winnable path IDs> .  
 
 void tictac3d::correlate_cells_with_winnable_paths()
 {
@@ -652,6 +732,14 @@ void tictac3d::correlate_cells_with_winnable_paths()
          }
       } // loop over index i labeling cells in curr_winnable_path
    } // loop over index w labeling winnable paths
+
+   
+   for(int cell_ID = 0; cell_ID < n_cells; cell_ID++)
+   {
+      cell_winnable_paths_iter = cell_winnable_paths_map.find(cell_ID);
+      intrinsic_cell_prize.push_back(
+         cell_winnable_paths_iter->second.size());
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -672,6 +760,13 @@ void tictac3d::print_cell_ID_vs_winnable_path_IDs()
       {
          cout << "   winnable path ID = " << winnable_path_IDs->at(j) << endl;
       }
+   }
+
+   for(int cell_ID = 0; cell_ID < n_cells; cell_ID++)
+   {
+      cout << "cell_ID = " << cell_ID 
+           << " prize = " << intrinsic_cell_prize[cell_ID]
+           << endl;
    }
 }
 
@@ -1113,7 +1208,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
 }
 
 // ---------------------------------------------------------------------
-// Member function get_recursive_minimax_move_score()
+// Member function get_recursive_minimax_move()
 
 int tictac3d::get_recursive_minimax_move(int player_value)
 {
@@ -1299,59 +1394,50 @@ double tictac3d::get_alphabeta_minimax_move_score(
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_winnable_path_occupancies() counts the
-// number of player_value pieces within each winnable path.  If both
-// players have pieces in a path, the number is set to -1.  
+// Member function extremal_winnable_path_scores() counts the number
+// of player_value pieces within each winnable path.  If both players
+// have pieces in a path, the number is set to -1.
 
 void tictac3d::extremal_winnable_path_scores(
    int player_value, double& min_path_score, double& max_path_score)
 {
-   DUPLE D1, D2;
-   D1.first = player_value;
-   D2.first = -player_value;
-
    min_path_score = POSITIVEINFINITY;
    max_path_score = NEGATIVEINFINITY;
    
    for(int p = 0; p < n_winnable_paths; p++)
    {
-      D1.second = p;
-      D2.second = p;
-
-      int n_player_pieces_in_path = 0;
-      int n_opponent_pieces_in_path = 0;
+      int n_player_path_prize = 0;
+      int n_opponent_path_prize = 0;
 
       for(int i = 0; i < n_size; i++)
       {
-         int curr_cell_value = get_cell_value(winnable_paths[p].path[i]);
+         int curr_cell = winnable_paths[p].path[i];
+         int curr_cell_value = get_cell_value(curr_cell);
          if(curr_cell_value == -player_value)
          {
-            n_opponent_pieces_in_path++;
+            n_opponent_path_prize += intrinsic_cell_prize[curr_cell];
          }
          else if (curr_cell_value == player_value)
          {
-            n_player_pieces_in_path++;
+            n_player_path_prize += intrinsic_cell_prize[curr_cell];
          }
 
-         if(n_player_pieces_in_path > 0 && n_opponent_pieces_in_path > 0)
+         if(n_opponent_path_prize > 0 && n_player_path_prize > 0)
          {
-            path_occupancy_map[D1] = -1;
-            path_occupancy_map[D2] = -1;
             break;
          }
+
       } // loop over index i 
 
       double curr_path_score = 0;
-      if(n_opponent_pieces_in_path == 0)
+      if(n_opponent_path_prize == 0)
       {
-         path_occupancy_map[D1] = n_player_pieces_in_path;
-         curr_path_score = (n_winnable_paths + 1) * n_player_pieces_in_path;
+         curr_path_score = n_player_path_prize;
       }
 
-      if(n_player_pieces_in_path == 0)
+      if(n_player_path_prize == 0)
       {
-         path_occupancy_map[D2] = n_opponent_pieces_in_path;
-         curr_path_score = -(n_winnable_paths + 2) * n_opponent_pieces_in_path;
+         curr_path_score = -n_opponent_path_prize;
       }
 
       min_path_score = basic_math::min(min_path_score, curr_path_score);

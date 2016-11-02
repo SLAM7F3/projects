@@ -3,7 +3,7 @@
 // reinforcement learning in program TTT.  It then uses the trained
 // network to play against a human opponent.
 // ==========================================================================
-// Last updated on 10/29/16; 10/30/16; 10/31/16; 11/1/16
+// Last updated on 10/30/16; 10/31/16; 11/1/16; 11/2/16
 // ==========================================================================
 
 #include <iostream>
@@ -31,8 +31,9 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
 
    ttt_ptr->reset_board_state();
-//   ttt_ptr->set_recursive_depth(1);
-   ttt_ptr->set_recursive_depth(3);
+//   ttt_ptr->set_recursive_depth(0);
+   ttt_ptr->set_recursive_depth(1);
+//   ttt_ptr->set_recursive_depth(3);
 //   ttt_ptr->set_recursive_depth(5);
    
    reinforce* reinforce_agent_ptr = new reinforce();
@@ -55,6 +56,8 @@ int main (int argc, char* argv[])
 // Agent move:
 
       int agent_value = 1;
+      ttt_ptr->display_minimax_scores(agent_value);
+
       int best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
       ttt_ptr->set_player_move(best_move, agent_value);
       ttt_ptr->record_latest_move(agent_value, best_move);

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/29/16; 10/30/16; 10/31/16; 11/1/16
+// Last modified on 10/30/16; 10/31/16; 11/1/16; 11/2/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -63,6 +63,7 @@ class tictac3d
 
    void reset_board_state();
    void randomize_board_state();
+   void display_minimax_scores(int player_value);
    void display_p_action(genvector* p_action);
    void display_board_state();
    void enter_player_move(int player_value);
@@ -86,8 +87,10 @@ class tictac3d
    void append_game_win_frac(double frac);
 
    int get_recursive_minimax_move(int player_value);
+
    double get_minimax_move_score(
       int curr_node, int depth, int player_value, bool maximizing_flag);
+
    double get_alphabeta_minimax_move_score(
       int curr_node, int depth, double alpha, double beta, int player_value,
       bool maximizing_flag);
@@ -133,7 +136,8 @@ class tictac3d
 
    CELL_WINNABLE_PATHS_MAP cell_winnable_paths_map;
    CELL_WINNABLE_PATHS_MAP::iterator cell_winnable_paths_iter;
-   
+   std::vector<int> intrinsic_cell_prize;
+
    PATH_OCCUPANCY_MAP path_occupancy_map;
    PATH_OCCUPANCY_MAP::iterator path_occupancy_iter;
 
