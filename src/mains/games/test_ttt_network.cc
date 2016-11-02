@@ -32,8 +32,9 @@ int main (int argc, char* argv[])
 
    ttt_ptr->reset_board_state();
 //   ttt_ptr->set_recursive_depth(0);
-   ttt_ptr->set_recursive_depth(1);
-//   ttt_ptr->set_recursive_depth(3);
+//   ttt_ptr->set_recursive_depth(1);
+//   ttt_ptr->set_recursive_depth(2);
+   ttt_ptr->set_recursive_depth(3);
 //   ttt_ptr->set_recursive_depth(5);
    
    reinforce* reinforce_agent_ptr = new reinforce();
@@ -56,7 +57,7 @@ int main (int argc, char* argv[])
 // Agent move:
 
       int agent_value = 1;   // "O"
-      ttt_ptr->display_minimax_scores(agent_value);
+//      ttt_ptr->display_minimax_scores(agent_value);
 
       int best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
       ttt_ptr->set_player_move(best_move, agent_value);
