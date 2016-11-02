@@ -96,7 +96,8 @@ class tictac3d
       bool maximizing_flag);
 
    void extremal_winnable_path_scores(
-      int player_value, double& min_path_score, double& max_path_score);
+      int player_value, double& integrated_player_path_score, 
+      double& integrated_opponent_path_score);
    void compute_winnable_path_occupancies(int player_value);
 
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);

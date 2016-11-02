@@ -46,7 +46,7 @@ int main (int argc, char* argv[])
 
 // Human move:
 
-      int human_value = -1;
+      int human_value = -1;   // "X"
 
       ttt_ptr->enter_player_move(human_value);
       ttt_ptr->display_board_state();
@@ -55,7 +55,7 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-      int agent_value = 1;
+      int agent_value = 1;   // "O"
       ttt_ptr->display_minimax_scores(agent_value);
 
       int best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
