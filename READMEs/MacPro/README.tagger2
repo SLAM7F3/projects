@@ -76,6 +76,10 @@ i.  Generate a test_tile.json file which looks something like
     "task":"s2d_tagger2",
     "rev":"rev0",
     "files":[
+	"https://flyover-static.geo.apple.com/startown-gpfs/sputnik03/supersize/devdata/pcho/s2d_tiles/test_tile.zip".
+	"https://flyover-static.geo.apple.com/startown-gpfs/sputnik03/supersize/devdata/pcho/s2d_tiles/test_tile.zip".
+	"https://flyover-static.geo.apple.com/startown-gpfs/sputnik03/supersize/devdata/pcho/s2d_tiles/test_tile.zip".
+	"https://flyover-static.geo.apple.com/startown-gpfs/sputnik03/supersize/devdata/pcho/s2d_tiles/test_tile.zip",
 	"https://flyover-static.geo.apple.com/startown-gpfs/sputnik03/supersize/devdata/pcho/s2d_tiles/test_tile.zip"
     ]
 }
