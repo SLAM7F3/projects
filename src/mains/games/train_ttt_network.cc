@@ -73,7 +73,7 @@ void compute_minimax_move(
 int main (int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
 //   int n_zlevels = 1;
    int n_zlevels = 4;
@@ -257,11 +257,12 @@ int main (int argc, char* argv[])
 //            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 
-//            ttt_ptr->display_board_state();
+//              ttt_ptr->display_board_state();
 //            ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
 
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
+               ttt_ptr->set_game_over(true);
                curr_reward = lose_reward; // Agent loses!
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
@@ -285,34 +286,38 @@ int main (int argc, char* argv[])
 
          int output_action = 
             reinforce_agent_ptr->get_candidate_current_action();
-
          reinforce_agent_ptr->set_current_action(output_action);
          ttt_ptr->set_player_move(output_action, agent_value);
-         ttt_ptr->increment_n_agent_turns();
 
-//         ttt_ptr->display_board_state();
+// FAKE FAKE:  Thurs Nov 3 at 1:16 pm
+
+//         ttt_ptr->get_random_legal_player_move(agent_value);
+//         ttt_ptr->increment_n_agent_turns();
+
+//          ttt_ptr->display_board_state();
 
 // Step the environment and then retrieve new reward measurements:
 
          curr_reward = 0;
          if(ttt_ptr->check_player_win(agent_value) > 0)
          {
+            ttt_ptr->set_game_over(true);
             curr_reward = win_reward;	 // Agent wins!
          }
          else if (ttt_ptr->check_filled_board())
          {
             curr_reward = stalemate_reward;
          }
+
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
 //          cout << "curr_reward = " << curr_reward << endl;
-
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
       if(curr_episode_number > 0 && curr_episode_number% n_update == 0)
       {
          ttt_ptr->display_board_state();
-//            outputfunc::enter_continue_char();
+//         outputfunc::enter_continue_char();
 //          cout << "GAME OVER" << endl;
       }
       
@@ -344,10 +349,6 @@ int main (int argc, char* argv[])
          if(AI_value == -1)
          {
             cout << "AI = X    agent = O" << endl;
-         }
-         else
-         {
-            cout << "AI = O    agent = X" << endl;
          }
          if(AI_moves_first)
          {

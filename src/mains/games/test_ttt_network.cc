@@ -3,7 +3,7 @@
 // reinforcement learning in program TTT.  It then uses the trained
 // network to play against a human opponent.
 // ==========================================================================
-// Last updated on 10/30/16; 10/31/16; 11/1/16; 11/2/16
+// Last updated on 10/31/16; 11/1/16; 11/2/16; 11/3/16
 // ==========================================================================
 
 #include <iostream>
@@ -65,7 +65,11 @@ int main (int argc, char* argv[])
          ttt_ptr->enter_player_move(human_value);
          ttt_ptr->display_board_state();
          ttt_ptr->increment_n_human_turns();
-         if(ttt_ptr->check_player_win(human_value) > 0) break;
+         if(ttt_ptr->check_player_win(human_value) > 0)
+         {
+            ttt_ptr->set_game_over(true);
+            break;
+         }
          if(ttt_ptr->check_filled_board()) break;
       }
 
@@ -97,7 +101,12 @@ int main (int argc, char* argv[])
       ttt_ptr->display_board_state();
       ttt_ptr->increment_n_agent_turns();
 
-      if(ttt_ptr->check_player_win(agent_value) > 0) break;
+      if(ttt_ptr->check_player_win(agent_value) > 0)
+      {
+         ttt_ptr->set_game_over(true);
+         break;
+      }
+
       if(ttt_ptr->check_filled_board()) break;
 
 // Periodically diminish relative differences between intrinsic cell
