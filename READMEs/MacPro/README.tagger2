@@ -1,7 +1,7 @@
 ============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 10/11/16; 10/30/16; 10/31/16
+Last updated on 10/11/16; 10/30/16; 10/31/16; 11/2/16
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -115,7 +115,7 @@ new ninjas by end of Fri, Nov 4, 2016.
 work in "editing" rather than "thumbs up/down labeling" mode, we need to 
 hardwire 
 
-_editor->get_current_s2d_context()->_thumbs_up_down_mode = false
+  _editor->get_current_s2d_context()->_thumbs_up_down_mode = false
 
 at the very start of TGEditorModule_Polylines_S2D::initialize_polygons()
 inside tg_editor_module_polylines_s2d.cpp
@@ -126,4 +126,7 @@ of tagger2/s2d editor, call "S2DContext::save_s2d_polygons()" by adding
 some new key stroke within ::update().  Also be sure to exit(-1) after
 printf("Exporting S2D polygons to %s \n", output_shape_filename).
 
-
+*.  In order to access PR Admin debug job (e.g. peter_debug5) from an
+"external" S2D branch (for delivery to groups outside Flyover), we may need
+to comment out #define TAGGER_EXT statements located in tagger2.h and
+tg_annotation_api.h

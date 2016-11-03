@@ -126,12 +126,13 @@ class tictac3d
    typedef struct
    {
       std::vector<int> path;  // Holds cell indices for winnable path
-      double X_score;
-      double O_score;
+//      double X_score;
+//      double O_score;
    } winnable_path_t;
    
    int n_winnable_paths;
    std::vector<winnable_path_t> winnable_paths;
+   int n_score_evaluations;
 
    WINNING_POSNS_MAP winning_posns_map;
    WINNING_POSNS_MAP::iterator winning_posns_iter;

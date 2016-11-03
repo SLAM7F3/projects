@@ -1291,6 +1291,7 @@ int tictac3d::get_recursive_minimax_move(int player_value)
    bool maximizing_player = false;
    double best_value;
    int best_move = -1;
+   n_score_evaluations = 0;
 
    if(recursive_depth%2 == 0)
    {
@@ -1357,6 +1358,7 @@ int tictac3d::get_recursive_minimax_move(int player_value)
 
    } // loop over index p labeling cells
    double elapsed_secs = timefunc::elapsed_timeofday_time();   
+   cout << "n_score_evaluations = " << n_score_evaluations << endl;
    cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
 
    return best_move;
@@ -1419,8 +1421,10 @@ double tictac3d::get_minimax_move_score(
 }
 
 // ---------------------------------------------------------------------
-// Member function get_alphabeta_minimax_move_score()
-// See https://www.cs.cornell.edu/courses/cs312/2002sp/lectures/rec21.htm
+// Member function get_alphabeta_minimax_move_score().  See
+// https://www.cs.cornell.edu/courses/cs312/2002sp/lectures/rec21.htm
+// On 11/2/16, we verified that alpha-beta pruning can reduce the
+// number of path scoring evaluations performed by factors of 2 - 3 !
 
 double tictac3d::get_alphabeta_minimax_move_score(
    int curr_node, int depth, double min_value, double max_value, 
@@ -1509,7 +1513,7 @@ double tictac3d::get_alphabeta_minimax_move_score(
 // ---------------------------------------------------------------------
 // Member function extremal_winnable_path_scores() counts the number
 // of player_value pieces within each winnable path.  If both players
-// have pieces in a path, the number is set to -1.
+// have pieces in a path, the path is ignored.  
 
 void tictac3d::extremal_winnable_path_scores(
    int player_value, double& integrated_player_path_score, 
@@ -1518,15 +1522,17 @@ void tictac3d::extremal_winnable_path_scores(
    integrated_player_path_score = integrated_opponent_path_score = 0;
    for(int p = 0; p < n_winnable_paths; p++)
    {
-      int n_player_path_prize = 0;
-      int n_opponent_path_prize = 0;
       int n_player_pieces_in_path = 0;
       int n_opponent_pieces_in_path = 0;
+      int n_player_path_prize = 0;
+      int n_opponent_path_prize = 0;
 
       for(int i = 0; i < n_size; i++)
       {
          int curr_cell = winnable_paths[p].path[i];
          int curr_cell_value = get_cell_value(curr_cell);
+         if(curr_cell_value == 0) continue;
+         
          if(curr_cell_value == -player_value)
          {
             n_opponent_pieces_in_path++;
@@ -1542,7 +1548,6 @@ void tictac3d::extremal_winnable_path_scores(
          {
             break;
          }
-
       } // loop over index i 
 
       double player_path_score = 0;
@@ -1562,6 +1567,11 @@ void tictac3d::extremal_winnable_path_scores(
       integrated_opponent_path_score += opponent_path_score;
 
    } // loop over index p labeling all winnable paths
+
+   n_score_evaluations++;
+
+//   cout << "integrated_player_path_score = " << integrated_player_path_score
+//        << " integrated_opponent_path_score = " << integrated_opponent_path_score << endl;
 }
 
 // ---------------------------------------------------------------------
