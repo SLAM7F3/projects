@@ -44,7 +44,7 @@ int main (int argc, char* argv[])
       ttt_ptr->set_recursive_depth(2);	 // machine plays offensively
    }
    
-      reinforce* reinforce_agent_ptr = new reinforce();
+   reinforce* reinforce_agent_ptr = new reinforce();
    reinforce_agent_ptr->initialize_episode();
 
    while(!ttt_ptr->get_game_over())
@@ -97,7 +97,6 @@ int main (int argc, char* argv[])
 
       if(ttt_ptr->check_player_win(agent_value) > 0) break;
       if(ttt_ptr->check_filled_board()) break;
-
 
 // Periodically diminish relative differences between intrinsic cell
 // prizes as game progresses:

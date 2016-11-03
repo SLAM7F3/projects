@@ -1407,8 +1407,8 @@ int tictac3d::get_recursive_minimax_move(int player_value)
 
    } // loop over index p labeling cells
    double elapsed_secs = timefunc::elapsed_timeofday_time();   
-   cout << "n_score_evaluations = " << n_score_evaluations << endl;
-   cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
+//   cout << "n_score_evaluations = " << n_score_evaluations << endl;
+//   cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
 
    return best_move;
 }

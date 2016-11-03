@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 10/28/16; 10/29/16; 10/30/16; 11/1/16
+// Last updated on 10/29/16; 10/30/16; 11/1/16; 11/3/16
 // ==========================================================================
 
 #include <iostream>
@@ -41,13 +41,42 @@ void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr,
 }
 
 // ==========================================================================
+void compute_minimax_move(
+   bool AI_moves_first, tictac3d* ttt_ptr, int AI_value)
+{
+   int best_move = ttt_ptr->imminent_win_or_loss(AI_value);
+   if(best_move < 0)
+   {
+      best_move = ttt_ptr->get_recursive_minimax_move(AI_value);
+   }
+   ttt_ptr->set_player_move(best_move, AI_value);
+
+// Periodically diminish relative differences between intrinsic cell
+// prizes as game progresses:
+
+   int n_completed_turns = ttt_ptr->get_n_completed_turns();
+   if(n_completed_turns == 1)
+   {
+      ttt_ptr->adjust_intrinsic_cell_prizes();
+   }
+   else if (n_completed_turns == 2)
+   {
+      ttt_ptr->adjust_intrinsic_cell_prizes();
+   }
+   else if (n_completed_turns == 3)
+   {
+      ttt_ptr->adjust_intrinsic_cell_prizes();
+   }
+}
+
+// ==========================================================================
 int main (int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
    nrfunc::init_time_based_seed();
 
-   int n_zlevels = 1;
-//   int n_zlevels = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
 
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
@@ -132,8 +161,8 @@ int main (int argc, char* argv[])
 //   int n_max_episodes = 10 * 1000000;
    }
 
-   int n_update = 25000;
-   int n_summarize = 50000;
+   int n_update = 250;
+   int n_summarize = 500;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -153,17 +182,19 @@ int main (int argc, char* argv[])
    int n_episodes_period = 100 * 1000;
 //      int n_episodes_period = 150 * 1000;
 
+   int AI_value = -1;     // "X" pieces
+   int agent_value = 1;   // "O" pieces
    bool AI_moves_first = true;
-   int AI_value = -1;
-   int agent_value = 1;
 //   bool periodically_switch_starting_player = false;
    bool periodically_switch_starting_player = true;
-   bool periodically_switch_player_values = false;
 
 // Import previously trained TTT network to guide AI play:
 
-//   reinforce* reinforce_AI_ptr = NULL;
-   reinforce* reinforce_AI_ptr = new reinforce();
+   reinforce* reinforce_AI_ptr = NULL;
+//   reinforce* reinforce_AI_ptr = new reinforce();
+
+// ==========================================================================
+// Reinforcement training loop begins here
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -182,20 +213,20 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
             n_episodes_period *= 1.2;
          }
-      }
 
-      if(periodically_switch_player_values)
-      {
-         if(curr_episode_number % 10000 == 0)
+         if(periodically_switch_starting_player)
          {
-            AI_value *= -1;
-            agent_value *= -1;
+            AI_moves_first = !AI_moves_first;
          }
       }
 
-      if(periodically_switch_starting_player)
+      if(AI_moves_first)
       {
-         AI_moves_first = !AI_moves_first;
+         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
+      }
+      else
+      {
+         ttt_ptr->set_recursive_depth(1);   // AI plays defensively
       }
 
 // -----------------------------------------------------------------------
@@ -206,21 +237,10 @@ int main (int argc, char* argv[])
          int curr_timestep = reinforce_agent_ptr->get_curr_timestep();
 
 // AI move:
-         if((AI_moves_first && reinforce_agent_ptr->get_curr_timestep() == 0)
-            || curr_timestep > 0)
+
+         if((AI_moves_first && curr_timestep == 0) || curr_timestep > 0)
          {
-
-// Experiment with forcing very first move to be random:
-
-            if(curr_timestep > 0 && 
-               reinforce_AI_ptr != NULL && nrfunc::ran1() > 0.1)
-            {
-               compute_AI_move(ttt_ptr, reinforce_AI_ptr, AI_value);
-            }
-            else
-            {
-               ttt_ptr->get_random_legal_player_move(AI_value);
-            }
+            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 
 //            ttt_ptr->display_board_state();
@@ -239,29 +259,20 @@ int main (int argc, char* argv[])
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
-
+         
          } // AI_moves_first || timestep > 0 conditional
 
 // Agent move:
 
-// Experiment with forcing very first move to be random:
-
-         if(nrfunc::ran1() > 0.1 && curr_timestep > 0)
-         {
-            reinforce_agent_ptr->compute_unrenorm_action_probs(
-               ttt_ptr->get_board_state_ptr());
-            reinforce_agent_ptr->renormalize_action_distribution();
+         reinforce_agent_ptr->compute_unrenorm_action_probs(
+            ttt_ptr->get_board_state_ptr());
+         reinforce_agent_ptr->renormalize_action_distribution();
 //         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
 
-            int output_action = 
-               reinforce_agent_ptr->get_candidate_current_action();
-            reinforce_agent_ptr->set_current_action(output_action);
-            ttt_ptr->set_player_move(output_action, agent_value);
-         }
-         else
-         {
-            ttt_ptr->get_random_legal_player_move(agent_value);
-         }
+         int output_action = 
+            reinforce_agent_ptr->get_candidate_current_action();
+         reinforce_agent_ptr->set_current_action(output_action);
+         ttt_ptr->set_player_move(output_action, agent_value);
          ttt_ptr->increment_n_agent_turns();
 
 //         ttt_ptr->display_board_state();
@@ -285,7 +296,9 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number% n_update == 0)
       {
+//          cout << "GAME OVER" << endl;
          ttt_ptr->display_board_state();
+//         outputfunc::enter_continue_char();
       }
 
       if(nearly_equal(curr_reward, lose_reward))
@@ -374,6 +387,9 @@ int main (int argc, char* argv[])
       }
 
    } // n_episodes < n_max_episodes while loop
+
+// Reinforcement training loop ends here
+// ==========================================================================
 
    delete ttt_ptr;
    delete reinforce_agent_ptr;
