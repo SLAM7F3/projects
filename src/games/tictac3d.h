@@ -86,6 +86,7 @@ class tictac3d
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
 
+   int imminent_win_or_loss(int player_value);
    int get_recursive_minimax_move(int player_value);
 
    double get_minimax_move_score(
@@ -93,11 +94,12 @@ class tictac3d
 
    double get_alphabeta_minimax_move_score(
       int curr_node, int depth, double alpha, double beta, int player_value,
-      bool maximizing_flag);
+      bool maximizing_flag, bool& player_wins, bool& opponent_wins);
 
    void extremal_winnable_path_scores(
       int player_value, double& integrated_player_path_score, 
-      double& integrated_opponent_path_score);
+      double& integrated_opponent_path_score,
+      bool& player_wins, bool& opponent_wins);
    void compute_winnable_path_occupancies(int player_value);
 
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
@@ -158,6 +160,7 @@ class tictac3d
 
    void generate_all_winnable_paths();
    void correlate_cells_with_winnable_paths();
+   void print_winnable_path(int path_ID);
    std::vector<int>* get_winnable_path_IDs(int cell_ID);
    void print_cell_ID_vs_winnable_path_IDs();
 

@@ -59,7 +59,12 @@ int main (int argc, char* argv[])
       int agent_value = 1;   // "O"
 //      ttt_ptr->display_minimax_scores(agent_value);
 
-      int best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
+      int best_move = ttt_ptr->imminent_win_or_loss(agent_value);
+      if(best_move < 0)
+      {
+         best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
+      }
+
       ttt_ptr->set_player_move(best_move, agent_value);
       ttt_ptr->record_latest_move(agent_value, best_move);
 
