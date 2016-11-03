@@ -43,6 +43,7 @@ void tictac3d::allocate_member_objects()
 
 void tictac3d::initialize_member_objects()
 {
+   n_human_turns = n_AI_turns = n_agent_turns = 0;
    game_over = false;
    generate_all_winnable_paths();
    correlate_cells_with_winnable_paths();
@@ -395,11 +396,6 @@ void tictac3d::display_minimax_scores(int player_value)
    }
    double max_score = mathfunc::maximal_value(minimax_scores);
 
-
-// FAKE FAKe:  Weds Nov 2 at 5:45 pm
-
-   if(max_score > 1000) max_score = 1;
-
 // Renormalize minimax scores so that maximal value --> 1
 
    for(int curr_node = 0; curr_node < n_cells; curr_node++)
@@ -747,12 +743,39 @@ void tictac3d::correlate_cells_with_winnable_paths()
       } // loop over index i labeling cells in curr_winnable_path
    } // loop over index w labeling winnable paths
 
-   
+   min_intrinsic_cell_prize = 10000;
+   max_intrinsic_cell_prize = -min_intrinsic_cell_prize;
    for(int cell_ID = 0; cell_ID < n_cells; cell_ID++)
    {
       cell_winnable_paths_iter = cell_winnable_paths_map.find(cell_ID);
+
       intrinsic_cell_prize.push_back(
          cell_winnable_paths_iter->second.size());
+
+      min_intrinsic_cell_prize = 
+         basic_math::min(min_intrinsic_cell_prize,
+                         intrinsic_cell_prize.back());
+      max_intrinsic_cell_prize = 
+         basic_math::max(max_intrinsic_cell_prize,
+                         intrinsic_cell_prize.back());
+   }
+   cout << "min_intrinsic_cell_prize = " << min_intrinsic_cell_prize
+        << " max_intrinsic_cell_prize = " << max_intrinsic_cell_prize
+        << endl;
+}
+
+// ---------------------------------------------------------------------
+void tictac3d::adjust_intrinsic_cell_prizes()
+{
+   for(int cell_ID = 0; cell_ID < n_cells; cell_ID++)
+   {
+      int curr_cell_prize = intrinsic_cell_prize[cell_ID];
+      int new_cell_prize = basic_math::min(max_intrinsic_cell_prize,
+                                           curr_cell_prize + 1);
+      intrinsic_cell_prize[cell_ID] = new_cell_prize;
+//      cout << "cell_ID = " << cell_ID
+//           << " new_cell_prize = " << intrinsic_cell_prize[cell_ID]
+//           << endl;
    }
 }
 
@@ -1191,6 +1214,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    }
    if(corner_diag_win) return true;
 
+   corner_diag_win = true;
    winning_posns_map.clear();
    for(int pz = 0; pz < n_zlevels; pz++)
    {
@@ -1205,6 +1229,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    }
    if(corner_diag_win) return true;
 
+   corner_diag_win = true;
    winning_posns_map.clear();
    for(int pz = 0; pz < n_zlevels; pz++)
    {
@@ -1219,6 +1244,7 @@ bool tictac3d::corner_2_corner_win(int player_ID)
    }
    if(corner_diag_win) return true;
 
+   corner_diag_win = true;
    winning_posns_map.clear();
    for(int pz = 0; pz < n_zlevels; pz++)
    {
@@ -1305,7 +1331,7 @@ int tictac3d::get_recursive_minimax_move(int player_value)
    }
 
    int curr_prime = 7;
-   int random = 5 * nrfunc::ran1();
+   int random = 10 * nrfunc::ran1();
    if(random == 1)
    {
       curr_prime = 11;
@@ -1322,7 +1348,30 @@ int tictac3d::get_recursive_minimax_move(int player_value)
    {
       curr_prime = 19;
    }
-   
+   else if (random == 5)
+   {
+      curr_prime = 19;
+   }
+   else if (random == 6)
+   {
+      curr_prime = 23;
+   }
+   else if (random == 7)
+   {
+      curr_prime = 29;
+   }
+   else if (random == 8)
+   {
+      curr_prime = 31;
+   }
+   else if (random == 9)
+   {
+      curr_prime = 37;
+   }
+   else if (random == 9)
+   {
+      curr_prime = 41;
+   }
    
    for(int p = 0; p < n_cells; p++)
    {
@@ -1554,12 +1603,16 @@ void tictac3d::extremal_winnable_path_scores(
       double opponent_path_score = 0;
       if(n_opponent_pieces_in_path == 0)
       {
-         player_path_score += n_player_pieces_in_path * n_player_path_prize;
+//         player_path_score += n_player_pieces_in_path * n_player_path_prize;
+         player_path_score += sqr(n_player_pieces_in_path) 
+            * n_player_path_prize;
       }
 
       if(n_player_pieces_in_path == 0)
       {
-         opponent_path_score += n_opponent_pieces_in_path * 
+//         opponent_path_score += n_opponent_pieces_in_path * 
+//            n_opponent_path_prize;
+         opponent_path_score += sqr(n_opponent_pieces_in_path) * 
             n_opponent_path_prize;
       }
 

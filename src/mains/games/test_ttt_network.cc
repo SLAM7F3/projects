@@ -29,30 +29,43 @@ int main (int argc, char* argv[])
 //   int n_zlevels = 1;
    int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
-
    ttt_ptr->reset_board_state();
-//   ttt_ptr->set_recursive_depth(0);
-//   ttt_ptr->set_recursive_depth(1);
-   ttt_ptr->set_recursive_depth(2);
-//   ttt_ptr->set_recursive_depth(3);
-//   ttt_ptr->set_recursive_depth(5);
-   
-   reinforce* reinforce_agent_ptr = new reinforce();
-   reinforce_agent_ptr->initialize_episode();
 
-   ttt_ptr->display_board_state();
+   bool human_move_first = true;
+//   bool human_move_first = false;
+   if(human_move_first)
+   {
+//      ttt_ptr->set_recursive_depth(1);	 // machine plays defensively
+      ttt_ptr->set_recursive_depth(3);
+   }
+   else
+   {
+//      ttt_ptr->set_recursive_depth(0);	 // machine plays offensively
+      ttt_ptr->set_recursive_depth(2);	 // machine plays offensively
+   }
+   
+      reinforce* reinforce_agent_ptr = new reinforce();
+   reinforce_agent_ptr->initialize_episode();
 
    while(!ttt_ptr->get_game_over())
    {
 
 // Human move:
 
-      int human_value = -1;   // "X"
+      if(human_move_first && ttt_ptr->get_n_agent_turns() == 0)
+      {
+         ttt_ptr->display_board_state();
+      }
 
-      ttt_ptr->enter_player_move(human_value);
-      ttt_ptr->display_board_state();
-      if(ttt_ptr->check_player_win(human_value) > 0) break;
-      if(ttt_ptr->check_filled_board()) break;
+      if(human_move_first || ttt_ptr->get_n_agent_turns() > 0)
+      {
+         int human_value = -1;   // "X"
+         ttt_ptr->enter_player_move(human_value);
+         ttt_ptr->display_board_state();
+         ttt_ptr->increment_n_human_turns();
+         if(ttt_ptr->check_player_win(human_value) > 0) break;
+         if(ttt_ptr->check_filled_board()) break;
+      }
 
 // Agent move:
 
@@ -84,6 +97,25 @@ int main (int argc, char* argv[])
 
       if(ttt_ptr->check_player_win(agent_value) > 0) break;
       if(ttt_ptr->check_filled_board()) break;
+
+
+// Periodically diminish relative differences between intrinsic cell
+// prizes as game progresses:
+
+      int n_completed_turns = ttt_ptr->get_n_completed_turns();
+      cout << "n_completed_turns = " << n_completed_turns << endl;
+      if(n_completed_turns == 1)
+      {
+         ttt_ptr->adjust_intrinsic_cell_prizes();
+      }
+      else if (n_completed_turns == 2)
+      {
+         ttt_ptr->adjust_intrinsic_cell_prizes();
+      }
+      else if (n_completed_turns == 3)
+      {
+         ttt_ptr->adjust_intrinsic_cell_prizes();
+      }
 
    } // !game_over while loop
 

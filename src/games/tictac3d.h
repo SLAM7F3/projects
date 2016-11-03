@@ -56,10 +56,13 @@ class tictac3d
    void pop_genuine_board_state();
    bool check_filled_board();
 
+   void increment_n_human_turns();
+   int get_n_human_turns() const;
    void increment_n_AI_turns();
    int get_n_AI_turns() const;
    void increment_n_agent_turns();
    int get_n_agent_turns() const;
+   int get_n_completed_turns() const;
 
    void reset_board_state();
    void randomize_board_state();
@@ -72,6 +75,7 @@ class tictac3d
    int get_n_filled_cells() const;
    int get_n_empty_cells() const;
    int check_player_win(int player_ID, bool print_flag = false);
+   void adjust_intrinsic_cell_prizes();
    void print_winning_pattern();
 
    double get_random_player_move(int agent_value);
@@ -108,7 +112,7 @@ class tictac3d
    bool game_over;
    int n_size, n_size_sqr, n_zlevels, n_cells;
    int recursive_depth;
-   int n_AI_turns, n_agent_turns;
+   int n_human_turns, n_AI_turns, n_agent_turns;
    int* curr_board_state;
    std::vector<int*> Genuine_Board_states;
    int** genuine_board_state_ptrs;
@@ -140,6 +144,7 @@ class tictac3d
    CELL_WINNABLE_PATHS_MAP cell_winnable_paths_map;
    CELL_WINNABLE_PATHS_MAP::iterator cell_winnable_paths_iter;
    std::vector<int> intrinsic_cell_prize;
+   int min_intrinsic_cell_prize, max_intrinsic_cell_prize;
 
    PATH_OCCUPANCY_MAP path_occupancy_map;
    PATH_OCCUPANCY_MAP::iterator path_occupancy_iter;
@@ -160,6 +165,7 @@ class tictac3d
 
    void generate_all_winnable_paths();
    void correlate_cells_with_winnable_paths();
+
    void print_winnable_path(int path_ID);
    std::vector<int>* get_winnable_path_IDs(int cell_ID);
    void print_cell_ID_vs_winnable_path_IDs();
@@ -208,6 +214,16 @@ inline bool tictac3d::get_game_over() const
    return game_over;
 }
 
+inline void tictac3d::increment_n_human_turns()
+{
+   n_human_turns++;
+}
+
+inline int tictac3d::get_n_human_turns() const
+{
+   return n_human_turns;
+}
+
 inline void tictac3d::increment_n_AI_turns()
 {
    n_AI_turns++;
@@ -227,6 +243,13 @@ inline int tictac3d::get_n_agent_turns() const
 {
    return n_agent_turns;
 }
+
+inline int tictac3d::get_n_completed_turns() const
+{
+   return (n_human_turns + n_AI_turns + n_agent_turns)/2;
+}
+
+
 
 inline void tictac3d::append_game_loss_frac(double frac)
 {
