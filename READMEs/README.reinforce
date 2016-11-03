@@ -568,28 +568,36 @@ expt 64 on TM at 11:28 am.  Worse performance than expt 64.  Terminated.
 
 70.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-2, gamma =
 0.99, rms_decay = 0.85.  Play against random AI.  Agent rapidly beats
-random player.
+random player.  Terminated.
 
 71.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-3, gamma =
 0.99, rms_decay = 0.85.  Play against random AI. Agent rapidly learns to
-beat random player.
+beat random player.  Terminated.
 
 72.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
 0.99, rms_decay = 0.85.  Play against random AI.  Agent takes a while to
-learn to beat random player.
+learn to beat random player.  Terminated.
 
 73.  Z = 4 TTT, random AI vs random agent.  Sanity check seems OK as of
 1:40 pm on Thurs Nov 3.  Random player wins roughly 50% of their games
-against another random player.
+against another random player.  Terminated.
+
 
 74.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
-0.99, rms_decay = 0.85.  Play against level-0 AI.  
+0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
+pm Thurs Nov 3.
 
 75.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-3, gamma =
-0.99, rms_decay = 0.85.  Play against level-0 AI.  
+0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
+pm Thurs Nov 3.
 
 76.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-2, gamma =
-0.99, rms_decay = 0.85.  Play against level-0 AI.  
+0.99, rms_decay = 0.85.  Play against level-0 AI.   Terminated.
 
 77.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-4, gamma =
-0.99, rms_decay = 0.85.  Play against level-0 AI.  
+0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
+pm Thurs Nov 3.
+
+78.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
+0.99, rms_decay = 0.85.  Play against level-0 AI.  Running on TM as of 3 pm
+Thurs Nov 3.
