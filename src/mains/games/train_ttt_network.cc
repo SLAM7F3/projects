@@ -161,8 +161,8 @@ int main (int argc, char* argv[])
 //   int n_max_episodes = 10 * 1000000;
    }
 
-   int n_update = 250;
-   int n_summarize = 500;
+   int n_update = 2500;
+   int n_summarize = 5000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -185,8 +185,8 @@ int main (int argc, char* argv[])
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
    bool AI_moves_first = true;
-//   bool periodically_switch_starting_player = false;
-   bool periodically_switch_starting_player = true;
+   bool periodically_switch_starting_player = false;
+//   bool periodically_switch_starting_player = true;
 
 // Import previously trained TTT network to guide AI play:
 
@@ -205,6 +205,14 @@ int main (int argc, char* argv[])
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_summarize, n_max_episodes);
 
+/*
+      double elapsed_secs, elapsed_mins, elapsed_hours;
+      timefunc::get_elapsed_time(elapsed_secs,elapsed_mins,elapsed_hours);
+      cout << "elapsed_secs = " << elapsed_secs
+           << " elapsed_mins = " << elapsed_mins
+           << " elapsed_hours = " << elapsed_hours << endl;
+*/
+
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
@@ -222,7 +230,8 @@ int main (int argc, char* argv[])
 
       if(AI_moves_first)
       {
-         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
+         ttt_ptr->set_recursive_depth(0);   // AI plays offensively
+//         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
       }
       else
       {

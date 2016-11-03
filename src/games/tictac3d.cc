@@ -1313,7 +1313,7 @@ int tictac3d::get_recursive_minimax_move(int player_value)
 //   cout << "inside get_recursive_minimax_move, player_value = " 
 //        << player_value << " recursive_depth = " << recursive_depth << endl;
 
-   timefunc::initialize_timeofday_clock();   
+//   timefunc::initialize_timeofday_clock();   
    bool maximizing_player = false;
    double best_value;
    int best_move = -1;
@@ -1406,7 +1406,7 @@ int tictac3d::get_recursive_minimax_move(int player_value)
       } // maximizing player conditional
 
    } // loop over index p labeling cells
-   double elapsed_secs = timefunc::elapsed_timeofday_time();   
+//   double elapsed_secs = timefunc::elapsed_timeofday_time();   
 //   cout << "n_score_evaluations = " << n_score_evaluations << endl;
 //   cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
 
