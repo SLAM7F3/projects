@@ -73,7 +73,7 @@ void compute_minimax_move(
 int main (int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
 //   int n_zlevels = 1;
    int n_zlevels = 4;
@@ -146,11 +146,10 @@ int main (int argc, char* argv[])
 //   double base_learning_rate = 0.001 + nrfunc::ran1() * 0.004;
 //   reinforce_agent_ptr->set_base_learning_rate(base_learning_rate);
 
-   reinforce_agent_ptr->set_base_learning_rate(3E-2);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-   //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-   //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    double min_learning_rate = 0.5E-4;
 //   double min_learning_rate = 3E-5;
@@ -207,15 +206,6 @@ int main (int argc, char* argv[])
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_summarize, n_max_episodes);
-
-/*
-      double elapsed_secs, elapsed_mins, elapsed_hours;
-      timefunc::get_elapsed_time(elapsed_secs,elapsed_mins,elapsed_hours);
-      cout << "elapsed_secs = " << elapsed_secs
-           << " elapsed_mins = " << elapsed_mins
-           << " elapsed_hours = " << elapsed_hours << endl;
-*/
-
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
@@ -253,8 +243,8 @@ int main (int argc, char* argv[])
 
          if((AI_moves_first && curr_timestep == 0) || curr_timestep > 0)
          {
-            ttt_ptr->get_random_legal_player_move(AI_value);
-//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+//            ttt_ptr->get_random_legal_player_move(AI_value);
+            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 
 //              ttt_ptr->display_board_state();
@@ -274,7 +264,6 @@ int main (int argc, char* argv[])
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
-         
          } // AI_moves_first || timestep > 0 conditional
 
 // Agent move:
