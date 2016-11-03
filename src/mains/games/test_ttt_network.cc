@@ -23,7 +23,7 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
    int nsize = 4;
 //   int n_zlevels = 1;
@@ -33,8 +33,8 @@ int main (int argc, char* argv[])
    ttt_ptr->reset_board_state();
 //   ttt_ptr->set_recursive_depth(0);
 //   ttt_ptr->set_recursive_depth(1);
-//   ttt_ptr->set_recursive_depth(2);
-   ttt_ptr->set_recursive_depth(3);
+   ttt_ptr->set_recursive_depth(2);
+//   ttt_ptr->set_recursive_depth(3);
 //   ttt_ptr->set_recursive_depth(5);
    
    reinforce* reinforce_agent_ptr = new reinforce();

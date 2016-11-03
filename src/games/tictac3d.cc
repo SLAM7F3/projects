@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/30/16; 10/31/16; 11/1/16; 11/2/16
+// Last modified on 10/31/16; 11/1/16; 11/2/16; 11/3/16
 // ==========================================================================
 
 #include <iostream>
@@ -1302,9 +1302,31 @@ int tictac3d::get_recursive_minimax_move(int player_value)
       maximizing_player = false;
       best_value = POSITIVEINFINITY;
    }
-   
-   for(int curr_node = 0; curr_node < n_cells; curr_node++)
+
+   int curr_prime = 7;
+   int random = 5 * nrfunc::ran1();
+   if(random == 1)
    {
+      curr_prime = 11;
+   }
+   else if (random == 2)
+   {
+      curr_prime = 13;
+   }
+   else if (random == 3)
+   {
+      curr_prime = 17;
+   }
+   else if (random == 4)
+   {
+      curr_prime = 19;
+   }
+   
+   
+   for(int p = 0; p < n_cells; p++)
+   {
+      int curr_node = ((p+1) * curr_prime) % n_cells;
+//      int curr_node = p;
       if(!legal_player_move(curr_node)) continue;
 
 //      double curr_value = get_minimax_move_score(
@@ -1312,10 +1334,9 @@ int tictac3d::get_recursive_minimax_move(int player_value)
 
       double min_value = NEGATIVEINFINITY;
       double max_value = POSITIVEINFINITY;
-      bool player_wins, opponent_wins;
       double curr_value = get_alphabeta_minimax_move_score(
          curr_node, recursive_depth, min_value, max_value, player_value, 
-         maximizing_player, player_wins, opponent_wins);
+         maximizing_player);
 
       if(maximizing_player)
       {
@@ -1334,7 +1355,7 @@ int tictac3d::get_recursive_minimax_move(int player_value)
          }
       } // maximizing player conditional
 
-   } // loop over curr_node
+   } // loop over index p labeling cells
    double elapsed_secs = timefunc::elapsed_timeofday_time();   
    cout << "Recursive computation time = " << elapsed_secs << " secs" << endl;
 
@@ -1352,11 +1373,10 @@ double tictac3d::get_minimax_move_score(
 
    if(depth == 0 || get_n_empty_cells() == 0)
    {
-      bool player_wins, opponent_wins;
       double integrated_player_path_score, integrated_opponent_path_score;
       extremal_winnable_path_scores(
          player_value, integrated_player_path_score, 
-         integrated_opponent_path_score, player_wins, opponent_wins);
+         integrated_opponent_path_score);
       pop_genuine_board_state();
 
       if(maximizing_flag)
@@ -1404,8 +1424,7 @@ double tictac3d::get_minimax_move_score(
 
 double tictac3d::get_alphabeta_minimax_move_score(
    int curr_node, int depth, double min_value, double max_value, 
-   int player_value, bool maximizing_flag,
-   bool& player_wins, bool& opponent_wins)
+   int player_value, bool maximizing_flag)
 {
    push_genuine_board_state();
    set_cell_value(curr_node, player_value);
@@ -1415,7 +1434,7 @@ double tictac3d::get_alphabeta_minimax_move_score(
       double integrated_player_path_score, integrated_opponent_path_score;
       extremal_winnable_path_scores(
          player_value, integrated_player_path_score, 
-         integrated_opponent_path_score, player_wins, opponent_wins);
+         integrated_opponent_path_score);
       pop_genuine_board_state();
 
       if(maximizing_flag)
@@ -1439,24 +1458,7 @@ double tictac3d::get_alphabeta_minimax_move_score(
          if(!legal_player_move(next_node)) continue;
          double curr_value = get_alphabeta_minimax_move_score(
             next_node, depth - 1, best_value, max_value, -player_value, 
-            maximizing_flag, player_wins, opponent_wins);
-
-/*
-         if(player_wins)
-         {
-            cout << "max_flag: curr_node = " << curr_node
-                 << " next_node = " << next_node
-                 << " opponent_value = " << -player_value << endl;
-            cout << "player = " << player_value << " wins" << endl;
-         }
-         if(opponent_wins)
-         {
-            cout << "max_flag: curr_node = " << curr_node
-                 << " next_node = " << next_node
-                 << " opponent_value = " << -player_value << endl;
-            cout << "opponent = " << -player_value << " wins" << endl;
-         }
-*/
+            maximizing_flag);
 
          best_value = basic_math::max(best_value, curr_value);
          if(best_value > max_value)
@@ -1490,24 +1492,7 @@ double tictac3d::get_alphabeta_minimax_move_score(
          if(!legal_player_move(next_node)) continue;
          double curr_value = get_alphabeta_minimax_move_score(
             next_node, depth - 1, min_value, best_value, -player_value, 
-            !maximizing_flag, player_wins, opponent_wins);
-
-/*
-         if(player_wins)
-         {
-            cout << "!max_flag: curr_node = " << curr_node
-                 << " next_node = " << next_node
-                 << " opponent_value = " << -player_value << endl;
-            cout << "player = " << player_value << " wins" << endl;
-         }
-         if(opponent_wins)
-         {
-            cout << "!max_flag: curr_node = " << curr_node
-                 << " next_node = " << next_node
-                 << " opponent_value = " << -player_value << endl;
-            cout << "opponent = " << -player_value << " wins" << endl;
-         }
-*/
+            !maximizing_flag);
 
          best_value = basic_math::min(best_value, curr_value);
          if(best_value < min_value)
@@ -1528,10 +1513,8 @@ double tictac3d::get_alphabeta_minimax_move_score(
 
 void tictac3d::extremal_winnable_path_scores(
    int player_value, double& integrated_player_path_score, 
-   double& integrated_opponent_path_score,
-   bool& player_wins, bool& opponent_wins)
+   double& integrated_opponent_path_score)
 {
-   player_wins = opponent_wins = false;
    integrated_player_path_score = integrated_opponent_path_score = 0;
    for(int p = 0; p < n_winnable_paths; p++)
    {
@@ -1567,22 +1550,12 @@ void tictac3d::extremal_winnable_path_scores(
       if(n_opponent_pieces_in_path == 0)
       {
          player_path_score += n_player_pieces_in_path * n_player_path_prize;
-         if(n_player_pieces_in_path == n_size)
-         {
-//            cout << "player_wins for path p = " << p << endl;
-            player_wins = true;
-         }
       }
 
       if(n_player_pieces_in_path == 0)
       {
          opponent_path_score += n_opponent_pieces_in_path * 
             n_opponent_path_prize;
-         if(n_opponent_pieces_in_path == n_size)
-         {
-//            cout << "opponent_wins for path p = " << p << endl;
-            opponent_wins = true;
-         }
       }
 
       integrated_player_path_score += player_path_score;

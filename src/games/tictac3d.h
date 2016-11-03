@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/30/16; 10/31/16; 11/1/16; 11/2/16
+// Last modified on 10/31/16; 11/1/16; 11/2/16; 11/3/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -94,12 +94,11 @@ class tictac3d
 
    double get_alphabeta_minimax_move_score(
       int curr_node, int depth, double alpha, double beta, int player_value,
-      bool maximizing_flag, bool& player_wins, bool& opponent_wins);
+      bool maximizing_flag);
 
    void extremal_winnable_path_scores(
       int player_value, double& integrated_player_path_score, 
-      double& integrated_opponent_path_score,
-      bool& player_wins, bool& opponent_wins);
+      double& integrated_opponent_path_score);
    void compute_winnable_path_occupancies(int player_value);
 
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
