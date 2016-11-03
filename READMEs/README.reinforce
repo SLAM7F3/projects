@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/27/16; 10/28/16; 10/29/16; 10/30/16
+Last updated on 10/28/16; 10/29/16; 10/30/16; 11/3/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -557,8 +557,6 @@ snapshot from expt 64 on TM at 12:38 pm.
 with Z=4 levels ***
 
 
-
-
 65.  Z = 4 TTT, H1 = 3 * 64, H2 = 3 * 64, base learning rate = 3E-4, gamma
 = 0.99, rms_decay = 0.85.  Started training against round 1 snapshot from
 expt 64 on TM at 11:27 am Worse performance than expt 64.  Terminated.
@@ -566,4 +564,18 @@ expt 64 on TM at 11:27 am Worse performance than expt 64.  Terminated.
 66.  Z = 4 TTT, H1 = 1 * 64, H2 = 5 * 64, base learning rate = 3E-4, gamma
 = 0.99, rms_decay = 0.85.  Started training against round 1 snapshot from
 expt 64 on TM at 11:28 am.  Worse performance than expt 64.  Terminated.
+
+
+70.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
+0.99, rms_decay = 0.85.  Play against AI with depth = 0.  After 1.4E6
+episodes and 3.6 hours of training, average number of turns is only 4.5.
+
+71.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-3, gamma =
+0.99, rms_decay = 0.85.  Play against AI with depth = 0.  Even worse
+performance than expt 70.  Terminated.
+
+72.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
+0.99, rms_decay = 0.85.  Play against AI with depth = 0.   Even worse
+performance than expt 71.  Terminated.
+
 

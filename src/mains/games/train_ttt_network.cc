@@ -78,6 +78,7 @@ int main (int argc, char* argv[])
 //   int n_zlevels = 1;
    int n_zlevels = 4;
 
+//   int nsize = 3;
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
@@ -145,9 +146,10 @@ int main (int argc, char* argv[])
 //   double base_learning_rate = 0.001 + nrfunc::ran1() * 0.004;
 //   reinforce_agent_ptr->set_base_learning_rate(base_learning_rate);
 
+   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
    //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
    //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    double min_learning_rate = 0.5E-4;
@@ -156,9 +158,9 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1 * 1000000;
    if(n_zlevels > 1)
    {
-//  int n_max_episodes = 2 * 1000000;
-      n_max_episodes = 5 * 1000000;
-//   int n_max_episodes = 10 * 1000000;
+//   n_max_episodes = 2 * 1000000;
+//      n_max_episodes = 5 * 1000000;
+      n_max_episodes = 20 * 1000000;
    }
 
    int n_update = 2500;
@@ -184,7 +186,8 @@ int main (int argc, char* argv[])
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
-   bool AI_moves_first = true;
+//   bool AI_moves_first = true;
+   bool AI_moves_first = false;
    bool periodically_switch_starting_player = false;
 //   bool periodically_switch_starting_player = true;
 
@@ -235,7 +238,8 @@ int main (int argc, char* argv[])
       }
       else
       {
-         ttt_ptr->set_recursive_depth(1);   // AI plays defensively
+         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
+//         ttt_ptr->set_recursive_depth(1);   // AI plays defensively
       }
 
 // -----------------------------------------------------------------------
@@ -249,7 +253,8 @@ int main (int argc, char* argv[])
 
          if((AI_moves_first && curr_timestep == 0) || curr_timestep > 0)
          {
-            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+            ttt_ptr->get_random_legal_player_move(AI_value);
+//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 
 //            ttt_ptr->display_board_state();
@@ -280,6 +285,7 @@ int main (int argc, char* argv[])
 
          int output_action = 
             reinforce_agent_ptr->get_candidate_current_action();
+
          reinforce_agent_ptr->set_current_action(output_action);
          ttt_ptr->set_player_move(output_action, agent_value);
          ttt_ptr->increment_n_agent_turns();
@@ -305,11 +311,11 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number% n_update == 0)
       {
-//          cout << "GAME OVER" << endl;
          ttt_ptr->display_board_state();
-//         outputfunc::enter_continue_char();
+//            outputfunc::enter_continue_char();
+//          cout << "GAME OVER" << endl;
       }
-
+      
       if(nearly_equal(curr_reward, lose_reward))
       {
          n_losses++;

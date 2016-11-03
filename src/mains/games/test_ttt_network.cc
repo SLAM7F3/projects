@@ -25,9 +25,11 @@ int main (int argc, char* argv[])
 
    nrfunc::init_time_based_seed();
 
-   int nsize = 4;
-//   int n_zlevels = 1;
-   int n_zlevels = 4;
+   int nsize = 3;
+//   int nsize = 4;
+//   int nsize = 5;
+   int n_zlevels = 1;
+//   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    ttt_ptr->reset_board_state();
 

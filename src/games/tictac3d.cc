@@ -310,8 +310,7 @@ bool tictac3d::set_player_move(int p, int player_value)
 void tictac3d::get_random_legal_player_move(int player_value)
 {
    bool legal_move_flag = false;
-
-   while(!legal_move_flag);
+   while(!legal_move_flag)
    {
       int p = mathfunc::getRandomInteger(n_cells);
       if(legal_player_move(p))
@@ -650,8 +649,6 @@ void tictac3d::print_winning_pattern()
 
 int tictac3d::check_player_win(int player_ID, bool print_flag)
 {
-//   cout << "inside check_player_win(), player_ID = " << player_ID << endl;
-
    int win_in_zplane = 1;
    int win_in_zcolumn = 2;
    int win_in_zslant = 3;
@@ -703,6 +700,7 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
    }
 
 // Check if player wins within any of 40 Z-planes possibilities:
+
    for(int pz = 0; pz < n_zlevels; pz++)
    {
       if(Zplane_win(player_ID, pz))
@@ -868,7 +866,7 @@ void tictac3d::generate_winnable_Zplane_paths(int pz)
 {
    winnable_path_t curr_path;
 
-// Firstly add 4 horizontal rows within Z-plane:
+// Firstly add n_size horizontal rows within Z-plane:
 
    for(int py = 0; py < n_size; py++)
    {
@@ -880,7 +878,7 @@ void tictac3d::generate_winnable_Zplane_paths(int pz)
       winnable_paths.push_back(curr_path);
    }
 
-// Secondly add 4 vertical columns within Z-plane:
+// Secondly add n_size vertical columns within Z-plane:
 
    for(int px = 0; px < n_size; px++)
    {
@@ -1330,47 +1328,50 @@ int tictac3d::get_recursive_minimax_move(int player_value)
       best_value = POSITIVEINFINITY;
    }
 
-   int curr_prime = 7;
-   int random = 10 * nrfunc::ran1();
-   if(random == 1)
+   int curr_prime = 3;
+   if(n_size > 3)
    {
-      curr_prime = 11;
-   }
-   else if (random == 2)
-   {
-      curr_prime = 13;
-   }
-   else if (random == 3)
-   {
-      curr_prime = 17;
-   }
-   else if (random == 4)
-   {
-      curr_prime = 19;
-   }
-   else if (random == 5)
-   {
-      curr_prime = 19;
-   }
-   else if (random == 6)
-   {
-      curr_prime = 23;
-   }
-   else if (random == 7)
-   {
-      curr_prime = 29;
-   }
-   else if (random == 8)
-   {
-      curr_prime = 31;
-   }
-   else if (random == 9)
-   {
-      curr_prime = 37;
-   }
-   else if (random == 9)
-   {
-      curr_prime = 41;
+      int random = 10 * nrfunc::ran1();
+      if(random == 1)
+      {
+         curr_prime = 11;
+      }
+      else if (random == 2)
+      {
+         curr_prime = 13;
+      }
+      else if (random == 3)
+      {
+         curr_prime = 17;
+      }
+      else if (random == 4)
+      {
+         curr_prime = 19;
+      }
+      else if (random == 5)
+      {
+         curr_prime = 19;
+      }
+      else if (random == 6)
+      {
+         curr_prime = 23;
+      }
+      else if (random == 7)
+      {
+         curr_prime = 29;
+      }
+      else if (random == 8)
+      {
+         curr_prime = 31;
+      }
+      else if (random == 9)
+      {
+         curr_prime = 37;
+      }
+      else if (random == 9)
+      {
+         curr_prime = 41;
+      }
    }
    
    for(int p = 0; p < n_cells; p++)
