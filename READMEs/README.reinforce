@@ -584,23 +584,26 @@ against another random player.  Terminated.
 
 
 74.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
-0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
-pm Thurs Nov 3.
+0.99, rms_decay = 0.85.  Play against level-0 AI.  Running on TM as of 3 pm
+Thurs Nov 3.  AS of 8:30 am on Fri Nov 4, agent actually started to win a
+few games against AI around 2E6 episodes!  Running reward also started
+barely inching away from -2 around 2E6 episodes.  
 
 75.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-3, gamma =
 0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
-pm Thurs Nov 3.
+pm Thurs Nov 3.  Definitely worse than expt 74.  Terminated.
 
 76.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-2, gamma =
 0.99, rms_decay = 0.85.  Play against level-0 AI.   Terminated.
 
 77.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-4, gamma =
 0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
-pm Thurs Nov 3.
+pm Thurs Nov 3.  Definitely not as good as expt 74.  Terminated.
 
 78.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
 0.99, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 30.
-Running on TM as of 3 pm Thurs Nov 3.
+Running on TM as of 3 pm Thurs Nov 3.  Definitely not as good as expt 74.
+Terminated.
 
 
 79.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
