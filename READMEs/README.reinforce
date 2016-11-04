@@ -587,7 +587,7 @@ against another random player.  Terminated.
 0.99, rms_decay = 0.85.  Play against level-0 AI.  Running on TM as of 3 pm
 Thurs Nov 3.  AS of 8:30 am on Fri Nov 4, agent actually started to win a
 few games against AI around 2E6 episodes!  Running reward also started
-barely inching away from -2 around 2E6 episodes.  
+barely inching away from -2 around 2E6 episodes.   RUNNING.
 
 75.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-3, gamma =
 0.99, rms_decay = 0.85.  Play against level-0 AI.    Running on TM as of 3
@@ -631,6 +631,22 @@ relative to expt 79 observed as of 6:50 am.
 Started on m6700 at 4:20 am on Fri, Nov 4.  No dramatic improvements
 relative to expt 79 observed as of 6:50 am .
 
+
 84.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
 0.99, rms_decay = 0.85.  Play against level-0 AI.  Implement Delsey's
-"check" idea.  Started on TM at 9:30 am on Fri Nov 4.
+"check" idea.  Started on TM at 9:30 am on Fri Nov 4. RUNNING.  After 1E6
+episodes, only won 1.29% of games. 
+
+85.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, no gradual
+learning rate reduction, gamma = 0.99, rms_decay = 0.85.  Play against
+level-0 AI.  Implement Delsey's "check" idea.  Started on TM at 11:50 am on
+Fri Nov 4. RUNNING  After 0.67E6 episodes, only won 0.98% of games.
+
+86.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-3, no gradual
+learning rate reduction, gamma = 0.99, rms_decay = 0.85.  Play against
+level-0 AI.  Implement Delsey's "check" idea.  Started on TM at 11:50 am on
+Fri Nov 4.  RUNNING.  After 0.71E6 episodes, only won 0.71% of games.
+
+
+Experimented with 3-layer and 4-layer networks containing 64 nodes per
+layer.  No obvious benefit compared to expt 84.

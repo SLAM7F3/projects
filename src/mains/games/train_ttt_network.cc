@@ -97,16 +97,24 @@ int main (int argc, char* argv[])
 //   int H2 = 3 * 64;
 //   int H2 = 5 * 64;
 
+   int H3 = 0;
+   int H4 = 0;
+
    if(n_zlevels == 4)
    {
-      H1 = 5 * 64;
-      H2 = 1 * 64;
+//      H1 = 5 * 64;
+//      H2 = 1 * 64;
 
 //      H1 = 3 * 64;
 //      H2 = 3 * 64;
 
 //      H1 = 1 * 64;
 //      H2 = 5 * 64;
+
+      H1 = 1 * 64;
+      H2 = 64;
+      H3 = 64;
+      H4 = 64;
    }
    
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -114,6 +122,15 @@ int main (int argc, char* argv[])
    {
       extrainfo += "; H2="+stringfunc::number_to_string(H2);
    }
+   if(H3 > 0)
+   {
+      extrainfo += "; H3="+stringfunc::number_to_string(H3);
+   }
+   if(H4 > 0)
+   {
+      extrainfo += "; H4="+stringfunc::number_to_string(H3);
+   }
+
    extrainfo += "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
@@ -122,6 +139,14 @@ int main (int argc, char* argv[])
    if(H2 > 0)
    {
       layer_dims.push_back(H2);
+   }
+   if(H3 > 0)
+   {
+      layer_dims.push_back(H3);
+   }
+   if(H4 > 0)
+   {
+      layer_dims.push_back(H4);
    }
    layer_dims.push_back(Dout);
 
@@ -166,8 +191,8 @@ int main (int argc, char* argv[])
       n_max_episodes = 20 * 1000000;
    }
 
-   int n_update = 2500;
-   int n_summarize = 5000;
+   int n_update = 5000;
+   int n_summarize = 10000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -210,6 +235,11 @@ int main (int argc, char* argv[])
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_summarize, n_max_episodes);
+
+// FAKE FAKE:  Fri Nov 4 at 11:50 am
+// Expt with NOT decreasing learning rate as training proceeds
+
+/*
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
@@ -224,6 +254,7 @@ int main (int argc, char* argv[])
             AI_moves_first = !AI_moves_first;
          }
       }
+*/
 
 
       if(AI_moves_first)

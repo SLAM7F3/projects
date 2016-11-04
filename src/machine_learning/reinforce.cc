@@ -392,12 +392,19 @@ void reinforce::policy_backward()
             delta_prime[curr_layer]->get_column(t),
             a[prev_layer]->get_column(t));
 
+/*
+
+// As of 11/4/16, we comment out L2-regularization for deep
+// reinforcement learning:
+
          const double TINY = 1E-8;
          if(lambda > TINY)
          {
             *delta_nabla_weights[prev_layer] += 
                2 * lambda * (*weights[prev_layer]);
          }
+*/
+
       } // loop over index t 
       
 
@@ -620,6 +627,9 @@ void reinforce::update_weights(bool episode_finished_flag)
    {
       T_values.pop_front();
    }
+
+
+
    
 // Compute the discounted reward backwards through time:
 
@@ -653,7 +663,7 @@ void reinforce::update_weights(bool episode_finished_flag)
          } // loop over index i labeling rows
       }
 
-// Update weights and biases for eacy network layer by their nabla
+// Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
       const double epsilon = 1E-5;
@@ -664,8 +674,34 @@ void reinforce::update_weights(bool episode_finished_flag)
          nabla_weights[l]->hadamard_division(*rms_denom[l]);
 
          *weights[l] -= learning_rate * (*nabla_weights[l]);
+
+         int mdim = nabla_weights[l]->get_mdim();
+         int ndim = nabla_weights[l]->get_ndim();
+
+         vector<double> curr_nabla_weights;
+         vector<double> curr_nabla_weight_ratios;
+         for(int r = 0; r < mdim; r++)
+         {
+            for(int c = 0; c < ndim; c++)
+            {
+               curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(c,r)));
+               curr_nabla_weight_ratios.push_back(
+                  fabs(nabla_weights[l]->get(c,r) / weights[l]->get(c,r) ));
+            }
+         }
+         double median_abs_nabla_weight = mathfunc::median_value(
+            curr_nabla_weights);
+         double median_abs_nabla_weight_ratio = mathfunc::median_value(
+            curr_nabla_weight_ratios);
+         cout << "layer l = " << l
+              << " median |nabla weight| = " 
+              << median_abs_nabla_weight 
+              << " lr * median weight ratio = " 
+              << learning_rate * median_abs_nabla_weight_ratio << endl;
+
          nabla_weights[l]->clear_values();
       }
+      cout << endl;
 //       print_weights();
    } // episode % batch_size == 0 conditional
 }
