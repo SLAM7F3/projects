@@ -129,15 +129,19 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-   double gamma = 0.99;
+//   double gamma = 0.99;
 //   double gamma = 0.95;
 //   double gamma = 0.9;
-//   double gamma = 0.5;
+   double gamma = 0.5;
    reinforce_agent_ptr->set_gamma(gamma);  
 
 //   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
 
-   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+   
+//   reinforce_agent_ptr->set_batch_size(100);   
+//   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+   reinforce_agent_ptr->set_batch_size(10);   
+//   reinforce_agent_ptr->set_batch_size(3);   
 //   reinforce_agent_ptr->set_batch_size(60);   
 //   reinforce_agent_ptr->set_batch_size(120);  
 
@@ -277,8 +281,6 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->get_candidate_current_action();
          reinforce_agent_ptr->set_current_action(output_action);
          ttt_ptr->set_player_move(output_action, agent_value);
-
-// FAKE FAKE:  Thurs Nov 3 at 1:16 pm
 
 //         ttt_ptr->get_random_legal_player_move(agent_value);
 //         ttt_ptr->increment_n_agent_turns();

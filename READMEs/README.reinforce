@@ -1,7 +1,7 @@
 ==========================================================================
 Reinforcement learning notes
 ==========================================================================
-Last updated on 10/28/16; 10/29/16; 10/30/16; 11/3/16
+Last updated on 10/29/16; 10/30/16; 11/3/16; 11/4/16
 ==========================================================================
 
 *.  On 10/19/16, we found the following set of hyperparameters which yields
@@ -599,5 +599,31 @@ pm Thurs Nov 3.
 pm Thurs Nov 3.
 
 78.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
-0.99, rms_decay = 0.85.  Play against level-0 AI.  Running on TM as of 3 pm
-Thurs Nov 3.
+0.99, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 30.
+Running on TM as of 3 pm Thurs Nov 3.
+
+
+79.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
+0.99, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 10.
+Running on m6700 as of 5:30 pm Thurs Nov 3.  Number of turns definitely
+advances beyond 4.  *Tiny* movements of running reward away from -2 min
+value also observed.  As of 6:50 am on Fri Nov 4, this expt is our best
+result seen on m6700 for Z=4 level TTT against a level-0 AI.
+
+80.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
+0.99, rms_decay = 0.85.  Play against level-0 AI. Batch size = 3.  Results
+not as good as those for expt 79 with batch size = 10.  Terminated.
+
+81.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
+0.99, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 100.  Very
+bad results.  Terminated.
+
+82.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
+0.90, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 10.
+Started on m6700 at 4:20 am on Fri, Nov 4.  No dramatic improvements
+relative to expt 79 observed as of 6:50 am.
+
+83.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 1E-3, gamma =
+0.50, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 10.
+Started on m6700 at 4:20 am on Fri, Nov 4.  No dramatic improvements
+relative to expt 79 observed as of 6:50 am .
