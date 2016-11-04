@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 10/31/16; 11/1/16; 11/2/16; 11/3/16
+// Last modified on 11/1/16; 11/2/16; 11/3/16; 11/4/16
 // ==========================================================================
 
 #include <iostream>
@@ -644,8 +644,8 @@ void tictac3d::print_winning_pattern()
 }
 
 // ---------------------------------------------------------------------
-// Boolean member function check_player_win() returns true if input
-// player_ID has a winning board state.
+// Boolean member function check_player_win() returns a positive
+// integer if input player_ID has a winning board state.
 
 int tictac3d::check_player_win(int player_ID, bool print_flag)
 {
@@ -1673,5 +1673,33 @@ void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
 }
 
 
+// ---------------------------------------------------------------------
+// Member function check_opponent_win_on_next_move() examines every
+// possible move that the opponent player could make on its next turn.
+// If moving into some cell will result in the opponent winning, the
+// cell's ID is returned by this method.  Otherwise, this method
+// returns -1.
 
-
+int tictac3d::check_opponent_win_on_next_turn(int player_value)
+{
+   for(int p = 0; p < n_cells; p++)
+   {
+      if(!legal_player_move(p)) continue;
+      
+      push_genuine_board_state();
+      set_cell_value(p, -player_value);
+      if(check_player_win(-player_value) > 0)
+      {
+//         cout << "*** OPPONENT CAN WIN ON NEXT TURN! ***" << endl;
+         triple curr_t = cell_decomposition[p];
+//         cout << " Z = " << curr_t.third
+//              << " col = " << curr_t.first
+//              << " row = " << curr_t.second
+//              << endl;
+         pop_genuine_board_state();
+         return p;
+      }
+      pop_genuine_board_state();
+   }
+   return -1;
+}

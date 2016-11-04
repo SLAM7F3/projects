@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 10/29/16; 10/30/16; 11/1/16; 11/3/16
+// Last updated on 10/30/16; 11/1/16; 11/3/16; 11/4/16
 // ==========================================================================
 
 #include <iostream>
@@ -129,18 +129,18 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-//   double gamma = 0.99;
+   double gamma = 0.99;
 //   double gamma = 0.95;
 //   double gamma = 0.9;
-   double gamma = 0.5;
+//   double gamma = 0.5;
    reinforce_agent_ptr->set_gamma(gamma);  
 
 //   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
 
    
 //   reinforce_agent_ptr->set_batch_size(100);   
-//   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
-   reinforce_agent_ptr->set_batch_size(10);   
+   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+//   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(3);   
 //   reinforce_agent_ptr->set_batch_size(60);   
 //   reinforce_agent_ptr->set_batch_size(120);  
@@ -151,8 +151,8 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(base_learning_rate);
 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    double min_learning_rate = 0.5E-4;
@@ -225,6 +225,7 @@ int main (int argc, char* argv[])
          }
       }
 
+
       if(AI_moves_first)
       {
          ttt_ptr->set_recursive_depth(0);   // AI plays offensively
@@ -270,15 +271,32 @@ int main (int argc, char* argv[])
             }
          } // AI_moves_first || timestep > 0 conditional
 
+//         ttt_ptr->display_board_state();
+
 // Agent move:
 
-         reinforce_agent_ptr->compute_unrenorm_action_probs(
-            ttt_ptr->get_board_state_ptr());
-         reinforce_agent_ptr->renormalize_action_distribution();
-//         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+         int output_action;
 
-         int output_action = 
-            reinforce_agent_ptr->get_candidate_current_action();
+// Expt on Fri Nov 4 at 9:30 am with Delsey's idea about "check" in 3D TTT:
+
+         int a_winning_opponent_action = 
+            ttt_ptr->check_opponent_win_on_next_turn(agent_value);
+         if(a_winning_opponent_action >= 0)
+         {
+            reinforce_agent_ptr->hardwire_output_action(
+               a_winning_opponent_action);
+            output_action = a_winning_opponent_action;
+         }
+         else
+         {
+            reinforce_agent_ptr->compute_unrenorm_action_probs(
+               ttt_ptr->get_board_state_ptr());
+            reinforce_agent_ptr->renormalize_action_distribution();
+//         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+            output_action = 
+               reinforce_agent_ptr->get_candidate_current_action();
+         }
+
          reinforce_agent_ptr->set_current_action(output_action);
          ttt_ptr->set_player_move(output_action, agent_value);
 

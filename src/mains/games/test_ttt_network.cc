@@ -3,7 +3,7 @@
 // reinforcement learning in program TTT.  It then uses the trained
 // network to play against a human opponent.
 // ==========================================================================
-// Last updated on 10/31/16; 11/1/16; 11/2/16; 11/3/16
+// Last updated on 11/1/16; 11/2/16; 11/3/16; 11/4/16
 // ==========================================================================
 
 #include <iostream>
@@ -25,16 +25,16 @@ int main (int argc, char* argv[])
 
    nrfunc::init_time_based_seed();
 
-   int nsize = 3;
-//   int nsize = 4;
+//   int nsize = 3;
+   int nsize = 4;
 //   int nsize = 5;
-   int n_zlevels = 1;
-//   int n_zlevels = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    ttt_ptr->reset_board_state();
 
-   bool human_move_first = true;
-//   bool human_move_first = false;
+//   bool human_move_first = true;
+   bool human_move_first = false;
    if(human_move_first)
    {
 //      ttt_ptr->set_recursive_depth(1);	 // machine plays defensively
@@ -62,6 +62,10 @@ int main (int argc, char* argv[])
       if(human_move_first || ttt_ptr->get_n_agent_turns() > 0)
       {
          int human_value = -1;   // "X"
+
+         int a_winning_opponent_action = 
+            ttt_ptr->check_opponent_win_on_next_turn(human_value);
+
          ttt_ptr->enter_player_move(human_value);
          ttt_ptr->display_board_state();
          ttt_ptr->increment_n_human_turns();

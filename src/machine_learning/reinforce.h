@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
+// Last modified on 10/27/16; 10/28/16; 10/29/16; 11/4/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -43,12 +43,13 @@ class reinforce
    void set_rmsprop_decay_rate(double rate);
    genvector* get_p_action();
 
+   void hardwire_output_action(int a);
+
    void initialize_episode();
    void compute_unrenorm_action_probs(genvector* x_input);
    void renormalize_action_distribution();
 
    void redistribute_action_probs();
-   void zero_p_action(int a_star);
    void print_p_action() const;
    int get_candidate_current_action();
    void set_current_action(int output_action);
@@ -106,6 +107,7 @@ class reinforce
 
 // Node activation outputs:
    std::vector<genmatrix*> a;
+   int hardwired_output_action;
 
 // Node errors:
    std::vector<genmatrix*> delta_prime; // n_actions x T

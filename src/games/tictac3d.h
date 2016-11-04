@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 10/31/16; 11/1/16; 11/2/16; 11/3/16
+// Last modified on 11/1/16; 11/2/16; 11/3/16; 11/4/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -75,6 +75,7 @@ class tictac3d
    int get_n_filled_cells() const;
    int get_n_empty_cells() const;
    int check_player_win(int player_ID, bool print_flag = false);
+   int check_opponent_win_on_next_turn(int player_value);
    void adjust_intrinsic_cell_prizes();
    void print_winning_pattern();
 

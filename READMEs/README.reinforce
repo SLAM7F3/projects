@@ -630,3 +630,7 @@ relative to expt 79 observed as of 6:50 am.
 0.50, rms_decay = 0.85.  Play against level-0 AI.  Batch size = 10.
 Started on m6700 at 4:20 am on Fri, Nov 4.  No dramatic improvements
 relative to expt 79 observed as of 6:50 am .
+
+84.  Z = 4 TTT, H1 = 5 * 64, H2 = 64, base learning rate = 3E-4, gamma =
+0.99, rms_decay = 0.85.  Play against level-0 AI.  Implement Delsey's
+"check" idea.  Started on TM at 9:30 am on Fri Nov 4.

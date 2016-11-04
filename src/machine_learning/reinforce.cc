@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/26/16; 10/27/16; 10/28/16; 10/29/16
+// Last modified on 10/27/16; 10/28/16; 10/29/16; 11/4/16
 // ==========================================================================
 
 #include <string>
@@ -81,6 +81,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       delta_prime.push_back(curr_delta_prime);
    }
    n_actions = layer_dims.back();
+   hardwired_output_action = -1;
 
    p_action = new genvector(n_actions);
    pcum_action = new genvector(n_actions);
@@ -195,6 +196,13 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
    return outstream;
 }
 
+
+// ---------------------------------------------------------------------
+void reinforce::hardwire_output_action(int a)
+{
+   hardwired_output_action = a;
+}
+
 // ---------------------------------------------------------------------
 // Member function policy_forward returns the output of the network
 // given an input set of values.  See "Forward & backward propagation
@@ -213,8 +221,18 @@ void reinforce::policy_forward(int t)
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
 //   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
-   machinelearning_func::constrained_softmax(
-      t, *x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
+
+   if(hardwired_output_action >= 0)
+   {
+      machinelearning_func::hardwire_output_action(t, hardwired_output_action,
+                                                   *a[n_layers-1]);
+      hardwired_output_action = -1;
+   }
+   else
+   {
+      machinelearning_func::constrained_softmax(
+         t, *x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -428,6 +446,9 @@ void reinforce::compute_unrenorm_action_probs(genvector *x_input)
 // renormalizes action probabilities and computes their cumulative
 // probability distribution.
 
+// Note as of 11/4/16, we believe that explicit prob dist
+// renormalization no longer needs to be performed !!!
+
 void reinforce::renormalize_action_distribution()
 {
 //   cout << "inside renormalize_action_dist()" << endl;
@@ -438,6 +459,7 @@ void reinforce::renormalize_action_distribution()
    }
 //    print_p_action();
 
+/*
    const double TINY=1E-100;
    if(denom < TINY)
    {
@@ -445,6 +467,7 @@ void reinforce::renormalize_action_distribution()
       redistribute_action_probs();
    }
    else
+*/
    {
       for(int a = 0; a < n_actions; a++)
       {
@@ -495,14 +518,6 @@ void reinforce::redistribute_action_probs()
       }
    }
    compute_cumulative_action_dist();
-}
-
-// ---------------------------------------------------------------------
-void reinforce::zero_p_action(int a_star)
-{
-//   cout << "inside zero_p_action, a_star = " << a_star << endl;
-   p_action->put(a_star, 0);
-   renormalize_action_distribution();
 }
 
 // ---------------------------------------------------------------------
