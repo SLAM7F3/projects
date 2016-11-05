@@ -8,10 +8,10 @@
 #define MAZE_H
 
 #include <map>
+#include <stack>
 #include <vector>
 #include "math/genmatrix.h"
 #include "math/ltduple.h"
-#include "datastructures/Stack.h"
 
 class maze
 {
@@ -30,17 +30,33 @@ class maze
    DUPLE getDirection(int curr_dir);
    bool IsDirValid(int px, int py, int curr_dir);
    int get_neighbor(int p, int curr_dir);
+   std::vector<int> get_cell_neighbors(int p);
+   int get_n_unvisited_neighbors(int p);
+   int n_visited_cells() const;
+   void init_grid();
+   void print_grid() const;
    void generate_maze();
 
-
-
+   void DrawLine(unsigned char* img, int x1, int y1, int x2, int y2,
+                 int R, int G, int B);
+   void RenderMaze(unsigned char* img);
+   void SaveBMP(std::string FileName, const void* RawBGRImage, 
+                int Width, int Height);
+   void DrawMaze();
+   
   private: 
 
    int n_size, n_cells;
+   int n_directions, nbits;
+   int ImageSize;
    bool game_over;
    std::vector<int> direction;
-   genmatrix *grid_ptr, *visited_ptr;
-   Stack<int> mstack;
+   genmatrix *grid_ptr;
+
+   std::vector<bool> visited_cell;
+	// independent int = cell ID; dependent bool = visited flag
+
+   std::stack<int> visited_cell_stack;
 
    std::vector<DUPLE> cell_decomposition;
 // independent int: p
@@ -52,6 +68,8 @@ class maze
 
    int get_cell(int px, int py);
    void set_game_over(bool flag);
+   std::string get_cell_bitstr(int px, int py);
+   void remove_wall(int p, int curr_dir);
 
 };
 
