@@ -18,15 +18,6 @@ class maze
    
   public:
 
-   enum eDirection
-   {
-      eDirection_Invalid = 0,
-      eDirection_Up      = 1,
-      eDirection_Right   = 2,
-      eDirection_Down    = 4,
-      eDirection_Left    = 8
-   };
-
 // Initialization, constructor and destructor functions:
 
    maze(int n_size);
@@ -36,14 +27,19 @@ class maze
    friend std::ostream& operator<< 
       (std::ostream& outstream,const maze& C);
 
+   DUPLE getDirection(int curr_dir);
+   bool IsDirValid(int px, int py, int curr_dir);
+   int get_neighbor(int p, int curr_dir);
    void generate_maze();
+
 
 
   private: 
 
    int n_size, n_cells;
    bool game_over;
-   genmatrix* grid_ptr;
+   std::vector<int> direction;
+   genmatrix *grid_ptr, *visited_ptr;
    Stack<int> mstack;
 
    std::vector<DUPLE> cell_decomposition;
