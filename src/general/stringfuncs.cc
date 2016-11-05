@@ -6,7 +6,7 @@
 // ==========================================================================
 // String methods definitions
 // ==========================================================================
-// Last updated on 5/28/14; 1/23/16; 3/31/16; 10/4/16
+// Last updated on 1/23/16; 3/31/16; 10/4/16; 11/5/16
 // ==========================================================================
 
 #include <cstring>
@@ -177,6 +177,7 @@ namespace stringfunc
       return value;
    }
 
+// ---------------------------------------------------------------------
 // Method byte_bits_rep() takes in a byte (in the form of a
 // single character).  It converts this single byte's content into a
 // character string of 0's and/or 1's whose length equals n_bits:
@@ -204,6 +205,7 @@ namespace stringfunc
       return substring;
    }
 
+// ---------------------------------------------------------------------
    void display_byte_bits_rep(char c,int n_bits)
    {
       unsigned short value=byte_value(c);
@@ -211,6 +213,26 @@ namespace stringfunc
 
       cout << setw(7) << value << " = " << byte_bits_rep(c,n_bits) << endl;
    }
+
+// ---------------------------------------------------------------------
+// Method bits_rep_to_integer() performs poor-man's bit algebra.  It
+// converts the bit string back into a base-10 integer.
+
+   int bits_rep_to_integer(string bits_rep_str)
+   {
+      int nbits = bits_rep_str.size();
+      int base10_value = 0;
+      int curr_power = 1;
+      for(int c = 0; c < nbits; c++)
+      {
+         if(bits_rep_str.substr(nbits-1-c,1) == "1")
+         {
+            base10_value += curr_power;
+         }
+         curr_power *= 2;
+      }
+      return base10_value;
+   } 
 
 // ==========================================================================
 // Get methods

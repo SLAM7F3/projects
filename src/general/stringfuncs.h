@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for some useful string manipulation methods
 // ==========================================================================
-// Last updated on 4/5/14; 4/29/14; 5/28/14; 3/5/16
+// Last updated on 4/29/14; 5/28/14; 3/5/16; 11/5/16
 // ==========================================================================
 
 #ifndef STRINGFUNCS_H
@@ -43,6 +43,7 @@ namespace stringfunc
    unsigned short byte_value(char c);
    std::string byte_bits_rep(char c,int n_bits=8);
    void display_byte_bits_rep(char c,int n_bits=8);
+   int bits_rep_to_integer(std::string bits_rep_str);
 
 // ==========================================================================
 // Get methods
