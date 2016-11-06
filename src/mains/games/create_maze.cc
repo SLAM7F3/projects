@@ -28,10 +28,12 @@ int main (int argc, char* argv[])
    maze curr_maze(nsize);
 
    curr_maze.generate_maze();
+   curr_maze.initialize_occupancy_grid();
+
    curr_maze.DrawMaze();
    curr_maze.print_solution_path();
 
-   curr_maze.generate_occupancy_grid();
+   curr_maze.reset_game();
    curr_maze.print_occupancy_grid();
 }
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/19/16; 10/20/16; 10/29/16; 11/4/16
+// Last updated on 10/20/16; 10/29/16; 11/4/16; 11/6/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -114,6 +114,7 @@ namespace machinelearning_func
             if(Zij > 0)
             {
                A.put(i, j, Zij);
+
             }
          }
       }
@@ -227,8 +228,7 @@ namespace machinelearning_func
 // computation.  
  
    void constrained_softmax(int zcol, const genvector& x_input, 
-                            const genmatrix& Z, genmatrix& A, 
-                            bool debug_flag)
+                            const genmatrix& Z, genmatrix& A)
    {
       const double SMALL = 0.1;
       double Zmax = NEGATIVEINFINITY;

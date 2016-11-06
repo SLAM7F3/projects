@@ -34,19 +34,18 @@ void maze::allocate_member_objects()
    nbits = n_directions;
    grid_ptr = new genmatrix(n_cells, n_cells);
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
+   occupancy_state = new genvector(sqr(2*n_size-1));
    ImageSize = 512;
 }		       
 
 void maze::initialize_member_objects()
 {
-   game_over = false;
-
    direction.push_back(1); // up
    direction.push_back(2); // right
    direction.push_back(4); // down
    direction.push_back(8); // left
 
-// Load cell_decomposition vector with (px,py,pz) triples
+// Load cell_decomposition vector with (px,py) duples
 // corresponding to p = 0 --> n_cells - 1:
 
    for(int q = 0; q < n_cells; q++)
@@ -58,13 +57,20 @@ void maze::initialize_member_objects()
       cell_decomposition.push_back(DUPLE(px,py));
    }
 
-// Set all visited cell flags to false:
+// Load occupancy_cell_decomposition vector with (px,py) duples
+// corresponding to p = 0 --> occupancy_grid.mdim * occupancy_grid.ndim - 1:
 
-   for(int p = 0; p < n_cells; p++)
+   for(unsigned int q = 0; 
+       q < occupancy_grid->get_mdim() * occupancy_grid->get_ndim(); q++)
    {
-      visited_cell.push_back(false);
-      deadend_cell.push_back(false);
+      int p = q;
+      int py = p / occupancy_grid->get_ndim();
+      p -= occupancy_grid->get_ndim() * py;
+      int px = p;
+      occupancy_cell_decomposition.push_back(DUPLE(px,py));
    }
+
+   turtle_cell = -1;
 }		       
 
 // ---------------------------------------------------------------------
@@ -89,6 +95,7 @@ maze::~maze()
 {
    delete grid_ptr;
    delete occupancy_grid;
+   delete occupancy_state;
 }
 
 // ---------------------------------------------------------------------
@@ -104,19 +111,19 @@ ostream& operator<< (ostream& outstream,const maze& T)
 
 DUPLE maze::getDirection(int curr_dir)
 {
-   if(curr_dir == 0)
+   if(curr_dir == 0)  	   // up
    {
       return DUPLE(0,-1);
    }
-   else if(curr_dir == 1)
+   else if(curr_dir == 1)  // right
    {
       return DUPLE(1,0);
    }
-   else if(curr_dir == 2)
+   else if(curr_dir == 2)  // down
    {
       return DUPLE(0,1);
    }
-   else if(curr_dir == 3)
+   else if(curr_dir == 3)  // lefet
    {
       return DUPLE(-1,0);
    }
@@ -178,7 +185,6 @@ int maze::get_direction_from_p_to_q(int p, int q)
    
    int delta_x = qx - px;
    int delta_y = qy - py;
-
 
    if(delta_x == 0 && delta_y == -1)
    {
@@ -320,6 +326,7 @@ void maze::print_visited_cell_stack() const
 // ---------------------------------------------------------------------
 void maze::set_solution_path() 
 {
+   soln_path.clear();
    soln_path.push_back(0);
 
    for(int v = visited_cell_stack.size()-1; v >= 0; v--)
@@ -331,6 +338,11 @@ void maze::set_solution_path()
 const vector<int>& maze::get_solution_path() const
 {
    return soln_path;
+}
+
+int maze::get_solution_path_moves() const
+{
+   return soln_path.size();
 }
 
 void maze::print_solution_path() const
@@ -353,13 +365,28 @@ void maze::generate_maze()
 {
 //    cout << "inside generate_maze()" << endl;
 
+   turtle_value = 1.0;
+   wall_value = -1.0;
+
    init_grid();
 
-// Start maze generation at some random location within grid:
+// Set all visited cell flags to false:
 
-//   int p = mathfunc::getRandomInteger(n_cells);
-   int p = n_cells-1;
+   visited_cell.clear();
+   deadend_cell.clear();
+   visited_cell_stack.clear();
+   for(int p = 0; p < n_cells; p++)
+   {
+      visited_cell.push_back(false);
+      deadend_cell.push_back(false);
+   }
+
+// Start maze generation at some location within grid:
+
 //   int p = 0;
+   int p = n_cells-1;
+//   int p = mathfunc::getRandomInteger(n_cells);
+
    visited_cell[p] = true;
 
    while(n_visited_cells() < n_cells)
@@ -550,7 +577,7 @@ void maze::DrawMaze()
 }
 
 // ---------------------------------------------------------------------
-void maze::generate_occupancy_grid()
+void maze::initialize_occupancy_grid()
 {
    int mdim = occupancy_grid->get_mdim();
    int ndim = occupancy_grid->get_ndim();
@@ -571,7 +598,7 @@ void maze::generate_occupancy_grid()
          {
             if(cell_bitstr.substr(2,1) == "1") // wall to right of (px,py)
             {
-               occupancy_grid->put(qx+1, qy, 1);
+               occupancy_grid->put(qx+1, qy, wall_value);
             }
             else
             {
@@ -583,7 +610,7 @@ void maze::generate_occupancy_grid()
          {
             if(cell_bitstr.substr(1,1) == "1") // wall below (px,py)
             {
-               occupancy_grid->put(qx, qy+1, 1);
+               occupancy_grid->put(qx, qy+1, wall_value);
             }
             else
             {
@@ -593,26 +620,213 @@ void maze::generate_occupancy_grid()
          
          if(qx+1 < ndim && qy+1 < mdim)
          {
-            occupancy_grid->put(qx+1,qy+1,1);
+            occupancy_grid->put(qx+1, qy+1, wall_value);
          }
 
       } // loop over px
    }  // loop over py
+
+   initialize_occupancy_state();
+}
+
+// ---------------------------------------------------------------------
+void maze::initialize_occupancy_state() 
+{
+   int n_wall_cells = 0;
+   for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
+   {
+      for(unsigned int px = 0; px < occupancy_grid->get_ndim(); px++)
+      {
+         if(nearly_equal(occupancy_grid->get(px,py), wall_value))
+         {
+            n_wall_cells++;
+         }
+      }
+   }
+
+// Reset wall_value so that sum over all occupancy_grid values = 0:
+
+   double renormalized_wall_value = -turtle_value / n_wall_cells;
+   int cell = 0;   
+   for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
+   {
+      for(unsigned int px = 0; px < occupancy_grid->get_ndim(); px++)
+      {
+         if(nearly_equal(occupancy_grid->get(px,py), wall_value))
+         {
+            occupancy_grid->put(px,py,renormalized_wall_value);
+         }
+         occupancy_state->put(cell, occupancy_grid->get(px,py));
+         cell++;
+      }
+   }
+
+   wall_value = renormalized_wall_value;
 }
 
 // ---------------------------------------------------------------------
 void maze::print_occupancy_grid() const
 {
-//   cout << "occupancy_grid: mdim = "  
-//        << occupancy_grid->get_mdim()
-//        << " ndim = " << occupancy_grid->get_ndim() << endl;
+   cout << "occupancy_grid: mdim = "  
+        << occupancy_grid->get_mdim()
+        << " ndim = " << occupancy_grid->get_ndim() << endl;
    for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
    {
       for(unsigned int px = 0; px < occupancy_grid->get_ndim(); px++)
       {
-         cout << occupancy_grid->get(px,py) << flush;
+//         if(nearly_equal(occupancy_grid->get(px,py), turtle_value))
+//         {
+//            cout << "T" << flush;
+//         }
+//         else
+         {
+            double curr_occup_val = occupancy_grid->get(px,py);
+            int prec = 3;
+            if(curr_occup_val < 0)
+            {
+               prec = 2;
+            }
+            cout << stringfunc::number_to_string(curr_occup_val,prec) 
+                 << " " << flush;
+         }
       }
       cout << endl;
    }
    cout << endl;
+
+/*
+   cout << "occupancy state:" << endl;
+   for(unsigned int p = 0; p < occupancy_state->get_mdim(); p++)
+   {
+      cout << occupancy_state->get(p) << endl;
+   }
+*/
+}
+
+// ---------------------------------------------------------------------
+void maze::reset_game() 
+{
+   game_over = false;
+   maze_solved = false;
+   turtle_cell = 0;
+   n_turtle_steps = 0;
+
+   initialize_occupancy_grid();
+   int tx = cell_decomposition[turtle_cell].first;
+   int ty = cell_decomposition[turtle_cell].second;
+   occupancy_grid->put(tx, ty, turtle_value);   
+   turtle_path_history.clear();
+   turtle_path_history.push_back(0);
+}
+
+// ---------------------------------------------------------------------
+void maze::set_game_over(bool flag)
+{
+   game_over = true;
+}
+
+// ---------------------------------------------------------------------
+bool maze::get_game_over() const
+{
+   return game_over;
+}
+
+// ---------------------------------------------------------------------
+bool maze::get_maze_solved() const
+{
+   return maze_solved;
+}
+
+// ---------------------------------------------------------------------
+int maze::get_n_turtle_steps() const
+{
+   return n_turtle_steps;
+}
+
+// ---------------------------------------------------------------------
+int maze::get_n_soln_steps() const
+{
+   return soln_path.size();
+}
+
+// ---------------------------------------------------------------------
+int maze::move_turtle(int curr_dir, bool erase_turtle_path)
+{
+//   cout << "inside move_turtle, curr_dir = " << curr_dir << endl;
+   n_turtle_steps++;
+   int tx = occupancy_cell_decomposition[turtle_cell].first;
+   int ty = occupancy_cell_decomposition[turtle_cell].second;
+//   cout << "Before move, tx = " << tx << " ty = " << ty << endl;
+
+   DUPLE d = getDirection(curr_dir);
+   int tx_inter = tx + d.first;
+   int ty_inter = ty + d.second;
+   int tx_new = tx + 2 * d.first;
+   int ty_new = ty + 2 * d.second;
+//   cout << "direction : dx = " << d.first << " dy = " << d.second << endl;
+//   cout << "After move, tx_new = " << tx_new <<" ty = " << ty_new << endl;
+
+   if(tx_new < 0 || tx_new >= int(occupancy_grid->get_ndim()) ||
+      ty_new < 0 || ty_new >= int(occupancy_grid->get_mdim()) )
+   {
+      return -1;        // Turtle cannot move beyond grid borders
+   }
+   
+   int t_inter = get_occupancy_cell(tx_inter,ty_inter);
+//   cout << "t_new = " << t_new 
+//        << " occupancy_state(t_new) = " << occupancy_state->get(t_new)
+//        << endl;
+
+   if(fabs(occupancy_state->get(t_inter)) > 0)
+   {
+      return -1;	 // new cell is already occupied by wall
+   }
+
+   
+/*
+   if(!erase_turtle_path && 
+      nearly_equal(occupancy_grid->get(tx_new, ty_new), turtle_value))
+   {
+      return -1;	// turtle previously visited candidate cell
+   }
+*/
+
+   occupancy_state->put(turtle_cell, 0);
+
+   int t_new = get_occupancy_cell(tx_new,ty_new);
+   turtle_cell = t_new;
+//   cout << "turtle_cell = " << turtle_cell << endl;
+   occupancy_state->put(turtle_cell, turtle_value);
+
+   if(erase_turtle_path)
+   {
+      occupancy_grid->put(tx,ty,0);
+   }
+   occupancy_grid->put(tx_new, ty_new, turtle_value);
+
+   if (turtle_cell == int(occupancy_state->get_mdim() - 1))
+   {
+      maze_solved = true;
+      game_over = true;
+   }
+
+   turtle_path_history.push_back(t_new);
+   return turtle_cell;
+}
+
+// ---------------------------------------------------------------------
+void maze::print_turtle_path_history() const
+{
+   for(unsigned int i = 0; i < turtle_path_history.size(); i++)
+   {
+      cout << "i = " << i << " turtle cell = " << turtle_path_history[i]
+           << endl;
+   }
+   cout << "---------------" << endl;
+}
+
+// ---------------------------------------------------------------------
+int maze::get_n_turtle_moves() const
+{
+   return turtle_path_history.size();
 }

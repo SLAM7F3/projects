@@ -208,7 +208,7 @@ void reinforce::hardwire_output_action(int a)
 // given an input set of values.  See "Forward & backward propagation
 // for one episode of reinforcement learning" notes dated 10/18/2016.
 
-void reinforce::policy_forward(int t)
+void reinforce::policy_forward(int t, bool enforce_constraints_flag)
 {
 //   cout << "inside policy_forward(), t = " << t << endl;
    a[0]->put_column(t, *x_input);
@@ -220,19 +220,25 @@ void reinforce::policy_forward(int t)
    }
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
-//   machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
 
-   if(hardwired_output_action >= 0)
+   if(!enforce_constraints_flag)
    {
-      machinelearning_func::hardwire_output_action(t, hardwired_output_action,
-                                                   *a[n_layers-1]);
-      hardwired_output_action = -1;
+      machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
    }
    else
    {
-      machinelearning_func::constrained_softmax(
-         t, *x_input, *z[n_layers-1], *a[n_layers-1], debug_flag);
-   }
+      if(hardwired_output_action >= 0)
+      {
+         machinelearning_func::hardwire_output_action(
+            t, hardwired_output_action, *a[n_layers-1]);
+         hardwired_output_action = -1;
+      }
+      else
+      {
+         machinelearning_func::constrained_softmax(
+            t, *x_input, *z[n_layers-1], *a[n_layers-1]);
+      } 
+   } // enforce_constraints_flag conditional
 }
 
 // ---------------------------------------------------------------------
@@ -392,12 +398,14 @@ void reinforce::policy_backward()
             delta_prime[curr_layer]->get_column(t),
             a[prev_layer]->get_column(t));
 
+
+
 /*
 
 // As of 11/4/16, we comment out L2-regularization for deep
 // reinforcement learning:
 
-         const double TINY = 1E-8;
+         const double TINY = 1E-8;<
          if(lambda > TINY)
          {
             *delta_nabla_weights[prev_layer] += 
@@ -406,7 +414,14 @@ void reinforce::policy_backward()
 */
 
       } // loop over index t 
-      
+
+      if(debug_flag)
+      {
+         cout << "prev_layer = " << prev_layer << endl;
+         cout << "*delta_nabla_weights[prev_layer] = " 
+              << *delta_nabla_weights[prev_layer]
+              << endl;
+      }
 
    } // loop over curr_layer index
 } 
@@ -437,15 +452,18 @@ void reinforce::initialize_episode()
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_unrenorm_action_probs() imports an input
+// Member function compute_action_probs() imports an input
 // state vector.  
 
-void reinforce::compute_unrenorm_action_probs(genvector *x_input)
+void reinforce::compute_action_probs(
+   genvector *x_input, bool enforce_constraints_flag)
 {
 //   cout << "curr_timestep = " << curr_timestep << endl;
    this->x_input = x_input;
-   policy_forward(curr_timestep);
+   policy_forward(curr_timestep, enforce_constraints_flag);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
+
+   compute_cumulative_action_dist();
 }
 
 // ---------------------------------------------------------------------
@@ -618,9 +636,9 @@ void reinforce::periodically_snapshot_loss_value()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::update_weights(bool episode_finished_flag)
+void reinforce::update_weights()
 {
-   if(!episode_finished_flag) return;
+//   cout << "inside update_weights()" << endl;
 
    T_values.push_back(T);
    if(T_values.size() > 1000)
@@ -628,9 +646,6 @@ void reinforce::update_weights(bool episode_finished_flag)
       T_values.pop_front();
    }
 
-
-
-   
 // Compute the discounted reward backwards through time:
 
    discount_rewards();
@@ -675,34 +690,56 @@ void reinforce::update_weights(bool episode_finished_flag)
 
          *weights[l] -= learning_rate * (*nabla_weights[l]);
 
-         int mdim = nabla_weights[l]->get_mdim();
-         int ndim = nabla_weights[l]->get_ndim();
-
-         vector<double> curr_nabla_weights;
-         vector<double> curr_nabla_weight_ratios;
-         for(int r = 0; r < mdim; r++)
+         if(debug_flag)
          {
-            for(int c = 0; c < ndim; c++)
-            {
-               curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(c,r)));
-               curr_nabla_weight_ratios.push_back(
-                  fabs(nabla_weights[l]->get(c,r) / weights[l]->get(c,r) ));
-            }
-         }
-         double median_abs_nabla_weight = mathfunc::median_value(
-            curr_nabla_weights);
-         double median_abs_nabla_weight_ratio = mathfunc::median_value(
-            curr_nabla_weight_ratios);
-         cout << "layer l = " << l
-              << " median |nabla weight| = " 
-              << median_abs_nabla_weight 
-              << " lr * median weight ratio = " 
-              << learning_rate * median_abs_nabla_weight_ratio << endl;
+            int mdim = nabla_weights[l]->get_mdim();
+            int ndim = nabla_weights[l]->get_ndim();
 
+            vector<double> curr_nabla_weights;
+            vector<double> curr_nabla_weight_ratios;
+            for(int r = 0; r < mdim; r++)
+            {
+               for(int c = 0; c < ndim; c++)
+               {
+                  curr_nabla_weights.push_back(
+                     fabs(nabla_weights[l]->get(c,r)));
+//               cout << "r = " << r << " c = " << c
+//                    << " curr_nabla_weight = " 
+//                    << curr_nabla_weights.back() << endl;
+                  double denom = weights[l]->get(c,r);
+                  if(fabs(denom) > 1E-10)
+                  {
+                     curr_nabla_weight_ratios.push_back(
+                        fabs(nabla_weights[l]->get(c,r) / denom ));
+                  }
+               }
+            }
+            double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+            double mean_abs_nabla_weight_ratio = mathfunc::mean(
+               curr_nabla_weight_ratios);
+            
+//         double median_abs_nabla_weight = mathfunc::median_value(
+//            curr_nabla_weights);
+//         double median_abs_nabla_weight_ratio = mathfunc::median_value(
+//            curr_nabla_weight_ratios);
+            cout << "layer l = " << l
+                 << " mean |nabla weight| = " 
+                 << mean_abs_nabla_weight 
+//              << " median |nabla weight| = " 
+//              << median_abs_nabla_weight  
+                 << " mean |nabla weight| ratio = " 
+                 << mean_abs_nabla_weight_ratio  << endl;
+
+            cout << " lr * mean weight ratio = " 
+                 << learning_rate * mean_abs_nabla_weight 
+                 << " lr * mean weight ratio = " 
+                 << learning_rate * mean_abs_nabla_weight_ratio << endl;
+         } // debug_flag conditional
+         
          nabla_weights[l]->clear_values();
       }
-      cout << endl;
-//       print_weights();
+//       cout << endl;
+//      print_weights();
    } // episode % batch_size == 0 conditional
 }
 

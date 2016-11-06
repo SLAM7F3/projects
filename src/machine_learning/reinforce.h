@@ -46,7 +46,8 @@ class reinforce
    void hardwire_output_action(int a);
 
    void initialize_episode();
-   void compute_unrenorm_action_probs(genvector* x_input);
+   void compute_action_probs(
+      genvector* x_input, bool enforce_constraints_flag);
    void renormalize_action_distribution();
 
    void redistribute_action_probs();
@@ -56,7 +57,7 @@ class reinforce
    void periodically_snapshot_loss_value();
    void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
-   void update_weights(bool episode_finished_flag);
+   void update_weights();
    void update_running_reward(std::string extrainfo);
 
    void print_weights();
@@ -132,7 +133,7 @@ class reinforce
 
    std::string snapshots_subdir;
 
-   void policy_forward(int t);
+   void policy_forward(int t, bool enforce_constraints_flag);
    void get_softmax_action_probs(int t);
    void compute_cumulative_action_dist();
    double compute_loss(int t);
