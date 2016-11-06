@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/5/16
+// Last modified on 11/5/16; 11/6/16
 // ==========================================================================
 
 #include <iostream>
@@ -62,6 +62,7 @@ void maze::initialize_member_objects()
    for(int p = 0; p < n_cells; p++)
    {
       visited_cell.push_back(false);
+      deadend_cell.push_back(false);
    }
 }		       
 
@@ -166,6 +167,43 @@ string maze::get_cell_bitstr(int px, int py)
 }
 
 // ---------------------------------------------------------------------
+int maze::get_direction_from_p_to_q(int p, int q)
+{
+   int px = cell_decomposition[p].first;
+   int py = cell_decomposition[p].second;
+   int qx = cell_decomposition[q].first;
+   int qy = cell_decomposition[q].second;
+   
+   int delta_x = qx - px;
+   int delta_y = qy - py;
+
+
+   if(delta_x == 0 && delta_y == -1)
+   {
+      return 0; // up
+   }
+   else if(delta_x == 1 && delta_y == 0)
+   {
+      return 1; // right
+   }
+   else if(delta_x == 0 && delta_y == 1)
+   {
+      return 2; // down
+   }
+   else if(delta_x == -1 && delta_y == 0)
+   {
+      return 3; // left
+   }
+   else
+   {
+      cout << "Error in get_direction_from_p_to_q()" << endl;
+      cout << "delta_x = " << delta_x << " delta_y = " << delta_y
+           << endl;
+      exit(-1);
+   }
+}
+
+// ---------------------------------------------------------------------
 void maze::remove_wall(int p, int curr_dir)
 {
 //   cout << "inside remove_wall, p = " << p << " curr_dir = " << curr_dir
@@ -197,9 +235,9 @@ vector<int> maze::get_cell_neighbors(int p)
 }
 
 // ---------------------------------------------------------------------
-int maze::get_n_unvisited_neighbors(int p)
+vector<int> maze::get_unvisited_neighbors(int p)
 {
-   int n_unvisited_neighbors = 0;
+   vector<int> unvisited_neighbors;
    
    vector<int> cell_neighbor_ids = get_cell_neighbors(p);
    for(unsigned int n = 0; n < cell_neighbor_ids.size(); n++)
@@ -208,10 +246,10 @@ int maze::get_n_unvisited_neighbors(int p)
       if(cell_neighbor_id < 0) continue;
       if(visited_cell[cell_neighbor_id] == false)
       {
-         n_unvisited_neighbors++;
+         unvisited_neighbors.push_back(cell_neighbor_id);
       }
    }
-   return n_unvisited_neighbors;
+   return unvisited_neighbors;
 }
 
 // ---------------------------------------------------------------------
@@ -251,6 +289,62 @@ void maze::print_grid() const
    cout << endl;
 }
 
+// ---------------------------------------------------------------------
+void maze::print_visited_cells() const
+{
+   for(int py = 0; py < n_size; py++)
+   {
+      for(int px = 0; px < n_size; px++)
+      {
+         int p = py * n_size + px;
+         cout << visited_cell[p] << "   " << flush;
+      }
+      cout << endl;
+   }
+   cout << endl;
+}
+
+// ---------------------------------------------------------------------
+void maze::print_visited_cell_stack() const
+{
+   for(unsigned int v = 0; v < visited_cell_stack.size(); v++)
+   {
+      cout << "v = " << v << " visited_cell_stack = " 
+           << visited_cell_stack[v] 
+           << endl;
+   }
+}
+
+// ---------------------------------------------------------------------
+void maze::set_solution_path() 
+{
+   soln_path.push_back(0);
+
+   for(int v = visited_cell_stack.size()-1; v >= 0; v--)
+   {
+      soln_path.push_back(visited_cell_stack[v]);
+   }
+}
+
+const vector<int>& maze::get_solution_path() const
+{
+   return soln_path;
+}
+
+void maze::print_solution_path() const
+{
+   cout << "Solution path:" << endl;
+   for(unsigned int v = 0; v < soln_path.size(); v++)
+   {
+      int p = soln_path[v];
+      int px = cell_decomposition[p].first;
+      int py = cell_decomposition[p].second;
+      
+      cout << "v = " << v << " Cell ID:" << p
+           << " px = " << px << " py = " << py 
+           << endl;
+   }
+}
 
 // ---------------------------------------------------------------------
 void maze::generate_maze()
@@ -258,61 +352,47 @@ void maze::generate_maze()
    cout << "inside generate_maze()" << endl;
 
    init_grid();
-   print_grid();
 
 // Start maze generation at some random location within grid:
 
-   int p = mathfunc::getRandomInteger(n_cells);
+//   int p = mathfunc::getRandomInteger(n_cells);
+   int p = n_cells-1;
+//   int p = 0;
    visited_cell[p] = true;
-   visited_cell_stack.push(p);
 
    while(n_visited_cells() < n_cells)
    {
-      while(get_n_unvisited_neighbors(p) > 0)
+      vector<int> unvisited_neighbor_ids = get_unvisited_neighbors(p);
+      int n_unvisited_neighbors = unvisited_neighbor_ids.size();
+      if(n_unvisited_neighbors > 0)
       {
-         int curr_dir;
-         int q = -1;
-         while(q < 0)
-         {
-            curr_dir = mathfunc::getRandomInteger(4);
-            q = get_neighbor(p, curr_dir);   
-         }
-      
-         int px = cell_decomposition[p].first;
-         int py = cell_decomposition[p].second;
-         int qx = cell_decomposition[q].first;
-         int qy = cell_decomposition[q].second;
+         int q = unvisited_neighbor_ids[
+            mathfunc::getRandomInteger(n_unvisited_neighbors)];
+         visited_cell_stack.push_back(p);
 
-         cout << "p = " << p 
-              << " px = " << px << " py = " << py << endl;
-         cout << "curr_dir = " << curr_dir << endl;
-         cout << "qx = " << qx << " qy = " << qy << endl;
-
-// Remove walls between (px,py) and (qx,qy):
-
+// Remove walls between p and q:
+         
+         int curr_dir = get_direction_from_p_to_q(p, q);
          remove_wall(p, curr_dir);
          remove_wall(q, (curr_dir+2)%4);
 
-
-         visited_cell[q] = true;
-         visited_cell_stack.push(q);
-
-         print_grid();
-         DrawMaze();
-         
          p = q;
-      } // p has unvisited neighbors while loop
-   
-      cout << "Reached dead end at p = " << p << endl;
-      cout << "visited_cell_stack.size() = " << visited_cell_stack.size()
-           << endl;
-      p = visited_cell_stack.top();
-      visited_cell_stack.pop();
-      cout << "Backtrack to p = " << p << endl;
-      print_grid();
+         visited_cell[p] = true;
+      }
+      else
+      {
+         deadend_cell[p] = true;
+         if(visited_cell_stack.size() > 0)
+         {
+            p = visited_cell_stack.back();
+            visited_cell_stack.pop_back();
+         }
+      } // n_unvisited_neighbors > 0 conditional
 
-      DrawMaze();
-
+      if(p == 0)
+      {
+         set_solution_path();
+      }
    } // n_visited_cells < n_cells while loop
 }
 
@@ -334,7 +414,6 @@ void maze::DrawLine( unsigned char* img, int x1, int y1, int x2, int y2 ,
          img[ i + 2 ] = R;
          img[ i + 1 ] = G;
          img[ i + 0 ] = B;
-
       }
    }
 
@@ -356,7 +435,8 @@ void maze::DrawLine( unsigned char* img, int x1, int y1, int x2, int y2 ,
 // ---------------------------------------------------------------------
 void maze::RenderMaze( unsigned char* img )
 {
-   int CellSize = ImageSize / n_cells;
+   int CellSize = ImageSize / n_size;
+   
    for ( int py = 0; py < n_size; py++ )
    {
       for ( int px = 0; px < n_size; px++ )
@@ -442,9 +522,9 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
    ofstream File( FileName.c_str(), std::ios::out | std::ios::binary );
    File.write( ( const char* )&Header, sizeof( Header ) );
    File.write( ( const char* )RawBGRImage, ImageSize );
-   cout << "Exported " << FileName << endl;
    string unix_cmd = "convert -flip "+FileName+" "+FileName;
    sysfunc::unix_command(unix_cmd);
+   cout << "Exported " << FileName << endl;
 }
 
 // ---------------------------------------------------------------------

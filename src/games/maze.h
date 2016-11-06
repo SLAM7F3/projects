@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/5/16
+// Last modified on 11/5/16; 11/6/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -31,10 +31,15 @@ class maze
    bool IsDirValid(int px, int py, int curr_dir);
    int get_neighbor(int p, int curr_dir);
    std::vector<int> get_cell_neighbors(int p);
-   int get_n_unvisited_neighbors(int p);
+   std::vector<int> get_unvisited_neighbors(int p);
    int n_visited_cells() const;
    void init_grid();
    void print_grid() const;
+   void print_visited_cells() const;
+   void print_visited_cell_stack() const;
+   void set_solution_path();
+   const std::vector<int>& get_solution_path() const;
+   void print_solution_path() const;
    void generate_maze();
 
    void DrawLine(unsigned char* img, int x1, int y1, int x2, int y2,
@@ -56,11 +61,16 @@ class maze
    std::vector<bool> visited_cell;
 	// independent int = cell ID; dependent bool = visited flag
 
-   std::stack<int> visited_cell_stack;
+   std::vector<bool> deadend_cell;
+	// independent int = cell ID; dependent bool = dead end cell
+
+   std::vector<int> visited_cell_stack;
 
    std::vector<DUPLE> cell_decomposition;
 // independent int: p
 // dependent triple: px, py
+
+   std::vector<int> soln_path;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -69,6 +79,7 @@ class maze
    int get_cell(int px, int py);
    void set_game_over(bool flag);
    std::string get_cell_bitstr(int px, int py);
+   int get_direction_from_p_to_q(int p, int q);
    void remove_wall(int p, int curr_dir);
 
 };
