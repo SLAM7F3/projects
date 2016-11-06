@@ -33,6 +33,7 @@ void maze::allocate_member_objects()
    n_directions = 4;  // 2D
    nbits = n_directions;
    grid_ptr = new genmatrix(n_cells, n_cells);
+   occupancy_grid = new genmatrix(2 * n_cells, 2 * n_cells);
    ImageSize = 512;
 }		       
 
@@ -87,6 +88,7 @@ maze::maze(const maze& T)
 maze::~maze()
 {
    delete grid_ptr;
+   delete occupancy_grid;
 }
 
 // ---------------------------------------------------------------------
@@ -340,7 +342,7 @@ void maze::print_solution_path() const
       int px = cell_decomposition[p].first;
       int py = cell_decomposition[p].second;
       
-      cout << "v = " << v << " Cell ID:" << p
+      cout << "   v = " << v << " Cell ID:" << p
            << " px = " << px << " py = " << py 
            << endl;
    }
@@ -349,7 +351,7 @@ void maze::print_solution_path() const
 // ---------------------------------------------------------------------
 void maze::generate_maze()
 {
-   cout << "inside generate_maze()" << endl;
+//    cout << "inside generate_maze()" << endl;
 
    init_grid();
 
@@ -545,4 +547,52 @@ void maze::DrawMaze()
    // cleanup
    delete[]( Img );
 
+}
+
+// ---------------------------------------------------------------------
+void maze::generate_occupancy_grid()
+{
+   for(int py = 0; py < n_cells; py++)
+   {
+      for(int px = 0; px < n_cells; px++)
+      {
+         string cell_bitstr = get_cell_bitstr(px, py);
+         int qx = 2 * px;
+         int qy = 2 * py;
+         occupancy_grid->put(qx, qy, 0);
+         if(cell_bitstr.substr(2,1) == "1") // wall to right of (px,py)
+         {
+            occupancy_grid->put(qx+1, qy, 1);
+         }
+         else
+         {
+            occupancy_grid->put(qx+1, qy, 0);
+         }
+         
+         if(cell_bitstr.substr(1,1) == "1") // wall below (px,py)
+         {
+            occupancy_grid->put(qx, qy+1, 1);
+         }
+         else
+         {
+            occupancy_grid->put(qx, qy+1, 0);
+         }
+         
+         occupancy_grid->put(qx+1,qy+1,1);
+      } // loop over px
+   }  // loop over py
+}
+
+// ---------------------------------------------------------------------
+void maze::print_occupancy_grid() const
+{
+   for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
+   {
+      for(unsigned int px = 0; px < occupancy_grid->get_ndim(); px++)
+      {
+         cout << occupancy_grid->get(px,py) << "   " << flush;
+      }
+      cout << endl;
+   }
+   cout << endl;
 }

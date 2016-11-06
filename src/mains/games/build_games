@@ -1,3 +1,4 @@
+~/bin/MAKE program=create_maze
 ~/bin/MAKE program=fill_grid
 ~/bin/MAKE program=test_ttt_network
 ~/bin/MAKE program=train_ttt_network

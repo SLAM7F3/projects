@@ -48,6 +48,8 @@ class maze
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
    void DrawMaze();
+   void generate_occupancy_grid();
+   void print_occupancy_grid() const;
    
   private: 
 
@@ -72,6 +74,8 @@ class maze
 
    std::vector<int> soln_path;
 
+   genmatrix *occupancy_grid;
+
    void allocate_member_objects();
    void initialize_member_objects();
    void docopy(const maze& T);
@@ -81,6 +85,7 @@ class maze
    std::string get_cell_bitstr(int px, int py);
    int get_direction_from_p_to_q(int p, int q);
    void remove_wall(int p, int curr_dir);
+   
 
 };
 

@@ -23,6 +23,8 @@ int main (int argc, char* argv[])
    nrfunc::init_time_based_seed();
 
    int nsize = 5;
+   cout << "Enter maze linear size:" << endl;
+   cin >> nsize;
    maze curr_maze(nsize);
 
    curr_maze.generate_maze();
