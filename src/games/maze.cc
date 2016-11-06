@@ -33,7 +33,7 @@ void maze::allocate_member_objects()
    n_directions = 4;  // 2D
    nbits = n_directions;
    grid_ptr = new genmatrix(n_cells, n_cells);
-   occupancy_grid = new genmatrix(2 * n_cells, 2 * n_cells);
+   occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    ImageSize = 512;
 }		       
 
@@ -552,33 +552,50 @@ void maze::DrawMaze()
 // ---------------------------------------------------------------------
 void maze::generate_occupancy_grid()
 {
-   for(int py = 0; py < n_cells; py++)
+   int mdim = occupancy_grid->get_mdim();
+   int ndim = occupancy_grid->get_ndim();
+   
+   for(int py = 0; py < n_size; py++)
    {
-      for(int px = 0; px < n_cells; px++)
+      for(int px = 0; px < n_size; px++)
       {
          string cell_bitstr = get_cell_bitstr(px, py);
+//         cout << "px = " << px << " py = " << py 
+//              << " bitstr = " << cell_bitstr << endl;
+
          int qx = 2 * px;
          int qy = 2 * py;
          occupancy_grid->put(qx, qy, 0);
-         if(cell_bitstr.substr(2,1) == "1") // wall to right of (px,py)
+         
+         if(qx+1 < ndim)
          {
-            occupancy_grid->put(qx+1, qy, 1);
-         }
-         else
-         {
-            occupancy_grid->put(qx+1, qy, 0);
+            if(cell_bitstr.substr(2,1) == "1") // wall to right of (px,py)
+            {
+               occupancy_grid->put(qx+1, qy, 1);
+            }
+            else
+            {
+               occupancy_grid->put(qx+1, qy, 0);
+            }
          }
          
-         if(cell_bitstr.substr(1,1) == "1") // wall below (px,py)
+         if(qy+1 < mdim)
          {
-            occupancy_grid->put(qx, qy+1, 1);
-         }
-         else
-         {
-            occupancy_grid->put(qx, qy+1, 0);
+            if(cell_bitstr.substr(1,1) == "1") // wall below (px,py)
+            {
+               occupancy_grid->put(qx, qy+1, 1);
+            }
+            else
+            {
+               occupancy_grid->put(qx, qy+1, 0);
+            }
          }
          
-         occupancy_grid->put(qx+1,qy+1,1);
+         if(qx+1 < ndim && qy+1 < mdim)
+         {
+            occupancy_grid->put(qx+1,qy+1,1);
+         }
+
       } // loop over px
    }  // loop over py
 }
@@ -586,11 +603,14 @@ void maze::generate_occupancy_grid()
 // ---------------------------------------------------------------------
 void maze::print_occupancy_grid() const
 {
+//   cout << "occupancy_grid: mdim = "  
+//        << occupancy_grid->get_mdim()
+//        << " ndim = " << occupancy_grid->get_ndim() << endl;
    for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
    {
       for(unsigned int px = 0; px < occupancy_grid->get_ndim(); px++)
       {
-         cout << occupancy_grid->get(px,py) << "   " << flush;
+         cout << occupancy_grid->get(px,py) << flush;
       }
       cout << endl;
    }

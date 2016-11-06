@@ -30,6 +30,9 @@ int main (int argc, char* argv[])
    curr_maze.generate_maze();
    curr_maze.DrawMaze();
    curr_maze.print_solution_path();
+
+   curr_maze.generate_occupancy_grid();
+   curr_maze.print_occupancy_grid();
 }
 
 
