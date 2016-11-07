@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 10/30/16; 11/1/16; 11/3/16; 11/4/16
+// Last updated on 11/1/16; 11/3/16; 11/4/16; 11/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -25,10 +25,10 @@ using std::vector;
 void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr, 
                      int AI_value)
 {
-   reinforce_AI_ptr->compute_unrenorm_action_probs(
-      ttt_ptr->get_inverse_board_state_ptr());
-   reinforce_AI_ptr->renormalize_action_distribution();
-
+   bool enforce_constraints_flag = true;
+   reinforce_AI_ptr->compute_action_probs(
+      ttt_ptr->get_inverse_board_state_ptr(), enforce_constraints_flag);
+   
    int output_action = reinforce_AI_ptr->get_candidate_current_action();
    bool legal_move = ttt_ptr->legal_player_move(output_action);
    if(!legal_move)
@@ -320,9 +320,10 @@ int main (int argc, char* argv[])
          }
          else
          {
-            reinforce_agent_ptr->compute_unrenorm_action_probs(
-               ttt_ptr->get_board_state_ptr());
-            reinforce_agent_ptr->renormalize_action_distribution();
+
+            bool enforce_constraints_flag = true;
+            reinforce_agent_ptr->compute_action_probs(
+               ttt_ptr->get_board_state_ptr(), enforce_constraints_flag);
 //         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
             output_action = 
                reinforce_agent_ptr->get_candidate_current_action();
@@ -377,8 +378,7 @@ int main (int argc, char* argv[])
          n_recent_stalemates++;
       }
 
-      bool episode_finished_flag = true;
-      reinforce_agent_ptr->update_weights(episode_finished_flag);
+      reinforce_agent_ptr->update_weights();
       reinforce_agent_ptr->update_running_reward(extrainfo);
       
       reinforce_agent_ptr->increment_episode_number();
