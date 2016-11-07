@@ -47,7 +47,8 @@ class reinforce
 
    void initialize_episode();
    void compute_action_probs(
-      genvector* x_input, bool enforce_constraints_flag);
+      genvector* x_input, bool enforce_constraints_flag,
+      genvector* legal_actions = NULL);
    void renormalize_action_distribution();
 
    void redistribute_action_probs();
@@ -133,7 +134,8 @@ class reinforce
 
    std::string snapshots_subdir;
 
-   void policy_forward(int t, bool enforce_constraints_flag);
+   void policy_forward(int t, bool enforce_constraints_flag,
+      genvector *legal_actions = NULL);
    void get_softmax_action_probs(int t);
    void compute_cumulative_action_dist();
    double compute_loss(int t);

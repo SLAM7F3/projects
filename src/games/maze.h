@@ -58,13 +58,15 @@ class maze
    void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;
+   genvector* get_curr_legal_actions();
    genvector* get_occupancy_state();
    
    void reset_game();
    void set_game_over(bool flag);
    bool get_game_over() const;
    bool get_maze_solved() const;
-   int get_n_turtle_steps() const;
+   genvector* compute_legal_turtle_actions();
+   bool legal_turtle_move(int curr_dir);
    int move_turtle(int curr_dir, bool erase_turtle_path);
    int get_n_soln_steps() const;
    void print_turtle_path_history() const;
@@ -76,7 +78,7 @@ class maze
    int n_size, n_cells;
    int n_directions, nbits;
    int ImageSize;
-   int turtle_cell, n_turtle_steps;
+   int turtle_cell;
    double turtle_value, wall_value;
    bool game_over, maze_solved;
    std::vector<int> direction;
@@ -96,6 +98,7 @@ class maze
 
    std::vector<int> soln_path;
 
+   genvector *curr_legal_actions;
    genmatrix *occupancy_grid;
    genvector *occupancy_state;
 
@@ -131,6 +134,11 @@ inline int maze::get_cell(int px, int py) const
 inline int maze::get_occupancy_cell(int px, int py) const
 {
    return occupancy_grid->get_ndim() * py + px;
+}
+
+inline genvector* maze::get_curr_legal_actions()
+{
+   return curr_legal_actions;
 }
 
 inline genvector* maze::get_occupancy_state()

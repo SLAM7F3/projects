@@ -36,6 +36,7 @@ void maze::allocate_member_objects()
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    occupancy_state = new genvector(sqr(2*n_size-1));
    ImageSize = 512;
+   curr_legal_actions = new genvector(n_directions);
 }		       
 
 void maze::initialize_member_objects()
@@ -94,6 +95,7 @@ maze::maze(const maze& T)
 maze::~maze()
 {
    delete grid_ptr;
+   delete curr_legal_actions;
    delete occupancy_grid;
    delete occupancy_state;
 }
@@ -709,7 +711,6 @@ void maze::reset_game()
    game_over = false;
    maze_solved = false;
    turtle_cell = 0;
-   n_turtle_steps = 0;
 
    initialize_occupancy_grid();
    int tx = cell_decomposition[turtle_cell].first;
@@ -738,22 +739,61 @@ bool maze::get_maze_solved() const
 }
 
 // ---------------------------------------------------------------------
-int maze::get_n_turtle_steps() const
-{
-   return n_turtle_steps;
-}
-
-// ---------------------------------------------------------------------
 int maze::get_n_soln_steps() const
 {
    return soln_path.size();
 }
 
 // ---------------------------------------------------------------------
+// Member function compute_legal_turtle_actions() fills genvector
+// *curr_legal_actions with -1 entries for actions which are ILLEGAL
+// and 0 entries for actions which are LEGAL.
+
+genvector* maze::compute_legal_turtle_actions()
+{
+   curr_legal_actions->initialize_values(-1);
+   for(int curr_dir = 0; curr_dir < n_directions; curr_dir++)
+   {
+      if(legal_turtle_move(curr_dir))
+      {
+         curr_legal_actions->put(curr_dir, 0);
+      }
+   }
+   return curr_legal_actions;
+}
+
+// ---------------------------------------------------------------------
+bool maze::legal_turtle_move(int curr_dir)
+{
+   int tx = occupancy_cell_decomposition[turtle_cell].first;
+   int ty = occupancy_cell_decomposition[turtle_cell].second;
+
+   DUPLE d = getDirection(curr_dir);
+   int tx_new = tx + 2 * d.first;
+   int ty_new = ty + 2 * d.second;
+
+   if(tx_new < 0 || tx_new >= int(occupancy_grid->get_ndim()) ||
+      ty_new < 0 || ty_new >= int(occupancy_grid->get_mdim()) )
+   {
+      return false;        // Turtle cannot move beyond grid borders
+   }
+
+   int tx_inter = tx + d.first;
+   int ty_inter = ty + d.second;
+
+   int t_inter = get_occupancy_cell(tx_inter,ty_inter);
+   if(fabs(occupancy_state->get(t_inter)) > 0)
+   {
+      return false;	 // new cell is already occupied by wall
+   }
+
+   return true;
+}
+
+// ---------------------------------------------------------------------
 int maze::move_turtle(int curr_dir, bool erase_turtle_path)
 {
 //   cout << "inside move_turtle, curr_dir = " << curr_dir << endl;
-   n_turtle_steps++;
    int tx = occupancy_cell_decomposition[turtle_cell].first;
    int ty = occupancy_cell_decomposition[turtle_cell].second;
 //   cout << "Before move, tx = " << tx << " ty = " << ty << endl;

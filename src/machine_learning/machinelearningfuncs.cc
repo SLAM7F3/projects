@@ -244,7 +244,7 @@ namespace machinelearning_func
       {
          if(fabs(x_input.get(i)) > SMALL)
          {
-            A.put(i,0);
+            A.put(i, zcol, 0);
             n_occupied_cells++;
          }
          else
@@ -252,6 +252,7 @@ namespace machinelearning_func
             double curr_exp = exp(Z.get(i,zcol) - Zmax);
             denom += curr_exp;
             A.put(i, zcol, curr_exp);
+
          }
       }
       
@@ -268,6 +269,7 @@ namespace machinelearning_func
 
       if(nearly_equal(p_sum,0))
       {
+         cout << "Warning: p_sum = " << p_sum << endl;
          int n_unoccupied_cells = A.get_mdim() - n_occupied_cells;
          for(unsigned int i = 0; i < A.get_mdim(); i++)
          {
@@ -281,11 +283,6 @@ namespace machinelearning_func
             }
          }
       }
-
-//      for(unsigned int i = 0; i < A.get_mdim(); i++)
-//      {
-//         cout << "i = " << i << " A = " << A.get(i, zcol) << endl;
-//      }
    }
 
 // --------------------------------------------------------------------------
@@ -295,7 +292,7 @@ namespace machinelearning_func
    {
       for(unsigned int i = 0; i < A.get_mdim(); i++)
       {
-         A.put(i, 0);
+         A.put(i, zcol, 0);
       }
       A.put(output_action, 1);
    }

@@ -208,7 +208,8 @@ void reinforce::hardwire_output_action(int a)
 // given an input set of values.  See "Forward & backward propagation
 // for one episode of reinforcement learning" notes dated 10/18/2016.
 
-void reinforce::policy_forward(int t, bool enforce_constraints_flag)
+void reinforce::policy_forward(int t, bool enforce_constraints_flag,
+                               genvector *legal_actions)
 {
 //   cout << "inside policy_forward(), t = " << t << endl;
    a[0]->put_column(t, *x_input);
@@ -235,8 +236,17 @@ void reinforce::policy_forward(int t, bool enforce_constraints_flag)
       }
       else
       {
-         machinelearning_func::constrained_softmax(
-            t, *x_input, *z[n_layers-1], *a[n_layers-1]);
+         if(legal_actions != NULL)
+         {
+            machinelearning_func::constrained_softmax(
+               t, *legal_actions, *z[n_layers-1], *a[n_layers-1]);
+         }
+         else
+         {
+            machinelearning_func::constrained_softmax(
+               t, *x_input, *z[n_layers-1], *a[n_layers-1]);
+         }
+         
       } 
    } // enforce_constraints_flag conditional
 }
@@ -456,11 +466,11 @@ void reinforce::initialize_episode()
 // state vector.  
 
 void reinforce::compute_action_probs(
-   genvector *x_input, bool enforce_constraints_flag)
+   genvector *x_input, bool enforce_constraints_flag, genvector* legal_actions)
 {
 //   cout << "curr_timestep = " << curr_timestep << endl;
    this->x_input = x_input;
-   policy_forward(curr_timestep, enforce_constraints_flag);
+   policy_forward(curr_timestep, enforce_constraints_flag, legal_actions);
    get_softmax_action_probs(curr_timestep);  // n_actions x 1
 
    compute_cumulative_action_dist();
@@ -517,7 +527,8 @@ void reinforce::compute_cumulative_action_dist()
 
    if(pcum < 0.999 || pcum > 1.001)
    {
-//      cout << "Danger in compute_cum_action_dist(): pcum = " << pcum << endl;
+      cout << "Danger in compute_cum_action_dist(): pcum = " << pcum << endl;
+      print_p_action();
       redistribute_action_probs();
    }   
 }

@@ -26,8 +26,8 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
 //    nrfunc::init_time_based_seed();
 
-   int n_grid_size = 2;
-//   int n_grid_size = 3;
+//   int n_grid_size = 2;
+   int n_grid_size = 3;
    maze curr_maze(n_grid_size);
    curr_maze.generate_maze();
    curr_maze.DrawMaze();
@@ -37,9 +37,10 @@ int main (int argc, char* argv[])
    int Tmax = 2 * Din * Din;
 
    int H1 = 4 * Din;
-//   int H1 = 5 * Din;
+//   int H1 = 8 * Din;
+//   int H1 = 16 * Din;
    int H2 = 0;
-//   int H2 = 2 * Dout;
+//   int H2 = 1 * Dout;
    int H3 = 0;
 //   int H3 = 1 * Dout;
 
@@ -70,13 +71,14 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
-   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+//   reinforce_agent_ptr->set_gamma(0.25);  
+   reinforce_agent_ptr->set_gamma(0.90);
+   reinforce_agent_ptr->set_batch_size(30);   
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   double min_learning_rate = 0.5E-4;
    double min_learning_rate = 3E-5;
@@ -138,10 +140,17 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
+// Given turtle's current position within maze, first determine which
+// output actions are legal:
+
+         genvector* curr_legal_actions = 
+            curr_maze.compute_legal_turtle_actions();
+
 //         bool enforce_constraints_flag = false;
          bool enforce_constraints_flag = true;
          reinforce_agent_ptr->compute_action_probs(
-            curr_maze.get_occupancy_state(), enforce_constraints_flag);
+            curr_maze.get_occupancy_state(), enforce_constraints_flag,
+            curr_legal_actions);
          int output_action = reinforce_agent_ptr->
             get_candidate_current_action();
          reinforce_agent_ptr->set_current_action(output_action);
@@ -150,10 +159,14 @@ int main (int argc, char* argv[])
 //         bool erase_turtle_path = false;
          int legal_move = curr_maze.move_turtle(
             output_action, erase_turtle_path);
-         cout << "output_action = " << output_action
-              << " legal_move = " << legal_move 
-              << " n_turtle_steps = " << curr_maze.get_n_turtle_steps()
-              << endl;
+         if(legal_move < 0)
+         {
+            cout << "output_action = " << output_action
+                 << " legal_move = " << legal_move 
+                 << " n_turtle_moves = " << curr_maze.get_n_turtle_moves()
+                 << endl;
+            outputfunc::enter_continue_char();
+         }
 
 // Do not allow turtle to oscillate indefinitely:
 
@@ -173,30 +186,20 @@ int main (int argc, char* argv[])
          }
          else if (curr_maze.get_game_over())
          {
-            double rho = double(curr_maze.get_n_soln_steps()) / 
-               double(curr_maze.get_n_turtle_steps());
-
-            if(nearly_equal(rho,1))
-            {
-               curr_reward = 1;
-            }
-            else
-            {
-//               curr_reward = -0.5;
-               curr_reward = alpha + (1 - alpha) * rho;
-            }
-
+            int n_soln_steps = curr_maze.get_n_soln_steps();
+            int n_turtle_steps = curr_maze.get_n_turtle_moves();
+            curr_reward = 1 - sqr(n_turtle_steps - n_soln_steps);
          }
          
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
 
 //         curr_maze.print_occupancy_grid();
-         curr_maze.print_turtle_path_history();
+//         curr_maze.print_turtle_path_history();
 
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
-      if(curr_maze.get_maze_solved())
+      if(curr_maze.get_maze_solved() && nearly_equal(curr_reward,1))
       {
          n_wins++;
          generate_new_maze = true;
@@ -222,13 +225,14 @@ int main (int argc, char* argv[])
          cout << "  loss_frac = " << loss_frac
               << "  win_frac = " << win_frac
               << endl;
-         cout << "  n_turtle_steps = "
-              << curr_maze.get_n_turtle_steps() << endl;
-
+         cout << "  n_turtle_moves = "
+              << curr_maze.get_n_turtle_moves() << endl;
+         cout << "  n_soln_steps = "
+              << curr_maze.get_n_soln_steps() << endl;
          curr_maze.print_turtle_path_history();
 
          double curr_n_turns_ratio = double(
-            curr_maze.get_n_soln_steps()) / curr_maze.get_n_turtle_steps();
+            curr_maze.get_n_soln_steps()) / curr_maze.get_n_turtle_moves();
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_ratio);
          reinforce_agent_ptr->snapshot_running_reward();
       }
