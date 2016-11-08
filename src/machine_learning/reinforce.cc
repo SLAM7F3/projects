@@ -131,6 +131,14 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    } // loop over index l labeling neural net layers
 
    snapshots_subdir="";
+
+// Q learning variable initialization:
+
+   s_curr = new genmatrix(Tmax, layer_dims.front());
+   a_curr = new genmatrix(Tmax, layer_dims.back());
+   s_next = new genmatrix(Tmax, layer_dims.front());
+   
+
 }
 
 // ---------------------------------------------------------------------
@@ -182,6 +190,10 @@ reinforce::~reinforce()
    delete y;
    delete reward;
    delete discounted_reward;
+
+   delete s_curr;
+   delete a_curr;
+   delete s_next;
 }
 
 // ---------------------------------------------------------------------
@@ -1206,10 +1218,12 @@ void reinforce::import_snapshot()
 
 // Member function Q_forward_propagate
 
-void reinforce::Q_forward_propagate(int t, genvector& legal_actions)
+void reinforce::Q_forward_propagate(
+   genvector& s_input, genvector& legal_actions)
 {
-//   cout << "inside Q_forward_propagate(), t = " << t << endl;
-   a[0]->put_column(t, *x_input);
+   int t = 0;
+//   cout << "inside Q_forward_propagate()" << endl;
+   a[0]->put_column(t, s_input);
  
    for(int l = 0; l < n_layers-2; l++)
    {
@@ -1222,3 +1236,46 @@ void reinforce::Q_forward_propagate(int t, genvector& legal_actions)
    machinelearning_func::constrained_identity(
       t, legal_actions, *z[n_layers-1], *a[n_layers-1]);
 }
+
+// ---------------------------------------------------------------------
+
+void reinforce::push_replay_entry(
+   int d, const genvector& curr_s, const genvector& curr_a, double curr_r,
+   const genvector& next_s, bool terminal_state_flag)
+{
+   s_curr->put_row(d, curr_s);
+   a_curr->put_row(d, curr_a);
+   reward->put(d, curr_r);
+   s_next->put_row(d, next_s);
+   terminal_state->put(d, double(terminal_state_flag));
+}
+
+bool reinforce::get_replay_entry(
+   int d, genvector& curr_s, genvector& curr_a, double& curr_r,
+   genvector& next_s)
+{
+   s_curr->get_row(d, curr_s);
+   a_curr->get_row(d, curr_a);
+   curr_r = reward->get(d);
+   s_next->get_row(d, next_s);
+   bool terminal_state_flag = (terminal_state->get(d) > 0);
+   return terminal_state_flag;
+}
+
+// ---------------------------------------------------------------------
+
+double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
+{
+   Q_forward_propagate(next_s, legal_actions);
+
+   double Qmax = NEGATIVEINFINITY;
+   for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
+   {
+      Qmax = basic_math::max(Qmax, a[n_layers-1]->get(j,0));
+   }
+   return Qmax;
+}
+
+
+// ---------------------------------------------------------------------
+

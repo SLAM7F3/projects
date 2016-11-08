@@ -77,7 +77,14 @@ class reinforce
 
 // Q learning methods
 
-   void Q_forward_propagate(int t, genvector& legal_actions);
+   void Q_forward_propagate(genvector& s_input, genvector& legal_actions);
+   void push_replay_entry(
+      int d, const genvector& curr_s, const genvector& curr_a, double curr_r,
+      const genvector& next_s, bool terminal_state_flag);
+   bool get_replay_entry(
+      int d, genvector& curr_s, genvector& curr_a, double& curr_r,
+      genvector& next_s);
+   double max_Q(genvector& next_s, genvector& legal_actions);
 
   private:
 
@@ -120,7 +127,7 @@ class reinforce
 // Node errors:
    std::vector<genmatrix*> delta_prime; // n_actions x T
 
-   genvector *x_input;          // n_actions x 1
+   genvector *x_input;          // Din x 1
    genvector *p_action;		// n_actions x 1  
    genvector *pcum_action;	// n_actions x 1  
 
@@ -139,6 +146,14 @@ class reinforce
    int episode_number;
 
    std::string snapshots_subdir;
+
+// Q learning variables:
+
+   int replay_memory_size;  // replay_memory_size < Tmax
+   genmatrix *s_curr;  // T x Din
+   genmatrix *a_curr;  // T x Dout
+   genmatrix *s_next;  // T x Din
+   genvector *terminal_state;   // T x 1
 
    void policy_forward(int t, bool enforce_constraints_flag,
       genvector *legal_actions = NULL);
