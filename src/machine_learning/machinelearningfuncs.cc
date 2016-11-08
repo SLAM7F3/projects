@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/20/16; 10/29/16; 11/4/16; 11/6/16
+// Last updated on 10/29/16; 11/4/16; 11/6/16; 11/8/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -281,6 +281,29 @@ namespace machinelearning_func
             {
                A.put(i, zcol, 1.0 / n_unoccupied_cells);
             }
+         }
+      }
+   }
+
+// --------------------------------------------------------------------------
+// Method constrained_identity() imports genvector x_input whose values
+// are assumed to equal 0 or non-zero.  Output cells within the column
+// of matrix A corresponding to occupied x_input cells with zero
+// values are forced to equal 0.  Otherwise, corresponding entries
+// within the columnf matrix Z are copied into the matrix A column.
+ 
+   void constrained_identity(int zcol, const genvector& x_input, 
+                             const genmatrix& Z, genmatrix& A)
+   {
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         if(fabs(x_input.get(i)) > 0)
+         {
+            A.put(i, zcol, Z.get(i,zcol));
+         }
+         else
+         {
+            A.put(i, 0);
          }
       }
    }

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/27/16; 10/28/16; 10/29/16; 11/4/16
+// Last modified on 10/28/16; 10/29/16; 11/4/16; 11/8/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -61,6 +61,8 @@ class reinforce
    void update_weights();
    void update_running_reward(std::string extrainfo);
 
+// Monitoring network training methods:
+
    void print_weights();
    void compute_weight_distributions();
    std::string init_subtitle();
@@ -72,6 +74,10 @@ class reinforce
    void create_snapshots_subdir();
    void export_snapshot();
    void import_snapshot();
+
+// Q learning methods
+
+   void Q_forward_propagate(int t, genvector& legal_actions);
 
   private:
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/20/16; 10/29/16; 11/4/16; 11/6/16
+// Last updated on 10/29/16; 11/4/16; 11/6/16; 11/8/16
 // ==========================================================================
 
 #include <vector>
@@ -26,9 +26,11 @@ namespace machinelearning_func
    void softmax(const genmatrix& Z, genmatrix& A);
    void softmax(int zcol, const genmatrix& Z, genmatrix& A);
 
+   void hardwire_output_action(int zcol, int output_action, genmatrix& A);
    void constrained_softmax(int zcol, const genvector& x_input, 
                             const genmatrix& Z, genmatrix& A);
-   void hardwire_output_action(int zcol, int output_action, genmatrix& A);
+   void constrained_identity(int zcol, const genvector& x_input, 
+                             const genmatrix& Z, genmatrix& A);
 
    void generate_data_samples(
       int n_samples, std::vector<neural_net::DATA_PAIR>& samples);

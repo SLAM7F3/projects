@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/27/16; 10/28/16; 10/29/16; 11/4/16
+// Last modified on 10/28/16; 10/29/16; 11/4/16; 11/8/16
 // ==========================================================================
 
 #include <string>
@@ -788,7 +788,10 @@ void reinforce::update_running_reward(string extrainfo)
    }
 }
 
-// ---------------------------------------------------------------------
+// ==========================================================================
+// Monitoring network training methods
+// ==========================================================================
+
 void reinforce::print_weights()
 {
    for(int l = 0; l < n_layers - 1; l++)
@@ -834,6 +837,7 @@ void reinforce::compute_weight_distributions()
 }
 
 // ---------------------------------------------------------------------
+
 string reinforce::init_subtitle()
 {
    string subtitle=
@@ -1196,3 +1200,25 @@ void reinforce::import_snapshot()
    cout << "Imported " << snapshot_filename << endl;
 }
 
+// ==========================================================================
+// Q learning methods
+// ==========================================================================
+
+// Member function Q_forward_propagate
+
+void reinforce::Q_forward_propagate(int t, genvector& legal_actions)
+{
+//   cout << "inside Q_forward_propagate(), t = " << t << endl;
+   a[0]->put_column(t, *x_input);
+ 
+   for(int l = 0; l < n_layers-2; l++)
+   {
+      z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+      machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
+   }
+
+   z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
+
+   machinelearning_func::constrained_identity(
+      t, legal_actions, *z[n_layers-1], *a[n_layers-1]);
+}
