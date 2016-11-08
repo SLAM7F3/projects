@@ -24,6 +24,8 @@ cd ../flyover
 build_anti_flyover
 cd ../fusion
 build_anti_fusion
+cd ../games
+build_anti_games
 cd ../geo
 build_anti_geo
 cd ../gist
@@ -56,6 +58,10 @@ cd ../machine_learning
 build_anti_machine_learning
 cd ./caffe
 build_anti_caffe
+cd ./deeplab
+build_anti_deeplab
+cd ./reinforcement_learning
+build_rl
 cd ../../mapping
 build_anti_mapping
 cd ../mit

@@ -62,6 +62,8 @@ cd ./caffe
 build_caffe
 cd ../deeplab
 build_deeplab
+cd ../reinforcement_learning
+build_rl
 cd ../../mapping
 build_mapping
 cd ../mit
