@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/28/16; 10/29/16; 11/4/16; 11/8/16
+// Last modified on 10/29/16; 11/4/16; 11/8/16; 11/9/16
 // ==========================================================================
 
 #include <string>
@@ -135,10 +135,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // Q learning variable initialization:
 
    s_curr = new genmatrix(Tmax, layer_dims.front());
-   a_curr = new genmatrix(Tmax, layer_dims.back());
+   a_curr = new genvector(Tmax);
    s_next = new genmatrix(Tmax, layer_dims.front());
-   
-
 }
 
 // ---------------------------------------------------------------------
@@ -1216,7 +1214,8 @@ void reinforce::import_snapshot()
 // Q learning methods
 // ==========================================================================
 
-// Member function Q_forward_propagate
+// Member function Q_forward_propagate() performs a feedforward pass
+// for the input state s to get predicted Q-values for all actions.
 
 void reinforce::Q_forward_propagate(
    genvector& s_input, genvector& legal_actions)
@@ -1238,6 +1237,30 @@ void reinforce::Q_forward_propagate(
 }
 
 // ---------------------------------------------------------------------
+// Member function compute_Qstar() returns the maximum activation from
+// output layer as current Q* value.  It also stores index curr_a
+// corresponding to Q* within member genvector a_curr.
+
+double reinforce::compute_Qstar(int d)
+{
+   double Qstar = NEGATIVEINFINITY;
+   int t = 0;
+   int curr_a = -1;
+   for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
+   {
+      double curr_activation = a[n_layers-1]->get(i,t);
+      if(curr_activation > Qstar)
+      {
+         Qstar = curr_activation;
+         curr_a = i;
+      }
+   }
+   a_curr->put(d, curr_a);
+   return Qstar;
+}
+
+// ---------------------------------------------------------------------
+// Member function push_replay_entry()
 
 void reinforce::push_replay_entry(
    int d, const genvector& curr_s, const genvector& curr_a, double curr_r,
@@ -1263,6 +1286,7 @@ bool reinforce::get_replay_entry(
 }
 
 // ---------------------------------------------------------------------
+// Member function max_Z()
 
 double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
 {
@@ -1276,6 +1300,129 @@ double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
    return Qmax;
 }
 
+// ---------------------------------------------------------------------
+// Member function compute_target()
+
+double reinforce::compute_target(int d, genvector& legal_actions)
+{
+   double r = reward->get(d);
+   if(terminal_state->get(d) > 0)
+   {
+      return r;
+   }
+   else
+   {
+      genvector next_s(s_curr->get_row(d));
+      return r + gamma * max_Q(next_s, legal_actions);
+   }
+}
 
 // ---------------------------------------------------------------------
+// Member function Q_backward_propagate()
 
+/*
+
+void reinforce::Q_backward_propagate(
+   vector<int>& d_samples, genvector& legal_actions)
+{
+   for(unsigned int d = 0; d < d_samples.size(); d++)
+   {
+      int curr_d = d_samples[i];
+
+  // Initialize "episode" weight gradients to zero:
+
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         delta_nabla_weights[l]->clear_values();
+      }
+      
+      int curr_layer = n_layers - 1;
+
+      
+// Eqn BP1:
+
+      for(int j = 0; j < layer_dims[curr_layer]; j++)
+      {
+         double curr_activation = a[curr_layer]->get(j, t);
+         if(j == y->get(t)) curr_activation -= 1.0;
+
+// Modulate the gradient with advantage (Policy Gradient magic happens
+// right here):
+
+         delta_prime[curr_layer]->put(
+            j, t, discounted_reward->get(t) * curr_activation);
+      }
+   } // loop over index t
+
+//   if(debug_flag)
+//   {
+//      cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
+//           << endl;
+//   }
+ 
+   for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
+   {
+      int prev_layer = curr_layer - 1;
+
+//      if(debug_flag)
+//      {
+//         cout << "prev_layer = " << prev_layer 
+//              << " curr_layer = " << curr_layer << endl;
+//      }
+
+// Eqn BP2A:
+
+// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
+// to curr layer nodes:
+
+      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
+      delta_prime[prev_layer]->matrix_mult(
+         *weights_transpose[prev_layer], *delta_prime[curr_layer]);
+
+//      if(debug_flag)
+//      {
+//         cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
+//              << endl;
+//      }
+
+// Eqn BP2B:
+      for(int j = 0; j < layer_dims[prev_layer]; j++)
+      {
+         for(int t = 0; t < T; t++)
+         {
+            if(z[prev_layer]->get(j, t) < 0)
+            {
+               delta_prime[prev_layer]->put(j, t, 0);
+            }
+         } // loop over t index
+      } // loop over j index
+
+// Accumulate weight gradients over episode:
+
+      for(int t = 0; t < T; t++)
+      {
+// Eqn BP4:
+
+         delta_nabla_weights[prev_layer]->accumulate_outerprod(
+            delta_prime[curr_layer]->get_column(t),
+            a[prev_layer]->get_column(t));
+
+
+
+      } // loop over index t 
+
+      if(debug_flag)
+      {
+         cout << "prev_layer = " << prev_layer << endl;
+         cout << "*delta_nabla_weights[prev_layer] = " 
+              << *delta_nabla_weights[prev_layer]
+              << endl;
+      }
+
+   } // loop over curr_layer index
+
+   } // loop over index d labeling samples from replay memory
+
+} 
+
+*/

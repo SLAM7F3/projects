@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/28/16; 10/29/16; 11/4/16; 11/8/16
+// Last modified on 10/29/16; 11/4/16; 11/8/16; 11/9/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -78,6 +78,7 @@ class reinforce
 // Q learning methods
 
    void Q_forward_propagate(genvector& s_input, genvector& legal_actions);
+   double compute_Qstar(int d);
    void push_replay_entry(
       int d, const genvector& curr_s, const genvector& curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
@@ -85,6 +86,7 @@ class reinforce
       int d, genvector& curr_s, genvector& curr_a, double& curr_r,
       genvector& next_s);
    double max_Q(genvector& next_s, genvector& legal_actions);
+   double compute_target(int d, genvector& legal_actions);
 
   private:
 
@@ -151,7 +153,7 @@ class reinforce
 
    int replay_memory_size;  // replay_memory_size < Tmax
    genmatrix *s_curr;  // T x Din
-   genmatrix *a_curr;  // T x Dout
+   genvector *a_curr;  // T x Dout
    genmatrix *s_next;  // T x Din
    genvector *terminal_state;   // T x 1
 
