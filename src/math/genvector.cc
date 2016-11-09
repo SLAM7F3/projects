@@ -24,6 +24,7 @@ genvector::genvector(int m):
    if (m <= 0)
    {
       cout << "Error in genvector constructor #1: m = " << m << endl;
+      cout << "this = " << this << endl;
    }
    if (get_ndim() != 1)
    {

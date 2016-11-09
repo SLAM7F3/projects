@@ -24,7 +24,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
    int n_grid_size = 2;
 //   int n_grid_size = 3;
@@ -84,15 +84,11 @@ int main (int argc, char* argv[])
 
 // Initialize Deep Q replay memory:
 
-   curr_maze.generate_maze();
-   curr_maze.DrawMaze();
-   curr_maze.reset_game();
-   reinforce_agent_ptr->initialize_episode();   
-
    environment game_world(environment::MAZE);
    game_world.set_maze(&curr_maze);
    reinforce_agent_ptr->set_environment(&game_world);
 
+   game_world.start_new_episode();
    reinforce_agent_ptr->initialize_replay_memory();
 
    cout << "Before start of training loop inside solve_maze" << endl;

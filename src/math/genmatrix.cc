@@ -45,6 +45,7 @@ genmatrix::genmatrix(int m):
    if (m <= 0)
    {
       cout << "Error in genmatrix constructor #1, m = " << m << endl;
+      cout << "this = " << this << endl;
    }
 }
 

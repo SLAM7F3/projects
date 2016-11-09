@@ -139,6 +139,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    s_curr = new genmatrix(Tmax, layer_dims.front());
    a_curr = new genvector(Tmax);
    s_next = new genmatrix(Tmax, layer_dims.front());
+   terminal_state = new genvector(Tmax);
 }
 
 // ---------------------------------------------------------------------
@@ -194,6 +195,7 @@ reinforce::~reinforce()
    delete s_curr;
    delete a_curr;
    delete s_next;
+   delete terminal_state;
 }
 
 // ---------------------------------------------------------------------
@@ -1221,14 +1223,14 @@ void reinforce::import_snapshot()
 void reinforce::initialize_replay_memory()
 {
    cout << "inside reinforce::initialize_replay_memory()" << endl;
-
-   genvector *curr_s = environment_ptr->get_curr_state();
-   cout << "*curr_s = " << *curr_s << endl;
+   initialize_episode();
 
    epsilon = 1;
-
    for(int t = 0; t < Tmax; t++)
    {
+      genvector *curr_s = environment_ptr->get_curr_state();
+      cout << "*curr_s = " << *curr_s << endl;
+
       int curr_a = -1;
       bool legal_action = false;
       while(!legal_action)
@@ -1242,19 +1244,18 @@ void reinforce::initialize_replay_memory()
       cout << "*next_s = " << *next_s << endl;
       bool terminal_state_flag = environment_ptr->is_terminal_state(next_s);
       cout << "terminal_state_flag = " << terminal_state_flag << endl;
-
-/*
-      double curr_r;
-      bool terminal_state_flag;
-//      environment_ptr->GetNextState(*curr_s, curr_a, curr_r, next_s,
-//                                    terminal_state_flag);
-      
+      double reward = environment_ptr->get_reward_for_next_state(next_s);
+      cout << "reward = " << reward << endl;
       push_replay_entry(
-         *curr_s, curr_a, curr_r, next_s, terminal_state_flag);
+         *curr_s, curr_a, reward, *next_s, terminal_state_flag);
 
-*/
+      if(terminal_state_flag)
+      {
+         environment_ptr->start_new_episode();
+         initialize_episode();
+      }
 
-      exit(-1);
+      outputfunc::enter_continue_char();
 
    } // loop over index t
 }
@@ -1312,6 +1313,7 @@ void reinforce::push_replay_entry(
    const genvector& curr_s, int curr_a, double curr_r,
    const genvector& next_s, bool terminal_state_flag)
 {
+//   cout << "inside push_replay_entry()" << endl;
    int d = -1;
    if(replay_memory_index < Tmax)
    {
@@ -1325,12 +1327,11 @@ void reinforce::push_replay_entry(
    }
 
    s_curr->put_row(d, curr_s);
-   a_curr->put_row(d, curr_a);
+   a_curr->put(d, curr_a);
    reward->put(d, curr_r);
    s_next->put_row(d, next_s);
-   terminal_state->put(d, double(terminal_state_flag));
+   terminal_state->put(d, terminal_state_flag);
 }
-
 
 // ---------------------------------------------------------------------
 // Member function get_replay_entry()
