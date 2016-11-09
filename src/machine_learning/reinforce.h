@@ -12,6 +12,9 @@
 #include <iostream>
 #include <vector>
 
+#include "machine_learning/environment.h"
+
+class environment;
 class genmatrix;
 class genvector;
 
@@ -28,6 +31,7 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
+   void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
    bool get_debug_flag() const;
    int get_curr_timestep() const;
@@ -77,10 +81,11 @@ class reinforce
 
 // Q learning methods
 
+   void initialize_replay_memory();
    void Q_forward_propagate(genvector& s_input, genvector& legal_actions);
    double compute_Qstar(int d);
    void push_replay_entry(
-      int d, const genvector& curr_s, const genvector& curr_a, double curr_r,
+      const genvector& curr_s, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
    bool get_replay_entry(
       int d, genvector& curr_s, genvector& curr_a, double& curr_r,
@@ -93,12 +98,13 @@ class reinforce
    bool debug_flag;
    int n_layers, n_actions;
    std::vector<int> layer_dims;
-
+   environment* environment_ptr;
+   
    int cum_time_counter;  // Cumulative time step counter
    int curr_timestep;
    int T;		// number of time steps in current episode
    std::deque<double> T_values;  // Holds latest T values
-   int Tmax;
+   int Tmax;  	        // For Qlearning, Nd = Tmax
    int batch_size;  	// Perform parameter update after this many episodes
    double base_learning_rate;
    double learning_rate;
@@ -151,9 +157,10 @@ class reinforce
 
 // Q learning variables:
 
-   int replay_memory_size;  // replay_memory_size < Tmax
+   int replay_memory_index;  // 0 <= replay_memory_index < Tmax
+   double epsilon;	// Select random action with probability epsilon
    genmatrix *s_curr;  // T x Din
-   genvector *a_curr;  // T x Dout
+   genvector *a_curr;  // T x 1  (Holds indices for actions)
    genmatrix *s_next;  // T x Din
    genvector *terminal_state;   // T x 1
 
@@ -174,6 +181,11 @@ class reinforce
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void reinforce::set_environment(environment* e_ptr)
+{
+   environment_ptr = e_ptr;
+}
 
 inline void reinforce::set_debug_flag(bool flag)
 {

@@ -579,6 +579,9 @@ void maze::DrawMaze()
 }
 
 // ---------------------------------------------------------------------
+// Fill (2*n_size - 1) x (2*n_size - 1) occupancy_grid with 0s
+// indicating vacant cells and 1s indicating wall cells.
+
 void maze::initialize_occupancy_grid()
 {
    int mdim = occupancy_grid->get_mdim();
@@ -709,13 +712,15 @@ void maze::print_occupancy_grid() const
 void maze::reset_game() 
 {
    game_over = false;
-   maze_solved = false;
-   turtle_cell = 0;
 
+// Turtle starts in upper left corner of maze:
+
+   turtle_cell = 0;
    initialize_occupancy_grid();
    int tx = cell_decomposition[turtle_cell].first;
    int ty = cell_decomposition[turtle_cell].second;
    occupancy_grid->put(tx, ty, turtle_value);   
+   occupancy_state->put(turtle_cell, turtle_value);
    turtle_path_history.clear();
    turtle_path_history.push_back(0);
 }
@@ -735,7 +740,7 @@ bool maze::get_game_over() const
 // ---------------------------------------------------------------------
 bool maze::get_maze_solved() const
 {
-   return maze_solved;
+   return (turtle_cell == int(occupancy_state->get_mdim() - 1));
 }
 
 // ---------------------------------------------------------------------
@@ -821,7 +826,6 @@ int maze::move_turtle(int curr_dir, bool erase_turtle_path)
    {
       return -1;	 // new cell is already occupied by wall
    }
-
    
 /*
    if(!erase_turtle_path && 
@@ -846,7 +850,6 @@ int maze::move_turtle(int curr_dir, bool erase_turtle_path)
 
    if (turtle_cell == int(occupancy_state->get_mdim() - 1))
    {
-      maze_solved = true;
       game_over = true;
    }
 

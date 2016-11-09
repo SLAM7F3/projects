@@ -80,7 +80,7 @@ class maze
    int ImageSize;
    int turtle_cell;
    double turtle_value, wall_value;
-   bool game_over, maze_solved;
+   bool game_over;
    std::vector<int> direction;
    genmatrix *grid_ptr;
 

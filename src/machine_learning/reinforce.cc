@@ -134,6 +134,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
 // Q learning variable initialization:
 
+   environment_ptr = NULL;
+   replay_memory_index = 0;
    s_curr = new genmatrix(Tmax, layer_dims.front());
    a_curr = new genvector(Tmax);
    s_next = new genmatrix(Tmax, layer_dims.front());
@@ -1214,6 +1216,50 @@ void reinforce::import_snapshot()
 // Q learning methods
 // ==========================================================================
 
+// Member function initialize_replay_memory()
+
+void reinforce::initialize_replay_memory()
+{
+   cout << "inside reinforce::initialize_replay_memory()" << endl;
+
+   genvector *curr_s = environment_ptr->get_curr_state();
+   cout << "*curr_s = " << *curr_s << endl;
+
+   epsilon = 1;
+
+   for(int t = 0; t < Tmax; t++)
+   {
+      int curr_a = -1;
+      bool legal_action = false;
+      while(!legal_action)
+      {
+         curr_a = mathfunc::getRandomInteger(n_actions);
+         legal_action = environment_ptr->is_legal_action(curr_a);
+      }
+
+      cout << "curr_a = " << curr_a << endl;
+      genvector *next_s = environment_ptr->get_next_state(curr_a);
+      cout << "*next_s = " << *next_s << endl;
+      bool terminal_state_flag = environment_ptr->is_terminal_state(next_s);
+      cout << "terminal_state_flag = " << terminal_state_flag << endl;
+
+/*
+      double curr_r;
+      bool terminal_state_flag;
+//      environment_ptr->GetNextState(*curr_s, curr_a, curr_r, next_s,
+//                                    terminal_state_flag);
+      
+      push_replay_entry(
+         *curr_s, curr_a, curr_r, next_s, terminal_state_flag);
+
+*/
+
+      exit(-1);
+
+   } // loop over index t
+}
+
+// ---------------------------------------------------------------------
 // Member function Q_forward_propagate() performs a feedforward pass
 // for the input state s to get predicted Q-values for all actions.
 
@@ -1263,15 +1309,31 @@ double reinforce::compute_Qstar(int d)
 // Member function push_replay_entry()
 
 void reinforce::push_replay_entry(
-   int d, const genvector& curr_s, const genvector& curr_a, double curr_r,
+   const genvector& curr_s, int curr_a, double curr_r,
    const genvector& next_s, bool terminal_state_flag)
 {
+   int d = -1;
+   if(replay_memory_index < Tmax)
+   {
+      d = replay_memory_index;
+      replay_memory_index++;
+   }
+   else
+   {
+      replay_memory_index = 0;
+      d = replay_memory_index;
+   }
+
    s_curr->put_row(d, curr_s);
    a_curr->put_row(d, curr_a);
    reward->put(d, curr_r);
    s_next->put_row(d, next_s);
    terminal_state->put(d, double(terminal_state_flag));
 }
+
+
+// ---------------------------------------------------------------------
+// Member function get_replay_entry()
 
 bool reinforce::get_replay_entry(
    int d, genvector& curr_s, genvector& curr_a, double& curr_r,
@@ -1286,7 +1348,7 @@ bool reinforce::get_replay_entry(
 }
 
 // ---------------------------------------------------------------------
-// Member function max_Z()
+// Member function max_Q()
 
 double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
 {
@@ -1299,6 +1361,7 @@ double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
    }
    return Qmax;
 }
+
 
 // ---------------------------------------------------------------------
 // Member function compute_target()

@@ -1,13 +1,13 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/5/16
+// Last updated on 11/5/16; 11/9/16
 // ==========================================================================
 
 #include <iostream>
 #include <string>
-#include <unistd.h>     // Needed for sleep() and usleep()
 #include <vector>
+#include "machine_learning/environment.h"
 #include "games/maze.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
@@ -24,34 +24,27 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//    nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
-//   int n_grid_size = 2;
-   int n_grid_size = 3;
+   int n_grid_size = 2;
+//   int n_grid_size = 3;
    maze curr_maze(n_grid_size);
-   curr_maze.generate_maze();
-   curr_maze.DrawMaze();
+
 
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
    int Dout = 4;			// Output dim
-   int Tmax = 2 * Din * Din;
+   int Tmax = 20 * 16;
 
    int H1 = 4 * Din;
 //   int H1 = 8 * Din;
 //   int H1 = 16 * Din;
    int H2 = 0;
 //   int H2 = 1 * Dout;
-   int H3 = 0;
-//   int H3 = 1 * Dout;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
       "; H2="+stringfunc::number_to_string(H2);
-   }
-   if(H3 > 0)
-   {
-      "; H3="+stringfunc::number_to_string(H3);
    }
 
    vector<int> layer_dims;
@@ -61,17 +54,12 @@ int main (int argc, char* argv[])
    {
       layer_dims.push_back(H2);
    }
-   if(H3 > 0)
-   {
-      layer_dims.push_back(H3);
-   }
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
 
 // Gamma = discount factor for reward:
 
-//   reinforce_agent_ptr->set_gamma(0.25);  
    reinforce_agent_ptr->set_gamma(0.90);
    reinforce_agent_ptr->set_batch_size(30);   
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
@@ -79,8 +67,6 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
-//   double min_learning_rate = 0.5E-4;
    double min_learning_rate = 3E-5;
 
    int n_max_episodes = 1 * 1000 * 1000;
@@ -95,6 +81,23 @@ int main (int argc, char* argv[])
 // value:
 
    int n_episodes_period = 1000 * 1000;
+
+// Initialize Deep Q replay memory:
+
+   curr_maze.generate_maze();
+   curr_maze.DrawMaze();
+   curr_maze.reset_game();
+   reinforce_agent_ptr->initialize_episode();   
+
+   environment game_world(environment::MAZE);
+   game_world.set_maze(&curr_maze);
+   reinforce_agent_ptr->set_environment(&game_world);
+
+   reinforce_agent_ptr->initialize_replay_memory();
+
+   cout << "Before start of training loop inside solve_maze" << endl;
+
+   exit(-1);
 
    bool generate_new_maze = false;
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
