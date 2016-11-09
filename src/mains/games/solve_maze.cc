@@ -30,7 +30,6 @@ int main (int argc, char* argv[])
 //   int n_grid_size = 3;
    maze curr_maze(n_grid_size);
 
-
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
    int Dout = 4;			// Output dim
    int Tmax = 20 * 16;
@@ -91,20 +90,9 @@ int main (int argc, char* argv[])
    game_world.start_new_episode();
    reinforce_agent_ptr->initialize_replay_memory();
 
-   cout << "Before start of training loop inside solve_maze" << endl;
-
-   exit(-1);
-
-   bool generate_new_maze = false;
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
-      if(generate_new_maze)
-      {
-         curr_maze.generate_maze();
-         generate_new_maze = false;
-      }
-      curr_maze.reset_game();
-
+      game_world.start_new_episode();
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
@@ -130,78 +118,25 @@ int main (int argc, char* argv[])
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 
-//      int Nmax = 2;
-      int Nmax = 4;
-      double alpha = -(Nmax + 1) / (Nmax - 1);
-
-      while(!curr_maze.get_game_over())
+      while(!curr_maze.get_maze_solved())
       {
+         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+         genvector* next_state = game_world.get_next_state(curr_a);
+         double reward = game_world.get_reward_for_next_state(next_state);
 
-// Agent move:
+         reinforce_agent_ptr->push_replay_entry(
+            *game_world.get_curr_state(), curr_a, reward,
+            *next_state, curr_maze.get_maze_solved());
 
-// Given turtle's current position within maze, first determine which
-// output actions are legal:
-
-         genvector* curr_legal_actions = 
-            curr_maze.compute_legal_turtle_actions();
-
-//         bool enforce_constraints_flag = false;
-         bool enforce_constraints_flag = true;
-         reinforce_agent_ptr->compute_action_probs(
-            curr_maze.get_occupancy_state(), enforce_constraints_flag,
-            curr_legal_actions);
-         int output_action = reinforce_agent_ptr->
-            get_candidate_current_action();
-         reinforce_agent_ptr->set_current_action(output_action);
-
-         bool erase_turtle_path = true;
-//         bool erase_turtle_path = false;
-         int legal_move = curr_maze.move_turtle(
-            output_action, erase_turtle_path);
-         if(legal_move < 0)
-         {
-            cout << "output_action = " << output_action
-                 << " legal_move = " << legal_move 
-                 << " n_turtle_moves = " << curr_maze.get_n_turtle_moves()
-                 << endl;
-            outputfunc::enter_continue_char();
-         }
-
-// Do not allow turtle to oscillate indefinitely:
-
-         if(curr_maze.get_n_turtle_moves() > 
-            Nmax * curr_maze.get_solution_path_moves())
-         {
-            legal_move = -1;
-         }
-
-// Step the environment and then retrieve new reward measurements:
-
-         curr_reward = 0;
-         if(legal_move < 0)
-         {
-            curr_reward = -1;
-            curr_maze.set_game_over(true);
-         }
-         else if (curr_maze.get_game_over())
-         {
-            int n_soln_steps = curr_maze.get_n_soln_steps();
-            int n_turtle_steps = curr_maze.get_n_turtle_moves();
-            curr_reward = 1 - sqr(n_turtle_steps - n_soln_steps);
-         }
-         
-         reinforce_agent_ptr->record_reward_for_action(curr_reward);
 
 //         curr_maze.print_occupancy_grid();
 //         curr_maze.print_turtle_path_history();
-
-      } // !game_over while loop
+      } // !maze_solved while loop
 // -----------------------------------------------------------------------
 
       if(curr_maze.get_maze_solved() && nearly_equal(curr_reward,1))
       {
          n_wins++;
-         generate_new_maze = true;
       }
       else
       {

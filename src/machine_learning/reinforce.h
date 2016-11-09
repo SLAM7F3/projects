@@ -82,16 +82,19 @@ class reinforce
 // Q learning methods
 
    void initialize_replay_memory();
-   void Q_forward_propagate(genvector& s_input, genvector& legal_actions);
-   double compute_Qstar(int d);
+   int get_random_legal_action() const;
+   int select_action_for_curr_state();
+
+   void Q_forward_propagate(genvector& s_input);
+   int compute_argmax_Q();
    void push_replay_entry(
       const genvector& curr_s, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
    bool get_replay_entry(
       int d, genvector& curr_s, genvector& curr_a, double& curr_r,
       genvector& next_s);
-   double max_Q(genvector& next_s, genvector& legal_actions);
-   double compute_target(int d, genvector& legal_actions);
+   double max_Q(genvector& next_s);
+   double compute_target(int d);
 
   private:
 
@@ -168,7 +171,7 @@ class reinforce
       genvector *legal_actions = NULL);
    void get_softmax_action_probs(int t);
    void compute_cumulative_action_dist();
-   double compute_loss(int t);
+   double compute_cross_entropy_loss(int t);
    void discount_rewards();
    void policy_backward();
 

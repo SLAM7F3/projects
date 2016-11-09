@@ -1,7 +1,7 @@
 j============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 10/11/16; 10/30/16; 10/31/16; 11/2/16
+Last updated on 10/30/16; 10/31/16; 11/2/16; 11/9/17
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -101,8 +101,8 @@ should automatically equal "complete".  Change its "State" to "debug".
 Default "Mode" = "Regular" is OK.  
 
 iv.  Change "#if 0" to "#if 1" in tg_work_scheduler.cpp.  Also be sure to
-hardwire the prjname (e.g. "peter_debug3") in this same section of
-tg_work_scheduler.cpp !!!
+hardwire the prjname (e.g. "peter_debug3") into USE_HARDCODED_TEST_JOB in
+tagger2.h
 
 v.  Splash page now reads "Tagger2" and no longer "S2D Editor".  After
 selecting debug option, we should see our hand-selected tile appear in the

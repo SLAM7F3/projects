@@ -136,10 +136,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    environment_ptr = NULL;
    replay_memory_index = 0;
-   s_curr = new genmatrix(Tmax, layer_dims.front());
-   a_curr = new genvector(Tmax);
-   s_next = new genmatrix(Tmax, layer_dims.front());
-   terminal_state = new genvector(Tmax);
+   epsilon = 0.1;
 }
 
 // ---------------------------------------------------------------------
@@ -148,6 +145,11 @@ void reinforce::allocate_member_objects()
    y = new genvector(Tmax);
    reward = new genvector(Tmax);
    discounted_reward = new genvector(Tmax);
+
+   s_curr = new genmatrix(Tmax, layer_dims.front());
+   a_curr = new genvector(Tmax);
+   s_next = new genmatrix(Tmax, layer_dims.front());
+   terminal_state = new genvector(Tmax);
 }		       
 
 // ---------------------------------------------------------------------
@@ -273,7 +275,7 @@ void reinforce::get_softmax_action_probs(int t)
 }
 
 // ---------------------------------------------------------------------
-double reinforce::compute_loss(int t) 
+double reinforce::compute_cross_entropy_loss(int t) 
 {
    get_softmax_action_probs(t);
    int a_star = y->get(t);
@@ -656,7 +658,7 @@ void reinforce::periodically_snapshot_loss_value()
    if(cum_time_counter > 0 && cum_time_counter%3000 == 0)
    {
       time_samples.push_back(cum_time_counter);
-      loss_values.push_back(compute_loss(curr_timestep));
+      loss_values.push_back(compute_cross_entropy_loss(curr_timestep));
    }
 }
 
@@ -706,11 +708,11 @@ void reinforce::update_weights()
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
-      const double epsilon = 1E-5;
+      const double eps = 1E-5;
       for(int l = 0; l < n_layers - 1; l++)
       {
          rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         rms_denom[l]->hadamard_sum(epsilon);
+         rms_denom[l]->hadamard_sum(eps);
          nabla_weights[l]->hadamard_division(*rms_denom[l]);
 
          *weights[l] -= learning_rate * (*nabla_weights[l]);
@@ -1222,30 +1224,16 @@ void reinforce::import_snapshot()
 
 void reinforce::initialize_replay_memory()
 {
-   cout << "inside reinforce::initialize_replay_memory()" << endl;
+//   cout << "inside reinforce::initialize_replay_memory()" << endl;
    initialize_episode();
 
-   epsilon = 1;
    for(int t = 0; t < Tmax; t++)
    {
       genvector *curr_s = environment_ptr->get_curr_state();
-      cout << "*curr_s = " << *curr_s << endl;
-
-      int curr_a = -1;
-      bool legal_action = false;
-      while(!legal_action)
-      {
-         curr_a = mathfunc::getRandomInteger(n_actions);
-         legal_action = environment_ptr->is_legal_action(curr_a);
-      }
-
-      cout << "curr_a = " << curr_a << endl;
+      int curr_a = get_random_legal_action();
       genvector *next_s = environment_ptr->get_next_state(curr_a);
-      cout << "*next_s = " << *next_s << endl;
       bool terminal_state_flag = environment_ptr->is_terminal_state(next_s);
-      cout << "terminal_state_flag = " << terminal_state_flag << endl;
       double reward = environment_ptr->get_reward_for_next_state(next_s);
-      cout << "reward = " << reward << endl;
       push_replay_entry(
          *curr_s, curr_a, reward, *next_s, terminal_state_flag);
 
@@ -1254,18 +1242,47 @@ void reinforce::initialize_replay_memory()
          environment_ptr->start_new_episode();
          initialize_episode();
       }
-
-      outputfunc::enter_continue_char();
-
    } // loop over index t
+}
+
+// ---------------------------------------------------------------------
+// Member function get_random_legal_action()
+
+int reinforce::get_random_legal_action() const
+{
+   int curr_a = -1;
+   bool legal_action = false;
+   while(!legal_action)
+   {
+      curr_a = mathfunc::getRandomInteger(n_actions);
+      legal_action = environment_ptr->is_legal_action(curr_a);
+   }
+   return curr_a;
+}
+
+// ---------------------------------------------------------------------
+// Member function select_action_for_curr_state()
+
+int reinforce::select_action_for_curr_state()
+{
+   genvector* curr_s = environment_ptr->get_curr_state();
+   
+   if(nrfunc::ran1() < epsilon)
+   {
+      return get_random_legal_action();
+   }
+   else
+   {
+      Q_forward_propagate(*curr_s);
+      return compute_argmax_Q();
+   }
 }
 
 // ---------------------------------------------------------------------
 // Member function Q_forward_propagate() performs a feedforward pass
 // for the input state s to get predicted Q-values for all actions.
 
-void reinforce::Q_forward_propagate(
-   genvector& s_input, genvector& legal_actions)
+void reinforce::Q_forward_propagate(genvector& s_input)
 {
    int t = 0;
 //   cout << "inside Q_forward_propagate()" << endl;
@@ -1279,16 +1296,23 @@ void reinforce::Q_forward_propagate(
 
    z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
 
-   machinelearning_func::constrained_identity(
-      t, legal_actions, *z[n_layers-1], *a[n_layers-1]);
+   for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
+   {
+      if(environment_ptr->is_legal_action(i))
+      {
+         a[n_layers-1]->put(t, i, z[n_layers-1]->get(t,i));
+      }
+      else
+      {
+         a[n_layers-1]->put(t, i, 0);
+      }
+   }
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_Qstar() returns the maximum activation from
-// output layer as current Q* value.  It also stores index curr_a
-// corresponding to Q* within member genvector a_curr.
+// Member function compute_argmax_Q() returns a = argmax_a' Q(s,a').
 
-double reinforce::compute_Qstar(int d)
+int reinforce::compute_argmax_Q()
 {
    double Qstar = NEGATIVEINFINITY;
    int t = 0;
@@ -1302,8 +1326,7 @@ double reinforce::compute_Qstar(int d)
          curr_a = i;
       }
    }
-   a_curr->put(d, curr_a);
-   return Qstar;
+   return curr_a;
 }
 
 // ---------------------------------------------------------------------
@@ -1351,9 +1374,9 @@ bool reinforce::get_replay_entry(
 // ---------------------------------------------------------------------
 // Member function max_Q()
 
-double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
+double reinforce::max_Q(genvector& next_s)
 {
-   Q_forward_propagate(next_s, legal_actions);
+   Q_forward_propagate(next_s);
 
    double Qmax = NEGATIVEINFINITY;
    for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
@@ -1367,7 +1390,7 @@ double reinforce::max_Q(genvector& next_s, genvector& legal_actions)
 // ---------------------------------------------------------------------
 // Member function compute_target()
 
-double reinforce::compute_target(int d, genvector& legal_actions)
+double reinforce::compute_target(int d)
 {
    double r = reward->get(d);
    if(terminal_state->get(d) > 0)
@@ -1377,7 +1400,7 @@ double reinforce::compute_target(int d, genvector& legal_actions)
    else
    {
       genvector next_s(s_curr->get_row(d));
-      return r + gamma * max_Q(next_s, legal_actions);
+      return r + gamma * max_Q(next_s);
    }
 }
 
