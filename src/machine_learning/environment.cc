@@ -93,7 +93,7 @@ bool environment::is_legal_action(int a)
 }
 
 // ---------------------------------------------------------------------
-genvector* environment::get_next_state(int a)
+genvector* environment::compute_next_state(int a)
 {
    genvector* next_state_ptr = NULL;
 
@@ -108,7 +108,7 @@ genvector* environment::get_next_state(int a)
 }
 
 // ---------------------------------------------------------------------
-bool environment::is_terminal_state(genvector* s)
+bool environment::is_terminal_state()
 {
    bool terminal_state_flag = false;
    if(world_type == MAZE)
@@ -119,12 +119,12 @@ bool environment::is_terminal_state(genvector* s)
 }
 
 // ---------------------------------------------------------------------
-double environment::get_reward_for_next_state(genvector* next_state_ptr)
+double environment::emit_reward()
 {
    double reward = 0;
    if(world_type == MAZE)
    {
-      if(is_terminal_state(next_state_ptr))
+      if(is_terminal_state())
       {
          reward = 1;
       }

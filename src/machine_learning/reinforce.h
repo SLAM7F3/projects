@@ -89,13 +89,15 @@ class reinforce
 
    void Q_forward_propagate(genvector& s_input);
    int compute_argmax_Q();
-   void push_replay_entry(
-      const genvector& curr_s, int curr_a, double curr_r,
+
+   int store_curr_state_into_replay_memory(const genvector& curr_s);
+   void store_arsprime_into_replay_memory(
+      int d, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
 
    void update_Q_network();
 
-   bool get_replay_entry(
+   bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
    double max_Q(genvector& next_s);

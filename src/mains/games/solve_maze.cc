@@ -121,15 +121,17 @@ int main (int argc, char* argv[])
 //      curr_maze.DrawMaze();
       while(!curr_maze.get_maze_solved())
       {
+         genvector *curr_s = game_world.get_curr_state();
+         int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+            *curr_s);
+
          int curr_a = reinforce_agent_ptr->
             select_legal_action_for_curr_state();
-         genvector* next_state = game_world.get_next_state(curr_a);
-         double reward = game_world.get_reward_for_next_state(next_state);
+         genvector* next_s = game_world.compute_next_state(curr_a);
+         double reward = game_world.emit_reward();
 
-         reinforce_agent_ptr->push_replay_entry(
-            *game_world.get_curr_state(), curr_a, reward,
-            *next_state, curr_maze.get_maze_solved());
-
+         reinforce_agent_ptr->store_arsprime_into_replay_memory(
+            d, curr_a, reward, *next_s, curr_maze.get_maze_solved());
       } // !maze_solved while loop
 // -----------------------------------------------------------------------
 

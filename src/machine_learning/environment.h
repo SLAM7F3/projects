@@ -33,9 +33,9 @@ class environment
    void start_new_episode();
    genvector* get_curr_state();
    bool is_legal_action(int a);
-   genvector* get_next_state(int a);
-   bool is_terminal_state(genvector* s);
-   double get_reward_for_next_state(genvector* next_state_ptr);
+   genvector* compute_next_state(int a);
+   bool is_terminal_state();
+   double emit_reward();
 
   private:
 

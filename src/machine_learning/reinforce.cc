@@ -1238,12 +1238,13 @@ void reinforce::initialize_replay_memory()
    for(int t = 0; t < Tmax; t++)
    {
       genvector *curr_s = environment_ptr->get_curr_state();
+      int d = store_curr_state_into_replay_memory(*curr_s);
       int curr_a = get_random_legal_action();
-      genvector *next_s = environment_ptr->get_next_state(curr_a);
-      bool terminal_state_flag = environment_ptr->is_terminal_state(next_s);
-      double reward = environment_ptr->get_reward_for_next_state(next_s);
-      push_replay_entry(
-         *curr_s, curr_a, reward, *next_s, terminal_state_flag);
+      genvector *next_s = environment_ptr->compute_next_state(curr_a);
+      double reward = environment_ptr->emit_reward();
+      bool terminal_state_flag = environment_ptr->is_terminal_state();
+      store_arsprime_into_replay_memory(
+         d, curr_a, reward, *next_s, terminal_state_flag);
 
       if(terminal_state_flag)
       {
@@ -1342,13 +1343,11 @@ int reinforce::compute_argmax_Q()
 }
 
 // ---------------------------------------------------------------------
-// Member function push_replay_entry()
+// Member function store_curr_state_into_replay_memory()
 
-void reinforce::push_replay_entry(
-   const genvector& curr_s, int curr_a, double curr_r,
-   const genvector& next_s, bool terminal_state_flag)
+int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
 {
-//   cout << "inside push_replay_entry()" << endl;
+//   cout << "inside store_curr_state_into_replay_memory()" << endl;
    int d = -1;
    if(replay_memory_index < Tmax)
    {
@@ -1362,6 +1361,17 @@ void reinforce::push_replay_entry(
    }
 
    s_curr->put_row(d, curr_s);
+   return d;
+}
+
+// ---------------------------------------------------------------------
+// Member function store_arsprime_into_replay_memory()
+
+void reinforce::store_arsprime_into_replay_memory(
+   int d, int curr_a, double curr_r,
+   const genvector& next_s, bool terminal_state_flag)
+{
+//   cout << "inside store_arsprime_into_replay_memory()" << endl;
    a_curr->put(d, curr_a);
    r_curr->put(d, curr_r);
    s_next->put_row(d, next_s);
@@ -1378,10 +1388,8 @@ void reinforce::update_Q_network()
 
 // Nd = Number of random samples to be drawn from memory replay:
 
-// FAKE FAKE:  Thurs Nov 10 at 5:38 am
-
-   int Nd = 10;
-//   int Nd = 0.1 * Tmax; 
+//   int Nd = 10;
+   int Nd = 0.1 * Tmax; 
 
    int curr_a = -1;
    double curr_r = -2;
@@ -1389,32 +1397,28 @@ void reinforce::update_Q_network()
    vector<int> sample_IDs = mathfunc::random_sequence(Tmax, Nd);
    for(unsigned int d = 0; d < sample_IDs.size(); d++)
    {
-      bool terminal_state_flag = get_replay_entry(
+      bool terminal_state_flag = get_memory_replay_entry(
          d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
 
-      cout << "d = " << d << " sample_ID = " << sample_IDs[d] 
-           << " a = " << curr_a << " r = " << curr_r << endl;
-      cout << "curr_s = " << *curr_s_sample << endl;
-      cout << "next_s = " << *next_s_sample << endl;
+// Calculate target for curr transition
+
+
    }
 
    outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
-// Member function get_replay_entry()
+// Member function get_memory_replay_entry()
 
-bool reinforce::get_replay_entry(
+bool reinforce::get_memory_replay_entry(
    int d, genvector& curr_s, int& curr_a, double& curr_r,
    genvector& next_s)
 {
-   cout << "inside get_replay_entry()" << endl;
-
    s_curr->get_row(d, curr_s);
    double a_val = a_curr->get(d);
    curr_a = int(a_val);
    curr_r = r_curr->get(d);
-   cout << "curr_r = " << curr_r << endl;
    
    s_next->get_row(d, next_s);
    bool terminal_state_flag = (terminal_state->get(d) > 0);
