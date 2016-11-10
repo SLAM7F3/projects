@@ -75,6 +75,8 @@ class maze
 
    int compute_turtle_reward() const;
 
+   genvector* set_2x2_state(int s);
+
   private: 
 
    int n_size, n_cells;
@@ -103,6 +105,7 @@ class maze
    genvector *curr_legal_actions;
    genmatrix *occupancy_grid;
    genvector *occupancy_state;
+   genvector *occupancy_2x2_state;
 
    std::vector<DUPLE> occupancy_cell_decomposition;
 // independent int: p

@@ -1589,3 +1589,19 @@ void reinforce::Q_backward_propagate(int d, int Nd)
       nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
    }
 }
+
+// ---------------------------------------------------------------------
+void reinforce::compute_2x2_maze_Qvalues(int s)
+{
+   genvector* occupancy_state_ptr = 
+      environment_ptr->get_maze()->set_2x2_state(s);
+   Q_forward_propagate(*occupancy_state_ptr);
+
+   int t = 0;
+   cout << "-------------------" << endl;
+   for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
+   {
+      cout << "s = " << s << " a = " << i 
+           << " Q(s,a) = " << a[n_layers-1]->get(t,i) << endl;
+   }
+}

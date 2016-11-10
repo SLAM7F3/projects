@@ -120,8 +120,8 @@ int main (int argc, char* argv[])
 //      cout << "************  Start of Game " << curr_episode_number
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
+//      curr_maze.print_solution_path();
 
-//      curr_maze.DrawMaze();
       while(!curr_maze.get_maze_solved() &&
             curr_maze.get_n_turtle_moves() < 5 * curr_maze.get_n_soln_steps())
       {
@@ -147,20 +147,22 @@ int main (int argc, char* argv[])
       cout << "  n_turtle_moves = "
            << curr_maze.get_n_turtle_moves() << endl;
       cout << "reward = " << game_world.get_reward() << endl;
-
       outputfunc::enter_continue_char();
 */
 
       reinforce_agent_ptr->increment_episode_number();
 
-// FAKE FAKE:  Thurs Nov 10 at 8:06 am
-// Turn off Q network updating for debugging...
-
       if(reinforce_agent_ptr->get_episode_number() % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
+
+// FAKE FAKE:  Thurs Nov 10 at 8:06 am
+// Suppress Q network updating for debugging...
+
          reinforce_agent_ptr->update_Q_network();
          reinforce_agent_ptr->anneal_epsilon();
+
+         reinforce_agent_ptr->compute_2x2_maze_Qvalues(0);
       }
 
       double curr_n_turns_ratio = double(
@@ -174,6 +176,7 @@ int main (int argc, char* argv[])
          double median, quartile_width;
          mathfunc::median_value_and_quartile_width(
             turn_ratios, median, quartile_width);
+
 
          cout << "turn ratio = " << mu << " +/- " << sigma 
               << "   median = " << median << " quartile_width = "

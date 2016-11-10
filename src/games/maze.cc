@@ -35,6 +35,7 @@ void maze::allocate_member_objects()
    grid_ptr = new genmatrix(n_cells, n_cells);
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    occupancy_state = new genvector(sqr(2*n_size-1));
+   occupancy_2x2_state = new genvector(sqr(2*2-1));
    ImageSize = 512;
    curr_legal_actions = new genvector(n_directions);
 }		       
@@ -98,6 +99,7 @@ maze::~maze()
    delete curr_legal_actions;
    delete occupancy_grid;
    delete occupancy_state;
+   delete occupancy_2x2_state;
 }
 
 // ---------------------------------------------------------------------
@@ -386,7 +388,7 @@ void maze::generate_maze()
 // Start maze generation at some location within grid:
 
 //   int p = 0;
-   int p = n_cells-1;
+   int p = n_cells-1;  // OK
 //   int p = mathfunc::getRandomInteger(n_cells);
 
    visited_cell[p] = true;
@@ -756,6 +758,9 @@ int maze::get_n_soln_steps() const
 
 genvector* maze::compute_legal_turtle_actions()
 {
+   int tx = occupancy_cell_decomposition[turtle_cell].first;
+   int ty = occupancy_cell_decomposition[turtle_cell].second;
+
    curr_legal_actions->initialize_values(-1);
    for(int curr_dir = 0; curr_dir < n_directions; curr_dir++)
    {
@@ -887,4 +892,107 @@ int maze::compute_turtle_reward() const
       if(reward > 1) reward = 0;
       return reward;
    }
+}
+
+// ---------------------------------------------------------------------
+genvector* maze::set_2x2_state(int s)
+{
+   occupancy_2x2_state->clear_values();
+   if(s == 0)
+   {
+      occupancy_2x2_state->put(0,1);
+      occupancy_2x2_state->put(1,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 1)
+   {
+      occupancy_2x2_state->put(2,1);
+      occupancy_2x2_state->put(1,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 2)
+   {
+      occupancy_2x2_state->put(8,1);
+      occupancy_2x2_state->put(1,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 3)
+   {
+      occupancy_2x2_state->put(7,1);
+      occupancy_2x2_state->put(1,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 4)
+   {
+      occupancy_2x2_state->put(0,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(5,-0.5);
+   }
+   else if(s == 5)
+   {
+      occupancy_2x2_state->put(2,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(5,-0.5);
+   }
+   else if(s == 6)
+   {
+      occupancy_2x2_state->put(8,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(5,-0.5);
+   }
+   else if(s == 7)
+   {
+      occupancy_2x2_state->put(6,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(5,-0.5);
+   }
+   else if(s == 8)
+   {
+      occupancy_2x2_state->put(0,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(7,-0.5);
+   }
+   else if(s == 9)
+   {
+      occupancy_2x2_state->put(2,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(7,-0.5);
+   }
+   else if(s == 10)
+   {
+      occupancy_2x2_state->put(8,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(7,-0.5);
+   }
+   else if(s == 11)
+   {
+      occupancy_2x2_state->put(6,1);
+      occupancy_2x2_state->put(4,-0.5);
+      occupancy_2x2_state->put(7,-0.5);
+   }
+   else if(s == 12)
+   {
+      occupancy_2x2_state->put(0,1);
+      occupancy_2x2_state->put(3,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 13)
+   {
+      occupancy_2x2_state->put(2,1);
+      occupancy_2x2_state->put(3,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 14)
+   {
+      occupancy_2x2_state->put(8,1);
+      occupancy_2x2_state->put(3,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   else if(s == 15)
+   {
+      occupancy_2x2_state->put(6,1);
+      occupancy_2x2_state->put(3,-0.5);
+      occupancy_2x2_state->put(4,-0.5);
+   }
+   return occupancy_2x2_state;
 }

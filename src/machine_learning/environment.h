@@ -29,6 +29,8 @@ class environment
       (std::ostream& outstream,const environment& E);
 
    void set_maze(maze* m_ptr);
+   maze* get_maze();
+   const maze* get_maze() const;
 
    void start_new_episode();
    genvector* get_curr_state();
@@ -58,6 +60,16 @@ class environment
 inline void environment::set_maze(maze* m_ptr)
 {
    maze_ptr = m_ptr;
+}
+
+inline maze* environment::get_maze()
+{
+   return maze_ptr;
+}
+
+inline const maze* environment::get_maze() const
+{
+   return maze_ptr;
 }
 
 

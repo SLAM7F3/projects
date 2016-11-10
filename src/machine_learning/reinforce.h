@@ -105,6 +105,8 @@ class reinforce
                          bool terminal_state_flag);
    void Q_backward_propagate(int d, int Nd);
 
+   void compute_2x2_maze_Qvalues(int s);
+
   private:
 
    bool debug_flag;
