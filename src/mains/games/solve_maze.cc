@@ -118,9 +118,11 @@ int main (int argc, char* argv[])
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 
+//      curr_maze.DrawMaze();
       while(!curr_maze.get_maze_solved())
       {
-         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+         int curr_a = reinforce_agent_ptr->
+            select_legal_action_for_curr_state();
          genvector* next_state = game_world.get_next_state(curr_a);
          double reward = game_world.get_reward_for_next_state(next_state);
 
@@ -128,25 +130,26 @@ int main (int argc, char* argv[])
             *game_world.get_curr_state(), curr_a, reward,
             *next_state, curr_maze.get_maze_solved());
 
-
-//         curr_maze.print_occupancy_grid();
-//         curr_maze.print_turtle_path_history();
       } // !maze_solved while loop
 // -----------------------------------------------------------------------
 
-      if(curr_maze.get_maze_solved() && nearly_equal(curr_reward,1))
+//      curr_maze.print_occupancy_grid();
+//      curr_maze.print_turtle_path_history();
+
+      reinforce_agent_ptr->increment_episode_number();
+      if(reinforce_agent_ptr->get_episode_number() % 
+         reinforce_agent_ptr->get_batch_size() == 0)
       {
-         n_wins++;
-      }
-      else
-      {
-         n_losses++;
+         reinforce_agent_ptr->update_Q_network();
+         reinforce_agent_ptr->anneal_epsilon();
       }
       
+
+/*      
       reinforce_agent_ptr->update_weights();
       reinforce_agent_ptr->update_running_reward(extrainfo);
 
-      reinforce_agent_ptr->increment_episode_number();
+
       int n_episodes = curr_episode_number + 1;
       if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
@@ -178,6 +181,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->plot_reward_history(extrainfo, -1, 1);
          reinforce_agent_ptr->plot_turns_history(extrainfo);
       }
+*/
 
 //      outputfunc::enter_continue_char();
    } // n_episodes < n_max_episodes while loop

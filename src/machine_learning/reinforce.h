@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 10/29/16; 11/4/16; 11/8/16; 11/9/16
+// Last modified on 11/4/16; 11/8/16; 11/9/16; 11/10/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -36,12 +36,13 @@ class reinforce
    bool get_debug_flag() const;
    int get_curr_timestep() const;
    int get_episode_number() const;
-   void increment_episode_number();
+   int increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
    void set_base_learning_rate(double rate);
    void set_learning_rate(double rate);
    double get_learning_rate() const;
    void set_batch_size(double bsize);
+   int get_batch_size() const;
    void set_lambda(double lambda);
    void set_gamma(double gamma);
    void set_rmsprop_decay_rate(double rate);
@@ -83,15 +84,19 @@ class reinforce
 
    void initialize_replay_memory();
    int get_random_legal_action() const;
-   int select_action_for_curr_state();
+   double anneal_epsilon();
+   int select_legal_action_for_curr_state();
 
    void Q_forward_propagate(genvector& s_input);
    int compute_argmax_Q();
    void push_replay_entry(
       const genvector& curr_s, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
+
+   void update_Q_network();
+
    bool get_replay_entry(
-      int d, genvector& curr_s, genvector& curr_a, double& curr_r,
+      int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
    double max_Q(genvector& next_s);
    double compute_target(int d);
@@ -107,7 +112,7 @@ class reinforce
    int curr_timestep;
    int T;		// number of time steps in current episode
    std::deque<double> T_values;  // Holds latest T values
-   int Tmax;  	        // For Qlearning, Nd = Tmax
+   int Tmax;  	        
    int batch_size;  	// Perform parameter update after this many episodes
    double base_learning_rate;
    double learning_rate;
@@ -164,8 +169,11 @@ class reinforce
    double epsilon;	// Select random action with probability epsilon
    genmatrix *s_curr;  // T x Din
    genvector *a_curr;  // T x 1  (Holds indices for actions)
+   genvector *r_curr;  // T x 1  (Holds rewards)
    genmatrix *s_next;  // T x Din
    genvector *terminal_state;   // T x 1
+
+   genvector *curr_s_sample, *next_s_sample;  // Din x 1 
 
    void policy_forward(int t, bool enforce_constraints_flag,
       genvector *legal_actions = NULL);
@@ -210,9 +218,10 @@ inline int reinforce::get_episode_number() const
    return episode_number;
 }
 
-inline void reinforce::increment_episode_number() 
+inline int reinforce::increment_episode_number() 
 {
    episode_number++;
+   return episode_number;
 }
 
 inline void reinforce::append_n_episode_turns_frac(double frac)
@@ -239,6 +248,11 @@ inline double reinforce::get_learning_rate() const
 inline void reinforce::set_batch_size(double bsize)
 {
    batch_size = bsize;
+}
+
+inline int reinforce::get_batch_size() const
+{
+   return batch_size;
 }
 
 inline void reinforce::set_lambda(double lambda)

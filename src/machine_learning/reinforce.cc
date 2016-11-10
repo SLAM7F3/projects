@@ -136,7 +136,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    environment_ptr = NULL;
    replay_memory_index = 0;
-   epsilon = 0.1;
+   epsilon = 0.99;
 }
 
 // ---------------------------------------------------------------------
@@ -148,8 +148,12 @@ void reinforce::allocate_member_objects()
 
    s_curr = new genmatrix(Tmax, layer_dims.front());
    a_curr = new genvector(Tmax);
+   r_curr = new genvector(Tmax);
    s_next = new genmatrix(Tmax, layer_dims.front());
    terminal_state = new genvector(Tmax);
+
+   curr_s_sample = new genvector(layer_dims.front());
+   next_s_sample = new genvector(layer_dims.front());
 }		       
 
 // ---------------------------------------------------------------------
@@ -196,8 +200,12 @@ reinforce::~reinforce()
 
    delete s_curr;
    delete a_curr;
+   delete r_curr;
    delete s_next;
    delete terminal_state;
+
+   delete curr_s_sample;
+   delete next_s_sample;
 }
 
 // ---------------------------------------------------------------------
@@ -1261,9 +1269,18 @@ int reinforce::get_random_legal_action() const
 }
 
 // ---------------------------------------------------------------------
+// Member function anneal_epsilon()
+
+double reinforce::anneal_epsilon()
+{
+   epsilon *= 0.95;
+   return epsilon;
+}
+
+// ---------------------------------------------------------------------
 // Member function select_action_for_curr_state()
 
-int reinforce::select_action_for_curr_state()
+int reinforce::select_legal_action_for_curr_state()
 {
    genvector* curr_s = environment_ptr->get_curr_state();
    
@@ -1298,14 +1315,7 @@ void reinforce::Q_forward_propagate(genvector& s_input)
 
    for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
    {
-      if(environment_ptr->is_legal_action(i))
-      {
-         a[n_layers-1]->put(t, i, z[n_layers-1]->get(t,i));
-      }
-      else
-      {
-         a[n_layers-1]->put(t, i, 0);
-      }
+      a[n_layers-1]->put(t, i, z[n_layers-1]->get(t,i));
    }
 }
 
@@ -1319,6 +1329,8 @@ int reinforce::compute_argmax_Q()
    int curr_a = -1;
    for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
    {
+      if(!environment_ptr->is_legal_action(i)) continue;
+
       double curr_activation = a[n_layers-1]->get(i,t);
       if(curr_activation > Qstar)
       {
@@ -1351,25 +1363,64 @@ void reinforce::push_replay_entry(
 
    s_curr->put_row(d, curr_s);
    a_curr->put(d, curr_a);
-   reward->put(d, curr_r);
+   r_curr->put(d, curr_r);
    s_next->put_row(d, next_s);
    terminal_state->put(d, terminal_state_flag);
+}
+
+// ---------------------------------------------------------------------
+// Member function update_Q_network()
+
+void reinforce::update_Q_network()
+{
+   cout << "inside update_Q_network()" << endl;
+   cout << "episode_number = " << get_episode_number() << endl;
+
+// Nd = Number of random samples to be drawn from memory replay:
+
+// FAKE FAKE:  Thurs Nov 10 at 5:38 am
+
+   int Nd = 10;
+//   int Nd = 0.1 * Tmax; 
+
+   int curr_a = -1;
+   double curr_r = -2;
+
+   vector<int> sample_IDs = mathfunc::random_sequence(Tmax, Nd);
+   for(unsigned int d = 0; d < sample_IDs.size(); d++)
+   {
+      bool terminal_state_flag = get_replay_entry(
+         d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
+
+      cout << "d = " << d << " sample_ID = " << sample_IDs[d] 
+           << " a = " << curr_a << " r = " << curr_r << endl;
+      cout << "curr_s = " << *curr_s_sample << endl;
+      cout << "next_s = " << *next_s_sample << endl;
+   }
+
+   outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
 // Member function get_replay_entry()
 
 bool reinforce::get_replay_entry(
-   int d, genvector& curr_s, genvector& curr_a, double& curr_r,
+   int d, genvector& curr_s, int& curr_a, double& curr_r,
    genvector& next_s)
 {
+   cout << "inside get_replay_entry()" << endl;
+
    s_curr->get_row(d, curr_s);
-   a_curr->get_row(d, curr_a);
-   curr_r = reward->get(d);
+   double a_val = a_curr->get(d);
+   curr_a = int(a_val);
+   curr_r = r_curr->get(d);
+   cout << "curr_r = " << curr_r << endl;
+   
    s_next->get_row(d, next_s);
    bool terminal_state_flag = (terminal_state->get(d) > 0);
    return terminal_state_flag;
 }
+
 
 // ---------------------------------------------------------------------
 // Member function max_Q()
@@ -1385,6 +1436,8 @@ double reinforce::max_Q(genvector& next_s)
    }
    return Qmax;
 }
+
+
 
 
 // ---------------------------------------------------------------------
