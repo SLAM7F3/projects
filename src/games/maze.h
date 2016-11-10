@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/5/16; 11/6/16
+// Last modified on 11/5/16; 11/6/16; 11/10/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -72,6 +72,8 @@ class maze
    void print_turtle_path_history() const;
    int get_n_turtle_moves() const;
    bool previously_visited_occupancy_cell() const;
+
+   int compute_turtle_reward() const;
 
   private: 
 

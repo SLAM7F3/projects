@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 10/29/16; 11/4/16; 11/8/16; 11/9/16
+// Last modified on 11/4/16; 11/8/16; 11/9/16; 11/10/16
 // ==========================================================================
 
 #include <string>
@@ -792,7 +792,7 @@ void reinforce::update_running_reward(string extrainfo)
    reward_sum = 0;
 
    bool print_flag = false;
-   if(episode_number > 0 && episode_number % 10000 == 0) print_flag = true;
+   if(episode_number > 0 && episode_number % 100 == 0) print_flag = true;
    if(print_flag)
    {
       double mu_T, sigma_T;
@@ -1241,7 +1241,7 @@ void reinforce::initialize_replay_memory()
       int d = store_curr_state_into_replay_memory(*curr_s);
       int curr_a = get_random_legal_action();
       genvector *next_s = environment_ptr->compute_next_state(curr_a);
-      double reward = environment_ptr->emit_reward();
+      double reward = environment_ptr->get_reward();
       bool terminal_state_flag = environment_ptr->is_terminal_state();
       store_arsprime_into_replay_memory(
          d, curr_a, reward, *next_s, terminal_state_flag);
@@ -1377,37 +1377,6 @@ void reinforce::store_arsprime_into_replay_memory(
    s_next->put_row(d, next_s);
    terminal_state->put(d, terminal_state_flag);
 }
-
-// ---------------------------------------------------------------------
-// Member function update_Q_network()
-
-void reinforce::update_Q_network()
-{
-   cout << "inside update_Q_network()" << endl;
-   cout << "episode_number = " << get_episode_number() << endl;
-
-// Nd = Number of random samples to be drawn from memory replay:
-
-//   int Nd = 10;
-   int Nd = 0.1 * Tmax; 
-
-   int curr_a = -1;
-   double curr_r = -2;
-
-   vector<int> sample_IDs = mathfunc::random_sequence(Tmax, Nd);
-   for(unsigned int d = 0; d < sample_IDs.size(); d++)
-   {
-      bool terminal_state_flag = get_memory_replay_entry(
-         d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
-
-// Calculate target for curr transition
-
-
-   }
-
-   outputfunc::enter_continue_char();
-}
-
 // ---------------------------------------------------------------------
 // Member function get_memory_replay_entry()
 
@@ -1425,94 +1394,165 @@ bool reinforce::get_memory_replay_entry(
    return terminal_state_flag;
 }
 
-
-// ---------------------------------------------------------------------
-// Member function max_Q()
-
-double reinforce::max_Q(genvector& next_s)
-{
-   Q_forward_propagate(next_s);
-
-   double Qmax = NEGATIVEINFINITY;
-   for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
-   {
-      Qmax = basic_math::max(Qmax, a[n_layers-1]->get(j,0));
-   }
-   return Qmax;
-}
-
-
-
-
 // ---------------------------------------------------------------------
 // Member function compute_target()
 
-double reinforce::compute_target(int d)
+double reinforce::compute_target(double curr_r, genvector* next_s,
+                                 bool terminal_state_flag)
 {
-   double r = reward->get(d);
-   if(terminal_state->get(d) > 0)
+   if(terminal_state_flag)
    {
-      return r;
+      return curr_r;
    }
    else
    {
-      genvector next_s(s_curr->get_row(d));
-      return r + gamma * max_Q(next_s);
+      Q_forward_propagate(*next_s);
+      double Qmax = NEGATIVEINFINITY;
+      for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
+      {
+         Qmax = basic_math::max(Qmax, a[n_layers-1]->get(j,0));
+      }
+      return curr_r + gamma * Qmax;
    }
+}
+
+// ---------------------------------------------------------------------
+// Member function update_Q_network()
+
+void reinforce::update_Q_network()
+{
+//   cout << "inside update_Q_network()" << endl;
+//   cout << "episode_number = " << get_episode_number() << endl;
+
+// Nd = Number of random samples to be drawn from replay memory:
+
+   int Nd = 0.1 * Tmax; 
+
+   vector<int> d_samples = mathfunc::random_sequence(Tmax, Nd);
+   for(unsigned int d = 0; d < d_samples.size(); d++)
+   {
+      Q_backward_propagate(d, Nd);
+   } // loop over index d labeling replay memory samples
+
+// Perform RMSprop parameter update:
+
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
+      {
+         for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+         {
+            double curr_val = 
+               rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
+               + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
+            rmsprop_weights_cache[l]->put(i,j,curr_val);
+         } // loop over index j labeling columns
+      } // loop over index i labeling rows
+   }
+
+// Update weights and biases for each network layer by their nabla
+// values averaged over the current mini-batch:
+
+   const double TINY = 1E-5;
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+      rms_denom[l]->hadamard_sum(TINY);
+      nabla_weights[l]->hadamard_division(*rms_denom[l]);
+      *weights[l] -= learning_rate * (*nabla_weights[l]);
+      
+      if(debug_flag)
+      {
+         int mdim = nabla_weights[l]->get_mdim();
+         int ndim = nabla_weights[l]->get_ndim();
+         
+         vector<double> curr_nabla_weights;
+         vector<double> curr_nabla_weight_ratios;
+         for(int r = 0; r < mdim; r++)
+         {
+            for(int c = 0; c < ndim; c++)
+            {
+               curr_nabla_weights.push_back(
+                  fabs(nabla_weights[l]->get(c,r)));
+//               cout << "r = " << r << " c = " << c
+//                    << " curr_nabla_weight = " 
+//                    << curr_nabla_weights.back() << endl;
+               double denom = weights[l]->get(c,r);
+               if(fabs(denom) > 1E-10)
+               {
+                  curr_nabla_weight_ratios.push_back(
+                     fabs(nabla_weights[l]->get(c,r) / denom ));
+               }
+            }
+         }
+         double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+         double mean_abs_nabla_weight_ratio = mathfunc::mean(
+            curr_nabla_weight_ratios);
+            
+         cout << "layer l = " << l
+              << " mean |nabla weight| = " 
+              << mean_abs_nabla_weight 
+              << " mean |nabla weight| ratio = " 
+              << mean_abs_nabla_weight_ratio  << endl;
+         
+         cout << " lr * mean weight ratio = " 
+              << learning_rate * mean_abs_nabla_weight 
+              << " lr * mean weight ratio = " 
+              << learning_rate * mean_abs_nabla_weight_ratio << endl;
+      } // debug_flag conditional
+      
+      nabla_weights[l]->clear_values();
+   }
+//       cout << endl;
+//   print_weights();
+//   outputfunc::enter_continue_char();
 }
 
 // ---------------------------------------------------------------------
 // Member function Q_backward_propagate()
 
-/*
-
-void reinforce::Q_backward_propagate(
-   vector<int>& d_samples, genvector& legal_actions)
+void reinforce::Q_backward_propagate(int d, int Nd)
 {
-   for(unsigned int d = 0; d < d_samples.size(); d++)
+   int t = 0;
+
+   // Initialize "batch" weight gradients to zero:
+
+   for(int l = 0; l < n_layers - 1; l++)
    {
-      int curr_d = d_samples[i];
+      delta_nabla_weights[l]->clear_values();
+   }
 
-  // Initialize "episode" weight gradients to zero:
+// Calculate target for curr transition sample:
 
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         delta_nabla_weights[l]->clear_values();
-      }
-      
-      int curr_layer = n_layers - 1;
+   int curr_a;
+   double curr_r;
+   bool terminal_state_flag = get_memory_replay_entry(
+      d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
+   double target_value = 
+      compute_target(curr_r, next_s_sample, terminal_state_flag);
 
-      
+// First need to perform forward propagation for *curr_s_sample in
+// order to repopulate linear z inputs and nonlinear a outputs for
+// each node in the neural network:
+
+   Q_forward_propagate(*curr_s_sample);
+
+   int curr_layer = n_layers - 1;
+
 // Eqn BP1:
 
-      for(int j = 0; j < layer_dims[curr_layer]; j++)
-      {
-         double curr_activation = a[curr_layer]->get(j, t);
-         if(j == y->get(t)) curr_activation -= 1.0;
+   for(int j = 0; j < layer_dims[curr_layer]; j++)
+   {
+      double curr_Q = a[curr_layer]->get(j, t);
 
-// Modulate the gradient with advantage (Policy Gradient magic happens
-// right here):
+      double curr_activation = 0;
+      if(j == curr_a) curr_activation = curr_Q - target_value;
+      delta_prime[curr_layer]->put(j, t, curr_activation);
+   }
 
-         delta_prime[curr_layer]->put(
-            j, t, discounted_reward->get(t) * curr_activation);
-      }
-   } // loop over index t
-
-//   if(debug_flag)
-//   {
-//      cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
-//           << endl;
-//   }
- 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
       int prev_layer = curr_layer - 1;
-
-//      if(debug_flag)
-//      {
-//         cout << "prev_layer = " << prev_layer 
-//              << " curr_layer = " << curr_layer << endl;
-//      }
 
 // Eqn BP2A:
 
@@ -1523,50 +1563,29 @@ void reinforce::Q_backward_propagate(
       delta_prime[prev_layer]->matrix_mult(
          *weights_transpose[prev_layer], *delta_prime[curr_layer]);
 
-//      if(debug_flag)
-//      {
-//         cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
-//              << endl;
-//      }
-
-// Eqn BP2B:
+// Eqn BP2B (ReLU):
       for(int j = 0; j < layer_dims[prev_layer]; j++)
       {
-         for(int t = 0; t < T; t++)
+         if(z[prev_layer]->get(j, t) < 0)
          {
-            if(z[prev_layer]->get(j, t) < 0)
-            {
-               delta_prime[prev_layer]->put(j, t, 0);
-            }
-         } // loop over t index
+            delta_prime[prev_layer]->put(j, t, 0);
+         }
       } // loop over j index
 
-// Accumulate weight gradients over episode:
+// Accumulate weight gradients over batch of episodes:
 
-      for(int t = 0; t < T; t++)
-      {
 // Eqn BP4:
 
-         delta_nabla_weights[prev_layer]->accumulate_outerprod(
-            delta_prime[curr_layer]->get_column(t),
-            a[prev_layer]->get_column(t));
-
-
-
-      } // loop over index t 
-
-      if(debug_flag)
-      {
-         cout << "prev_layer = " << prev_layer << endl;
-         cout << "*delta_nabla_weights[prev_layer] = " 
-              << *delta_nabla_weights[prev_layer]
-              << endl;
-      }
+      delta_nabla_weights[prev_layer]->accumulate_outerprod(
+         delta_prime[curr_layer]->get_column(t), a[prev_layer]->get_column(t));
 
    } // loop over curr_layer index
 
-   } // loop over index d labeling samples from replay memory
+// Accumulate weights' gradients for each network layer:
 
-} 
-
-*/
+   double inverse_Nd = 1.0 / Nd;
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
+   }
+}

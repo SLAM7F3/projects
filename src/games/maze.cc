@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/5/16; 11/6/16
+// Last modified on 11/5/16; 11/6/16; 11/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -872,4 +872,19 @@ void maze::print_turtle_path_history() const
 int maze::get_n_turtle_moves() const
 {
    return turtle_path_history.size();
+}
+
+// ---------------------------------------------------------------------
+int maze::compute_turtle_reward() const
+{
+   if(get_n_turtle_moves() < get_solution_path_moves())
+   {
+      return 0;
+   }
+   else
+   {
+      int reward = 1 - ( get_n_turtle_moves() - get_solution_path_moves() );
+      if(reward > 1) reward = 0;
+      return reward;
+   }
 }

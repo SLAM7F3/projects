@@ -101,7 +101,9 @@ class reinforce
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
    double max_Q(genvector& next_s);
-   double compute_target(int d);
+   double compute_target(double curr_r, genvector* next_s, 
+                         bool terminal_state_flag);
+   void Q_backward_propagate(int d, int Nd);
 
   private:
 

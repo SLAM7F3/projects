@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/9/16
+// Last modified on 11/9/16; 11/10/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -35,11 +35,14 @@ class environment
    bool is_legal_action(int a);
    genvector* compute_next_state(int a);
    bool is_terminal_state();
-   double emit_reward();
+
+   void set_reward(double r);
+   double get_reward() const;
 
   private:
 
    int world_type;
+   double reward;
    maze *maze_ptr;
 
    void allocate_member_objects();

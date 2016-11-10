@@ -56,6 +56,7 @@ int main (int argc, char* argv[])
    layer_dims.push_back(Dout);
 
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
+//   reinforce_agent_ptr->set_debug_flag(true);
 
 // Gamma = discount factor for reward:
 
@@ -64,12 +65,12 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);
    double min_learning_rate = 3E-5;
 
    int n_max_episodes = 1 * 1000 * 1000;
-   int n_update = 1000;
+   int n_update = 10;
    int n_summarize = 1000 * 1000;
 
    int n_losses = 0;
@@ -89,6 +90,8 @@ int main (int argc, char* argv[])
 
    game_world.start_new_episode();
    reinforce_agent_ptr->initialize_replay_memory();
+
+   vector<double> turn_ratios;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -119,59 +122,79 @@ int main (int argc, char* argv[])
 //      curr_maze.print_occupancy_grid();
 
 //      curr_maze.DrawMaze();
-      while(!curr_maze.get_maze_solved())
+      while(!curr_maze.get_maze_solved() &&
+            curr_maze.get_n_turtle_moves() < 5 * curr_maze.get_n_soln_steps())
       {
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
-
          int curr_a = reinforce_agent_ptr->
             select_legal_action_for_curr_state();
          genvector* next_s = game_world.compute_next_state(curr_a);
-         double reward = game_world.emit_reward();
-
+         double reward = curr_maze.compute_turtle_reward();
+         game_world.set_reward(reward);
          reinforce_agent_ptr->store_arsprime_into_replay_memory(
             d, curr_a, reward, *next_s, curr_maze.get_maze_solved());
       } // !maze_solved while loop
 // -----------------------------------------------------------------------
 
-//      curr_maze.print_occupancy_grid();
-//      curr_maze.print_turtle_path_history();
+/*
+      curr_maze.print_occupancy_grid();
+      curr_maze.print_turtle_path_history();
+
+      cout << "  n_soln_steps = "
+           << curr_maze.get_n_soln_steps() << endl;
+      cout << "  n_turtle_moves = "
+           << curr_maze.get_n_turtle_moves() << endl;
+      cout << "reward = " << game_world.get_reward() << endl;
+
+      outputfunc::enter_continue_char();
+*/
 
       reinforce_agent_ptr->increment_episode_number();
+
+// FAKE FAKE:  Thurs Nov 10 at 8:06 am
+// Turn off Q network updating for debugging...
+
       if(reinforce_agent_ptr->get_episode_number() % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
          reinforce_agent_ptr->update_Q_network();
          reinforce_agent_ptr->anneal_epsilon();
       }
-      
 
-/*      
-      reinforce_agent_ptr->update_weights();
-      reinforce_agent_ptr->update_running_reward(extrainfo);
+      double curr_n_turns_ratio = double(
+         curr_maze.get_n_soln_steps()) / curr_maze.get_n_turtle_moves();
+      turn_ratios.push_back(curr_n_turns_ratio);
+      if(turn_ratios.size() > 1000)
+      {
+         double mu, sigma;
+         mathfunc::mean_and_std_dev(turn_ratios, mu, sigma);
 
+         double median, quartile_width;
+         mathfunc::median_value_and_quartile_width(
+            turn_ratios, median, quartile_width);
 
+         cout << "turn ratio = " << mu << " +/- " << sigma 
+              << "   median = " << median << " quartile_width = "
+              << quartile_width << endl;
+         turn_ratios.clear();
+      }
+
+/*
       int n_episodes = curr_episode_number + 1;
       if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
       {
-         double loss_frac = double(n_losses) / n_episodes;
-         double win_frac = double(n_wins) / n_episodes;
-         cout << "n_episodes = " << n_episodes 
-              << " n_losses = " << n_losses
-              << " n_wins = " << n_wins
-              << endl;
-         cout << "  loss_frac = " << loss_frac
-              << "  win_frac = " << win_frac
-              << endl;
-         cout << "  n_turtle_moves = "
-              << curr_maze.get_n_turtle_moves() << endl;
-         cout << "  n_soln_steps = "
-              << curr_maze.get_n_soln_steps() << endl;
-         curr_maze.print_turtle_path_history();
+//         curr_maze.print_turtle_path_history();
 
-         double curr_n_turns_ratio = double(
-            curr_maze.get_n_soln_steps()) / curr_maze.get_n_turtle_moves();
+
+         cout << "  n_soln_steps = "
+              << curr_maze.get_n_soln_steps() 
+              << "  n_turtle_moves = "
+              << curr_maze.get_n_turtle_moves() 
+              << " ratio = " 
+              << curr_n_turns_ratio << endl;
+
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_ratio);
          reinforce_agent_ptr->snapshot_running_reward();
       }

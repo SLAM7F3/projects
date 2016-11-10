@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/9/16
+// Last modified on 11/9/16; 11/10/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -119,15 +119,12 @@ bool environment::is_terminal_state()
 }
 
 // ---------------------------------------------------------------------
-double environment::emit_reward()
+void environment::set_reward(double r)
 {
-   double reward = 0;
-   if(world_type == MAZE)
-   {
-      if(is_terminal_state())
-      {
-         reward = 1;
-      }
-   }
+   reward = r;
+}
+
+double environment::get_reward() const
+{
    return reward;
 }
