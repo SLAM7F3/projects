@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 8/10/16; 8/11/16; 9/7/16; 9/9/16
+Last updated on 8/11/16; 9/7/16; 9/9/16; 9/10/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -788,6 +788,9 @@ git fetch
 git merge origin/s2d_chunks
 
 
+*.  If you wish to set tracking information for a local branch, you can do
+so with:
 
+    git branch --set-upstream-to=origin/<branch> tagger2_new_api_peter
 
 
