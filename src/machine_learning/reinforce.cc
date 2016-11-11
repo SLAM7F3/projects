@@ -136,7 +136,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    environment_ptr = NULL;
    replay_memory_index = 0;
-   epsilon = 0.99;
+   epsilon = 0.99999;
 }
 
 // ---------------------------------------------------------------------
@@ -1257,6 +1257,12 @@ void reinforce::initialize_replay_memory()
 // ---------------------------------------------------------------------
 // Member function get_random_legal_action()
 
+int reinforce::get_random_action() const
+{
+   int curr_a = mathfunc::getRandomInteger(n_actions);
+   return curr_a;
+}
+
 int reinforce::get_random_legal_action() const
 {
    int curr_a = -1;
@@ -1274,12 +1280,33 @@ int reinforce::get_random_legal_action() const
 
 double reinforce::anneal_epsilon()
 {
-   epsilon *= 0.95;
+   epsilon *= 0.9999;
+//   cout << "epsilon = " << epsilon << endl;
+   return epsilon;
+}
+
+double reinforce::get_epsilon() const
+{
    return epsilon;
 }
 
 // ---------------------------------------------------------------------
 // Member function select_action_for_curr_state()
+
+int reinforce::select_action_for_curr_state()
+{
+   genvector* curr_s = environment_ptr->get_curr_state();
+   
+   if(nrfunc::ran1() < epsilon)
+   {
+      return get_random_action();
+   }
+   else
+   {
+      Q_forward_propagate(*curr_s);
+      return compute_argmax_Q();
+   }
+}
 
 int reinforce::select_legal_action_for_curr_state()
 {
@@ -1292,7 +1319,7 @@ int reinforce::select_legal_action_for_curr_state()
    else
    {
       Q_forward_propagate(*curr_s);
-      return compute_argmax_Q();
+      return compute_legal_argmax_Q();
    }
 }
 
@@ -1324,6 +1351,23 @@ void reinforce::Q_forward_propagate(genvector& s_input)
 // Member function compute_argmax_Q() returns a = argmax_a' Q(s,a').
 
 int reinforce::compute_argmax_Q()
+{
+   double Qstar = NEGATIVEINFINITY;
+   int t = 0;
+   int curr_a = -1;
+   for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
+   {
+      double curr_activation = a[n_layers-1]->get(i,t);
+      if(curr_activation > Qstar)
+      {
+         Qstar = curr_activation;
+         curr_a = i;
+      }
+   }
+   return curr_a;
+}
+
+int reinforce::compute_legal_argmax_Q()
 {
    double Qstar = NEGATIVEINFINITY;
    int t = 0;

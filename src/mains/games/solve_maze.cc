@@ -34,7 +34,8 @@ int main (int argc, char* argv[])
    int Dout = 4;			// Output dim
    int Tmax = 20 * 16;
 
-   int H1 = 4 * Din;
+   int H1 = 1 * Din;
+//   int H1 = 4 * Din;
 //   int H1 = 8 * Din;
 //   int H1 = 16 * Din;
    int H2 = 0;
@@ -67,6 +68,8 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
    reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-5);
    double min_learning_rate = 3E-5;
 
    int n_max_episodes = 1 * 1000 * 1000;
@@ -122,19 +125,34 @@ int main (int argc, char* argv[])
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_solution_path();
 
-      while(!curr_maze.get_maze_solved() &&
-            curr_maze.get_n_turtle_moves() < 5 * curr_maze.get_n_soln_steps())
+      while(!curr_maze.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
-         int curr_a = reinforce_agent_ptr->
-            select_legal_action_for_curr_state();
-         genvector* next_s = game_world.compute_next_state(curr_a);
-         double reward = curr_maze.compute_turtle_reward();
-         game_world.set_reward(reward);
+         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+
+         double reward;
+         genvector* next_s;
+         if(curr_a < 0)
+         {
+            curr_maze.set_game_over(true);
+            reward = -1;
+         }
+         else
+         {
+            next_s = game_world.compute_next_state(curr_a);
+            reward = curr_maze.compute_turtle_reward();
+         }
+         
          reinforce_agent_ptr->store_arsprime_into_replay_memory(
             d, curr_a, reward, *next_s, curr_maze.get_maze_solved());
+
+         if(curr_maze.get_n_turtle_moves() > 5 * curr_maze.get_n_soln_steps())
+         {
+            curr_maze.set_game_over(true);
+         }
+
       } // !maze_solved while loop
 // -----------------------------------------------------------------------
 
@@ -146,7 +164,7 @@ int main (int argc, char* argv[])
            << curr_maze.get_n_soln_steps() << endl;
       cout << "  n_turtle_moves = "
            << curr_maze.get_n_turtle_moves() << endl;
-      cout << "reward = " << game_world.get_reward() << endl;
+      cout << "reward = " << reward << endl;
       outputfunc::enter_continue_char();
 */
 
@@ -162,7 +180,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->update_Q_network();
          reinforce_agent_ptr->anneal_epsilon();
 
-         reinforce_agent_ptr->compute_2x2_maze_Qvalues(0);
+//         reinforce_agent_ptr->compute_2x2_maze_Qvalues(0);
       }
 
       double curr_n_turns_ratio = double(
@@ -181,6 +199,8 @@ int main (int argc, char* argv[])
          cout << "turn ratio = " << mu << " +/- " << sigma 
               << "   median = " << median << " quartile_width = "
               << quartile_width << endl;
+         cout << "      epsilon = " << reinforce_agent_ptr->get_epsilon()
+              << endl;
          turn_ratios.clear();
       }
 

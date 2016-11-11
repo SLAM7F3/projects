@@ -1,4 +1,5 @@
 /bin/rm ./create_maze
 /bin/rm ./fill_grid
+/bin/rm ./solve_maze
 /bin/rm ./test_ttt_network
 /bin/rm ./train_ttt_network

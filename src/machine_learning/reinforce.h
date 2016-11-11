@@ -83,12 +83,16 @@ class reinforce
 // Q learning methods
 
    void initialize_replay_memory();
+   int get_random_action() const;
    int get_random_legal_action() const;
    double anneal_epsilon();
+   double get_epsilon() const;
+   int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
 
    void Q_forward_propagate(genvector& s_input);
    int compute_argmax_Q();
+   int compute_legal_argmax_Q();
 
    int store_curr_state_into_replay_memory(const genvector& curr_s);
    void store_arsprime_into_replay_memory(
