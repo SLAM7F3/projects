@@ -777,17 +777,16 @@ void maze::reset_game(bool random_turtle_start)
 // Turtle starts in upper left corner of maze:
 
    turtle_cell = 0;
+   int tx = 0;
+   int ty = 0;
    if(random_turtle_start)
    {
       int px = mathfunc::getRandomInteger(n_size);
       int py = mathfunc::getRandomInteger(n_size);
-      int ty = 2 * py;     
-      int tx = 2 * px;
+      tx = 2 * px;
+      ty = 2 * py;     
       turtle_cell = ty * (2 * n_size - 1) + tx;
    }
-
-   int tx = cell_decomposition[turtle_cell].first;
-   int ty = cell_decomposition[turtle_cell].second;
    occupancy_grid->put(tx, ty, turtle_value);   
    occupancy_state->put(turtle_cell, turtle_value);
    turtle_path_history.clear();
@@ -946,6 +945,9 @@ int maze::get_n_turtle_moves() const
 // ---------------------------------------------------------------------
 int maze::compute_turtle_reward() const
 {
+  return (get_maze_solved());
+
+  /*
    if(get_n_turtle_moves() < get_solution_path_moves())
    {
       return 0;
@@ -956,11 +958,11 @@ int maze::compute_turtle_reward() const
    }
    else
    {
-//      return 1;
       int reward = 1 - ( get_n_turtle_moves() - get_solution_path_moves() );
       if(reward > 1) reward = 0;
       return reward;
    }
+  */
 }
 
 // ---------------------------------------------------------------------

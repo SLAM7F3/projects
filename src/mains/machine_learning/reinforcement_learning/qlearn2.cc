@@ -20,15 +20,15 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
    double gamma = 0.8;
-   cout << "Enter discounter factor gamma:" << endl;
-   cin >> gamma;
+//   cout << "Enter discounter factor gamma:" << endl;
+//   cin >> gamma;
 
    double alpha = 1.0;
-   cout << "Enter learning rate alpha:" << endl;
-   cin >> alpha;
+//   cout << "Enter learning rate alpha:" << endl;
+//   cin >> alpha;
 
 // Environment reward matrix:  row = state; column = action
 
@@ -57,7 +57,6 @@ int main (int argc, char* argv[])
 // Set fixed reward matrix values:
 
    R.initialize_values(-1);
-//   R.initialize_values(-10);
    NextState.initialize_values(-1);
 
    R.put(0, 2, 0);
@@ -122,18 +121,15 @@ int main (int argc, char* argv[])
          Q.put(i, j, 2 * (nrfunc::ran1() - 0.5) );
       }
    }
+   cout << "Initial random Q = " << Q << endl;
 
-   int n_episodes = 10000;
+   int n_episodes = 5;
+//   int n_episodes = 10000;
+   cout << "Enter number of episodes to iterate over:" << endl;
+   cin >> n_episodes;
+
    for(int n = 0; n < n_episodes; n++)
    {
-
-// FAKE FAKE:
-// Tues Nov 8 at 4:04 am
-  
-//      int curr_state = 0;
-//      int curr_state = starting_states[mathfunc::getRandomInteger(4)];
-//      cout << "curr_state = " << curr_state << endl;
-
       int curr_state = -1;
       bool init_OK_state = false;
       while(!init_OK_state)
@@ -151,24 +147,14 @@ int main (int argc, char* argv[])
          }
       }
 
+      cout << "************  Start of Game " << n
+           << " ***********" << endl;
+
       bool game_over = false;
       do
       {
-/*
-         int curr_action = -1;
-         bool legal_action = false;
-         do
-         {
-            curr_action = mathfunc::getRandomInteger(n_actions);
-            if(R.get(curr_state, curr_action) >= 0)
-            {
-               legal_action = true;
-            }
-         }
-         while(!legal_action);
-*/
          int curr_action = mathfunc::getRandomInteger(n_actions);
-
+         cout << "curr_action = " << curr_action << endl;
          int next_state = NextState.get(curr_state, curr_action);
 //         cout << "next_state = " << next_state << endl;
 
@@ -185,15 +171,19 @@ int main (int argc, char* argv[])
                double curr_Q = Q.get(next_state, a);
                max_Q = basic_math::max(curr_Q, max_Q);
             }
-//         cout << "max_Q = " << max_Q << endl;
+
          }
-         
+
+         double reward = R.get(curr_state, curr_action);
+         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
+
          double old_q = Q.get(curr_state, curr_action);
-         double new_q = R.get(curr_state, curr_action) + gamma * max_Q;
+         double new_q = reward + gamma * max_Q;
          double avg_q = (1 - alpha) * old_q + alpha * new_q;
          Q.put(curr_state, curr_action, avg_q);
 
-//         cout << "old_q = " << old_q << " new_q = " << new_q << endl;
+         cout << "old_q = " << old_q << " new_q = " << new_q 
+              << " avg_q = " << avg_q << endl;
 
          curr_state = next_state;
          for(unsigned int g = 0; g < winning_states.size(); g++)
@@ -217,4 +207,5 @@ int main (int argc, char* argv[])
    Q = Q / max_q_entry;
    cout << "Renormalized Q = " << Q << endl;
 }
+
 

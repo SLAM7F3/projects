@@ -26,8 +26,8 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
 //   nrfunc::init_time_based_seed();
 
-   int n_grid_size = 2;
-//   int n_grid_size = 3;
+//   int n_grid_size = 2;
+   int n_grid_size = 3;
    int n_actions = 4;
 
 // Construct one particular maze:
@@ -77,12 +77,13 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-   reinforce_agent_ptr->set_gamma(0.90);
+   reinforce_agent_ptr->set_gamma(0.8);
 
 // Q-learning rate:
    double alpha = 1.0;
 
-   int n_max_episodes = 1 * 1000 * 1000;
+   int n_max_episodes = 1 * 1000;
+//   int n_max_episodes = 1 * 1000 * 1000;
    int n_summarize = 1000 * 1000;
 
    vector<double> turn_ratios;
@@ -115,7 +116,6 @@ int main (int argc, char* argv[])
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 
          curr_maze.print_occupancy_grid();
-         cout << "curr_a = " << curr_a << endl;
          
          string curr_state_action_str = 
             game_world.get_state_action_string(curr_s, curr_a);
@@ -139,7 +139,7 @@ int main (int argc, char* argv[])
             for(int a = 0; a < n_actions; a++)
             {
                string next_state_action_str = 
-                  game_world.get_state_action_string(next_s, curr_a);
+                  game_world.get_state_action_string(next_s, a);
                double next_Q = reinforce_agent_ptr->get_Qmap_value(
                   next_state_action_str);
                max_Q = basic_math::max(next_Q, max_Q);
