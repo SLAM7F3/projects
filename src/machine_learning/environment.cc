@@ -12,6 +12,8 @@ using std::cout;
 using std::endl;
 using std::ostream;
 using std::string;
+using std::vector;
+
 
 // ---------------------------------------------------------------------
 // Initialization, constructor and destructor functions:
@@ -149,4 +151,15 @@ string environment::get_state_action_string(genvector* state_ptr, int a)
    string state_action_str = get_state_string(state_ptr);
    state_action_str += stringfunc::number_to_string(a);
    return state_action_str;
+}
+
+// ---------------------------------------------------------------------
+vector<string> environment::get_all_curr_state_strings()
+{
+   vector<string> curr_state_strings;
+   if(world_type == MAZE)
+   {
+      curr_state_strings = maze_ptr->get_curr_maze_state_strings();
+   }
+   return curr_state_strings;
 }

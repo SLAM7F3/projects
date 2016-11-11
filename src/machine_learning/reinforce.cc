@@ -1678,3 +1678,33 @@ double reinforce::get_Qmap_value(string state_action_str)
    }
 }
 
+// ---------------------------------------------------------------------
+// Member function init_random_Qmap initializes matrix Q(s,a) with
+// random values ranging over interval [-1,1].
+
+void reinforce::init_random_Qmap()
+{
+   vector<string> curr_state_strings = 
+      environment_ptr->get_all_curr_state_strings();
+   for(unsigned int s = 0; s < curr_state_strings.size(); s++)
+   {
+      for(int a = 0; a < n_actions; a++)
+      {
+         string curr_state_action_str = curr_state_strings[s] + 
+            stringfunc::number_to_string(a);
+         double Qval = 2 * (nrfunc::ran1() - 0.5);
+         set_Qmap_value(curr_state_action_str, Qval);
+      } // loop over index a labeling actions
+   } // loop over index s labeling state strings
+}
+
+// ---------------------------------------------------------------------
+// Member function print_Qmap 
+
+void reinforce::print_Qmap()
+{
+   for(qmap_iter = qmap.begin(); qmap_iter != qmap.end(); qmap_iter++)
+   {
+      cout << qmap_iter->first << "  " << qmap_iter->second << endl;
+   }
+}

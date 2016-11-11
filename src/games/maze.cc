@@ -654,7 +654,7 @@ void maze::initialize_occupancy_state()
 // Renormalize wall_value so that sum over all occupancy_grid values =
 // 0:
 
-   wall_value = -turtle_value / n_wall_cells;
+   double renorm_wall_value = -turtle_value / n_wall_cells;
 
    int cell = 0;   
    for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
@@ -663,12 +663,14 @@ void maze::initialize_occupancy_state()
       {
          if(nearly_equal(occupancy_grid->get(px,py), wall_value))
          {
-            occupancy_grid->put(px,py,wall_value);
+            occupancy_grid->put(px,py,renorm_wall_value);
          }
          occupancy_state->put(cell, occupancy_grid->get(px,py));
          cell++;
       }
    }
+
+   wall_value = renorm_wall_value;
 }
 
 // ---------------------------------------------------------------------
@@ -700,9 +702,16 @@ void maze::print_occupancy_grid() const
       cout << endl;
    }
    cout << endl;
+}
 
-/*
-*/
+// ---------------------------------------------------------------------
+void maze::print_occupancy_state() const
+{
+   for(unsigned int p = 0; p < occupancy_state->get_mdim(); p++)
+   {
+      cout << occupancy_state->get(p) << " " << flush;
+   }
+   cout << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -729,14 +738,45 @@ string maze::occupancy_state_to_string()
 }
 
 // ---------------------------------------------------------------------
+// Member function generate_all_turtle_states() works with the current
+// maze which is assumed to contain no turtle.  It moves the turtle
+// into all possible n_size x n_size locations and saves the
+// corresponding state vector as a string into member STL vector
+// curr_maze_state_strings.
+
+void maze::generate_all_turtle_states()
+{
+   curr_maze_state_strings.clear();
+   initialize_occupancy_grid();
+
+// Turtle starts in upper left corner of maze:
+
+   for(int py = 0; py < n_size; py++)
+   {
+      int ty = 2 * py;
+      for(int px = 0; px < n_size; px++)
+      {
+         int tx = 2 * px;
+         int turtle_cell = ty * (2 * n_size - 1) + tx;
+
+         occupancy_state->put(turtle_cell, turtle_value);
+         string state_str =  occupancy_state_to_string();    
+         curr_maze_state_strings.push_back(state_str);
+         occupancy_state->put(turtle_cell, 0);
+      } // loop over px
+   } // loop over py
+}
+
+// ---------------------------------------------------------------------
 void maze::reset_game()
 {
    game_over = false;
 
+   initialize_occupancy_grid();
+
 // Turtle starts in upper left corner of maze:
 
    turtle_cell = 0;
-   initialize_occupancy_grid();
    int tx = cell_decomposition[turtle_cell].first;
    int ty = cell_decomposition[turtle_cell].second;
    occupancy_grid->put(tx, ty, turtle_value);   
@@ -776,9 +816,6 @@ int maze::get_n_soln_steps() const
 
 genvector* maze::compute_legal_turtle_actions()
 {
-   int tx = occupancy_cell_decomposition[turtle_cell].first;
-   int ty = occupancy_cell_decomposition[turtle_cell].second;
-
    curr_legal_actions->initialize_values(-1);
    for(int curr_dir = 0; curr_dir < n_directions; curr_dir++)
    {

@@ -118,6 +118,8 @@ class reinforce
 
    void set_Qmap_value(std::string state_action_str, double Qvalue);
    double get_Qmap_value(std::string state_action_str);
+   void init_random_Qmap();
+   void print_Qmap();
 
   private:
 

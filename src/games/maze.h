@@ -7,7 +7,6 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include <map>
 #include <stack>
 #include <vector>
 #include "math/genmatrix.h"
@@ -31,7 +30,6 @@ class maze
    void set_turtle_cell(int p);
    void set_turtle_cell(int px, int py);
    int get_turtle_cell() const;
-
 
    DUPLE getDirection(int curr_dir);
    bool IsDirValid(int px, int py, int curr_dir);
@@ -58,10 +56,12 @@ class maze
    void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;
+   void print_occupancy_state() const;
    std::string occupancy_state_to_string();
    genvector* get_curr_legal_actions();
    genvector* get_occupancy_state();
    
+   void generate_all_turtle_states();
    void reset_game();
    void set_game_over(bool flag);
    bool get_game_over() const;
@@ -77,6 +77,8 @@ class maze
    int compute_turtle_reward() const;
 
    genvector* set_2x2_state(int s);
+   std::vector<std::string>& get_curr_maze_state_strings();
+   const std::vector<std::string>& get_curr_maze_state_strings() const;
 
   private: 
 
@@ -114,6 +116,7 @@ class maze
 
    std::vector<int> turtle_path_history;
 
+   std::vector<std::string> curr_maze_state_strings;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -168,7 +171,15 @@ inline int maze::get_turtle_cell() const
    return turtle_cell;
 }
 
+inline std::vector<std::string>& maze::get_curr_maze_state_strings() 
+{
+   return curr_maze_state_strings;
+}
 
+inline const std::vector<std::string>& maze::get_curr_maze_state_strings() const
+{
+   return curr_maze_state_strings;
+}
 
 #endif  // maze.h
 
