@@ -72,12 +72,15 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->init_random_Qmap();
 
+   cout << "Initial random Qmap" << endl;
+   reinforce_agent_ptr->print_Qmap();
+
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.90);
 
 // Q-learning rate:
-   double alpha = 0.5;
+   double alpha = 1.0;
 
    int n_max_episodes = 1 * 1000 * 1000;
    int n_summarize = 1000 * 1000;
@@ -86,7 +89,9 @@ int main (int argc, char* argv[])
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
-      curr_maze.reset_game();
+      bool random_turtle_start = true;
+//      bool random_turtle_start = false;
+      curr_maze.reset_game(random_turtle_start);
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
@@ -96,8 +101,8 @@ int main (int argc, char* argv[])
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
-//      cout << "************  Start of Game " << curr_episode_number
-//           << " ***********" << endl;
+      cout << "************  Start of Game " << curr_episode_number
+           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
 //      curr_maze.print_solution_path();
@@ -108,6 +113,10 @@ int main (int argc, char* argv[])
       {
          genvector *curr_s = game_world.get_curr_state();
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+
+         curr_maze.print_occupancy_grid();
+         cout << "curr_a = " << curr_a << endl;
+         
          string curr_state_action_str = 
             game_world.get_state_action_string(curr_s, curr_a);
 
@@ -136,6 +145,8 @@ int main (int argc, char* argv[])
                max_Q = basic_math::max(next_Q, max_Q);
             }
          } // curr_a is legal action conditional
+
+         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
          
          double old_q = reinforce_agent_ptr->get_Qmap_value(
             curr_state_action_str);
@@ -143,7 +154,11 @@ int main (int argc, char* argv[])
          double avg_q = (1 - alpha) * old_q + alpha * new_q;
          reinforce_agent_ptr->set_Qmap_value(curr_state_action_str, avg_q);
 
-//         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
+         cout << "old_q = " << old_q << " new_q = " << new_q 
+              << " avg_q = " << avg_q << endl;
+
+
+
 //         cout << "old_q = " << old_q << " avg_q = " << avg_q << endl;
 
 /*
@@ -154,8 +169,13 @@ int main (int argc, char* argv[])
             }
 */
 
+
+
       } // !game_over while loop
 // -----------------------------------------------------------------------
+
+      cout << "game over" << endl;
+      reinforce_agent_ptr->print_Qmap();
 
 /*
       curr_maze.print_occupancy_grid();
@@ -197,6 +217,7 @@ int main (int argc, char* argv[])
       }
 
 //      outputfunc::enter_continue_char();
+
    } // n_episodes < n_max_episodes while loop
 
    delete reinforce_agent_ptr;

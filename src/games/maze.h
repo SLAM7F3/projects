@@ -62,7 +62,7 @@ class maze
    genvector* get_occupancy_state();
    
    void generate_all_turtle_states();
-   void reset_game();
+   void reset_game(bool random_turtle_start);
    void set_game_over(bool flag);
    bool get_game_over() const;
    bool get_maze_solved() const;

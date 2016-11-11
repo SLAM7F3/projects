@@ -1248,7 +1248,8 @@ void reinforce::initialize_replay_memory()
 
       if(terminal_state_flag)
       {
-         environment_ptr->start_new_episode();
+         bool random_start = false;
+         environment_ptr->start_new_episode(random_start);
          initialize_episode();
       }
    } // loop over index t

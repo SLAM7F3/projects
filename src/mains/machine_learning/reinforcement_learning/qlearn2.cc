@@ -56,8 +56,8 @@ int main (int argc, char* argv[])
    
 // Set fixed reward matrix values:
 
-//   R.initialize_values(-1);
-   R.initialize_values(-10);
+   R.initialize_values(-1);
+//   R.initialize_values(-10);
    NextState.initialize_values(-1);
 
    R.put(0, 2, 0);

@@ -34,7 +34,7 @@ class environment
    maze* get_maze();
    const maze* get_maze() const;
 
-   void start_new_episode();
+   void start_new_episode(bool random_start = false);
    genvector* get_curr_state();
    bool is_legal_action(int a);
    genvector* compute_next_state(int a);

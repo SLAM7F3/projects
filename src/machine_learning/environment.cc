@@ -62,13 +62,13 @@ ostream& operator<< (ostream& outstream,const environment& E)
 }
 
 // ---------------------------------------------------------------------
-void environment::start_new_episode()
+void environment::start_new_episode(bool random_start)
 {
    if(world_type == MAZE)
    {
       maze_ptr->generate_maze();
 //      maze_ptr->DrawMaze();
-      maze_ptr->reset_game();
+      maze_ptr->reset_game(random_start);
    }
 }
 
