@@ -584,7 +584,7 @@ void maze::DrawMaze()
 // Fill (2*n_size - 1) x (2*n_size - 1) occupancy_grid with 0s
 // indicating vacant cells and 1s indicating wall cells.
 
-void maze::initialize_occupancy_grid(bool zero_mean_flag)
+void maze::initialize_occupancy_grid()
 {
    int mdim = occupancy_grid->get_mdim();
    int ndim = occupancy_grid->get_ndim();
@@ -633,11 +633,11 @@ void maze::initialize_occupancy_grid(bool zero_mean_flag)
       } // loop over px
    }  // loop over py
 
-   initialize_occupancy_state(zero_mean_flag);
+   initialize_occupancy_state();
 }
 
 // ---------------------------------------------------------------------
-void maze::initialize_occupancy_state(bool zero_mean_flag)
+void maze::initialize_occupancy_state()
 {
    int n_wall_cells = 0;
    for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
@@ -651,13 +651,10 @@ void maze::initialize_occupancy_state(bool zero_mean_flag)
       }
    }
 
-// If zero_mean_flag == true, reset wall_value so that sum over all
-// occupancy_grid values = 0:
+// Renormalize wall_value so that sum over all occupancy_grid values =
+// 0:
 
-   if(zero_mean_flag)
-   {
-      wall_value = -turtle_value / n_wall_cells;
-   }
+   wall_value = -turtle_value / n_wall_cells;
 
    int cell = 0;   
    for(unsigned int py = 0; py < occupancy_grid->get_mdim(); py++)
@@ -714,12 +711,12 @@ string maze::occupancy_state_to_string()
    string occup_state_str="";
    for(unsigned int p = 0; p < occupancy_state->get_mdim(); p++)
    {
-      int cell_value = occupancy_state->get(p);
-      if(cell_value == 1)
+      double cell_value = occupancy_state->get(p);
+      if(cell_value > 0)
       {
          occup_state_str += "T";
       }
-      else if(cell_value == -1)
+      else if(cell_value < 0)
       {
          occup_state_str += "W";
       }
@@ -732,14 +729,14 @@ string maze::occupancy_state_to_string()
 }
 
 // ---------------------------------------------------------------------
-void maze::reset_game(bool zero_mean_flag)
+void maze::reset_game()
 {
    game_over = false;
 
 // Turtle starts in upper left corner of maze:
 
    turtle_cell = 0;
-   initialize_occupancy_grid(zero_mean_flag);
+   initialize_occupancy_grid();
    int tx = cell_decomposition[turtle_cell].first;
    int ty = cell_decomposition[turtle_cell].second;
    occupancy_grid->put(tx, ty, turtle_value);   

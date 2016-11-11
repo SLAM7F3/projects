@@ -115,9 +115,9 @@ int main (int argc, char* argv[])
 
 // Initialize Q matrix to random values ranging over interval [-1,1]:
 
-   for(int i = 0; i < Q.get_mdim(); i++)
+   for(unsigned int i = 0; i < Q.get_mdim(); i++)
    {
-      for(int j = 0; j < Q.get_ndim(); j++)
+      for(unsigned int j = 0; j < Q.get_ndim(); j++)
       {
          Q.put(i, j, 2 * (nrfunc::ran1() - 0.5) );
       }

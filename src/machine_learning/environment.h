@@ -1,13 +1,14 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16
+// Last modified on 11/9/16; 11/10/16; 11/11/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
 
 #include <iostream>
+#include <string>
 #include "math/genvector.h"
 #include "games/maze.h"
 
@@ -40,6 +41,9 @@ class environment
 
    void set_reward(double r);
    double get_reward() const;
+
+   std::string get_state_string(genvector* state_ptr);
+   std::string get_state_action_string(genvector* state_ptr, int a);
 
   private:
 

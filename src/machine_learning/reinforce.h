@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/4/16; 11/8/16; 11/9/16; 11/10/16
+// Last modified on 11/8/16; 11/9/16; 11/10/16; 11/11/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -22,6 +22,10 @@ class reinforce
 {
    
   public:
+
+   typedef std::map<std::string, double > Q_MAP;
+// independent string: string rep for state + action
+// dependent double: Q(s,a)
 
 // Initialization, constructor and destructor functions:
 
@@ -45,6 +49,7 @@ class reinforce
    int get_batch_size() const;
    void set_lambda(double lambda);
    void set_gamma(double gamma);
+   double get_gamma() const;
    void set_rmsprop_decay_rate(double rate);
    genvector* get_p_action();
 
@@ -110,6 +115,9 @@ class reinforce
    void Q_backward_propagate(int d, int Nd);
 
    void compute_2x2_maze_Qvalues(int s);
+
+   void set_Qmap_value(std::string state_action_str, double Qvalue);
+   double get_Qmap_value(std::string state_action_str);
 
   private:
 
@@ -184,6 +192,9 @@ class reinforce
    genvector *terminal_state;   // T x 1
 
    genvector *curr_s_sample, *next_s_sample;  // Din x 1 
+
+   Q_MAP qmap;
+   Q_MAP::iterator qmap_iter;
 
    void policy_forward(int t, bool enforce_constraints_flag,
       genvector *legal_actions = NULL);
@@ -273,6 +284,11 @@ inline void reinforce::set_lambda(double lambda)
 inline void reinforce::set_gamma(double gamma)
 {
    this->gamma=gamma;
+}
+
+inline double reinforce::get_gamma() const
+{
+   return gamma;
 }
 
 inline void reinforce::set_rmsprop_decay_rate(double rate)

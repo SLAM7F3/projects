@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/4/16; 11/8/16; 11/9/16; 11/10/16
+// Last modified on 11/8/16; 11/9/16; 11/10/16; 11/11/16
 // ==========================================================================
 
 #include <string>
@@ -136,7 +136,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    environment_ptr = NULL;
    replay_memory_index = 0;
-   epsilon = 0.99999;
+   epsilon = 1.000001;
 }
 
 // ---------------------------------------------------------------------
@@ -1649,3 +1649,32 @@ void reinforce::compute_2x2_maze_Qvalues(int s)
            << " Q(s,a) = " << a[n_layers-1]->get(t,i) << endl;
    }
 }
+
+// ---------------------------------------------------------------------
+void reinforce::set_Qmap_value(string state_action_str, double Qvalue)
+{
+   qmap_iter = qmap.find(state_action_str);
+   if(qmap_iter == qmap.end())
+   {
+      qmap[state_action_str] = Qvalue;
+   }
+   else
+   {
+      qmap_iter->second = Qvalue;
+   }
+}
+
+// ---------------------------------------------------------------------
+double reinforce::get_Qmap_value(string state_action_str)
+{
+   qmap_iter = qmap.find(state_action_str);
+   if(qmap_iter == qmap.end())
+   {
+      return NEGATIVEINFINITY;
+   }
+   else
+   {
+      return qmap_iter->second;
+   }
+}
+

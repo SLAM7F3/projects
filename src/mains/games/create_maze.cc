@@ -48,15 +48,12 @@ int main (int argc, char* argv[])
    for(int trial = 0; trial < n_trials; trial++)
    {
       curr_maze.generate_maze();
-
-      bool zero_mean_flag = false;
-//   bool zero_mean_flag = true;
-      curr_maze.initialize_occupancy_grid(zero_mean_flag);
+      curr_maze.initialize_occupancy_grid();
 
 //      curr_maze.DrawMaze();
 //      curr_maze.print_solution_path();
 
-      curr_maze.reset_game(zero_mean_flag);
+      curr_maze.reset_game();
 //      curr_maze.print_occupancy_grid();
 
       string occup_state_str = curr_maze.occupancy_state_to_string();

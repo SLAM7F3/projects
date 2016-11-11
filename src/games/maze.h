@@ -55,14 +55,14 @@ class maze
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
    void DrawMaze();
-   void initialize_occupancy_grid(bool zero_mean_flag);
+   void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;
    std::string occupancy_state_to_string();
    genvector* get_curr_legal_actions();
    genvector* get_occupancy_state();
    
-   void reset_game(bool zero_mean_flag);
+   void reset_game();
    void set_game_over(bool flag);
    bool get_game_over() const;
    bool get_maze_solved() const;
@@ -124,7 +124,7 @@ class maze
    std::string get_cell_bitstr(int px, int py);
    int get_direction_from_p_to_q(int p, int q);
    void remove_wall(int p, int curr_dir);
-   void initialize_occupancy_state(bool zero_wall_flag);
+   void initialize_occupancy_state();
 };
 
 // ==========================================================================

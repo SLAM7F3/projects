@@ -1,15 +1,17 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16
+// Last modified on 11/9/16; 11/10/16; 11/11/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
+#include "general/stringfuncs.h"
 
 using std::cin;
 using std::cout;
 using std::endl;
 using std::ostream;
+using std::string;
 
 // ---------------------------------------------------------------------
 // Initialization, constructor and destructor functions:
@@ -127,4 +129,24 @@ void environment::set_reward(double r)
 double environment::get_reward() const
 {
    return reward;
+}
+
+// ---------------------------------------------------------------------
+string environment::get_state_string(genvector* state_ptr)
+{
+   string state_str = "";
+   if(world_type == MAZE)
+   {
+      state_str = maze_ptr->occupancy_state_to_string();
+   }
+
+   return state_str;
+}
+
+// ---------------------------------------------------------------------
+string environment::get_state_action_string(genvector* state_ptr, int a)
+{
+   string state_action_str = get_state_string(state_ptr);
+   state_action_str += stringfunc::number_to_string(a);
+   return state_action_str;
 }

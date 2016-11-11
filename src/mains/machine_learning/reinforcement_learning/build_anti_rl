@@ -1,2 +1,3 @@
 /bin/rm ./qlearn1
 /bin/rm ./qlearn2
+/bin/rm ./qmaze
