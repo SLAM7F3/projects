@@ -24,11 +24,13 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
 //   int n_grid_size = 2;
-//   int n_grid_size = 3;
-   int n_grid_size = 4;
+   int n_grid_size = 3;
+//   int n_grid_size = 4;
+   cout << "Enter grid size:" << endl;
+   cin >> n_grid_size;
    int n_actions = 4;
 
 // Construct one particular maze:
@@ -36,10 +38,7 @@ int main (int argc, char* argv[])
    maze curr_maze(n_grid_size);
    curr_maze.generate_maze();
 
-   string bmp_filename="bare_maze.bmp";
-   curr_maze.DrawMaze(bmp_filename);
-   
-   exit(-1);
+
 
    curr_maze.generate_all_turtle_states();
 
@@ -78,8 +77,14 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->init_random_Qmap();
 
-//    cout << "Initial random Qmap" << endl;
-//    reinforce_agent_ptr->print_Qmap();
+   cout << "Initial random Qmap" << endl;
+   reinforce_agent_ptr->print_Qmap();
+
+   curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
+
+   string bmp_filename="initial_maze.bmp";
+   bool display_qmap_flag = true;
+   curr_maze.DrawMaze(bmp_filename, display_qmap_flag);
 
 // Gamma = discount factor for reward:
 
@@ -213,11 +218,13 @@ int main (int argc, char* argv[])
 
       }
 
-//      outputfunc::enter_continue_char();
-
    } // n_episodes < n_max_episodes while loop
 
    reinforce_agent_ptr->print_Qmap();
+   curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
+
+   bmp_filename="final_maze.bmp";
+   curr_maze.DrawMaze(bmp_filename, display_qmap_flag);
 
    delete reinforce_agent_ptr;
 }

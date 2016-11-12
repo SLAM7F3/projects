@@ -9,6 +9,7 @@
 #include "math/mathfuncs.h"
 #include "games/maze.h"
 #include "numrec/nrfuncs.h"
+#include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
 #include "math/twovector.h"
@@ -681,7 +682,7 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
 }
 
 // ---------------------------------------------------------------------
-void maze::DrawMaze(string bmp_filename)
+void maze::DrawMaze(string bmp_filename, bool display_qmap_flag)
 {
    // prepare BGR image
    size_t DataSize = 3 * ImageSize * ImageSize;
@@ -693,17 +694,84 @@ void maze::DrawMaze(string bmp_filename)
    // render maze on bitmap
    RenderMaze( Img );
 
-
-   DrawCellArrow(Img, 0, 0, 0, 255, 0, 0);
-   DrawCellArrow(Img, 0, 1, 1, 255, 0, 0);
-   DrawCellArrow(Img, 0, 2, 2, 255, 0, 0);
-   DrawCellArrow(Img, 0, 3, 3, 255, 0, 0);
+   if(display_qmap_flag)
+   {
+      int R = 255;
+      int G = 0;
+      int B = 0;
+      draw_max_Qmap(Img, R, G, B);
+   }
 
    SaveBMP( bmp_filename, Img, ImageSize, ImageSize );
 
    // cleanup
    delete[]( Img );
+
+   string banner="Exported maze to "+bmp_filename;
+   outputfunc::write_banner(banner);
 }
+
+// ---------------------------------------------------------------------
+// Member function draw_max_Qmap() loops over all entries within
+// *qmap_ptr.  It extracts the turtle's occupancy grid coordinates
+// from each state along with its direction.  This method draws an
+// arrow corresponding in each cell which indicates the maximal Q
+// value for that position.
+
+void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
+{
+   typedef map<int, pair<double, int> > MAX_Q_MAP;
+// independent int: turtle cell
+// dependent pair: double = qvalue, int = action direction
+   
+   MAX_Q_MAP max_qmap;
+   MAX_Q_MAP::iterator max_qmap_iter;
+
+   for(qmap_iter = qmap_ptr->begin(); qmap_iter != qmap_ptr->end(); 
+       qmap_iter++)
+   {
+      string state_action_str = qmap_iter->first;
+      int turtle_cell = state_action_str.find("T");
+      int turtle_direction = stringfunc::string_to_number(
+         state_action_str.substr(state_action_str.size() - 1, 1));
+      double qvalue = qmap_iter->second;
+
+      max_qmap_iter = max_qmap.find(turtle_cell);
+      if(max_qmap_iter == max_qmap.end())
+      {
+         pair<double, int> P;
+         P.first = qvalue;
+         P.second = turtle_direction;
+         max_qmap[turtle_cell] = P;
+      }
+      else
+      {
+         if(max_qmap_iter->second.first < qvalue)
+         {
+            max_qmap_iter->second.first = qvalue;
+            max_qmap_iter->second.second = turtle_direction;
+         }
+      }
+   }
+
+   for(max_qmap_iter = max_qmap.begin(); 
+       max_qmap_iter != max_qmap.end(); max_qmap_iter++)
+   {
+      int turtle_cell = max_qmap_iter->first;
+      int tx, ty;
+      decompose_turtle_cell(turtle_cell, tx, ty);
+      int px = tx / 2;
+      int py = ty / 2;
+      int turtle_direction = max_qmap_iter->second.second;
+
+      cout << "  turtle cell = " << turtle_cell
+           << " tx = " << tx << " ty = " << ty 
+           << "  turtle dir = " << turtle_direction << endl;
+
+      DrawCellArrow(img, px, py, turtle_direction, R, G, B);
+   }
+}
+
 
 // ---------------------------------------------------------------------
 // Fill (2*n_size - 1) x (2*n_size - 1) occupancy_grid with 0s
@@ -1192,3 +1260,5 @@ genvector* maze::set_2x2_state(int s)
    }
    return occupancy_2x2_state;
 }
+
+

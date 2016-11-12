@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/5/16; 11/6/16; 11/10/16; 11/11/16
+// Last modified on 11/6/16; 11/10/16; 11/11/16; 11/12/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -18,6 +18,10 @@ class maze
    
   public:
 
+   typedef std::map<std::string, double > Q_MAP;
+// independent string: string rep for state + action
+// dependent double: Q(s,a)
+
 // Initialization, constructor and destructor functions:
 
    maze(int n_size);
@@ -30,6 +34,7 @@ class maze
    void set_turtle_cell(int p);
    void set_turtle_cell(int px, int py);
    int get_turtle_cell() const;
+   void decompose_turtle_cell(int turtle_cell, int& tx, int& ty);
 
    DUPLE getDirection(int curr_dir);
    bool IsDirValid(int px, int py, int curr_dir);
@@ -61,7 +66,7 @@ class maze
    void RenderMaze(unsigned char* img);
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
-   void DrawMaze(std::string bmp_filename);
+   void DrawMaze(std::string bmp_filename, bool display_qmap_flag = true);
    void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;
@@ -88,6 +93,9 @@ class maze
    genvector* set_2x2_state(int s);
    std::vector<std::string>& get_curr_maze_state_strings();
    const std::vector<std::string>& get_curr_maze_state_strings() const;
+
+   void set_qmap_ptr(Q_MAP *qmap_ptr);
+   void draw_max_Qmap(unsigned char* img, int R, int G, int B);
 
   private: 
 
@@ -127,6 +135,9 @@ class maze
 
    std::vector<std::string> curr_maze_state_strings;
 
+   Q_MAP *qmap_ptr;
+   Q_MAP::iterator qmap_iter;
+
    void allocate_member_objects();
    void initialize_member_objects();
    void docopy(const maze& T);
@@ -136,7 +147,7 @@ class maze
    std::string get_cell_bitstr(int px, int py);
    int get_direction_from_p_to_q(int p, int q);
    void remove_wall(int p, int curr_dir);
-   void initialize_occupancy_state();
+   void initialize_occupancy_state();   
 };
 
 // ==========================================================================
@@ -180,6 +191,12 @@ inline int maze::get_turtle_cell() const
    return turtle_cell;
 }
 
+inline void maze::decompose_turtle_cell(int turtle_cell, int& tx, int& ty)
+{
+   ty = turtle_cell / (2*n_size - 1);
+   tx = turtle_cell % (2*n_size - 1);
+}
+
 inline std::vector<std::string>& maze::get_curr_maze_state_strings() 
 {
    return curr_maze_state_strings;
@@ -189,6 +206,12 @@ inline const std::vector<std::string>& maze::get_curr_maze_state_strings() const
 {
    return curr_maze_state_strings;
 }
+
+inline void maze::set_qmap_ptr(Q_MAP *qmap_ptr)
+{
+   this->qmap_ptr = qmap_ptr;
+}
+
 
 #endif  // maze.h
 

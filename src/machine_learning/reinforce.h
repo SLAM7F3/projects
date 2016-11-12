@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/8/16; 11/9/16; 11/10/16; 11/11/16
+// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/12/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -120,6 +120,9 @@ class reinforce
    double get_Qmap_value(std::string state_action_str);
    void init_random_Qmap();
    void print_Qmap();
+   
+   Q_MAP* get_qmap_ptr();
+   const Q_MAP* get_qmap_ptr() const;
 
   private:
 
@@ -303,6 +306,15 @@ inline genvector* reinforce::get_p_action()
    return p_action;
 }
 
+inline reinforce::Q_MAP* reinforce::get_qmap_ptr()
+{
+   return &qmap;
+}
+
+inline const reinforce::Q_MAP* reinforce::get_qmap_ptr() const
+{
+   return &qmap;
+}
 
 #endif  // reinforce.h
 
