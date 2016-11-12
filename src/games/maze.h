@@ -49,10 +49,19 @@ class maze
 
    void DrawLine(unsigned char* img, int x1, int y1, int x2, int y2,
                  int R, int G, int B);
+
+   void DrawPoint(unsigned char* img, const twovector& V, int R, int G, int B);
+   void DrawLine(unsigned char* img, twovector& V1, twovector& V2,
+                 int R, int G, int B);
+   void DrawArrow(unsigned char* img, twovector& base, twovector& tip,
+                  int R, int G, int B);
+   void DrawCellArrow(unsigned char* img, int px, int py, int direction,
+                      int R, int G, int B);
+
    void RenderMaze(unsigned char* img);
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
-   void DrawMaze();
+   void DrawMaze(std::string bmp_filename);
    void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;

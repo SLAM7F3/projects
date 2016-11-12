@@ -50,10 +50,11 @@ int main (int argc, char* argv[])
       curr_maze.generate_maze();
       curr_maze.initialize_occupancy_grid();
 
-//      curr_maze.DrawMaze();
+//      curr_maze.DrawMaze("raw_maze.bmp");
 //      curr_maze.print_solution_path();
 
-      curr_maze.reset_game();
+      bool random_turtle_start = false;
+      curr_maze.reset_game(random_turtle_start);
 //      curr_maze.print_occupancy_grid();
 
       string occup_state_str = curr_maze.occupancy_state_to_string();

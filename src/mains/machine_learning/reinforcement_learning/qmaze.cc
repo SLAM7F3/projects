@@ -27,14 +27,20 @@ int main (int argc, char* argv[])
 //   nrfunc::init_time_based_seed();
 
 //   int n_grid_size = 2;
-   int n_grid_size = 3;
+//   int n_grid_size = 3;
+   int n_grid_size = 4;
    int n_actions = 4;
 
 // Construct one particular maze:
 
    maze curr_maze(n_grid_size);
    curr_maze.generate_maze();
-   curr_maze.DrawMaze();
+
+   string bmp_filename="bare_maze.bmp";
+   curr_maze.DrawMaze(bmp_filename);
+   
+   exit(-1);
+
    curr_maze.generate_all_turtle_states();
 
 // Construct environment which acts as interface between reinforcement
@@ -72,8 +78,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->init_random_Qmap();
 
-   cout << "Initial random Qmap" << endl;
-   reinforce_agent_ptr->print_Qmap();
+//    cout << "Initial random Qmap" << endl;
+//    reinforce_agent_ptr->print_Qmap();
 
 // Gamma = discount factor for reward:
 
@@ -82,7 +88,7 @@ int main (int argc, char* argv[])
 // Q-learning rate:
    double alpha = 1.0;
 
-   int n_max_episodes = 1 * 1000;
+   int n_max_episodes = 5 * 1000;
 //   int n_max_episodes = 1 * 1000 * 1000;
    int n_summarize = 1000 * 1000;
 
@@ -102,8 +108,8 @@ int main (int argc, char* argv[])
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
-      cout << "************  Start of Game " << curr_episode_number
-           << " ***********" << endl;
+//      cout << "************  Start of Game " << curr_episode_number
+//           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
 //      curr_maze.print_solution_path();
@@ -115,8 +121,6 @@ int main (int argc, char* argv[])
          genvector *curr_s = game_world.get_curr_state();
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 
-         curr_maze.print_occupancy_grid();
-         
          string curr_state_action_str = 
             game_world.get_state_action_string(curr_s, curr_a);
 
@@ -146,7 +150,7 @@ int main (int argc, char* argv[])
             }
          } // curr_a is legal action conditional
 
-         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
+//         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
          
          double old_q = reinforce_agent_ptr->get_Qmap_value(
             curr_state_action_str);
@@ -154,10 +158,8 @@ int main (int argc, char* argv[])
          double avg_q = (1 - alpha) * old_q + alpha * new_q;
          reinforce_agent_ptr->set_Qmap_value(curr_state_action_str, avg_q);
 
-         cout << "old_q = " << old_q << " new_q = " << new_q 
-              << " avg_q = " << avg_q << endl;
-
-
+//         cout << "old_q = " << old_q << " new_q = " << new_q 
+//              << " avg_q = " << avg_q << endl;
 
 //         cout << "old_q = " << old_q << " avg_q = " << avg_q << endl;
 
@@ -169,13 +171,11 @@ int main (int argc, char* argv[])
             }
 */
 
-
-
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
-      cout << "game over" << endl;
-      reinforce_agent_ptr->print_Qmap();
+//      cout << "game over" << endl;
+//      reinforce_agent_ptr->print_Qmap();
 
 /*
       curr_maze.print_occupancy_grid();
@@ -203,15 +203,12 @@ int main (int argc, char* argv[])
          mathfunc::median_value_and_quartile_width(
             turn_ratios, median, quartile_width);
 
-
          cout << "turn ratio = " << mu << " +/- " << sigma 
               << "   median = " << median << " quartile_width = "
               << quartile_width << endl;
-         cout << "      epsilon = " << reinforce_agent_ptr->get_epsilon()
-              << endl;
          turn_ratios.clear();
 
-         reinforce_agent_ptr->print_Qmap();
+
          cout << endl;
 
       }
@@ -219,6 +216,8 @@ int main (int argc, char* argv[])
 //      outputfunc::enter_continue_char();
 
    } // n_episodes < n_max_episodes while loop
+
+   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
 }

@@ -11,6 +11,7 @@
 #include "numrec/nrfuncs.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
+#include "math/twovector.h"
 
 using std::cin;
 using std::cout;
@@ -433,8 +434,9 @@ void maze::generate_maze()
 // Bitmap note: x = y = 0 corresponds to BOTTOM left corner of output
 // image rather than to TOP left corner!
 
-void maze::DrawLine( unsigned char* img, int x1, int y1, int x2, int y2 ,
-                     int R, int G, int B)
+
+void maze::DrawLine(unsigned char* img, int x1, int y1, int x2, int y2 ,
+                    int R, int G, int B)
 {
    if ( x1 == x2 )
    {
@@ -463,6 +465,124 @@ void maze::DrawLine( unsigned char* img, int x1, int y1, int x2, int y2 ,
          img[ i + 0 ] = B;
       }
    }
+}
+
+void maze::DrawPoint(unsigned char* img, const twovector& V,
+                     int R, int G, int B)
+{
+   int px = V.get(0);
+   int py = V.get(1);
+   if(px < 0 || px >= ImageSize || py < 0 || py >= ImageSize) return;
+   int p = 3 * (py * ImageSize + px);
+   img[ p + 2 ] = R;
+   img[ p + 1 ] = G;
+   img[ p + 0 ] = B;
+}
+
+void maze::DrawLine(unsigned char* img, twovector& V1, twovector& V2,
+                    int R, int G, int B)
+{
+   int px_start = basic_math::min(V1.get(0), V2.get(0));
+   int px_stop = basic_math::max(V1.get(0), V2.get(0));
+
+   int py_start = basic_math::min(V1.get(1), V2.get(1));
+   int py_stop = basic_math::max(V1.get(1), V2.get(1));
+
+   double delta_x = px_stop - px_start;
+   double delta_y = py_stop - py_start;
+   
+   if(fabs(delta_x) > fabs(delta_y))
+   {
+      int n_steps = px_stop - px_start;
+      for(int n = 0; n <= n_steps; n++)
+      {
+         double frac = double(n) / n_steps;
+         int px = V1.get(0) + frac * (V2.get(0) - V1.get(0));
+         int py = V1.get(1) + frac * (V2.get(1) - V1.get(1));
+         twovector V(px,py);
+         DrawPoint(img, V, R, G, B);
+      }
+   }
+   else
+   {
+      int n_steps = py_stop - py_start;
+      for(int n = 0; n <= n_steps; n++)
+      {
+         double frac = double(n) / n_steps;
+         int px = V1.get(0) + frac * (V2.get(0) - V1.get(0));
+         int py = V1.get(1) + frac * (V2.get(1) - V1.get(1));
+         twovector V(px,py);
+         DrawPoint(img, V, R, G, B);
+      }
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function DrawArrow() draws an arrow pointing from (x1,y1) to
+// (x2,y2):
+
+void maze::DrawArrow( unsigned char* img, twovector& base, twovector& tip,
+                     int R, int G, int B)
+{
+   twovector body = tip - base;
+   twovector ehat = body.unitvector();
+
+   double theta = 30 * PI/180;
+   double cos_theta = cos(theta);
+   double sin_theta = sin(theta);
+   genmatrix Rot(2,2);
+   Rot.put(0,0,cos_theta);
+   Rot.put(1,0,sin_theta);
+   Rot.put(0,1,-sin_theta);
+   Rot.put(1,1,cos_theta);
+   twovector epos_hat = Rot * ehat;
+   twovector eneg_hat = Rot.transpose() * ehat;
+
+   twovector slant_neg_start = tip - 0.5 * body.magnitude() * epos_hat;   
+   twovector slant_pos_start = tip - 0.5 * body.magnitude() * eneg_hat;
+
+   DrawLine(img, base, tip, R, G, B);
+   DrawLine(img, slant_neg_start, tip, R, G, B);
+   DrawLine(img, slant_pos_start, tip, R, G, B);
+}
+
+// ---------------------------------------------------------------------
+// Member function DrawCellArrow() takes in cell coords (px,py) where
+// (0,0) corresponds to the cell in the UPPER LEFT corner of the maze.
+// It also takes in direction d = 0, 1, 2, 3 [up, right, bottom,
+// left].  DrawCellArrow places a colored arrow in the center of the
+// specified cell which points in the specified direction.
+
+void maze::DrawCellArrow(unsigned char* img, int px, int py, int direction,
+                         int R, int G, int B)
+{
+   double CellSize = ImageSize / n_size;
+
+   twovector cell_midpoint(px + 0.5, py + 0.5);
+   cell_midpoint *= CellSize;
+
+   twovector fhat;
+   if(direction == 0)
+   {
+      fhat = twovector(0,-1);
+   }
+   else if(direction == 1)
+   {
+      fhat = twovector(1,0);
+   }
+   else if(direction == 2)
+   {
+      fhat = twovector(0,1);
+   }
+   else if(direction == 3)
+   {
+      fhat = twovector(-1,0);
+   }
+   
+   twovector base = cell_midpoint - 0.25 * fhat * CellSize;
+   twovector tip = cell_midpoint + 0.25 * fhat * CellSize;
+
+   DrawArrow(img, base, tip, R, G, B);
 }
 
 // ---------------------------------------------------------------------
@@ -561,7 +681,7 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
 }
 
 // ---------------------------------------------------------------------
-void maze::DrawMaze()
+void maze::DrawMaze(string bmp_filename)
 {
    // prepare BGR image
    size_t DataSize = 3 * ImageSize * ImageSize;
@@ -573,11 +693,16 @@ void maze::DrawMaze()
    // render maze on bitmap
    RenderMaze( Img );
 
-   SaveBMP( "Maze.bmp", Img, ImageSize, ImageSize );
+
+   DrawCellArrow(Img, 0, 0, 0, 255, 0, 0);
+   DrawCellArrow(Img, 0, 1, 1, 255, 0, 0);
+   DrawCellArrow(Img, 0, 2, 2, 255, 0, 0);
+   DrawCellArrow(Img, 0, 3, 3, 255, 0, 0);
+
+   SaveBMP( bmp_filename, Img, ImageSize, ImageSize );
 
    // cleanup
    delete[]( Img );
-
 }
 
 // ---------------------------------------------------------------------
