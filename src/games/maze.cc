@@ -810,7 +810,13 @@ void maze::compute_max_Qmap()
 }
 
 // ---------------------------------------------------------------------
-// Member function score_max_Qmap() 
+// Member function score_max_Qmap() loops over all entries within
+// member STL map max_Qmap.  For each turtle cell, it compares the
+// direction vector currently stored in max_Qmap with the solution
+// direction stored in *soln_grid_ptr.  This method counts the number
+// cells for which these two directions match.  It returns the ratio
+// of matching directions to the number of cells as a metric of the
+// Qmap's utility.
 
 double maze::score_max_Qmap()
 {

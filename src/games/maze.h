@@ -80,8 +80,6 @@ class maze
    void DrawMaze(int counter, std::string output_subdir, std::string basename, 
                  bool display_qmap_flag);
 
-
-
    void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;

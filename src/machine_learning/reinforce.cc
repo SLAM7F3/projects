@@ -1077,6 +1077,74 @@ void reinforce::plot_turns_history(std::string extrainfo)
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of Qmap score versus episode number.
+
+void reinforce::plot_Qmap_score_history(std::string extrainfo)
+{
+   if(Qmap_scores.size() < 3) return;
+
+   metafile curr_metafile;
+   string meta_filename="Qmap_score_history";
+   string title="Qmap score vs episode; bsize="+
+      stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+   }
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label="Episode";
+   string y_label="Qmap score";
+
+   double min_score = 0;
+   double max_score = 1;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, episode_number,
+      min_score, max_score);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, episode_number, Qmap_scores);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy Qmap scores:
+
+   double sigma = 5;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+   cout << "gaussian_size = " << gaussian_size << endl;
+   cout << "Qmap_scores.size() = " << Qmap_scores.size() << endl;
+
+   vector<double> smoothed_Qmap_scores;
+   if(gaussian_size < int(Qmap_scores.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_n_episode_turns_frac;
+      filterfunc::brute_force_filter(
+         n_episode_turns_frac, h, smoothed_Qmap_scores, 
+         wrap_around_input_values);
+      curr_metafile.write_curve(
+         0, episode_number, smoothed_Qmap_scores, colorfunc::blue);
+   }
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Member function export_snapshot()
 
 void reinforce::create_snapshots_subdir()
@@ -1636,7 +1704,7 @@ void reinforce::Q_backward_propagate(int d, int Nd)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::set_Qmap_value(string state_action_str, double Qvalue)
+void reinforce::set_Q_value(string state_action_str, double Qvalue)
 {
    qmap_iter = qmap.find(state_action_str);
    if(qmap_iter == qmap.end())
@@ -1650,7 +1718,7 @@ void reinforce::set_Qmap_value(string state_action_str, double Qvalue)
 }
 
 // ---------------------------------------------------------------------
-double reinforce::get_Qmap_value(string state_action_str)
+double reinforce::get_Q_value(string state_action_str)
 {
    qmap_iter = qmap.find(state_action_str);
    if(qmap_iter == qmap.end())
@@ -1678,7 +1746,7 @@ void reinforce::init_random_Qmap()
          string curr_state_action_str = curr_state_strings[s] + 
             stringfunc::number_to_string(a);
          double Qval = 2 * (nrfunc::ran1() - 0.5);
-         set_Qmap_value(curr_state_action_str, Qval);
+         set_Q_value(curr_state_action_str, Qval);
       } // loop over index a labeling actions
    } // loop over index s labeling state strings
 }

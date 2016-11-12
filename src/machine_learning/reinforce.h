@@ -80,6 +80,7 @@ class reinforce
    void plot_reward_history(
       std::string extrainfo, double min_reward, double max_reward);
    void plot_turns_history(std::string extrainfo);
+   void plot_Qmap_score_history(std::string extrainfo);
 
    void create_snapshots_subdir();
    void export_snapshot();
@@ -114,10 +115,11 @@ class reinforce
                          bool terminal_state_flag);
    void Q_backward_propagate(int d, int Nd);
 
-   void set_Qmap_value(std::string state_action_str, double Qvalue);
-   double get_Qmap_value(std::string state_action_str);
+   void set_Q_value(std::string state_action_str, double Qvalue);
+   double get_Q_value(std::string state_action_str);
    void init_random_Qmap();
    void print_Qmap();
+   void push_back_Qmap_score(double score);
    
    Q_MAP* get_qmap_ptr();
    const Q_MAP* get_qmap_ptr() const;
@@ -173,6 +175,7 @@ class reinforce
    std::vector<double> time_samples;
    std::vector<double> loss_values;
    std::vector<double> n_episode_turns_frac;
+   std::vector<double> Qmap_scores;
 
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
@@ -313,6 +316,12 @@ inline const reinforce::Q_MAP* reinforce::get_qmap_ptr() const
 {
    return &qmap;
 }
+
+inline void reinforce::push_back_Qmap_score(double score)
+{
+   Qmap_scores.push_back(score);
+}
+
 
 #endif  // reinforce.h
 

@@ -1,7 +1,28 @@
 // ==========================================================================
-// Program QMAZE
+// Program QMAZE utilizes non-deep Q learning to iteratively solve for
+// directions to follow within randomly generated mazes.  For a
+// particular maze with size n_size, the total number of possible
+// "turtle" states = n_size**2 * n_directions.  QMAZE works with an
+// explicit table Q(s,a) whose values are initially randomly chosen
+// from [-1,1].  The turtle is started at some random cell inside the
+// maze.  It takes argmax_a Q(s,a) as the direction to move.  If the
+// turtle crashes into a wall, the episode terminates and the
+// reinforcement agent receives a -1 reward.  If the turtle moves to a
+// legal cell, the reinforcement agent receives a 0 reward.  And if
+// the turtle reaches the final maze cell, the episode terminates with
+// a +1 reward.  Q(s,a) is updated after each terminal move according
+// to the Bellman equation.  It eventually converges to a function for
+// which the turtle never crashes into a wall and for which the turtle
+// optimally finds it way through the maze starting at any cell
+// location.
+
+// QMAZE periodically outputs PNG images showing the current values
+// for Q(s,a) as arrows superposed on the grid cell locations.  It
+// also exports a plot of the ratio of correct Q(s,a) directions
+// to the total number of cells as a function of episode number.  This
+// ratio should approach one as Q learning proceeds.
 // ==========================================================================
-// Last updated on 11/11/16
+// Last updated on 11/11/16; 11/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -92,11 +113,11 @@ int main (int argc, char* argv[])
 //   double alpha = 1.0;
 
    int n_max_episodes = basic_math::max(10000, 5 * sqr(sqr(n_grid_size)));
-   int n_summarize = 1000;
+   int n_summarize = 500;
+   double Qmap_score = -1;
 
-   vector<double> Qmap_scores;
-
-   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
+   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
+         Qmap_score < 0.999999)
    {
       bool random_turtle_start = true;
 //      bool random_turtle_start = false;
@@ -146,17 +167,17 @@ int main (int argc, char* argv[])
             {
                string next_state_action_str = 
                   game_world.get_state_action_string(next_s, a);
-               double next_Q = reinforce_agent_ptr->get_Qmap_value(
+               double next_Q = reinforce_agent_ptr->get_Q_value(
                   next_state_action_str);
                max_Q = basic_math::max(next_Q, max_Q);
             }
          } // curr_a is legal action conditional
 
-         double old_q = reinforce_agent_ptr->get_Qmap_value(
+         double old_q = reinforce_agent_ptr->get_Q_value(
             curr_state_action_str);
          double new_q = reward + reinforce_agent_ptr->get_gamma() * max_Q;
          double avg_q = (1 - alpha) * old_q + alpha * new_q;
-         reinforce_agent_ptr->set_Qmap_value(curr_state_action_str, avg_q);
+         reinforce_agent_ptr->set_Q_value(curr_state_action_str, avg_q);
 
 //         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
 //         cout << "old_q = " << old_q << " new_q = " << new_q 
@@ -172,8 +193,9 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number % n_summarize == 0)
       {
-         Qmap_scores.push_back(curr_maze.score_max_Qmap());
-         cout << "Qmap_score = " << Qmap_scores.back() << endl;
+         Qmap_score = curr_maze.score_max_Qmap();
+         reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
+         cout << "Qmap_score = " << Qmap_score << endl;
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
          cout << endl;
@@ -183,6 +205,7 @@ int main (int argc, char* argv[])
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
+   reinforce_agent_ptr->plot_Qmap_score_history("");
 
    delete reinforce_agent_ptr;
 }
