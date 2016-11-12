@@ -114,8 +114,6 @@ class reinforce
                          bool terminal_state_flag);
    void Q_backward_propagate(int d, int Nd);
 
-   void compute_2x2_maze_Qvalues(int s);
-
    void set_Qmap_value(std::string state_action_str, double Qvalue);
    double get_Qmap_value(std::string state_action_str);
    void init_random_Qmap();

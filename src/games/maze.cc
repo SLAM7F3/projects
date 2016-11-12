@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/5/16; 11/6/16; 11/10/16; 11/11/16
+// Last modified on 11/6/16; 11/10/16; 11/11/16; 11/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -36,11 +36,15 @@ void maze::allocate_member_objects()
    n_directions = 4;  // 2D
    nbits = n_directions;
    grid_ptr = new genmatrix(n_cells, n_cells);
+   soln_grid_ptr = new genmatrix(n_size, n_size);
+
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    occupancy_state = new genvector(sqr(2*n_size-1));
-   occupancy_2x2_state = new genvector(sqr(2*2-1));
-   ImageSize = 1024;
-//   ImageSize = 512;
+   ImageSize = 512;
+   if(n_size > 6)
+   {
+      ImageSize = 1024;
+   }
    curr_legal_actions = new genvector(n_directions);
 }		       
 
@@ -100,10 +104,10 @@ maze::maze(const maze& T)
 maze::~maze()
 {
    delete grid_ptr;
+   delete soln_grid_ptr;
    delete curr_legal_actions;
    delete occupancy_grid;
    delete occupancy_state;
-   delete occupancy_2x2_state;
 }
 
 // ---------------------------------------------------------------------
@@ -222,13 +226,8 @@ int maze::get_direction_from_p_to_q(int p, int q)
 // ---------------------------------------------------------------------
 void maze::remove_wall(int p, int curr_dir)
 {
-//   cout << "inside remove_wall, p = " << p << " curr_dir = " << curr_dir
-//        << endl;
-   
    int px = cell_decomposition[p].first;
    int py = cell_decomposition[p].second;
-//   cout << "px = " << px << " py = " << py << endl;
-
    string cell_bitstr = get_cell_bitstr(px, py);
 
 // Reset bit labeled by curr_dir to zero:
@@ -239,6 +238,26 @@ void maze::remove_wall(int p, int curr_dir)
 }
 
 // ---------------------------------------------------------------------
+// Member function wall_exists() takes in a grid cell ID and direction
+// label.  It retrieves the bit-string for the specified cell.  If the
+// bit-string contains a "1" in the bit location corresponding to
+// curr_dir, this boolean method returns true.
+
+bool maze::wall_exists(int p, int curr_dir)
+{
+   int px = cell_decomposition[p].first;
+   int py = cell_decomposition[p].second;
+   string cell_bitstr = get_cell_bitstr(px, py);
+
+   string curr_bitstr = cell_bitstr.substr(nbits-1-curr_dir,1);
+   return (curr_bitstr == "1");
+}
+
+// ---------------------------------------------------------------------
+// Member function get_cell_neighbors() returns the IDs for all
+// n_directions neighbors of input cell p (regardless of whether
+// they're accessible from p or blocked by a wall).
+
 vector<int> maze::get_cell_neighbors(int p)
 {
    vector<int> cell_neighbor_ids;
@@ -381,12 +400,12 @@ void maze::generate_maze()
 // Set all visited cell flags to false:
 
    visited_cell.clear();
-   deadend_cell.clear();
+//   deadend_cell.clear();
    visited_cell_stack.clear();
    for(int p = 0; p < n_cells; p++)
    {
       visited_cell.push_back(false);
-      deadend_cell.push_back(false);
+//      deadend_cell.push_back(false);
    }
 
 // Start maze generation at some location within grid:
@@ -418,7 +437,7 @@ void maze::generate_maze()
       }
       else
       {
-         deadend_cell[p] = true;
+//         deadend_cell[p] = true;
          if(visited_cell_stack.size() > 0)
          {
             p = visited_cell_stack.back();
@@ -433,10 +452,12 @@ void maze::generate_maze()
    } // n_visited_cells < n_cells while loop
 }
 
-// ---------------------------------------------------------------------
+// ==========================================================================
+// Drawing member functions
+// ==========================================================================
+
 // Bitmap note: x = y = 0 corresponds to BOTTOM left corner of output
 // image rather than to TOP left corner!
-
 
 void maze::DrawLine(unsigned char* img, int x1, int y1, int x2, int y2 ,
                     int R, int G, int B)
@@ -701,7 +722,7 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
    File.write( ( const char* )RawBGRImage, ImageSize );
    string unix_cmd = "convert -flip "+FileName+" "+FileName;
    sysfunc::unix_command(unix_cmd);
-   cout << "Exported " << FileName << endl;
+//   cout << "Exported " << FileName << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -720,6 +741,7 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
 
    if(display_qmap_flag)
    {
+      compute_max_Qmap();
       int R = 255;
       int G = 0;
       int B = 0;
@@ -737,7 +759,6 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
       counter,3)+".png";
    SaveBMP( bmp_filename, Img, ImageSize, ImageSize );
    string unix_cmd = "convert "+bmp_filename+" "+png_filename;
-   cout << unix_cmd << endl;
    sysfunc::unix_command(unix_cmd);
 
    // cleanup
@@ -748,21 +769,16 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
 }
 
 // ---------------------------------------------------------------------
-// Member function draw_max_Qmap() loops over all entries within
+// Member function compute_max_Qmap() loops over all entries within
 // *qmap_ptr.  It extracts the turtle's occupancy grid coordinates
-// from each state along with its direction.  This method draws an
-// arrow corresponding in each cell which indicates the maximal Q
-// value for that position.
+// from each state along with its direction.  This method stores 
+// the direction corresponding to the maximum Q value for each maze
+// grid cell in member STL map max_qmap.
 
-void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
+void maze::compute_max_Qmap()
 {
-   typedef map<int, pair<double, int> > MAX_Q_MAP;
-// independent int: turtle cell
-// dependent pair: double = qvalue, int = action direction
+   max_qmap.clear();
    
-   MAX_Q_MAP max_qmap;
-   MAX_Q_MAP::iterator max_qmap_iter;
-
    for(qmap_iter = qmap_ptr->begin(); qmap_iter != qmap_ptr->end(); 
        qmap_iter++)
    {
@@ -788,8 +804,43 @@ void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
             max_qmap_iter->second.second = turtle_direction;
          }
       }
-   } // loop over qmap_iter
 
+      max_qmap_iter = max_qmap.find(turtle_cell);
+   } // loop over qmap_iter
+}
+
+// ---------------------------------------------------------------------
+// Member function score_max_Qmap() 
+
+double maze::score_max_Qmap()
+{
+   int n_correct_dirs = 0;
+   for(max_qmap_iter = max_qmap.begin(); 
+       max_qmap_iter != max_qmap.end(); max_qmap_iter++)
+   {
+      int turtle_cell = max_qmap_iter->first;
+      int tx, ty;
+      decompose_turtle_cell(turtle_cell, tx, ty);
+      int col = tx / 2;
+      int row = ty / 2;
+      int turtle_direction = max_qmap_iter->second.second;
+      int soln_direction = soln_grid_ptr->get(row,col);
+//      cout << "row = " << row << " col = " << col
+//           << " soln_dir = " << soln_direction
+//           << " turtle_direction = " << turtle_direction << endl;
+      if( (col == n_size - 1 && row == n_size - 1) ||
+          (turtle_direction == soln_direction) ) n_correct_dirs++;
+   }
+   double Qmap_score = double(n_correct_dirs) / n_cells;
+   return Qmap_score;
+}
+
+// ---------------------------------------------------------------------
+// Member function draw_max_Qmap() draws an arrow in each cell which
+// indicates the maximal Q value for that position.
+
+void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
+{
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
    {
@@ -810,7 +861,6 @@ void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
       }
    } // loop over max_qmap_iter
 }
-
 
 // ---------------------------------------------------------------------
 // Fill (2*n_size - 1) x (2*n_size - 1) occupancy_grid with 0s
@@ -1197,107 +1247,49 @@ int maze::compute_turtle_reward() const
   */
 }
 
+
 // ---------------------------------------------------------------------
-genvector* maze::set_2x2_state(int s)
+void maze::solve_maze_backwards()
 {
-   occupancy_2x2_state->clear_values();
-   if(s == 0)
-   {
-      occupancy_2x2_state->put(0,1);
-      occupancy_2x2_state->put(1,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 1)
-   {
-      occupancy_2x2_state->put(2,1);
-      occupancy_2x2_state->put(1,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 2)
-   {
-      occupancy_2x2_state->put(8,1);
-      occupancy_2x2_state->put(1,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 3)
-   {
-      occupancy_2x2_state->put(7,1);
-      occupancy_2x2_state->put(1,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 4)
-   {
-      occupancy_2x2_state->put(0,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(5,-0.5);
-   }
-   else if(s == 5)
-   {
-      occupancy_2x2_state->put(2,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(5,-0.5);
-   }
-   else if(s == 6)
-   {
-      occupancy_2x2_state->put(8,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(5,-0.5);
-   }
-   else if(s == 7)
-   {
-      occupancy_2x2_state->put(6,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(5,-0.5);
-   }
-   else if(s == 8)
-   {
-      occupancy_2x2_state->put(0,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(7,-0.5);
-   }
-   else if(s == 9)
-   {
-      occupancy_2x2_state->put(2,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(7,-0.5);
-   }
-   else if(s == 10)
-   {
-      occupancy_2x2_state->put(8,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(7,-0.5);
-   }
-   else if(s == 11)
-   {
-      occupancy_2x2_state->put(6,1);
-      occupancy_2x2_state->put(4,-0.5);
-      occupancy_2x2_state->put(7,-0.5);
-   }
-   else if(s == 12)
-   {
-      occupancy_2x2_state->put(0,1);
-      occupancy_2x2_state->put(3,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 13)
-   {
-      occupancy_2x2_state->put(2,1);
-      occupancy_2x2_state->put(3,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 14)
-   {
-      occupancy_2x2_state->put(8,1);
-      occupancy_2x2_state->put(3,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   else if(s == 15)
-   {
-      occupancy_2x2_state->put(6,1);
-      occupancy_2x2_state->put(3,-0.5);
-      occupancy_2x2_state->put(4,-0.5);
-   }
-   return occupancy_2x2_state;
+   cout << "inside solve_maze_backwards()" << endl;
+
+   soln_grid_ptr->initialize_values(-2);
+
+   int px = n_size - 1;
+   int py = n_size - 1;
+   int p = get_cell(px, py);
+   soln_grid_ptr->put(px,py,-1);
+   
+   find_neighbor_cell_directions(p);
 }
 
+// ---------------------------------------------------------------------
+void maze::print_soln_grid() const
+{
+   cout << "soln_grid = " << *soln_grid_ptr << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function find_neighbor_cell_directions()
+
+void maze::find_neighbor_cell_directions(int p)
+{
+//   cout << "inside find_neighbor_cell_directions, p = " << p << endl;
+   for(int curr_dir = 0; curr_dir < n_directions; curr_dir++)
+   {
+      if(wall_exists(p, curr_dir)) continue;
+      int n = get_neighbor(p, curr_dir);
+//      cout << "n = " << n << endl;
+      int col = cell_decomposition[n].first;
+      int row = cell_decomposition[n].second;
+      if(soln_grid_ptr->get(row, col) >= -1) continue;
+
+      int anti_curr_dir = (curr_dir + 2) % 4;
+      soln_grid_ptr->put(row, col, anti_curr_dir);
+//      cout << "row = " << row << " col = " << col << " anti_curr_dir = "
+//           << anti_curr_dir << endl;
+      find_neighbor_cell_directions(n);
+   } // loop over curr_dir
+   return;
+}
 

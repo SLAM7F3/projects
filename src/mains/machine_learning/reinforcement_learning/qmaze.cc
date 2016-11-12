@@ -26,9 +26,7 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
 //   nrfunc::init_time_based_seed();
 
-//   int n_grid_size = 2;
-   int n_grid_size = 3;
-//   int n_grid_size = 4;
+   int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
    cin >> n_grid_size;
    int n_actions = 4;
@@ -37,6 +35,8 @@ int main (int argc, char* argv[])
 
    maze curr_maze(n_grid_size);
    curr_maze.generate_maze();
+   curr_maze.DrawMaze(0, "./", "empty_maze", false);
+   curr_maze.solve_maze_backwards();
    curr_maze.generate_all_turtle_states();
 
 // Construct environment which acts as interface between reinforcement
@@ -87,14 +87,14 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.8);
 
 // Q-learning rate:
+
    double alpha = 0.75;
 //   double alpha = 1.0;
 
-   int n_max_episodes = 500 * sqr(n_grid_size);
-//   int n_max_episodes = 1 * 1000 * 1000;
-   int n_summarize = 5000;
+   int n_max_episodes = basic_math::max(10000, 5 * sqr(sqr(n_grid_size)));
+   int n_summarize = 1000;
 
-   vector<double> turn_ratios;
+   vector<double> Qmap_scores;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -105,7 +105,7 @@ int main (int argc, char* argv[])
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, n_summarize, n_max_episodes);
+         curr_episode_number, 5 * n_summarize, n_max_episodes);
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
@@ -152,26 +152,15 @@ int main (int argc, char* argv[])
             }
          } // curr_a is legal action conditional
 
-//         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
-         
          double old_q = reinforce_agent_ptr->get_Qmap_value(
             curr_state_action_str);
          double new_q = reward + reinforce_agent_ptr->get_gamma() * max_Q;
          double avg_q = (1 - alpha) * old_q + alpha * new_q;
          reinforce_agent_ptr->set_Qmap_value(curr_state_action_str, avg_q);
 
+//         cout << "reward = " << reward << " max_Q = " << max_Q << endl;
 //         cout << "old_q = " << old_q << " new_q = " << new_q 
 //              << " avg_q = " << avg_q << endl;
-
-//         cout << "old_q = " << old_q << " avg_q = " << avg_q << endl;
-
-/*
-            if(curr_maze.get_n_turtle_moves() > 
-               5 * curr_maze.get_n_soln_steps())
-            {
-               curr_maze.set_game_over(true);
-            }
-*/
 
       } // !game_over while loop
 // -----------------------------------------------------------------------
@@ -179,46 +168,19 @@ int main (int argc, char* argv[])
 //      cout << "game over" << endl;
 //      reinforce_agent_ptr->print_Qmap();
 
-/*
-      curr_maze.print_occupancy_grid();
-      curr_maze.print_turtle_path_history();
-
-      cout << "  n_soln_steps = "
-           << curr_maze.get_n_soln_steps() << endl;
-      cout << "  n_turtle_moves = "
-           << curr_maze.get_n_turtle_moves() << endl;
-      cout << "reward = " << reward << endl;
-      outputfunc::enter_continue_char();
-*/
-
       reinforce_agent_ptr->increment_episode_number();
 
-      double curr_n_turns_ratio = double(
-         curr_maze.get_n_soln_steps()) / curr_maze.get_n_turtle_moves();
-      turn_ratios.push_back(curr_n_turns_ratio);
-      if(turn_ratios.size() > 1000)
+      if(curr_episode_number % n_summarize == 0)
       {
-         double mu, sigma;
-         mathfunc::mean_and_std_dev(turn_ratios, mu, sigma);
-
-         double median, quartile_width;
-         mathfunc::median_value_and_quartile_width(
-            turn_ratios, median, quartile_width);
-
-         cout << "turn ratio = " << mu << " +/- " << sigma 
-              << "   median = " << median << " quartile_width = "
-              << quartile_width << endl;
-         turn_ratios.clear();
-
+         Qmap_scores.push_back(curr_maze.score_max_Qmap());
+         cout << "Qmap_score = " << Qmap_scores.back() << endl;
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
          cout << endl;
       }
-
    } // n_episodes < n_max_episodes while loop
 
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
-
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
 

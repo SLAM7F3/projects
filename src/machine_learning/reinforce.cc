@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/8/16; 11/9/16; 11/10/16; 11/11/16
+// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/12/16
 // ==========================================================================
 
 #include <string>
@@ -1632,22 +1632,6 @@ void reinforce::Q_backward_propagate(int d, int Nd)
    for(int l = 0; l < n_layers - 1; l++)
    {
       nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
-   }
-}
-
-// ---------------------------------------------------------------------
-void reinforce::compute_2x2_maze_Qvalues(int s)
-{
-   genvector* occupancy_state_ptr = 
-      environment_ptr->get_maze()->set_2x2_state(s);
-   Q_forward_propagate(*occupancy_state_ptr);
-
-   int t = 0;
-   cout << "-------------------" << endl;
-   for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
-   {
-      cout << "s = " << s << " a = " << i 
-           << " Q(s,a) = " << a[n_layers-1]->get(t,i) << endl;
    }
 }
 

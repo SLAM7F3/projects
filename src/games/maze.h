@@ -8,6 +8,7 @@
 #define MAZE_H
 
 #include <stack>
+#include <utility>
 #include <vector>
 #include "math/genmatrix.h"
 #include "math/genvector.h"
@@ -22,6 +23,10 @@ class maze
 // independent string: string rep for state + action
 // dependent double: Q(s,a)
 
+   typedef std::map<int, std::pair<double, int> > MAX_Q_MAP;
+// independent int: turtle cell
+// dependent pair: double = qvalue, int = action direction
+
 // Initialization, constructor and destructor functions:
 
    maze(int n_size);
@@ -31,8 +36,7 @@ class maze
    friend std::ostream& operator<< 
       (std::ostream& outstream,const maze& C);
 
-   void set_turtle_cell(int p);
-   void set_turtle_cell(int px, int py);
+   void set_turtle_cell(int t);
    int get_turtle_cell() const;
    void decompose_turtle_cell(int turtle_cell, int& tx, int& ty);
 
@@ -50,7 +54,13 @@ class maze
    const std::vector<int>& get_solution_path() const;
    int get_solution_path_moves() const;
    void print_solution_path() const;
+
    void generate_maze();
+   void solve_maze_backwards();
+   void find_neighbor_cell_directions(int p);
+   void print_soln_grid() const;
+
+// Drawing member functions:
 
    void DrawLine(unsigned char* img, int x1, int y1, int x2, int y2,
                  int R, int G, int B);
@@ -64,12 +74,13 @@ class maze
                       int R, int G, int B);
    void DrawCellX(unsigned char* img, int px, int py, 
                   int R, int G, int B);
-
    void RenderMaze(unsigned char* img);
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
    void DrawMaze(int counter, std::string output_subdir, std::string basename, 
                  bool display_qmap_flag);
+
+
 
    void initialize_occupancy_grid();
 
@@ -94,11 +105,12 @@ class maze
 
    int compute_turtle_reward() const;
 
-   genvector* set_2x2_state(int s);
    std::vector<std::string>& get_curr_maze_state_strings();
    const std::vector<std::string>& get_curr_maze_state_strings() const;
 
    void set_qmap_ptr(Q_MAP *qmap_ptr);
+   void compute_max_Qmap();
+   double score_max_Qmap();
    void draw_max_Qmap(unsigned char* img, int R, int G, int B);
 
   private: 
@@ -111,11 +123,12 @@ class maze
    bool game_over;
    std::vector<int> direction;
    genmatrix *grid_ptr;
-
+   genmatrix *soln_grid_ptr;
+   
    std::vector<bool> visited_cell;
 	// independent int = cell ID; dependent bool = visited flag
 
-   std::vector<bool> deadend_cell;
+//    std::vector<bool> deadend_cell;
 	// independent int = cell ID; dependent bool = dead end cell
 
    std::vector<int> visited_cell_stack;
@@ -129,7 +142,6 @@ class maze
    genvector *curr_legal_actions;
    genmatrix *occupancy_grid;
    genvector *occupancy_state;
-   genvector *occupancy_2x2_state;
 
    std::vector<DUPLE> occupancy_cell_decomposition;
 // independent int: p
@@ -142,6 +154,9 @@ class maze
    Q_MAP *qmap_ptr;
    Q_MAP::iterator qmap_iter;
 
+   MAX_Q_MAP max_qmap;
+   MAX_Q_MAP::iterator max_qmap_iter;
+
    void allocate_member_objects();
    void initialize_member_objects();
    void docopy(const maze& T);
@@ -151,6 +166,7 @@ class maze
    std::string get_cell_bitstr(int px, int py);
    int get_direction_from_p_to_q(int p, int q);
    void remove_wall(int p, int curr_dir);
+   bool wall_exists(int p, int curr_dir);
    void initialize_occupancy_state();   
 };
 
@@ -180,14 +196,9 @@ inline genvector* maze::get_occupancy_state()
    return occupancy_state;
 }
 
-inline void maze::set_turtle_cell(int p)
+inline void maze::set_turtle_cell(int t)
 {
-   turtle_cell = p;
-}
-
-inline void maze::set_turtle_cell(int px, int py)
-{
-   turtle_cell = get_cell(px,py);
+   turtle_cell = t;
 }
 
 inline int maze::get_turtle_cell() const
