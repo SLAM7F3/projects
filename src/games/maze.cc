@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include "general/filefuncs.h"
 #include "math/mathfuncs.h"
 #include "games/maze.h"
 #include "numrec/nrfuncs.h"
@@ -38,7 +39,8 @@ void maze::allocate_member_objects()
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    occupancy_state = new genvector(sqr(2*n_size-1));
    occupancy_2x2_state = new genvector(sqr(2*2-1));
-   ImageSize = 512;
+   ImageSize = 1024;
+//   ImageSize = 512;
    curr_legal_actions = new genvector(n_directions);
 }		       
 
@@ -587,6 +589,27 @@ void maze::DrawCellArrow(unsigned char* img, int px, int py, int direction,
 }
 
 // ---------------------------------------------------------------------
+void maze::DrawCellX(unsigned char* img, int px, int py, int R, int G, int B)
+{
+   double CellSize = ImageSize / n_size;
+
+   twovector cell_midpoint(px + 0.5, py + 0.5);
+   cell_midpoint *= CellSize;
+
+   twovector fhat(1,1);
+   fhat = fhat.unitvector();
+   twovector base = cell_midpoint - 0.25 * fhat * CellSize;
+   twovector tip = cell_midpoint + 0.25 * fhat * CellSize;
+   DrawLine(img, base, tip, R, G, B);
+
+   fhat = twovector(1,-1);
+   fhat = fhat.unitvector();
+   base = cell_midpoint - 0.25 * fhat * CellSize;
+   tip = cell_midpoint + 0.25 * fhat * CellSize;
+   DrawLine(img, base, tip, R, G, B);
+}
+
+// ---------------------------------------------------------------------
 void maze::RenderMaze( unsigned char* img )
 {
    int CellSize = ImageSize / n_size;
@@ -682,7 +705,8 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
 }
 
 // ---------------------------------------------------------------------
-void maze::DrawMaze(string bmp_filename, bool display_qmap_flag)
+void maze::DrawMaze(int counter, string output_subdir, string basename, 
+                    bool display_qmap_flag)
 {
    // prepare BGR image
    size_t DataSize = 3 * ImageSize * ImageSize;
@@ -702,12 +726,24 @@ void maze::DrawMaze(string bmp_filename, bool display_qmap_flag)
       draw_max_Qmap(Img, R, G, B);
    }
 
+   filefunc::add_trailing_dir_slash(output_subdir);
+   filefunc::dircreate(output_subdir);
+   string bmp_filename = output_subdir+basename+stringfunc::integer_to_string(
+      counter,3)+".bmp";
+
+   string png_subdir = output_subdir+"pngs/";
+   filefunc::dircreate(png_subdir);
+   string png_filename = png_subdir+basename+stringfunc::integer_to_string(
+      counter,3)+".png";
    SaveBMP( bmp_filename, Img, ImageSize, ImageSize );
+   string unix_cmd = "convert "+bmp_filename+" "+png_filename;
+   cout << unix_cmd << endl;
+   sysfunc::unix_command(unix_cmd);
 
    // cleanup
    delete[]( Img );
 
-   string banner="Exported maze to "+bmp_filename;
+   string banner="Exported maze to "+png_filename;
    outputfunc::write_banner(banner);
 }
 
@@ -752,7 +788,7 @@ void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
             max_qmap_iter->second.second = turtle_direction;
          }
       }
-   }
+   } // loop over qmap_iter
 
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
@@ -764,12 +800,15 @@ void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
       int py = ty / 2;
       int turtle_direction = max_qmap_iter->second.second;
 
-      cout << "  turtle cell = " << turtle_cell
-           << " tx = " << tx << " ty = " << ty 
-           << "  turtle dir = " << turtle_direction << endl;
-
-      DrawCellArrow(img, px, py, turtle_direction, R, G, B);
-   }
+      if(px == n_size - 1 && py == n_size - 1)
+      {
+         DrawCellX(img, px, py, R, G, B);
+      }
+      else
+      {
+         DrawCellArrow(img, px, py, turtle_direction, R, G, B);
+      }
+   } // loop over max_qmap_iter
 }
 
 

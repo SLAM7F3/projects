@@ -24,7 +24,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
 //   int n_grid_size = 2;
    int n_grid_size = 3;
@@ -37,9 +37,6 @@ int main (int argc, char* argv[])
 
    maze curr_maze(n_grid_size);
    curr_maze.generate_maze();
-
-
-
    curr_maze.generate_all_turtle_states();
 
 // Construct environment which acts as interface between reinforcement
@@ -76,26 +73,26 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->init_random_Qmap();
-
-   cout << "Initial random Qmap" << endl;
-   reinforce_agent_ptr->print_Qmap();
-
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
-   string bmp_filename="initial_maze.bmp";
+   int output_counter = 0;
+   string output_subdir = "./output_solns";
+   string basename = "maze";
    bool display_qmap_flag = true;
-   curr_maze.DrawMaze(bmp_filename, display_qmap_flag);
+   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                      display_qmap_flag);
 
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.8);
 
 // Q-learning rate:
-   double alpha = 1.0;
+   double alpha = 0.75;
+//   double alpha = 1.0;
 
-   int n_max_episodes = 5 * 1000;
+   int n_max_episodes = 500 * sqr(n_grid_size);
 //   int n_max_episodes = 1 * 1000 * 1000;
-   int n_summarize = 1000 * 1000;
+   int n_summarize = 5000;
 
    vector<double> turn_ratios;
 
@@ -213,18 +210,17 @@ int main (int argc, char* argv[])
               << quartile_width << endl;
          turn_ratios.clear();
 
-
+         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                            display_qmap_flag);
          cout << endl;
-
       }
 
    } // n_episodes < n_max_episodes while loop
 
-   reinforce_agent_ptr->print_Qmap();
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
-   bmp_filename="final_maze.bmp";
-   curr_maze.DrawMaze(bmp_filename, display_qmap_flag);
+   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                      display_qmap_flag);
 
    delete reinforce_agent_ptr;
 }

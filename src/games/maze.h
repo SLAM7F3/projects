@@ -62,11 +62,15 @@ class maze
                   int R, int G, int B);
    void DrawCellArrow(unsigned char* img, int px, int py, int direction,
                       int R, int G, int B);
+   void DrawCellX(unsigned char* img, int px, int py, 
+                  int R, int G, int B);
 
    void RenderMaze(unsigned char* img);
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
-   void DrawMaze(std::string bmp_filename, bool display_qmap_flag = true);
+   void DrawMaze(int counter, std::string output_subdir, std::string basename, 
+                 bool display_qmap_flag);
+
    void initialize_occupancy_grid();
 
    void print_occupancy_grid() const;
