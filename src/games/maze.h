@@ -147,6 +147,8 @@ class maze
 
    std::vector<int> turtle_path_history;
 
+// curr_maze_state_strings holds all possible turtle states for
+// current maze:
    std::vector<std::string> curr_maze_state_strings;
 
    Q_MAP *qmap_ptr;

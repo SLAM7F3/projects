@@ -91,7 +91,6 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
-//   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->init_random_Qmap();
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
@@ -135,7 +134,6 @@ int main (int argc, char* argv[])
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
-//      curr_maze.print_solution_path();
 
       double reward, max_Q;
       genvector* next_s;
@@ -143,7 +141,6 @@ int main (int argc, char* argv[])
       {
          genvector *curr_s = game_world.get_curr_state();
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
-
          string curr_state_action_str = 
             game_world.get_state_action_string(curr_s, curr_a);
 
@@ -206,6 +203,8 @@ int main (int argc, char* argv[])
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
    reinforce_agent_ptr->plot_Qmap_score_history("");
+
+   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
 }

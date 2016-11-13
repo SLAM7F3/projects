@@ -1316,7 +1316,8 @@ void reinforce::initialize_replay_memory()
 
       if(terminal_state_flag)
       {
-         bool random_start = false;
+//         bool random_start = false;
+         bool random_start = true;
          environment_ptr->start_new_episode(random_start);
          initialize_episode();
       }
@@ -1472,6 +1473,8 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
       replay_memory_index = 0;
       d = replay_memory_index;
    }
+//   cout << " d = " << d << endl;
+//   cout << "replay_memory_index = " << replay_memory_index << endl;
 
    s_curr->put_row(d, curr_s);
    return d;

@@ -1003,6 +1003,11 @@ void maze::print_occupancy_state() const
 }
 
 // ---------------------------------------------------------------------
+// Member function occupancy_state_to_string() converts genvector
+// *occupancy_state into a corresponding string containing "T" for
+// turtle's location, "W" for wall locations and "E" for empty cell
+// locations.  The string can be used as a key inside STL maps.
+
 string maze::occupancy_state_to_string() 
 {
    string occup_state_str="";
@@ -1036,8 +1041,6 @@ void maze::generate_all_turtle_states()
 {
    curr_maze_state_strings.clear();
    initialize_occupancy_grid();
-
-// Turtle starts in upper left corner of maze:
 
    for(int py = 0; py < n_size; py++)
    {

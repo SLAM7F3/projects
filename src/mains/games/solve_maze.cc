@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/5/16; 11/9/16
+// Last updated on 11/5/16; 11/9/16; 11/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -27,19 +27,30 @@ int main (int argc, char* argv[])
 //   nrfunc::init_time_based_seed();
 
    int n_grid_size = 2;
-//   int n_grid_size = 3;
+   cout << "Enter grid size:" << endl;
+   cin >> n_grid_size;
+   int n_actions = 4;
+
+// Construct one particular maze:
+
    maze curr_maze(n_grid_size);
+   curr_maze.generate_maze();
+   curr_maze.DrawMaze(0, "./", "empty_maze", false);
+   curr_maze.solve_maze_backwards();
+   curr_maze.generate_all_turtle_states();
+
+// Construct environment which acts as interface between reinforcement
+// agent and particular game:
+
+   environment game_world(environment::MAZE);
+   game_world.set_maze(&curr_maze);
 
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
-   int Dout = 4;			// Output dim
+   int Dout = n_actions;
    int Tmax = 20 * 16;
 
-   int H1 = 1 * Din;
-//   int H1 = 4 * Din;
-//   int H1 = 8 * Din;
-//   int H1 = 16 * Din;
+   int H1 = 4 * Din;
    int H2 = 0;
-//   int H2 = 1 * Dout;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -56,8 +67,11 @@ int main (int argc, char* argv[])
    }
    layer_dims.push_back(Dout);
 
+// Construct reinforcement learning agent:
+
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
 //   reinforce_agent_ptr->set_debug_flag(true);
+   reinforce_agent_ptr->set_environment(&game_world);
 
 // Gamma = discount factor for reward:
 
@@ -74,11 +88,7 @@ int main (int argc, char* argv[])
 
    int n_max_episodes = 1 * 1000 * 1000;
    int n_update = 10;
-   int n_summarize = 1000 * 1000;
-
-   int n_losses = 0;
-   int n_wins = 0;
-   double curr_reward=-999;
+   int n_summarize = 5000;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -87,23 +97,19 @@ int main (int argc, char* argv[])
 
 // Initialize Deep Q replay memory:
 
-   environment game_world(environment::MAZE);
-   game_world.set_maze(&curr_maze);
-   reinforce_agent_ptr->set_environment(&game_world);
-
    game_world.start_new_episode();
    reinforce_agent_ptr->initialize_replay_memory();
 
-   vector<double> turn_ratios;
-
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
-      game_world.start_new_episode();
+      bool random_turtle_start = true;
+//      bool random_turtle_start = false;
+      curr_maze.reset_game(random_turtle_start);
       reinforce_agent_ptr->initialize_episode();
 
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, n_summarize, n_max_episodes);
+         curr_episode_number, 5 * n_summarize, n_max_episodes);
 
 /*      
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
@@ -123,37 +129,46 @@ int main (int argc, char* argv[])
 //      cout << "************  Start of Game " << curr_episode_number
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
-//      curr_maze.print_solution_path();
+//      curr_maze.print_occupancy_state();
 
+      double reward;
+      genvector* next_s;
       while(!curr_maze.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+//         cout << "In curr game loop, d = " << d 
+//              << " curr_a = " << curr_a << endl;
 
-         double reward;
-         genvector* next_s;
-         if(curr_a < 0)
+         if(!game_world.is_legal_action(curr_a))
          {
-            curr_maze.set_game_over(true);
+            next_s = NULL;
             reward = -1;
+            curr_maze.set_game_over(true);
          }
          else
          {
             next_s = game_world.compute_next_state(curr_a);
             reward = curr_maze.compute_turtle_reward();
-         }
-         
-         reinforce_agent_ptr->store_arsprime_into_replay_memory(
-            d, curr_a, reward, *next_s, curr_maze.get_maze_solved());
+         } // curr_a is legal action conditional
 
-         if(curr_maze.get_n_turtle_moves() > 5 * curr_maze.get_n_soln_steps())
+//         cout << " reward = " << reward 
+//              << " game over = " << curr_maze.get_game_over() << endl;
+
+         if(curr_maze.get_game_over())
          {
-            curr_maze.set_game_over(true);
+            reinforce_agent_ptr->store_arsprime_into_replay_memory(
+               d, curr_a, reward, *curr_s, curr_maze.get_game_over());
          }
+         else
+         {
+            reinforce_agent_ptr->store_arsprime_into_replay_memory(
+               d, curr_a, reward, *next_s, curr_maze.get_game_over());
+         }
+      } // game_over while loop
 
-      } // !maze_solved while loop
 // -----------------------------------------------------------------------
 
 /*
@@ -170,39 +185,19 @@ int main (int argc, char* argv[])
 
       reinforce_agent_ptr->increment_episode_number();
 
-      if(reinforce_agent_ptr->get_episode_number() % 
+      if(curr_episode_number > 0 && curr_episode_number % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
-
-// FAKE FAKE:  Thurs Nov 10 at 8:06 am
-// Suppress Q network updating for debugging...
-
          reinforce_agent_ptr->update_Q_network();
          reinforce_agent_ptr->anneal_epsilon();
 
-//         reinforce_agent_ptr->compute_2x2_maze_Qvalues(0);
+//  Display Q(s,a):
+
       }
 
-      double curr_n_turns_ratio = double(
-         curr_maze.get_n_soln_steps()) / curr_maze.get_n_turtle_moves();
-      turn_ratios.push_back(curr_n_turns_ratio);
-      if(turn_ratios.size() > 1000)
-      {
-         double mu, sigma;
-         mathfunc::mean_and_std_dev(turn_ratios, mu, sigma);
-
-         double median, quartile_width;
-         mathfunc::median_value_and_quartile_width(
-            turn_ratios, median, quartile_width);
 
 
-         cout << "turn ratio = " << mu << " +/- " << sigma 
-              << "   median = " << median << " quartile_width = "
-              << quartile_width << endl;
-         cout << "      epsilon = " << reinforce_agent_ptr->get_epsilon()
-              << endl;
-         turn_ratios.clear();
-      }
+
 
 /*
       int n_episodes = curr_episode_number + 1;
@@ -218,7 +213,6 @@ int main (int argc, char* argv[])
               << " ratio = " 
               << curr_n_turns_ratio << endl;
 
-         reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_ratio);
          reinforce_agent_ptr->snapshot_running_reward();
       }
 
@@ -227,7 +221,6 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_loss_history(extrainfo);
          reinforce_agent_ptr->plot_reward_history(extrainfo, -1, 1);
-         reinforce_agent_ptr->plot_turns_history(extrainfo);
       }
 */
 

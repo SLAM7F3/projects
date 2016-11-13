@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16; 11/11/16
+// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/13/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -36,6 +36,7 @@ class environment
 
    void start_new_episode(bool random_start = false);
    genvector* get_curr_state();
+   std::string get_curr_state_string();
    bool is_legal_action(int a);
    genvector* compute_next_state(int a);
    bool is_terminal_state();
@@ -44,6 +45,7 @@ class environment
    double get_reward() const;
 
    std::string get_state_string(genvector* state_ptr);
+   std::string get_state_action_string(std::string state_str, int a);
    std::string get_state_action_string(genvector* state_ptr, int a);
    std::vector<std::string> get_all_curr_state_strings();
 

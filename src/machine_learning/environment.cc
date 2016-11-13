@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16; 11/11/16
+// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/13/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -85,6 +85,18 @@ genvector* environment::get_curr_state()
 }
 
 // ---------------------------------------------------------------------
+string environment::get_curr_state_string()
+{
+   string curr_state_str = "";
+
+   if(world_type == MAZE)
+   {
+      return maze_ptr->occupancy_state_to_string();
+   }
+   return curr_state_str;
+}
+
+// ---------------------------------------------------------------------
 bool environment::is_legal_action(int a)
 {
    bool legal_action_flag = true;
@@ -146,11 +158,15 @@ string environment::get_state_string(genvector* state_ptr)
 }
 
 // ---------------------------------------------------------------------
+string environment::get_state_action_string(string state_str, int a)
+{
+   return state_str + stringfunc::number_to_string(a);
+}
+
+// ---------------------------------------------------------------------
 string environment::get_state_action_string(genvector* state_ptr, int a)
 {
-   string state_action_str = get_state_string(state_ptr);
-   state_action_str += stringfunc::number_to_string(a);
-   return state_action_str;
+   return get_state_action_string(get_state_string(state_ptr), a);
 }
 
 // ---------------------------------------------------------------------
