@@ -47,9 +47,10 @@ int main (int argc, char* argv[])
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
    int Dout = n_actions;
    int Tmax = 1;
-//   int Tmax = 20 * 16;
 
-   int H1 = 4 * Din;
+//   int H1 = 1 * Din;
+   int H1 = 2 * Din;
+//   int H1 = 4 * Din;
    int H2 = 0;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -86,7 +87,6 @@ int main (int argc, char* argv[])
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.90);
-//   reinforce_agent_ptr->set_batch_size(3);
    reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(30);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
@@ -96,17 +96,17 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);
-   double min_learning_rate = 3E-5;
+   double min_learning_rate = 1E-4;
 
    int n_max_episodes = 100 * 1000 * 1000;
-   int n_update = 20000;
+   int n_update = 10000;
    int n_summarize = 20000;
    double Qmap_score = -1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
-   int n_episodes_period = 1000 * 1000;
+   int n_episodes_period = 100 * 1000;
 
 // Initialize Deep Q replay memory:
 
@@ -126,7 +126,6 @@ int main (int argc, char* argv[])
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, 5 * n_summarize, n_max_episodes);
 
-/*      
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
@@ -136,7 +135,6 @@ int main (int argc, char* argv[])
             n_episodes_period *= 1.2;
          }
       }
-*/
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
@@ -252,7 +250,7 @@ int main (int argc, char* argv[])
 //   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
 //                      display_qmap_flag);
    reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, "");
-   reinforce_agent_ptr->print_Qmap();
+//   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
 }
