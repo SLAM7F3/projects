@@ -35,7 +35,6 @@ int main (int argc, char* argv[])
 
    maze curr_maze(n_grid_size);
    curr_maze.generate_maze();
-   curr_maze.DrawMaze(0, "./", "empty_maze", false);
    curr_maze.solve_maze_backwards();
    curr_maze.generate_all_turtle_states();
 
@@ -47,7 +46,8 @@ int main (int argc, char* argv[])
 
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
    int Dout = n_actions;
-   int Tmax = 20 * 16;
+   int Tmax = 1;
+//   int Tmax = 20 * 16;
 
    int H1 = 4 * Din;
    int H2 = 0;
@@ -69,7 +69,9 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
+   int replay_memory_capacity = 5 * sqr(n_grid_size);
+   reinforce* reinforce_agent_ptr = new reinforce(
+      layer_dims, Tmax, replay_memory_capacity);
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
@@ -96,9 +98,9 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);
    double min_learning_rate = 3E-5;
 
-   int n_max_episodes = 1 * 1000 * 1000;
-   int n_update = 5000;
-   int n_summarize = 5000;
+   int n_max_episodes = 100 * 1000 * 1000;
+   int n_update = 20000;
+   int n_summarize = 20000;
    double Qmap_score = -1;
 
 // Periodically decrease learning rate down to some minimal floor
@@ -109,6 +111,7 @@ int main (int argc, char* argv[])
 // Initialize Deep Q replay memory:
 
    game_world.start_new_episode();
+
    reinforce_agent_ptr->initialize_replay_memory();
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
@@ -142,9 +145,6 @@ int main (int argc, char* argv[])
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
-
-      if(curr_episode_number%1000 == 0)
-         cout << curr_episode_number << endl;
 
       double reward;
       genvector* next_s;
@@ -205,11 +205,11 @@ int main (int argc, char* argv[])
 //         reinforce_agent_ptr->anneal_epsilon();
       }
 
-      if(curr_episode_number > 0 && curr_episode_number%n_update == 0)
+      if(curr_episode_number%n_update == 0)
       {
          cout << "episode_number = " << curr_episode_number << endl;
          reinforce_agent_ptr->compute_deep_Qvalues();
-         reinforce_agent_ptr->print_Qmap();
+//          reinforce_agent_ptr->print_Qmap();
 
          curr_maze.compute_max_Qmap();
          Qmap_score = curr_maze.score_max_Qmap();
@@ -251,7 +251,7 @@ int main (int argc, char* argv[])
 
 //   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
 //                      display_qmap_flag);
-   reinforce_agent_ptr->plot_Qmap_score_history("");
+   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, "");
    reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;

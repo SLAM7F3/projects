@@ -2062,6 +2062,11 @@ void genmatrix::matrix_mult(const genmatrix& A, const genmatrix& B)
 {
    clear_values();
 
+//   cout << "inside genmatrix::matrix_mult()" << endl;
+//   cout << "A.mdim = " << A.mdim << " A.ndim = " << A.ndim
+//        << " B.mdim = " << B.mdim << " B.ndim = " << B.ndim 
+//        << endl;
+
    for (unsigned int i = 0; i < A.mdim; i++)
    {
       for (unsigned int k = 0; k < A.ndim; k++)

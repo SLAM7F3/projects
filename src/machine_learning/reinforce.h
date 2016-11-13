@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/12/16
+// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -30,6 +30,8 @@ class reinforce
 // Initialization, constructor and destructor functions:
 
    reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax);
+   reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax,
+             int replay_memory_capacity);
    reinforce();
    ~reinforce();
    friend std::ostream& operator<< 
@@ -80,7 +82,8 @@ class reinforce
    void plot_reward_history(
       std::string extrainfo, double min_reward, double max_reward);
    void plot_turns_history(std::string extrainfo);
-   void plot_Qmap_score_history(std::string extrainfo);
+   void plot_Qmap_score_history(std::string output_subdir, 
+                                std::string extrainfo);
 
    void create_snapshots_subdir();
    void export_snapshot();
@@ -191,13 +194,14 @@ class reinforce
 
 // Q learning variables:
 
-   int replay_memory_index;  // 0 <= replay_memory_index < Tmax
+   int replay_memory_capacity;
+   int replay_memory_index; // 0 <=replay_memory_index < replay_memory_capacity
    double epsilon;	// Select random action with probability epsilon
-   genmatrix *s_curr;  // T x Din
-   genvector *a_curr;  // T x 1  (Holds indices for actions)
-   genvector *r_curr;  // T x 1  (Holds rewards)
-   genmatrix *s_next;  // T x Din
-   genvector *terminal_state;   // T x 1
+   genmatrix *s_curr;  // replay_memory_capacity x Din
+   genvector *a_curr;  // replay_memory_capacity x 1 (Holds action indices)
+   genvector *r_curr;  // replay_memory_capacity x 1  (Holds rewards)
+   genmatrix *s_next;  // replay_memory_capacity x Din
+   genvector *terminal_state;   // replay_memory_capacity x 1
 
    genvector *curr_s_sample, *next_s_sample;  // Din x 1 
 

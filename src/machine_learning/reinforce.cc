@@ -146,11 +146,11 @@ void reinforce::allocate_member_objects()
    reward = new genvector(Tmax);
    discounted_reward = new genvector(Tmax);
 
-   s_curr = new genmatrix(Tmax, layer_dims.front());
-   a_curr = new genvector(Tmax);
-   r_curr = new genvector(Tmax);
-   s_next = new genmatrix(Tmax, layer_dims.front());
-   terminal_state = new genvector(Tmax);
+   s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
+   a_curr = new genvector(replay_memory_capacity);
+   r_curr = new genvector(replay_memory_capacity);
+   s_next = new genmatrix(replay_memory_capacity, layer_dims.front());
+   terminal_state = new genvector(replay_memory_capacity);
 
    curr_s_sample = new genvector(layer_dims.front());
    next_s_sample = new genvector(layer_dims.front());
@@ -160,6 +160,16 @@ void reinforce::allocate_member_objects()
 reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax)
 {
    this->Tmax = Tmax;
+   this->replay_memory_capacity = 1;
+   initialize_member_objects(n_nodes_per_layer);
+   allocate_member_objects();
+}
+
+reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax,
+                     int replay_memory_capacity)
+{
+   this->Tmax = Tmax;
+   this->replay_memory_capacity = replay_memory_capacity;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 }
@@ -1079,12 +1089,13 @@ void reinforce::plot_turns_history(std::string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of Qmap score versus episode number.
 
-void reinforce::plot_Qmap_score_history(std::string extrainfo)
+void reinforce::plot_Qmap_score_history(std::string output_subdir, 
+                                        std::string extrainfo)
 {
    if(Qmap_scores.size() < 3) return;
 
    metafile curr_metafile;
-   string meta_filename="Qmap_score_history";
+   string meta_filename=output_subdir + "/Qmap_score_history";
    string title="Qmap score vs episode; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
@@ -1300,10 +1311,9 @@ void reinforce::import_snapshot()
 
 void reinforce::initialize_replay_memory()
 {
-//   cout << "inside reinforce::initialize_replay_memory()" << endl;
    initialize_episode();
 
-   for(int t = 0; t < Tmax; t++)
+   for(int m = 0; m < replay_memory_capacity; m++)
    {
       genvector *curr_s = environment_ptr->get_curr_state();
       int d = store_curr_state_into_replay_memory(*curr_s);
@@ -1321,7 +1331,7 @@ void reinforce::initialize_replay_memory()
          environment_ptr->start_new_episode(random_start);
          initialize_episode();
       }
-   } // loop over index t
+   } // loop over index m
 }
 
 // ---------------------------------------------------------------------
@@ -1491,7 +1501,7 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
 {
 //   cout << "inside store_curr_state_into_replay_memory()" << endl;
    int d = -1;
-   if(replay_memory_index < Tmax)
+   if(replay_memory_index < replay_memory_capacity)
    {
       d = replay_memory_index;
       replay_memory_index++;
@@ -1515,7 +1525,6 @@ void reinforce::store_arsprime_into_replay_memory(
    int d, int curr_a, double curr_r,
    const genvector& next_s, bool terminal_state_flag)
 {
-//   cout << "inside store_arsprime_into_replay_memory()" << endl;
    a_curr->put(d, curr_a);
    r_curr->put(d, curr_r);
    s_next->put_row(d, next_s);
@@ -1570,9 +1579,10 @@ void reinforce::update_Q_network()
 
 // Nd = Number of random samples to be drawn from replay memory:
 
-   int Nd = 0.1 * Tmax; 
+   int Nd = 0.1 * replay_memory_capacity; 
 
-   vector<int> d_samples = mathfunc::random_sequence(Tmax, Nd);
+   vector<int> d_samples = mathfunc::random_sequence(
+      replay_memory_capacity, Nd);
    for(unsigned int d = 0; d < d_samples.size(); d++)
    {
       Q_backward_propagate(d, Nd);

@@ -22,7 +22,7 @@
 // to the total number of cells as a function of episode number.  This
 // ratio should approach one as Q learning proceeds.
 // ==========================================================================
-// Last updated on 11/11/16; 11/12/16
+// Last updated on 11/11/16; 11/12/16; 11/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -90,7 +90,9 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
+   int replay_memory_capacity = 1;
+   reinforce* reinforce_agent_ptr = new reinforce(
+      layer_dims, Tmax, replay_memory_capacity);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->init_random_Qmap();
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
