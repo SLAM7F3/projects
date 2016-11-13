@@ -92,6 +92,7 @@ class reinforce
    int get_random_action() const;
    int get_random_legal_action() const;
    double anneal_epsilon();
+   void set_epsilon(double eps);
    double get_epsilon() const;
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();

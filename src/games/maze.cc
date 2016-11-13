@@ -394,8 +394,7 @@ void maze::print_solution_path() const
 // ---------------------------------------------------------------------
 void maze::generate_maze()
 {
-   cout << "inside generate_maze()" << endl;
-   outputfunc::enter_continue_char();
+//   cout << "inside generate_maze()" << endl;
 
    turtle_value = 1.0;
    wall_value = -1.0;

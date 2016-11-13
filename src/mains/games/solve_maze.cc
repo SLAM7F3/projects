@@ -24,7 +24,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -84,12 +84,14 @@ int main (int argc, char* argv[])
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.90);
-   reinforce_agent_ptr->set_batch_size(30);   
+//   reinforce_agent_ptr->set_batch_size(3);
+   reinforce_agent_ptr->set_batch_size(10);   
+//   reinforce_agent_ptr->set_batch_size(30);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);
    double min_learning_rate = 3E-5;
@@ -141,6 +143,9 @@ int main (int argc, char* argv[])
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
 
+      if(curr_episode_number%1000 == 0)
+         cout << curr_episode_number << endl;
+
       double reward;
       genvector* next_s;
       while(!curr_maze.get_game_over())
@@ -149,8 +154,6 @@ int main (int argc, char* argv[])
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
-//         cout << "In curr game loop, d = " << d 
-//              << " curr_a = " << curr_a << endl;
 
          if(!game_world.is_legal_action(curr_a))
          {
@@ -199,7 +202,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->get_batch_size() == 0)
       {
          reinforce_agent_ptr->update_Q_network();
-         reinforce_agent_ptr->anneal_epsilon();
+//         reinforce_agent_ptr->anneal_epsilon();
       }
 
       if(curr_episode_number > 0 && curr_episode_number%n_update == 0)
@@ -214,6 +217,8 @@ int main (int argc, char* argv[])
          cout << "Qmap_score = " << Qmap_score << endl;
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
+
+         reinforce_agent_ptr->set_epsilon(1 - Qmap_score);
       }
 
 /*
@@ -248,7 +253,6 @@ int main (int argc, char* argv[])
 //                      display_qmap_flag);
    reinforce_agent_ptr->plot_Qmap_score_history("");
    reinforce_agent_ptr->print_Qmap();
-
 
    delete reinforce_agent_ptr;
 }

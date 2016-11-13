@@ -145,15 +145,16 @@ double environment::get_reward() const
 }
 
 // ---------------------------------------------------------------------
-string environment::get_state_string(genvector* state_ptr)
+// Member function get_state_action_string()
+
+string environment::get_state_action_string(genvector* curr_s, int a)
 {
-   string state_str = "";
+   string state_action_str = "";
    if(world_type == MAZE)
    {
-      state_str = maze_ptr->occupancy_state_to_string();
+      return get_curr_state_string()+stringfunc::number_to_string(a);
    }
-
-   return state_str;
+   return state_action_str;
 }
 
 // ---------------------------------------------------------------------

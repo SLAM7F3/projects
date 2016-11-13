@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/12/16
+// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
 // ==========================================================================
 
 #include <string>
@@ -1350,9 +1350,15 @@ int reinforce::get_random_legal_action() const
 
 double reinforce::anneal_epsilon()
 {
-   epsilon *= 0.99;
+//   epsilon *= 0.99;
+   epsilon *= 0.99999;
 //   cout << "epsilon = " << epsilon << endl;
    return epsilon;
+}
+
+void reinforce::set_epsilon(double eps)
+{
+   epsilon = eps;
 }
 
 double reinforce::get_epsilon() const

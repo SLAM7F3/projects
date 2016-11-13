@@ -203,7 +203,7 @@ int main (int argc, char* argv[])
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
    reinforce_agent_ptr->plot_Qmap_score_history("");
-   reinforce_agent_ptr->print_Qmap();
+//   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
 }
