@@ -72,12 +72,14 @@ int main (int argc, char* argv[])
    reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
+   curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
-// Display random Q(s,a) after forward propagating all states through
-// noise network:
-
-   reinforce_agent_ptr->compute_deep_Qvalues();
-   reinforce_agent_ptr->print_Qmap();
+   int output_counter = 0;
+   string output_subdir = "./output_solns";
+   string basename = "maze";
+   bool display_qmap_flag = true;
+   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                      display_qmap_flag);
 
 // Gamma = discount factor for reward:
 
@@ -95,6 +97,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1 * 1000 * 1000;
    int n_update = 5000;
    int n_summarize = 5000;
+   double Qmap_score = -1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -106,7 +109,8 @@ int main (int argc, char* argv[])
    game_world.start_new_episode();
    reinforce_agent_ptr->initialize_replay_memory();
 
-   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
+   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
+         Qmap_score < 0.999999)
    {
       bool random_turtle_start = true;
 //      bool random_turtle_start = false;
@@ -198,12 +202,18 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->anneal_epsilon();
       }
 
-
       if(curr_episode_number > 0 && curr_episode_number%n_update == 0)
       {
          cout << "episode_number = " << curr_episode_number << endl;
          reinforce_agent_ptr->compute_deep_Qvalues();
          reinforce_agent_ptr->print_Qmap();
+
+         curr_maze.compute_max_Qmap();
+         Qmap_score = curr_maze.score_max_Qmap();
+         reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
+         cout << "Qmap_score = " << Qmap_score << endl;
+         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                            display_qmap_flag);
       }
 
 /*
@@ -233,6 +243,12 @@ int main (int argc, char* argv[])
 
 //      outputfunc::enter_continue_char();
    } // n_episodes < n_max_episodes while loop
+
+//   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+//                      display_qmap_flag);
+   reinforce_agent_ptr->plot_Qmap_score_history("");
+   reinforce_agent_ptr->print_Qmap();
+
 
    delete reinforce_agent_ptr;
 }

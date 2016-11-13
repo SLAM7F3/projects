@@ -190,6 +190,7 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number % n_summarize == 0)
       {
+         curr_maze.compute_max_Qmap();
          Qmap_score = curr_maze.score_max_Qmap();
          reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
          cout << "Qmap_score = " << Qmap_score << endl;
@@ -199,11 +200,9 @@ int main (int argc, char* argv[])
       }
    } // n_episodes < n_max_episodes while loop
 
-   curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
    reinforce_agent_ptr->plot_Qmap_score_history("");
-
    reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;

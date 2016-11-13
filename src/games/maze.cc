@@ -97,7 +97,6 @@ maze::maze(int n_size)
 maze::maze(const maze& T)
 {
 //   docopy(T);
-   generate_maze();
 }
 
 // ---------------------------------------------------------------------
@@ -395,7 +394,8 @@ void maze::print_solution_path() const
 // ---------------------------------------------------------------------
 void maze::generate_maze()
 {
-//    cout << "inside generate_maze()" << endl;
+   cout << "inside generate_maze()" << endl;
+   outputfunc::enter_continue_char();
 
    turtle_value = 1.0;
    wall_value = -1.0;
@@ -405,12 +405,10 @@ void maze::generate_maze()
 // Set all visited cell flags to false:
 
    visited_cell.clear();
-//   deadend_cell.clear();
    visited_cell_stack.clear();
    for(int p = 0; p < n_cells; p++)
    {
       visited_cell.push_back(false);
-//      deadend_cell.push_back(false);
    }
 
 // Start maze generation at some location within grid:
@@ -442,7 +440,6 @@ void maze::generate_maze()
       }
       else
       {
-//         deadend_cell[p] = true;
          if(visited_cell_stack.size() > 0)
          {
             p = visited_cell_stack.back();
@@ -746,7 +743,6 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
 
    if(display_qmap_flag)
    {
-      compute_max_Qmap();
       int R = 255;
       int G = 0;
       int B = 0;
@@ -825,6 +821,9 @@ void maze::compute_max_Qmap()
 
 double maze::score_max_Qmap()
 {
+   cout << "inside maze::score_max_Qmap()" << endl;
+   cout << "max_qmap.size = " << max_qmap.size() << endl;
+   
    int n_correct_dirs = 0;
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
@@ -834,14 +833,15 @@ double maze::score_max_Qmap()
       decompose_turtle_cell(turtle_cell, tx, ty);
       int col = tx / 2;
       int row = ty / 2;
-      int turtle_direction = max_qmap_iter->second.second;
+      int max_qmap_direction = max_qmap_iter->second.second;
       int soln_direction = soln_grid_ptr->get(row,col);
-//      cout << "row = " << row << " col = " << col
-//           << " soln_dir = " << soln_direction
-//           << " turtle_direction = " << turtle_direction << endl;
+      cout << "row = " << row << " col = " << col
+           << " soln_dir = " << soln_direction
+           << " max_qmap_direction = " << max_qmap_direction << endl;
       if( (col == n_size - 1 && row == n_size - 1) ||
-          (turtle_direction == soln_direction) ) n_correct_dirs++;
+          (max_qmap_direction == soln_direction) ) n_correct_dirs++;
    }
+   cout << "n_correct_dirs = " << n_correct_dirs << endl;
    double Qmap_score = double(n_correct_dirs) / n_cells;
    return Qmap_score;
 }

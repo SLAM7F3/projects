@@ -1350,7 +1350,7 @@ int reinforce::get_random_legal_action() const
 
 double reinforce::anneal_epsilon()
 {
-   epsilon *= 0.9999;
+   epsilon *= 0.99;
 //   cout << "epsilon = " << epsilon << endl;
    return epsilon;
 }
