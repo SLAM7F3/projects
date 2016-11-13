@@ -96,6 +96,7 @@ class reinforce
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
 
+   void compute_deep_Qvalues();
    void Q_forward_propagate(genvector& s_input);
    int compute_argmax_Q();
    int compute_legal_argmax_Q();

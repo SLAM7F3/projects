@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/6/16; 11/10/16; 11/11/16; 11/12/16
+// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -103,6 +103,8 @@ class maze
 
    int compute_turtle_reward() const;
 
+   std::vector<genvector*>& get_curr_maze_states();
+   const std::vector<genvector*>& get_curr_maze_states() const;
    std::vector<std::string>& get_curr_maze_state_strings();
    const std::vector<std::string>& get_curr_maze_state_strings() const;
 
@@ -147,8 +149,14 @@ class maze
 
    std::vector<int> turtle_path_history;
 
-// curr_maze_state_strings holds all possible turtle states for
-// current maze:
+// curr_maze_states holds all possible turtle states for current maze
+// as genvectors.  
+
+   std::vector<genvector*> curr_maze_states;
+
+// curr_maze_state_strings holds all possible turtle
+// states as strings.
+
    std::vector<std::string> curr_maze_state_strings;
 
    Q_MAP *qmap_ptr;
@@ -210,6 +218,16 @@ inline void maze::decompose_turtle_cell(int turtle_cell, int& tx, int& ty)
 {
    ty = turtle_cell / (2*n_size - 1);
    tx = turtle_cell % (2*n_size - 1);
+}
+
+inline std::vector<genvector*>& maze::get_curr_maze_states() 
+{
+   return curr_maze_states;
+}
+
+inline const std::vector<genvector*>& maze::get_curr_maze_states() const
+{
+   return curr_maze_states;
 }
 
 inline std::vector<std::string>& maze::get_curr_maze_state_strings() 

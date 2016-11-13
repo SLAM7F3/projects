@@ -73,6 +73,12 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
+// Display random Q(s,a) after forward propagating all states through
+// noise network:
+
+   reinforce_agent_ptr->compute_deep_Qvalues();
+   reinforce_agent_ptr->print_Qmap();
+
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.90);
@@ -87,7 +93,7 @@ int main (int argc, char* argv[])
    double min_learning_rate = 3E-5;
 
    int n_max_episodes = 1 * 1000 * 1000;
-   int n_update = 10;
+   int n_update = 5000;
    int n_summarize = 5000;
 
 // Periodically decrease learning rate down to some minimal floor
@@ -190,14 +196,15 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->update_Q_network();
          reinforce_agent_ptr->anneal_epsilon();
-
-//  Display Q(s,a):
-
       }
 
 
-
-
+      if(curr_episode_number > 0 && curr_episode_number%n_update == 0)
+      {
+         cout << "episode_number = " << curr_episode_number << endl;
+         reinforce_agent_ptr->compute_deep_Qvalues();
+         reinforce_agent_ptr->print_Qmap();
+      }
 
 /*
       int n_episodes = curr_episode_number + 1;

@@ -1394,13 +1394,35 @@ int reinforce::select_legal_action_for_curr_state()
 }
 
 // ---------------------------------------------------------------------
+// Member function compute_deep_Qvalues()
+
+void reinforce::compute_deep_Qvalues()
+{
+   vector<genvector*> curr_states = environment_ptr->get_all_curr_states();
+   vector<string> curr_state_strings = 
+      environment_ptr->get_all_curr_state_strings();
+
+   int t = 0;
+   for(unsigned int s = 0; s < curr_states.size(); s++)
+   {
+      Q_forward_propagate(*curr_states[s]);
+      for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
+      {
+         string state_action_str = environment_ptr->
+            get_state_action_string(curr_state_strings[s], i);
+         double Qvalue = a[n_layers-1]->get(i, t);
+         set_Q_value(state_action_str, Qvalue);
+      } // loop over index i labeling actions
+   } // loop over index s labeling input states
+}
+
+// ---------------------------------------------------------------------
 // Member function Q_forward_propagate() performs a feedforward pass
 // for the input state s to get predicted Q-values for all actions.
 
 void reinforce::Q_forward_propagate(genvector& s_input)
 {
    int t = 0;
-//   cout << "inside Q_forward_propagate()" << endl;
    a[0]->put_column(t, s_input);
  
    for(int l = 0; l < n_layers-2; l++)
@@ -1413,7 +1435,7 @@ void reinforce::Q_forward_propagate(genvector& s_input)
 
    for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
    {
-      a[n_layers-1]->put(t, i, z[n_layers-1]->get(t,i));
+      a[n_layers-1]->put(i, t, z[n_layers-1]->get(i,t));
    }
 }
 
@@ -1759,6 +1781,7 @@ void reinforce::init_random_Qmap()
 
 void reinforce::print_Qmap()
 {
+   cout << "---------------" << endl;
    for(qmap_iter = qmap.begin(); qmap_iter != qmap.end(); qmap_iter++)
    {
       cout << qmap_iter->first << "  " << qmap_iter->second << endl;

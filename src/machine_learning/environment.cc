@@ -164,9 +164,14 @@ string environment::get_state_action_string(string state_str, int a)
 }
 
 // ---------------------------------------------------------------------
-string environment::get_state_action_string(genvector* state_ptr, int a)
+vector<genvector*> environment::get_all_curr_states()
 {
-   return get_state_action_string(get_state_string(state_ptr), a);
+   vector<genvector*> curr_states;
+   if(world_type == MAZE)
+   {
+      return maze_ptr->get_curr_maze_states();
+   }
+   return curr_states;
 }
 
 // ---------------------------------------------------------------------

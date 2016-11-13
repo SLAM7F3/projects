@@ -47,6 +47,7 @@ class environment
    std::string get_state_string(genvector* state_ptr);
    std::string get_state_action_string(std::string state_str, int a);
    std::string get_state_action_string(genvector* state_ptr, int a);
+   std::vector<genvector*> get_all_curr_states();
    std::vector<std::string> get_all_curr_state_strings();
 
   private:

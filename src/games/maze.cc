@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/6/16; 11/10/16; 11/11/16; 11/12/16
+// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -108,6 +108,11 @@ maze::~maze()
    delete curr_legal_actions;
    delete occupancy_grid;
    delete occupancy_state;
+
+   for(unsigned int t = 0; t < curr_maze_states.size(); t++)
+   {
+      delete curr_maze_states[t];
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -1049,10 +1054,14 @@ void maze::generate_all_turtle_states()
       {
          int tx = 2 * px;
          int turtle_cell = ty * (2 * n_size - 1) + tx;
-
          occupancy_state->put(turtle_cell, turtle_value);
+
+         genvector* turtle_state = new genvector(*occupancy_state);
+         curr_maze_states.push_back(turtle_state);
+
          string state_str =  occupancy_state_to_string();    
          curr_maze_state_strings.push_back(state_str);
+
          occupancy_state->put(turtle_cell, 0);
       } // loop over px
    } // loop over py
