@@ -53,10 +53,10 @@ int main (int argc, char* argv[])
 //   int H1 = 4 * Din;
    int H2 = 0;
 
-   string extrainfo="H1="+stringfunc::number_to_string(H1);
+   string extrainfo="H1/Din="+stringfunc::number_to_string(H1/Din);
    if(H2 > 0)
    {
-      "; H2="+stringfunc::number_to_string(H2);
+      "; H2/Dout="+stringfunc::number_to_string(H2/Dout);
    }
 
    vector<int> layer_dims;
@@ -249,7 +249,7 @@ int main (int argc, char* argv[])
 
 //   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
 //                      display_qmap_flag);
-   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, "");
+   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
