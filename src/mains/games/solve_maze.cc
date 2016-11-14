@@ -90,7 +90,8 @@ int main (int argc, char* argv[])
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.95);
-   reinforce_agent_ptr->set_batch_size(3);
+   reinforce_agent_ptr->set_batch_size(1);
+//   reinforce_agent_ptr->set_batch_size(3);
 //   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(30);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
@@ -104,7 +105,7 @@ int main (int argc, char* argv[])
 
    int n_max_episodes = 100 * 1000 * 1000;
    int n_anneal_steps = 1000;
-   int n_update = 10000;
+   int n_update = 1000;
    int n_summarize = 20000;
    double Qmap_score = -1;
 
@@ -190,7 +191,6 @@ int main (int argc, char* argv[])
 
       reinforce_agent_ptr->increment_episode_number();
 
-
       if(curr_episode_number > 0 && curr_episode_number % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
@@ -199,7 +199,6 @@ int main (int argc, char* argv[])
          {
             reinforce_agent_ptr->copy_weights_onto_old_weights();
          }
-
          total_loss = reinforce_agent_ptr->update_Q_network();
       }
 
@@ -230,38 +229,11 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
          }
 
-         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
-                            display_qmap_flag);
+//         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+//                            display_qmap_flag);
 
 //         reinforce_agent_ptr->set_epsilon(1 - Qmap_score);
       }
-
-/*
-      int n_episodes = curr_episode_number + 1;
-      if(curr_episode_number > 10 && curr_episode_number % n_update == 0)
-      {
-//         curr_maze.print_turtle_path_history();
-
-
-         cout << "  n_soln_steps = "
-              << curr_maze.get_n_soln_steps() 
-              << "  n_turtle_moves = "
-              << curr_maze.get_n_turtle_moves() 
-              << " ratio = " 
-              << curr_n_turns_ratio << endl;
-
-         reinforce_agent_ptr->snapshot_running_reward();
-      }
-
-      if(curr_episode_number > 10 && curr_episode_number % n_summarize == 0)
-      {
-         reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_loss_history(extrainfo);
-         reinforce_agent_ptr->plot_reward_history(extrainfo, -1, 1);
-      }
-*/
-
-//      outputfunc::enter_continue_char();
    } // n_episodes < n_max_episodes while loop
 
 //   curr_maze.DrawMaze(output_counter++, output_subdir, basename,

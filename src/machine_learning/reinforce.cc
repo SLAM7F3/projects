@@ -1173,8 +1173,8 @@ void reinforce::plot_log10_loss_history(std::string output_subdir,
    string x_label="Episode";
    string y_label="Log10(Total loss)";
 
-   double min_score = -6;
-   double max_score = 0;
+   double min_score = -5;
+   double max_score = -1;
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, episode_number,
