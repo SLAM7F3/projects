@@ -49,15 +49,20 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
    int Tmax = 1;
 
-   int H1 = 10;
+   int H1 = 8;
+//   int H1 = 10;
+//   int H1 = 12;
 //   int H1 = 16;
 //   int H1 = 20;
 //   int H1 = 32;
 
 //   int H2 = 0;
-//   int H2 = 8;
-   int H2 = 10;
+   int H2 = 8;
+//   int H2 = 10;
+//   int H2 = 12;
 //   int H2 = 4;
+
+   int H3 = 0;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -66,12 +71,16 @@ int main (int argc, char* argv[])
    {
       layer_dims.push_back(H2);
    }
+   if(H3 > 0)
+   {
+      layer_dims.push_back(H3);
+   }
    layer_dims.push_back(Dout);
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 3 * sqr(n_grid_size);
-//   int replay_memory_capacity = 5 * sqr(n_grid_size);
+//   int replay_memory_capacity = 3 * sqr(n_grid_size);
+   int replay_memory_capacity = 5 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, replay_memory_capacity);
 //   reinforce_agent_ptr->set_debug_flag(true);
@@ -106,7 +115,7 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.75);
 
-   //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 		// optimal for n_grid_size = 7
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
@@ -130,9 +139,9 @@ int main (int argc, char* argv[])
    //   int old_weights_period = 300;
    //   int old_weights_period = 1000;
 
-   //   double min_epsilon = 0.05;
-   double min_epsilon = 0.1; // Optimal for n_grid_size = 7
-   //    double min_epsilon = 0.15;
+//   double min_epsilon = 0.05;
+   double min_epsilon = 0.1; // Optimal for n_grid_size = 7, 10
+//   double min_epsilon = 0.15;
 
 // Initialize Deep Q replay memory:
 
@@ -248,9 +257,8 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
          }
 
-//         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
-//                            display_qmap_flag);
-//         reinforce_agent_ptr->set_epsilon(1 - Qmap_score);
+         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                            display_qmap_flag);
       }
    } // n_episodes < n_max_episodes while loop
 
@@ -270,6 +278,10 @@ int main (int argc, char* argv[])
    if(H2 > 0)
    {
       ";H2="+stringfunc::number_to_string(H2);
+   }
+   if(H3 > 0)
+   {
+      ";H3="+stringfunc::number_to_string(H3);
    }
 
    reinforce_agent_ptr->plot_Qmap_score_history(

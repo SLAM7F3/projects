@@ -1,7 +1,7 @@
 j============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 10/30/16; 10/31/16; 11/2/16; 11/9/17
+Last updated on 10/31/16; 11/2/16; 11/9/16; 11/14/16
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -130,3 +130,7 @@ printf("Exporting S2D polygons to %s \n", output_shape_filename).
 "external" S2D branch (for delivery to groups outside Flyover), we may need
 to comment out #define TAGGER_EXT statements located in tagger2.h and
 tg_annotation_api.h
+
+*.  As of Mon Nov 14, we need to comment out #define TAGGER_EXT in
+tg_annotation_api.h and in tagger2.h in order to run "stopwatch" tests on
+"peter_debug6" PR ADMIN job.

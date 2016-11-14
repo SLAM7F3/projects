@@ -115,10 +115,12 @@ class maze
 
   private: 
 
+   bool random_turtle_start;
    int n_size, n_cells;
    int n_directions, nbits;
    int ImageSize;
    int turtle_cell;
+   int turtle_p_start, turtle_px_start, turtle_py_start;
    double turtle_value, wall_value;
    bool game_over;
    std::vector<int> direction;

@@ -81,6 +81,7 @@ void maze::initialize_member_objects()
    }
 
    turtle_cell = -1;
+   turtle_p_start = 0;
 }		       
 
 // ---------------------------------------------------------------------
@@ -1071,6 +1072,7 @@ void maze::generate_all_turtle_states()
 void maze::reset_game(bool random_turtle_start)
 {
    game_over = false;
+   this->random_turtle_start = random_turtle_start;
 
    initialize_occupancy_grid();
 
@@ -1081,10 +1083,29 @@ void maze::reset_game(bool random_turtle_start)
    int ty = 0;
    if(random_turtle_start)
    {
-      int px = mathfunc::getRandomInteger(n_size);
-      int py = mathfunc::getRandomInteger(n_size);
-      tx = 2 * px;
-      ty = 2 * py;     
+/*
+
+// Experiments with systematically starting turtle in each maze cell
+// yields no obvious benefit compared to randomly starting turtle
+// anywhere within maze
+
+      turtle_px_start = cell_decomposition[turtle_p_start].first;
+      turtle_py_start = cell_decomposition[turtle_p_start].second;
+      turtle_p_start++;
+      if(turtle_p_start >= n_cells)
+      {
+         turtle_p_start = 0;
+      }
+*/
+
+      turtle_px_start = mathfunc::getRandomInteger(n_size);
+      turtle_py_start = mathfunc::getRandomInteger(n_size);
+//      cout << "turtle_p_start = " << turtle_p_start
+//           << " turtle_px_start = " << turtle_px_start
+//           << " turtle_py_start = " << turtle_py_start << endl;
+      
+      tx = 2 * turtle_px_start;
+      ty = 2 * turtle_py_start;     
       turtle_cell = ty * (2 * n_size - 1) + tx;
    }
    occupancy_grid->put(tx, ty, turtle_value);   
@@ -1245,7 +1266,27 @@ int maze::get_n_turtle_moves() const
 // ---------------------------------------------------------------------
 int maze::compute_turtle_reward() const
 {
-  return (get_maze_solved());
+   return (get_maze_solved());
+
+/*
+   if(get_maze_solved())
+   {
+      if(random_turtle_start)
+      {
+         int approx_reward = abs(n_size - turtle_px_start) + 
+            abs(n_size - turtle_py_start);
+         return approx_reward;
+      }
+      else
+      {
+         return 1;
+      }
+   }
+   else
+   {
+      return 0;
+   }
+*/
 
   /*
    if(get_n_turtle_moves() < get_solution_path_moves())

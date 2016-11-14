@@ -253,47 +253,47 @@ Running experiments
 ..............................................
 
 46.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 16, H2 = 8, base learning rate = 0.0001, batch size = 1
+H1 = 16, H2 = 8, base learning rate = 0.0003, batch size = 1
 N_weights = 2864
 N final episode =  329 K, Ran for  2.88 mins on TM.
 
 47.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 16, H2 = 8, base learning rate = 0.0001, batch size = 1
+H1 = 16, H2 = 8, base learning rate = 0.0003, batch size = 1
 N_weights = 2864
 N final episode =  84K, Ran for  0.82 mins on TM.
 
 48.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 16, H2 = 8, base learning rate = 0.0001, batch size = 1
+H1 = 16, H2 = 8, base learning rate = 0.0003, batch size = 1
 N_weights = 2864
 N final episode = 115K , Ran for   1.04 mins on TM.
 
 49.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 16, H2 = 8, base learning rate = 0.0001, batch size = 1
+H1 = 16, H2 = 8, base learning rate = 0.0003, batch size = 1
 N_weights = 2864
 N final episode = 70K , Ran for 0.65 mins on TM.
 
 50.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 16, H2 = 8, base learning rate = 0.0001, batch size = 1
+H1 = 16, H2 = 8, base learning rate = 0.0003, batch size = 1
 N_weights = 2864
 N final episode = 78K , Ran for 0.70 mins on TM.
 
 51.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 1830
 N final episode = 131K , Ran for  0.79 mins on TM.
 
 52.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 
 N final episode = 96 K , Ran for  0.59 mins on TM.
 
 53.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 
 N final episode = 104K , Ran for 0.64 mins on TM.
 
 54.  n_size = 7, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 1830
 N final episode = 81K , Ran for  0.53 mins on TM.
 
@@ -302,54 +302,345 @@ Conclusion: H1 = 10; H2 = 10  seems optimal for n_grid_size = 7.
 
 
 55.  n_size = 8, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 2390
 N final episode = 108K , Ran for 1.06 mins on TM.
 
 56.  n_size = 8, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 2390
 N final episode = 115K , Ran for 1.12 mins on TM.
 
 
 57.  n_size = 9, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 3030
 N final episode = 228 K , Ran for  3.44 mins on TM.
 
 58.  n_size = 9, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 3030
 N final episode = 159K , Ran for  2.34 mins on TM.
 
 ***** Expts 57, 58 yielded best maze results as of Mon Nov 14 *****
 
 59.  n_size = 10, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 3750
 N final episode = 187K , Ran for  4.25 mins on TM.
 
-60.  n_size = 10, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
-N_weights = 
-N final episode = K , Ran for  mins on TM.
+60.  n_size = 10, old weights T=30, min eps = 0.1 H1 = 10, H2 = 10, base
+learning rate = 0.0003, batch size = 1 N_weights = 3750.
+Failed to successfully terminate after running for 18.5 minutes and
+evaluating 800K episodes.
 
 61.  n_size = 10, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 N_weights = 3750
 N final episode = 227K , Ran for  5.04 mins on TM.
 
 62.  n_size = 10, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
-N_weights = 
-N final episode = K , Ran for  mins on TM.
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+Failed to successfully terminate after running for 18.4 minutes and
+evaluating 820K episodes.
 
 63.  n_size = 10, old weights T=30, min eps = 0.1
-H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
-N_weights = 
-N final episode = K , Ran for  mins on TM.
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode = 312K , Ran for  6.99 mins on TM.
 
 64.  n_size = 10, old weights T=30, min eps = 0.1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode = 190K , Ran for  4.19 mins on TM.
+
+65.  n_size = 10, old weights T=30, min eps = 0.1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode = 146 K , Ran for  3.44 mins on TM.
+
+66.  n_size = 10, old weights T=30, min eps = 0.1
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode = 214 K , Ran for  5.08 mins on TM.
+
+..............................................
+// Adjust base learning rate
+..............................................
+
+67.  n_size = 10, old weights T=30, min eps = 0.1
+H1 = 10, H2 = 10, base learning rate = 0.001, batch size = 1
+N_weights = 3750
+Terminated after > 5 mins of running on TM.
+
+68.  n_size = 10, old weights T=30, min eps = 0.1
+H1 = 10, H2 = 10, base learning rate = 0.001, batch size = 1
+N_weights = 3750
+Terminated after > 5 mins of running on TM.
+
+69.  n_size = 10, old weights T=30, min eps = 0.1
 H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+N_weights = 3750
+N final episode = 292 K , Ran for  6.45 mins on TM.
+
+70.  n_size = 10, old weights T=30, min eps = 0.1
+H1 = 10, H2 = 10, base learning rate = 0.0001, batch size = 1
+N_weights = 3750
+N final episode = 224 K , Ran for  5.13 mins on TM.
+
+Conclusion: base_learning_rate = 3E-4 seems optimal for n_grid_size = 10.
+
+..............................................
+// Adjust min_eps
+..............................................
+
+71.  n_size = 10, old weights T=30, min eps = 0.15
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+Terminated after running for >9 mins.
+
+72.  n_size = 10, old weights T=30, min eps = 0.15
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+Terminated after running for 9 mins.
+N final episode = 430 K , Ran for  9.62 mins on TM.
+
+73.  n_size = 10, old weights T=30, min eps = 0.05
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+Terminated after running for > 16 mins & 700K iters.
+
+74.  n_size = 10, old weights T=30, min eps = 0.05
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode =  540K , Ran for  12.23 mins on TM.
+
+Conclusion: min_eps = 0.1 seems optimal for n_grid_size = 10.
+
+..............................................
+// Adjust H1, H2
+..............................................
+
+75.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 12, H2 = 12, base learning rate = 0.0003, batch size = 1
 N_weights = 
-N final episode = K , Ran for  mins on TM.
+Terminated after running for > 19 minutes.
+
+76.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 12, H2 = 12, base learning rate = 0.0003, batch size = 1
+N_weights = 
+Terminated after running for > 19 minutes.
+
+77.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode = 240K  , Ran for  5.3 mins on TM.
+
+78.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode = 465K  , Ran for  mins on TM.
+
+79.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+N_weights = 3750
+N final episode =  794K , Ran for  18.6 mins on TM.
+
+80.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 12, H2 = 8, base learning rate = 0.0003, batch size = 1
+N_weights = 4460
+N final episode =  1.469M , Ran for 40  mins on TM.
+
+81.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 12, H2 = 8, base learning rate = 0.0003, batch size = 1
+N_weights = 4460
+Terminated after 2M episodes and running for over 54 minutes.
+
+82.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, H3 = 4, base learning rate = 0.0003, batch size = 1
+N_weights =
+Terminated! Horrible results!
+
+83.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, H3 = 4, base learning rate = 0.0003, batch size = 1
+N_weights =
+Terminated!  Horrible results!
+
+84.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, H3 = 10, base learning rate = 0.0003, batch size = 1
+N_weights =
+Terminated!  Horrible results!
+
+85.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, H3 = 10, base learning rate = 0.0003, batch size = 1
+N_weights =
+Terminated!  Horrible results!
+
+
+86.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity incrased from 3 * 10*10 to  6 * 10*10
+N_weights = 3750
+N final episode = 379K  , Ran for 15.6 mins on TM.
+
+87.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity incrased from 3 * 10*10 to  6 * 10*10
+N_weights = 3750
+N final episode = 556K  , Ran for 23.29 mins on TM.
+
+
+88.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 20, H2 = 0, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 7300
+N final episode = 403K  , Ran for 27.41 mins on TM.
+
+89.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 20, H2 = 0, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 7300
+N final episode = 402K  , Ran for 27.16 mins on TM.
+
+
+90.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 339K  , Ran for 11.95 mins on TM.
+
+91.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 227K  , Ran for 7.77 mins on TM.
+
+92.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 240K  , Ran for 8.24 mins on TM.
+
+93.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 231K  , Ran for 8.42 mins on TM.
+
+94.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 245K  , Ran for 8.4 mins on TM.
+
+95.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 312K  , Ran for 11.03 mins on TM.
+
+
+
+96.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 747K  , Ran for  27.76 mins on TM.
+
+97.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 238K  , Ran for  8.54 mins on TM.
+
+98.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 471K  , Ran for  18.23 mins on TM.
+
+99.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 1.38M , Ran for  51.7 minutes !!!
+
+100.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 7, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3708
+N final episode = 380K  , Ran for  13.77 mins on TM.
+
+
+
+101.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3750
+N final episode = 1.047M  , Ran for 39.63 mins on TM.
+
+102.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 
+N final episode = 509K  , Ran for 18.75 mins on TM.
+
+103.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 
+N final episode = K  , Ran for  mins on TM.
+
+104.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity  = 5 * 10*10
+N_weights = 3750
+N final episode = 231K  , Ran for  8.33 mins on TM.
+
+
+
+
+
+105.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = K  , Ran for  mins on TM.
+
+106.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = 235K  , Ran for  7.05 mins on TM.
+
+107.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = 778K  , Ran for 23.66 mins on TM.
+
+108.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = 247K  , Ran for  7.31 mins on TM.
+
+109.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = 355K  , Ran for  10.65 mins on TM.
+
+110.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = 330K  , Ran for  10 mins on TM.
+
+111.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+N_weights = 2984
+N final episode = 238 K  , Ran for  7.02 mins on TM.
+
