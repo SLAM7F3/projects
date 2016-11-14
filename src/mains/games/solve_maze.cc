@@ -49,11 +49,15 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
    int Tmax = 1;
 
-   int H1 = 1 * Din;
+//   int H1 = 10;
+   int H1 = 16;
+//   int H1 = 1 * Din;
 //   int H1 = 2 * Din;
 //   int H1 = 2 * Din;
 //   int H1 = 4 * Din;
-   int H2 = 0;
+
+//   int H2 = 0;
+   int H2 = 4;
 //   int H2 = 1 * Dout;
 
    vector<int> layer_dims;
@@ -244,16 +248,19 @@ int main (int argc, char* argv[])
    } // n_episodes < n_max_episodes while loop
 
    outputfunc::print_elapsed_time();
+   cout << "Final episode number = "
+        << reinforce_agent_ptr->get_episode_number() << endl;
+
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
    string subtitle="Nsize="+stringfunc::number_to_string(n_grid_size)
       +";old weights T="+stringfunc::number_to_string(old_weights_period)
       +";min eps="+stringfunc::number_to_string(min_epsilon);
 
-   string extrainfo="H1/Din="+stringfunc::number_to_string(H1/Din);
+   string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
-      ";H2/Dout="+stringfunc::number_to_string(H2/Dout);
+      ";H2="+stringfunc::number_to_string(H2);
    }
 
    reinforce_agent_ptr->plot_Qmap_score_history(

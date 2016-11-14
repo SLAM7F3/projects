@@ -1,0 +1,70 @@
+==========================================================================
+Deep Q learning notes for mazes
+==========================================================================
+Last updated on 11/14/16
+==========================================================================
+
+-------------------------------
+Terminated experiments
+-------------------------------
+
+1.  n_size = 5, old weights T=300, min eps = 0.1
+H1/Din = 1, base learning rate = 0.001, batch size = 1
+N final episode = 850,000, Ran for 27 mins on m6700.
+
+1.  n_size = 5, old weights T=300, min eps = 0.1
+H1/Din = 1, base learning rate = 0.001, batch size = 1
+N final episode = 140000, Ran for 3.7 mins on m6700
+
+2.  n_size = 5, old weights T=300, min eps = 0.1
+H1/Din = 1, base learning rate = 0.001, batch size = 1
+N final episode = 185000, Ran for 5 mins on m6700
+
+4.  n_size = 5, old weights T=300, min eps = 0.1
+H1/Din = 2, base learning rate = 0.001, batch size = 1
+N final episode = 214000, Ran for 11.9 mins on m6700
+
+6.  n_size = 5, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 26000, Ran for 0.15 mins on m6700
+
+5.  n_size = 5, old weights T=300, min eps = 0.1
+H1/Din = 2, base learning rate = 0.001, batch size = 1
+N final episode = 000, Ran for mins on m6700.  Terminated.
+
+
+7.  n_size = 5, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 31000, Ran for 0.17 mins on m6700
+
+7.  n_size = 5, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 33000, Ran for 0.27 mins on m6700
+
+8.  n_size = 6, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 63000, Ran for 0.52 mins on m6700
+
+9.  n_size = 7, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 111000, Ran for 1.53 mins on m6700
+
+10.  n_size = 8, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 181000, Ran for 3.88 mins on m6700
+
+11.  n_size = 10, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 348000, Ran for 16.97 mins on m6700
+
+12.  n_size = 10, old weights T=300, min eps = 0.1
+H1 = 10, base learning rate = 0.001, batch size = 1
+N final episode = 458000, Ran for 22.51 mins on m6700
+
+-------------------------------
+Running experiments
+-------------------------------
+
+
+
+
