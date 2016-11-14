@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/5/16; 11/9/16; 11/13/16
+// Last updated on 11/5/16; 11/9/16; 11/13/16; 11/14/16
 // ==========================================================================
 
 #include <iostream>
@@ -49,16 +49,15 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
    int Tmax = 1;
 
-//   int H1 = 10;
-   int H1 = 16;
-//   int H1 = 1 * Din;
-//   int H1 = 2 * Din;
-//   int H1 = 2 * Din;
-//   int H1 = 4 * Din;
+   int H1 = 10;
+//   int H1 = 16;
+//   int H1 = 20;
+//   int H1 = 32;
 
 //   int H2 = 0;
-   int H2 = 4;
-//   int H2 = 1 * Dout;
+//   int H2 = 8;
+   int H2 = 10;
+//   int H2 = 4;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -107,8 +106,9 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.75);
 
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+   //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+		// optimal for n_grid_size = 7
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);
@@ -124,8 +124,15 @@ int main (int argc, char* argv[])
 // value:
 
    int n_episodes_period = 100 * 1000;
-   int old_weights_period = 300;
-   double min_epsilon = 0.1;
+   //   int old_weights_period = 10;
+   int old_weights_period = 30;   // Optimal for n_grid_size = 7 
+//   int old_weights_period = 100;
+   //   int old_weights_period = 300;
+   //   int old_weights_period = 1000;
+
+   //   double min_epsilon = 0.05;
+   double min_epsilon = 0.1; // Optimal for n_grid_size = 7
+   //    double min_epsilon = 0.15;
 
 // Initialize Deep Q replay memory:
 
@@ -224,19 +231,19 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number%n_update == 0)
       {
-         cout << "episode_number = " << curr_episode_number << endl;
+         cout << "Episode number = " << curr_episode_number << endl;
          
          reinforce_agent_ptr->compute_deep_Qvalues();
 //          reinforce_agent_ptr->print_Qmap();
 
          curr_maze.compute_max_Qmap();
          Qmap_score = curr_maze.score_max_Qmap();
-         cout << "Qmap_score = " << Qmap_score << endl;
+         cout << "  Qmap_score = " << Qmap_score << endl;
          reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
 
          if(total_loss > 0)
          {
-            cout << "Total loss = " << total_loss 
+            cout << "  Total loss = " << total_loss 
                  << " log10(total_loss) = " << log10(total_loss) << endl;
             reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
          }
@@ -250,6 +257,8 @@ int main (int argc, char* argv[])
    outputfunc::print_elapsed_time();
    cout << "Final episode number = "
         << reinforce_agent_ptr->get_episode_number() << endl;
+   cout << "N_weights = " << reinforce_agent_ptr->count_weights()
+        << endl;
 
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);

@@ -76,6 +76,7 @@ class reinforce
 
 // Monitoring network training methods:
 
+   int count_weights();
    void print_weights();
    void compute_weight_distributions();
    std::string init_subtitle();

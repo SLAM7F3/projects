@@ -831,6 +831,17 @@ void reinforce::update_running_reward(string extrainfo)
 // Monitoring network training methods
 // ==========================================================================
 
+int reinforce::count_weights()
+{
+   int n_weights = 0;
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      n_weights += weights[l]->get_mdim() * weights[l]->get_ndim();
+   }
+   return n_weights;
+}
+
+
 void reinforce::print_weights()
 {
    for(int l = 0; l < n_layers - 1; l++)
@@ -1176,7 +1187,7 @@ void reinforce::plot_log10_loss_history(string output_subdir,
    string x_label="Episode";
    string y_label="Log10(Total loss)";
 
-   double min_score = -5;
+   double min_score = -6;
    double max_score = -1;
 
    curr_metafile.set_parameters(
