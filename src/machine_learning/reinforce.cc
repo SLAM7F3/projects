@@ -92,6 +92,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    {
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
+      genmatrix *curr_old_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
 
       int mdim = layer_dims[l+1];
       int ndim = layer_dims[l];
@@ -99,6 +101,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
            << endl;
       
       weights.push_back(curr_weights);
+      old_weights.push_back(curr_old_weights);
       genmatrix *curr_weights_transpose = new genmatrix(
          layer_dims[l], layer_dims[l+1]);
       weights_transpose.push_back(curr_weights_transpose);
@@ -125,6 +128,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          for(int j = 0; j < layer_dims[l]; j++)
          {
             curr_weights->put(i, j, nrfunc::gasdev() / sqrt(layer_dims[l]) );
+            curr_old_weights->put(i, j, curr_weights->get(i, j));
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
@@ -195,6 +199,7 @@ reinforce::~reinforce()
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       delete weights[l];
+      delete old_weights[l];
       delete weights_transpose[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
@@ -1098,10 +1103,6 @@ void reinforce::plot_Qmap_score_history(std::string output_subdir,
    string meta_filename=output_subdir + "/Qmap_score_history";
    string title="Qmap score vs episode; bsize="+
       stringfunc::number_to_string(batch_size);
-   if(lambda > 1E-5)
-   {
-      title += "; lambda="+stringfunc::number_to_string(lambda);
-   }
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
@@ -1139,12 +1140,73 @@ void reinforce::plot_Qmap_score_history(std::string output_subdir,
       filterfunc::gaussian_filter(dx, sigma, h);
 
       bool wrap_around_input_values = false;
-      vector<double> smoothed_n_episode_turns_frac;
       filterfunc::brute_force_filter(
          n_episode_turns_frac, h, smoothed_Qmap_scores, 
          wrap_around_input_values);
       curr_metafile.write_curve(
          0, episode_number, smoothed_Qmap_scores, colorfunc::blue);
+   }
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of log10(total loss) versus episode number.
+
+void reinforce::plot_log10_loss_history(std::string output_subdir, 
+                                        std::string extrainfo)
+{
+   if(log10_losses.size() < 3) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir + "/log10_losses_history";
+   string title="Log10(Total loss) vs episode; bsize="+
+      stringfunc::number_to_string(batch_size);
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label="Episode";
+   string y_label="Log10(Total loss)";
+
+   double min_score = -6;
+   double max_score = 0;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, episode_number,
+      min_score, max_score);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.5);
+   curr_metafile.set_ysubtic(0.25);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, episode_number, log10_losses);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy log10(Total Loss) scores:
+
+   double sigma = 5;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   vector<double> smoothed_log10_losses;
+   if(gaussian_size < int(log10_losses.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      filterfunc::brute_force_filter(
+         n_episode_turns_frac, h, smoothed_log10_losses, 
+         wrap_around_input_values);
+      curr_metafile.write_curve(
+         0, episode_number, smoothed_log10_losses, colorfunc::blue);
    }
    
    curr_metafile.closemetafile();
@@ -1335,6 +1397,22 @@ void reinforce::initialize_replay_memory()
 }
 
 // ---------------------------------------------------------------------
+// Member function copy_weights_onto_old_weights() copies weights and
+// weights_transpose onto old_weights.  According to David Silver's
+// "Deep Reinforcement Learning" notes, using frequently-updated
+// weights within the target can lead to neural network oscillations
+// and instabilities.  So we should instead compute targets using old
+// weights and only periodically update them by calling this method.
+
+void reinforce::copy_weights_onto_old_weights() 
+{
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      *old_weights[l] = *weights[l];
+   }
+}
+
+// ---------------------------------------------------------------------
 // Member function get_random_legal_action()
 
 int reinforce::get_random_action() const
@@ -1358,11 +1436,17 @@ int reinforce::get_random_legal_action() const
 // ---------------------------------------------------------------------
 // Member function anneal_epsilon()
 
-double reinforce::anneal_epsilon()
+double reinforce::anneal_epsilon(double decay_factor, double min_epsilon)
 {
-//   epsilon *= 0.99;
-   epsilon *= 0.99999;
-//   cout << "epsilon = " << epsilon << endl;
+   if(epsilon < min_epsilon)
+   {
+      epsilon = min_epsilon;
+   }
+   else
+   {
+      epsilon *= decay_factor;
+   }
+//    cout << "epsilon = " << epsilon << endl;
    return epsilon;
 }
 
@@ -1436,18 +1520,35 @@ void reinforce::compute_deep_Qvalues()
 // Member function Q_forward_propagate() performs a feedforward pass
 // for the input state s to get predicted Q-values for all actions.
 
-void reinforce::Q_forward_propagate(genvector& s_input)
+void reinforce::Q_forward_propagate(
+   genvector& s_input, bool use_old_weights_flag)
 {
    int t = 0;
    a[0]->put_column(t, s_input);
  
    for(int l = 0; l < n_layers-2; l++)
    {
-      z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+      if(use_old_weights_flag)
+      {
+         z[l+1]->matrix_column_mult(*old_weights[l], *a[l], t);
+      }
+      else
+      {
+         z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+      }
       machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
    }
 
-   z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
+   if(use_old_weights_flag)
+   {
+      z[n_layers-1]->matrix_column_mult(
+         *old_weights[n_layers-2], *a[n_layers-2], t);
+   }
+   else
+   {
+      z[n_layers-1]->matrix_column_mult(
+         *weights[n_layers-2], *a[n_layers-2], t);
+   }
 
    for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
    {
@@ -1559,7 +1660,8 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
    }
    else
    {
-      Q_forward_propagate(*next_s);
+      bool use_old_weights_flag = true;
+      Q_forward_propagate(*next_s, use_old_weights_flag);
       double Qmax = NEGATIVEINFINITY;
       for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
       {
@@ -1572,7 +1674,7 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
 // ---------------------------------------------------------------------
 // Member function update_Q_network()
 
-void reinforce::update_Q_network()
+double reinforce::update_Q_network()
 {
 //   cout << "inside update_Q_network()" << endl;
 //   cout << "episode_number = " << get_episode_number() << endl;
@@ -1583,9 +1685,10 @@ void reinforce::update_Q_network()
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);
+   double total_loss = 0;
    for(unsigned int d = 0; d < d_samples.size(); d++)
    {
-      Q_backward_propagate(d, Nd);
+      total_loss += Q_backward_propagate(d, Nd);
    } // loop over index d labeling replay memory samples
 
 // Perform RMSprop parameter update:
@@ -1660,12 +1763,14 @@ void reinforce::update_Q_network()
 //       cout << endl;
 //   print_weights();
 //   outputfunc::enter_continue_char();
+
+   return total_loss;
 }
 
 // ---------------------------------------------------------------------
 // Member function Q_backward_propagate()
 
-void reinforce::Q_backward_propagate(int d, int Nd)
+double reinforce::Q_backward_propagate(int d, int Nd)
 {
    int t = 0;
 
@@ -1695,12 +1800,18 @@ void reinforce::Q_backward_propagate(int d, int Nd)
 
 // Eqn BP1:
 
+   double curr_loss = -1;
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
       double curr_Q = a[curr_layer]->get(j, t);
 
       double curr_activation = 0;
-      if(j == curr_a) curr_activation = curr_Q - target_value;
+      if(j == curr_a)
+      {
+         curr_activation = curr_Q - target_value;
+         curr_loss = 0.5 * sqr(curr_activation);
+      }
+
       delta_prime[curr_layer]->put(j, t, curr_activation);
    }
 
@@ -1742,6 +1853,9 @@ void reinforce::Q_backward_propagate(int d, int Nd)
    {
       nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
    }
+
+   curr_loss *= inverse_Nd;
+   return curr_loss;
 }
 
 // ---------------------------------------------------------------------

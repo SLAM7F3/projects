@@ -48,10 +48,12 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
    int Tmax = 1;
 
-//   int H1 = 1 * Din;
-   int H1 = 2 * Din;
+   int H1 = 1 * Din;
+//   int H1 = 2 * Din;
+//   int H1 = 2 * Din;
 //   int H1 = 4 * Din;
    int H2 = 0;
+//   int H2 = 1 * Dout;
 
    string extrainfo="H1/Din="+stringfunc::number_to_string(H1/Din);
    if(H2 > 0)
@@ -70,7 +72,8 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 5 * sqr(n_grid_size);
+   int replay_memory_capacity = 3 * sqr(n_grid_size);
+//   int replay_memory_capacity = 5 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, replay_memory_capacity);
 //   reinforce_agent_ptr->set_debug_flag(true);
@@ -86,8 +89,9 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-   reinforce_agent_ptr->set_gamma(0.90);
-   reinforce_agent_ptr->set_batch_size(10);   
+   reinforce_agent_ptr->set_gamma(0.95);
+   reinforce_agent_ptr->set_batch_size(3);
+//   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(30);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
 
@@ -99,6 +103,7 @@ int main (int argc, char* argv[])
    double min_learning_rate = 1E-4;
 
    int n_max_episodes = 100 * 1000 * 1000;
+   int n_anneal_steps = 1000;
    int n_update = 10000;
    int n_summarize = 20000;
    double Qmap_score = -1;
@@ -113,12 +118,13 @@ int main (int argc, char* argv[])
    game_world.start_new_episode();
 
    reinforce_agent_ptr->initialize_replay_memory();
+   int update_old_weights_counter = 0;
+   double total_loss = -1;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
          Qmap_score < 0.999999)
    {
       bool random_turtle_start = true;
-//      bool random_turtle_start = false;
       curr_maze.reset_game(random_turtle_start);
       reinforce_agent_ptr->initialize_episode();
 
@@ -182,41 +188,52 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
 
-/*
-      curr_maze.print_occupancy_grid();
-      curr_maze.print_turtle_path_history();
-
-      cout << "  n_soln_steps = "
-           << curr_maze.get_n_soln_steps() << endl;
-      cout << "  n_turtle_moves = "
-           << curr_maze.get_n_turtle_moves() << endl;
-      cout << "reward = " << reward << endl;
-      outputfunc::enter_continue_char();
-*/
-
       reinforce_agent_ptr->increment_episode_number();
+
 
       if(curr_episode_number > 0 && curr_episode_number % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
-         reinforce_agent_ptr->update_Q_network();
-//         reinforce_agent_ptr->anneal_epsilon();
+         update_old_weights_counter++;
+         if(update_old_weights_counter%100 == 0)
+         {
+            reinforce_agent_ptr->copy_weights_onto_old_weights();
+         }
+
+         total_loss = reinforce_agent_ptr->update_Q_network();
+      }
+
+      if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
+      {
+         double decay_factor = 0.995;
+//         double min_epsilon = 1.0 / sqr(n_grid_size);
+         double min_epsilon = 0.1;
+         reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
       if(curr_episode_number%n_update == 0)
       {
          cout << "episode_number = " << curr_episode_number << endl;
+         
          reinforce_agent_ptr->compute_deep_Qvalues();
 //          reinforce_agent_ptr->print_Qmap();
 
          curr_maze.compute_max_Qmap();
          Qmap_score = curr_maze.score_max_Qmap();
-         reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
          cout << "Qmap_score = " << Qmap_score << endl;
+         reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
+
+         if(total_loss > 0)
+         {
+            cout << "Total loss = " << total_loss 
+                 << " log10(total_loss) = " << log10(total_loss) << endl;
+            reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
+         }
+
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
 
-         reinforce_agent_ptr->set_epsilon(1 - Qmap_score);
+//         reinforce_agent_ptr->set_epsilon(1 - Qmap_score);
       }
 
 /*
@@ -250,6 +267,7 @@ int main (int argc, char* argv[])
 //   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
 //                      display_qmap_flag);
    reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
+   reinforce_agent_ptr->plot_log10_loss_history(output_subdir, extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;

@@ -45,7 +45,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -106,7 +106,10 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
-   reinforce_agent_ptr->set_gamma(0.8);
+   double gamma = 0.95;
+//   cout << "Enter gamma:" << endl;
+//   cin >> gamma;
+   reinforce_agent_ptr->set_gamma(gamma);
 
 // Q-learning rate:
 
@@ -204,7 +207,9 @@ int main (int argc, char* argv[])
 
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
-   reinforce_agent_ptr->plot_Qmap_score_history("");
+   extrainfo="gamma = "+stringfunc::number_to_string(
+      reinforce_agent_ptr->get_gamma());
+   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;

@@ -84,6 +84,8 @@ class reinforce
    void plot_turns_history(std::string extrainfo);
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string extrainfo);
+   void plot_log10_loss_history(std::string output_subdir, 
+                                std::string extrainfo);
 
    void create_snapshots_subdir();
    void export_snapshot();
@@ -92,16 +94,18 @@ class reinforce
 // Q learning methods
 
    void initialize_replay_memory();
+   void copy_weights_onto_old_weights();
    int get_random_action() const;
    int get_random_legal_action() const;
-   double anneal_epsilon();
+   double anneal_epsilon(double decay_factor, double min_epsilon);
    void set_epsilon(double eps);
    double get_epsilon() const;
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
 
    void compute_deep_Qvalues();
-   void Q_forward_propagate(genvector& s_input);
+   void Q_forward_propagate(
+      genvector& s_input, bool use_old_weights_flag = false);
    int compute_argmax_Q();
    int compute_legal_argmax_Q();
 
@@ -110,7 +114,7 @@ class reinforce
       int d, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
 
-   void update_Q_network();
+   double update_Q_network();
 
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
@@ -118,13 +122,14 @@ class reinforce
    double max_Q(genvector& next_s);
    double compute_target(double curr_r, genvector* next_s, 
                          bool terminal_state_flag);
-   void Q_backward_propagate(int d, int Nd);
+   double Q_backward_propagate(int d, int Nd);
 
    void set_Q_value(std::string state_action_str, double Qvalue);
    double get_Q_value(std::string state_action_str);
    void init_random_Qmap();
    void print_Qmap();
    void push_back_Qmap_score(double score);
+   void push_back_log10_loss(double log10_loss);
    
    Q_MAP* get_qmap_ptr();
    const Q_MAP* get_qmap_ptr() const;
@@ -149,6 +154,7 @@ class reinforce
    double rmsprop_decay_rate; // Decay factor for RMSProp leaky sum of grad**2
 
    std::vector<genmatrix*> weights, weights_transpose;
+   std::vector<genmatrix*> old_weights;
    std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
@@ -181,6 +187,7 @@ class reinforce
    std::vector<double> loss_values;
    std::vector<double> n_episode_turns_frac;
    std::vector<double> Qmap_scores;
+   std::vector<double> log10_losses;
 
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
@@ -326,6 +333,11 @@ inline const reinforce::Q_MAP* reinforce::get_qmap_ptr() const
 inline void reinforce::push_back_Qmap_score(double score)
 {
    Qmap_scores.push_back(score);
+}
+
+inline void reinforce::push_back_log10_loss(double log10_loss)
+{
+   log10_losses.push_back(log10_loss);
 }
 
 

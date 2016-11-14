@@ -820,8 +820,8 @@ void maze::compute_max_Qmap()
 
 double maze::score_max_Qmap()
 {
-   cout << "inside maze::score_max_Qmap()" << endl;
-   cout << "max_qmap.size = " << max_qmap.size() << endl;
+//   cout << "inside maze::score_max_Qmap()" << endl;
+//   cout << "max_qmap.size = " << max_qmap.size() << endl;
    
    int n_correct_dirs = 0;
    for(max_qmap_iter = max_qmap.begin(); 
@@ -834,13 +834,14 @@ double maze::score_max_Qmap()
       int row = ty / 2;
       int max_qmap_direction = max_qmap_iter->second.second;
       int soln_direction = soln_grid_ptr->get(row,col);
-      cout << "row = " << row << " col = " << col
-           << " soln_dir = " << soln_direction
-           << " max_qmap_direction = " << max_qmap_direction << endl;
+//      cout << "row = " << row << " col = " << col
+//           << " soln_dir = " << soln_direction
+//           << " max_qmap_direction = " << max_qmap_direction << endl;
       if( (col == n_size - 1 && row == n_size - 1) ||
           (max_qmap_direction == soln_direction) ) n_correct_dirs++;
    }
-   cout << "n_correct_dirs = " << n_correct_dirs << endl;
+   cout << "n_correct_dirs = " << n_correct_dirs 
+        << " max_qmap.size = " << max_qmap.size() << endl;
    double Qmap_score = double(n_correct_dirs) / n_cells;
    return Qmap_score;
 }
