@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
+// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/14/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -45,6 +45,7 @@ class reinforce
    int increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
    void set_base_learning_rate(double rate);
+   double get_base_learning_rate() const;
    void set_learning_rate(double rate);
    double get_learning_rate() const;
    void set_batch_size(double bsize);
@@ -83,9 +84,9 @@ class reinforce
       std::string extrainfo, double min_reward, double max_reward);
    void plot_turns_history(std::string extrainfo);
    void plot_Qmap_score_history(std::string output_subdir, 
-                                std::string extrainfo);
+                                std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(std::string output_subdir, 
-                                std::string extrainfo);
+                                std::string subtitle, std::string extrainfo);
 
    void create_snapshots_subdir();
    void export_snapshot();
@@ -273,6 +274,11 @@ inline void reinforce::set_base_learning_rate(double rate)
 {
    base_learning_rate = rate;
    learning_rate = rate;
+}
+
+inline double reinforce::get_base_learning_rate() const
+{
+   return base_learning_rate;
 }
 
 inline void reinforce::set_learning_rate(double rate)

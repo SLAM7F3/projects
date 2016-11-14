@@ -903,7 +903,7 @@ void reinforce::plot_loss_history(std::string extrainfo)
    }
    
    string subtitle=init_subtitle();
-   subtitle += " "+extrainfo;
+   subtitle += ";"+extrainfo;
    string x_label="Time step";
    string y_label="Loss";
 
@@ -1094,18 +1094,19 @@ void reinforce::plot_turns_history(std::string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of Qmap score versus episode number.
 
-void reinforce::plot_Qmap_score_history(std::string output_subdir, 
-                                        std::string extrainfo)
+void reinforce::plot_Qmap_score_history(string output_subdir, 
+                                        string subtitle,string extrainfo)
 {
    if(Qmap_scores.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir + "/Qmap_score_history";
-   string title="Qmap score vs episode; bsize="+
-      stringfunc::number_to_string(batch_size);
+   string title="Qmap score";
+   title += ";learning rate="+stringfunc::number_to_string(base_learning_rate);
+   title += ";bsize="+stringfunc::number_to_string(batch_size);
 
-   string subtitle=init_subtitle();
-   subtitle += " "+extrainfo;
+//   string subtitle=init_subtitle();
+   subtitle += ";"+extrainfo;
    string x_label="Episode";
    string y_label="Qmap score";
 
@@ -1158,18 +1159,20 @@ void reinforce::plot_Qmap_score_history(std::string output_subdir,
 // ---------------------------------------------------------------------
 // Generate metafile plot of log10(total loss) versus episode number.
 
-void reinforce::plot_log10_loss_history(std::string output_subdir, 
-                                        std::string extrainfo)
+void reinforce::plot_log10_loss_history(string output_subdir, 
+                                        string subtitle, string extrainfo)
 {
    if(log10_losses.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir + "/log10_losses_history";
-   string title="Log10(Total loss) vs episode; bsize="+
-      stringfunc::number_to_string(batch_size);
 
-   string subtitle=init_subtitle();
-   subtitle += " "+extrainfo;
+   string title="Log10(total loss)";
+   title += ";learning rate="+stringfunc::number_to_string(base_learning_rate);
+   title += ";bsize="+stringfunc::number_to_string(batch_size);
+
+//   string subtitle=init_subtitle();
+   subtitle += ";"+extrainfo;
    string x_label="Episode";
    string y_label="Log10(Total loss)";
 

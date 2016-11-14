@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "machine_learning/environment.h"
+#include "general/filefuncs.h"
 #include "games/maze.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
@@ -55,12 +56,6 @@ int main (int argc, char* argv[])
    int H2 = 0;
 //   int H2 = 1 * Dout;
 
-   string extrainfo="H1/Din="+stringfunc::number_to_string(H1/Din);
-   if(H2 > 0)
-   {
-      "; H2/Dout="+stringfunc::number_to_string(H2/Dout);
-   }
-
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
@@ -81,7 +76,16 @@ int main (int argc, char* argv[])
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
    int output_counter = 0;
-   string output_subdir = "./output_solns";
+   string experiments_subdir="./experiments/mazes/";
+   filefunc::dircreate(experiments_subdir);
+
+   int expt_number;
+   cout << "Enter experiment number:" << endl;
+   cin >> expt_number;
+   string output_subdir=experiments_subdir+
+      "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
+   filefunc::dircreate(output_subdir);
+
    string basename = "maze";
    bool display_qmap_flag = true;
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
@@ -94,7 +98,10 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_batch_size(3);
 //   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(30);
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.75);
 
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
@@ -113,6 +120,8 @@ int main (int argc, char* argv[])
 // value:
 
    int n_episodes_period = 100 * 1000;
+   int old_weights_period = 300;
+   double min_epsilon = 0.1;
 
 // Initialize Deep Q replay memory:
 
@@ -191,22 +200,21 @@ int main (int argc, char* argv[])
 
       reinforce_agent_ptr->increment_episode_number();
 
+      update_old_weights_counter++;
+      if(update_old_weights_counter%old_weights_period == 0)
+      {
+         reinforce_agent_ptr->copy_weights_onto_old_weights();
+      }
+
       if(curr_episode_number > 0 && curr_episode_number % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
-         update_old_weights_counter++;
-         if(update_old_weights_counter%100 == 0)
-         {
-            reinforce_agent_ptr->copy_weights_onto_old_weights();
-         }
          total_loss = reinforce_agent_ptr->update_Q_network();
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
          double decay_factor = 0.995;
-//         double min_epsilon = 1.0 / sqr(n_grid_size);
-         double min_epsilon = 0.1;
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
@@ -231,15 +239,27 @@ int main (int argc, char* argv[])
 
 //         curr_maze.DrawMaze(output_counter++, output_subdir, basename,
 //                            display_qmap_flag);
-
 //         reinforce_agent_ptr->set_epsilon(1 - Qmap_score);
       }
    } // n_episodes < n_max_episodes while loop
 
-//   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
-//                      display_qmap_flag);
-   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
-   reinforce_agent_ptr->plot_log10_loss_history(output_subdir, extrainfo);
+   outputfunc::print_elapsed_time();
+   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                      display_qmap_flag);
+   string subtitle="Nsize="+stringfunc::number_to_string(n_grid_size)
+      +";old weights T="+stringfunc::number_to_string(old_weights_period)
+      +";min eps="+stringfunc::number_to_string(min_epsilon);
+
+   string extrainfo="H1/Din="+stringfunc::number_to_string(H1/Din);
+   if(H2 > 0)
+   {
+      ";H2/Dout="+stringfunc::number_to_string(H2/Dout);
+   }
+
+   reinforce_agent_ptr->plot_Qmap_score_history(
+      output_subdir, subtitle, extrainfo);
+   reinforce_agent_ptr->plot_log10_loss_history(
+      output_subdir, subtitle, extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
