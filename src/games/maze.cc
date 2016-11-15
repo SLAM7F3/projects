@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
+// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/15/16
 // ==========================================================================
 
 #include <iostream>
@@ -36,6 +36,7 @@ void maze::allocate_member_objects()
    n_directions = 4;  // 2D
    nbits = n_directions;
    grid_ptr = new genmatrix(n_cells, n_cells);
+   grid_problems_ptr = new genmatrix(n_cells, n_cells);
    soln_grid_ptr = new genmatrix(n_size, n_size);
 
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
@@ -104,6 +105,7 @@ maze::maze(const maze& T)
 maze::~maze()
 {
    delete grid_ptr;
+   delete grid_problems_ptr;
    delete soln_grid_ptr;
    delete curr_legal_actions;
    delete occupancy_grid;
@@ -743,10 +745,7 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
 
    if(display_qmap_flag)
    {
-      int R = 255;
-      int G = 0;
-      int B = 0;
-      draw_max_Qmap(Img, R, G, B);
+      draw_max_Qmap(Img);
    }
 
    filefunc::add_trailing_dir_slash(output_subdir);
@@ -761,6 +760,7 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
    SaveBMP( bmp_filename, Img, ImageSize, ImageSize );
    string unix_cmd = "convert "+bmp_filename+" "+png_filename;
    sysfunc::unix_command(unix_cmd);
+   filefunc::deletefile(bmp_filename);
 
    // cleanup
    delete[]( Img );
@@ -848,11 +848,65 @@ double maze::score_max_Qmap()
 }
 
 // ---------------------------------------------------------------------
+// Member function identify_max_Qmap_problems() searches for cells
+// containing illegal actions and contradictory cell pairs.
+
+void maze::identify_max_Qmap_problems()
+{
+   grid_problems_ptr->clear_values();
+   for(max_qmap_iter = max_qmap.begin(); 
+       max_qmap_iter != max_qmap.end(); max_qmap_iter++)
+   {
+      int turtle_cell = max_qmap_iter->first;
+      int tx, ty;
+      decompose_turtle_cell(turtle_cell, tx, ty);
+      int px = tx / 2;
+      int py = ty / 2;
+      int p = get_cell(px, py);
+      if(p == n_cells - 1) continue;
+      int turtle_direction = max_qmap_iter->second.second;
+
+      if(!legal_turtle_move(tx, ty, turtle_direction))
+      {
+         grid_problems_ptr->put(px, py, -2);
+         continue;
+      }
+      
+      int p_neighbor = get_neighbor(p, turtle_direction);
+      int px_neighbor = cell_decomposition[p_neighbor].first;
+      int py_neighbor = cell_decomposition[p_neighbor].second;
+      int tx_neighbor = 2 * px_neighbor;
+      int ty_neighbor = 2 * py_neighbor;
+      int t_neighbor = get_turtle_cell(tx_neighbor, ty_neighbor);
+      if(p_neighbor == n_cells - 1) continue;
+
+      MAX_Q_MAP::iterator max_qmap_neighbor_iter = max_qmap.find(
+         t_neighbor);
+      if(max_qmap_neighbor_iter == max_qmap.end())
+      {
+         cout << "Trouble in maze::locate_max_Qmap_problems()" << endl;
+      }
+      else
+      {
+         int neighbor_turtle_direction = max_qmap_neighbor_iter->second.second;
+         if( (turtle_direction == 0 && neighbor_turtle_direction == 2) ||
+             (turtle_direction == 1 && neighbor_turtle_direction == 3) ||
+             (turtle_direction == 2 && neighbor_turtle_direction == 0) ||
+             (turtle_direction == 3 && neighbor_turtle_direction == 1))
+         {
+            grid_problems_ptr->put(px, py, -1);
+         }
+      }
+   } // loop over max_qmap_iter
+}
+
+// ---------------------------------------------------------------------
 // Member function draw_max_Qmap() draws an arrow in each cell which
 // indicates the maximal Q value for that position.
 
-void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
+void maze::draw_max_Qmap(unsigned char* img)
 {
+   identify_max_Qmap_problems();
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
    {
@@ -863,8 +917,30 @@ void maze::draw_max_Qmap(unsigned char* img, int R, int G, int B)
       int py = ty / 2;
       int turtle_direction = max_qmap_iter->second.second;
 
+      int R = 0;
+      int G = 255;
+      int B = 0;
+
+      if(nearly_equal(grid_problems_ptr->get(px,py), -2))
+      {
+         R = 255;
+         G = 0;
+         B = 0;
+      }
+
+// Color contradictory neighbor pair directions orange:
+      else if(nearly_equal(grid_problems_ptr->get(px,py), -1))
+      {
+         R = 255;
+         G = 123;
+         B = 0;
+      }
+      
       if(px == n_size - 1 && py == n_size - 1)
       {
+         R = 0;
+         G = 128;
+         B = 255;
          DrawCellX(img, px, py, R, G, B);
       }
       else
@@ -1054,7 +1130,7 @@ void maze::generate_all_turtle_states()
       for(int px = 0; px < n_size; px++)
       {
          int tx = 2 * px;
-         int turtle_cell = ty * (2 * n_size - 1) + tx;
+         int turtle_cell = get_turtle_cell(tx, ty);
          occupancy_state->put(turtle_cell, turtle_value);
 
          genvector* turtle_state = new genvector(*occupancy_state);
@@ -1106,7 +1182,7 @@ void maze::reset_game(bool random_turtle_start)
       
       tx = 2 * turtle_px_start;
       ty = 2 * turtle_py_start;     
-      turtle_cell = ty * (2 * n_size - 1) + tx;
+      turtle_cell = get_turtle_cell(tx, ty);
    }
    occupancy_grid->put(tx, ty, turtle_value);   
    occupancy_state->put(turtle_cell, turtle_value);
@@ -1161,7 +1237,12 @@ bool maze::legal_turtle_move(int curr_dir)
 {
    int tx = occupancy_cell_decomposition[turtle_cell].first;
    int ty = occupancy_cell_decomposition[turtle_cell].second;
+   return legal_turtle_move(tx, ty, curr_dir);
+}
 
+// ---------------------------------------------------------------------
+bool maze::legal_turtle_move(int tx, int ty, int curr_dir)
+{
    DUPLE d = getDirection(curr_dir);
    int tx_new = tx + 2 * d.first;
    int ty_new = ty + 2 * d.second;

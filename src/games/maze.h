@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/10/16; 11/11/16; 11/12/16; 11/13/16
+// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/15/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -38,6 +38,7 @@ class maze
 
    void set_turtle_cell(int t);
    int get_turtle_cell() const;
+   int get_turtle_cell(int tx, int ty) const;
    void decompose_turtle_cell(int turtle_cell, int& tx, int& ty);
 
    DUPLE getDirection(int curr_dir);
@@ -95,6 +96,7 @@ class maze
    bool get_maze_solved() const;
    genvector* compute_legal_turtle_actions();
    bool legal_turtle_move(int curr_dir);
+   bool legal_turtle_move(int tx, int ty, int curr_dir);
    int move_turtle(int curr_dir, bool erase_turtle_path);
    int get_n_soln_steps() const;
    void print_turtle_path_history() const;
@@ -111,7 +113,8 @@ class maze
    void set_qmap_ptr(Q_MAP *qmap_ptr);
    void compute_max_Qmap();
    double score_max_Qmap();
-   void draw_max_Qmap(unsigned char* img, int R, int G, int B);
+   void identify_max_Qmap_problems();
+   void draw_max_Qmap(unsigned char* img);
 
   private: 
 
@@ -125,6 +128,7 @@ class maze
    bool game_over;
    std::vector<int> direction;
    genmatrix *grid_ptr;
+   genmatrix *grid_problems_ptr;
    genmatrix *soln_grid_ptr;
    
    std::vector<bool> visited_cell;
@@ -166,6 +170,7 @@ class maze
 
    MAX_Q_MAP max_qmap;
    MAX_Q_MAP::iterator max_qmap_iter;
+
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -214,6 +219,11 @@ inline void maze::set_turtle_cell(int t)
 inline int maze::get_turtle_cell() const
 {
    return turtle_cell;
+}
+
+inline int maze::get_turtle_cell(int tx, int ty) const
+{
+   return ty * (2 * n_size - 1) + tx;
 }
 
 inline void maze::decompose_turtle_cell(int turtle_cell, int& tx, int& ty)
