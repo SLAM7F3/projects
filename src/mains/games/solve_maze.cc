@@ -49,16 +49,16 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
    int Tmax = 1;
 
-   int H1 = 8;
-//   int H1 = 10;
+//   int H1 = 8;
+   int H1 = 10;
 //   int H1 = 12;
 //   int H1 = 16;
 //   int H1 = 20;
 //   int H1 = 32;
 
 //   int H2 = 0;
-   int H2 = 8;
-//   int H2 = 10;
+//   int H2 = 8;
+   int H2 = 10;
 //   int H2 = 12;
 //   int H2 = 4;
 
@@ -190,6 +190,7 @@ int main (int argc, char* argv[])
 
          int curr_a;
 
+/*
 // Experiment with increasing epsilon for random actions if current
 // turtle cell is problematic:
 
@@ -200,17 +201,18 @@ int main (int argc, char* argv[])
             {
                double orig_eps = reinforce_agent_ptr->get_epsilon();
                reinforce_agent_ptr->set_epsilon(
-                  basic_math::max(0.5, orig_eps));
+                  basic_math::max(0.25, orig_eps));
                curr_a = reinforce_agent_ptr->select_action_for_curr_state();
                reinforce_agent_ptr->set_epsilon(orig_eps);
             }
          }
          else
+*/
+
          {
             curr_a = reinforce_agent_ptr->select_action_for_curr_state();
          }
          
-
 
          if(!game_world.is_legal_action(curr_a))
          {
@@ -259,7 +261,9 @@ int main (int argc, char* argv[])
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
 //         double decay_factor = 0.995;
-         double decay_factor = 0.99;
+//         double decay_factor = 0.99;
+         double decay_factor = 0.975;
+//         double decay_factor = 0.95;
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 

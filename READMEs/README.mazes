@@ -717,12 +717,95 @@ N final episode 259K    , Ran for  3.58 mins on TM.
 135.  n_size = 8.  Scan turtle start sequentially for last 50%
 N final episode 140K    , Ran for  1.92 mins on TM.
 
-136.  n_size = 8.  Scan turtle start sequentially for last 50%
-N final episode K    , Ran for   mins on TM.
+// Experiment with epsilon decay factor = 0.99 rather than 0.995
 
-137.  n_size = 8.  Scan turtle start sequentially for last 50%
-N final episode K    , Ran for   mins on TM.
+136.  n_size = 8.  
+N final episode 109K    , Ran for   mins on TM.
 
-138.  n_size = 8.  Scan turtle start sequentially for last 50%
-N final episode K    , Ran for   mins on TM.
+137.  n_size = 8.  
+N final episode 107K    , Ran for   mins on TM.
+
+138.  n_size = 8
+N final episode 103K    , Ran for   mins on TM.
+
+139.  n_size = 8
+N final episode 99K    , Ran for   mins on TM.
+
+140.  n_size = 8
+N final episode 145 K    , Ran for   mins on TM.
+
+141.  n_size = 8
+N final episode  105K    , Ran for   mins on TM.
+
+142.  n_size = 8
+N final episode  70K    , Ran for   mins on TM.
+
+143.  n_size = 8
+N final episode  70K    , Ran for   mins on TM.
+
+
+Conclusion: decay_factor = 0.99 for epsilon is DEFINITELY better than
+0.995!
+
+144.  n_size = 8
+N final episode  145K    , Ran for   mins on TM.
+
+145.  n_size = 8
+N final episode  66K    , Ran for   mins on TM.
+
+146.  n_size = 8
+N final episode  57K    , Ran for   mins on TM.
+
+147.  n_size = 8
+N final episode  79K    , Ran for   mins on TM.
+
+148.  n_size = 8
+N final episode  109K    , Ran for   mins on TM.
+
+149.  n_size = 8
+N final episode  64K    , Ran for   mins on TM.
+
+150.  n_size = 8
+N final episode  76K    , Ran for   mins on TM.
+
+151.  n_size = 8
+N final episode  84K    , Ran for   mins on TM.
+
+152.  n_size = 8
+N final episode  124K    , Ran for   mins on TM.
+
+Conclusion: decay_factor = 0.95 for epsilon is PROBABLY better than
+0.99
+
+
+Compromise:  Set decay_factor = 0.975 .
+
+
+153.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = K  , Ran for  mins on TM.
+
+154.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = K  , Ran for  mins on TM.
+
+155.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = K  , Ran for  mins on TM.
+
+156.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = K  , Ran for  mins on TM.
 
