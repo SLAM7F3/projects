@@ -187,7 +187,30 @@ int main (int argc, char* argv[])
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
-         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+
+         int curr_a;
+
+// Experiment with increasing epsilon for random actions if current
+// turtle cell is problematic:
+
+         if(curr_maze.get_n_problem_cells() < 0.5 * curr_maze.get_n_cells())
+         {
+            int turtle_p = curr_maze.get_turtle_cell();
+            if(curr_maze.is_problem_cell(turtle_p) < 0)
+            {
+               double orig_eps = reinforce_agent_ptr->get_epsilon();
+               reinforce_agent_ptr->set_epsilon(
+                  basic_math::max(0.5, orig_eps));
+               curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+               reinforce_agent_ptr->set_epsilon(orig_eps);
+            }
+         }
+         else
+         {
+            curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+         }
+         
+
 
          if(!game_world.is_legal_action(curr_a))
          {
@@ -224,6 +247,7 @@ int main (int argc, char* argv[])
       if(update_old_weights_counter%old_weights_period == 0)
       {
          reinforce_agent_ptr->copy_weights_onto_old_weights();
+         update_old_weights_counter = 1;
       }
 
       if(curr_episode_number > 0 && curr_episode_number % 
@@ -234,14 +258,17 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-         double decay_factor = 0.995;
+//         double decay_factor = 0.995;
+         double decay_factor = 0.99;
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
       if(curr_episode_number%n_update == 0)
       {
-         cout << "Episode number = " << curr_episode_number << endl;
-         
+         cout << "Episode number = " << curr_episode_number 
+              << " epsilon = " << reinforce_agent_ptr->get_epsilon()
+              << endl;
+
          reinforce_agent_ptr->compute_deep_Qvalues();
 //          reinforce_agent_ptr->print_Qmap();
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/14/16
+// Last modified on 11/12/16; 11/13/16; 11/14/16; 11/15/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -102,6 +102,7 @@ class reinforce
    double anneal_epsilon(double decay_factor, double min_epsilon);
    void set_epsilon(double eps);
    double get_epsilon() const;
+
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
 

@@ -27,6 +27,10 @@ class maze
 // independent int: turtle cell
 // dependent pair: double = qvalue, int = action direction
 
+   typedef std::map<int, int> PROBLEM_CELLS_MAP;
+// independent int: turtle cell ID
+// dependent int: -2 --> illegal action, -1 --> contradictory neighbor action
+
 // Initialization, constructor and destructor functions:
 
    maze(int n_size);
@@ -36,6 +40,8 @@ class maze
    friend std::ostream& operator<< 
       (std::ostream& outstream,const maze& C);
 
+   int get_n_cells() const;
+   int get_n_problem_cells() const;
    void set_turtle_cell(int t);
    int get_turtle_cell() const;
    int get_turtle_cell(int tx, int ty) const;
@@ -116,6 +122,8 @@ class maze
    void identify_max_Qmap_problems();
    void draw_max_Qmap(unsigned char* img);
 
+   int is_problem_cell(int turtle_p);
+
   private: 
 
    bool random_turtle_start;
@@ -130,7 +138,7 @@ class maze
    genmatrix *grid_ptr;
    genmatrix *grid_problems_ptr;
    genmatrix *soln_grid_ptr;
-   
+
    std::vector<bool> visited_cell;
 	// independent int = cell ID; dependent bool = visited flag
 
@@ -171,6 +179,12 @@ class maze
    MAX_Q_MAP max_qmap;
    MAX_Q_MAP::iterator max_qmap_iter;
 
+// Store IDs for cells containing actions which are either illegal or
+// pairwise contradictory:
+
+   std::vector<int> current_problem_cells;
+   PROBLEM_CELLS_MAP problem_cells_map;
+   PROBLEM_CELLS_MAP::iterator problem_cells_iter;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -190,6 +204,16 @@ class maze
 // ==========================================================================
 
 // Set and get member functions:
+
+inline int maze::get_n_cells() const
+{
+   return n_cells;
+}
+
+inline int maze::get_n_problem_cells() const
+{
+   return problem_cells_map.size();
+}
 
 inline int maze::get_cell(int px, int py) const
 {

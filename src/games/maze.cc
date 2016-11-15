@@ -854,6 +854,9 @@ double maze::score_max_Qmap()
 void maze::identify_max_Qmap_problems()
 {
    grid_problems_ptr->clear_values();
+   current_problem_cells.clear();
+   problem_cells_map.clear();
+
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
    {
@@ -869,6 +872,10 @@ void maze::identify_max_Qmap_problems()
       if(!legal_turtle_move(tx, ty, turtle_direction))
       {
          grid_problems_ptr->put(px, py, -2);
+         
+         current_problem_cells.push_back(p);
+         current_problem_cells.push_back(p);
+         problem_cells_map[turtle_cell] = -2;
          continue;
       }
       
@@ -877,11 +884,11 @@ void maze::identify_max_Qmap_problems()
       int py_neighbor = cell_decomposition[p_neighbor].second;
       int tx_neighbor = 2 * px_neighbor;
       int ty_neighbor = 2 * py_neighbor;
-      int t_neighbor = get_turtle_cell(tx_neighbor, ty_neighbor);
+      int turtle_cell_neighbor = get_turtle_cell(tx_neighbor, ty_neighbor);
       if(p_neighbor == n_cells - 1) continue;
 
       MAX_Q_MAP::iterator max_qmap_neighbor_iter = max_qmap.find(
-         t_neighbor);
+         turtle_cell_neighbor);
       if(max_qmap_neighbor_iter == max_qmap.end())
       {
          cout << "Trouble in maze::locate_max_Qmap_problems()" << endl;
@@ -895,6 +902,10 @@ void maze::identify_max_Qmap_problems()
              (turtle_direction == 3 && neighbor_turtle_direction == 1))
          {
             grid_problems_ptr->put(px, py, -1);
+            current_problem_cells.push_back(p);
+            current_problem_cells.push_back(p_neighbor);
+            problem_cells_map[turtle_cell] = -1;
+            problem_cells_map[turtle_cell_neighbor] = -1;
          }
       }
    } // loop over max_qmap_iter
@@ -1159,26 +1170,52 @@ void maze::reset_game(bool random_turtle_start)
    int ty = 0;
    if(random_turtle_start)
    {
-/*
 
+/*
 // Experiments with systematically starting turtle in each maze cell
 // yields no obvious benefit compared to randomly starting turtle
 // anywhere within maze
 
-      turtle_px_start = cell_decomposition[turtle_p_start].first;
-      turtle_py_start = cell_decomposition[turtle_p_start].second;
-      turtle_p_start++;
-      if(turtle_p_start >= n_cells)
-      {
-         turtle_p_start = 0;
-      }
+         turtle_px_start = cell_decomposition[turtle_p_start].first;
+         turtle_py_start = cell_decomposition[turtle_p_start].second;
+         turtle_p_start++;
+         if(turtle_p_start >= n_cells)
+         {
+            turtle_p_start = 0;
+         }
 */
-
+       
       turtle_px_start = mathfunc::getRandomInteger(n_size);
       turtle_py_start = mathfunc::getRandomInteger(n_size);
-//      cout << "turtle_p_start = " << turtle_p_start
-//           << " turtle_px_start = " << turtle_px_start
-//           << " turtle_py_start = " << turtle_py_start << endl;
+
+/*
+      int n_curr_problem_cells = current_problem_cells.size();
+      if(n_curr_problem_cells > 0 &&
+         n_curr_problem_cells < 0.5 * n_cells)
+      {
+         bool OK_turtle_starting_location = false;
+         while(!OK_turtle_starting_location)
+         {
+            turtle_px_start = mathfunc::getRandomInteger(n_size);
+            turtle_py_start = mathfunc::getRandomInteger(n_size);
+            int turtle_p_start = get_turtle_cell(
+               turtle_px_start, turtle_py_start);
+            OK_turtle_starting_location = true;
+            for(int i = 0; i < n_curr_problem_cells; i++)
+            {
+               if(turtle_p_start == current_problem_cells[i])
+               {
+                  OK_turtle_starting_location = false;
+               }
+            }
+         }
+      }
+      else
+      {
+         turtle_px_start = mathfunc::getRandomInteger(n_size);
+         turtle_py_start = mathfunc::getRandomInteger(n_size);
+      }
+*/
       
       tx = 2 * turtle_px_start;
       ty = 2 * turtle_py_start;     
@@ -1433,3 +1470,15 @@ void maze::find_neighbor_cell_directions(int p)
    return;
 }
 
+// ---------------------------------------------------------------------
+// Member function find_neighbor_cell_directions()
+
+int maze::is_problem_cell(int turtle_p)
+{
+   problem_cells_iter = problem_cells_map.find(turtle_p);
+   if(problem_cells_iter == problem_cells_map.end()) 
+   {
+      return 0;
+   }
+   return problem_cells_iter->second;
+}

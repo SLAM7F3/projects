@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for mazes
 ==========================================================================
-Last updated on 11/14/16
+Last updated on 11/14/16; 11/15/16
 ==========================================================================
 
 -------------------------------
@@ -643,4 +643,86 @@ H1 = 8, H2 = 8, base learning rate = 0.0003, batch size = 1
 replay_mem_capacity = 5 * 10*10
 N_weights = 2984
 N final episode = 238 K  , Ran for  7.02 mins on TM.
+
+
+// Experiment with starting turtle at problem cells:
+
+116.  n_size = 8.  Start turtle in problem cells for last 10% of problem cells.
+N final episode = 238 K  , Ran for  2.9 mins on TM.
+
+117.  n_size = 8.  Start turtle in problem cells for last 10% of problem cells.
+N final episode = 208 K  , Ran for  2.9 mins on TM.
+
+118.  n_size = 8.  Start turtle in problem cells for last 10% of problem cells.
+N final episode = 184 K  , Ran for  2.67 mins on TM.
+
+
+119.  n_size = 8.  Start turtle randomly.
+N final episode =  136K  , Ran for  1.90 mins on TM.
+
+120.  n_size = 8.  Start turtle randomly.
+N final episode =  109K  , Ran for  1.52 mins on TM.
+
+121.  n_size = 8.  Start turtle randomly.
+N final episode =  130K  , Ran for  1.81 mins on TM.
+
+Conclusion:  Starting turtle at random locations is MUCH better than
+starting it at problem cells!
+
+// Experiment with starting turtle away from problem cells in last 50%
+
+122.  n_size = 8.  Start turtle away from problem cells for last 50%
+N final episode = 104K    , Ran for  1.49 mins on TM.
+
+123.  n_size = 8.  Start turtle away from problem cells for last 50%
+N final episode  107K=    , Ran for   1.56 mins on TM.
+
+124.  n_size = 8.  Start turtle away from problem cells for last 50%
+N final episode 182K=    , Ran for  2.54 mins on TM.
+
+
+125.  n_size = 8.  Start turtle away from problem cells for last 50%
+N final episode 123K=    , Ran for   1/79 mins on TM.
+
+126.  n_size = 8.  Start turtle away from problem cells for last 50%
+N final episode 132K=    , Ran for   1.84 mins on TM.
+
+127.  n_size = 8.  Start turtle away from problem cells for last 50%
+N final episode 136K    , Ran for   1.91 mins on TM.
+
+Conclusion:  No significant difference between starting turtle randomly and
+away from problem cells in last 50%.
+
+128.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 110K    , Ran for  1.63 mins on TM.
+
+129.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 108K    , Ran for  1.53 mins on TM.
+
+130.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 86K    , Ran for  1.21mins on TM.
+
+
+131.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 111K    , Ran for  1.55 mins on TM.
+
+132.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 132K    , Ran for  1.83 mins on TM.
+
+133.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 259K    , Ran for  3.58 mins on TM.
+
+// Experiment with increasing eps --> 0.5 for problematic cells
+
+135.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode 140K    , Ran for  1.92 mins on TM.
+
+136.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode K    , Ran for   mins on TM.
+
+137.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode K    , Ran for   mins on TM.
+
+138.  n_size = 8.  Scan turtle start sequentially for last 50%
+N final episode K    , Ran for   mins on TM.
 
