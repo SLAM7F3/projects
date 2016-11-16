@@ -1,18 +1,49 @@
 ===============================================================================
 Apple maps source catalog notes
 ===============================================================================
-Last updated on 6/15/16
+Last updated on 6/15/16; 11/15/16
 ===============================================================================
 
 *.  Point a browser towards https://source-catalog.geo.apple.com
 
 *.  Under Search tab located near upper left, select "Find Resources".
-Then enter a search ID such as Core Logic parcels 648594934267379713
-into the Top search field on the LHS:
+Then enter a search ID such as Core Logic parcels 648594934267379713 into
+the Top search field on the LHS.  (Alternatively enter "parcel polygons" or
+"parcel points" as the search term in the upper left search tab.)
 
-*.  We then see "Parel Polygons" appear in column on RHS.  
+*.  We then see "Parcel Polygons" appear in column on RHS.  
 Click on yellow "PENDING LEGAL" link.  
+
 
 *.  Click on blue "Files" link.  We should then see blue "Download all
 files" appearing on RHS of next menu.  Click on this link in order to
 download all parcel info for Boston.
+
+
+*.  On 11/15/16, we learned from Jason Borak's team that Tiger shapefile
+data is updated annually.  The latest TIGER data for 2016 was released on
+Aug 19, 2016.  Core logic data is published quarterly.  There appears to be
+a few weeks delay between the time Core Logic publishes its data and when
+Apple receives it and makes it available to Maps division.
+
+
+On 11/15/16, we clicked on the blue "Relationships" menu option which
+showed us two buttons for CoreLogic Parcel Polygons.  One was for 2016 Q2
+and the other is for 2016 Q3.  We selected the 8/31/2016 Q3 button.  Then
+we pressed on the blue "Files" menu option.  Next press blue "Download all
+files" button located near upper right.
+
+
+	648602988167823604.tar.gz = 2016 Q3 parcel polygons 
+
+
+Resource Identifier
+    648594934267379713 = Parcel Polygons (2016 Q2) Core Logic
+
+    648602988167823604 = Parcel Polygons (2016 Q3) Core Logic
+	(published on 8/29/2016; acquired on 8/30/2016)
+
+    653097708221890918 = Parcel Points (2016 Q2) Core Logic
+
+    648602988167823606 = Parcel Points (2016 Q3) Core Logic
+	(published on 8/29/2016; acquired on 8/30/2016)

@@ -1,7 +1,7 @@
 ===============================================================================
 PV40 cluster notes
 ===============================================================================
-Last updated on 5/6/16; 5/11/16; 6/15/16; 6/16/16
+Last updated on 5/11/16; 6/15/16; 6/16/16; 11/15/16
 ===============================================================================
 
 *.  Eufori configuration file on PV40 is located in 
@@ -74,10 +74,16 @@ thinkmate.  He followed some discussion in
 
 But there is still a "connection reset by peer" error message.  
 
-*.  Downloaded (using wget -r) all of the ADDRFEAT and ROADS zipfiles for
-the entire US on 5/3/16.  Copied these files into
-/startown-gpfs/ssdws03/devdata/tiger_shapefiles/ on startown cluster and
-into /gpfs/mercury12/tiger_shapefiles/ on PV40 cluster. 
+*.  On 5/3/16, we downloaded ROADS and ADDRFEAT zipfiles for entire US by
+chanting
+
+wget --verbose --recursive ftp://ftp2.census.gov/geo/tiger/TIGER2016/ROADS/*.zip
+
+wget --verbose --recursive ftp://ftp2.census.gov/geo/tiger/TIGER2016/ADDRFEAT/*.zip
+
+Copied these files into /startown-gpfs/ssdws03/devdata/tiger_shapefiles/ on
+startown cluster and into /gpfs/mercury12/tiger_shapefiles/ on PV40
+cluster.
 
 *.  Shape files on PV40 appear to be sitting 
 

@@ -151,6 +151,8 @@ int main (int argc, char* argv[])
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
+   vector<int> curr_turtle_path;
+   
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
          Qmap_score < 0.999999)
    {
@@ -182,14 +184,29 @@ int main (int argc, char* argv[])
 
       double reward;
       genvector* next_s;
+      curr_turtle_path.clear();
+      bool backtrack_flag = false;
       while(!curr_maze.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
 
-         int curr_a;
+// Check if turtle path ever backtracks:
 
+         int turtle_p = curr_maze.get_turtle_cell();
+         for(unsigned int k = 0; k < curr_turtle_path.size() && 
+                !backtrack_flag; k++)
+         {
+            if(turtle_p == curr_turtle_path[k])
+            {
+               backtrack_flag = true;
+               break;
+            }
+         }
+         curr_turtle_path.push_back(turtle_p);
+
+         int curr_a;
 /*
 // Experiment with increasing epsilon for random actions if current
 // turtle cell is problematic:
@@ -208,7 +225,6 @@ int main (int argc, char* argv[])
          }
          else
 */
-
          {
             curr_a = reinforce_agent_ptr->select_action_for_curr_state();
          }
@@ -243,6 +259,13 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
 
+      if(backtrack_flag)
+      {
+         reinforce_agent_ptr->set_epsilon(
+            basic_math::min(
+               1.0, reinforce_agent_ptr->get_epsilon() + 0.0001));
+      }
+      
       reinforce_agent_ptr->increment_episode_number();
 
       update_old_weights_counter++;

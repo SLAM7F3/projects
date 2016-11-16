@@ -793,19 +793,63 @@ H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 replay_mem_capacity = 5 * 10*10
 eps decay factor = 0.975
 N_weights = 
-N final episode = K  , Ran for  mins on TM.
+N final episode = 208K  , Ran for  7.95 mins on TM.
 
 155.  n_size = 10, old weights T=30, min eps = 0.10
 H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 replay_mem_capacity = 5 * 10*10
 eps decay factor = 0.975
 N_weights = 
-N final episode = K  , Ran for  mins on TM.
+N final episode = 102K  , Ran for  3.81 mins on TM.
 
 156.  n_size = 10, old weights T=30, min eps = 0.10
 H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
 replay_mem_capacity = 5 * 10*10
 eps decay factor = 0.975
 N_weights = 
+N final episode = 1.3M  , Ran for  51 mins on TM. !!!
+
+157.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = 172 K  , Ran for  6.59 mins on TM.
+
+158.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 3750
+N final episode =159 K  , Ran for  6.02 mins on TM.
+
+159.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+Terminated after running for 1.3M episodes without completing !!!
+
+160.  n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
 N final episode = K  , Ran for  mins on TM.
+
+
+161.  n_size = 8, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = 105K  , Ran for  1.84 mins on TM.
+
+162.  n_size = 8, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.975
+N_weights = 
+N final episode = 107K  , Ran for  1.83 mins on TM.
+
 
