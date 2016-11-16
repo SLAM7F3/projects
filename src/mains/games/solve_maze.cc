@@ -1,7 +1,7 @@
 // ==========================================================================
-// Program SOLVE_MAZE
+// Program SINGLE_MAZE
 // ==========================================================================
-// Last updated on 11/5/16; 11/9/16; 11/13/16; 11/14/16; 11/16/16
+// Last updated on 11/9/16; 11/13/16; 11/14/16; 11/16/16
 // ==========================================================================
 
 #include <iostream>
@@ -25,7 +25,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -50,9 +50,9 @@ int main (int argc, char* argv[])
    int Tmax = 1;
 
 //   int H1 = 8;
-   int H1 = 10;
+//   int H1 = 10;
 //   int H1 = 12;
-//   int H1 = 16;
+   int H1 = 10;
 //   int H1 = 20;
 //   int H1 = 32;
 
@@ -80,7 +80,9 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
 //   int replay_memory_capacity = 3 * sqr(n_grid_size);
-   int replay_memory_capacity = 5 * sqr(n_grid_size);
+   int replay_memory_capacity = 5 * sqr(n_grid_size);  
+		// Seems optimal for n_grid_size = 10
+//   int replay_memory_capacity = 10 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, replay_memory_capacity);
 //   reinforce_agent_ptr->set_debug_flag(true);
@@ -109,39 +111,37 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_batch_size(1);
 //   reinforce_agent_ptr->set_batch_size(3);
 //   reinforce_agent_ptr->set_batch_size(10);   
-//   reinforce_agent_ptr->set_batch_size(30);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.75);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 		// optimal for n_grid_size = 7
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-5);
+
    double min_learning_rate = 1E-4;
 
-   int n_max_episodes = 100 * 1000 * 1000;
+   int n_max_episodes = 1 * 1000 * 1000;
    int n_anneal_steps = 1000;
-   int n_update = 1000;
-   int n_summarize = 20000;
+   int n_update = 2000;
+   int n_progress = 50000;
    double Qmap_score = -1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
    int n_episodes_period = 100 * 1000;
-   //   int old_weights_period = 10;
-   int old_weights_period = 30;   // Optimal for n_grid_size = 7 
-//   int old_weights_period = 100;
-   //   int old_weights_period = 300;
-   //   int old_weights_period = 1000;
+//   int old_weights_period = 10;
+//   int old_weights_period = 30;   // Optimal for n_grid_size = 7 
+   int old_weights_period = 100;
 
-//   double min_epsilon = 0.05;
-   double min_epsilon = 0.1; // Optimal for n_grid_size = 7, 10
+   double min_epsilon = 0.01;
+//   double min_epsilon = 0.025;
+//   double min_epsilon = 0.05; // Optimal for n_grid_size = 10
+//   double min_epsilon = 0.1; // Optimal for n_grid_size = 7
 //   double min_epsilon = 0.15;
+//   double min_epsilon = 0.01;
 
 // Initialize Deep Q replay memory:
 
@@ -156,13 +156,13 @@ int main (int argc, char* argv[])
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
          Qmap_score < 0.999999)
    {
+      int curr_episode_number = reinforce_agent_ptr->get_episode_number();
+      outputfunc::update_progress_and_remaining_time(
+         curr_episode_number, n_progress, n_max_episodes);
+
       bool random_turtle_start = true;
       curr_maze.reset_game(random_turtle_start);
       reinforce_agent_ptr->initialize_episode();
-
-      int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, 5 * n_summarize, n_max_episodes);
 
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
@@ -185,59 +185,12 @@ int main (int argc, char* argv[])
       double reward;
       genvector* next_s;
       curr_turtle_path.clear();
-      bool backtrack_flag = false;
       while(!curr_maze.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
-
-// Check if turtle path ever backtracks:
-
-         int turtle_p = curr_maze.get_turtle_cell();
-         for(unsigned int k = 0; k < curr_turtle_path.size() && 
-                !backtrack_flag; k++)
-         {
-            if(turtle_p == curr_turtle_path[k])
-            {
-               backtrack_flag = true;
-               break;
-            }
-         }
-         curr_turtle_path.push_back(turtle_p);
-
-         int curr_a;
-
-/*
-// If current turtle cell is problematic after Q(s,a) has mostly converged,
-// experiment with taking that cell's action to either be the one
-// predicted by Q(s,a) or its anti-parallel opposite:
-
-         if(curr_maze.get_n_problem_cells() < 0.25 * curr_maze.get_n_cells())
-         {
-            int turtle_p = curr_maze.get_turtle_cell();
-            if(nearly_equal(curr_maze.is_problem_cell(turtle_p), -1))
-            {
-               double orig_eps = reinforce_agent_ptr->get_epsilon();
-               reinforce_agent_ptr->set_epsilon(0);
-//                  basic_math::max(0.25, orig_eps));
-               curr_a = reinforce_agent_ptr->select_action_for_curr_state();
-               reinforce_agent_ptr->set_epsilon(orig_eps);
-
-               if(nrfunc::ran1() < 0.5)
-               {
-                  int anti_a = (curr_a + 2) % 4;
-                  curr_a = anti_a;
-               }
-            }
-         }
-         else
-*/
-
-         {
-            curr_a = reinforce_agent_ptr->select_action_for_curr_state();
-         }
-         
+         int curr_a= reinforce_agent_ptr->select_action_for_curr_state();
 
          if(!game_world.is_legal_action(curr_a))
          {
@@ -267,14 +220,7 @@ int main (int argc, char* argv[])
       } // game_over while loop
 
 // -----------------------------------------------------------------------
-
-      if(backtrack_flag)
-      {
-         reinforce_agent_ptr->set_epsilon(
-            basic_math::min(
-               1.0, reinforce_agent_ptr->get_epsilon() + 0.0001));
-      }
-      
+    
       reinforce_agent_ptr->increment_episode_number();
 
       update_old_weights_counter++;
@@ -292,10 +238,10 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-//         double decay_factor = 0.995;
 //         double decay_factor = 0.99;
-         double decay_factor = 0.975;
-//         double decay_factor = 0.95;
+//             double decay_factor = 0.975;
+         double decay_factor = 0.95;
+//         double decay_factor = 0.90;
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
@@ -340,11 +286,11 @@ int main (int argc, char* argv[])
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
-      ";H2="+stringfunc::number_to_string(H2);
+      extrainfo += ";H2="+stringfunc::number_to_string(H2);
    }
    if(H3 > 0)
    {
-      ";H3="+stringfunc::number_to_string(H3);
+      extrainfo += ";H3="+stringfunc::number_to_string(H3);
    }
 
    reinforce_agent_ptr->plot_Qmap_score_history(

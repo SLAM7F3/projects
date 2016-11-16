@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/15/16
+// Last modified on 11/12/16; 11/13/16; 11/15/16; 11/16/16
 // ==========================================================================
 
 #include <string>
@@ -1508,7 +1508,14 @@ int reinforce::select_legal_action_for_curr_state()
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_deep_Qvalues()
+// Member function compute_deep_Qvalues() retreives all possible
+// states in both genvector* and string form from the environment.
+// Looping over each possible state, it forward propagates the input
+// state through the neural network and extracts Q values
+// corresponding to each possible action.  The independent
+// state-action variables are encoded into a string.  The dependent Q
+// values are stored as functions of the state-action strings within
+// STL map member qmap.
 
 void reinforce::compute_deep_Qvalues()
 {
@@ -1925,8 +1932,12 @@ void reinforce::init_random_Qmap()
 
 void reinforce::print_Qmap()
 {
+   int counter = 0;
+   int max_counter = 8;
    cout << "---------------" << endl;
-   for(qmap_iter = qmap.begin(); qmap_iter != qmap.end(); qmap_iter++)
+   cout << "qmap.size() = " << qmap.size() << endl;
+   for(qmap_iter = qmap.begin(); qmap_iter != qmap.end() && 
+          counter++ < max_counter; qmap_iter++)
    {
       cout << qmap_iter->first << "  " << qmap_iter->second << endl;
    }

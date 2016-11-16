@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/15/16
+// Last modified on 11/12/16; 11/13/16; 11/15/16; 11/16/16
 // ==========================================================================
 
 #include <iostream>
@@ -780,6 +780,50 @@ void maze::compute_max_Qmap()
 {
    max_qmap.clear();
    
+   for(unsigned int s = 0; s < curr_maze_state_strings.size(); s++)
+   {
+      string curr_state_str = curr_maze_state_strings[s];
+      for(int a = 0; a < n_directions; a++)
+      {
+         string state_action_str = curr_state_str+stringfunc::number_to_string(
+            a);
+
+         int turtle_cell = state_action_str.find("T");
+         int turtle_direction = stringfunc::string_to_number(
+            state_action_str.substr(state_action_str.size() - 1, 1));
+
+         qmap_iter = qmap_ptr->find(state_action_str);
+         double qvalue = qmap_iter->second;
+
+         max_qmap_iter = max_qmap.find(turtle_cell);
+         if(max_qmap_iter == max_qmap.end())
+         {
+            pair<double, int> P;
+            P.first = qvalue;
+            P.second = turtle_direction;
+            max_qmap[turtle_cell] = P;
+         }
+         else
+         {
+            if(max_qmap_iter->second.first < qvalue)
+            {
+               max_qmap_iter->second.first = qvalue;
+               max_qmap_iter->second.second = turtle_direction;
+            }
+         }
+         max_qmap_iter = max_qmap.find(turtle_cell);
+      } // loop over index a labeling actions
+   } // loop over index s labeling current maze states
+}
+
+/*
+void maze::compute_max_Qmap()
+{
+   max_qmap.clear();
+   
+   cout << "inside maze::compute_max_Qmap()" << endl;
+   cout << "qmap_ptr->size() = " << qmap_ptr->size() << endl;
+
    for(qmap_iter = qmap_ptr->begin(); qmap_iter != qmap_ptr->end(); 
        qmap_iter++)
    {
@@ -809,6 +853,8 @@ void maze::compute_max_Qmap()
       max_qmap_iter = max_qmap.find(turtle_cell);
    } // loop over qmap_iter
 }
+*/
+
 
 // ---------------------------------------------------------------------
 // Member function score_max_Qmap() loops over all entries within
@@ -1132,6 +1178,7 @@ string maze::occupancy_state_to_string()
 
 void maze::generate_all_turtle_states()
 {
+   curr_maze_states.clear();
    curr_maze_state_strings.clear();
    initialize_occupancy_grid();
 

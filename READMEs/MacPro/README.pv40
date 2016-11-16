@@ -1,7 +1,7 @@
 ===============================================================================
 PV40 cluster notes
 ===============================================================================
-Last updated on 5/11/16; 6/15/16; 6/16/16; 11/15/16
+Last updated on 6/15/16; 6/16/16; 11/15/16; 11/16/16
 ===============================================================================
 
 *.  Eufori configuration file on PV40 is located in 
@@ -83,7 +83,19 @@ wget --verbose --recursive ftp://ftp2.census.gov/geo/tiger/TIGER2016/ADDRFEAT/*.
 
 Copied these files into /startown-gpfs/ssdws03/devdata/tiger_shapefiles/ on
 startown cluster and into /gpfs/mercury12/tiger_shapefiles/ on PV40
-cluster.
+cluster.  
+
+In Nov 2016, we copied an updated set of 2016 TIGER files from our local
+ThinkMate machine to Startown.  We used the following rsync command to
+transfer several hundred TIGER zip files:
+
+   rsync -avz ./TIGER2016/ pcho@10.182.128.166:/home/pcho/tiger_2016/
+
+On the other hand, we were unable to ssh or rsync into a PV40 node.  So we
+instead used the following rsync command in order to copy TIGER files to
+our local machine's mountpoint:
+
+   rsync -avz ./TIGER2016/ /pv40-gpfs/mercury12/tiger_shapefiles/ftp2.census.gov/geo/tiger/TIGER2016/
 
 *.  Shape files on PV40 appear to be sitting 
 

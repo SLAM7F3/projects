@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for mazes
 ==========================================================================
-Last updated on 11/14/16; 11/15/16
+Last updated on 11/14/16; 11/15/16; 11/16/16
 ==========================================================================
 
 -------------------------------
@@ -853,3 +853,166 @@ N_weights =
 N final episode = 107K  , Ran for  1.83 mins on TM.
 
 
+------------
+
+194.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.10
+old_weights_period = 30
+N_weights = 3750
+N final episode = 292K  , Ran for   10.96 mins on TM.
+REASONABLE FINAL RESULTS
+
+
+195.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 3 * 10*10
+eps decay factor = 0.95
+old_weights_period = 30
+N_weights = 
+N final episode = K  , Ran for   mins on TM.
+TERMINATED
+
+196.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+old_weights_period = 100
+N_weights = 
+N final episode = 316K  , Ran for   12.04 mins on TM.
+
+
+197.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 10 * 10*10
+eps decay factor = 0.95
+old_weights_period = 30
+N_weights = 
+N final episode = K  , Ran for   mins on TM.
+TERMIMATED after 316K episodes
+
+
+198.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.05
+old_weights_period = 100
+N_weights = 3750
+N final episode = 202K  , Ran for   7.95 mins on TM.
+
+
+199.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.10
+old_weights_period = 10
+N_weights = 3750
+N final episode = K  , Ran for    mins on TM.
+TERMINATED after 262K episodes
+
+200.  time randomized seed = FALSE
+n_size = 10, old weights T=30, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.025
+old_weights_period = 100
+N_weights = 3750
+N final episode = K  , Ran for  mins on TM.
+TERMINATED after 482K episodes
+
+201.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = 170K  , Ran for  7.18 mins on TM.
+BEST FINAL RESULTS
+
+202.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = 186K  , Ran for   7.68 mins on TM.
+
+203.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = K  , Ran for   mins on TM.
+TERMINATED after 516K episodes
+
+204.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = 182K  , Ran for   7.78 mins on TM.
+
+205.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+TERMINATED after 528K episodes
+
+
+206.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = K  , Ran for   mins on TM.
+TERMINATED after 886K episodes
+
+207.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = 274K  , Ran for   11.8 mins on TM.
+
+208.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = 238K  , Ran for   10.31 mins on TM.
+
+209.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = K  , Ran for   mins on TM.
+TERMINATED after 712K episodes
