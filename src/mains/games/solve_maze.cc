@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/5/16; 11/9/16; 11/13/16; 11/14/16
+// Last updated on 11/5/16; 11/9/16; 11/13/16; 11/14/16; 11/16/16
 // ==========================================================================
 
 #include <iostream>
@@ -25,7 +25,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -207,24 +207,33 @@ int main (int argc, char* argv[])
          curr_turtle_path.push_back(turtle_p);
 
          int curr_a;
-/*
-// Experiment with increasing epsilon for random actions if current
-// turtle cell is problematic:
 
-         if(curr_maze.get_n_problem_cells() < 0.5 * curr_maze.get_n_cells())
+/*
+// If current turtle cell is problematic after Q(s,a) has mostly converged,
+// experiment with taking that cell's action to either be the one
+// predicted by Q(s,a) or its anti-parallel opposite:
+
+         if(curr_maze.get_n_problem_cells() < 0.25 * curr_maze.get_n_cells())
          {
             int turtle_p = curr_maze.get_turtle_cell();
-            if(curr_maze.is_problem_cell(turtle_p) < 0)
+            if(nearly_equal(curr_maze.is_problem_cell(turtle_p), -1))
             {
                double orig_eps = reinforce_agent_ptr->get_epsilon();
-               reinforce_agent_ptr->set_epsilon(
-                  basic_math::max(0.25, orig_eps));
+               reinforce_agent_ptr->set_epsilon(0);
+//                  basic_math::max(0.25, orig_eps));
                curr_a = reinforce_agent_ptr->select_action_for_curr_state();
                reinforce_agent_ptr->set_epsilon(orig_eps);
+
+               if(nrfunc::ran1() < 0.5)
+               {
+                  int anti_a = (curr_a + 2) % 4;
+                  curr_a = anti_a;
+               }
             }
          }
          else
 */
+
          {
             curr_a = reinforce_agent_ptr->select_action_for_curr_state();
          }
