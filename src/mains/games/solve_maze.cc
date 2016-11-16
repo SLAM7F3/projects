@@ -1,5 +1,5 @@
 // ==========================================================================
-// Program SINGLE_MAZE
+// Program SOLVE_MAZE
 // ==========================================================================
 // Last updated on 11/9/16; 11/13/16; 11/14/16; 11/16/16
 // ==========================================================================
@@ -100,11 +100,6 @@ int main (int argc, char* argv[])
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
-   string basename = "maze";
-   bool display_qmap_flag = true;
-   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
-                      display_qmap_flag);
-
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.95);
@@ -143,6 +138,14 @@ int main (int argc, char* argv[])
 //   double min_epsilon = 0.15;
 //   double min_epsilon = 0.01;
 
+   string basename = "maze";
+   bool display_qmap_flag = true;
+   reinforce_agent_ptr->compute_deep_Qvalues();
+//    reinforce_agent_ptr->print_Qmap();
+   curr_maze.compute_max_Qmap();
+   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                      display_qmap_flag);
+
 // Initialize Deep Q replay memory:
 
    game_world.start_new_episode();
@@ -150,9 +153,7 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->initialize_replay_memory();
    int update_old_weights_counter = 0;
    double total_loss = -1;
-
-   vector<int> curr_turtle_path;
-   
+      
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
          Qmap_score < 0.999999)
    {
@@ -184,7 +185,6 @@ int main (int argc, char* argv[])
 
       double reward;
       genvector* next_s;
-      curr_turtle_path.clear();
       while(!curr_maze.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
@@ -277,8 +277,14 @@ int main (int argc, char* argv[])
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
 
-   curr_maze.DrawMaze(output_counter++, output_subdir, basename,
-                      display_qmap_flag);
+//   int n_final_mazes = 1;
+   int n_final_mazes = 40;
+   for(int i = 0; i < n_final_mazes; i++)
+   {
+      curr_maze.DrawMaze(output_counter++, output_subdir, basename,
+                         display_qmap_flag);
+   }
+
    string subtitle="Nsize="+stringfunc::number_to_string(n_grid_size)
       +";old weights T="+stringfunc::number_to_string(old_weights_period)
       +";min eps="+stringfunc::number_to_string(min_epsilon);

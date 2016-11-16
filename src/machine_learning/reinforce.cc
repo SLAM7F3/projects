@@ -1932,12 +1932,7 @@ void reinforce::init_random_Qmap()
 
 void reinforce::print_Qmap()
 {
-   int counter = 0;
-   int max_counter = 8;
-   cout << "---------------" << endl;
-   cout << "qmap.size() = " << qmap.size() << endl;
-   for(qmap_iter = qmap.begin(); qmap_iter != qmap.end() && 
-          counter++ < max_counter; qmap_iter++)
+   for(qmap_iter = qmap.begin(); qmap_iter != qmap.end(); qmap_iter++)
    {
       cout << qmap_iter->first << "  " << qmap_iter->second << endl;
    }

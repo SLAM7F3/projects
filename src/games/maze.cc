@@ -964,9 +964,11 @@ void maze::identify_max_Qmap_problems()
 void maze::draw_max_Qmap(unsigned char* img)
 {
    identify_max_Qmap_problems();
+   
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
    {
+
       int turtle_cell = max_qmap_iter->first;
       int tx, ty;
       decompose_turtle_cell(turtle_cell, tx, ty);

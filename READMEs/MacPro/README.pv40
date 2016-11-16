@@ -91,11 +91,18 @@ transfer several hundred TIGER zip files:
 
    rsync -avz ./TIGER2016/ pcho@10.182.128.166:/home/pcho/tiger_2016/
 
+   rsync -avz ./CoreLogic_2016Q3_ParcelPoints/ pcho@10.182.128.166:/home/pcho/CoreLogic_2016/
+
+
+   rsync -avz ./CoreLogic_2016Q3_ParcelPolygons/ pcho@10.182.128.166:/home/pcho/CoreLogic_2016_ParcelPolygons/
+
 On the other hand, we were unable to ssh or rsync into a PV40 node.  So we
 instead used the following rsync command in order to copy TIGER files to
 our local machine's mountpoint:
 
    rsync -avz ./TIGER2016/ /pv40-gpfs/mercury12/tiger_shapefiles/ftp2.census.gov/geo/tiger/TIGER2016/
+
+   rsync -avz ./CoreLogic_2016Q3_ParcelPolygons/ /pv40-gpfs/mercury12/corelogic_shapefiles/CoreLogic_2016Q3_ParcelPolygons/
 
 *.  Shape files on PV40 appear to be sitting 
 

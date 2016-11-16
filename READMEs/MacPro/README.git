@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 8/11/16; 9/7/16; 9/9/16; 9/10/16
+Last updated on 9/7/16; 9/9/16; 9/10/16; 11/16/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -794,3 +794,8 @@ so with:
     git branch --set-upstream-to=origin/<branch> tagger2_new_api_peter
 
 
+*.  On 11/14/16, Gustav Hanning taught us that we can leave alone the
+master ~/sputnik/.gitignore by instead adding files for pwin git to ignore
+to a GLOBAL ignore file which sits inside ~/.config/git/ignore .   See
+
+   http://stackoverflow.com/questions/7335420/global-git-ignore
