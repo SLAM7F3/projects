@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/13/16
+// Last modified on 11/10/16; 11/11/16; 11/13/16; 11/17/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -12,6 +12,7 @@
 #include <vector>
 #include "math/genvector.h"
 #include "games/maze.h"
+#include "image/TwoDarray.h"
 
 class environment
 {
@@ -48,6 +49,8 @@ class environment
    std::string get_state_action_string(genvector* state_ptr, int a);
    std::vector<genvector*> get_all_curr_states();
    std::vector<std::string> get_all_curr_state_strings();
+
+   void color_weights(twoDarray* wtwoDarray_ptr);
 
   private:
 

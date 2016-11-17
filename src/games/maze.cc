@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include "color/colorfuncs.h"
 #include "general/filefuncs.h"
 #include "math/mathfuncs.h"
 #include "games/maze.h"
@@ -633,6 +634,27 @@ void maze::DrawCellX(unsigned char* img, int px, int py, int R, int G, int B)
    tip = cell_midpoint + 0.25 * fhat * CellSize;
    DrawLine(img, base, tip, R, G, B);
 }
+// ---------------------------------------------------------------------
+void maze::FillCell(unsigned char* img, int px, int py, int R, int G, int B)
+{
+   double CellSize = ImageSize / n_size;
+
+   int qx_lo = px * CellSize;
+   int qx_hi = (px + 1 ) * CellSize;
+   int qy_lo = py * CellSize;
+   int qy_hi = (py + 1 ) * CellSize;
+
+   for(int qy = qy_lo; qy < qy_hi; qy++)
+   {
+      for(int qx = qx_lo; qx < qx_hi; qx++)
+      {
+         int p = 3 * (py * ImageSize + px);
+         img[ p + 2 ] = R;
+         img[ p + 1 ] = G;
+         img[ p + 0 ] = B;
+      }
+   }
+}
 
 // ---------------------------------------------------------------------
 void maze::RenderMaze( unsigned char* img )
@@ -979,6 +1001,40 @@ void maze::draw_max_Qmap(unsigned char* img)
          DrawCellArrow(img, px, py, turtle_direction, R, G, B);
       }
    } // loop over max_qmap_iter
+}
+
+// ---------------------------------------------------------------------
+// Member function color_cells()
+
+void maze::color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr)
+{
+   for(max_qmap_iter = max_qmap.begin(); 
+       max_qmap_iter != max_qmap.end(); max_qmap_iter++)
+   {
+      int turtle_cell = max_qmap_iter->first;
+      int tx, ty;
+      decompose_turtle_cell(turtle_cell, tx, ty);
+      int px = tx / 2;
+      int py = ty / 2;
+      int turtle_direction = max_qmap_iter->second.second;
+
+      double curr_w = wtwoDarray_ptr->get(px,py);
+      double h = (1 - curr_w) * 270;
+      double s = 1;
+      double v = 1;
+      double r, g, b;
+      colorfunc::hsv_to_RGB(h, s, v, r, g, b);
+      int R = 255 * r;
+      int G = 255 * g;
+      int B = 255 * b;
+      FillCell(img, px, py, R, G, B);
+   } // loop over max_qmap_iter
+}
+// ---------------------------------------------------------------------
+// Member function color_weights()
+
+void maze::color_weights(twoDarray* wtwoDarray_ptr)
+{
 }
 
 // ---------------------------------------------------------------------

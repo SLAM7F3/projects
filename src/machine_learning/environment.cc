@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/9/16; 11/10/16; 11/11/16; 11/13/16
+// Last modified on 11/10/16; 11/11/16; 11/13/16; 11/17/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -182,4 +182,14 @@ vector<string> environment::get_all_curr_state_strings()
       curr_state_strings = maze_ptr->get_curr_maze_state_strings();
    }
    return curr_state_strings;
+}
+
+
+// ---------------------------------------------------------------------
+void environment::color_weights(twoDarray* wtwoDarray_ptr)
+{
+   if(world_type == MAZE)
+   {
+      maze_ptr->color_weights(wtwoDarray_ptr);
+   }
 }

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/11/16; 11/12/16; 11/13/16; 11/15/16
+// Last modified on 11/12/16; 11/13/16; 11/15/16; 11/17/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -13,6 +13,7 @@
 #include "math/genmatrix.h"
 #include "math/genvector.h"
 #include "math/ltduple.h"
+#include "image/TwoDarray.h"
 
 class maze
 {
@@ -81,6 +82,7 @@ class maze
                       int R, int G, int B);
    void DrawCellX(unsigned char* img, int px, int py, 
                   int R, int G, int B);
+   void FillCell(unsigned char* img, int px, int py, int R, int G, int B);
    void RenderMaze(unsigned char* img);
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
@@ -121,6 +123,8 @@ class maze
    double score_max_Qmap();
    void identify_max_Qmap_problems();
    void draw_max_Qmap(unsigned char* img);
+   void color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr);
+   void color_weights(twoDarray* wtwoDarray_ptr);
 
    int is_problem_cell(int turtle_p);
 
