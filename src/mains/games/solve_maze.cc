@@ -25,17 +25,16 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
-   long s = -11;
+//   long s = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> s;
-   nrfunc::init_default_seed(s);
+//   nrfunc::init_default_seed(s);
 
-//   int n_grid_size = 2;
-   int n_grid_size = 6;
-//   cout << "Enter grid size:" << endl;
-//   cin >> n_grid_size;
+   int n_grid_size = 2;
+   cout << "Enter grid size:" << endl;
+   cin >> n_grid_size;
    int n_actions = 4;
 
 // Construct one particular maze:
@@ -56,11 +55,9 @@ int main (int argc, char* argv[])
    int Tmax = 1;
 
 //   int H1 = 8;
-//   int H1 = 10;
-//   int H1 = 12;
    int H1 = 10;
+//   int H1 = 12;
 //   int H1 = 20;
-//   int H1 = 32;
 
 //   int H2 = 0;
 //   int H2 = 8;
@@ -147,7 +144,7 @@ int main (int argc, char* argv[])
    string basename = "maze";
    bool display_qmap_flag = true;
    reinforce_agent_ptr->compute_deep_Qvalues();
-//    reinforce_agent_ptr->print_Qmap();
+//   reinforce_agent_ptr->print_Qmap();
    curr_maze.compute_max_Qmap();
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);

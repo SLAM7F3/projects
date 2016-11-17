@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/29/16; 11/4/16; 11/6/16; 11/8/16
+// Last updated on 11/4/16; 11/6/16; 11/8/16; 11/17/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -122,6 +122,7 @@ namespace machinelearning_func
 
    void ReLU(int zcol, const genmatrix& Z, genmatrix& A)
    {
+      A.clear_values();
       for(unsigned int i = 0; i < Z.get_mdim(); i++)
       {
          double curr_Z = Z.get(i,zcol);

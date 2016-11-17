@@ -847,6 +847,9 @@ void reinforce::print_weights()
    for(int l = 0; l < n_layers - 1; l++)
    {
       cout << "layer = " << l << endl;
+      cout << "weights[l].mdim = " << weights[l]->get_mdim()
+           << " weights[l].ndim = " << weights[l]->get_ndim()
+           << endl;
       cout << "weights[l] = " << *weights[l] << endl;
    }
 }
@@ -1533,6 +1536,8 @@ void reinforce::compute_deep_Qvalues()
             get_state_action_string(curr_state_strings[s], i);
          double Qvalue = a[n_layers-1]->get(i, t);
          set_Q_value(state_action_str, Qvalue);
+//         cout << "s = " << s << " a = " << i << " Qvalue = " << Qvalue
+//              << endl;
       } // loop over index i labeling actions
    } // loop over index s labeling input states
 }
