@@ -25,11 +25,17 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
 
-   int n_grid_size = 2;
-   cout << "Enter grid size:" << endl;
-   cin >> n_grid_size;
+   long s = -11;
+//   cout << "Enter negative seed:" << endl;
+//   cin >> s;
+   nrfunc::init_default_seed(s);
+
+//   int n_grid_size = 2;
+   int n_grid_size = 6;
+//   cout << "Enter grid size:" << endl;
+//   cin >> n_grid_size;
    int n_actions = 4;
 
 // Construct one particular maze:
@@ -190,7 +196,7 @@ int main (int argc, char* argv[])
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
-         int curr_a= reinforce_agent_ptr->select_action_for_curr_state();
+         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 
          if(!game_world.is_legal_action(curr_a))
          {

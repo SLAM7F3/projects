@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/12/16; 11/13/16; 11/15/16; 11/16/16
+// Last modified on 11/13/16; 11/15/16; 11/16/16; 11/17/16
 // ==========================================================================
 
 #include <iostream>
@@ -805,7 +805,19 @@ void maze::compute_max_Qmap()
          }
          else
          {
-            if(max_qmap_iter->second.first < qvalue)
+
+// As of 11/17/16, we experiment with randomly breaking ties between
+// max qmap values:
+
+            if(nearly_equal(max_qmap_iter->second.first, qvalue))
+            {
+               if(nrfunc::ran1() > 0.5)
+               {
+                  max_qmap_iter->second.first = qvalue;
+                  max_qmap_iter->second.second = turtle_direction;
+               }
+            }
+            else if(max_qmap_iter->second.first < qvalue)
             {
                max_qmap_iter->second.first = qvalue;
                max_qmap_iter->second.second = turtle_direction;
@@ -815,46 +827,6 @@ void maze::compute_max_Qmap()
       } // loop over index a labeling actions
    } // loop over index s labeling current maze states
 }
-
-/*
-void maze::compute_max_Qmap()
-{
-   max_qmap.clear();
-   
-   cout << "inside maze::compute_max_Qmap()" << endl;
-   cout << "qmap_ptr->size() = " << qmap_ptr->size() << endl;
-
-   for(qmap_iter = qmap_ptr->begin(); qmap_iter != qmap_ptr->end(); 
-       qmap_iter++)
-   {
-      string state_action_str = qmap_iter->first;
-      int turtle_cell = state_action_str.find("T");
-      int turtle_direction = stringfunc::string_to_number(
-         state_action_str.substr(state_action_str.size() - 1, 1));
-      double qvalue = qmap_iter->second;
-
-      max_qmap_iter = max_qmap.find(turtle_cell);
-      if(max_qmap_iter == max_qmap.end())
-      {
-         pair<double, int> P;
-         P.first = qvalue;
-         P.second = turtle_direction;
-         max_qmap[turtle_cell] = P;
-      }
-      else
-      {
-         if(max_qmap_iter->second.first < qvalue)
-         {
-            max_qmap_iter->second.first = qvalue;
-            max_qmap_iter->second.second = turtle_direction;
-         }
-      }
-
-      max_qmap_iter = max_qmap.find(turtle_cell);
-   } // loop over qmap_iter
-}
-*/
-
 
 // ---------------------------------------------------------------------
 // Member function score_max_Qmap() loops over all entries within

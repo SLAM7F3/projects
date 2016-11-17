@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/12/16; 11/13/16; 11/15/16; 11/16/16
+// Last modified on 11/13/16; 11/15/16; 11/16/16; 11/17/16
 // ==========================================================================
 
 #include <string>
@@ -1588,7 +1588,19 @@ int reinforce::compute_argmax_Q()
    for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
    {
       double curr_activation = a[n_layers-1]->get(i,t);
-      if(curr_activation > Qstar)
+
+// As of 11/17/16, we experiment with randomly breaking "ties" between
+// Q value scores:
+
+      if(nearly_equal(curr_activation, Qstar))
+      {
+         if(nrfunc::ran1() > 0.5)
+         {
+            Qstar = curr_activation;
+            curr_a = i;
+         }
+      }
+      else if(curr_activation > Qstar)
       {
          Qstar = curr_activation;
          curr_a = i;
@@ -1607,7 +1619,19 @@ int reinforce::compute_legal_argmax_Q()
       if(!environment_ptr->is_legal_action(i)) continue;
 
       double curr_activation = a[n_layers-1]->get(i,t);
-      if(curr_activation > Qstar)
+   
+// As of 11/17/16, we experiment with randomly breaking "ties" between
+// Q value scores:
+
+      if(nearly_equal(curr_activation, Qstar))
+      {
+         if(nrfunc::ran1() > 0.5)
+         {
+            Qstar = curr_activation;
+            curr_a = i;
+         }
+      }
+      else if(curr_activation > Qstar)
       {
          Qstar = curr_activation;
          curr_a = i;
