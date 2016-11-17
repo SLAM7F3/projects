@@ -1921,10 +1921,6 @@ void texture_rectangle::set_pixel_intensity_value(
 int texture_rectangle::get_pixel_intensity(
    unsigned int pu,unsigned int pv) const
 {
-//   int R,G,B;
-//   get_pixel_RGB_values(pu,pv,R,G,B);
-//   return R;
-
    return ptwoDarray_ptr->get(pu,pv);
 }
 
@@ -3504,7 +3500,7 @@ void texture_rectangle::minutely_perturb_RGB_values()
 texture_rectangle* 
 texture_rectangle::generate_RGB_from_grey_texture_rectangle()
 {
-//   cout << "inside texture_rectangle::generate_RGB_from_grey_texture_rectangle()" << endl;
+   cout << "inside texture_rectangle::generate_RGB_from_grey_texture_rectangle()" << endl;
 
    unsigned int width=getWidth();
    unsigned int height=getHeight();
@@ -3521,8 +3517,13 @@ texture_rectangle::generate_RGB_from_grey_texture_rectangle()
    {
       for (unsigned int pu=0; pu<width; pu++)
       {
-         get_pixel_RGB_values(pu,pv,R,G,B);
+         cout << "pu = " << pu << " pv = " << pv << endl;
+
+//         get_pixel_RGB_values(pu,pv,R,G,B);
+
          R = G = B = 255 * get_pixel_intensity(pu, pv);
+
+         cout << "R = " << R << endl;
 
          if (randomize_blue_values_flag)
          {

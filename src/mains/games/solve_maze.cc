@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/9/16; 11/13/16; 11/14/16; 11/16/16
+// Last updated on 11/13/16; 11/14/16; 11/16/16; 11/17/16
 // ==========================================================================
 
 #include <iostream>
@@ -145,8 +145,14 @@ int main (int argc, char* argv[])
    bool display_qmap_flag = true;
    reinforce_agent_ptr->compute_deep_Qvalues();
 
-   reinforce_agent_ptr->print_weights();
+
+   string weights_subdir = output_subdir+"zeroth_layer_weights/";
+   filefunc::dircreate(weights_subdir);
+   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
+
    exit(-1);
+
+
 
 //   reinforce_agent_ptr->print_Qmap();
    curr_maze.compute_max_Qmap();
@@ -311,6 +317,15 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->plot_log10_loss_history(
       output_subdir, subtitle, extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
+
+// Export trained weights in neural network's zeroth layer as
+// greyscale images to output_subdir
+
+/*
+   string weights_subdir = output_subdir+"zeroth_layer_weights/";
+   filefunc::dircreate(weights_subdir);
+   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
+*/
 
    delete reinforce_agent_ptr;
 }

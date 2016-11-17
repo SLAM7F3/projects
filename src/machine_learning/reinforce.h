@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/12/16; 11/13/16; 11/14/16; 11/15/16
+// Last modified on 11/13/16; 11/14/16; 11/15/16; 11/17/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -78,6 +78,7 @@ class reinforce
 
    int count_weights();
    void print_weights();
+   void plot_zeroth_layer_weights(std::string output_subdir);
    void compute_weight_distributions();
    std::string init_subtitle();
    void plot_loss_history(std::string extrainfo);

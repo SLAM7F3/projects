@@ -17,6 +17,8 @@
 #include "machine_learning/reinforce.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
+#include "video/texture_rectangle.h"
+#include "image/TwoDarray.h"
 
 using std::cin;
 using std::cout;
@@ -852,6 +854,88 @@ void reinforce::print_weights()
            << endl;
       cout << "weights[l] = " << *weights[l] << endl;
    }
+}
+
+// ---------------------------------------------------------------------
+// Member function plot_zeroth_layer_weights() renormalizes copies of
+// all weights within the zeroth layer to range between 0 and 1.  It
+// then exports the renormalized weight values as PNG images to the
+// specified output subdirectory.
+
+void reinforce::plot_zeroth_layer_weights(string output_subdir)
+{
+   int n_zeroth_layer_weights = weights[0]->get_mdim();
+   int n_zeroth_layer_pixels = weights[0]->get_ndim();
+   int nx = sqrt(double(n_zeroth_layer_pixels));
+   int ny = nx;
+   
+   double min_weight_val = POSITIVEINFINITY;
+   double max_weight_val = NEGATIVEINFINITY;
+   for(int n = 0; n < n_zeroth_layer_weights; n++)
+   {
+      for(int p = 0; p < n_zeroth_layer_pixels; p++)
+      {
+         min_weight_val = basic_math::min(
+            min_weight_val, weights[0]->get(n, p));
+         max_weight_val = basic_math::max(
+            max_weight_val, weights[0]->get(n, p));
+      }
+   } // loop over index n labeling weight images
+
+//   cout << "min_weight_val = " << min_weight_val
+//        << " max_weight_val = " << max_weight_val << endl;
+
+// Renormalize image weight values to range from 0 to 255:
+
+   vector<twoDarray*> weight_image_ptrs;
+   
+   for(int n = 0; n < n_zeroth_layer_weights; n++)
+   {
+      twoDarray* wtwoDarray_ptr = new twoDarray(nx, ny);
+   
+      for(int p = 0; p < n_zeroth_layer_pixels; p++)
+      {
+         int pu = p % ny;
+         int pv = p / ny;
+         
+         double curr_weight_val = 255 * 
+            (weights[0]->get(n,p) - min_weight_val) / 
+            (max_weight_val - min_weight_val);
+         wtwoDarray_ptr->put(pu, pv, curr_weight_val);
+      }
+
+      int n_channels = 3;
+      texture_rectangle* tr_ptr = new texture_rectangle(
+         nx, ny, 1, n_channels, NULL);
+
+      tr_ptr->convert_single_twoDarray_to_three_channels(
+         wtwoDarray_ptr, true);
+
+//      tr_ptr->initialize_twoDarray_image(wtwoDarray_ptr, 1, false);
+//      tr_ptr->instantiate_ptwoDarray_ptr();
+
+/*
+      texture_rectangle* rgb_tr_ptr = 
+         tr_ptr->generate_RGB_from_grey_texture_rectangle();      
+      cout << "*rgb_tr_ptr = " << *rgb_tr_ptr << endl;
+*/
+
+      double hue_min = 270;
+      tr_ptr->convert_grey_values_to_hues(hue_min);
+
+      string output_filename=output_subdir + 
+         "weights_"+stringfunc::number_to_string(n)+".png";
+      tr_ptr->write_curr_frame(output_filename);
+      string banner="Exported "+output_filename;
+      outputfunc::write_banner(banner);
+
+      delete tr_ptr;
+//      delete rgb_tr_ptr;
+      delete wtwoDarray_ptr;
+
+   } // loop over index n labeling weight images
+   
+//   cout << "weights[l] = " << *weights[l] << endl;
 }
 
 // ---------------------------------------------------------------------
