@@ -106,7 +106,7 @@ int main (int argc, char* argv[])
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.95);
-   reinforce_agent_ptr->set_batch_size(1);
+   reinforce_agent_ptr->set_batch_size(1);  // optimal for n_grid_size = 8
 //   reinforce_agent_ptr->set_batch_size(3);
 //   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
@@ -115,7 +115,7 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-		// optimal for n_grid_size = 7
+		// optimal for n_grid_size = 8
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    double min_learning_rate = 1E-4;
@@ -130,20 +130,24 @@ int main (int argc, char* argv[])
 // value:
 
    int n_episodes_period = 100 * 1000;
-//   int old_weights_period = 10;
-//   int old_weights_period = 30;   // Optimal for n_grid_size = 7 
-   int old_weights_period = 100;
+   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
+//   int old_weights_period = 32;  
+//   int old_weights_period = 100;
 
-   double min_epsilon = 0.01;
+   double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
 //   double min_epsilon = 0.025;
-//   double min_epsilon = 0.05; // Optimal for n_grid_size = 10
-//   double min_epsilon = 0.1; // Optimal for n_grid_size = 7
+//   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.1; 
 //   double min_epsilon = 0.15;
 //   double min_epsilon = 0.01;
 
    string basename = "maze";
    bool display_qmap_flag = true;
    reinforce_agent_ptr->compute_deep_Qvalues();
+
+   reinforce_agent_ptr->print_weights();
+   exit(-1);
+
 //   reinforce_agent_ptr->print_Qmap();
    curr_maze.compute_max_Qmap();
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
@@ -243,8 +247,8 @@ int main (int argc, char* argv[])
       {
 //         double decay_factor = 0.99;
 //             double decay_factor = 0.975;
-         double decay_factor = 0.95;
-//         double decay_factor = 0.90;
+//         double decay_factor = 0.95;
+         double decay_factor = 0.90; // Probably optimal for n_size_grid = 8
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
