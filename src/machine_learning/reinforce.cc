@@ -19,6 +19,7 @@
 #include "general/sysfuncs.h"
 #include "video/texture_rectangle.h"
 #include "image/TwoDarray.h"
+#include "video/videofuncs.h"
 
 using std::cin;
 using std::cout;
@@ -892,33 +893,37 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
    for(int n = 0; n < n_zeroth_layer_weights; n++)
    {
       twoDarray* wtwoDarray_ptr = new twoDarray(nx, ny);
+
+      int magnify_factor = 15;
+      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(
+         magnify_factor * nx, magnify_factor * ny);
    
       for(int p = 0; p < n_zeroth_layer_pixels; p++)
       {
          int pu = p % ny;
          int pv = p / ny;
-         
          double curr_weight_val = 255 * 
             (weights[0]->get(n,p) - min_weight_val) / 
             (max_weight_val - min_weight_val);
          wtwoDarray_ptr->put(pu, pv, curr_weight_val);
       }
 
+      for(unsigned int py = 0; py < enlarged_wtwoDarray_ptr->get_mdim(); py++)
+      {
+         int pv = py / magnify_factor;
+         for(unsigned int px = 0; px < enlarged_wtwoDarray_ptr->get_ndim(); px++)
+         {
+            int pu = px / magnify_factor;
+            double curr_weight_val = wtwoDarray_ptr->get(pu, pv);
+            enlarged_wtwoDarray_ptr->put(px, py, curr_weight_val);
+         }
+      }
+
       int n_channels = 3;
       texture_rectangle* tr_ptr = new texture_rectangle(
-         nx, ny, 1, n_channels, NULL);
-
+         magnify_factor * nx, magnify_factor * ny, 1, n_channels, NULL);
       tr_ptr->convert_single_twoDarray_to_three_channels(
-         wtwoDarray_ptr, true);
-
-//      tr_ptr->initialize_twoDarray_image(wtwoDarray_ptr, 1, false);
-//      tr_ptr->instantiate_ptwoDarray_ptr();
-
-/*
-      texture_rectangle* rgb_tr_ptr = 
-         tr_ptr->generate_RGB_from_grey_texture_rectangle();      
-      cout << "*rgb_tr_ptr = " << *rgb_tr_ptr << endl;
-*/
+         enlarged_wtwoDarray_ptr, true);
 
       double hue_min = 270;
       tr_ptr->convert_grey_values_to_hues(hue_min);
@@ -930,12 +935,10 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
       outputfunc::write_banner(banner);
 
       delete tr_ptr;
-//      delete rgb_tr_ptr;
       delete wtwoDarray_ptr;
+      delete enlarged_wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
-   
-//   cout << "weights[l] = " << *weights[l] << endl;
 }
 
 // ---------------------------------------------------------------------
