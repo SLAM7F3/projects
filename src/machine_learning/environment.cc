@@ -187,7 +187,6 @@ vector<string> environment::get_all_curr_state_strings()
 // ---------------------------------------------------------------------
 void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
 {
-   cout << "inside environment::append_wtwoDarray()" << endl;
    if(world_type == MAZE)
    {
       maze_ptr->append_wtwoDarray(wtwoDarray_ptr);

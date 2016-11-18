@@ -1,7 +1,7 @@
 ============================================================================
 RecordMyDesktop notes
 ============================================================================
-Last updated on 9/25/12; 12/5/15
+Last updated on 9/25/12; 12/5/15; 11/18/16
 ============================================================================
 
 In Sep 2012, we used Ubuntu's RecordMyDesktop in order to generate several
@@ -55,3 +55,7 @@ avconv -i model2t_network.ogv \
 avconv -i faces_fc5_graph.ogv \
    -c:v libx264 -preset veryslow -qp 0 \
    faces_fc5_graph.mp4
+
+avconv -i maze_qlearning.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+  maze_qlearning_1.mp4

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/13/16; 11/14/16; 11/16/16; 11/17/16
+// Last updated on 11/14/16; 11/16/16; 11/17/16; 11/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -314,6 +314,8 @@ int main (int argc, char* argv[])
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
    reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
+
+   curr_maze.DisplayTrainedZerothLayerWeights(weights_subdir);
 
    delete reinforce_agent_ptr;
 }

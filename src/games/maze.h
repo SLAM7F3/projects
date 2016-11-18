@@ -86,6 +86,7 @@ class maze
    void RenderMaze(unsigned char* img);
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
+   void DisplayTrainedZerothLayerWeights(std::string output_subdir);
    void DrawMaze(int counter, std::string output_subdir, std::string basename, 
                  bool display_qmap_flag, twoDarray* wtwoDarray_ptr = NULL);
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
@@ -146,9 +147,6 @@ class maze
    std::vector<bool> visited_cell;
 	// independent int = cell ID; dependent bool = visited flag
 
-//    std::vector<bool> deadend_cell;
-	// independent int = cell ID; dependent bool = dead end cell
-
    std::vector<int> visited_cell_stack;
 
    std::vector<DUPLE> cell_decomposition;
@@ -160,6 +158,7 @@ class maze
    genvector *curr_legal_actions;
    genmatrix *occupancy_grid;
    genvector *occupancy_state;
+   genmatrix *visited_turtle_cells;
 
    std::vector<DUPLE> occupancy_cell_decomposition;
 // independent int: p

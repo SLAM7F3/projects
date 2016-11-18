@@ -3160,7 +3160,7 @@ void texture_rectangle::convert_color_image_to_luminosity()
 void texture_rectangle::convert_grey_values_to_hues(
    double hue_min,double hue_max)
 {
-//   cout << "inside texture_rectangle::convert_grey_values_to_hues()" 
+//   cout << "inside texture_rectangle::convert_grey_values_to_hues()"
 //	  << endl;
 
    int R,G,B;
@@ -3181,6 +3181,14 @@ void texture_rectangle::convert_grey_values_to_hues(
          double b=B/255.0;
          colorfunc::RGB_to_hsv(r,g,b,h,s,v);
          double new_hue=hue_min+(hue_max-hue_min)*v;
+
+/*
+         cout << "R = " << R << " G = " << G << " B = " << B << endl;
+         cout << "h = " << h << " s = " << s << " v = " << v << endl;
+         cout << " new_hue = " << new_hue << endl;
+         outputfunc::enter_continue_char();
+*/
+
          s=1;	// Recall s = 0 corresponds to grey scale!
          v=0.5+0.5*v;
 
@@ -3410,11 +3418,11 @@ void texture_rectangle::convert_greyscale_image_to_hue_value_colored(
 void texture_rectangle::convert_single_twoDarray_to_three_channels(
    const twoDarray* qtwoDarray_ptr,bool randomize_blue_values_flag)
 {
-   cout << "inside texture_rectangle::convert_single_twoDarray_to_three_channels()" << endl;
+//   cout << "inside texture_rectangle::convert_single_twoDarray_to_three_channels()" << endl;
 
    unsigned int mdim=qtwoDarray_ptr->get_mdim();
    unsigned int ndim=qtwoDarray_ptr->get_ndim();
-   cout << "mdim = " << mdim << " ndim = " << ndim << endl;
+//   cout << "mdim = " << mdim << " ndim = " << ndim << endl;
    for (unsigned int pu=0; pu<mdim; pu++)
    {
       for (unsigned int pv=0; pv<ndim; pv++)

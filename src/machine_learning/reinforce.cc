@@ -927,7 +927,7 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
       tr_ptr->convert_single_twoDarray_to_three_channels(
          enlarged_wtwoDarray_ptr, true);
 
-      double hue_min = 270;
+      double hue_min =270;
       tr_ptr->convert_grey_values_to_hues(hue_min);
 
       string output_filename=output_subdir + 
@@ -937,7 +937,7 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
       outputfunc::write_banner(banner);
 
       delete tr_ptr;
-      delete wtwoDarray_ptr;
+//      delete wtwoDarray_ptr;
       delete enlarged_wtwoDarray_ptr;
 
    } // loop over index n labeling weight images

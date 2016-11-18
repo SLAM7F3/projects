@@ -42,6 +42,7 @@ void maze::allocate_member_objects()
 
    occupancy_grid = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    occupancy_state = new genvector(sqr(2*n_size-1));
+   visited_turtle_cells = new genmatrix(2 * n_size - 1, 2 * n_size - 1);
    ImageSize = 512;
    if(n_size > 6)
    {
@@ -111,6 +112,7 @@ maze::~maze()
    delete curr_legal_actions;
    delete occupancy_grid;
    delete occupancy_state;
+   delete visited_turtle_cells;
 
    for(unsigned int t = 0; t < curr_maze_states.size(); t++)
    {
@@ -648,10 +650,10 @@ void maze::FillCell(unsigned char* img, int px, int py, int R, int G, int B)
    {
       for(int qx = qx_lo; qx < qx_hi; qx++)
       {
-         int p = 3 * (py * ImageSize + px);
-         img[ p + 2 ] = R;
-         img[ p + 1 ] = G;
-         img[ p + 0 ] = B;
+         int q = 3 * (qy * ImageSize + qx);
+         img[ q + 2 ] = R;
+         img[ q + 1 ] = G;
+         img[ q + 0 ] = B;
       }
    }
 }
@@ -750,6 +752,18 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
    sysfunc::unix_command(unix_cmd);
 //   cout << "Exported " << FileName << endl;
 }
+ 
+// ---------------------------------------------------------------------
+void maze::DisplayTrainedZerothLayerWeights(string output_subdir)
+{
+   for(unsigned int w = 0; w < wtwoDarray_ptrs.size(); w++)
+   {
+      twoDarray* wtwoDarray_ptr = wtwoDarray_ptrs[w];
+      string basename = "trained_weights";
+      bool display_qmap_flag = true;
+      DrawMaze(w, output_subdir, basename, display_qmap_flag, wtwoDarray_ptr);
+   } // loop over index w labeling zeroth layer weights
+}
 
 // ---------------------------------------------------------------------
 void maze::DrawMaze(int counter, string output_subdir, string basename, 
@@ -774,8 +788,7 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
 
    filefunc::add_trailing_dir_slash(output_subdir);
    filefunc::dircreate(output_subdir);
-   string bmp_filename = output_subdir+basename+stringfunc::integer_to_string(
-      counter,3)+".bmp";
+   string bmp_filename = output_subdir+basename+".bmp";
 
    string png_subdir = output_subdir+"pngs/";
    filefunc::dircreate(png_subdir);
@@ -1021,10 +1034,10 @@ void maze::color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr)
       int py = ty / 2;
       int turtle_direction = max_qmap_iter->second.second;
 
-      double curr_w = wtwoDarray_ptr->get(px,py);
-      double h = (1 - curr_w) * 270;
+      double curr_w = wtwoDarray_ptr->get(tx,ty);
+      double h = (1 - curr_w/255.0) * 270;
       double s = 1;
-      double v = 1;
+      double v = 0.4;
       double r, g, b;
       colorfunc::hsv_to_RGB(h, s, v, r, g, b);
       int R = 255 * r;
@@ -1237,8 +1250,6 @@ void maze::reset_game(bool random_turtle_start)
 
    initialize_occupancy_grid();
 
-// Turtle starts in upper left corner of maze:
-
    turtle_cell = 0;
    int tx = 0;
    int ty = 0;
@@ -1297,6 +1308,10 @@ void maze::reset_game(bool random_turtle_start)
    }
    occupancy_grid->put(tx, ty, turtle_value);   
    occupancy_state->put(turtle_cell, turtle_value);
+
+   visited_turtle_cells->clear_values();
+   visited_turtle_cells->put(tx, ty, 1);
+
    turtle_path_history.clear();
    turtle_path_history.push_back(0);
 }
@@ -1373,6 +1388,22 @@ bool maze::legal_turtle_move(int tx, int ty, int curr_dir)
       return false;	 // new cell is already occupied by wall
    }
 
+/*
+// Fri Nov 18 at 6:56 am
+
+// Experiment with forbidding turtle to ever move to a previously
+// visited cell:
+
+   int max_prev_visits = 4 * n_size;
+//   cout << "tx = " << tx_new << " ty = " << ty_new 
+//        << " n_prev_visits = " << visited_turtle_cells->get(tx_new, ty_new)
+//        << endl;
+   if(visited_turtle_cells->get(tx_new,ty_new) > max_prev_visits)
+   {
+      return false;
+   }
+*/
+
    return true;
 }
 
@@ -1407,14 +1438,6 @@ int maze::move_turtle(int curr_dir, bool erase_turtle_path)
    {
       return -1;	 // new cell is already occupied by wall
    }
-   
-/*
-   if(!erase_turtle_path && 
-      nearly_equal(occupancy_grid->get(tx_new, ty_new), turtle_value))
-   {
-      return -1;	// turtle previously visited candidate cell
-   }
-*/
 
    occupancy_state->put(turtle_cell, 0);
 
@@ -1428,6 +1451,8 @@ int maze::move_turtle(int curr_dir, bool erase_turtle_path)
       occupancy_grid->put(tx,ty,0);
    }
    occupancy_grid->put(tx_new, ty_new, turtle_value);
+   visited_turtle_cells->put(
+      tx_new, ty_new, visited_turtle_cells->get(tx_new, ty_new) + 1);
 
    if (turtle_cell == int(occupancy_state->get_mdim() - 1))
    {
