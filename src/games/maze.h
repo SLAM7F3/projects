@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/12/16; 11/13/16; 11/15/16; 11/17/16
+// Last modified on 11/13/16; 11/15/16; 11/17/16; 11/18/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -87,10 +87,10 @@ class maze
    void SaveBMP(std::string FileName, const void* RawBGRImage, 
                 int Width, int Height);
    void DrawMaze(int counter, std::string output_subdir, std::string basename, 
-                 bool display_qmap_flag);
+                 bool display_qmap_flag, twoDarray* wtwoDarray_ptr = NULL);
+   void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
    void initialize_occupancy_grid();
-
    void print_occupancy_grid() const;
    void print_occupancy_state() const;
    std::string occupancy_state_to_string();
@@ -124,9 +124,9 @@ class maze
    void identify_max_Qmap_problems();
    void draw_max_Qmap(unsigned char* img);
    void color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr);
-   void color_weights(twoDarray* wtwoDarray_ptr);
 
    int is_problem_cell(int turtle_p);
+
 
   private: 
 
@@ -189,6 +189,11 @@ class maze
    std::vector<int> current_problem_cells;
    PROBLEM_CELLS_MAP problem_cells_map;
    PROBLEM_CELLS_MAP::iterator problem_cells_iter;
+
+// wtwoDarray_ptr points to a twoDarray which contains renormalized
+// trained weight values:
+
+   std::vector<twoDarray*> wtwoDarray_ptrs;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -285,6 +290,10 @@ inline void maze::set_qmap_ptr(Q_MAP *qmap_ptr)
    this->qmap_ptr = qmap_ptr;
 }
 
+inline void maze::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
+{
+   wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
+}
 
 #endif  // maze.h
 

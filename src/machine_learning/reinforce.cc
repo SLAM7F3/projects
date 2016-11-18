@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/13/16; 11/15/16; 11/16/16; 11/17/16
+// Last modified on 11/15/16; 11/16/16; 11/17/16; 11/18/16
 // ==========================================================================
 
 #include <string>
@@ -893,11 +893,8 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
    for(int n = 0; n < n_zeroth_layer_weights; n++)
    {
       twoDarray* wtwoDarray_ptr = new twoDarray(nx, ny);
+      environment_ptr->append_wtwoDarray(wtwoDarray_ptr);
 
-      int magnify_factor = 15;
-      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(
-         magnify_factor * nx, magnify_factor * ny);
-   
       for(int p = 0; p < n_zeroth_layer_pixels; p++)
       {
          int pu = p % ny;
@@ -908,10 +905,15 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
          wtwoDarray_ptr->put(pu, pv, curr_weight_val);
       }
 
+      int magnify_factor = 15;
+      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(
+         magnify_factor * nx, magnify_factor * ny);
+
       for(unsigned int py = 0; py < enlarged_wtwoDarray_ptr->get_mdim(); py++)
       {
          int pv = py / magnify_factor;
-         for(unsigned int px = 0; px < enlarged_wtwoDarray_ptr->get_ndim(); px++)
+         for(unsigned int px = 0; px < enlarged_wtwoDarray_ptr->get_ndim(); 
+             px++)
          {
             int pu = px / magnify_factor;
             double curr_weight_val = wtwoDarray_ptr->get(pu, pv);

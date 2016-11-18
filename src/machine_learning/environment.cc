@@ -184,12 +184,12 @@ vector<string> environment::get_all_curr_state_strings()
    return curr_state_strings;
 }
 
-
 // ---------------------------------------------------------------------
-void environment::color_weights(twoDarray* wtwoDarray_ptr)
+void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
 {
+   cout << "inside environment::append_wtwoDarray()" << endl;
    if(world_type == MAZE)
    {
-      maze_ptr->color_weights(wtwoDarray_ptr);
+      maze_ptr->append_wtwoDarray(wtwoDarray_ptr);
    }
 }

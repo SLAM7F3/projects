@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/10/16; 11/11/16; 11/13/16; 11/17/16
+// Last modified on 11/11/16; 11/13/16; 11/17/16; 11/18/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -50,7 +50,7 @@ class environment
    std::vector<genvector*> get_all_curr_states();
    std::vector<std::string> get_all_curr_state_strings();
 
-   void color_weights(twoDarray* wtwoDarray_ptr);
+   void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
   private:
 

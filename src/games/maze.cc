@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/13/16; 11/15/16; 11/16/16; 11/17/16
+// Last modified on 11/15/16; 11/16/16; 11/17/16; 11/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -753,7 +753,7 @@ void maze::SaveBMP(string FileName, const void* RawBGRImage,
 
 // ---------------------------------------------------------------------
 void maze::DrawMaze(int counter, string output_subdir, string basename, 
-                    bool display_qmap_flag)
+                    bool display_qmap_flag, twoDarray* wtwoDarray_ptr)
 {
    // prepare BGR image
    size_t DataSize = 3 * ImageSize * ImageSize;
@@ -761,6 +761,8 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
    unsigned char* Img = new unsigned char[ DataSize ];
 
    memset( Img, 0, DataSize );
+
+   if(wtwoDarray_ptr != NULL) color_cells(Img, wtwoDarray_ptr);
 
    // render maze on bitmap
    RenderMaze( Img );
@@ -1004,7 +1006,8 @@ void maze::draw_max_Qmap(unsigned char* img)
 }
 
 // ---------------------------------------------------------------------
-// Member function color_cells()
+// Member function color_cells() fills each maze cell with a color
+// which is correlated to an underlying trained weight value.
 
 void maze::color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr)
 {
@@ -1029,12 +1032,6 @@ void maze::color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr)
       int B = 255 * b;
       FillCell(img, px, py, R, G, B);
    } // loop over max_qmap_iter
-}
-// ---------------------------------------------------------------------
-// Member function color_weights()
-
-void maze::color_weights(twoDarray* wtwoDarray_ptr)
-{
 }
 
 // ---------------------------------------------------------------------
