@@ -1,0 +1,21 @@
+=============================================================================
+CMAKE notes
+=============================================================================
+Last updated on 11/18/16
+=============================================================================
+
+*.  Each subfolder of ~/sputnik/pwin/ now contains a CMakeLists.txt file
+which needs to be manually edited whenever a new .c/.h file is added to the
+folder.  For example, we added mview.c and mview.h to
+~/sputnik/pwin/lib/xdat/CMakeLists.txt :
+
+set(XDAT_SRC
+    mview.c
+    mview.h
+    xdat.c
+    xdat.h
+    xdat_corelogic.c
+    xdat_corelogic.h
+    xdat_tiger.c
+    xdat_tiger.h)
+

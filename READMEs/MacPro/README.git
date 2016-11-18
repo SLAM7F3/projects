@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 9/7/16; 9/9/16; 9/10/16; 11/16/16
+Last updated on 9/9/16; 9/10/16; 11/16/16; 11/18/16
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -799,3 +799,11 @@ master ~/sputnik/.gitignore by instead adding files for pwin git to ignore
 to a GLOBAL ignore file which sits inside ~/.config/git/ignore .   See
 
    http://stackoverflow.com/questions/7335420/global-git-ignore
+
+*.  On 11/18/16, we struggled with trying to find the branch in which we
+were experimenting with poor-man's compositing in July 2016.  John Wood
+suggested that we login to Apple's github and checkout our profile.  It
+contains a list of checkins we performed as a function of date.  After
+poking around, we eventually discovered that the poor-man's compositing
+work had been done within branch hn_edit which miraculously we still had on
+our local machine.  It was also still in origin/hn_edit.  

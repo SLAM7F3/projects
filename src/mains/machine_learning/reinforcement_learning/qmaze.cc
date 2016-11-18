@@ -22,7 +22,7 @@
 // to the total number of cells as a function of episode number.  This
 // ratio should approach one as Q learning proceeds.
 // ==========================================================================
-// Last updated on 11/11/16; 11/12/16; 11/13/16
+// Last updated on 11/11/16; 11/12/16; 11/13/16; 11/18/16
 // ==========================================================================
 
 #include <iostream>
@@ -209,7 +209,8 @@ int main (int argc, char* argv[])
                       display_qmap_flag);
    extrainfo="gamma = "+stringfunc::number_to_string(
       reinforce_agent_ptr->get_gamma());
-   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
+   reinforce_agent_ptr->plot_Qmap_score_history(
+      output_subdir, "", extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;
