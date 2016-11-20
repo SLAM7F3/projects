@@ -1,7 +1,7 @@
 ========================================================================
 GITHUB notes
 ========================================================================
-Last updated 2/21/16; 7/6/16; 9/25/16; 9/29/16
+Last updated 7/6/16; 9/25/16; 9/29/16; 11/19/16
 ========================================================================
 
 *.  On 12/6/15, we followed directions provided by Brad Westfall in his
@@ -203,7 +203,6 @@ blue links (located on LHS) within
 our local-machine and global github servers were then able to 
 find these images and display them in a new blog post.
 
-
 *.  On 7/7/16, we explicitly appended all executable binaries to our
 $GITPROJECTS/.gitignore file by chanting
 
@@ -212,4 +211,69 @@ find . -executable -type f >> .gitignore
 *.  In order to see our blog traffic over past 2 weeks, first goto
 https://github.com/PeterCho/blog . Then press Graphs button near upper
 right.  Then Press Traffic button near upper left.  
+
+
+*.  On 11/19/16, we tested a number of different approaches discussed
+online for rendering TeX equations jekyll.  The only one which worked
+(after some modification) for us is presented in 
+ 
+http://haixing-hu.github.io/programming/2013/09/20/how-to-use-mathjax-in-jekyll-generated-github-pages/
+
+
+In particular, we added a few lines to blog/_layouts/default.html:
+
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+  <body>
+
+    {% include header.html %}
+
+    {% if page.use_math %}
+      {% include mathjax_support %}
+    {% endif %}
+
+    <div class="page-content">
+      <div class="wrapper">
+        {{ content }}
+      </div>
+    </div>
+
+    {% include footer.html %}
+
+  </body>
+
+We also added blog/_includes/mathjax_support:
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ['\(', '\)'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+At the top of a new blog post, we must now also include use_math: true  .
+For example:
+
+---
+layout: post
+title:  "Solving Mazes via Deep Reinforcement Learning"
+date:   2016-11-19 12:00:00
+categories: Deep Learning
+use_math: true
+---
+
 
