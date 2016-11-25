@@ -83,7 +83,7 @@ int main (int argc, char* argv[])
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
 
-   environment game_world(environment::MAZE);
+   environment game_world(environment::TTT);
 //   game_world.set_maze(&curr_maze);
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality

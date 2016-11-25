@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/10/16; 11/11/16; 11/13/16; 11/17/16
+// Last modified on 11/11/16; 11/13/16; 11/17/16; 11/25/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -22,6 +22,7 @@ using std::vector;
 void environment::initialize_member_objects()
 {
    maze_ptr = NULL;
+   tictac3d_ptr = NULL;
 }
 
 // ---------------------------------------------------------------------
@@ -68,6 +69,10 @@ void environment::start_new_episode(bool random_start)
    {
       maze_ptr->reset_game(random_start);
    }
+   else if(world_type == TTT)
+   {
+      tictac3d_ptr->reset_board_state();
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -78,6 +83,10 @@ genvector* environment::get_curr_state()
    if(world_type == MAZE)
    {
       curr_state_ptr = maze_ptr->get_occupancy_state();
+   }
+   else if(world_type == TTT)
+   {
+      curr_state_ptr = tictac3d_ptr->get_board_state_ptr();
    }
    return curr_state_ptr;
 }
@@ -90,6 +99,10 @@ string environment::get_curr_state_string()
    if(world_type == MAZE)
    {
       return maze_ptr->occupancy_state_to_string();
+   }
+   else if(world_type == TTT)
+   {
+      return tictac3d_ptr->board_state_to_string();
    }
    return curr_state_str;
 }

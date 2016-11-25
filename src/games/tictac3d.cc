@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/1/16; 11/2/16; 11/3/16; 11/4/16
+// Last modified on 11/2/16; 11/3/16; 11/4/16; 11/25/16
 // ==========================================================================
 
 #include <iostream>
@@ -145,6 +145,34 @@ genvector* tictac3d::get_inverse_board_state_ptr()
       inverse_board_state_ptr->put(p, -curr_board_state[p]);
    }
    return inverse_board_state_ptr;
+}
+
+// ---------------------------------------------------------------------
+// Member function board_state_to_string() converts genvector
+// *board_state_ptr into a corresponding string containing "X" for
+// AI pieces, "O" for agent pieces and "E" for empty cell
+// locations.  The string can be used as a key inside STL maps.
+
+string tictac3d::board_state_to_string()
+{
+   string board_state_str="";
+   for(int p = 0; p < n_cells; p++)
+   {
+      double cell_value = board_state_ptr->get(p);
+      if(cell_value > 0)
+      {
+         board_state_str += "O";
+      }
+      else if(cell_value < 0)
+      {
+         board_state_str += "X";
+      }
+      else
+      {
+         board_state_str += "E";
+      }
+   }
+   return board_state_str;
 }
 
 // ---------------------------------------------------------------------
@@ -1672,7 +1700,6 @@ void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
    sysfunc::unix_command(unix_cmd);
 }
 
-
 // ---------------------------------------------------------------------
 // Member function check_opponent_win_on_next_move() examines every
 // possible move that the opponent player could make on its next turn.
@@ -1691,7 +1718,7 @@ int tictac3d::check_opponent_win_on_next_turn(int player_value)
       if(check_player_win(-player_value) > 0)
       {
 //         cout << "*** OPPONENT CAN WIN ON NEXT TURN! ***" << endl;
-         triple curr_t = cell_decomposition[p];
+//         triple curr_t = cell_decomposition[p];
 //         cout << " Z = " << curr_t.third
 //              << " col = " << curr_t.first
 //              << " row = " << curr_t.second

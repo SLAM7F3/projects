@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/11/16; 11/13/16; 11/17/16; 11/18/16
+// Last modified on 11/13/16; 11/17/16; 11/18/16; 11/25/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -12,6 +12,7 @@
 #include <vector>
 #include "math/genvector.h"
 #include "games/maze.h"
+#include "games/tictac3d.h"
 #include "image/TwoDarray.h"
 
 class environment
@@ -34,6 +35,9 @@ class environment
    void set_maze(maze* m_ptr);
    maze* get_maze();
    const maze* get_maze() const;
+   void set_tictac3d(tictac3d* t_ptr);
+   tictac3d* get_tictac3d();
+   const tictac3d* get_tictac3d() const;
 
    void start_new_episode(bool random_start = false);
    genvector* get_curr_state();
@@ -57,6 +61,7 @@ class environment
    int world_type;
    double reward;
    maze *maze_ptr;
+   tictac3d *tictac3d_ptr;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -83,6 +88,20 @@ inline const maze* environment::get_maze() const
    return maze_ptr;
 }
 
+inline void environment::set_tictac3d(tictac3d* t_ptr)
+{
+   tictac3d_ptr = t_ptr;
+}
+
+inline tictac3d* environment::get_tictac3d()
+{
+   return tictac3d_ptr;
+}
+
+inline const tictac3d* environment::get_tictac3d() const
+{
+   return tictac3d_ptr;
+}
 
 #endif  // environment.h
 

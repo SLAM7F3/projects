@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/1/16; 11/2/16; 11/3/16; 11/4/16
+// Last modified on 11/2/16; 11/3/16; 11/4/16; 11/25/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -52,6 +52,8 @@ class tictac3d
    bool get_game_over() const;
    genvector* get_board_state_ptr();
    genvector* get_inverse_board_state_ptr();
+   std::string board_state_to_string();
+
    void push_genuine_board_state();
    void pop_genuine_board_state();
    bool check_filled_board();
