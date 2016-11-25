@@ -1,13 +1,13 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 11/1/16; 11/3/16; 11/4/16; 11/7/16
+// Last updated on 11/3/16; 11/4/16; 11/7/16; 11/25/16
 // ==========================================================================
 
 #include <iostream>
 #include <string>
-#include <unistd.h>     // Needed for sleep() and usleep()
 #include <vector>
+#include "machine_learning/environment.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "machine_learning/reinforce.h"
@@ -75,13 +75,16 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
    nrfunc::init_time_based_seed();
 
-//   int n_zlevels = 1;
    int n_zlevels = 4;
-
-//   int nsize = 3;
    int nsize = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_max_turns = nsize * nsize * n_zlevels;
+
+// Construct environment which acts as interface between reinforcement
+// agent and particular game:
+
+   environment game_world(environment::MAZE);
+//   game_world.set_maze(&curr_maze);
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
@@ -100,6 +103,7 @@ int main (int argc, char* argv[])
    int H3 = 0;
    int H4 = 0;
 
+/*
    if(n_zlevels == 4)
    {
 //      H1 = 5 * 64;
@@ -116,7 +120,8 @@ int main (int argc, char* argv[])
       H3 = 64;
       H4 = 64;
    }
-   
+*/
+ 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
@@ -150,48 +155,44 @@ int main (int argc, char* argv[])
    }
    layer_dims.push_back(Dout);
 
-   reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
+// Construct reinforcement learning agent:
+
+   int replay_memory_capacity = 5 * sqr(n_max_turns);  
+   reinforce* reinforce_agent_ptr = new reinforce(
+      layer_dims, Tmax, replay_memory_capacity);
+//   reinforce_agent_ptr->set_debug_flag(true);
+   reinforce_agent_ptr->set_environment(&game_world);
 
 // Gamma = discount factor for reward:
 
-   double gamma = 0.99;
-//   double gamma = 0.95;
+//   double gamma = 0.99;
+   double gamma = 0.95;
 //   double gamma = 0.9;
 //   double gamma = 0.5;
    reinforce_agent_ptr->set_gamma(gamma);  
 
 //   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
 
-   
 //   reinforce_agent_ptr->set_batch_size(100);   
-   reinforce_agent_ptr->set_batch_size(30);   // Best value as of Tues Oct 25
+//   reinforce_agent_ptr->set_batch_size(30);   
 //   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(3);   
-//   reinforce_agent_ptr->set_batch_size(60);   
-//   reinforce_agent_ptr->set_batch_size(120);  
+   reinforce_agent_ptr->set_batch_size(1);  
 
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 
-//   double base_learning_rate = 0.001 + nrfunc::ran1() * 0.004;
-//   reinforce_agent_ptr->set_base_learning_rate(base_learning_rate);
-
-//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-
-   double min_learning_rate = 0.5E-4;
-//   double min_learning_rate = 3E-5;
+   double min_learning_rate = 1E-4;
 
    int n_max_episodes = 1 * 1000000;
    if(n_zlevels > 1)
    {
-//   n_max_episodes = 2 * 1000000;
-//      n_max_episodes = 5 * 1000000;
       n_max_episodes = 20 * 1000000;
    }
 
-   int n_update = 5000;
+   int n_update = 2000;
    int n_summarize = 10000;
 
    int n_losses = 0;
@@ -203,8 +204,7 @@ int main (int argc, char* argv[])
    double curr_reward = -999;
    double win_reward = 1;
    double stalemate_reward = 0.25;
-   double lose_reward = -2;
-//   double lose_reward = -1;
+   double lose_reward = -1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -229,17 +229,15 @@ int main (int argc, char* argv[])
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
-      ttt_ptr->reset_board_state();
-      reinforce_agent_ptr->initialize_episode();
-
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_summarize, n_max_episodes);
 
-// FAKE FAKE:  Fri Nov 4 at 11:50 am
-// Expt with NOT decreasing learning rate as training proceeds
+      ttt_ptr->reset_board_state();
+      reinforce_agent_ptr->initialize_episode();
 
-/*
+// Decrease learning rate as training proceeds:
+
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
@@ -254,12 +252,10 @@ int main (int argc, char* argv[])
             AI_moves_first = !AI_moves_first;
          }
       }
-*/
-
 
       if(AI_moves_first)
       {
-         ttt_ptr->set_recursive_depth(0);   // AI plays offensively
+         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
 //         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
       }
       else
@@ -308,6 +304,7 @@ int main (int argc, char* argv[])
 
          int output_action;
 
+/*
 // Expt on Fri Nov 4 at 9:30 am with Delsey's idea about "check" in 3D TTT:
 
          int a_winning_opponent_action = 
@@ -328,11 +325,11 @@ int main (int argc, char* argv[])
             output_action = 
                reinforce_agent_ptr->get_candidate_current_action();
          }
+*/
 
          reinforce_agent_ptr->set_current_action(output_action);
          ttt_ptr->set_player_move(output_action, agent_value);
 
-//         ttt_ptr->get_random_legal_player_move(agent_value);
 //         ttt_ptr->increment_n_agent_turns();
 
 //          ttt_ptr->display_board_state();
@@ -451,7 +448,3 @@ int main (int argc, char* argv[])
    delete reinforce_agent_ptr;
    delete reinforce_AI_ptr;
 }
-
-
-
-

@@ -57,13 +57,11 @@ int main (int argc, char* argv[])
 //   int H1 = 8;
    int H1 = 10;
 //   int H1 = 12;
-//   int H1 = 20;
 
 //   int H2 = 0;
 //   int H2 = 8;
    int H2 = 10;
 //   int H2 = 12;
-//   int H2 = 4;
 
    int H3 = 0;
 
