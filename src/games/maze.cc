@@ -1,7 +1,7 @@
 // ==========================================================================
 // maze class member function definitions
 // ==========================================================================
-// Last modified on 11/15/16; 11/16/16; 11/17/16; 11/18/16
+// Last modified on 11/16/16; 11/17/16; 11/18/16; 11/21/16
 // ==========================================================================
 
 #include <iostream>
@@ -398,6 +398,10 @@ void maze::print_solution_path() const
 }
 
 // ---------------------------------------------------------------------
+// Member function generate_maze() implements a depth-first search
+// method for creating a maze.  It follows the algorithm given in
+// https://en.wikipedia.org/wiki/Maze_generation_algorithm . 
+
 void maze::generate_maze()
 {
 //   cout << "inside generate_maze()" << endl;
@@ -1003,7 +1007,10 @@ void maze::draw_max_Qmap(unsigned char* img)
          G = 123;
          B = 0;
       }
-      
+
+// Draw bluish "X" within final cell location to indicate it is the
+// maze's termination point:
+
       if(px == n_size - 1 && py == n_size - 1)
       {
          R = 0;
@@ -1523,11 +1530,15 @@ int maze::compute_turtle_reward() const
   */
 }
 
-
 // ---------------------------------------------------------------------
+// Member function solve_maze_backwards() initializes the current maze
+// cell to the maze's terminal location in the bottom right corner.  It
+// recursively finds directions pointing from neighboring cells to the
+// current cell.
+
 void maze::solve_maze_backwards()
 {
-   cout << "inside solve_maze_backwards()" << endl;
+//   cout << "inside solve_maze_backwards()" << endl;
 
    soln_grid_ptr->initialize_values(-2);
 
@@ -1540,13 +1551,13 @@ void maze::solve_maze_backwards()
 }
 
 // ---------------------------------------------------------------------
-void maze::print_soln_grid() const
-{
-   cout << "soln_grid = " << *soln_grid_ptr << endl;
-}
-
-// ---------------------------------------------------------------------
-// Member function find_neighbor_cell_directions()
+// Member function find_neighbor_cell_directions() takes in index p 
+// for some maze cell.  Looping over up, right, down and left
+// directions, it ignores any direction for which the input cell has a
+// wall.  It also ignores any direction for which the neighbor cell n
+// already has an assigned direction.  Otherwise, neighbor cell n is
+// assigned the direction pointing towards cell p.  The method is then
+// recursively called on neighbor cell n.
 
 void maze::find_neighbor_cell_directions(int p)
 {
@@ -1570,7 +1581,13 @@ void maze::find_neighbor_cell_directions(int p)
 }
 
 // ---------------------------------------------------------------------
-// Member function find_neighbor_cell_directions()
+void maze::print_soln_grid() const
+{
+   cout << "soln_grid = " << *soln_grid_ptr << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function is_problem_cell()
 
 int maze::is_problem_cell(int turtle_p)
 {
