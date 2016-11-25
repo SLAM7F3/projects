@@ -43,7 +43,7 @@ class environment
    genvector* get_curr_state();
    std::string get_curr_state_string();
    bool is_legal_action(int a);
-   genvector* compute_next_state(int a);
+   genvector* compute_next_state(int a, int player_value = 1);
    bool is_terminal_state();
 
    void set_reward(double r);

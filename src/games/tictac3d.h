@@ -12,6 +12,7 @@
 #include "math/ltduple.h"
 #include "math/lttriple.h"
 #include "math/threevector.h"
+#include "image/TwoDarray.h"
 
 class tictac3d
 {
@@ -109,6 +110,7 @@ class tictac3d
    void compute_winnable_path_occupancies(int player_value);
 
    void plot_game_frac_histories(int n_episodes, std::string extrainfo);
+   void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
   private: 
 
@@ -156,6 +158,11 @@ class tictac3d
    LATEST_MOVE_MAP::iterator latest_move_iter;
 
    int latest_O_move, latest_X_move;
+
+// wtwoDarray_ptr points to a twoDarray which contains renormalized
+// trained weight values:
+
+   std::vector<twoDarray*> wtwoDarray_ptrs;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -291,6 +298,11 @@ inline void tictac3d::set_cell_value(int p, int value)
 inline int tictac3d::get_cell_value(int p) const
 {
    return curr_board_state[p];
+}
+
+inline void tictac3d::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
+{
+   wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
 }
 
 

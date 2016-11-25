@@ -114,13 +114,16 @@ bool environment::is_legal_action(int a)
    if(world_type == MAZE)
    {
       legal_action_flag = maze_ptr->legal_turtle_move(a);
-      
+   }
+   else if(world_type == TTT)
+   {
+      legal_action_flag = tictac3d_ptr->legal_player_move(a);
    }
    return legal_action_flag;
 }
 
 // ---------------------------------------------------------------------
-genvector* environment::compute_next_state(int a)
+genvector* environment::compute_next_state(int a, int player_value)
 {
    genvector* next_state_ptr = NULL;
 
@@ -130,6 +133,11 @@ genvector* environment::compute_next_state(int a)
       bool erase_turtle_path = true;
       maze_ptr->move_turtle(curr_dir, erase_turtle_path);
       next_state_ptr = maze_ptr->get_occupancy_state();
+   }
+   else if (world_type == TTT)
+   {
+      tictac3d_ptr->set_player_move(a, player_value);
+      next_state_ptr = tictac3d_ptr->get_board_state_ptr();
    }
    return next_state_ptr;
 }
@@ -141,6 +149,10 @@ bool environment::is_terminal_state()
    if(world_type == MAZE)
    {
       terminal_state_flag = maze_ptr->get_maze_solved();
+   }
+   else if(world_type == MAZE)
+   {
+      terminal_state_flag = tictac3d_ptr->get_game_over();
    }
    return terminal_state_flag;
 }
@@ -161,12 +173,7 @@ double environment::get_reward() const
 
 string environment::get_state_action_string(genvector* curr_s, int a)
 {
-   string state_action_str = "";
-   if(world_type == MAZE)
-   {
-      return get_curr_state_string()+stringfunc::number_to_string(a);
-   }
-   return state_action_str;
+   return get_curr_state_string()+stringfunc::number_to_string(a);
 }
 
 // ---------------------------------------------------------------------
@@ -203,5 +210,9 @@ void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
    if(world_type == MAZE)
    {
       maze_ptr->append_wtwoDarray(wtwoDarray_ptr);
+   }
+   else if(world_type == TTT)
+   {
+      tictac3d_ptr->append_wtwoDarray(wtwoDarray_ptr);
    }
 }

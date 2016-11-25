@@ -1600,7 +1600,7 @@ int reinforce::select_legal_action_for_curr_state()
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_deep_Qvalues() retreives all possible
+// Member function compute_deep_Qvalues() retrieves all possible
 // states in both genvector* and string form from the environment.
 // Looping over each possible state, it forward propagates the input
 // state through the neural network and extracts Q values

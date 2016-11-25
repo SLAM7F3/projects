@@ -687,7 +687,6 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
    if(corner_2_corner_win(player_ID))
    {
       if(print_flag) print_winning_pattern();
-//      game_over = true;
       return win_in_corner_diag;
    }
 
@@ -698,7 +697,6 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
       if(Zslant_xconst_win(player_ID,px))
       {
          if(print_flag) print_winning_pattern();
-//         game_over = true;
          return win_in_zslant;
       }
    }
@@ -708,7 +706,6 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
       if(Zslant_yconst_win(player_ID,py))
       {
          if(print_flag) print_winning_pattern();
-//         game_over = true;
          return win_in_zslant;
       }
    }
@@ -721,7 +718,6 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
          if(Zcolumn_win(player_ID, px, py))
          {
             if(print_flag) print_winning_pattern();
-//            game_over = true;
             return win_in_zcolumn;
          }
       }
@@ -734,7 +730,6 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
       if(Zplane_win(player_ID, pz))
       {
          if(print_flag) print_winning_pattern();
-//         game_over = true;
          return win_in_zplane;
       }
    } // loop over pz
