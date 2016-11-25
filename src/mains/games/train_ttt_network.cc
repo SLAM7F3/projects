@@ -22,25 +22,6 @@ using std::string;
 using std::vector;
 
 // ==========================================================================
-void compute_AI_move(tictac3d* ttt_ptr, reinforce* reinforce_AI_ptr, 
-                     int AI_value)
-{
-   bool enforce_constraints_flag = true;
-   reinforce_AI_ptr->compute_action_probs(
-      ttt_ptr->get_inverse_board_state_ptr(), enforce_constraints_flag);
-   
-   int output_action = reinforce_AI_ptr->get_candidate_current_action();
-   bool legal_move = ttt_ptr->legal_player_move(output_action);
-   if(!legal_move)
-   {
-      cout << "legal AI move = " << legal_move << endl;
-   }
-   
-   reinforce_AI_ptr->set_current_action(output_action);
-   ttt_ptr->set_player_move(output_action, AI_value);
-}
-
-// ==========================================================================
 void compute_minimax_move(
    bool AI_moves_first, tictac3d* ttt_ptr, int AI_value)
 {
@@ -73,22 +54,26 @@ void compute_minimax_move(
 int main (int argc, char* argv[])
 {
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
+//   nrfunc::init_time_based_seed();
+   long s = -11;
+//   cout << "Enter negative seed:" << endl;
+//   cin >> s;
+   nrfunc::init_default_seed(s);
 
-   int n_zlevels = 4;
    int nsize = 4;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
-   int n_max_turns = nsize * nsize * n_zlevels;
+   int n_actions = nsize * nsize * n_zlevels;
+   int n_max_turns = n_actions;
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
 
    environment game_world(environment::TTT);
-//   game_world.set_maze(&curr_maze);
+   game_world.set_tictac3d(ttt_ptr);
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
-   int Dout = nsize * nsize * n_zlevels;// Output dimensionality
-   int Tmax = nsize * nsize * n_zlevels;
+   int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 64;	// 
 //   int H1 = 3 * 64;	//  
@@ -100,42 +85,11 @@ int main (int argc, char* argv[])
 //   int H2 = 3 * 64;
 //   int H2 = 5 * 64;
 
-   int H3 = 0;
-   int H4 = 0;
-
-/*
-   if(n_zlevels == 4)
-   {
-//      H1 = 5 * 64;
-//      H2 = 1 * 64;
-
-//      H1 = 3 * 64;
-//      H2 = 3 * 64;
-
-//      H1 = 1 * 64;
-//      H2 = 5 * 64;
-
-      H1 = 1 * 64;
-      H2 = 64;
-      H3 = 64;
-      H4 = 64;
-   }
-*/
- 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
       extrainfo += "; H2="+stringfunc::number_to_string(H2);
    }
-   if(H3 > 0)
-   {
-      extrainfo += "; H3="+stringfunc::number_to_string(H3);
-   }
-   if(H4 > 0)
-   {
-      extrainfo += "; H4="+stringfunc::number_to_string(H3);
-   }
-
    extrainfo += "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
    vector<int> layer_dims;
@@ -145,21 +99,13 @@ int main (int argc, char* argv[])
    {
       layer_dims.push_back(H2);
    }
-   if(H3 > 0)
-   {
-      layer_dims.push_back(H3);
-   }
-   if(H4 > 0)
-   {
-      layer_dims.push_back(H4);
-   }
    layer_dims.push_back(Dout);
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 5 * sqr(n_max_turns);  
+   int replay_memory_capacity = 10 * sqr(n_max_turns);  
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, replay_memory_capacity);
+      layer_dims, n_max_turns, replay_memory_capacity);
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
@@ -168,13 +114,8 @@ int main (int argc, char* argv[])
 //   double gamma = 0.99;
    double gamma = 0.95;
 //   double gamma = 0.9;
-//   double gamma = 0.5;
    reinforce_agent_ptr->set_gamma(gamma);  
 
-//   reinforce_agent_ptr->set_gamma(0.25);  // best gamma value as of Weds Oct 26
-
-//   reinforce_agent_ptr->set_batch_size(100);   
-//   reinforce_agent_ptr->set_batch_size(30);   
 //   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_batch_size(3);   
    reinforce_agent_ptr->set_batch_size(1);  
@@ -210,7 +151,14 @@ int main (int argc, char* argv[])
 // value:
 
    int n_episodes_period = 100 * 1000;
-//      int n_episodes_period = 150 * 1000;
+
+   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
+//   int old_weights_period = 32;  
+
+   double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
+//   double min_epsilon = 0.025;
+//   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.1; 
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
@@ -218,6 +166,14 @@ int main (int argc, char* argv[])
    bool AI_moves_first = false;
    bool periodically_switch_starting_player = false;
 //   bool periodically_switch_starting_player = true;
+
+// Initialize Deep Q replay memory:
+
+   game_world.start_new_episode();
+
+   reinforce_agent_ptr->initialize_replay_memory();
+   int update_old_weights_counter = 0;
+   double total_loss = -1;
 
 // Import previously trained TTT network to guide AI play:
 
@@ -267,6 +223,11 @@ int main (int argc, char* argv[])
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
+//      cout << "************  Start of Game " << curr_episode_number
+//           << " ***********" << endl;
+
+      double reward;
+      genvector* next_s;
       while(!ttt_ptr->get_game_over())
       {
          int curr_timestep = reinforce_agent_ptr->get_curr_timestep();
@@ -278,9 +239,7 @@ int main (int argc, char* argv[])
 //            ttt_ptr->get_random_legal_player_move(AI_value);
             compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
-
-//              ttt_ptr->display_board_state();
-//            ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
+//            ttt_ptr->display_board_state();
 
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
@@ -298,11 +257,7 @@ int main (int argc, char* argv[])
             }
          } // AI_moves_first || timestep > 0 conditional
 
-//         ttt_ptr->display_board_state();
-
 // Agent move:
-
-         int output_action;
 
 /*
 // Expt on Fri Nov 4 at 9:30 am with Delsey's idea about "check" in 3D TTT:
@@ -317,15 +272,30 @@ int main (int argc, char* argv[])
          }
          else
          {
-
-            bool enforce_constraints_flag = true;
-            reinforce_agent_ptr->compute_action_probs(
-               ttt_ptr->get_board_state_ptr(), enforce_constraints_flag);
-//         ttt_ptr->display_p_action(reinforce_agent_ptr->get_p_action());
-            output_action = 
-               reinforce_agent_ptr->get_candidate_current_action();
-         }
 */
+
+         genvector *curr_s = game_world.get_curr_state();
+         int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+            *curr_s);
+         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+
+         if(!game_world.is_legal_action(curr_a))
+         {
+            next_s = NULL;
+            reward = -1;
+            curr_maze.set_game_over(true);
+         }
+         else
+         {
+            next_s = game_world.compute_next_state(curr_a);
+            reward = curr_maze.compute_turtle_reward();
+         } // curr_a is legal action conditional
+
+//         cout << " reward = " << reward 
+//              << " game over = " << curr_maze.get_game_over() << endl;
+
+
+
 
          reinforce_agent_ptr->set_current_action(output_action);
          ttt_ptr->set_player_move(output_action, agent_value);

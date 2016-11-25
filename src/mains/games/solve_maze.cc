@@ -116,6 +116,9 @@ int main (int argc, char* argv[])
 		// optimal for n_grid_size = 8
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
+// Periodically decrease learning rate down to some minimal floor
+// value:
+
    double min_learning_rate = 1E-4;
 
    int n_max_episodes = 1 * 1000 * 1000;
@@ -124,8 +127,6 @@ int main (int argc, char* argv[])
    int n_progress = 50000;
    double Qmap_score = -1;
 
-// Periodically decrease learning rate down to some minimal floor
-// value:
 
    int n_episodes_period = 100 * 1000;
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
@@ -137,7 +138,6 @@ int main (int argc, char* argv[])
 //   double min_epsilon = 0.05; 
 //   double min_epsilon = 0.1; 
 //   double min_epsilon = 0.15;
-//   double min_epsilon = 0.01;
 
    string basename = "maze";
    bool display_qmap_flag = true;
