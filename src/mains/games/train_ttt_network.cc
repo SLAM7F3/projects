@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 11/3/16; 11/4/16; 11/7/16; 11/25/16
+// Last updated on 11/4/16; 11/7/16; 11/25/16; 11/26/16
 // ==========================================================================
 
 #include <iostream>
@@ -142,10 +142,12 @@ int main (int argc, char* argv[])
    int n_recent_losses = 0;
    int n_recent_stalemates = 0;
    int n_recent_wins = 0;
+
    double curr_reward = -999;
    double win_reward = 1;
    double stalemate_reward = 0.25;
    double lose_reward = -1;
+   double illegal_reward = -2;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -226,9 +228,8 @@ int main (int argc, char* argv[])
 //      cout << "************  Start of Game " << curr_episode_number
 //           << " ***********" << endl;
 
-      double reward;
       genvector* next_s;
-      while(!ttt_ptr->get_game_over())
+      while(!game_world.get_game_over())
       {
          int curr_timestep = reinforce_agent_ptr->get_curr_timestep();
 
@@ -243,7 +244,7 @@ int main (int argc, char* argv[])
 
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
-               ttt_ptr->set_game_over(true);
+               game_world.set_game_over(true);
                curr_reward = lose_reward; // Agent loses!
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
@@ -279,37 +280,27 @@ int main (int argc, char* argv[])
             *curr_s);
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 
+         curr_reward = 0;
          if(!game_world.is_legal_action(curr_a))
          {
             next_s = NULL;
-            reward = -1;
-            curr_maze.set_game_over(true);
+            curr_reward = illegal_reward;
+            game_world.set_game_over(true);
          }
          else
          {
-            next_s = game_world.compute_next_state(curr_a);
-            reward = curr_maze.compute_turtle_reward();
+            next_s = game_world.compute_next_state(curr_a, agent_value);
          } // curr_a is legal action conditional
 
-//         cout << " reward = " << reward 
-//              << " game over = " << curr_maze.get_game_over() << endl;
-
-
-
-
-         reinforce_agent_ptr->set_current_action(output_action);
-         ttt_ptr->set_player_move(output_action, agent_value);
-
-//         ttt_ptr->increment_n_agent_turns();
-
-//          ttt_ptr->display_board_state();
+         reinforce_agent_ptr->set_current_action(curr_a);
+         ttt_ptr->increment_n_agent_turns();
+         ttt_ptr->display_board_state();
 
 // Step the environment and then retrieve new reward measurements:
 
-         curr_reward = 0;
          if(ttt_ptr->check_player_win(agent_value) > 0)
          {
-            ttt_ptr->set_game_over(true);
+            game_world.set_game_over(true);
             curr_reward = win_reward;	 // Agent wins!
          }
          else if (ttt_ptr->check_filled_board())
@@ -318,7 +309,9 @@ int main (int argc, char* argv[])
          }
 
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
-//          cout << "curr_reward = " << curr_reward << endl;
+         cout << "curr_reward = " << curr_reward << endl;
+
+         outputfunc::enter_continue_char();
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
@@ -329,7 +322,8 @@ int main (int argc, char* argv[])
 //          cout << "GAME OVER" << endl;
       }
       
-      if(nearly_equal(curr_reward, lose_reward))
+      if(nearly_equal(curr_reward, lose_reward) ||
+         nearly_equal(curr_reward, illegal_reward))
       {
          n_losses++;
          n_recent_losses++;

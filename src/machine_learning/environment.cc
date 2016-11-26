@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/11/16; 11/13/16; 11/17/16; 11/25/16
+// Last modified on 11/13/16; 11/17/16; 11/25/16; 11/26/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -155,6 +155,34 @@ bool environment::is_terminal_state()
       terminal_state_flag = tictac3d_ptr->get_game_over();
    }
    return terminal_state_flag;
+}
+
+// ---------------------------------------------------------------------
+bool environment::get_game_over()
+{
+   bool game_over_flag = false;
+   if(world_type == MAZE)
+   {
+      return maze_ptr->get_game_over();
+   }
+   else if(world_type == MAZE)
+   {
+      return tictac3d_ptr->get_game_over();
+   }
+   return game_over_flag;
+}
+
+// ---------------------------------------------------------------------
+void environment::set_game_over(bool flag)
+{
+   if(world_type == MAZE)
+   {
+      return maze_ptr->set_game_over(flag);
+   }
+   else if(world_type == MAZE)
+   {
+      return tictac3d_ptr->set_game_over(flag);
+   }
 }
 
 // ---------------------------------------------------------------------

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/13/16; 11/17/16; 11/18/16; 11/25/16
+// Last modified on 11/17/16; 11/18/16; 11/25/16; 11/26/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -45,6 +45,8 @@ class environment
    bool is_legal_action(int a);
    genvector* compute_next_state(int a, int player_value = 1);
    bool is_terminal_state();
+   bool get_game_over();
+   void set_game_over(bool flag);
 
    void set_reward(double r);
    double get_reward() const;
