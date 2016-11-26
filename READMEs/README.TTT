@@ -1,0 +1,22 @@
+==========================================================================
+Deep Q learning notes for TTT
+==========================================================================
+Last updated on 11/26/16
+==========================================================================
+
+5.  H1 = 320; H2 = 16; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 32; min_epsilon = 0.1
+    Started on m6700 
+
+6.  H1 = 320; H2 = 16; zlevels = 1
+    base learning rate = 3E-2; rms_decay = 0.9; batch size = 32
+    old weights period = 32; min_epsilon = 0.1
+    Started on m6700 
+
+7.  H1 = 7*64; H2 = 16; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 32; min_epsilon = 0.1
+    Started on m6700 
+
+
