@@ -62,8 +62,8 @@ int main (int argc, char* argv[])
    nrfunc::init_default_seed(s);
 
    int nsize = 4;
-   int n_zlevels = 1;
-//   int n_zlevels = 4;
+//   int n_zlevels = 1;
+   int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_actions = nsize * nsize * n_zlevels;
    int n_max_turns = n_actions;
@@ -83,8 +83,9 @@ int main (int argc, char* argv[])
 //   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
-   int H2 = 16;
-//   int H2 = 1 * 64;
+//   int H2 = 16;
+//   int H2 = 32;
+   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
 //   int H2 = 5 * 64;
 
@@ -130,8 +131,8 @@ int main (int argc, char* argv[])
 //   double gamma = 0.9;
    reinforce_agent_ptr->set_gamma(gamma);  
 
-   reinforce_agent_ptr->set_batch_size(32);
-//   reinforce_agent_ptr->set_batch_size(10);
+//   reinforce_agent_ptr->set_batch_size(32);
+   reinforce_agent_ptr->set_batch_size(10);
 //   reinforce_agent_ptr->set_batch_size(1);  
 
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
@@ -292,7 +293,9 @@ int main (int argc, char* argv[])
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
-         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+         int curr_a = reinforce_agent_ptr->
+            select_legal_action_for_curr_state();
+//         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 
          curr_reward = 0;
          if(!game_world.is_legal_action(curr_a))
@@ -462,7 +465,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->compute_weight_distributions();
 //         reinforce_agent_ptr->plot_loss_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_reward_history(
-            output_subdir, extrainfo, illegal_reward, win_reward);
+            output_subdir, extrainfo, lose_reward, win_reward);
          reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
          reinforce_agent_ptr->export_snapshot(output_subdir);
          ttt_ptr->plot_game_frac_histories(

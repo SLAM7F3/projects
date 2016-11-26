@@ -4,13 +4,44 @@ Deep Q learning notes for TTT
 Last updated on 11/26/16
 ==========================================================================
 
+BEST RESULTS SO FAR
+-------------------
+
+13.  H1 = 3*64; H2 = 32; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    illegal_frac --> 0.204; win frac --> 0.754 after 20M episodes
+    running reward --> 0.598 after 20M episodes
+    Started on TM at 1:35 pm
+
 TERMINATED EXPERIMENTS
+----------------------
 
 6.  H1 = 320; H2 = 16; zlevels = 1
     base learning rate = 3E-2; rms_decay = 0.9; batch size = 32
     old weights period = 32; min_epsilon = 0.1
     epsilon decay factor = 0.999
     Terminated.  This base learning rate is definitely too large !!!
+
+8.  H1 = 3*64; H2 = 16; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 32; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Started on TM at 11:55 am
+    win frac --> 0.724; illegal frac --> 0.230 after 20E6 episodes
+    cross over of win and illegal fracs occurs around 5E6 episodes
+    log10(loss) --> -1.75 after 20E6 episodes
+    running reward --> 0.606 after 20M episodes
+
+9.  H1 = 5*64; H2 = 16; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 100; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Started on TM at 11:57 am
+    win frac --> 0.7; illegal frac --> 0.27 after 1.9M episodes
+    cross over of win and illegal fracs occurs around 5.8E6 episodes
+    Worse performance than expt 8
 
 10.  H1 = 5*64; H2 = 16; zlevels = 1
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 100
@@ -22,16 +53,14 @@ TERMINATED EXPERIMENTS
     Finished running for 20M episodes on TM after 1 hour
     Batch size = 100 definitely seems too large !!!
 
-RUNNING EXPERIMENTS
-
 5.  H1 = 320; H2 = 16; zlevels = 1
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
     old weights period = 32; min_epsilon = 0.1
     epsilon decay factor = 0.999
     Started on m6700 
     cross over of win and illegal fracs occurs around 6E6 episodes
-    illegal frac --> 0.33, win frac --> 0.65 after 13E6 episodes
-    running reward --> 0.6 after 10E6 episodes
+    illegal frac --> 0.27, win frac --> 0.71 after 20E6 episodes
+    running reward --> 0.558 after 20E6 episodes
 
 7.  H1 = 7*64; H2 = 16; zlevels = 1
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
@@ -39,29 +68,8 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.999
     Started on m6700 
     cross over of win and illegal fracs occurs around 5.5E6 episodes
-    illegal frac --> 0.38, win frac --> 0.58 after 7E6 episodes
-    running reward --> 0.5 after 7E6 episodes
-
-8.  H1 = 3*64; H2 = 16; zlevels = 1
-    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
-    old weights period = 32; min_epsilon = 0.1
-    epsilon decay factor = 0.999
-    Started on TM at 11:55 am
-    win frac --> 0.73; illegal frac --> 0.23 after 20E6 episodes
-    cross over of win and illegal fracs occurs around 5E6 episodes
-    log10(loss) --> -1.75 after 20E6 episodes
-    running reward --> 0.6 after 20E6 episodes
-
-    BEST RESULTS SO FAR
-
-9.  H1 = 5*64; H2 = 16; zlevels = 1
-    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
-    old weights period = 100; min_epsilon = 0.1
-    epsilon decay factor = 0.999
-    Started on TM at 11:57 am
-    win frac --> 0.7; illegal frac --> 0.27 after 1.9M episodes
-    cross over of win and illegal fracs occurs around 5.8E6 episodes
-    Worse performance than expt 8
+    illegal frac --> 0.244, win frac --> 0.724 after 20E6 episodes
+    running reward --> 0.51 after 20E6 episodes
 
 11.  H1 = 5*64; H2 = 16; zlevels = 1
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
@@ -69,4 +77,92 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.999
     Started on m6700 at 12:13 pm
     cross over of win and illegal fracs occurs around 6E6 episodes
-    win frac --> 0.48; illegal frac --> 0.48 after 6M episodes
+    win frac --> 0.713; illegal frac --> 0.259 after 20M episodes
+    running reward --> 0.558 after 20E6 episodes
+
+
+
+12.  H1 = 3*64; H2 = 0; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Started on TM at 1:33 pm
+    illegal frac --> 0.228; win frac --> 0.722 after 20M episodes
+
+13.  H1 = 3*64; H2 = 32; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    illegal_frac --> 0.204; win frac --> 0.754 after 20M episodes
+    Started on TM at 1:35 pm
+
+14.  H1 = 2*64; H2 = 16; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    illegal frac --> 0.381; win frac --> 0.609 after 20M episodes
+    Started on TM at 1:38 pm
+
+15.  H1 = 3*64; H2 = 16; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    illegal reward = -4 rather than -2
+    Started on TM at 1:49 pm
+    illegal frac --> 0.287 win frac --> 0.690
+
+16.  H1 = 3*64; H2 = 32; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:10 pm
+    Terminated after 1.4M episodes.  Winning rate decreases!
+
+17.  H1 = 5*64; H2 = 64; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 32
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:15 pm
+    Terminated after 0.5M episodes.  Winning rate decreases!	
+
+18.  H1 = 5*64; H2 = 64; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:10 pm
+    Terminated after 0.6M episodes.  Winning rate decreases!	
+
+19.  H1 = 7*64; H2 = 0; zlevels = 1
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:24 pm
+    Terminated after 0.75M episodes.  Winning rate decreases!	
+
+RUNNING EXPERIMENTS
+-------------------
+
+20.  H1 = 3*64; H2 = 32; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:34 pm
+
+21.  H1 = 5*64; H2 = 32; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:34 pm
+
+22.  H1 = 5*64; H2 = 64; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on m6700 at 5:34 pm
