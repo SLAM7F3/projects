@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/15/16; 11/16/16; 11/17/16; 11/18/16
+// Last modified on 11/16/16; 11/17/16; 11/18/16; 11/26/16
 // ==========================================================================
 
 #include <string>
@@ -979,7 +979,6 @@ void reinforce::compute_weight_distributions()
 }
 
 // ---------------------------------------------------------------------
-
 string reinforce::init_subtitle()
 {
    string subtitle=
@@ -992,12 +991,12 @@ string reinforce::init_subtitle()
 // ---------------------------------------------------------------------
 // Generate metafile plot of loss values versus time step samples.
 
-void reinforce::plot_loss_history(std::string extrainfo)
+void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 {
    if(loss_values.size() < 3) return;
 
    metafile curr_metafile;
-   string meta_filename="loss_history";
+   string meta_filename=output_subdir+"loss_history";
    string title="Loss vs RMSprop model training; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
@@ -1068,12 +1067,13 @@ void reinforce::plot_loss_history(std::string extrainfo)
 // Generate metafile plot of running reward sum versus time step samples.
 
 void reinforce::plot_reward_history(
-   std::string extrainfo, double min_reward, double max_reward)
+   std::string output_subdir, std::string extrainfo, 
+   double min_reward, double max_reward)
 {
    if(running_reward_snapshots.size() < 5) return;
 
    metafile curr_metafile;
-   string meta_filename="reward_history";
+   string meta_filename=output_subdir+"reward_history";
    string title="Running reward sum vs RMSprop model training; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
@@ -1131,12 +1131,12 @@ void reinforce::plot_reward_history(
 // ---------------------------------------------------------------------
 // Generate metafile plot of total number of turns versus episode number.
 
-void reinforce::plot_turns_history(std::string extrainfo)
+void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 {
    if(n_episode_turns_frac.size() < 5) return;
 
    metafile curr_metafile;
-   string meta_filename="turns_history";
+   string meta_filename=output_subdir+"turns_history";
    string title="Number of AI and agent turns vs episode; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
@@ -1324,22 +1324,25 @@ void reinforce::plot_log10_loss_history(string output_subdir,
 }
 
 // ---------------------------------------------------------------------
-// Member function export_snapshot()
+// Member function create_snapshots_subdir()
 
-void reinforce::create_snapshots_subdir()
+void reinforce::create_snapshots_subdir(string output_subdir)
 {
    Clock clock;
    clock.set_time_based_on_local_computer_clock();
    string timestamp_str = clock.YYYY_MM_DD_H_M_S("_","_",false,0);
    string timestamp_substr = timestamp_str.substr(0,16);
 
-   snapshots_subdir = "./snapshots/"+timestamp_substr+"/";
+   snapshots_subdir = output_subdir+"snapshots/"+timestamp_substr+"/";
    filefunc::dircreate(snapshots_subdir);
 }
 
-void reinforce::export_snapshot()
+// ---------------------------------------------------------------------
+// Member function export_snapshot()
+
+void reinforce::export_snapshot(string output_subdir)
 {
-   if(snapshots_subdir.size() == 0) create_snapshots_subdir();
+   if(snapshots_subdir.size() == 0) create_snapshots_subdir(output_subdir);
    
    string snapshot_filename=snapshots_subdir+"snapshot_"+
       stringfunc::integer_to_string(episode_number, 5)+".binary";

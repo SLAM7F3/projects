@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/2/16; 11/3/16; 11/4/16; 11/25/16
+// Last modified on 11/3/16; 11/4/16; 11/25/16; 11/26/16
 // ==========================================================================
 
 #include <iostream>
@@ -1655,10 +1655,11 @@ void tictac3d::extremal_winnable_path_scores(
 // Generate metafile plot of game_illegal_frac, game_loss_frac,
 // game_stalemate_frac and game_win_frac versus episodes
 
-void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
+void tictac3d::plot_game_frac_histories(
+   string output_subdir, int n_episodes, string extrainfo)
 {
    metafile curr_metafile;
-   string meta_filename="game_histories";
+   string meta_filename=output_subdir+"game_histories";
    string title="Game histories vs episode";
    string x_label="Episode number";
    string y_label="Game history fractions";
@@ -1673,7 +1674,8 @@ void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
 
    curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Illegal");
-   curr_metafile.write_curve(0, n_episodes, game_illegal_frac, colorfunc::purple);
+   curr_metafile.write_curve(
+      0, n_episodes, game_illegal_frac, colorfunc::purple);
 
    curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Loss");
@@ -1681,7 +1683,8 @@ void tictac3d::plot_game_frac_histories(int n_episodes, string extrainfo)
 
    curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Stalemate");
-   curr_metafile.write_curve(0, n_episodes, game_stalemate_frac, colorfunc::cyan);
+   curr_metafile.write_curve(
+      0, n_episodes, game_stalemate_frac, colorfunc::cyan);
 
    curr_metafile.set_thickness(3);
    curr_metafile.set_legendlabel("Win");

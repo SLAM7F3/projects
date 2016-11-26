@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "machine_learning/environment.h"
+#include "general/filefuncs.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "machine_learning/reinforce.h"
@@ -109,6 +110,18 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
+// Initialize output subdirectory within an experiments folder:
+
+   string experiments_subdir="./experiments/TTT/";
+   filefunc::dircreate(experiments_subdir);
+
+   int expt_number;
+   cout << "Enter experiment number:" << endl;
+   cin >> expt_number;
+   string output_subdir=experiments_subdir+
+      "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
+   filefunc::dircreate(output_subdir);
+
 // Gamma = discount factor for reward:
 
 //   double gamma = 0.99;
@@ -135,6 +148,8 @@ int main (int argc, char* argv[])
 
    int n_update = 2000;
    int n_summarize = 10000;
+   int n_anneal_steps = 1000;
+   int n_progress = 50000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -154,13 +169,18 @@ int main (int argc, char* argv[])
 
    int n_episodes_period = 100 * 1000;
 
-   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
+   int old_weights_period = 10; 
 //   int old_weights_period = 32;  
 
-   double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
+   double min_epsilon = 0.01;	
 //   double min_epsilon = 0.025;
 //   double min_epsilon = 0.05; 
 //   double min_epsilon = 0.1; 
+
+
+
+
+
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
@@ -168,6 +188,7 @@ int main (int argc, char* argv[])
    bool AI_moves_first = false;
    bool periodically_switch_starting_player = false;
 //   bool periodically_switch_starting_player = true;
+
 
 // Initialize Deep Q replay memory:
 
@@ -311,9 +332,46 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          cout << "curr_reward = " << curr_reward << endl;
 
+         if(game_world.get_game_over())
+         {
+            reinforce_agent_ptr->store_arsprime_into_replay_memory(
+               d, curr_a, reward, *curr_s, curr_maze.get_game_over());
+         }
+         else
+         {
+            reinforce_agent_ptr->store_arsprime_into_replay_memory(
+               d, curr_a, reward, *next_s, curr_maze.get_game_over());
+         }
+
          outputfunc::enter_continue_char();
       } // !game_over while loop
 // -----------------------------------------------------------------------
+
+      reinforce_agent_ptr->increment_episode_number();
+      reinforce_agent_ptr->update_running_reward(extrainfo);
+
+      update_old_weights_counter++;
+      if(update_old_weights_counter%old_weights_period == 0)
+      {
+         reinforce_agent_ptr->copy_weights_onto_old_weights();
+         update_old_weights_counter = 1;
+      }
+
+      if(curr_episode_number > 0 && curr_episode_number % 
+         reinforce_agent_ptr->get_batch_size() == 0)
+      {
+         total_loss = reinforce_agent_ptr->update_Q_network();
+      }
+
+// Periodically anneal epsilon:
+
+      if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
+      {
+//         double decay_factor = 0.975;
+//         double decay_factor = 0.95;
+         double decay_factor = 0.90; 
+         reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
+      }
 
       if(curr_episode_number > 0 && curr_episode_number% n_update == 0)
       {
@@ -339,11 +397,6 @@ int main (int argc, char* argv[])
          n_recent_stalemates++;
       }
 
-      reinforce_agent_ptr->update_weights();
-      reinforce_agent_ptr->update_running_reward(extrainfo);
-      
-      reinforce_agent_ptr->increment_episode_number();
-      int n_episodes = curr_episode_number + 1;
       if(curr_episode_number >= n_update - 1 && 
          curr_episode_number % n_update == 0)
       {
@@ -359,7 +412,8 @@ int main (int argc, char* argv[])
          {
             cout << "Agent moves first" << endl;
          }
-         
+
+         int n_episodes = curr_episode_number + 1;         
          double recent_loss_frac = double(n_recent_losses) / n_update;
          double recent_stalemate_frac = double(n_recent_stalemates) / n_update;
          double recent_win_frac = double(n_recent_wins) / n_update;
@@ -395,18 +449,41 @@ int main (int argc, char* argv[])
          curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_loss_history(extrainfo);
+         reinforce_agent_ptr->plot_loss_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_reward_history(
-            extrainfo, lose_reward, win_reward);
-         reinforce_agent_ptr->plot_turns_history(extrainfo);
-         reinforce_agent_ptr->export_snapshot();
-         ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
+            output_subdir, extrainfo, lose_reward, win_reward);
+         reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
+         reinforce_agent_ptr->export_snapshot(output_subdir);
+         ttt_ptr->plot_game_frac_histories(
+            output_subdir, curr_episode_number, extrainfo);
       }
 
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
 // ==========================================================================
+
+   outputfunc::print_elapsed_time();
+   cout << "Final episode number = "
+        << reinforce_agent_ptr->get_episode_number() << endl;
+   cout << "N_weights = " << reinforce_agent_ptr->count_weights()
+        << endl;
+
+// Generate metafile for loss function history:
+
+   string subtitle=
+      "Old weights T="+stringfunc::number_to_string(old_weights_period)
+      +";min eps="+stringfunc::number_to_string(min_epsilon);
+
+   reinforce_agent_ptr->plot_log10_loss_history(
+      output_subdir, subtitle, extrainfo);
+
+// Export trained weights in neural network's zeroth layer as
+// greyscale images to output_subdir
+
+   string weights_subdir = output_subdir+"zeroth_layer_weights/";
+   filefunc::dircreate(weights_subdir);
+   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
 
    delete ttt_ptr;
    delete reinforce_agent_ptr;

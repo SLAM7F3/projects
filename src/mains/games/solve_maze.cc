@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/14/16; 11/16/16; 11/17/16; 11/18/16
+// Last updated on 11/16/16; 11/17/16; 11/18/16; 11/26/16
 // ==========================================================================
 
 #include <iostream>
@@ -89,6 +89,8 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
+
+// Initialize output subdirectory within an experiments folder:
 
    int output_counter = 0;
    string experiments_subdir="./experiments/mazes/";
@@ -186,7 +188,7 @@ int main (int argc, char* argv[])
 
       double reward;
       genvector* next_s;
-      while(!curr_maze.get_game_over())
+      while(!game_world.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
@@ -197,7 +199,7 @@ int main (int argc, char* argv[])
          {
             next_s = NULL;
             reward = -1;
-            curr_maze.set_game_over(true);
+            game_world.set_game_over(true);
          }
          else
          {
@@ -206,17 +208,17 @@ int main (int argc, char* argv[])
          } // curr_a is legal action conditional
 
 //         cout << " reward = " << reward 
-//              << " game over = " << curr_maze.get_game_over() << endl;
+//              << " game over = " << game_world.get_game_over() << endl;
 
-         if(curr_maze.get_game_over())
+         if(game_world.get_game_over())
          {
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, reward, *curr_s, curr_maze.get_game_over());
+               d, curr_a, reward, *curr_s, game_world.get_game_over());
          }
          else
          {
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, reward, *next_s, curr_maze.get_game_over());
+               d, curr_a, reward, *next_s, game_world.get_game_over());
          }
       } // game_over while loop
 
@@ -237,10 +239,11 @@ int main (int argc, char* argv[])
          total_loss = reinforce_agent_ptr->update_Q_network();
       }
 
+// Periodically anneal epsilon:
+
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-//         double decay_factor = 0.99;
-//             double decay_factor = 0.975;
+//         double decay_factor = 0.975;
 //         double decay_factor = 0.95;
          double decay_factor = 0.90; // Probably optimal for n_size_grid = 8
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
@@ -286,6 +289,8 @@ int main (int argc, char* argv[])
                          display_qmap_flag);
    }
 
+// Generate metafiles for Qmap and loss function histories:
+
    string subtitle="Nsize="+stringfunc::number_to_string(n_grid_size)
       +";old weights T="+stringfunc::number_to_string(old_weights_period)
       +";min eps="+stringfunc::number_to_string(min_epsilon);
@@ -304,7 +309,6 @@ int main (int argc, char* argv[])
       output_subdir, subtitle, extrainfo);
    reinforce_agent_ptr->plot_log10_loss_history(
       output_subdir, subtitle, extrainfo);
-//   reinforce_agent_ptr->print_Qmap();
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir

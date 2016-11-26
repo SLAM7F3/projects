@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/13/16; 11/14/16; 11/15/16; 11/17/16
+// Last modified on 11/14/16; 11/15/16; 11/17/16; 11/26/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -81,17 +81,18 @@ class reinforce
    void plot_zeroth_layer_weights(std::string output_subdir);
    void compute_weight_distributions();
    std::string init_subtitle();
-   void plot_loss_history(std::string extrainfo);
+   void plot_loss_history(std::string output_subdir, std::string extrainfo);
    void plot_reward_history(
-      std::string extrainfo, double min_reward, double max_reward);
-   void plot_turns_history(std::string extrainfo);
+      std::string output_subdir, std::string extrainfo, 
+      double min_reward, double max_reward);
+   void plot_turns_history(std::string output_subdir, std::string extrainfo);
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
 
-   void create_snapshots_subdir();
-   void export_snapshot();
+   void create_snapshots_subdir(std::string output_subdir);
+   void export_snapshot(std::string output_subdir);
    void import_snapshot();
 
 // Q learning methods

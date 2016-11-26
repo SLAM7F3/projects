@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/2/16; 11/3/16; 11/4/16; 11/25/16
+// Last modified on 11/3/16; 11/4/16; 11/25/16; 11/26/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -109,7 +109,8 @@ class tictac3d
       double& integrated_opponent_path_score);
    void compute_winnable_path_occupancies(int player_value);
 
-   void plot_game_frac_histories(int n_episodes, std::string extrainfo);
+   void plot_game_frac_histories(
+      std::string output_subdir, int n_episodes, std::string extrainfo);
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
   private: 
