@@ -1272,8 +1272,9 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
 // ---------------------------------------------------------------------
 // Generate metafile plot of log10(total loss) versus episode number.
 
-void reinforce::plot_log10_loss_history(string output_subdir, 
-                                        string subtitle, string extrainfo)
+void reinforce::plot_log10_loss_history(
+   string output_subdir, string subtitle, string extrainfo, 
+   double min_score, double max_score)
 {
    if(log10_losses.size() < 3) return;
 
@@ -1288,9 +1289,6 @@ void reinforce::plot_log10_loss_history(string output_subdir,
    subtitle += ";"+extrainfo;
    string x_label="Episode";
    string y_label="Log10(Total loss)";
-
-   double min_score = -6;
-   double max_score = -1;
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, episode_number,

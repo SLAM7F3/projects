@@ -89,8 +89,9 @@ class reinforce
    void plot_turns_history(std::string output_subdir, std::string extrainfo);
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
-   void plot_log10_loss_history(std::string output_subdir, 
-                                std::string subtitle, std::string extrainfo);
+   void plot_log10_loss_history(
+      std::string output_subdir, std::string subtitle, std::string extrainfo,
+      double min_score = -6, double max_score = -1);
 
    void create_snapshots_subdir(std::string output_subdir);
    void export_snapshot(std::string output_subdir);

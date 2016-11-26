@@ -79,8 +79,8 @@ int main (int argc, char* argv[])
 
 //   int H1 = 1 * 32;	// 
 //   int H1 = 3 * 64;	//  
-//   int H1 = 5 * 64;	//  = 320
-   int H1 = 7 * 64;	//  
+   int H1 = 5 * 64;	//  = 320
+//   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
    int H2 = 16;
@@ -172,8 +172,8 @@ int main (int argc, char* argv[])
 
    int n_episodes_period = 100 * 1000;
 
-//   int old_weights_period = 10; 
-   int old_weights_period = 32;  
+   int old_weights_period = 10; 
+//   int old_weights_period = 32;  
 
 //   double min_epsilon = 0.01;	
 //   double min_epsilon = 0.025;
@@ -487,7 +487,7 @@ int main (int argc, char* argv[])
       +";min eps="+stringfunc::number_to_string(min_epsilon);
 
    reinforce_agent_ptr->plot_log10_loss_history(
-      output_subdir, subtitle, extrainfo);
+      output_subdir, subtitle, extrainfo, 0, -3);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
