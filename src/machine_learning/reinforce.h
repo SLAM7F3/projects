@@ -71,6 +71,7 @@ class reinforce
    void periodically_snapshot_loss_value();
    void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
+   void update_T_values();
    void update_weights();
    void update_running_reward(std::string extrainfo);
 
@@ -97,7 +98,8 @@ class reinforce
 
 // Q learning methods
 
-   void initialize_replay_memory();
+//    void initialize_replay_memory();
+   bool get_replay_memory_full() const;
    void copy_weights_onto_old_weights();
    int get_random_action() const;
    int get_random_legal_action() const;
@@ -206,6 +208,7 @@ class reinforce
 
 // Q learning variables:
 
+   bool replay_memory_full_flag;
    int replay_memory_capacity;
    int replay_memory_index; // 0 <=replay_memory_index < replay_memory_capacity
    double epsilon;	// Select random action with probability epsilon
@@ -348,6 +351,11 @@ inline void reinforce::push_back_Qmap_score(double score)
 inline void reinforce::push_back_log10_loss(double log10_loss)
 {
    log10_losses.push_back(log10_loss);
+}
+
+inline bool reinforce::get_replay_memory_full() const
+{
+   return replay_memory_full_flag;
 }
 
 

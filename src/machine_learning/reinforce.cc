@@ -142,6 +142,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // Q learning variable initialization:
 
    environment_ptr = NULL;
+   replay_memory_full_flag = false;
    replay_memory_index = 0;
    epsilon = 1.000001;
 }
@@ -672,7 +673,7 @@ void reinforce::record_reward_for_action(double curr_reward)
 //   cout << "curr_timestep = " << curr_timestep 
 //        << " curr_reward = " << curr_reward << endl;
 
-   periodically_snapshot_loss_value();
+//   periodically_snapshot_loss_value();
    cum_time_counter++;
    curr_timestep++;
    T++;
@@ -688,16 +689,25 @@ void reinforce::periodically_snapshot_loss_value()
    }
 }
 
+
 // ---------------------------------------------------------------------
-void reinforce::update_weights()
+void reinforce::update_T_values()
 {
-//   cout << "inside update_weights()" << endl;
+//   cout << "inside update_T_values()" << endl;
 
    T_values.push_back(T);
    if(T_values.size() > 1000)
    {
       T_values.pop_front();
    }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::update_weights()
+{
+//   cout << "inside update_weights()" << endl;
+
+   update_T_values();
 
 // Compute the discounted reward backwards through time:
 
@@ -810,7 +820,7 @@ void reinforce::update_running_reward(string extrainfo)
    reward_sum = 0;
 
    bool print_flag = false;
-   if(episode_number > 0 && episode_number % 100 == 0) print_flag = true;
+   if(episode_number > 0 && episode_number % 5000 == 0) print_flag = true;
    if(print_flag)
    {
       double mu_T, sigma_T;
@@ -931,7 +941,7 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
       tr_ptr->convert_grey_values_to_hues(hue_min);
 
       string output_filename=output_subdir + 
-         "weights_"+stringfunc::number_to_string(n)+".png";
+         "weights_"+stringfunc::integer_to_string(n,3)+".png";
       tr_ptr->write_curr_frame(output_filename);
       string banner="Exported "+output_filename;
       outputfunc::write_banner(banner);
@@ -1478,14 +1488,17 @@ void reinforce::import_snapshot()
 // Q learning methods
 // ==========================================================================
 
+/*
 // Member function initialize_replay_memory()
 
 void reinforce::initialize_replay_memory()
 {
+   cout << "inside reinforce::initialize_replay_memory()" << endl;
    initialize_episode();
 
    for(int m = 0; m < replay_memory_capacity; m++)
    {
+      cout << "m = " << m << endl;
       genvector *curr_s = environment_ptr->get_curr_state();
       int d = store_curr_state_into_replay_memory(*curr_s);
       int curr_a = get_random_legal_action();
@@ -1503,7 +1516,9 @@ void reinforce::initialize_replay_memory()
          initialize_episode();
       }
    } // loop over index m
+   cout << "at end of reinforce::initialize_replay_memory()" << endl;
 }
+*/
 
 // ---------------------------------------------------------------------
 // Member function copy_weights_onto_old_weights() copies weights and
@@ -1751,6 +1766,7 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
    }
    else
    {
+      replay_memory_full_flag = true;
       replay_memory_index = 0;
       d = replay_memory_index;
    }
@@ -1773,12 +1789,12 @@ void reinforce::store_arsprime_into_replay_memory(
    s_next->put_row(d, next_s);
    terminal_state->put(d, terminal_state_flag);
 }
+
 // ---------------------------------------------------------------------
 // Member function get_memory_replay_entry()
 
 bool reinforce::get_memory_replay_entry(
-   int d, genvector& curr_s, int& curr_a, double& curr_r,
-   genvector& next_s)
+   int d, genvector& curr_s, int& curr_a, double& curr_r, genvector& next_s)
 {
    s_curr->get_row(d, curr_s);
    double a_val = a_curr->get(d);
@@ -1824,6 +1840,7 @@ double reinforce::update_Q_network()
 // Nd = Number of random samples to be drawn from replay memory:
 
    int Nd = 0.1 * replay_memory_capacity; 
+//   cout << "Nd = " << Nd << endl;
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);

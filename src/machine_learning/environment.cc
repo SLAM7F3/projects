@@ -150,7 +150,7 @@ bool environment::is_terminal_state()
    {
       terminal_state_flag = maze_ptr->get_maze_solved();
    }
-   else if(world_type == MAZE)
+   else if(world_type == TTT)
    {
       terminal_state_flag = tictac3d_ptr->get_game_over();
    }
@@ -165,7 +165,7 @@ bool environment::get_game_over()
    {
       return maze_ptr->get_game_over();
    }
-   else if(world_type == MAZE)
+   else if(world_type == TTT)
    {
       return tictac3d_ptr->get_game_over();
    }
@@ -179,7 +179,7 @@ void environment::set_game_over(bool flag)
    {
       return maze_ptr->set_game_over(flag);
    }
-   else if(world_type == MAZE)
+   else if(world_type == TTT)
    {
       return tictac3d_ptr->set_game_over(flag);
    }

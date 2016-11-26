@@ -149,13 +149,12 @@ int main (int argc, char* argv[])
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
 
-// Initialize Deep Q replay memory:
-
    game_world.start_new_episode();
-
-   reinforce_agent_ptr->initialize_replay_memory();
    int update_old_weights_counter = 0;
    double total_loss = -1;
+
+// ==========================================================================
+// Reinforcement training loop starts here
       
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
          Qmap_score < 0.999999)
@@ -226,6 +225,8 @@ int main (int argc, char* argv[])
     
       reinforce_agent_ptr->increment_episode_number();
 
+// Periodically copy current weights into old weights:
+
       update_old_weights_counter++;
       if(update_old_weights_counter%old_weights_period == 0)
       {
@@ -233,8 +234,8 @@ int main (int argc, char* argv[])
          update_old_weights_counter = 1;
       }
 
-      if(curr_episode_number > 0 && curr_episode_number % 
-         reinforce_agent_ptr->get_batch_size() == 0)
+      if(reinforce_agent_ptr->get_replay_memory_full() && 
+         curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
          total_loss = reinforce_agent_ptr->update_Q_network();
       }
@@ -275,13 +276,15 @@ int main (int argc, char* argv[])
       }
    } // n_episodes < n_max_episodes while loop
 
+// Reinforcement training loop ends here
+// ==========================================================================
+
    outputfunc::print_elapsed_time();
    cout << "Final episode number = "
         << reinforce_agent_ptr->get_episode_number() << endl;
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
 
-//   int n_final_mazes = 1;
    int n_final_mazes = 40;
    for(int i = 0; i < n_final_mazes; i++)
    {
