@@ -131,10 +131,7 @@ class tictac3d
 
    genvector *board_state_ptr;
    genvector *inverse_board_state_ptr;
-
-   int n_afterstates;
    std::vector<genvector*> afterstate_ptrs;
-   
 
    std::vector<double> game_loss_frac, game_illegal_frac;
    std::vector<double> game_stalemate_frac, game_win_frac;

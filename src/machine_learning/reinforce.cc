@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/16/16; 11/17/16; 11/18/16; 11/26/16
+// Last modified on 11/17/16; 11/18/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #include <string>
@@ -672,10 +672,11 @@ void reinforce::record_reward_for_action(double curr_reward)
 {
    reward_sum += curr_reward;
    reward->put(curr_timestep, curr_reward);
-//   cout << "curr_timestep = " << curr_timestep 
-//        << " curr_reward = " << curr_reward << endl;
+}
 
-//   periodically_snapshot_loss_value();
+// ---------------------------------------------------------------------
+void reinforce::increment_time_counters()
+{
    cum_time_counter++;
    curr_timestep++;
    T++;
@@ -690,7 +691,6 @@ void reinforce::periodically_snapshot_loss_value()
       loss_values.push_back(compute_cross_entropy_loss(curr_timestep));
    }
 }
-
 
 // ---------------------------------------------------------------------
 void reinforce::update_T_values()
@@ -1810,10 +1810,11 @@ double reinforce::update_Q_network()
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);
    double total_loss = 0;
-   for(unsigned int d = 0; d < d_samples.size(); d++)
+   for(unsigned int j = 0; j < d_samples.size(); j++)
    {
-      total_loss += Q_backward_propagate(d, Nd);
-   } // loop over index d labeling replay memory samples
+      int curr_d = d_samples[j];
+      total_loss += Q_backward_propagate(curr_d, Nd);
+   } // loop over index j labeling replay memory samples
 
 // Perform RMSprop parameter update:
 
@@ -2045,6 +2046,19 @@ void reinforce::print_Qmap()
 // Value function learning methods
 // ==========================================================================
 
+// Member function compute_value() performs a forward-pass on the
+// input state.  It returns the scalar value output from the neural
+// network.
+
+double reinforce::compute_value(
+   genvector* curr_afterstate, bool use_old_weights_flag)
+{
+   Q_forward_propagate(curr_afterstate, use_old_weights_flag);
+   int t = 0;
+   return a[n_layers-1]->get(0,t);
+}
+
+// ---------------------------------------------------------------------
 // Member function V_forward_propagate_afterstates() performs a
 // feedforward pass for all legal afterstates to the current state.
 // It returns the index for the action which yields the best
@@ -2052,7 +2066,7 @@ void reinforce::print_Qmap()
 // member *prev_afterstate_ptr.
 
 int reinforce::V_forward_propagate_afterstates(
-   int player_value, double& Vstar, bool use_old_weights_flag)
+   int player_value, double& Vstar)
 {
    vector<genvector*>* afterstate_ptrs = environment_ptr->get_all_afterstates(
       player_value);
@@ -2064,7 +2078,6 @@ int reinforce::V_forward_propagate_afterstates(
    }
 
    int best_a = -1;
-   int t = 0;
    for(unsigned int curr_a = 0; curr_a < afterstate_ptrs->size(); curr_a++)
    {
       genvector* curr_afterstate = afterstate_ptrs->at(curr_a);
@@ -2073,9 +2086,8 @@ int reinforce::V_forward_propagate_afterstates(
 // all coordinates of their genvectors:
 
       if(nearly_equal(curr_afterstate->get(0), -999)) continue;
-      
-      Q_forward_propagate(curr_afterstate, use_old_weights_flag);
-      double curr_activation = a[n_layers-1]->get(0,t);
+
+      double curr_activation = compute_value(curr_afterstate);
       if(player_value > 0 && curr_activation > Vstar)
       {
          Vstar = curr_activation;
@@ -2089,7 +2101,6 @@ int reinforce::V_forward_propagate_afterstates(
    } // loop over index curr_a labeling actions which lead to afterstates
 
    *prev_afterstate_ptr = *afterstate_ptrs->at(best_a);
-
    return best_a;
 }
 
@@ -2115,15 +2126,12 @@ int reinforce::select_legal_action_for_curr_state(
    {
       curr_a = get_random_legal_action();
       *prev_afterstate_ptr = *afterstate_ptrs->at(curr_a);
-      Q_forward_propagate(prev_afterstate_ptr);
-      int t = 0;
-      Vstar = a[n_layers-1]->get(0,t);
+      Vstar = compute_value(prev_afterstate_ptr);
    }
    else
    {
       curr_a = V_forward_propagate_afterstates(player_value, Vstar);
    }
-
    return curr_a;
 }
 
@@ -2131,7 +2139,7 @@ int reinforce::select_legal_action_for_curr_state(
 // Member function compute_target()
 
 double reinforce::compute_target(
-   double curr_r, int player_value, bool terminal_state_flag)
+   int curr_a, int player_value, double curr_r, bool terminal_state_flag)
 {
    if(terminal_state_flag)
    {
@@ -2139,20 +2147,114 @@ double reinforce::compute_target(
    }
    else
    {
-      bool use_old_weights_flag = true;
-      double Vstar;
-      V_forward_propagate_afterstates(
-         player_value, Vstar, use_old_weights_flag);
+      vector<genvector*>* afterstate_ptrs = environment_ptr->
+         get_all_afterstates(player_value);
+      genvector* curr_afterstate = afterstate_ptrs->at(curr_a);
+//      bool use_old_weights_flag = true;
+      bool use_old_weights_flag = false;
+      double Vstar = compute_value(curr_afterstate, use_old_weights_flag);
       return curr_r + gamma * Vstar;
    }
 }
 
-
 // ---------------------------------------------------------------------
-// 
-
-void reinforce::execute_selected_action(int player_value, int curr_a)
+double reinforce::get_prev_afterstate_curr_value()
 {
-   
+   return compute_value(prev_afterstate_ptr);
 }
 
+// ---------------------------------------------------------------------
+// Member function update_V_network()
+
+double reinforce::update_V_network()
+{
+//   cout << "inside update_V_network()" << endl;
+//   cout << "episode_number = " << get_episode_number() << endl;
+
+// Nd = Number of random samples to be drawn from replay memory:
+
+   int Nd = 0.1 * replay_memory_capacity; 
+//   cout << "Nd = " << Nd << endl;
+
+   vector<int> d_samples = mathfunc::random_sequence(
+      replay_memory_capacity, Nd);
+   double total_loss = 0;
+   for(unsigned int j = 0; j < d_samples.size(); j++)
+   {
+      int curr_d = d_samples[j];
+//      total_loss += V_backward_propagate(curr_d, Nd);
+   } // loop over index j labeling replay memory samples
+
+// Perform RMSprop parameter update:
+
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
+      {
+         for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+         {
+            double curr_val = 
+               rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
+               + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
+            rmsprop_weights_cache[l]->put(i,j,curr_val);
+         } // loop over index j labeling columns
+      } // loop over index i labeling rows
+   }
+
+// Update weights and biases for each network layer by their nabla
+// values averaged over the current mini-batch:
+
+   const double TINY = 1E-5;
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+      rms_denom[l]->hadamard_sum(TINY);
+      nabla_weights[l]->hadamard_division(*rms_denom[l]);
+      *weights[l] -= learning_rate * (*nabla_weights[l]);
+      
+// Should update biases too!
+
+      if(debug_flag)
+      {
+         int mdim = nabla_weights[l]->get_mdim();
+         int ndim = nabla_weights[l]->get_ndim();
+         
+         vector<double> curr_nabla_weights;
+         vector<double> curr_nabla_weight_ratios;
+         for(int r = 0; r < mdim; r++)
+         {
+            for(int c = 0; c < ndim; c++)
+            {
+               curr_nabla_weights.push_back(
+                  fabs(nabla_weights[l]->get(c,r)));
+//               cout << "r = " << r << " c = " << c
+//                    << " curr_nabla_weight = " 
+//                    << curr_nabla_weights.back() << endl;
+               double denom = weights[l]->get(c,r);
+               if(fabs(denom) > 1E-10)
+               {
+                  curr_nabla_weight_ratios.push_back(
+                     fabs(nabla_weights[l]->get(c,r) / denom ));
+               }
+            }
+         }
+         double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+         double mean_abs_nabla_weight_ratio = mathfunc::mean(
+            curr_nabla_weight_ratios);
+            
+         cout << "layer l = " << l
+              << " mean |nabla weight| = " 
+              << mean_abs_nabla_weight 
+              << " mean |nabla weight| ratio = " 
+              << mean_abs_nabla_weight_ratio  << endl;
+         
+         cout << " lr * mean weight ratio = " 
+              << learning_rate * mean_abs_nabla_weight 
+              << " lr * mean weight ratio = " 
+              << learning_rate * mean_abs_nabla_weight_ratio << endl;
+      } // debug_flag conditional
+      
+      nabla_weights[l]->clear_values();
+   }
+   return total_loss;
+}

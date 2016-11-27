@@ -239,6 +239,7 @@ int main (int argc, char* argv[])
 //      cout << "************  Start of Game " << curr_episode_number
 //           << " ***********" << endl;
 
+      double prev_Vstar = NEGATIVEINFINITY;
       genvector* next_s;
       while(!game_world.get_game_over())
       {
@@ -263,6 +264,7 @@ int main (int argc, char* argv[])
          
             if(ttt_ptr->check_filled_board())
             {
+               game_world.set_game_over(true);
                curr_reward = stalemate_reward; // Entire board filled
                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
@@ -280,14 +282,12 @@ int main (int argc, char* argv[])
             select_legal_action_for_curr_state(agent_value, Vstar);
          next_s = game_world.compute_next_state(curr_a, agent_value);
 
-         curr_reward = 0;
-
-
          ttt_ptr->increment_n_agent_turns();
 //          ttt_ptr->display_board_state();
 
 // Step the environment and then retrieve new reward measurements:
 
+         curr_reward = 0;
          if(ttt_ptr->check_player_win(agent_value) > 0)
          {
             game_world.set_game_over(true);
@@ -295,11 +295,23 @@ int main (int argc, char* argv[])
          }
          else if (ttt_ptr->check_filled_board())
          {
+            game_world.set_game_over(true);
             curr_reward = stalemate_reward;
          }
 
-         reinforce_agent_ptr->record_reward_for_action(curr_reward);
+         if(reinforce_agent_ptr->get_curr_timestep() > 0)
+         {
+            double Vtarget_prev = reinforce_agent_ptr->compute_target(
+               curr_a, agent_value, curr_reward, game_world.get_game_over());
+            double temporal_error = Vtarget_prev - 
+               reinforce_agent_ptr->get_prev_afterstate_curr_value();
+         }
 
+         reinforce_agent_ptr->record_reward_for_action(curr_reward);
+         reinforce_agent_ptr->increment_time_counters();
+         prev_Vstar = Vstar;
+
+/*
          if(game_world.get_game_over())
          {
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
@@ -310,6 +322,7 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, curr_reward, *next_s, game_world.get_game_over());
          }
+*/
 
       } // !game_over while loop
 // -----------------------------------------------------------------------
@@ -330,7 +343,6 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-
          total_loss = reinforce_agent_ptr->update_Q_network();
       }
 

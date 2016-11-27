@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/14/16; 11/15/16; 11/17/16; 11/26/16
+// Last modified on 11/15/16; 11/17/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -71,6 +71,7 @@ class reinforce
    void periodically_snapshot_loss_value();
    void snapshot_running_reward();
    void record_reward_for_action(double curr_reward);
+   void increment_time_counters();
    void update_T_values();
    void update_weights();
    void update_running_reward(std::string extrainfo);
@@ -138,12 +139,14 @@ class reinforce
 
 // Value function learning methods
 
-   int V_forward_propagate_afterstates(
-      int player_value, double& Vstar, bool use_old_weights_flag = false);
+   double compute_value(
+      genvector* curr_afterstate, bool use_old_weights_flag = false);
+   int V_forward_propagate_afterstates(int player_value, double& Vstar);
    int select_legal_action_for_curr_state(int player_value, double& Vstar);
    double compute_target(
-      double curr_r, int player_value, bool terminal_state_flag);
-   void execute_selected_action(int player_value, int curr_a);
+      int curr_a, int player_value, double curr_r, bool terminal_state_flag);
+   double get_prev_afterstate_curr_value();
+   double update_V_network();
 
   private:
 
@@ -230,6 +233,7 @@ class reinforce
 // V learning variables:
 
    genvector *prev_afterstate_ptr; // Din x 1
+
 
    void policy_forward(int t, bool enforce_constraints_flag,
       genvector *legal_actions = NULL);
