@@ -58,8 +58,7 @@ class environment
 
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
-   std::vector<genvector*>* get_all_afterstates(
-      int player_value, int& n_afterstates);
+   std::vector<genvector*>* get_all_afterstates(int player_value);
 
   private:
 

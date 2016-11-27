@@ -113,8 +113,7 @@ class tictac3d
       std::string output_subdir, int n_episodes, std::string extrainfo);
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
-   std::vector<genvector*>& compute_all_afterstates(
-      int player_value, int& n_afterstates);
+   std::vector<genvector*>& compute_all_afterstates(int player_value);
 
   private: 
 

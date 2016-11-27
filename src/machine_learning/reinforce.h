@@ -138,9 +138,12 @@ class reinforce
 
 // Value function learning methods
 
-
-
-
+   int V_forward_propagate_afterstates(
+      int player_value, bool use_old_weights_flag, double& Vstar);
+   int select_legal_action_for_curr_state(
+      int player_value, bool use_old_weights_flag, double& Vstar);
+   double compute_target(
+      double curr_r, double Vstar, bool terminal_state_flag);
 
   private:
 
@@ -223,6 +226,10 @@ class reinforce
 
    Q_MAP qmap;
    Q_MAP::iterator qmap_iter;
+
+// V learning variables:
+
+   genvector *prev_afterstate_ptr; // Din x 1
 
    void policy_forward(int t, bool enforce_constraints_flag,
       genvector *legal_actions = NULL);

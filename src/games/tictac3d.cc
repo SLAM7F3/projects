@@ -1748,11 +1748,9 @@ void tictac3d::plot_game_frac_histories(
 // Member function compute_all_afterstates() loops over all currently
 // vacant cells within the current board.  It sets a genvector*
 // corresponding to each possible afterstate for the current board
-// state into member vector afterstate_ptrs.  This method also returns
-// the number of such afterstates.
+// state into member vector afterstate_ptrs. 
 
-vector<genvector*>& tictac3d::compute_all_afterstates(
-   int player_value, int& n_afterstates)
+vector<genvector*>& tictac3d::compute_all_afterstates(int player_value)
 {
    n_afterstates = 0;
    for(int p = 0; p < n_cells; p++)
@@ -1768,8 +1766,18 @@ vector<genvector*>& tictac3d::compute_all_afterstates(
          n_afterstates++;
 
          set_cell_value(p, 0);  // Reset board state back to initial condition
-      } // legal move conditional
-   } // loop over index p labeling cells
+      } 
+      else
+      {
+// Fill afterstate genvector with dummy -999 values for illegal
+// moves:
 
+         for(int c = 0; c < n_cells; c++)
+         {
+            afterstate_ptrs[n_afterstates]->put(c, -999);
+         }
+      } // legal player move conditional
+
+   } // loop over index p labeling cells
    return afterstate_ptrs;
 }

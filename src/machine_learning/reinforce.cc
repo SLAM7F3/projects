@@ -162,6 +162,7 @@ void reinforce::allocate_member_objects()
 
    curr_s_sample = new genvector(layer_dims.front());
    next_s_sample = new genvector(layer_dims.front());
+   prev_afterstate_ptr = new genvector(layer_dims.front());
 }		       
 
 // ---------------------------------------------------------------------
@@ -225,6 +226,7 @@ reinforce::~reinforce()
 
    delete curr_s_sample;
    delete next_s_sample;
+   delete prev_afterstate_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -1554,14 +1556,13 @@ double reinforce::get_epsilon() const
 
 int reinforce::select_action_for_curr_state()
 {
-   genvector* curr_s = environment_ptr->get_curr_state();
-   
    if(nrfunc::ran1() < epsilon)
    {
       return get_random_action();
    }
    else
    {
+      genvector* curr_s = environment_ptr->get_curr_state();
       Q_forward_propagate(*curr_s);
       return compute_argmax_Q();
    }
@@ -1569,14 +1570,13 @@ int reinforce::select_action_for_curr_state()
 
 int reinforce::select_legal_action_for_curr_state()
 {
-   genvector* curr_s = environment_ptr->get_curr_state();
-   
    if(nrfunc::ran1() < epsilon)
    {
       return get_random_legal_action();
    }
    else
    {
+      genvector* curr_s = environment_ptr->get_curr_state();
       Q_forward_propagate(*curr_s);
       return compute_legal_argmax_Q();
    }
@@ -2045,12 +2045,104 @@ void reinforce::print_Qmap()
 // Value function learning methods
 // ==========================================================================
 
-/*
-void reinforce::copy_weights_onto_old_weights() 
+// Member function V_forward_propagate_afterstates() performs a
+// feedforward pass for all afterstates to the current state.  It
+// returns the index for the best afterstate as well as its V value.
+// The best afterstate is saved within member *prev_afterstate_ptr.
+
+int reinforce::V_forward_propagate_afterstates(
+   int player_value, bool use_old_weights_flag, double& Vstar)
 {
-   for(unsigned int l = 0; l < weights.size(); l++)
+   vector<genvector*>* afterstate_ptrs = environment_ptr->get_all_afterstates(
+      player_value);
+
+   Vstar = POSITIVEINFINITY;
+   if(player_value > 0)
    {
-      *old_weights[l] = *weights[l];
+      Vstar = NEGATIVEINFINITY;
+   }
+
+   int best_s = -1;
+   int t = 0;
+   for(unsigned int s = 0; s < afterstate_ptrs->size(); s++)
+   {
+      if(nearly_equal(afterstate_ptrs->at(s)->get(0), -999)) continue;
+      
+      Q_forward_propagate(*afterstate_ptrs->at(s), use_old_weights_flag);
+      double curr_activation = a[n_layers-1]->get(0,t);
+      if(player_value > 0 && curr_activation > Vstar)
+      {
+         Vstar = curr_activation;
+         best_s = s;
+      }
+      else if(player_value < 0 && curr_activation < Vstar)
+      {
+         Vstar = curr_activation;
+         best_s = s;
+      }
+   } // loop over index s labeling afterstates
+
+   *prev_afterstate_ptr = *afterstate_ptrs->at(best_s);
+
+   return best_s;
+}
+
+// ---------------------------------------------------------------------
+// This overloaded version of member function
+// select_legal_action_for_curr_state() implements epsilon-greedy
+// exploration.  For epsilon percentage of calls to this method, some
+// random, legal afterstate is selected and its V-value is evaluated
+// via the neural network.  Otherwise, the V-values for all
+// afterstates are evaluated via the network.  The one with the
+// extremal value consistent within input player_value is returned
+// within output Vstar along with the index for the corresponding
+// afterstate.
+
+int reinforce::select_legal_action_for_curr_state(
+   int player_value, bool use_old_weights_flag, double& Vstar)
+{
+   vector<genvector*>* afterstate_ptrs = 
+      environment_ptr->get_all_afterstates(player_value);
+
+   int curr_a = -1;
+   if(nrfunc::ran1() < epsilon)
+   {
+      curr_a = get_random_legal_action();
+      *prev_afterstate_ptr = *afterstate_ptrs->at(curr_a);
+      Q_forward_propagate(*prev_afterstate_ptr, use_old_weights_flag);
+      int t = 0;
+      Vstar = a[n_layers-1]->get(0,t);
+   }
+   else
+   {
+      curr_a = V_forward_propagate_afterstates(
+         player_value, use_old_weights_flag, Vstar);
+   }
+
+   return curr_a;
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_target()
+
+double reinforce::compute_target(
+   double curr_r, double Vstar, bool terminal_state_flag)
+{
+   if(terminal_state_flag)
+   {
+      return curr_r;
+   }
+   else
+   {
+      return curr_r + gamma * Vstar;
    }
 }
+// ---------------------------------------------------------------------
+// 
+
+/*
+void reinforce::execute_selected_action(int player_value, int afterstate_s)
+{
+   int n_afterstates;
+   vector<genvector*>* afterstate_ptrs = 
 */

@@ -271,32 +271,21 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-/*
-// Expt on Fri Nov 4 at 9:30 am with Delsey's idea about "check" in 3D TTT:
-
-         int a_winning_opponent_action = 
-            ttt_ptr->check_opponent_win_on_next_turn(agent_value);
-         if(a_winning_opponent_action >= 0)
-         {
-            reinforce_agent_ptr->hardwire_output_action(
-               a_winning_opponent_action);
-            output_action = a_winning_opponent_action;
-         }
-         else
-         {
-*/
-
          genvector *curr_s = game_world.get_curr_state();
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
+
+         bool use_old_weights_flag = false;
+         double Vstar;
          int curr_a = reinforce_agent_ptr->
-            select_legal_action_for_curr_state();
-//         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+            select_legal_action_for_curr_state(
+               agent_value, use_old_weights_flag, Vstar);
+         
 
          curr_reward = 0;
          next_s = game_world.compute_next_state(curr_a, agent_value);
 
-         reinforce_agent_ptr->set_current_action(curr_a);
+//         reinforce_agent_ptr->set_current_action(curr_a);
          ttt_ptr->increment_n_agent_turns();
 //          ttt_ptr->display_board_state();
 
@@ -325,7 +314,6 @@ int main (int argc, char* argv[])
                d, curr_a, curr_reward, *next_s, game_world.get_game_over());
          }
 
-//          outputfunc::enter_continue_char();
       } // !game_over while loop
 // -----------------------------------------------------------------------
 

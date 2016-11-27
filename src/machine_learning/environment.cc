@@ -246,14 +246,11 @@ void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
 }
 
 // ---------------------------------------------------------------------
-vector<genvector*>* environment::get_all_afterstates(
-   int player_value, int& n_afterstates)
+vector<genvector*>* environment::get_all_afterstates(int player_value)
 {
-   n_afterstates = 0;
    if(world_type == TTT)
    {
-      return &tictac3d_ptr->compute_all_afterstates(
-         player_value, n_afterstates);
+      return &tictac3d_ptr->compute_all_afterstates(player_value);
    }
    return NULL;
 }
