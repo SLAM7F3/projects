@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/16/16; 11/17/16; 11/18/16; 11/26/16
+// Last updated on 11/17/16; 11/18/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -108,7 +108,6 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_batch_size(1);  // optimal for n_grid_size = 8
 //   reinforce_agent_ptr->set_batch_size(3);
-//   reinforce_agent_ptr->set_batch_size(10);   
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.85);
@@ -133,13 +132,11 @@ int main (int argc, char* argv[])
    int n_episodes_period = 100 * 1000;
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
 //   int old_weights_period = 32;  
-//   int old_weights_period = 100;
 
    double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
 //   double min_epsilon = 0.025;
 //   double min_epsilon = 0.05; 
 //   double min_epsilon = 0.1; 
-//   double min_epsilon = 0.15;
 
    string basename = "maze";
    bool display_qmap_flag = true;
@@ -149,7 +146,6 @@ int main (int argc, char* argv[])
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
 
-   game_world.start_new_episode();
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
@@ -164,7 +160,7 @@ int main (int argc, char* argv[])
          curr_episode_number, n_progress, n_max_episodes);
 
       bool random_turtle_start = true;
-      curr_maze.reset_game(random_turtle_start);
+      game_world.start_new_episode(random_turtle_start);
       reinforce_agent_ptr->initialize_episode();
 
       if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
@@ -244,7 +240,6 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-//         double decay_factor = 0.975;
 //         double decay_factor = 0.95;
          double decay_factor = 0.90; // Probably optimal for n_size_grid = 8
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);

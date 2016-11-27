@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/3/16; 11/4/16; 11/25/16; 11/26/16
+// Last modified on 11/4/16; 11/25/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -39,6 +39,10 @@ void tictac3d::allocate_member_objects()
    curr_board_state = new int[n_cells];
    board_state_ptr = new genvector(n_cells);
    inverse_board_state_ptr = new genvector(n_cells);
+   for(int s = 0; s < n_cells; s++)
+   {
+      afterstate_ptrs.push_back(new genvector(n_cells));
+   }
 }		       
 
 void tictac3d::initialize_member_objects()
@@ -100,6 +104,11 @@ tictac3d::~tictac3d()
          delete genuine_board_state_ptrs[d];
       }
       delete genuine_board_state_ptrs;
+   }
+
+   for(int s = 0; s < n_cells; s++)
+   {
+      delete afterstate_ptrs[s];
    }
 }
 
@@ -738,6 +747,37 @@ int tictac3d::check_player_win(int player_ID, bool print_flag)
 }
 
 // ---------------------------------------------------------------------
+// Member function check_opponent_win_on_next_move() examines every
+// possible move that the opponent player could make on its next turn.
+// If moving into some cell will result in the opponent winning, the
+// cell's ID is returned by this method.  Otherwise, this method
+// returns -1.
+
+int tictac3d::check_opponent_win_on_next_turn(int player_value)
+{
+   for(int p = 0; p < n_cells; p++)
+   {
+      if(!legal_player_move(p)) continue;
+      
+      push_genuine_board_state();
+      set_cell_value(p, -player_value);
+      if(check_player_win(-player_value) > 0)
+      {
+//         cout << "*** OPPONENT CAN WIN ON NEXT TURN! ***" << endl;
+//         triple curr_t = cell_decomposition[p];
+//         cout << " Z = " << curr_t.third
+//              << " col = " << curr_t.first
+//              << " row = " << curr_t.second
+//              << endl;
+         pop_genuine_board_state();
+         return p;
+      }
+      pop_genuine_board_state();
+   }
+   return -1;
+}
+
+// ---------------------------------------------------------------------
 // Member function correlate_cells_with_winnable_paths() fills STL map
 // cell_winnable_paths_map with key = cell ID and value =
 // vector<winnable path IDs> .  
@@ -1326,7 +1366,10 @@ int tictac3d::imminent_win_or_loss(int player_value)
    }
 }
 
-// ---------------------------------------------------------------------
+// =====================================================================
+// Minimax member functions
+// =====================================================================
+
 // Member function get_recursive_minimax_move()
 
 int tictac3d::get_recursive_minimax_move(int player_value)
@@ -1651,7 +1694,10 @@ void tictac3d::extremal_winnable_path_scores(
 //        << " integrated_opponent_path_score = " << integrated_opponent_path_score << endl;
 }
 
-// ---------------------------------------------------------------------
+// =====================================================================
+// Results display member functions
+// =====================================================================
+
 // Generate metafile plot of game_illegal_frac, game_loss_frac,
 // game_stalemate_frac and game_win_frac versus episodes
 
@@ -1699,32 +1745,31 @@ void tictac3d::plot_game_frac_histories(
 }
 
 // ---------------------------------------------------------------------
-// Member function check_opponent_win_on_next_move() examines every
-// possible move that the opponent player could make on its next turn.
-// If moving into some cell will result in the opponent winning, the
-// cell's ID is returned by this method.  Otherwise, this method
-// returns -1.
+// Member function compute_all_afterstates() loops over all currently
+// vacant cells within the current board.  It sets a genvector*
+// corresponding to each possible afterstate for the current board
+// state into member vector afterstate_ptrs.  This method also returns
+// the number of such afterstates.
 
-int tictac3d::check_opponent_win_on_next_turn(int player_value)
+vector<genvector*>& tictac3d::compute_all_afterstates(
+   int player_value, int& n_afterstates)
 {
+   n_afterstates = 0;
    for(int p = 0; p < n_cells; p++)
    {
-      if(!legal_player_move(p)) continue;
-      
-      push_genuine_board_state();
-      set_cell_value(p, -player_value);
-      if(check_player_win(-player_value) > 0)
+      if(legal_player_move(p))
       {
-//         cout << "*** OPPONENT CAN WIN ON NEXT TURN! ***" << endl;
-//         triple curr_t = cell_decomposition[p];
-//         cout << " Z = " << curr_t.third
-//              << " col = " << curr_t.first
-//              << " row = " << curr_t.second
-//              << endl;
-         pop_genuine_board_state();
-         return p;
-      }
-      pop_genuine_board_state();
-   }
-   return -1;
+         set_cell_value(p, player_value);
+
+         for(int c = 0; c < n_cells; c++)
+         {
+            afterstate_ptrs[n_afterstates]->put(c, curr_board_state[c]);
+         }
+         n_afterstates++;
+
+         set_cell_value(p, 0);  // Reset board state back to initial condition
+      } // legal move conditional
+   } // loop over index p labeling cells
+
+   return afterstate_ptrs;
 }

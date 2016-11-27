@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/13/16; 11/17/16; 11/25/16; 11/26/16
+// Last modified on 11/17/16; 11/25/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -243,4 +243,17 @@ void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
    {
       tictac3d_ptr->append_wtwoDarray(wtwoDarray_ptr);
    }
+}
+
+// ---------------------------------------------------------------------
+vector<genvector*>* environment::get_all_afterstates(
+   int player_value, int& n_afterstates)
+{
+   n_afterstates = 0;
+   if(world_type == TTT)
+   {
+      return &tictac3d_ptr->compute_all_afterstates(
+         player_value, n_afterstates);
+   }
+   return NULL;
 }

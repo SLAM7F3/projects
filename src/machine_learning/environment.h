@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/17/16; 11/18/16; 11/25/16; 11/26/16
+// Last modified on 11/18/16; 11/25/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -57,6 +57,9 @@ class environment
    std::vector<std::string> get_all_curr_state_strings();
 
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
+
+   std::vector<genvector*>* get_all_afterstates(
+      int player_value, int& n_afterstates);
 
   private:
 

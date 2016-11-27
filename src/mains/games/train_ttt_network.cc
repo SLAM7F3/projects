@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 11/4/16; 11/7/16; 11/25/16; 11/26/16
+// Last updated on 11/7/16; 11/25/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -62,7 +62,6 @@ int main (int argc, char* argv[])
    nrfunc::init_default_seed(s);
 
    int nsize = 4;
-//   int n_zlevels = 1;
    int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_actions = nsize * nsize * n_zlevels;
@@ -75,24 +74,27 @@ int main (int argc, char* argv[])
    game_world.set_tictac3d(ttt_ptr);
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
-   int Dout = n_actions;		// Output dimensionality
+   int Dout = 1;			// Output dimensionality
 
-//   int H1 = 1 * 32;	// 
 //   int H1 = 3 * 64;	//  
    int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
-//   int H2 = 16;
-//   int H2 = 32;
-   int H2 = 1 * 64;
-//   int H2 = 3 * 64;
-//   int H2 = 5 * 64;
+   int H2 = 32;
+//   int H2 = 1 * 64;
+
+   int H3 = 0;
+//   int H3 = 32;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
       extrainfo += "; H2="+stringfunc::number_to_string(H2);
+   }
+   if(H3 > 0)
+   {
+      extrainfo += "; H3="+stringfunc::number_to_string(H3);
    }
    extrainfo += "; zlevels="+stringfunc::number_to_string(n_zlevels);
 
@@ -103,6 +105,10 @@ int main (int argc, char* argv[])
    {
       layer_dims.push_back(H2);
    }
+   if(H3 > 0)
+   {
+      layer_dims.push_back(H3);
+   }
    layer_dims.push_back(Dout);
 
 // Construct reinforcement learning agent:
@@ -110,7 +116,6 @@ int main (int argc, char* argv[])
    int replay_memory_capacity = 10 * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, n_max_turns, replay_memory_capacity);
-//   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
 // Initialize output subdirectory within an experiments folder:
@@ -140,24 +145,18 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
    double min_learning_rate = 1E-4;
 
    int n_max_episodes = 2 * 1000 * 1000;
-//   if(n_zlevels > 1)
-   {
-      n_max_episodes = 20 * 1000 * 1000;
-   }
+//   int n_max_episodes = 20 * 1000 * 1000;
 
    int n_update = 25000;
    int n_summarize = 25000;
    int n_anneal_steps = 2000;
 
-   int n_illegal_moves = 0;
    int n_losses = 0;
    int n_stalemates = 0;
    int n_wins = 0;
-   int n_recent_illegal_moves = 0;
    int n_recent_losses = 0;
    int n_recent_stalemates = 0;
    int n_recent_wins = 0;
@@ -166,7 +165,6 @@ int main (int argc, char* argv[])
    double win_reward = 1;
    double stalemate_reward = 0.25;
    double lose_reward = -1;
-   double illegal_reward = -2;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -176,8 +174,6 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
 
-//   double min_epsilon = 0.01;	
-//   double min_epsilon = 0.025;
 //   double min_epsilon = 0.05; 
    double min_epsilon = 0.1; 
 
@@ -188,7 +184,6 @@ int main (int argc, char* argv[])
    bool periodically_switch_starting_player = false;
 //   bool periodically_switch_starting_player = true;
 
-   game_world.start_new_episode();
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
@@ -206,7 +201,8 @@ int main (int argc, char* argv[])
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_summarize, n_max_episodes);
 
-      ttt_ptr->reset_board_state();
+      bool random_start = false;
+      game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
 // Decrease learning rate as training proceeds:
@@ -298,16 +294,7 @@ int main (int argc, char* argv[])
 //         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 
          curr_reward = 0;
-         if(!game_world.is_legal_action(curr_a))
-         {
-            next_s = NULL;
-            curr_reward = illegal_reward;
-            game_world.set_game_over(true);
-         }
-         else
-         {
-            next_s = game_world.compute_next_state(curr_a, agent_value);
-         } // curr_a is legal action conditional
+         next_s = game_world.compute_next_state(curr_a, agent_value);
 
          reinforce_agent_ptr->set_current_action(curr_a);
          ttt_ptr->increment_n_agent_turns();
@@ -373,12 +360,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
       
-      if(nearly_equal(curr_reward, illegal_reward))
-      {
-         n_illegal_moves++;
-         n_recent_illegal_moves++;
-      }
-      else if(nearly_equal(curr_reward, lose_reward))
+      if(nearly_equal(curr_reward, lose_reward))
       {
          n_losses++;
          n_recent_losses++;
@@ -413,32 +395,25 @@ int main (int argc, char* argv[])
          }
 
          int n_episodes = curr_episode_number + 1;         
-         double recent_illegal_frac = double(n_recent_illegal_moves) 
-            / n_update;
          double recent_loss_frac = double(n_recent_losses) / n_update;
          double recent_stalemate_frac = double(n_recent_stalemates) / n_update;
          double recent_win_frac = double(n_recent_wins) / n_update;
-         double illegal_frac = double(n_illegal_moves) / n_episodes;
          double loss_frac = double(n_losses) / n_episodes;
          double stalemate_frac = double(n_stalemates) / n_episodes;
          double win_frac = double(n_wins) / n_episodes;
          cout << "n_episodes = " << n_episodes 
-              << " n_recent_illegal_moves = " << n_recent_illegal_moves
               << " n_recent_losses = " << n_recent_losses
               << " n_recent_stalemates = " << n_recent_stalemates
               << " n_recent_wins = " << n_recent_wins
               << endl;
-         cout << "recent illegal frac = " << recent_illegal_frac
-              << " recent loss frac = " << recent_loss_frac
+         cout << " recent loss frac = " << recent_loss_frac
               << " recent stalemate frac = " << recent_stalemate_frac 
               << " recent win frac = " << recent_win_frac << endl;
-         cout << " illegal_frac = " << illegal_frac
-              << " loss_frac = " << loss_frac
+         cout << " loss_frac = " << loss_frac
               << " stalemate_frac = " << stalemate_frac
               << " win_frac = " << win_frac
               << endl;
-         n_recent_illegal_moves = n_recent_losses = n_recent_stalemates 
-            = n_recent_wins = 0;
+         n_recent_losses = n_recent_stalemates = n_recent_wins = 0;
 
          if(total_loss > 0)
          {
@@ -453,7 +428,6 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
          reinforce_agent_ptr->snapshot_running_reward();
 
-         ttt_ptr->append_game_illegal_frac(illegal_frac);
          ttt_ptr->append_game_loss_frac(loss_frac);
          ttt_ptr->append_game_stalemate_frac(stalemate_frac);
          ttt_ptr->append_game_win_frac(win_frac);

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/3/16; 11/4/16; 11/25/16; 11/26/16
+// Last modified on 11/4/16; 11/25/16; 11/26/16; 11/27/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -83,7 +83,6 @@ class tictac3d
    void print_winning_pattern();
 
    double get_random_player_move(int agent_value);
-
    bool legal_player_move(int p);
    bool set_player_move(int p, int player_value);
    void get_random_legal_player_move(int player_value);
@@ -93,25 +92,29 @@ class tictac3d
    void append_game_illegal_frac(double frac);
    void append_game_stalemate_frac(double frac);
    void append_game_win_frac(double frac);
-
    int imminent_win_or_loss(int player_value);
-   int get_recursive_minimax_move(int player_value);
 
+// Minimax member functions
+
+   int get_recursive_minimax_move(int player_value);
    double get_minimax_move_score(
       int curr_node, int depth, int player_value, bool maximizing_flag);
-
    double get_alphabeta_minimax_move_score(
       int curr_node, int depth, double alpha, double beta, int player_value,
       bool maximizing_flag);
-
    void extremal_winnable_path_scores(
       int player_value, double& integrated_player_path_score, 
       double& integrated_opponent_path_score);
    void compute_winnable_path_occupancies(int player_value);
 
+// Results display member functions
+
    void plot_game_frac_histories(
       std::string output_subdir, int n_episodes, std::string extrainfo);
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
+
+   std::vector<genvector*>& compute_all_afterstates(
+      int player_value, int& n_afterstates);
 
   private: 
 
@@ -129,6 +132,10 @@ class tictac3d
 
    genvector *board_state_ptr;
    genvector *inverse_board_state_ptr;
+
+   int n_afterstates;
+   std::vector<genvector*> afterstate_ptrs;
+   
 
    std::vector<double> game_loss_frac, game_illegal_frac;
    std::vector<double> game_stalemate_frac, game_win_frac;

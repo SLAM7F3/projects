@@ -99,7 +99,6 @@ class reinforce
 
 // Q learning methods
 
-//    void initialize_replay_memory();
    bool get_replay_memory_full() const;
    void copy_weights_onto_old_weights();
    int get_random_action() const;
@@ -110,20 +109,16 @@ class reinforce
 
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
-
    void compute_deep_Qvalues();
    void Q_forward_propagate(
       genvector& s_input, bool use_old_weights_flag = false);
    int compute_argmax_Q();
    int compute_legal_argmax_Q();
-
    int store_curr_state_into_replay_memory(const genvector& curr_s);
    void store_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
-
    double update_Q_network();
-
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
@@ -138,9 +133,14 @@ class reinforce
    void print_Qmap();
    void push_back_Qmap_score(double score);
    void push_back_log10_loss(double log10_loss);
-   
    Q_MAP* get_qmap_ptr();
    const Q_MAP* get_qmap_ptr() const;
+
+// Value function learning methods
+
+
+
+
 
   private:
 

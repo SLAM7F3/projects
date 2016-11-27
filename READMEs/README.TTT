@@ -153,16 +153,37 @@ RUNNING EXPERIMENTS
     Only legal agent moves allowed
     Started on m6700 at 5:34 pm
 
-21.  H1 = 5*64; H2 = 32; zlevels = 4
+21.  H1 = 32; H2 = 32; H3 = 32; zlevels = 4
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
     old weights period = 10; min_epsilon = 0.1
     epsilon decay factor = 0.999
     Only legal agent moves allowed
-    Started on m6700 at 5:34 pm
+    Started on m6700 at 6:16 pm
 
-22.  H1 = 5*64; H2 = 64; zlevels = 4
+22.  H1 = 32; H2 = 32; zlevels = 4
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
     old weights period = 10; min_epsilon = 0.1
     epsilon decay factor = 0.999
     Only legal agent moves allowed
-    Started on m6700 at 5:34 pm
+    Started on m6700 at 6:13 pm
+
+23.  H1 = 7*64; H2 = 32; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on TM at 5:54 pm
+
+24.  H1 = 7*64; H2 = 64; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on TM at 5:55 pm
+
+25.  H1 = 7*64; H2 = 2*64; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.999
+    Only legal agent moves allowed
+    Started on TM at 5:56 pm

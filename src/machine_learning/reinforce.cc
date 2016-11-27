@@ -1486,39 +1486,6 @@ void reinforce::import_snapshot()
 // Q learning methods
 // ==========================================================================
 
-/*
-// Member function initialize_replay_memory()
-
-void reinforce::initialize_replay_memory()
-{
-   cout << "inside reinforce::initialize_replay_memory()" << endl;
-   initialize_episode();
-
-   for(int m = 0; m < replay_memory_capacity; m++)
-   {
-      cout << "m = " << m << endl;
-      genvector *curr_s = environment_ptr->get_curr_state();
-      int d = store_curr_state_into_replay_memory(*curr_s);
-      int curr_a = get_random_legal_action();
-      genvector *next_s = environment_ptr->compute_next_state(curr_a);
-      double reward = environment_ptr->get_reward();
-      bool terminal_state_flag = environment_ptr->is_terminal_state();
-      store_arsprime_into_replay_memory(
-         d, curr_a, reward, *next_s, terminal_state_flag);
-
-      if(terminal_state_flag)
-      {
-//         bool random_start = false;
-         bool random_start = true;
-         environment_ptr->start_new_episode(random_start);
-         initialize_episode();
-      }
-   } // loop over index m
-   cout << "at end of reinforce::initialize_replay_memory()" << endl;
-}
-*/
-
-// ---------------------------------------------------------------------
 // Member function copy_weights_onto_old_weights() copies weights and
 // weights_transpose onto old_weights.  According to David Silver's
 // "Deep Reinforcement Learning" notes, using frequently-updated
@@ -2073,3 +2040,17 @@ void reinforce::print_Qmap()
       cout << qmap_iter->first << "  " << qmap_iter->second << endl;
    }
 }
+
+// ==========================================================================
+// Value function learning methods
+// ==========================================================================
+
+/*
+void reinforce::copy_weights_onto_old_weights() 
+{
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      *old_weights[l] = *weights[l];
+   }
+}
+*/
