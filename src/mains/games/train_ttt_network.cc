@@ -275,17 +275,14 @@ int main (int argc, char* argv[])
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
 
-         bool use_old_weights_flag = false;
          double Vstar;
          int curr_a = reinforce_agent_ptr->
-            select_legal_action_for_curr_state(
-               agent_value, use_old_weights_flag, Vstar);
-         
-
-         curr_reward = 0;
+            select_legal_action_for_curr_state(agent_value, Vstar);
          next_s = game_world.compute_next_state(curr_a, agent_value);
 
-//         reinforce_agent_ptr->set_current_action(curr_a);
+         curr_reward = 0;
+
+
          ttt_ptr->increment_n_agent_turns();
 //          ttt_ptr->display_board_state();
 

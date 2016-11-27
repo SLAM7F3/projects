@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/29/16; 10/30/16; 11/1/16; 11/7/16
+// Last updated on 10/30/16; 11/1/16; 11/7/16; 11/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -209,11 +209,14 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 10 && curr_episode_number % n_summarize == 0)
       {
+         string output_subdir = "./";
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_loss_history(extrainfo);
-         reinforce_agent_ptr->plot_reward_history(extrainfo, -1, 1);
-         reinforce_agent_ptr->plot_turns_history(extrainfo);
-         ttt_ptr->plot_game_frac_histories(curr_episode_number, extrainfo);
+         reinforce_agent_ptr->plot_loss_history(output_subdir, extrainfo);
+         reinforce_agent_ptr->plot_reward_history(
+            output_subdir, extrainfo, -1, 1);
+         reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
+         ttt_ptr->plot_game_frac_histories(
+            output_subdir, curr_episode_number, extrainfo);
       }
    } // n_episodes < n_max_episodes while loop
 

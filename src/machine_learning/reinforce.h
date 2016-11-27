@@ -111,7 +111,7 @@ class reinforce
    int select_legal_action_for_curr_state();
    void compute_deep_Qvalues();
    void Q_forward_propagate(
-      genvector& s_input, bool use_old_weights_flag = false);
+      genvector* s_input, bool use_old_weights_flag = false);
    int compute_argmax_Q();
    int compute_legal_argmax_Q();
    int store_curr_state_into_replay_memory(const genvector& curr_s);
@@ -139,11 +139,11 @@ class reinforce
 // Value function learning methods
 
    int V_forward_propagate_afterstates(
-      int player_value, bool use_old_weights_flag, double& Vstar);
-   int select_legal_action_for_curr_state(
-      int player_value, bool use_old_weights_flag, double& Vstar);
+      int player_value, double& Vstar, bool use_old_weights_flag = false);
+   int select_legal_action_for_curr_state(int player_value, double& Vstar);
    double compute_target(
-      double curr_r, double Vstar, bool terminal_state_flag);
+      double curr_r, int player_value, bool terminal_state_flag);
+   void execute_selected_action(int player_value, int curr_a);
 
   private:
 
