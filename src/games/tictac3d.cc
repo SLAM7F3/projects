@@ -1760,8 +1760,9 @@ vector<genvector*>& tictac3d::compute_all_afterstates(int player_value)
          set_cell_value(p, player_value);
          for(int c = 0; c < n_cells; c++)
          {
-            afterstate_ptrs[n_afterstates++]->put(c, curr_board_state[c]);
+            afterstate_ptrs[n_afterstates]->put(c, curr_board_state[c]);
          }
+         n_afterstates++;
          set_cell_value(p, 0);  // Reset board state back to initial condition
       } 
       else
@@ -1775,5 +1776,6 @@ vector<genvector*>& tictac3d::compute_all_afterstates(int player_value)
          }
       } // legal player move conditional
    } // loop over index p labeling cells
+
    return afterstate_ptrs;
 }

@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for mazes
 ==========================================================================
-Last updated on 11/14/16; 11/15/16; 11/16/16
+Last updated on 11/14/16; 11/15/16; 11/16/16; 11/27/16
 ==========================================================================
 
 -------------------------------
@@ -1016,3 +1016,56 @@ min eps = 0.01
 N_weights = 3750
 N final episode = K  , Ran for   mins on TM.
 TERMINATED after 712K episodes
+
+
+
+224.  time randomized seed = true
+n_size = 10, old weights T=32, min eps = 0.01
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 10 * sqr(10)
+eps decay factor = 0.9
+N_weights = 3750
+N final episode = 110K  , Ran for 19 mins on m6700
+
+225.  time randomized seed = true
+n_size = 10, old weights T=32, min eps = 0.01
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 10 * sqr(10)
+eps decay factor = 0.9
+N_weights = 3750
+N final episode = 132 K  , Ran for  22.55 mins on m6700.
+
+226.  time randomized seed = true
+n_size = 10, old weights T=32, min eps = 0.01
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 10 * sqr(10)
+eps decay factor = 0.9
+N_weights = 3750
+N final episode = 48K  , Ran for   8.0 mins on m6700.
+
+227.  time randomized seed = true
+n_size = 10, old weights T=32, min eps = 0.01
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 10 * sqr(10)
+eps decay factor = 0.9
+N_weights = 3750
+N final episode = 44K  , Ran for   7.2 mins on m6700.
+
+
+
+
+
+
+
+
+
+
+201.  time randomized seed = true
+n_size = 10, old weights T=100, min eps = 0.10
+H1 = 10, H2 = 10, base learning rate = 0.0003, batch size = 1
+replay_mem_capacity = 5 * 10*10
+eps decay factor = 0.95
+min eps = 0.01
+N_weights = 3750
+N final episode = 170K  , Ran for  7.18 mins on TM.
+BEST FINAL RESULTS

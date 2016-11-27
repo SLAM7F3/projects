@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for TTT
 ==========================================================================
-Last updated on 11/26/16
+Last updated on 11/26/16; 11/27/16
 ==========================================================================
 
 BEST RESULTS SO FAR
@@ -143,9 +143,6 @@ TERMINATED EXPERIMENTS
     Started on m6700 at 5:24 pm
     Terminated after 0.75M episodes.  Winning rate decreases!	
 
-RUNNING EXPERIMENTS
--------------------
-
 20.  H1 = 3*64; H2 = 32; zlevels = 4
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
     old weights period = 10; min_epsilon = 0.1
@@ -187,3 +184,14 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.999
     Only legal agent moves allowed
     Started on TM at 5:56 pm
+
+
+
+RUNNING EXPERIMENTS
+-------------------
+
+27.  H1 = 5*64; H2 = 32; zlevels = 4
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    Only legal agent moves allowed

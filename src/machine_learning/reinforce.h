@@ -119,7 +119,7 @@ class reinforce
    void store_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
-   double update_Q_network();
+   double update_neural_network();
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
@@ -139,6 +139,7 @@ class reinforce
 
 // Value function learning methods
 
+   void set_n_actions(int n);
    double compute_value(
       genvector* curr_afterstate, bool use_old_weights_flag = false);
    int V_forward_propagate_afterstates(int player_value, double& Vstar);
@@ -146,7 +147,6 @@ class reinforce
    double compute_target(
       int curr_a, int player_value, double curr_r, bool terminal_state_flag);
    double get_prev_afterstate_curr_value();
-   double update_V_network();
 
   private:
 

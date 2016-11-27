@@ -1785,7 +1785,7 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
    {
       bool use_old_weights_flag = true;
       Q_forward_propagate(next_s, use_old_weights_flag);
-      double Qmax = NEGATIVEINFINITY;
+      double Qmax = a[n_layers-1]->get(0,0);
       for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
       {
          Qmax = basic_math::max(Qmax, a[n_layers-1]->get(j,0));
@@ -1795,11 +1795,11 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
 }
 
 // ---------------------------------------------------------------------
-// Member function update_Q_network()
+// Member function update_neural_network()
 
-double reinforce::update_Q_network()
+double reinforce::update_neural_network()
 {
-//   cout << "inside update_Q_network()" << endl;
+//   cout << "inside update_neural_network()" << endl;
 //   cout << "episode_number = " << get_episode_number() << endl;
 
 // Nd = Number of random samples to be drawn from replay memory:
@@ -2046,6 +2046,12 @@ void reinforce::print_Qmap()
 // Value function learning methods
 // ==========================================================================
 
+void reinforce::set_n_actions(int n)
+{
+   n_actions = n;
+}
+
+// ---------------------------------------------------------------------
 // Member function compute_value() performs a forward-pass on the
 // input state.  It returns the scalar value output from the neural
 // network.
@@ -2054,8 +2060,7 @@ double reinforce::compute_value(
    genvector* curr_afterstate, bool use_old_weights_flag)
 {
    Q_forward_propagate(curr_afterstate, use_old_weights_flag);
-   int t = 0;
-   return a[n_layers-1]->get(0,t);
+   return a[n_layers-1]->get(0,0);
 }
 
 // ---------------------------------------------------------------------
@@ -2132,129 +2137,12 @@ int reinforce::select_legal_action_for_curr_state(
    {
       curr_a = V_forward_propagate_afterstates(player_value, Vstar);
    }
+
    return curr_a;
-}
-
-// ---------------------------------------------------------------------
-// Member function compute_target()
-
-double reinforce::compute_target(
-   int curr_a, int player_value, double curr_r, bool terminal_state_flag)
-{
-   if(terminal_state_flag)
-   {
-      return curr_r;
-   }
-   else
-   {
-      vector<genvector*>* afterstate_ptrs = environment_ptr->
-         get_all_afterstates(player_value);
-      genvector* curr_afterstate = afterstate_ptrs->at(curr_a);
-//      bool use_old_weights_flag = true;
-      bool use_old_weights_flag = false;
-      double Vstar = compute_value(curr_afterstate, use_old_weights_flag);
-      return curr_r + gamma * Vstar;
-   }
 }
 
 // ---------------------------------------------------------------------
 double reinforce::get_prev_afterstate_curr_value()
 {
    return compute_value(prev_afterstate_ptr);
-}
-
-// ---------------------------------------------------------------------
-// Member function update_V_network()
-
-double reinforce::update_V_network()
-{
-//   cout << "inside update_V_network()" << endl;
-//   cout << "episode_number = " << get_episode_number() << endl;
-
-// Nd = Number of random samples to be drawn from replay memory:
-
-   int Nd = 0.1 * replay_memory_capacity; 
-//   cout << "Nd = " << Nd << endl;
-
-   vector<int> d_samples = mathfunc::random_sequence(
-      replay_memory_capacity, Nd);
-   double total_loss = 0;
-   for(unsigned int j = 0; j < d_samples.size(); j++)
-   {
-      int curr_d = d_samples[j];
-//      total_loss += V_backward_propagate(curr_d, Nd);
-   } // loop over index j labeling replay memory samples
-
-// Perform RMSprop parameter update:
-
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
-      {
-         for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
-         {
-            double curr_val = 
-               rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
-               + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
-            rmsprop_weights_cache[l]->put(i,j,curr_val);
-         } // loop over index j labeling columns
-      } // loop over index i labeling rows
-   }
-
-// Update weights and biases for each network layer by their nabla
-// values averaged over the current mini-batch:
-
-   const double TINY = 1E-5;
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-      rms_denom[l]->hadamard_sum(TINY);
-      nabla_weights[l]->hadamard_division(*rms_denom[l]);
-      *weights[l] -= learning_rate * (*nabla_weights[l]);
-      
-// Should update biases too!
-
-      if(debug_flag)
-      {
-         int mdim = nabla_weights[l]->get_mdim();
-         int ndim = nabla_weights[l]->get_ndim();
-         
-         vector<double> curr_nabla_weights;
-         vector<double> curr_nabla_weight_ratios;
-         for(int r = 0; r < mdim; r++)
-         {
-            for(int c = 0; c < ndim; c++)
-            {
-               curr_nabla_weights.push_back(
-                  fabs(nabla_weights[l]->get(c,r)));
-//               cout << "r = " << r << " c = " << c
-//                    << " curr_nabla_weight = " 
-//                    << curr_nabla_weights.back() << endl;
-               double denom = weights[l]->get(c,r);
-               if(fabs(denom) > 1E-10)
-               {
-                  curr_nabla_weight_ratios.push_back(
-                     fabs(nabla_weights[l]->get(c,r) / denom ));
-               }
-            }
-         }
-         double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
-         double mean_abs_nabla_weight_ratio = mathfunc::mean(
-            curr_nabla_weight_ratios);
-            
-         cout << "layer l = " << l
-              << " mean |nabla weight| = " 
-              << mean_abs_nabla_weight 
-              << " mean |nabla weight| ratio = " 
-              << mean_abs_nabla_weight_ratio  << endl;
-         
-         cout << " lr * mean weight ratio = " 
-              << learning_rate * mean_abs_nabla_weight 
-              << " lr * mean weight ratio = " 
-              << learning_rate * mean_abs_nabla_weight_ratio << endl;
-      } // debug_flag conditional
-      
-      nabla_weights[l]->clear_values();
-   }
-   return total_loss;
 }

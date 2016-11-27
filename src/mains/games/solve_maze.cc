@@ -81,9 +81,9 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
 //   int replay_memory_capacity = 3 * sqr(n_grid_size);
-   int replay_memory_capacity = 5 * sqr(n_grid_size);  
+//   int replay_memory_capacity = 5 * sqr(n_grid_size);  
 		// Seems optimal for n_grid_size = 10
-//   int replay_memory_capacity = 10 * sqr(n_grid_size);
+   int replay_memory_capacity = 10 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, replay_memory_capacity);
 //   reinforce_agent_ptr->set_debug_flag(true);
@@ -130,8 +130,8 @@ int main (int argc, char* argv[])
 
 
    int n_episodes_period = 100 * 1000;
-   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
-//   int old_weights_period = 32;  
+//   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
+   int old_weights_period = 32;  
 
    double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
 //   double min_epsilon = 0.025;
@@ -233,14 +233,13 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_Q_network();
+         total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
 // Periodically anneal epsilon:
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-//         double decay_factor = 0.95;
          double decay_factor = 0.90; // Probably optimal for n_size_grid = 8
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }

@@ -117,6 +117,7 @@ int main (int argc, char* argv[])
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, n_max_turns, replay_memory_capacity);
    reinforce_agent_ptr->set_environment(&game_world);
+   reinforce_agent_ptr->set_n_actions(n_actions);
 
 // Initialize output subdirectory within an experiments folder:
 
@@ -150,8 +151,8 @@ int main (int argc, char* argv[])
    int n_max_episodes = 2 * 1000 * 1000;
 //   int n_max_episodes = 20 * 1000 * 1000;
 
-   int n_update = 25000;
-   int n_summarize = 25000;
+   int n_update = 1000;
+   int n_summarize = 1000;
    int n_anneal_steps = 2000;
 
    int n_losses = 0;
@@ -239,7 +240,6 @@ int main (int argc, char* argv[])
 //      cout << "************  Start of Game " << curr_episode_number
 //           << " ***********" << endl;
 
-      double prev_Vstar = NEGATIVEINFINITY;
       genvector* next_s;
       while(!game_world.get_game_over())
       {
@@ -283,7 +283,7 @@ int main (int argc, char* argv[])
          next_s = game_world.compute_next_state(curr_a, agent_value);
 
          ttt_ptr->increment_n_agent_turns();
-//          ttt_ptr->display_board_state();
+
 
 // Step the environment and then retrieve new reward measurements:
 
@@ -299,19 +299,9 @@ int main (int argc, char* argv[])
             curr_reward = stalemate_reward;
          }
 
-         if(reinforce_agent_ptr->get_curr_timestep() > 0)
-         {
-            double Vtarget_prev = reinforce_agent_ptr->compute_target(
-               curr_a, agent_value, curr_reward, game_world.get_game_over());
-            double temporal_error = Vtarget_prev - 
-               reinforce_agent_ptr->get_prev_afterstate_curr_value();
-         }
-
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
-         prev_Vstar = Vstar;
 
-/*
          if(game_world.get_game_over())
          {
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
@@ -322,7 +312,8 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, curr_reward, *next_s, game_world.get_game_over());
          }
-*/
+
+//         ttt_ptr->display_board_state();        
 
       } // !game_over while loop
 // -----------------------------------------------------------------------
@@ -343,15 +334,15 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_Q_network();
+         total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
 // Periodically anneal epsilon:
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-         double decay_factor = 0.999; 
-//         double decay_factor = 0.99; 
+//         double decay_factor = 0.999; 
+         double decay_factor = 0.99; 
 //         double decay_factor = 0.95;
 //         double decay_factor = 0.90; 
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
