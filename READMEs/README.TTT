@@ -231,6 +231,72 @@ TERMINATED EXPERIMENTS
     Lose frac = 1; Win frac = 0
     Terminated on TM
 
+41.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 1E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss increases from 0 - 90K episodes!
+
+42.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-7; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss increases from 0 - 90K episodes!
+
+43.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 1E-7; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss seems stable from 0 - 90K episodes.
+
+SGD rather than RMS prop evolution:
+----------------------------------
+
+46.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; SGD
+    base learning rate = 1E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss seems stable from 0 - 30K episodes...
+
+47.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; SGD
+    base learning rate = 1E-6; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss seems stable from 0 - 25K episodes...
+
+48.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; SGD
+    base learning rate = 1E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss increases from 0 - 40K episodes!
+
+50.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; SGD
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss increases from 0 - 15K episodes!
+
 
 RUNNING EXPERIMENTS
 -------------------
@@ -260,4 +326,15 @@ RUNNING EXPERIMENTS
 
     Running reward --> -1 after 0.3E6 episodes;
     Lose frac --> 0.77; win frac --> 0.23 after nearly 0.4E6 episodes
+
+
+51.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; SGD
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss seems stable from 0 - 15K episodes!
+
 
