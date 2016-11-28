@@ -1850,6 +1850,8 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
 // ---------------------------------------------------------------------
 // Member function update_neural_network()
 
+// int dummy_counter = 0;
+
 double reinforce::update_neural_network()
 {
 //   cout << "inside update_neural_network()" << endl;
@@ -1858,7 +1860,6 @@ double reinforce::update_neural_network()
 // Nd = Number of random samples to be drawn from replay memory:
 
    int Nd = 0.1 * replay_memory_capacity; 
-//   cout << "Nd = " << Nd << endl;
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);
@@ -1869,34 +1870,46 @@ double reinforce::update_neural_network()
       double curr_loss = Q_backward_propagate(curr_d, Nd);
       if(curr_loss >= 0) total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
+//   cout << "total_loss = " << total_loss << endl;
+
+   bool RMSprop_flag = false;
+//   bool RMSprop_flag = true;
+   if(RMSprop_flag)
+   {
 
 // Perform RMSprop parameter update:
 
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
+      for(int l = 0; l < n_layers - 1; l++)
       {
-         for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+         for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
          {
-            double curr_val = 
-               rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
-               + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
-            rmsprop_weights_cache[l]->put(i,j,curr_val);
-         } // loop over index j labeling columns
-      } // loop over index i labeling rows
+            for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+            {
+               double curr_val = 
+                  rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
+                  + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
+               rmsprop_weights_cache[l]->put(i,j,curr_val);
+            } // loop over index j labeling columns
+         } // loop over index i labeling rows
+      }
    }
-
+   
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
-   const double TINY = 1E-5;
    for(int l = 0; l < n_layers - 1; l++)
    {
-      rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-      rms_denom[l]->hadamard_sum(TINY);
-      nabla_weights[l]->hadamard_division(*rms_denom[l]);
+      if(RMSprop_flag)
+      {
+         rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         const double TINY = 1E-5;
+         rms_denom[l]->hadamard_sum(TINY);
+         nabla_weights[l]->hadamard_division(*rms_denom[l]);
+      }
+
       *weights[l] -= learning_rate * (*nabla_weights[l]);
       
+//      debug_flag = true;
       if(debug_flag)
       {
          int mdim = nabla_weights[l]->get_mdim();
@@ -1931,9 +1944,9 @@ double reinforce::update_neural_network()
               << " mean |nabla weight| ratio = " 
               << mean_abs_nabla_weight_ratio  << endl;
          
-         cout << " lr * mean weight ratio = " 
+         cout << " lr * mean_abs_nabla_weight = " 
               << learning_rate * mean_abs_nabla_weight 
-              << " lr * mean weight ratio = " 
+              << "  lr * mean_abs_nabla_weight_ratio = " 
               << learning_rate * mean_abs_nabla_weight_ratio << endl;
       } // debug_flag conditional
       
@@ -1942,6 +1955,17 @@ double reinforce::update_neural_network()
 //       cout << endl;
 //   print_weights();
 //   outputfunc::enter_continue_char();
+
+/*
+   dummy_counter++;
+   if(dummy_counter%100 == 0) 
+   {
+      cout << "RMSprop_flag = " << RMSprop_flag << endl;
+      cout << "dummy_counter = " << dummy_counter << endl;
+      outputfunc::enter_continue_char();
+   }
+*/
+ 
 
    return total_loss;
 }

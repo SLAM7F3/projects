@@ -139,7 +139,8 @@ int main (int argc, char* argv[])
 //   double gamma = 0.9;
    reinforce_agent_ptr->set_gamma(gamma);  
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-5);
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
