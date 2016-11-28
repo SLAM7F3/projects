@@ -1362,8 +1362,7 @@ void reinforce::plot_log10_loss_history(
 
       bool wrap_around_input_values = false;
       filterfunc::brute_force_filter(
-         n_episode_turns_frac, h, smoothed_log10_losses, 
-         wrap_around_input_values);
+         log10_losses, h, smoothed_log10_losses, wrap_around_input_values);
       curr_metafile.write_curve(
          0, episode_number, smoothed_log10_losses, colorfunc::blue);
    }

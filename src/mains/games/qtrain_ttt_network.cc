@@ -78,9 +78,9 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 32;	// 
-   //   int H1 = 3 * 64;	//  
-   int H1 = 5 * 64;	//  = 320
-//   int H1 = 7 * 64;	//  
+//   int H1 = 3 * 64;	//  
+//   int H1 = 5 * 64;	//  = 320
+   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
 //   int H2 = 16;
@@ -150,11 +150,6 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
    reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);
-
-//   reinforce_agent_ptr->set_base_learning_rate(3E-6);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-6);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-7);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-7);
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
