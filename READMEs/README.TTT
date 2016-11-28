@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for TTT
 ==========================================================================
-Last updated on 11/26/16; 11/27/16
+Last updated on 11/26/16; 11/27/16; 11/28/16
 ==========================================================================
 
 BEST RESULTS SO FAR
@@ -200,6 +200,9 @@ RUNNING EXPERIMENTS
     win_reward = 1; lose_reward = -1
     Running on m6700
 
+    Running reward --> -0.7 after 1E6 episodes; 
+    Lose frac --> 0.78; Win frac --> 0.22 after 1.4E6 episodes
+
 28.  H1 = 5*64; H2 = 32; zlevels = 4
     V learning
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
@@ -210,6 +213,8 @@ RUNNING EXPERIMENTS
     win_reward = 1; lose_reward = -1
     Running on m6700
 
+    Running reward --> -1 after 0.3E6 episodes;
+    Lose frac --> 0.77; win frac --> 0.23 after nearly 0.4E6 episodes
 
 29.  H1 = 5*64; H2 = 32; zlevels = 4
     Q learning
