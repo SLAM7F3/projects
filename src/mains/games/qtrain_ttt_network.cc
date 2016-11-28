@@ -78,9 +78,9 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 32;	// 
-//   int H1 = 3 * 64;	//  
+   int H1 = 3 * 64;	//  
 //   int H1 = 5 * 64;	//  = 320
-   int H1 = 7 * 64;	//  
+//   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
 //   int H2 = 16;
@@ -186,9 +186,9 @@ int main (int argc, char* argv[])
 
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
-//   double min_epsilon = 0.01;	
+   double min_epsilon = 0.01;	
 //   double min_epsilon = 0.025;
-   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.05; 
 //   double min_epsilon = 0.1; 
 
    int AI_value = -1;     // "X" pieces

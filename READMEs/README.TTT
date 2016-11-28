@@ -361,5 +361,21 @@ RUNNING EXPERIMENTS
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
 
+55.  H1 = 3*64; H2 = 16; zlevels = 4
+    Q learning; SGD
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.05
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+
+56.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; SGD
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.01
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+
 
 
