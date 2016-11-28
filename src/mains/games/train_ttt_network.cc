@@ -163,9 +163,13 @@ int main (int argc, char* argv[])
    int n_recent_wins = 0;
 
    double curr_reward = -999;
-   double win_reward = 1;
-   double stalemate_reward = 0.25;
-   double lose_reward = -1;
+//   double win_reward = 1;
+//   double stalemate_reward = 0.25;
+//   double lose_reward = -1;
+
+   double win_reward = -1;
+   double stalemate_reward = -0.25;
+   double lose_reward = 1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:

@@ -191,7 +191,58 @@ RUNNING EXPERIMENTS
 -------------------
 
 27.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
     old weights period = 10; min_epsilon = 0.1
     epsilon decay factor = 0.99
-    Only legal agent moves allowed
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    win_reward = 1; lose_reward = -1
+    Running on m6700
+
+28.  H1 = 5*64; H2 = 32; zlevels = 4
+    V learning
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    win_reward = 1; lose_reward = -1
+    Running on m6700
+
+
+29.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    win_reward = -1; lose_reward = 1
+
+30.  H1 = 5*64; H2 = 32; zlevels = 4
+    V learning
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    win_reward = -1; lose_reward = 1
+
+31.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; stupid AI moves
+    win_reward = -1; lose_reward = 1
+
+32.  H1 = 5*64; H2 = 32; zlevels = 4
+    V learning
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; stupid AI moves
+    win_reward = -1; lose_reward = 1
