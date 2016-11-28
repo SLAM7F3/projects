@@ -115,9 +115,8 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1 * 1000 * 1000;
    int n_anneal_steps = 1000;
    int n_update = 2000;
-   int n_progress = 50000;
+   int n_progress = 10000;
    double Qmap_score = -1;
-
 
    int n_episodes_period = 100 * 1000;
 //   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
@@ -135,6 +134,19 @@ int main (int argc, char* argv[])
    curr_maze.compute_max_Qmap();
    curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                       display_qmap_flag);
+
+   string subtitle="Nsize="+stringfunc::number_to_string(n_grid_size)
+      +";old weights T="+stringfunc::number_to_string(old_weights_period)
+      +";min eps="+stringfunc::number_to_string(min_epsilon);
+   string extrainfo="H1="+stringfunc::number_to_string(H1);
+   if(H2 > 0)
+   {
+      extrainfo += ";H2="+stringfunc::number_to_string(H2);
+   }
+   if(H3 > 0)
+   {
+      extrainfo += ";H3="+stringfunc::number_to_string(H3);
+   }
 
    int update_old_weights_counter = 0;
    double total_loss = -1;
@@ -258,6 +270,17 @@ int main (int argc, char* argv[])
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
       }
+
+      if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
+      {
+//         reinforce_agent_ptr->plot_reward_history(
+//            output_subdir, extrainfo, lose_reward, win_reward);
+         reinforce_agent_ptr->plot_Qmap_score_history(
+            output_subdir, subtitle, extrainfo);
+         reinforce_agent_ptr->plot_log10_loss_history(
+            output_subdir, subtitle, extrainfo);
+      }
+
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
@@ -269,7 +292,7 @@ int main (int argc, char* argv[])
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
 
-   int n_final_mazes = 40;
+   int n_final_mazes = 20;
    for(int i = 0; i < n_final_mazes; i++)
    {
       curr_maze.DrawMaze(output_counter++, output_subdir, basename,
@@ -277,20 +300,6 @@ int main (int argc, char* argv[])
    }
 
 // Generate metafiles for Qmap and loss function histories:
-
-   string subtitle="Nsize="+stringfunc::number_to_string(n_grid_size)
-      +";old weights T="+stringfunc::number_to_string(old_weights_period)
-      +";min eps="+stringfunc::number_to_string(min_epsilon);
-
-   string extrainfo="H1="+stringfunc::number_to_string(H1);
-   if(H2 > 0)
-   {
-      extrainfo += ";H2="+stringfunc::number_to_string(H2);
-   }
-   if(H3 > 0)
-   {
-      extrainfo += ";H3="+stringfunc::number_to_string(H3);
-   }
 
    reinforce_agent_ptr->plot_Qmap_score_history(
       output_subdir, subtitle, extrainfo);

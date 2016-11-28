@@ -93,15 +93,21 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // gaussian random var distributed according to N(0,1).  Recall input
 // layer has no biases:
 
+// FAKE FAKE:  Mon Nov 28 at 7:14 am
+// Set all biases to zero.
+
       for(int i = 0; i < layer_dims[l]; i++)
       {
          if(l == 0)
          {
             curr_biases->put(i, 0);
+            curr_old_biases->put(i, curr_biases->get(i));
          }
          else
          {
-            curr_biases->put(i, nrfunc::gasdev());
+            curr_biases->put(i, 0);
+//            curr_biases->put(i, nrfunc::gasdev());
+            curr_old_biases->put(i, curr_biases->get(i));
          }
       } // loop over index i labeling node in current layer
    } // loop over index l labeling network layers
@@ -128,16 +134,22 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
+      curr_nabla_weights->clear_values();
       nabla_weights.push_back(curr_nabla_weights);
+
       genmatrix *curr_delta_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
+      curr_delta_nabla_weights->clear_values();
       delta_nabla_weights.push_back(curr_delta_nabla_weights);
+
       genmatrix *curr_rmsprop_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       curr_rmsprop_weights->clear_values();
       rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+
       genmatrix *curr_rms_denom = 
          new genmatrix(layer_dims[l+1], layer_dims[l]);
+      curr_rms_denom->clear_values();
       rms_denom.push_back(curr_rms_denom);
 
 // Xavier initialize weights connecting network layers l and l+1 to be
@@ -853,7 +865,7 @@ void reinforce::update_running_reward(string extrainfo)
    {
       double mu_T, sigma_T;
       mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
-      cout << "base learning rate="+stringfunc::number_to_string(
+      cout << "base learning rate="+stringfunc::scinumber_to_string(
          base_learning_rate,5)
            << " learning_rate="+stringfunc::number_to_string(
               learning_rate, 6);
@@ -1303,9 +1315,6 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
 void reinforce::plot_log10_loss_history(
    string output_subdir, string subtitle, string extrainfo)
 {
-   cout << "inside reinforce::plot_log10_loss_history()" << endl;
-   cout << "log10_losses.size = " << log10_losses.size() << endl;
-
    if(log10_losses.size() < 3) return;
 
    metafile curr_metafile;
@@ -1337,9 +1346,10 @@ void reinforce::plot_log10_loss_history(
 
 // Temporally smooth noisy log10(Total Loss) scores:
 
-   double sigma = 5;
+   double sigma = 3;
    double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 1.5);
+   cout << "gaussian_size = " << gaussian_size << endl;
 
    vector<double> smoothed_log10_losses;
    if(gaussian_size < int(log10_losses.size())) 
@@ -1362,8 +1372,6 @@ void reinforce::plot_log10_loss_history(
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
-
-   cout << "at end of reinforce::plot_log10_loss_history()" << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -1521,12 +1529,12 @@ void reinforce::import_snapshot()
 // Q learning methods
 // ==========================================================================
 
-// Member function copy_weights_onto_old_weights() copies weights and
-// weights_transpose onto old_weights.  According to David Silver's
-// "Deep Reinforcement Learning" notes, using frequently-updated
-// weights within the target can lead to neural network oscillations
-// and instabilities.  So we should instead compute targets using old
-// weights and only periodically update them by calling this method.
+// Member function copy_weights_onto_old_weights() copies weights onto
+// old_weights.  According to David Silver's "Deep Reinforcement
+// Learning" notes, using frequently-updated weights within the target
+// can lead to neural network oscillations and instabilities.  So we
+// should instead compute targets using old weights and only
+// periodically update them by calling this method.
 
 void reinforce::copy_weights_onto_old_weights() 
 {
@@ -1661,24 +1669,31 @@ void reinforce::Q_forward_propagate(
    {
       if(use_old_weights_flag)
       {
-         z[l+1]->matrix_column_mult(*old_weights[l], *a[l], t);
+//         z[l+1]->matrix_column_mult(*old_weights[l], *a[l], t);
+         z[l+1]->matrix_column_mult_sum(
+            *old_weights[l], *a[l], *old_biases[l+1],t);
       }
       else
       {
-         z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+//         z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
+         z[l+1]->matrix_column_mult_sum(*weights[l], *a[l], *biases[l+1], t);
       }
       machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
    }
 
    if(use_old_weights_flag)
    {
-      z[n_layers-1]->matrix_column_mult(
-         *old_weights[n_layers-2], *a[n_layers-2], t);
+//      z[n_layers-1]->matrix_column_mult(
+//         *old_weights[n_layers-2], *a[n_layers-2], t);
+      z[n_layers-1]->matrix_column_mult_sum(
+         *old_weights[n_layers-2], *a[n_layers-2], *old_biases[n_layers-1], t);
    }
    else
    {
-      z[n_layers-1]->matrix_column_mult(
-         *weights[n_layers-2], *a[n_layers-2], t);
+//      z[n_layers-1]->matrix_column_mult(
+//         *weights[n_layers-2], *a[n_layers-2], t);
+      z[n_layers-1]->matrix_column_mult_sum(
+         *weights[n_layers-2], *a[n_layers-2], *biases[n_layers-1], t);
    }
 
    for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
@@ -1849,7 +1864,8 @@ double reinforce::update_neural_network()
    for(unsigned int j = 0; j < d_samples.size(); j++)
    {
       int curr_d = d_samples[j];
-      total_loss += Q_backward_propagate(curr_d, Nd);
+      double curr_loss = Q_backward_propagate(curr_d, Nd);
+      if(curr_loss >= 0) total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
 
 // Perform RMSprop parameter update:
@@ -1936,6 +1952,11 @@ double reinforce::Q_backward_propagate(int d, int Nd)
    int t = 0;
 
    // Initialize "batch" weight gradients to zero:
+
+   for(int l = 0; l < n_layers; l++)
+   {
+      delta_nabla_biases[l]->clear_values();
+   }
 
    for(int l = 0; l < n_layers - 1; l++)
    {

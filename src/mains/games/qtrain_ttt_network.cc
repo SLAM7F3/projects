@@ -78,8 +78,8 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 32;	// 
-   int H1 = 3 * 64;	//  
-//   int H1 = 5 * 64;	//  = 320
+   //   int H1 = 3 * 64;	//  
+   int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
@@ -119,7 +119,8 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 3;
+   int batch_size = 1;
+//   int batch_size = 3;
    int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, n_max_turns, batch_size, replay_memory_capacity);
@@ -144,10 +145,10 @@ int main (int argc, char* argv[])
 //   double gamma = 0.9;
    reinforce_agent_ptr->set_gamma(gamma);  
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-2);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-   double min_learning_rate = 1E-4;
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+   reinforce_agent_ptr->set_base_learning_rate(1E-5);
+   double min_learning_rate = 
+      0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
    int n_max_episodes = 2 * 1000 * 1000;
 //   if(n_zlevels > 1)
@@ -353,7 +354,6 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-
          total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
@@ -455,8 +455,7 @@ int main (int argc, char* argv[])
          ttt_ptr->append_game_win_frac(win_frac);
       }
 
-      if(curr_episode_number >= n_summarize - 1 && 
-         curr_episode_number % n_summarize == 0)
+      if(curr_episode_number > 0 && curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
 //         reinforce_agent_ptr->plot_loss_history(output_subdir, extrainfo);
