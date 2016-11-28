@@ -91,8 +91,7 @@ class reinforce
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
-      std::string output_subdir, std::string subtitle, std::string extrainfo,
-      double min_score = -6, double max_score = -1);
+      std::string output_subdir, std::string subtitle, std::string extrainfo);
 
    void create_snapshots_subdir(std::string output_subdir);
    void export_snapshot(std::string output_subdir);
@@ -167,11 +166,15 @@ class reinforce
    double gamma;	// Discount factor for reward
    double rmsprop_decay_rate; // Decay factor for RMSProp leaky sum of grad**2
 
+   std::vector<genvector*> biases, old_biases;
+//	Bias STL vectors are nonzero for layers 1 thru n_layers-1
+   std::vector<genvector*> nabla_biases, delta_nabla_biases;
+
    std::vector<genmatrix*> weights, weights_transpose;
-   std::vector<genmatrix*> old_weights;
-   std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
+   std::vector<genmatrix*> old_weights;
+   std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 
    std::vector<genmatrix*> rmsprop_weights_cache;
    std::vector<genmatrix*> rms_denom;

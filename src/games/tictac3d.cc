@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/4/16; 11/25/16; 11/26/16; 11/27/16
+// Last modified on 11/25/16; 11/26/16; 11/27/16; 11/28/16
 // ==========================================================================
 
 #include <iostream>
@@ -1705,13 +1705,15 @@ void tictac3d::plot_game_frac_histories(
    string output_subdir, int n_episodes, string extrainfo)
 {
    metafile curr_metafile;
-   string meta_filename=output_subdir+"game_histories";
-   string title="Game histories vs episode";
+   string meta_filename=output_subdir+"game_performance";
+   string title="Game performance";
+   string subtitle = extrainfo;
    string x_label="Episode number";
-   string y_label="Game history fractions";
+   string y_label="Game win/loss fractions";
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, n_episodes, 0, 1);
+   curr_metafile.set_subtitle(subtitle);
    curr_metafile.set_ytic(0.2);
    curr_metafile.set_ysubtic(0.1);
    curr_metafile.set_legend_flag(true);

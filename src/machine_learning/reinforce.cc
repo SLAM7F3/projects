@@ -11,6 +11,7 @@
 #include "math/genmatrix.h"
 #include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
+#include "math/mathfuncs.h"
 #include "plot/metafile.h"
 #include "numrec/nrfuncs.h"
 #include "math/prob_distribution.h"
@@ -73,6 +74,37 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    p_action = new genvector(n_actions);
    pcum_action = new genvector(n_actions);
+
+// Biases for all network layers:
+
+   for(int l = 0; l < n_layers; l++)
+   {
+      genvector *curr_biases = new genvector(layer_dims[l]);
+      biases.push_back(curr_biases);
+      genvector *curr_old_biases = new genvector(layer_dims[l]);
+      old_biases.push_back(curr_old_biases);
+
+      genvector *curr_nabla_biases = new genvector(layer_dims[l]);
+      nabla_biases.push_back(curr_nabla_biases);
+      genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
+      delta_nabla_biases.push_back(curr_delta_nabla_biases);
+
+// Initialize bias for each network node in layers 1, 2, ... to be
+// gaussian random var distributed according to N(0,1).  Recall input
+// layer has no biases:
+
+      for(int i = 0; i < layer_dims[l]; i++)
+      {
+         if(l == 0)
+         {
+            curr_biases->put(i, 0);
+         }
+         else
+         {
+            curr_biases->put(i, nrfunc::gasdev());
+         }
+      } // loop over index i labeling node in current layer
+   } // loop over index l labeling network layers
 
 // Weights link layer l with layer l+1:
     
@@ -185,6 +217,14 @@ reinforce::~reinforce()
       delete z[l];
       delete a[l];
       delete delta_prime[l];
+   }
+
+   for(unsigned int l = 0; l < biases.size(); l++)
+   {
+      delete biases[l];
+      delete old_biases[l];
+      delete nabla_biases[l];
+      delete delta_nabla_biases[l];
    }
 
    for(unsigned int l = 0; l < weights.size(); l++)
@@ -1261,9 +1301,11 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
 // Generate metafile plot of log10(total loss) versus episode number.
 
 void reinforce::plot_log10_loss_history(
-   string output_subdir, string subtitle, string extrainfo, 
-   double min_score, double max_score)
+   string output_subdir, string subtitle, string extrainfo)
 {
+   cout << "inside reinforce::plot_log10_loss_history()" << endl;
+   cout << "log10_losses.size = " << log10_losses.size() << endl;
+
    if(log10_losses.size() < 3) return;
 
    metafile curr_metafile;
@@ -1277,6 +1319,9 @@ void reinforce::plot_log10_loss_history(
    subtitle += ";"+extrainfo;
    string x_label="Episode";
    string y_label="Log10(Total loss)";
+
+   double max_score = mathfunc::maximal_value(log10_losses)+0.5;
+   double min_score = mathfunc::minimal_value(log10_losses)-0.5;
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, episode_number,
@@ -1317,6 +1362,8 @@ void reinforce::plot_log10_loss_history(
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
+
+   cout << "at end of reinforce::plot_log10_loss_history()" << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -1714,10 +1761,13 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
    {
       d = replay_memory_index;
       replay_memory_index++;
+//      double fill_frac = double(replay_memory_index) / replay_memory_capacity;
+//      cout << "Replay memory fill frac = " << fill_frac << endl;
    }
    else
    {
       replay_memory_full_flag = true;
+//      cout << "REPLAY MEMORY IS NOW FULL" << endl;
       replay_memory_index = 0;
       d = replay_memory_index;
    }

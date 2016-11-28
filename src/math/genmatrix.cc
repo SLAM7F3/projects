@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 10/12/16; 10/17/16; 10/19/16; 10/20/16
+// Last modified on 10/17/16; 10/19/16; 10/20/16; 11/28/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -2099,6 +2099,22 @@ void genmatrix::matrix_column_mult(const genmatrix& A, const genmatrix& B,
          sum += A.get(i,j) * B.get(j, bcol);
       }
       put(i, bcol, sum);
+   }
+}
+void genmatrix::matrix_column_mult_sum(
+   const genmatrix& A, const genmatrix& B, const genvector& V, int bcol)
+{
+   double sum = 0;
+   int A_mdim = A.get_mdim();
+   int A_ndim = A.get_ndim();
+   for (int i = 0; i < A_mdim; i++)
+   {
+      sum = 0;
+      for (int j = 0; j < A_ndim; j++)
+      {
+         sum += A.get(i,j) * B.get(j, bcol);
+      }
+      put(i, bcol, sum + V.get(i));
    }
 }
 

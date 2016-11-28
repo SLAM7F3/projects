@@ -1,5 +1,5 @@
 // ==========================================================================
-// Program TRAIN_TTT_NETWORK 
+// Program TRAIN_TTT_NETWORK trains a neural network via V-learning.
 // ==========================================================================
 // Last updated on 11/25/16; 11/26/16; 11/27/16; 11/28/16
 // ==========================================================================
@@ -146,7 +146,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 2 * 1000 * 1000;
 //   int n_max_episodes = 20 * 1000 * 1000;
 
-   int n_update = 1000;
+   int n_update = 200;
    int n_summarize = 1000;
    int n_snapshot = 20000;
    int n_anneal_steps = 2000;
@@ -365,6 +365,7 @@ int main (int argc, char* argv[])
          curr_episode_number % n_update == 0)
       {
          ttt_ptr->display_board_state();
+         cout << "V-learning" << endl;
          if(AI_value == -1)
          {
             cout << "AI = X    agent = O" << endl;
@@ -398,11 +399,11 @@ int main (int argc, char* argv[])
               << " win_frac = " << win_frac
               << endl;
          n_recent_losses = n_recent_stalemates = n_recent_wins = 0;
+         cout << "  Total loss = " << total_loss << endl;
 
          if(total_loss > 0)
          {
-            cout << "  Total loss = " << total_loss 
-                 << " log10(total_loss) = " << log10(total_loss) << endl;
+            cout << " log10(total_loss) = " << log10(total_loss) << endl;
             reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
          }
 
@@ -433,7 +434,7 @@ int main (int argc, char* argv[])
             +stringfunc::number_to_string(old_weights_period)
             +";min eps="+stringfunc::number_to_string(min_epsilon);
          reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, subtitle, extrainfo, 0, -3);
+            output_subdir, subtitle, extrainfo);
 
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
