@@ -78,8 +78,8 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 32;	// 
-//   int H1 = 3 * 64;	//  
-   int H1 = 5 * 64;	//  = 320
+   int H1 = 3 * 64;	//  
+//   int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
 //   int H2 = 0;
@@ -102,6 +102,7 @@ int main (int argc, char* argv[])
       extrainfo += "; H3="+stringfunc::number_to_string(H3);
    }
    extrainfo += "; zlevels="+stringfunc::number_to_string(n_zlevels);
+   extrainfo += "; Q-learning";
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -156,6 +157,7 @@ int main (int argc, char* argv[])
 
    int n_update = 2500;
    int n_summarize = 2500;
+   int n_snapshot = 20000;
    int n_anneal_steps = 2000;
 
    int n_illegal_moves = 0;
@@ -258,8 +260,8 @@ int main (int argc, char* argv[])
 
          if((AI_moves_first && curr_timestep == 0) || curr_timestep > 0)
          {
-//            ttt_ptr->get_random_legal_player_move(AI_value);
-            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+            ttt_ptr->get_random_legal_player_move(AI_value);
+//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 //             ttt_ptr->display_board_state();
 
@@ -460,9 +462,22 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->plot_reward_history(
             output_subdir, extrainfo, lose_reward, win_reward);
          reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->export_snapshot(output_subdir);
+
+// Generate metafile for loss function history:
+
+         string subtitle="Old weights T="
+            +stringfunc::number_to_string(old_weights_period)
+            +";min eps="+stringfunc::number_to_string(min_epsilon);
+         reinforce_agent_ptr->plot_log10_loss_history(
+            output_subdir, subtitle, extrainfo, 0, -3);
+
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
+      }
+
+      if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
+      {
+         reinforce_agent_ptr->export_snapshot(output_subdir);
       }
 
    } // n_episodes < n_max_episodes while loop
@@ -475,15 +490,6 @@ int main (int argc, char* argv[])
         << reinforce_agent_ptr->get_episode_number() << endl;
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
-
-// Generate metafile for loss function history:
-
-   string subtitle=
-      "Old weights T="+stringfunc::number_to_string(old_weights_period)
-      +";min eps="+stringfunc::number_to_string(min_epsilon);
-
-   reinforce_agent_ptr->plot_log10_loss_history(
-      output_subdir, subtitle, extrainfo, 0, -3);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
