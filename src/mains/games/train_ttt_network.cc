@@ -146,7 +146,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 2 * 1000 * 1000;
 //   int n_max_episodes = 20 * 1000 * 1000;
 
-   int n_update = 200;
+   int n_update = 100;
    int n_summarize = 1000;
    int n_snapshot = 20000;
    int n_anneal_steps = 2000;
@@ -170,9 +170,8 @@ int main (int argc, char* argv[])
 
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
-
-//   double min_epsilon = 0.05; 
-   double min_epsilon = 0.1; 
+   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.1; 
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces

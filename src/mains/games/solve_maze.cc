@@ -114,7 +114,7 @@ int main (int argc, char* argv[])
 
    int n_max_episodes = 1 * 1000 * 1000;
    int n_anneal_steps = 1000;
-   int n_update = 2000;
+   int n_update = 500;
    int n_progress = 10000;
    double Qmap_score = -1;
 

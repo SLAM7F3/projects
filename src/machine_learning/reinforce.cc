@@ -866,9 +866,9 @@ void reinforce::update_running_reward(string extrainfo)
       double mu_T, sigma_T;
       mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
       cout << "base learning rate="+stringfunc::scinumber_to_string(
-         base_learning_rate,5)
-           << " learning_rate="+stringfunc::number_to_string(
-              learning_rate, 6);
+         base_learning_rate,2)
+           << " learning_rate="+stringfunc::scinumber_to_string(
+              learning_rate, 2);
       cout << " gamma="+stringfunc::number_to_string(gamma,3)
            << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
            << endl;
@@ -1032,9 +1032,9 @@ void reinforce::compute_weight_distributions()
 string reinforce::init_subtitle()
 {
    string subtitle=
-      "learning rate="+stringfunc::number_to_string(base_learning_rate,5)+
-      "; gamma="+stringfunc::number_to_string(gamma,3)+
-      "; rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3);
+      "learning rate="+stringfunc::scinumber_to_string(base_learning_rate,2)+
+      "; gamma="+stringfunc::scinumber_to_string(gamma,2)+
+      "; rms_decay="+stringfunc::scinumber_to_string(rmsprop_decay_rate,2);
    return subtitle;
 }
 
@@ -1255,7 +1255,8 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
    metafile curr_metafile;
    string meta_filename=output_subdir + "/Qmap_score_history";
    string title="Qmap score";
-   title += ";learning rate="+stringfunc::number_to_string(base_learning_rate);
+   title += ";learning rate="+stringfunc::scinumber_to_string(
+      base_learning_rate,2);
    title += ";bsize="+stringfunc::number_to_string(batch_size);
 
 //   string subtitle=init_subtitle();
@@ -1321,7 +1322,8 @@ void reinforce::plot_log10_loss_history(
    string meta_filename=output_subdir + "/log10_losses_history";
 
    string title="Log10(total loss)";
-   title += ";learning rate="+stringfunc::number_to_string(base_learning_rate);
+   title += ";learning rate="+stringfunc::scinumber_to_string(
+      base_learning_rate,2);
    title += ";bsize="+stringfunc::number_to_string(batch_size);
 
 //   string subtitle=init_subtitle();

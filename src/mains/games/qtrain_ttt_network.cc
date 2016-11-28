@@ -145,8 +145,7 @@ int main (int argc, char* argv[])
 //   double gamma = 0.9;
    reinforce_agent_ptr->set_gamma(gamma);  
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
-   reinforce_agent_ptr->set_base_learning_rate(1E-5);
+   reinforce_agent_ptr->set_base_learning_rate(3E-6);
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
@@ -156,8 +155,8 @@ int main (int argc, char* argv[])
       n_max_episodes = 20 * 1000 * 1000;
    }
 
-   int n_update = 500;
-   int n_summarize = 2500;
+   int n_update = 250;
+   int n_summarize = 2000;
    int n_snapshot = 20000;
    int n_anneal_steps = 2000;
 
@@ -171,7 +170,6 @@ int main (int argc, char* argv[])
    int n_recent_wins = 0;
 
    double curr_reward = -999;
-
    double win_reward = 1;
    double stalemate_reward = 0.25;
    double lose_reward = -1;
@@ -184,11 +182,10 @@ int main (int argc, char* argv[])
 
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
-
 //   double min_epsilon = 0.01;	
 //   double min_epsilon = 0.025;
-//   double min_epsilon = 0.05; 
-   double min_epsilon = 0.1; 
+   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.1; 
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
