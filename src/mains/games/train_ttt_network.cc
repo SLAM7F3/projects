@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK 
 // ==========================================================================
-// Last updated on 11/7/16; 11/25/16; 11/26/16; 11/27/16
+// Last updated on 11/25/16; 11/26/16; 11/27/16; 11/28/16
 // ==========================================================================
 
 #include <iostream>
@@ -113,9 +113,10 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 10 * n_max_turns;
+   int batch_size = 3;
+   int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, n_max_turns, replay_memory_capacity);
+      layer_dims, n_max_turns, batch_size, replay_memory_capacity);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->set_n_actions(n_actions);
 
@@ -136,13 +137,7 @@ int main (int argc, char* argv[])
    double gamma = 0.95;
 //   double gamma = 0.9;
    reinforce_agent_ptr->set_gamma(gamma);  
-
-//   reinforce_agent_ptr->set_batch_size(32);
-   reinforce_agent_ptr->set_batch_size(10);
-//   reinforce_agent_ptr->set_batch_size(1);  
-
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
@@ -163,13 +158,9 @@ int main (int argc, char* argv[])
    int n_recent_wins = 0;
 
    double curr_reward = -999;
-//   double win_reward = 1;
-//   double stalemate_reward = 0.25;
-//   double lose_reward = -1;
-
-   double win_reward = -1;
-   double stalemate_reward = -0.25;
-   double lose_reward = 1;
+   double win_reward = 1;
+   double stalemate_reward = 0.25;
+   double lose_reward = -1;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -253,8 +244,8 @@ int main (int argc, char* argv[])
 
          if((AI_moves_first && curr_timestep == 0) || curr_timestep > 0)
          {
-            ttt_ptr->get_random_legal_player_move(AI_value);
-//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+//            ttt_ptr->get_random_legal_player_move(AI_value);
+            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 //             ttt_ptr->display_board_state();
 

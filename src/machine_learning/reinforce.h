@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/15/16; 11/17/16; 11/26/16; 11/27/16
+// Last modified on 11/17/16; 11/26/16; 11/27/16; 11/28/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -31,7 +31,7 @@ class reinforce
 
    reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax);
    reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax,
-             int replay_memory_capacity);
+             int batch_size, int replay_memory_capacity);
    reinforce();
    ~reinforce();
    friend std::ostream& operator<< 

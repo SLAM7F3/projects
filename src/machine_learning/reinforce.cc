@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/17/16; 11/18/16; 11/26/16; 11/27/16
+// Last modified on 11/18/16; 11/26/16; 11/27/16; 11/28/16
 // ==========================================================================
 
 #include <string>
@@ -46,27 +46,12 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // learning for an agent not to place any of its pieces into already
 // occupied cells within a 4x4 grid !
 
-   batch_size = 10;	// Perform parameter update after this many episodes
-//   batch_size = 5;	// Perform parameter update after this many episodes
-//   learning_rate = 3E-3;  // Seems worse than 1E-4
-//   learning_rate = 1E-3;  // Terrible for 2 z-levels
-
-//   learning_rate = 5.196E-4;  
-//   learning_rate = 3E-4;  // Much better than 1E-4 for 1 z-level!!!
-//   learning_rate = 1.732E-4;  
+   batch_size = 1;	// Perform parameter update after this many episodes
    base_learning_rate = 1E-4;  //
    learning_rate = base_learning_rate;
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
-//   lambda = 0.001;	// L2 regularization coefficient
-//   gamma = 0.99;	// Discount factor for reward
    gamma = 0.5;	// Discount factor for reward
-//   rmsprop_decay_rate = 0.75;
-//   rmsprop_decay_rate = 0.8;
    rmsprop_decay_rate = 0.85;
-//   rmsprop_decay_rate = 0.9;
-   // rmsprop_decay_rate = 0.95; 
-//   rmsprop_decay_rate = 0.99; 
-   
    running_reward = -1000;
    reward_sum = 0;
    episode_number = 0;
@@ -175,9 +160,10 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax)
 }
 
 reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax,
-                     int replay_memory_capacity)
+                     int batch_size, int replay_memory_capacity)
 {
    this->Tmax = Tmax;
+   this->batch_size = batch_size;
    this->replay_memory_capacity = replay_memory_capacity;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
