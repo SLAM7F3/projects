@@ -534,19 +534,6 @@ BEST RESULTS SO FAR
     Only legal agent moves allowed; random AI moves
     Loss diverges
 
-
-RUNNING EXPERIMENTS
--------------------
-
-75.  H1 = 3*64; H2 = 32; zlevels = 4
-    Q learning; ADAM prop; beta1 = 0; beta2 = 1
-    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
-    old weights period = 10; min_epsilon = 0.025
-    epsilon decay factor = 0.99
-    gamma = 0.95
-    Only legal agent moves allowed; random AI moves
-
-
 79.  H1 = 3*64; H2 = 32; zlevels = 4
     Q learning; ADAM prop; beta1 = 0; beta2 = 0.999
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
@@ -554,6 +541,7 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss slowly decreased and then diverged around 0.5E6 episodes.
 
 80.  H1 = 3*64; H2 = 32; zlevels = 4
     Q learning; ADAM prop; beta1 = 0; beta2 = 0.999
@@ -562,10 +550,23 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss slowly decreased and then diverged around 0.5E6 episodes.
 
 81.  H1 = 3*64; H2 = 32; zlevels = 4
     Q learning; ADAM prop; beta1 = 0; beta2 = 0.999
     base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss slowly decreased and then diverged around 0.5E6 episodes.
+
+RUNNING EXPERIMENTS
+-------------------
+
+75.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; ADAM prop; beta1 = 0; beta2 = 1
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.99
     gamma = 0.95

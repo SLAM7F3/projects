@@ -128,8 +128,8 @@ int main (int argc, char* argv[])
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
-//      reinforce::RMSPROP);
-      reinforce::ADAM);
+      reinforce::RMSPROP);
+//      reinforce::ADAM);
 
    const double beta1 = 0.0;
 //   const double beta1 = 1E-12;// OK
@@ -172,11 +172,11 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.001);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.01);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.10);  // bad
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.10);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.5);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.99);  // bad
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.999);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.999);  // bad
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);
@@ -496,15 +496,8 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->plot_reward_history(
             output_subdir, extrainfo, lose_reward, win_reward);
          reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
-
-// Generate metafile for loss function history:
-
-//         string subtitle="Old weights T="
-//            +stringfunc::number_to_string(old_weights_period)
-//            +";min eps="+stringfunc::number_to_string(min_epsilon);
          reinforce_agent_ptr->plot_log10_loss_history(
             output_subdir, extrainfo);
-
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }

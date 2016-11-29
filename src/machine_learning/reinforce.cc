@@ -1992,7 +1992,9 @@ double reinforce::update_neural_network()
          rms_biases_denom[l]->hadamard_sum(TINY);
          nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
          *biases[l] -= learning_rate * (*nabla_biases[l]);
-         
+      }
+      else if (solver_type == ADAM)
+      {
       }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
@@ -2001,7 +2003,6 @@ double reinforce::update_neural_network()
    {
       if (solver_type == SGD)
       {
-
          *weights[l] -= learning_rate * (*nabla_weights[l]);
       }
       else if (solver_type == MOMENTUM)
