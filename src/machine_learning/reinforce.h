@@ -187,6 +187,7 @@ class reinforce
    std::vector<genmatrix*> old_weights;
    std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
    std::vector<genmatrix*> velocities, prev_velocities;
+   std::vector<genmatrix*> adam_m, adam_v;
 
    std::vector<genmatrix*> rmsprop_weights_cache;
    std::vector<genmatrix*> rms_denom;
@@ -249,6 +250,9 @@ class reinforce
 
    genvector *prev_afterstate_ptr; // Din x 1
 
+// ADAM solver variables:
+
+   double curr_beta1_pow, curr_beta2_pow;
 
    void policy_forward(int t, bool enforce_constraints_flag,
       genvector *legal_actions = NULL);
@@ -257,6 +261,7 @@ class reinforce
    double compute_cross_entropy_loss(int t);
    void discount_rewards();
    void policy_backward();
+   void update_rmsprop_cache(double decay_rate);
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);

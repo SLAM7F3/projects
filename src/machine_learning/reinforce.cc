@@ -115,6 +115,12 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    } // loop over index l labeling network layers
 
 // Weights link layer l with layer l+1:
+
+
+// FAKE FAKE:  Tues Nov 29 at 5:15 am
+
+// Should really only instantiate genmatrices which are needed depending
+// upon selected solver type
     
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -126,6 +132,11 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          layer_dims[l+1], layer_dims[l]);  // used for momentum solver type
       genmatrix *prev_velocity = new genmatrix(
          layer_dims[l+1], layer_dims[l]);  // used for Nesterov solver type
+
+      genmatrix *curr_adam_m = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);  // used for ADAM solver type
+      genmatrix *curr_adam_v = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);  // used for ADAM solver type
 
       int mdim = layer_dims[l+1];
       int ndim = layer_dims[l];
@@ -142,6 +153,11 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       velocities.push_back(curr_velocity);
       prev_velocity->clear_values();
       prev_velocities.push_back(prev_velocity);
+
+      curr_adam_m->clear_values();
+      adam_m.push_back(curr_adam_m);
+      curr_adam_v->clear_values();
+      adam_v.push_back(curr_adam_v);
 
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
@@ -186,6 +202,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    replay_memory_index = 0;
    epsilon = 1.000001;
    solver_type = RMSPROP;
+
+   curr_beta1_pow = curr_beta2_pow = 1;
 }
 
 // ---------------------------------------------------------------------
@@ -264,6 +282,8 @@ reinforce::~reinforce()
       delete rms_denom[l];
       delete velocities[l];
       delete prev_velocities[l];
+      delete adam_m[l];
+      delete adam_v[l];
    }
 
    delete p_action;
@@ -1885,9 +1905,37 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
 }
 
 // ---------------------------------------------------------------------
-// Member function update_neural_network()
+// Member function update_rmsprop_cache()
 
-// int dummy_counter = 0;
+void reinforce::update_rmsprop_cache(double decay_rate)
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
+      {
+         for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+         {
+            double curr_val = 
+               decay_rate * rmsprop_weights_cache[l]->get(i,j)
+               + (1 - decay_rate) * sqr(nabla_weights[l]->get(i,j));
+            rmsprop_weights_cache[l]->put(i,j,curr_val);
+
+/*
+            if(i <= 1 && j <= 1)
+            {
+               cout << "l = " << l << " i = " << i << " j = " << j 
+                    << " rmsprop_weights_cache = " 
+                    << rmsprop_weights_cache[l]->get(i,j) << endl;
+            }
+*/
+          
+         } // loop over index j labeling columns
+      } // loop over index i labeling rows
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
+// Member function update_neural_network()
 
 double reinforce::update_neural_network()
 {
@@ -1896,10 +1944,8 @@ double reinforce::update_neural_network()
 
 // Nd = Number of random samples to be drawn from replay memory:
 
-//   int Nd = 0.1 * replay_memory_capacity; 
-//   int Nd = 64;
-   int Nd = 32;
-//   int Nd = 16;
+   int Nd = 0.1 * replay_memory_capacity; 
+   Nd = basic_math::min(Nd, 32);
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);
@@ -1914,23 +1960,15 @@ double reinforce::update_neural_network()
 
    if(solver_type == RMSPROP)
    {
-
-// Perform RMSprop parameter update:
-
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
-         {
-            for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
-            {
-               double curr_val = 
-                  rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
-                  + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
-               rmsprop_weights_cache[l]->put(i,j,curr_val);
-            } // loop over index j labeling columns
-         } // loop over index i labeling rows
-      }
-   } // solver_type == RMSPROP conditional
+      update_rmsprop_cache(rmsprop_decay_rate);
+   }
+   else if (solver_type == ADAM)
+   {
+      const double beta2 = 0.90;
+//      const double beta2 = 0.999;
+      update_rmsprop_cache(beta2);
+      curr_beta2_pow *= beta2;
+   }
    
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
@@ -1965,11 +2003,25 @@ double reinforce::update_neural_network()
       }
       else if(solver_type == ADAM)
       {
-//         nabla_weights[l]->hadamard_division(*rms_denom[l]);
-//         *weights[l] -= learning_rate * (*nabla_weights[l]);
+         const double beta1 = 0.0;
+//         const double beta1 = 0.5;
+//         const double beta1 = 0.9;
+         curr_beta1_pow *= beta1;
+
+         *adam_m[l] = beta1 * (*adam_m[l]) + (1 - beta1) * (*nabla_weights[l]);
+
+//         *adam_m[l] /= (1 - curr_beta1_pow);
+//         *rmsprop_weights_cache[l] /= (1 - curr_beta2_pow);
+         
+         rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         const double TINY = 1E-5;
+//         const double TINY = 1E-8;
+         rms_denom[l]->hadamard_sum(TINY);
+         adam_m[l]->hadamard_division(*rms_denom[l]);
+         *weights[l] -= learning_rate * (*adam_m[l]);
       }
       
-//      debug_flag = true;
+      debug_flag = true;
       if(debug_flag)
       {
          int mdim = nabla_weights[l]->get_mdim();
@@ -1977,12 +2029,15 @@ double reinforce::update_neural_network()
          
          vector<double> curr_nabla_weights;
          vector<double> curr_nabla_weight_ratios;
+         vector<double> curr_adam_ms;
+         
          for(int r = 0; r < mdim; r++)
          {
             for(int c = 0; c < ndim; c++)
             {
                curr_nabla_weights.push_back(
                   fabs(nabla_weights[l]->get(c,r)));
+               curr_adam_ms.push_back(fabs(adam_m[l]->get(c,r)));
 //               cout << "r = " << r << " c = " << c
 //                    << " curr_nabla_weight = " 
 //                    << curr_nabla_weights.back() << endl;
@@ -1997,6 +2052,7 @@ double reinforce::update_neural_network()
          double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
          double mean_abs_nabla_weight_ratio = mathfunc::mean(
             curr_nabla_weight_ratios);
+         double mean_abs_adam_m = mathfunc::mean(curr_adam_ms);
             
          cout << "layer l = " << l
               << " mean |nabla weight| = " 
@@ -2008,12 +2064,19 @@ double reinforce::update_neural_network()
               << learning_rate * mean_abs_nabla_weight 
               << "  lr * mean_abs_nabla_weight_ratio = " 
               << learning_rate * mean_abs_nabla_weight_ratio << endl;
+
+         cout << " mean_abs_adam_m = " << mean_abs_adam_m
+              << " lr * mean_abs_adam_m = " << learning_rate * mean_abs_adam_m
+              << endl;
+         
       } // debug_flag conditional
       
       nabla_weights[l]->clear_values();
    }
-//       cout << endl;
+   cout << endl;
 //   print_weights();
+//    outputfunc::enter_continue_char();
+
 
    return total_loss;
 }

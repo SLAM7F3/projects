@@ -81,14 +81,14 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
    int batch_size = 1;
-   int replay_memory_capacity = 1 * batch_size * sqr(n_grid_size);
-//   int replay_memory_capacity = 10 * batch_size * sqr(n_grid_size);
+   int replay_memory_capacity = 10 * batch_size * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
-      reinforce::RMSPROP);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
+//      reinforce::RMSPROP);
+      reinforce::ADAM);
 
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
@@ -128,12 +128,12 @@ int main (int argc, char* argv[])
    double Qmap_score = -1;
 
    int n_episodes_period = 100 * 1000;
-//   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
-   int old_weights_period = 32;  
+   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
+//   int old_weights_period = 32;  
 
 //   double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
-//   double min_epsilon = 0.025;
-   double min_epsilon = 0.05; 
+   double min_epsilon = 0.025;
+//   double min_epsilon = 0.05; 
 //   double min_epsilon = 0.1; 
 
    string basename = "maze";

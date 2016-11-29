@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for TTT
 ==========================================================================
-Last updated on 11/26/16; 11/27/16; 11/28/16
+Last updated on 11/26/16; 11/27/16; 11/28/16; 11/29/16
 ==========================================================================
 
 BEST RESULTS SO FAR
@@ -185,6 +185,32 @@ TERMINATED EXPERIMENTS
     Only legal agent moves allowed
     Started on TM at 5:56 pm
 
+27.  H1 = 5*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    win_reward = 1; lose_reward = -1
+    Running on m6700
+
+    Running reward --> -0.7 after 1E6 episodes; 
+    Lose frac --> 0.78; Win frac --> 0.22 after 1.4E6 episodes
+
+28.  H1 = 5*64; H2 = 32; zlevels = 4
+    V learning; RMSprop
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
+    old weights period = 10; min_epsilon = 0.1
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    win_reward = 1; lose_reward = -1
+    Running on m6700
+
+    Running reward --> -1 after 0.3E6 episodes;
+    Lose frac --> 0.77; win frac --> 0.23 after nearly 0.4E6 episodes
+
 29.  H1 = 5*64; H2 = 32; zlevels = 4
     Q learning
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
@@ -306,37 +332,6 @@ SGD rather than RMS prop evolution:
     Only legal agent moves allowed; random AI moves
     Loss seems stable from 0 - 35K episodes!
 
-
-RUNNING EXPERIMENTS
--------------------
-
-27.  H1 = 5*64; H2 = 32; zlevels = 4
-    Q learning
-    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
-    old weights period = 10; min_epsilon = 0.1
-    epsilon decay factor = 0.99
-    gamma = 0.95
-    Only legal agent moves allowed; random AI moves
-    win_reward = 1; lose_reward = -1
-    Running on m6700
-
-    Running reward --> -0.7 after 1E6 episodes; 
-    Lose frac --> 0.78; Win frac --> 0.22 after 1.4E6 episodes
-
-28.  H1 = 5*64; H2 = 32; zlevels = 4
-    V learning
-    base learning rate = 1E-3; rms_decay = 0.9; batch size = 10
-    old weights period = 10; min_epsilon = 0.1
-    epsilon decay factor = 0.99
-    gamma = 0.95
-    Only legal agent moves allowed; random AI moves
-    win_reward = 1; lose_reward = -1
-    Running on m6700
-
-    Running reward --> -1 after 0.3E6 episodes;
-    Lose frac --> 0.77; win frac --> 0.23 after nearly 0.4E6 episodes
-
-
 52.  H1 = 5*64; H2 = 32; zlevels = 4
     Q learning; SGD
     base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
@@ -344,6 +339,7 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss curve starts to diverge after 100K episodes
 
 53.  H1 = 3*64; H2 = 32; zlevels = 4
     Q learning; SGD
@@ -352,6 +348,7 @@ RUNNING EXPERIMENTS
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss curve starts to diverge after 150K episodes
 
 BEST RESULTS SO FAR
 
@@ -362,6 +359,7 @@ BEST RESULTS SO FAR
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss curve starts to diverge after 80K episodes
 
 55.  H1 = 3*64; H2 = 16; zlevels = 4
     Q learning; SGD
@@ -370,6 +368,7 @@ BEST RESULTS SO FAR
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss curve starts to diverge after 120K episodes
 
 56.  H1 = 3*64; H2 = 32; zlevels = 4
     Q learning; SGD
@@ -378,6 +377,7 @@ BEST RESULTS SO FAR
     epsilon decay factor = 0.99
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
+    Loss curve starts to diverge after 150K episodes
 
 57.  H1 = 3*64; H2 = 32; zlevels = 4; 
     Q learning; SGD; Nd = 64
@@ -405,3 +405,6 @@ BEST RESULTS SO FAR
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
     Started on m6700 at 4:55 pm on Mon Nov 28
+
+RUNNING EXPERIMENTS
+-------------------
