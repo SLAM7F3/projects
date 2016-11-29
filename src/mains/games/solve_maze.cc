@@ -90,6 +90,20 @@ int main (int argc, char* argv[])
 //      reinforce::RMSPROP);
       reinforce::ADAM);
 
+//   const double beta1 = 0.0;
+//   const double beta1 = 1E-12;// OK
+//   const double beta1 = 1E-9;  // OK
+   const double beta1 = 1E-8;  // OK
+//   const double beta1 = 1E-7;  // bad
+//   const double beta1 = 1E-6;   // bad
+
+//   const double beta2 = 0.5;   // OK
+   const double beta2 = 0.90;  // OK
+//   const double beta2 = 0.99;   /bad
+
+   reinforce_agent_ptr->set_ADAM_params(beta1, beta2);
+   
+
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());

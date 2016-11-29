@@ -203,6 +203,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    epsilon = 1.000001;
    solver_type = RMSPROP;
 
+   beta1 = beta2 = 0;
    curr_beta1_pow = curr_beta2_pow = 1;
 }
 
@@ -1964,10 +1965,8 @@ double reinforce::update_neural_network()
    }
    else if (solver_type == ADAM)
    {
-      const double beta2 = 0.90;
-//      const double beta2 = 0.999;
       update_rmsprop_cache(beta2);
-      curr_beta2_pow *= beta2;
+
    }
    
 // Update weights and biases for each network layer by their nabla
@@ -2003,25 +2002,21 @@ double reinforce::update_neural_network()
       }
       else if(solver_type == ADAM)
       {
-         const double beta1 = 0.0;
-//         const double beta1 = 0.5;
-//         const double beta1 = 0.9;
-         curr_beta1_pow *= beta1;
-
          *adam_m[l] = beta1 * (*adam_m[l]) + (1 - beta1) * (*nabla_weights[l]);
+         curr_beta1_pow *= beta1;
+         *adam_m[l] /= (1 - curr_beta1_pow);
 
-//         *adam_m[l] /= (1 - curr_beta1_pow);
-//         *rmsprop_weights_cache[l] /= (1 - curr_beta2_pow);
+         curr_beta2_pow *= beta2;
+         *rmsprop_weights_cache[l] /= (1 - curr_beta2_pow);
          
          rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         const double TINY = 1E-5;
-//         const double TINY = 1E-8;
+         const double TINY = 1E-8;
          rms_denom[l]->hadamard_sum(TINY);
          adam_m[l]->hadamard_division(*rms_denom[l]);
          *weights[l] -= learning_rate * (*adam_m[l]);
       }
       
-      debug_flag = true;
+//      debug_flag = true;
       if(debug_flag)
       {
          int mdim = nabla_weights[l]->get_mdim();
@@ -2073,10 +2068,9 @@ double reinforce::update_neural_network()
       
       nabla_weights[l]->clear_values();
    }
-   cout << endl;
+//   cout << endl;
 //   print_weights();
-//    outputfunc::enter_continue_char();
-
+//   outputfunc::enter_continue_char();
 
    return total_loss;
 }

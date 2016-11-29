@@ -46,6 +46,8 @@ class reinforce
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
 
+// Set & get member functions:
+
    void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
    bool get_debug_flag() const;
@@ -64,9 +66,9 @@ class reinforce
    double get_gamma() const;
    void set_rmsprop_decay_rate(double rate);
    genvector* get_p_action();
+   void set_ADAM_params(double beta1, double beta2);
 
    void hardwire_output_action(int a);
-
    void initialize_episode();
    void compute_action_probs(
       genvector* x_input, bool enforce_constraints_flag,
@@ -252,6 +254,7 @@ class reinforce
 
 // ADAM solver variables:
 
+   double beta1, beta2;
    double curr_beta1_pow, curr_beta2_pow;
 
    void policy_forward(int t, bool enforce_constraints_flag,
@@ -388,6 +391,12 @@ inline void reinforce::push_back_log10_loss(double log10_loss)
 inline bool reinforce::get_replay_memory_full() const
 {
    return replay_memory_full_flag;
+}
+
+inline void reinforce::set_ADAM_params(double beta1, double beta2)
+{
+   this->beta1 = beta1;
+   this->beta2 = beta2;
 }
 
 
