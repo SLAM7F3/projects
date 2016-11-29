@@ -90,6 +90,7 @@ class reinforce
 // Monitoring network training methods:
 
    int count_weights();
+   void print_biases();
    void print_weights();
    void plot_zeroth_layer_weights(std::string output_subdir);
    void compute_weight_distributions();
@@ -191,8 +192,10 @@ class reinforce
    std::vector<genmatrix*> velocities, prev_velocities;
    std::vector<genmatrix*> adam_m, adam_v;
 
+   std::vector<genvector*> rmsprop_biases_cache;
+   std::vector<genvector*> rms_biases_denom;
    std::vector<genmatrix*> rmsprop_weights_cache;
-   std::vector<genmatrix*> rms_denom;
+   std::vector<genmatrix*> rms_weights_denom;
 
 // STL vector index ranges over layers l = 0, 1, ..., n_layers
 // row index ranges over lth layer nodes j = 0, 1, ... n_nodes_in_lth_layer
@@ -264,6 +267,7 @@ class reinforce
    double compute_cross_entropy_loss(int t);
    void discount_rewards();
    void policy_backward();
+   void update_biases_cache(double decay_rate);
    void update_rmsprop_cache(double decay_rate);
 
    void allocate_member_objects();

@@ -25,7 +25,7 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
+   nrfunc::init_time_based_seed();
 
 //   long s = -11;
 //   cout << "Enter negative seed:" << endl;
@@ -87,8 +87,8 @@ int main (int argc, char* argv[])
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
-//      reinforce::RMSPROP);
-      reinforce::ADAM);
+      reinforce::RMSPROP);
+//      reinforce::ADAM);
 
 //   const double beta1 = 0.0;
 //   const double beta1 = 1E-12;// OK
@@ -100,9 +100,7 @@ int main (int argc, char* argv[])
 //   const double beta2 = 0.5;   // OK
    const double beta2 = 0.90;  // OK
 //   const double beta2 = 0.99;   /bad
-
    reinforce_agent_ptr->set_ADAM_params(beta1, beta2);
-   
 
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
@@ -336,6 +334,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
 
    curr_maze.DisplayTrainedZerothLayerWeights(weights_subdir);
+
+   reinforce_agent_ptr->print_biases();
 
    delete reinforce_agent_ptr;
 }

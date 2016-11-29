@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genvector class member function definitions
 // ==========================================================================
-// Last modified on 8/24/13; 2/8/16; 10/17/16; 10/19/16
+// Last modified on 2/8/16; 10/17/16; 10/19/16; 11/29/16
 // ==========================================================================
 
 #include <math.h>
@@ -286,6 +286,38 @@ genvector genvector::hadamard_power(double alpha) const
    return B;
 }
 
+// ---------------------------------------------------------------------
+void genvector::hadamard_sqrt(const genvector& Y) 
+{
+   for (unsigned int i=0; i<mdim; i++)
+   {
+      put(i, sqrt(Y.get(i)));
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function hadamard_sum() adds alpha to each element of *this.
+
+void genvector::hadamard_sum(double alpha) 
+{
+   for (unsigned int i=0; i<mdim; i++)
+   {
+      put(i, get(i) + alpha);
+   } // loop over index m
+}
+
+// ---------------------------------------------------------------------
+// Member function hadamard_ratio() divides each element of *this
+// by its corresponding element in input genvector D.  
+
+void genvector::hadamard_ratio(const genvector& D)
+{
+   for (unsigned int i=0; i<mdim; i++)
+   {
+      put(i, get(i) / D.get(i));
+   } 
+}
+
 // ==========================================================================
 // Vector export member functions
 // ==========================================================================
@@ -558,4 +590,21 @@ void genvector::matrix_vector_mult(const genmatrix& A,const genvector& X)
    }
 }
 
+void genvector::vector_increment(double alpha, const genvector& B)
+{
+   for (unsigned int i = 0; i < B.mdim; i++)
+   {
+      put(i, get(i) + alpha * B.get(i));
+   }
+}
 
+// Member function copy_matrix_column() copies the contents of column
+// c from genmatrix A directly into *this.
+
+void genvector::copy_matrix_column(const genmatrix& A, int c)
+{
+   for (unsigned int i = 0; i < A.get_mdim(); i++)
+   {
+      put(i, A.get(i,c));
+   }
+}

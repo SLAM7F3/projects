@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genvector class 
 // ==========================================================================
-// Last modified on 8/24/13; 2/8/16; 10/17/16; 10/19/16
+// Last modified on 2/8/16; 10/17/16; 10/19/16; 11/29/16
 // ==========================================================================
 
 #ifndef GENVECTOR_H
@@ -57,6 +57,9 @@ class genvector:public genmatrix
    genvector hadamard_division(const genvector& Y) const;
    genvector hadamard_power(const genvector& Y, double alpha) const;
    genvector hadamard_power(double alpha) const;
+   void hadamard_sqrt(const genvector& Y);
+   void hadamard_sum(double alpha);
+   void hadamard_ratio(const genvector& D);
    genmatrix outerproduct(const genvector& Y) const;
    void self_outerproduct(genmatrix& B) const;
    using tensor::outerproduct;
@@ -89,6 +92,8 @@ class genvector:public genmatrix
    friend genvector operator* (const genvector& X,const genmatrix& A);
 
    void matrix_vector_mult(const genmatrix& A,const genvector& X);
+   void vector_increment(double alpha, const genvector& B);
+   void copy_matrix_column(const genmatrix& A, int c);
 
   private: 
 
