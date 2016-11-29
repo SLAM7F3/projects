@@ -23,6 +23,13 @@ class reinforce
    
   public:
 
+   typedef enum{
+      SGD = 0,
+      RMSPROP = 1,
+      MOMENTUM = 2,
+      NESTEROV = 3
+   } solver_t;
+
    typedef std::map<std::string, double > Q_MAP;
 // independent string: string rep for state + action
 // dependent double: Q(s,a)
@@ -31,7 +38,8 @@ class reinforce
 
    reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax);
    reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax,
-             int batch_size, int replay_memory_capacity);
+             int batch_size, int replay_memory_capacity, 
+             int solver_type = SGD);
    reinforce();
    ~reinforce();
    friend std::ostream& operator<< 
@@ -150,6 +158,7 @@ class reinforce
   private:
 
    bool debug_flag;
+   int solver_type;
    int n_layers, n_actions;
    std::vector<int> layer_dims;
    environment* environment_ptr;
@@ -162,6 +171,7 @@ class reinforce
    int batch_size;  	// Perform parameter update after this many episodes
    double base_learning_rate;
    double learning_rate;
+   double mu;	  	// Damping coeff for momentum solver type
    double lambda;	// L2 regularization coefficient
    double gamma;	// Discount factor for reward
    double rmsprop_decay_rate; // Decay factor for RMSProp leaky sum of grad**2
@@ -175,6 +185,7 @@ class reinforce
 //      {n_layers-2, n_layers-1}
    std::vector<genmatrix*> old_weights;
    std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
+   std::vector<genmatrix*> velocities, prev_velocities;
 
    std::vector<genmatrix*> rmsprop_weights_cache;
    std::vector<genmatrix*> rms_denom;

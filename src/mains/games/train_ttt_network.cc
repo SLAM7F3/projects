@@ -117,7 +117,8 @@ int main (int argc, char* argv[])
 //   int batch_size = 3;
    int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, n_max_turns, batch_size, replay_memory_capacity);
+      layer_dims, n_max_turns, batch_size, replay_memory_capacity,
+      reinforce::SGD);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->set_n_actions(n_actions);
 

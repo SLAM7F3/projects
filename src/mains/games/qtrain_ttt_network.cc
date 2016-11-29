@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 11/7/16; 11/25/16; 11/26/16; 11/27/16; 11/28/16
+// Last updated on 11/25/16; 11/26/16; 11/27/16; 11/28/16
 // ==========================================================================
 
 #include <iostream>
@@ -123,7 +123,8 @@ int main (int argc, char* argv[])
 //   int batch_size = 3;
    int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, n_max_turns, batch_size, replay_memory_capacity);
+      layer_dims, n_max_turns, batch_size, replay_memory_capacity,
+      reinforce::SGD);
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
@@ -186,8 +187,8 @@ int main (int argc, char* argv[])
 
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
-   double min_epsilon = 0.01;	
-//   double min_epsilon = 0.025;
+//   double min_epsilon = 0.01;	
+   double min_epsilon = 0.025;
 //   double min_epsilon = 0.05; 
 //   double min_epsilon = 0.1; 
 

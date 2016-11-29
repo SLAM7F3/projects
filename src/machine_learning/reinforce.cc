@@ -50,6 +50,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    batch_size = 1;	// Perform parameter update after this many episodes
    base_learning_rate = 1E-4;  //
    learning_rate = base_learning_rate;
+//   mu = 0.5;		// Coefficient for momentum solver type
+   mu = 0.9;		// Coefficient for momentum solver type
    lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
@@ -120,6 +122,10 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          layer_dims[l+1], layer_dims[l]);
       genmatrix *curr_old_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
+      genmatrix *curr_velocity = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);  // used for momentum solver type
+      genmatrix *prev_velocity = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);  // used for Nesterov solver type
 
       int mdim = layer_dims[l+1];
       int ndim = layer_dims[l];
@@ -131,6 +137,11 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       genmatrix *curr_weights_transpose = new genmatrix(
          layer_dims[l], layer_dims[l+1]);
       weights_transpose.push_back(curr_weights_transpose);
+
+      curr_velocity->clear_values();
+      velocities.push_back(curr_velocity);
+      prev_velocity->clear_values();
+      prev_velocities.push_back(prev_velocity);
 
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
@@ -174,6 +185,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    replay_memory_full_flag = false;
    replay_memory_index = 0;
    epsilon = 1.000001;
+   solver_type = RMSPROP;
 }
 
 // ---------------------------------------------------------------------
@@ -204,13 +216,15 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax)
 }
 
 reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax,
-                     int batch_size, int replay_memory_capacity)
+                     int batch_size, int replay_memory_capacity,
+                     int solver_type)
 {
    this->Tmax = Tmax;
    this->batch_size = batch_size;
    this->replay_memory_capacity = replay_memory_capacity;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
+   this->solver_type = solver_type;
 }
 
 // ---------------------------------------------------------------------
@@ -248,6 +262,8 @@ reinforce::~reinforce()
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
       delete rms_denom[l];
+      delete velocities[l];
+      delete prev_velocities[l];
    }
 
    delete p_action;
@@ -1032,9 +1048,27 @@ void reinforce::compute_weight_distributions()
 string reinforce::init_subtitle()
 {
    string subtitle=
-      "learning rate="+stringfunc::scinumber_to_string(base_learning_rate,2)+
+      "blr="+stringfunc::scinumber_to_string(base_learning_rate,2)+
       "; gamma="+stringfunc::scinumber_to_string(gamma,2)+
-      "; rms_decay="+stringfunc::scinumber_to_string(rmsprop_decay_rate,2);
+      "; solver=";
+   if(solver_type == SGD)
+   {
+      subtitle += "SGD";
+   }
+   else if(solver_type == RMSPROP)
+   {
+      subtitle += "RMSPROP;";
+      subtitle += " decay="+stringfunc::scinumber_to_string(
+         rmsprop_decay_rate,2);
+   }
+   else if(solver_type == MOMENTUM)
+   {
+      subtitle += "MOMENTUM";
+   }
+   else if(solver_type == NESTEROV)
+   {
+      subtitle += "NESTEROV";
+   }
    return subtitle;
 }
 
@@ -1047,7 +1081,7 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"loss_history";
-   string title="Loss vs RMSprop model training; bsize="+
+   string title="Loss function; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
    {
@@ -1124,7 +1158,7 @@ void reinforce::plot_reward_history(
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"reward_history";
-   string title="Running reward sum vs RMSprop model training; bsize="+
+   string title="Running reward sum; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
    {
@@ -1133,7 +1167,7 @@ void reinforce::plot_reward_history(
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
-   string x_label="Episode";
+   string x_label="Episode number";
    string y_label="Running reward sum";
 
    curr_metafile.set_parameters(
@@ -1187,7 +1221,7 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"turns_history";
-   string title="Number of AI and agent turns vs episode; bsize="+
+   string title="Number of AI and agent turns; bsize="+
       stringfunc::number_to_string(batch_size);
    if(lambda > 1E-5)
    {
@@ -1196,7 +1230,7 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
-   string x_label="Episode";
+   string x_label="Episode number";
    string y_label="Number of AI + agent turns";
 
    double min_turn_frac = 0;
@@ -1261,7 +1295,7 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
 
 //   string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
-   string x_label="Episode";
+   string x_label="Episode number";
    string y_label="Qmap score";
 
    double min_score = 0;
@@ -1328,7 +1362,7 @@ void reinforce::plot_log10_loss_history(
 
 //   string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
-   string x_label="Episode";
+   string x_label="Episode number";
    string y_label="Log10(Total loss)";
 
    double max_score = mathfunc::maximal_value(log10_losses)+0.5;
@@ -1858,7 +1892,10 @@ double reinforce::update_neural_network()
 
 // Nd = Number of random samples to be drawn from replay memory:
 
-   int Nd = 0.1 * replay_memory_capacity; 
+//   int Nd = 0.1 * replay_memory_capacity; 
+//   int Nd = 64;
+   int Nd = 32;
+//   int Nd = 16;
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);
@@ -1871,9 +1908,7 @@ double reinforce::update_neural_network()
    } // loop over index j labeling replay memory samples
 //   cout << "total_loss = " << total_loss << endl;
 
-   bool RMSprop_flag = false;
-//   bool RMSprop_flag = true;
-   if(RMSprop_flag)
+   if(solver_type == RMSPROP)
    {
 
 // Perform RMSprop parameter update:
@@ -1891,22 +1926,39 @@ double reinforce::update_neural_network()
             } // loop over index j labeling columns
          } // loop over index i labeling rows
       }
-   }
+   } // solver_type == RMSPROP conditional
    
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
    for(int l = 0; l < n_layers - 1; l++)
    {
-      if(RMSprop_flag)
+      if (solver_type == SGD)
+      {
+         *weights[l] -= learning_rate * (*nabla_weights[l]);
+      }
+      else if (solver_type == MOMENTUM)
+      {
+         *velocities[l] = mu * (*velocities[l])
+            - learning_rate * (*nabla_weights[l]);
+         *weights[l] += *velocities[l];
+      }
+      else if (solver_type == NESTEROV)
+      {
+         *prev_velocities[l] = *velocities[l];
+         *velocities[l] = mu * (*velocities[l])
+            - learning_rate * (*nabla_weights[l]);
+         *weights[l] += -mu * (*prev_velocities[l]) +
+            (1 + mu) * (*velocities[l]);
+      }
+      else if(solver_type == RMSPROP)
       {
          rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
          const double TINY = 1E-5;
          rms_denom[l]->hadamard_sum(TINY);
          nabla_weights[l]->hadamard_division(*rms_denom[l]);
+         *weights[l] -= learning_rate * (*nabla_weights[l]);
       }
-
-      *weights[l] -= learning_rate * (*nabla_weights[l]);
       
 //      debug_flag = true;
       if(debug_flag)
@@ -1953,18 +2005,6 @@ double reinforce::update_neural_network()
    }
 //       cout << endl;
 //   print_weights();
-//   outputfunc::enter_continue_char();
-
-/*
-   dummy_counter++;
-   if(dummy_counter%100 == 0) 
-   {
-      cout << "RMSprop_flag = " << RMSprop_flag << endl;
-      cout << "dummy_counter = " << dummy_counter << endl;
-      outputfunc::enter_continue_char();
-   }
-*/
- 
 
    return total_loss;
 }

@@ -353,6 +353,8 @@ RUNNING EXPERIMENTS
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
 
+BEST RESULTS SO FAR
+
 54.  H1 = 7*64; H2 = 32; zlevels = 4
     Q learning; SGD
     base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
@@ -377,5 +379,29 @@ RUNNING EXPERIMENTS
     gamma = 0.95
     Only legal agent moves allowed; random AI moves
 
+57.  H1 = 3*64; H2 = 32; zlevels = 4; 
+    Q learning; SGD; Nd = 64
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Started on m6700 at 4:53 pm on Mon Nov 28
 
+58.  H1 = 3*64; H2 = 32; zlevels = 4; 
+    Q learning; SGD; Nd = 32
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Started on m6700 at 4:54 pm on Mon Nov 28
 
+59.  H1 = 3*64; H2 = 32; zlevels = 4; 
+    Q learning; SGD; Nd = 16
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Started on m6700 at 4:55 pm on Mon Nov 28
