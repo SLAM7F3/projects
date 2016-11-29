@@ -1,7 +1,7 @@
 =============================================================================
 Pano notes
 =============================================================================
-Last updated on 7/21/15; 7/22/15
+Last updated on 7/21/15; 7/22/15; 11/29/16
 =============================================================================
 
 /home/pcho/sputnik/pwin/build/linux64/pwin -vv -do "pano_gui \
@@ -26,7 +26,33 @@ curl -s https://flyover-api.geo.apple.com/imdata/lookup/OBJECT_ID_HERE | python 
 
 esc-x save_pano pano_name.jpg
 
+*.  In order to find KH projects which have panos and house number results,
+goto flyover admin -> Projects -> Build Pipeline List
+
+Find 24-character mongo string ID corresponding to some KH project name
+
+Project name = kh_drive-002004-Douglas-County
+Mongo ID = 5817ecde1c47d17fe700f3c9
+
+Click on pen-icon next to the project to see pipeline graph.  Nodes colored
+green within this graph are completed.  In particular, "pr_house_numbers"
+and "kh_panorama" for this particular project are both done.
+
+*.  On 11/29/16, Dan Ragurasson told us that we can use "blob" methods in
+order to retrieve panorama data from an Apple/IBM "cleversafe" data center
+where all KH final results are stored.  The access time for a panorama is
+approximately 1 second.
 
 
-*.  
+blob_ret_t blob_generic_get(blob_env_t *env, const char *key, void **data, size_t *size);
 
+See pwin/lib/blob.h for following "one-shot" API:
+
+blob_ret_t blob_get         (const char *key, void **data, size_t *size);
+
+
+*.  See Daniel Ragnarsson's email dated 11/29/16 at 2:59 pm for lots of
+helpful information about KH delivery data formats.  
+
+In particular, we can login to https://kittyhawk-3dv.geo.apple.com/ in
+order to see documentation about 3DV Kitty Hawk Builds.

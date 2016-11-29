@@ -1995,6 +1995,20 @@ double reinforce::update_neural_network()
       }
       else if (solver_type == ADAM)
       {
+         *adam_m_biases[l] = beta1 * (*adam_m[l]) + 
+            (1 - beta1) * (*nabla_biases[l]);
+         curr_beta1_pow *= beta1;
+         *adam_m_biases[l] /= (1 - curr_beta1_pow);
+
+         curr_beta2_pow *= beta2;
+         *rmsprop_biases_cache[l] /= (1 - curr_beta2_pow);
+         
+         rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+         const double TINY = 1E-8;
+         rms_biases_denom[l]->hadamard_sum(TINY);
+         adam_m_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
+         *biases[l] -= learning_rate * (*adam_m_biases[l]);
+
       }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
