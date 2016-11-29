@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/17/16; 11/26/16; 11/27/16; 11/28/16
+// Last modified on 11/26/16; 11/27/16; 11/28/16; 11/29/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -27,7 +27,8 @@ class reinforce
       SGD = 0,
       RMSPROP = 1,
       MOMENTUM = 2,
-      NESTEROV = 3
+      NESTEROV = 3,
+      ADAM = 4
    } solver_t;
 
    typedef std::map<std::string, double > Q_MAP;

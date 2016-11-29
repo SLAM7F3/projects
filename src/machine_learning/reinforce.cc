@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/18/16; 11/26/16; 11/27/16; 11/28/16
+// Last modified on 11/26/16; 11/27/16; 11/28/16; 11/29/16
 // ==========================================================================
 
 #include <string>
@@ -1069,6 +1069,10 @@ string reinforce::init_subtitle()
    {
       subtitle += "NESTEROV";
    }
+   else if(solver_type == ADAM)
+   {
+      subtitle += "ADAM";
+   }
    return subtitle;
 }
 
@@ -1958,6 +1962,11 @@ double reinforce::update_neural_network()
          rms_denom[l]->hadamard_sum(TINY);
          nabla_weights[l]->hadamard_division(*rms_denom[l]);
          *weights[l] -= learning_rate * (*nabla_weights[l]);
+      }
+      else if(solver_type == ADAM)
+      {
+//         nabla_weights[l]->hadamard_division(*rms_denom[l]);
+//         *weights[l] -= learning_rate * (*nabla_weights[l]);
       }
       
 //      debug_flag = true;
