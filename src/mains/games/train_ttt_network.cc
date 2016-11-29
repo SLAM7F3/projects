@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK trains a neural network via V-learning.
 // ==========================================================================
-// Last updated on 11/25/16; 11/26/16; 11/27/16; 11/28/16
+// Last updated on 11/26/16; 11/27/16; 11/28/16; 11/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -97,7 +97,8 @@ int main (int argc, char* argv[])
       extrainfo += "; H3="+stringfunc::number_to_string(H3);
    }
    extrainfo += "; zlevels="+stringfunc::number_to_string(n_zlevels);
-
+   extrainfo += "; V-learning";
+   
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
@@ -430,12 +431,12 @@ int main (int argc, char* argv[])
 
 // Generate metafile for loss function history:
 
-         string subtitle=
-            "V-learning; Old weights T="
-            +stringfunc::number_to_string(old_weights_period)
-            +";min eps="+stringfunc::number_to_string(min_epsilon);
+//         string subtitle=
+//            "Old weights T="
+//            +stringfunc::number_to_string(old_weights_period)
+//            +";min eps="+stringfunc::number_to_string(min_epsilon);
          reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, subtitle, extrainfo);
+            output_subdir, extrainfo);
 
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);

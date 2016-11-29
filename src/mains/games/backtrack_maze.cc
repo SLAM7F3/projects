@@ -1,7 +1,7 @@
 // ==========================================================================
-// Program SINGLE_MAZE
+// Program BACKTRACK_MAZE
 // ==========================================================================
-// Last updated on 11/13/16; 11/14/16; 11/16/16; 11/28/16
+// Last updated on 11/14/16; 11/16/16; 11/28/16; 11/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -339,8 +339,7 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->plot_Qmap_score_history(
       output_subdir, subtitle, extrainfo);
-   reinforce_agent_ptr->plot_log10_loss_history(
-      output_subdir, subtitle, extrainfo);
+   reinforce_agent_ptr->plot_log10_loss_history(output_subdir, extrainfo);
 //   reinforce_agent_ptr->print_Qmap();
 
    delete reinforce_agent_ptr;

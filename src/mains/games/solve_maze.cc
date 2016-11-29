@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/18/16; 11/26/16; 11/27/16; 11/28/16
+// Last updated on 11/26/16; 11/27/16; 11/28/16; 11/29/16
 // ==========================================================================
 
 #include <iostream>
@@ -301,7 +301,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->plot_Qmap_score_history(
             output_subdir, subtitle, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, subtitle, extrainfo);
+            output_subdir, extrainfo);
       }
 
    } // n_episodes < n_max_episodes while loop
@@ -326,8 +326,7 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->plot_Qmap_score_history(
       output_subdir, subtitle, extrainfo);
-   reinforce_agent_ptr->plot_log10_loss_history(
-      output_subdir, subtitle, extrainfo);
+   reinforce_agent_ptr->plot_log10_loss_history(output_subdir, extrainfo);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir

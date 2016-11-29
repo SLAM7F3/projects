@@ -1071,7 +1071,7 @@ string reinforce::init_subtitle()
    string subtitle=
       "blr="+stringfunc::scinumber_to_string(base_learning_rate,2)+
       "; gamma="+stringfunc::scinumber_to_string(gamma,2)+
-      "; solver=";
+      "; ";
    if(solver_type == SGD)
    {
       subtitle += "SGD";
@@ -1093,6 +1093,8 @@ string reinforce::init_subtitle()
    else if(solver_type == ADAM)
    {
       subtitle += "ADAM";
+      subtitle += " b1="+stringfunc::scinumber_to_string(beta1,2);
+      subtitle += " b2="+stringfunc::scinumber_to_string(beta2,2);
    }
    return subtitle;
 }
@@ -1372,8 +1374,7 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
 // ---------------------------------------------------------------------
 // Generate metafile plot of log10(total loss) versus episode number.
 
-void reinforce::plot_log10_loss_history(
-   string output_subdir, string subtitle, string extrainfo)
+void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
 {
    if(log10_losses.size() < 3) return;
 
@@ -1381,11 +1382,10 @@ void reinforce::plot_log10_loss_history(
    string meta_filename=output_subdir + "/log10_losses_history";
 
    string title="Log10(total loss)";
-   title += ";learning rate="+stringfunc::scinumber_to_string(
-      base_learning_rate,2);
+   title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
    title += ";bsize="+stringfunc::number_to_string(batch_size);
 
-//   string subtitle=init_subtitle();
+   string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
    string x_label="Episode number";
    string y_label="Log10(Total loss)";
@@ -1995,7 +1995,9 @@ double reinforce::update_neural_network()
       else if(solver_type == RMSPROP)
       {
          rms_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+//         const double TINY = 1E-3;
          const double TINY = 1E-5;
+//         const double TINY = 1E-7;
          rms_denom[l]->hadamard_sum(TINY);
          nabla_weights[l]->hadamard_division(*rms_denom[l]);
          *weights[l] -= learning_rate * (*nabla_weights[l]);

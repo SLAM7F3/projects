@@ -78,7 +78,8 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 32;	// 
-   int H1 = 3 * 64;	//  
+   int H1 = 2 * 64;	//  
+//   int H1 = 3 * 64;	//  
 //   int H1 = 5 * 64;	//  = 320
 //   int H1 = 7 * 64;	//  
 
@@ -124,7 +125,26 @@ int main (int argc, char* argv[])
    int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, n_max_turns, batch_size, replay_memory_capacity,
-      reinforce::SGD);
+//      reinforce::SGD);
+//      reinforce::MOMENTUM);
+//      reinforce::NESTEROV);
+//      reinforce::RMSPROP);
+      reinforce::ADAM);
+
+   const double beta1 = 0.0;
+//   const double beta1 = 1E-12;// OK
+//   const double beta1 = 1E-9;  // OK
+//   const double beta1 = 1E-8;  // OK
+//   const double beta1 = 1E-7;  // bad
+//   const double beta1 = 1E-6;   // bad
+//   double beta1 = 0.9;
+   
+//   const double beta2 = 0.01;
+//   const double beta2 = 0.1;
+//   const double beta2 = 0.90;  
+   double beta2 = 0.999;   
+   reinforce_agent_ptr->set_ADAM_params(beta1, beta2);
+
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
@@ -145,9 +165,21 @@ int main (int argc, char* argv[])
    double gamma = 0.95;
 //   double gamma = 0.9;
    reinforce_agent_ptr->set_gamma(gamma);  
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(1E-6);   // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(1E-5);   // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(1E-4);   // bad
+
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.001);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.01);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.10);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.5);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.99);  // bad
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.999);  // bad
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
    reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);
@@ -467,11 +499,11 @@ int main (int argc, char* argv[])
 
 // Generate metafile for loss function history:
 
-         string subtitle="Old weights T="
-            +stringfunc::number_to_string(old_weights_period)
-            +";min eps="+stringfunc::number_to_string(min_epsilon);
+//         string subtitle="Old weights T="
+//            +stringfunc::number_to_string(old_weights_period)
+//            +";min eps="+stringfunc::number_to_string(min_epsilon);
          reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, subtitle, extrainfo);
+            output_subdir, extrainfo);
 
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);

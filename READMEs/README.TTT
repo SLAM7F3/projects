@@ -406,5 +406,167 @@ BEST RESULTS SO FAR
     Only legal agent moves allowed; random AI moves
     Started on m6700 at 4:55 pm on Mon Nov 28
 
+
+60.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.1; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+61.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+62.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.99; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+
+63.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.001; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+64.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.01; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+65.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.999; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+66.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.9999; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss explosively diverges
+
+67.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.99999; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss explosively diverges
+
+68.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 0.999999; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss explosively diverges
+
+69.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 1E-6; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+70.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 1E-5; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+71.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop
+    base learning rate = 3E-4; rms_decay = 1E-4; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+72.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop, TINY = 1E-3;
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+73.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; RMS prop, TINY = 1E-7;
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+    Loss diverges
+
+
 RUNNING EXPERIMENTS
 -------------------
+
+75.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; ADAM prop; beta1 = 0; beta2 = 1
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+
+
+79.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; ADAM prop; beta1 = 0; beta2 = 0.999
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+
+80.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; ADAM prop; beta1 = 0; beta2 = 0.999
+    base learning rate = 1E-4; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
+
+81.  H1 = 3*64; H2 = 32; zlevels = 4
+    Q learning; ADAM prop; beta1 = 0; beta2 = 0.999
+    base learning rate = 3E-5; rms_decay = 0.9; batch size = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.99
+    gamma = 0.95
+    Only legal agent moves allowed; random AI moves
