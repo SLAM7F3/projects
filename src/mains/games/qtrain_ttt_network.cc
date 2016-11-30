@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 11/25/16; 11/26/16; 11/27/16; 11/28/16
+// Last updated on 11/26/16; 11/27/16; 11/28/16; 11/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -172,16 +172,16 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.001);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.01);  // bad
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.10);  // bad
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.10);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.5);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  // bad
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.99);  // bad
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.999);  // bad
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
@@ -482,6 +482,10 @@ int main (int argc, char* argv[])
             n_max_turns;
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
          reinforce_agent_ptr->snapshot_running_reward();
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+           reinforce_agent_ptr->compute_bias_distributions();
+         }
+         reinforce_agent_ptr->compute_weight_distributions();
 
          ttt_ptr->append_game_illegal_frac(illegal_frac);
          ttt_ptr->append_game_loss_frac(loss_frac);
@@ -497,6 +501,12 @@ int main (int argc, char* argv[])
             output_subdir, extrainfo, lose_reward, win_reward);
          reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
+            output_subdir, extrainfo);
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+            reinforce_agent_ptr->plot_bias_distributions(
+               output_subdir, extrainfo);
+         }
+         reinforce_agent_ptr->plot_weight_distributions(
             output_subdir, extrainfo);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);

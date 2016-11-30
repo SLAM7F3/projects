@@ -276,7 +276,6 @@ int main (int argc, char* argv[])
          if(reinforce_agent_ptr->get_include_bias_terms()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
-
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->compute_deep_Qvalues();
 //          reinforce_agent_ptr->print_Qmap();
@@ -324,7 +323,7 @@ int main (int argc, char* argv[])
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
 
-   int n_final_mazes = 20;
+   int n_final_mazes = 10;
    for(int i = 0; i < n_final_mazes; i++)
    {
       curr_maze.DrawMaze(output_counter++, output_subdir, basename,

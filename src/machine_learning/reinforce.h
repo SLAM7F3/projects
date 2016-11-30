@@ -48,6 +48,7 @@ class reinforce
 
 // Set & get member functions:
 
+   void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
    void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
@@ -293,6 +294,11 @@ class reinforce
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void reinforce::set_include_bias_terms(bool flag)
+{
+   include_bias_terms = flag;
+}
 
 inline bool reinforce::get_include_bias_terms() const
 {
