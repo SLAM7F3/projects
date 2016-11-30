@@ -41,6 +41,7 @@ using std::vector;
 
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
+   include_bias_terms = false;
    debug_flag = false;
    cum_time_counter = 0;
 
@@ -52,7 +53,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    base_learning_rate = 1E-4;  //
    learning_rate = base_learning_rate;
    mu = 0.9;		// Coefficient for momentum solver type
-   lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
+//   lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
+   lambda = 1E-3;	// L2 regularization coefficient (better than 1E-3)
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
    running_reward = -1000;
@@ -99,6 +101,19 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          curr_biases->put(i, 0);
          curr_old_biases->put(i, curr_biases->get(i));
       } // loop over index i labeling node in current layer
+
+      vector<double> dummy_dist;
+      bias_01.push_back(dummy_dist);
+      bias_05.push_back(dummy_dist);
+      bias_10.push_back(dummy_dist);
+      bias_25.push_back(dummy_dist);
+      bias_35.push_back(dummy_dist);
+      bias_50.push_back(dummy_dist);
+      bias_65.push_back(dummy_dist);
+      bias_75.push_back(dummy_dist);
+      bias_90.push_back(dummy_dist);
+      bias_95.push_back(dummy_dist);
+      bias_99.push_back(dummy_dist);
    } // loop over index l labeling network layers
 
 // Weights link layer l with layer l+1:
@@ -187,18 +202,18 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
-      vector<double> dummy_weight_dist;
-      weight_01.push_back(dummy_weight_dist);
-      weight_05.push_back(dummy_weight_dist);
-      weight_10.push_back(dummy_weight_dist);
-      weight_25.push_back(dummy_weight_dist);
-      weight_35.push_back(dummy_weight_dist);
-      weight_50.push_back(dummy_weight_dist);
-      weight_65.push_back(dummy_weight_dist);
-      weight_75.push_back(dummy_weight_dist);
-      weight_90.push_back(dummy_weight_dist);
-      weight_95.push_back(dummy_weight_dist);
-      weight_99.push_back(dummy_weight_dist);
+      vector<double> dummy_dist;
+      weight_01.push_back(dummy_dist);
+      weight_05.push_back(dummy_dist);
+      weight_10.push_back(dummy_dist);
+      weight_25.push_back(dummy_dist);
+      weight_35.push_back(dummy_dist);
+      weight_50.push_back(dummy_dist);
+      weight_65.push_back(dummy_dist);
+      weight_75.push_back(dummy_dist);
+      weight_90.push_back(dummy_dist);
+      weight_95.push_back(dummy_dist);
+      weight_99.push_back(dummy_dist);
    } // loop over index l labeling neural net layers
 
    snapshots_subdir="";
@@ -537,21 +552,20 @@ void reinforce::policy_backward()
             delta_prime[curr_layer]->get_column(t),
             a[prev_layer]->get_column(t));
 
-/*
+      } // loop over index t 
 
+/*
 // As of 11/4/16, we comment out L2-regularization for deep
 // reinforcement learning:
 
-         const double TINY = 1E-8;<
-         if(lambda > TINY)
-         {
-            *delta_nabla_weights[prev_layer] += 
-               2 * lambda * (*weights[prev_layer]);
-         }
+      const double TINY = 1E-8;
+      if(lambda > TINY)
+      {
+         *delta_nabla_weights[prev_layer] += 
+            2 * lambda * (*weights[prev_layer]);
+      }
 */
-
-      } // loop over index t 
-
+    
       if(debug_flag)
       {
          cout << "prev_layer = " << prev_layer << endl;
@@ -940,6 +954,8 @@ int reinforce::count_weights()
 
 void reinforce::print_biases()
 {
+   if(!include_bias_terms) return;
+   
    for(int l = 0; l < n_layers; l++)
    {
       cout << "layer = " << l << endl;
@@ -1048,6 +1064,52 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
 }
 
 // ---------------------------------------------------------------------
+void reinforce::compute_bias_distributions()
+{
+   for(int l = 0; l < n_layers; l++)
+   {
+      vector<double> bias_values;
+      for(unsigned int r = 0; r < biases[l]->get_mdim(); r++)
+      {
+         bias_values.push_back(biases[l]->get(r));
+      }
+
+      double blo = mathfunc::minimal_value(bias_values);
+      double bhi = mathfunc::maximal_value(bias_values);
+      if(nearly_equal(blo,bhi))
+      {
+         bias_01[l].push_back(blo);
+         bias_05[l].push_back(blo);
+         bias_10[l].push_back(blo);
+         bias_25[l].push_back(blo);
+         bias_35[l].push_back(blo);
+         bias_50[l].push_back(blo);
+         bias_65[l].push_back(blo);
+         bias_75[l].push_back(blo);
+         bias_90[l].push_back(blo);
+         bias_95[l].push_back(blo);
+         bias_99[l].push_back(blo);
+      }
+      else
+      {
+         int nbins = 500;
+         prob_distribution prob_biases(nbins, blo, bhi, bias_values);
+         bias_01[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.01));
+         bias_05[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.05));
+         bias_10[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.10));
+         bias_25[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.25));
+         bias_35[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.35));
+         bias_50[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.50));
+         bias_65[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.65));
+         bias_75[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.75));
+         bias_90[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.90));
+         bias_95[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.95));
+         bias_99[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.99));
+      }
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
 void reinforce::compute_weight_distributions()
 {
    for(int l = 0; l < n_layers - 1; l++)
@@ -1077,15 +1139,15 @@ void reinforce::compute_weight_distributions()
       weight_95[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.95));
       weight_99[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.99));
       
-      cout << "layer = " << l
-           << " wlo = " << wlo
-           << " w_05 = " << weight_05[l].back()
-           << " w_25 = " << weight_25[l].back();
-      cout << "   w_50 = " << weight_50[l].back()
-           << " w_75 = " << weight_75[l].back()
-           << " w_95 = " << weight_95[l].back()
-           << " whi = " << whi
-           << endl;
+//      cout << "layer = " << l
+//           << " wlo = " << wlo
+//           << " w_05 = " << weight_05[l].back()
+//           << " w_25 = " << weight_25[l].back();
+//      cout << "   w_50 = " << weight_50[l].back()
+//           << " w_75 = " << weight_75[l].back()
+//           << " w_95 = " << weight_95[l].back()
+//           << " whi = " << whi
+//           << endl;
    } // loop over index l labeling network layers
 }
 
@@ -1459,6 +1521,75 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of bias distributions versus episode number.
+
+void reinforce::plot_bias_distributions(string output_subdir, string extrainfo)
+{
+   for(unsigned int l = 1; l < bias_50.size(); l++)
+   {
+      metafile curr_metafile;
+      string meta_filename=output_subdir + "/bias_dists_"+
+         stringfunc::number_to_string(l);
+
+      string title="Bias dists for layer "+stringfunc::number_to_string(l);
+      title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
+      title += ";bsize="+stringfunc::number_to_string(batch_size);
+
+      string subtitle=init_subtitle();
+      subtitle += ";"+extrainfo;
+      string x_label="Episode number";
+      string y_label="Bias distributions";
+
+      double max_bias = NEGATIVEINFINITY;
+      double min_bias = POSITIVEINFINITY; 
+      max_bias = basic_math::max(
+         max_bias, mathfunc::maximal_value(bias_99[l]));
+      min_bias = basic_math::min(
+         min_bias, mathfunc::minimal_value(bias_01[l]));
+
+      curr_metafile.set_parameters(
+         meta_filename, title, x_label, y_label, 0, 
+         episode_number, min_bias, max_bias);
+      curr_metafile.set_subtitle(subtitle);
+//      curr_metafile.set_ytic(0.5);
+//      curr_metafile.set_ysubtic(0.25);
+      curr_metafile.openmetafile();
+      curr_metafile.write_header();
+      curr_metafile.set_thickness(2);
+
+      curr_metafile.write_curve(
+         0, episode_number, bias_01[l], colorfunc::get_color(0));
+      curr_metafile.write_curve(
+         0, episode_number, bias_05[l], colorfunc::get_color(1));
+      curr_metafile.write_curve(
+         0, episode_number, bias_10[l], colorfunc::get_color(2));
+      curr_metafile.write_curve(
+         0, episode_number, bias_25[l], colorfunc::get_color(3));
+      curr_metafile.write_curve(
+         0, episode_number, bias_35[l], colorfunc::get_color(4));
+      curr_metafile.write_curve(
+         0, episode_number, bias_50[l], colorfunc::get_color(5));
+      curr_metafile.write_curve(
+         0, episode_number, bias_65[l], colorfunc::get_color(6));
+      curr_metafile.write_curve(
+         0, episode_number, bias_75[l], colorfunc::get_color(7));
+      curr_metafile.write_curve(
+         0, episode_number, bias_90[l], colorfunc::get_color(8));
+      curr_metafile.write_curve(
+         0, episode_number, bias_95[l], colorfunc::get_color(9));
+      curr_metafile.write_curve(
+         0, episode_number, bias_99[l], colorfunc::get_color(10));
+
+      curr_metafile.closemetafile();
+      string banner="Exported metafile "+meta_filename+".meta";
+      outputfunc::write_banner(banner);
+
+      string unix_cmd="meta_to_jpeg "+meta_filename;
+      sysfunc::unix_command(unix_cmd);
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of weight distributions versus episode number.
 
 void reinforce::plot_weight_distributions(
@@ -1486,10 +1617,9 @@ void reinforce::plot_weight_distributions(
       min_weight = basic_math::min(
          min_weight, mathfunc::minimal_value(weight_01[l]));
 
-      int delta_x = 0.02 * episode_number;
       curr_metafile.set_parameters(
          meta_filename, title, x_label, y_label, 0, 
-         episode_number + 2 * delta_x, min_weight, max_weight);
+         episode_number, min_weight, max_weight);
       curr_metafile.set_subtitle(subtitle);
       curr_metafile.set_ytic(0.5);
       curr_metafile.set_ysubtic(0.25);
@@ -1497,29 +1627,28 @@ void reinforce::plot_weight_distributions(
       curr_metafile.write_header();
       curr_metafile.set_thickness(2);
 
-      int delta = l * delta_x;
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_01[l], colorfunc::get_color(0));
+         0, episode_number, weight_01[l], colorfunc::get_color(0));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_05[l], colorfunc::get_color(1));
+         0, episode_number, weight_05[l], colorfunc::get_color(1));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_10[l], colorfunc::get_color(2));
+         0, episode_number, weight_10[l], colorfunc::get_color(2));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_25[l], colorfunc::get_color(3));
+         0, episode_number, weight_25[l], colorfunc::get_color(3));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_35[l], colorfunc::get_color(4));
+         0, episode_number, weight_35[l], colorfunc::get_color(4));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_50[l], colorfunc::get_color(5));
+         0, episode_number, weight_50[l], colorfunc::get_color(5));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_65[l], colorfunc::get_color(6));
+         0, episode_number, weight_65[l], colorfunc::get_color(6));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_75[l], colorfunc::get_color(7));
+         0, episode_number, weight_75[l], colorfunc::get_color(7));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_90[l], colorfunc::get_color(8));
+         0, episode_number, weight_90[l], colorfunc::get_color(8));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_95[l], colorfunc::get_color(9));
+         0, episode_number, weight_95[l], colorfunc::get_color(9));
       curr_metafile.write_curve(
-         delta, episode_number+delta, weight_99[l], colorfunc::get_color(10));
+         0, episode_number, weight_99[l], colorfunc::get_color(10));
 
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
@@ -2294,23 +2423,40 @@ double reinforce::Q_backward_propagate(int d, int Nd)
 
 // Eqn BP3:
 
-      delta_nabla_biases[curr_layer]->copy_matrix_column(
-         *delta_prime[curr_layer], t);
+      if(include_bias_terms)
+      {
+         delta_nabla_biases[curr_layer]->copy_matrix_column(
+            *delta_prime[curr_layer], t);
+      }
 
 // Eqn BP4:
 
       delta_nabla_weights[prev_layer]->accumulate_outerprod(
          delta_prime[curr_layer]->get_column(t), a[prev_layer]->get_column(t));
+/*
+      const double TINY = 1E-8;
+      if(lambda > TINY)
+      {
+         *delta_nabla_biases[curr_layer] += 
+            2 * lambda * (*biases[curr_layer]);
+         *delta_nabla_weights[prev_layer] += 
+            2 * lambda * (*weights[prev_layer]);
+      }
+*/
 
    } // loop over curr_layer index
 
 // Accumulate biases' and weights' gradients for each network layer:
 
    double inverse_Nd = 1.0 / Nd;
-   for(int l = 0; l < n_layers; l++)
+   if(include_bias_terms)
    {
-      nabla_biases[l]->vector_increment(inverse_Nd, *delta_nabla_biases[l]);
+      for(int l = 0; l < n_layers; l++)
+      {
+         nabla_biases[l]->vector_increment(inverse_Nd, *delta_nabla_biases[l]);
+      }
    }
+   
    for(int l = 0; l < n_layers - 1; l++)
    {
       nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
@@ -2483,3 +2629,8 @@ double reinforce::get_prev_afterstate_curr_value()
 {
    return compute_value(prev_afterstate_ptr);
 }
+
+
+
+
+

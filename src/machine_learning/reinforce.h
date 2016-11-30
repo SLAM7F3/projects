@@ -48,6 +48,7 @@ class reinforce
 
 // Set & get member functions:
 
+   bool get_include_bias_terms() const;
    void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
    bool get_debug_flag() const;
@@ -93,6 +94,7 @@ class reinforce
    void print_biases();
    void print_weights();
    void plot_zeroth_layer_weights(std::string output_subdir);
+   void compute_bias_distributions();
    void compute_weight_distributions();
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
@@ -103,6 +105,8 @@ class reinforce
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
+      std::string output_subdir, std::string extrainfo);
+   void plot_bias_distributions(
       std::string output_subdir, std::string extrainfo);
    void plot_weight_distributions(
       std::string output_subdir, std::string extrainfo);
@@ -163,6 +167,7 @@ class reinforce
 
   private:
 
+   bool include_bias_terms;
    bool debug_flag;
    int solver_type;
    int n_layers, n_actions;
@@ -229,7 +234,10 @@ class reinforce
    std::vector<std::vector<double> > weight_25, weight_35, weight_50;
    std::vector<std::vector<double> > weight_65, weight_75, weight_90;
    std::vector<std::vector<double> > weight_95, weight_99;
-   
+   std::vector<std::vector<double> > bias_01, bias_05, bias_10, bias_25;
+   std::vector<std::vector<double>  >bias_35, bias_50, bias_65, bias_75;
+   std::vector<std::vector<double> > bias_90, bias_95, bias_99;
+
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
    genvector *discounted_reward;  // T x 1
@@ -285,6 +293,11 @@ class reinforce
 // ==========================================================================
 
 // Set and get member functions:
+
+inline bool reinforce::get_include_bias_terms() const
+{
+   return include_bias_terms;
+}
 
 inline void reinforce::set_environment(environment* e_ptr)
 {

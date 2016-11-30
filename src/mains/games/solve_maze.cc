@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/26/16; 11/27/16; 11/28/16; 11/29/16
+// Last updated on 11/27/16; 11/28/16; 11/29/16; 11/30/16
 // ==========================================================================
 
 #include <iostream>
@@ -267,11 +267,15 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
-      if(curr_episode_number%n_update == 0)
+      if(curr_episode_number%n_update == 0 && curr_episode_number > 0)
       {
          cout << "Episode number = " << curr_episode_number 
               << " epsilon = " << reinforce_agent_ptr->get_epsilon()
               << endl;
+
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+           reinforce_agent_ptr->compute_bias_distributions();
+         }
 
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->compute_deep_Qvalues();
@@ -301,6 +305,10 @@ int main (int argc, char* argv[])
             output_subdir, subtitle, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
             output_subdir, extrainfo);
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+            reinforce_agent_ptr->plot_bias_distributions(
+               output_subdir, extrainfo);
+         }
          reinforce_agent_ptr->plot_weight_distributions(
             output_subdir, extrainfo);
       }
@@ -337,8 +345,6 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
 
    curr_maze.DisplayTrainedZerothLayerWeights(weights_subdir);
-
-   reinforce_agent_ptr->print_biases();
 
    delete reinforce_agent_ptr;
 }
