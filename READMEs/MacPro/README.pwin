@@ -1,7 +1,7 @@
 =============================================================================
 PWIN notes
 =============================================================================
-Last updated on 6/1/16; 7/22/16; 7/28/16; 8/9/16
+Last updated on 7/22/16; 7/28/16; 8/9/16; 11/30/16
 =============================================================================
 
 *.  In order to avoid having to chant "c3 lab_pcho" at a pwin command
@@ -870,3 +870,11 @@ int curl_load(const char *url, mfile_buf_t *data)
   curl_easy_cleanup(curl);
   return resp / 100 == 2 ? 0 : -1;
 }
+
+*.  On 11/30/16, Andreas Bockert told us about "mfiles" which act like
+files in memory.  In particular he pointed us toward m3d_read_mem() inside
+m3d_rw.c for an example which generates an "mfile" from a one-dimensional
+array of bytes (containing jpeg imagery content).  A char* URL is generated
+for this "mfile" which can then be passed into methods such as
+"p_info_imf(url, &xdim, &ydim)" to recover horizontal & vertical image
+dimensions.

@@ -6,7 +6,7 @@
 # Note added on 8/3/15:  Eliminated -lopencv_contrib, -lopencv_legacy   #
 # and -lopencv_nonfree which no longer exist under opencv3.0.0		#
 # ===================================================================== #
-# Last modified on 10/5/16; 10/17/16; 11/5/16; 11/9/16			#
+# Last modified on 10/17/16; 11/5/16; 11/9/16; 11/30/16			#
 # ===================================================================== #
 #									#
 # NOTES:								#
@@ -203,6 +203,8 @@ LIBS =  -L/usr/local/lib \
         -L/opt/geos/lib \
         -L/opt/boost/lib \
         -L/usr/local/anaconda/lib \
+        -L/usr/local/ALE/ \
+	-lale \
 	-lsvd -lxml++-2.6 -lglibmm-2.4 \
 	-lcaffe -lboost_system -lboost_python \
 	-lprotobuf -lprotobuf-c -lleveldb -llmdb \
@@ -361,6 +363,7 @@ CXXFLAGS = `Magick++-config --cxxflags --cppflags` \
         -O3 -msse4 -Wall -frounding-math \
         -std=c++11 -fopenmp \
         -I. -I/usr/local/axiscpp_deploy/include \
+	-I /usr/local/ALE/src/ \
 	-I /usr/lib/x86_64-linux-gnu/glib-2.0/include/ \
 	-I/usr/lib/gcc/x86_64-linux-gnu/4.8/include/ \
         -I/usr/lib/x86_64-linux-gnu/glibmm-2.4/include/ \
