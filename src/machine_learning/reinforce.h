@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/26/16; 11/27/16; 11/28/16; 11/29/16
+// Last modified on 11/27/16; 11/28/16; 11/29/16; 11/30/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -103,6 +103,8 @@ class reinforce
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
+      std::string output_subdir, std::string extrainfo);
+   void plot_weight_distributions(
       std::string output_subdir, std::string extrainfo);
 
    void create_snapshots_subdir(std::string output_subdir);
@@ -223,7 +225,11 @@ class reinforce
    std::vector<double> n_episode_turns_frac;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
-
+   std::vector<std::vector<double> > weight_01, weight_05, weight_10;
+   std::vector<std::vector<double> > weight_25, weight_35, weight_50;
+   std::vector<std::vector<double> > weight_65, weight_75, weight_90;
+   std::vector<std::vector<double> > weight_95, weight_99;
+   
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
    genvector *discounted_reward;  // T x 1

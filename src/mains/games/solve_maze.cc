@@ -273,6 +273,7 @@ int main (int argc, char* argv[])
               << " epsilon = " << reinforce_agent_ptr->get_epsilon()
               << endl;
 
+         reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->compute_deep_Qvalues();
 //          reinforce_agent_ptr->print_Qmap();
 
@@ -299,6 +300,8 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->plot_Qmap_score_history(
             output_subdir, subtitle, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
+            output_subdir, extrainfo);
+         reinforce_agent_ptr->plot_weight_distributions(
             output_subdir, extrainfo);
       }
 

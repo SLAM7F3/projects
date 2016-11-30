@@ -1,11 +1,12 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/26/16; 11/27/16; 11/28/16; 11/29/16
+// Last modified on 11/27/16; 11/28/16; 11/29/16; 11/30/16
 // ==========================================================================
 
 #include <string>
 #include "astro_geo/Clock.h"
+#include "color/colorfuncs.h"
 #include "general/filefuncs.h"
 #include "filter/filterfuncs.h"
 #include "math/genmatrix.h"
@@ -186,6 +187,18 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
+      vector<double> dummy_weight_dist;
+      weight_01.push_back(dummy_weight_dist);
+      weight_05.push_back(dummy_weight_dist);
+      weight_10.push_back(dummy_weight_dist);
+      weight_25.push_back(dummy_weight_dist);
+      weight_35.push_back(dummy_weight_dist);
+      weight_50.push_back(dummy_weight_dist);
+      weight_65.push_back(dummy_weight_dist);
+      weight_75.push_back(dummy_weight_dist);
+      weight_90.push_back(dummy_weight_dist);
+      weight_95.push_back(dummy_weight_dist);
+      weight_99.push_back(dummy_weight_dist);
    } // loop over index l labeling neural net layers
 
    snapshots_subdir="";
@@ -1052,21 +1065,28 @@ void reinforce::compute_weight_distributions()
       double whi = mathfunc::maximal_value(weight_values);
       prob_distribution prob_weights(nbins, wlo, whi, weight_values);
 
-      double w_05 = prob_weights.find_x_corresponding_to_pcum(0.05);
-      double w_25 = prob_weights.find_x_corresponding_to_pcum(0.25);
-      double w_median = prob_weights.median();
-      double w_75 = prob_weights.find_x_corresponding_to_pcum(0.75);
-      double w_95 = prob_weights.find_x_corresponding_to_pcum(0.95);
+      weight_01[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.01));
+      weight_05[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.05));
+      weight_10[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.10));
+      weight_25[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.25));
+      weight_35[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.35));
+      weight_50[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.50));
+      weight_65[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.65));
+      weight_75[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.75));
+      weight_90[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.90));
+      weight_95[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.95));
+      weight_99[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.99));
+      
       cout << "layer = " << l
            << " wlo = " << wlo
-           << " w_05 = " << w_05
-           << " w_25 = " << w_25 << endl;
-      cout << "   w_50 = " << w_median
-           << " w_75 = " << w_75
-           << " w_95 = " << w_95 
+           << " w_05 = " << weight_05[l].back()
+           << " w_25 = " << weight_25[l].back();
+      cout << "   w_50 = " << weight_50[l].back()
+           << " w_75 = " << weight_75[l].back()
+           << " w_95 = " << weight_95[l].back()
            << " whi = " << whi
            << endl;
-   }
+   } // loop over index l labeling network layers
 }
 
 // ---------------------------------------------------------------------
@@ -1436,6 +1456,78 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of weight distributions versus episode number.
+
+void reinforce::plot_weight_distributions(
+   string output_subdir, string extrainfo)
+{
+   for(unsigned int l = 0; l < weight_50.size(); l++)
+   {
+      metafile curr_metafile;
+      string meta_filename=output_subdir + "/weight_dists_"+
+         stringfunc::number_to_string(l);
+
+      string title="Weight dists for layer "+stringfunc::number_to_string(l);
+      title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
+      title += ";bsize="+stringfunc::number_to_string(batch_size);
+
+      string subtitle=init_subtitle();
+      subtitle += ";"+extrainfo;
+      string x_label="Episode number";
+      string y_label="Weight distributions";
+
+      double max_weight = NEGATIVEINFINITY;
+      double min_weight = POSITIVEINFINITY; 
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_99[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_01[l]));
+
+      int delta_x = 0.02 * episode_number;
+      curr_metafile.set_parameters(
+         meta_filename, title, x_label, y_label, 0, 
+         episode_number + 2 * delta_x, min_weight, max_weight);
+      curr_metafile.set_subtitle(subtitle);
+      curr_metafile.set_ytic(0.5);
+      curr_metafile.set_ysubtic(0.25);
+      curr_metafile.openmetafile();
+      curr_metafile.write_header();
+      curr_metafile.set_thickness(2);
+
+      int delta = l * delta_x;
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_01[l], colorfunc::get_color(0));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_05[l], colorfunc::get_color(1));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_10[l], colorfunc::get_color(2));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_25[l], colorfunc::get_color(3));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_35[l], colorfunc::get_color(4));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_50[l], colorfunc::get_color(5));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_65[l], colorfunc::get_color(6));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_75[l], colorfunc::get_color(7));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_90[l], colorfunc::get_color(8));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_95[l], colorfunc::get_color(9));
+      curr_metafile.write_curve(
+         delta, episode_number+delta, weight_99[l], colorfunc::get_color(10));
+
+      curr_metafile.closemetafile();
+      string banner="Exported metafile "+meta_filename+".meta";
+      outputfunc::write_banner(banner);
+
+      string unix_cmd="meta_to_jpeg "+meta_filename;
+      sysfunc::unix_command(unix_cmd);
+   } // loop over index l labeling network layers
 }
 
 // ---------------------------------------------------------------------
@@ -1995,6 +2087,11 @@ double reinforce::update_neural_network()
       }
       else if (solver_type == ADAM)
       {
+
+// FAKE FAKE:  ADAM solver for biases needs fixing
+// Weds Nov 30 at 4:11 am
+
+/*
          *adam_m_biases[l] = beta1 * (*adam_m[l]) + 
             (1 - beta1) * (*nabla_biases[l]);
          curr_beta1_pow *= beta1;
@@ -2008,6 +2105,7 @@ double reinforce::update_neural_network()
          rms_biases_denom[l]->hadamard_sum(TINY);
          adam_m_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
          *biases[l] -= learning_rate * (*adam_m_biases[l]);
+         */
 
       }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
