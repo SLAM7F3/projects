@@ -364,6 +364,7 @@ CXXFLAGS = `Magick++-config --cxxflags --cppflags` \
         -std=c++11 -fopenmp \
         -I. -I/usr/local/axiscpp_deploy/include \
 	-I /usr/local/ALE/src/ \
+	-I /usr/include/SDL/ \
 	-I /usr/lib/x86_64-linux-gnu/glib-2.0/include/ \
 	-I/usr/lib/gcc/x86_64-linux-gnu/4.8/include/ \
         -I/usr/lib/x86_64-linux-gnu/glibmm-2.4/include/ \
