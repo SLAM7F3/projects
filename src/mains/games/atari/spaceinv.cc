@@ -22,33 +22,9 @@ int main(int argc, char** argv)
    using std::vector;
    
    ALEInterface ale;
- 
-//  enum Action {
-//  PLAYER_A_NOOP           = 0,
-//  PLAYER_A_FIRE           = 1,
-//  PLAYER_A_UP             = 2,
-//  PLAYER_A_RIGHT          = 3,
-//  PLAYER_A_LEFT           = 4,
-//  PLAYER_A_DOWN           = 5,
-//  PLAYER_A_UPRIGHT        = 6,
-//  PLAYER_A_UPLEFT         = 7,
-//  PLAYER_A_DOWNRIGHT      = 8,
-//  PLAYER_A_DOWNLEFT       = 9,
-//  PLAYER_A_UPFIRE         = 10,
-//  PLAYER_A_RIGHTFIRE      = 11,
-//  PLAYER_A_LEFTFIRE       = 12,
-//  PLAYER_A_DOWNFIRE       = 13,
-//  PLAYER_A_UPRIGHTFIRE    = 14,
-//  PLAYER_A_UPLEFTFIRE     = 15,
-//  PLAYER_A_DOWNRIGHTFIRE  = 16,
-//  PLAYER_A_DOWNLEFTFIRE   = 17,
-//  }
-
-// Space invaders actions: 0, 1, 3, 4, 11, 12
 
    nrfunc::init_time_based_seed();
    ale.setInt("random_seed", int(10000 * nrfunc::ran1()));
-//   ale.setInt("random_seed", 123);
 
    //The default is already 0.25, this is just an example
    ale.setFloat("repeat_action_probability", 0.25);
@@ -81,15 +57,20 @@ int main(int argc, char** argv)
    vector<unsigned char> grayscale_output_buffer;
    grayscale_output_buffer.reserve(n_pixels);
 
-
-// Screen ROI for space invaders:
+// Space Invader specific parameters:
 
    int min_px = 22;
    int max_px = 138;
    int min_py = 30;
    int max_py = 192;
+
    int min_episode_framenumber = 100;
    int frame_skip = 3;
+
+   double max_score_per_episode = 1000;  // Reasonable guestimate
+
+   double mu_zdiff = 0.94;     // Estimate from few hundred random episodes
+   double sigma_zdiff = 11.0;  // Estimated from few hundred random episodes
 
    int curr_frame_number = -1;
 //   int n_episodes = 10;
@@ -198,7 +179,6 @@ int main(int argc, char** argv)
                vector<vector<unsigned char > > diff_pooled_byte_array;
                if(other_pooled_byte_array_ptr->size() > 0)
                {
-
                   for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); 
                       py++)
                   {
@@ -209,8 +189,10 @@ int main(int argc, char** argv)
                         unsigned char z_diff = 
                            pooled_byte_array_ptr->at(py).at(px) - 
                            other_pooled_byte_array_ptr->at(py).at(px);
-                        diff_pooled_byte_row.push_back(z_diff);
                         z_differences.push_back(double(z_diff));
+
+                        diff_pooled_byte_row.push_back(z_diff);
+
                      } // loop over px
                      diff_pooled_byte_array.push_back(diff_pooled_byte_row);
                   } // loop over py 
@@ -248,6 +230,9 @@ int main(int argc, char** argv)
       cout << "Episode " << episode << " ended with score: " 
            << totalReward << endl;
       scores.push_back(totalReward);
+
+      double renorm_reward = totalReward / max_score_per_episode;
+
       cout << " Final episode frame number = " << curr_frame_number << endl;
       ale.reset_game();
    } // loop over episodes
@@ -265,6 +250,10 @@ int main(int argc, char** argv)
    cout << "median = " << median << " quartile width = " << qw << endl;
    cout << "max score = " << mathfunc::maximal_value(scores) << endl;
 
+
+
+   
+
 // z_difference = 0.937752 +/- 11.0019
 // z_difference = 0.936237 +/- 10.9916
 // z_difference = 0.951648 +/- 11.0808
@@ -275,7 +264,6 @@ int main(int argc, char** argv)
 // score = 160.55 +/- 95.4513
 // median = 155 quartile width = 55
 // median = 135 quartile width = 52.5
-
 // max score = 605
 // max score = 640
 // max score = 660

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/18/16; 11/25/16; 11/26/16; 11/27/16
+// Last modified on 11/25/16; 11/26/16; 11/27/16; 12/1/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -22,7 +22,8 @@ class environment
 
    typedef enum{
       MAZE = 0,
-      TTT = 1
+      TTT = 1,
+      SPACEINV = 2
    } environment_t;
 
 // Initialization, constructor and destructor functions:
