@@ -26,7 +26,9 @@ cd ../fusion
 build_anti_fusion
 cd ../games
 build_anti_games
-cd ../geo
+cd ../games/atari
+build_anti_atari
+cd ../../geo
 build_anti_geo
 cd ../gist
 build_anti_gist
