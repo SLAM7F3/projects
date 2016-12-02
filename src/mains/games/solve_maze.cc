@@ -26,7 +26,6 @@ int main (int argc, char* argv[])
 
    timefunc::initialize_timeofday_clock();
    nrfunc::init_time_based_seed();
-
 //   long s = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> s;
@@ -49,6 +48,8 @@ int main (int argc, char* argv[])
 
    environment game_world(environment::MAZE);
    game_world.set_maze(&curr_maze);
+
+// Set neural network architecture parameters:
 
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
    int Dout = n_actions;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/25/16; 11/26/16; 11/27/16; 12/1/16
+// Last modified on 11/26/16; 11/27/16; 12/1/16; 12/2/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -12,6 +12,7 @@
 #include <vector>
 #include "math/genvector.h"
 #include "games/maze.h"
+#include "games/spaceinv.h"
 #include "games/tictac3d.h"
 #include "image/TwoDarray.h"
 
@@ -36,6 +37,9 @@ class environment
    void set_maze(maze* m_ptr);
    maze* get_maze();
    const maze* get_maze() const;
+   void set_spaceinv(spaceinv* s_ptr);
+   spaceinv* get_spaceinv();
+   const spaceinv* get_spaceinv() const;
    void set_tictac3d(tictac3d* t_ptr);
    tictac3d* get_tictac3d();
    const tictac3d* get_tictac3d() const;
@@ -49,8 +53,10 @@ class environment
    bool get_game_over();
    void set_game_over(bool flag);
 
-   void set_reward(double r);
-   double get_reward() const;
+   int get_episode_framenumber() const;
+   int get_min_episode_framenumber() const;
+   int get_frame_skip() const;
+   double get_max_score_per_episode() const;
 
    std::string get_state_action_string(std::string state_str, int a);
    std::string get_state_action_string(genvector* state_ptr, int a);
@@ -64,8 +70,9 @@ class environment
   private:
 
    int world_type;
-   double reward;
+
    maze *maze_ptr;
+   spaceinv *spaceinv_ptr;
    tictac3d *tictac3d_ptr;
 
    void allocate_member_objects();
@@ -93,6 +100,21 @@ inline const maze* environment::get_maze() const
    return maze_ptr;
 }
 
+inline void environment::set_spaceinv(spaceinv* s_ptr)
+{
+   spaceinv_ptr = s_ptr;
+}
+
+inline spaceinv* environment::get_spaceinv()
+{
+   return spaceinv_ptr;
+}
+
+inline const spaceinv* environment::get_spaceinv() const
+{
+   return spaceinv_ptr;
+}
+
 inline void environment::set_tictac3d(tictac3d* t_ptr)
 {
    tictac3d_ptr = t_ptr;
@@ -109,5 +131,6 @@ inline const tictac3d* environment::get_tictac3d() const
 }
 
 #endif  // environment.h
+
 
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/17/16; 11/25/16; 11/26/16; 11/27/16
+// Last modified on 11/25/16; 11/26/16; 11/27/16; 12/2/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -165,6 +165,10 @@ bool environment::get_game_over()
    {
       return maze_ptr->get_game_over();
    }
+   else if(world_type == SPACEINV)
+   {
+      return spaceinv_ptr->get_ale().game_over();
+   }
    else if(world_type == TTT)
    {
       return tictac3d_ptr->get_game_over();
@@ -186,14 +190,55 @@ void environment::set_game_over(bool flag)
 }
 
 // ---------------------------------------------------------------------
-void environment::set_reward(double r)
+int environment::get_episode_framenumber() const
 {
-   reward = r;
+   if(world_type == SPACEINV)
+   {
+      return spaceinv_ptr->get_ale().getEpisodeFrameNumber();
+   }
+   else
+   {
+      return -1;
+   }
 }
 
-double environment::get_reward() const
+// ---------------------------------------------------------------------
+int environment::get_min_episode_framenumber() const
 {
-   return reward;
+   if(world_type == SPACEINV)
+   {
+      return spaceinv_ptr->get_min_episode_framenumber();
+   }
+   else
+   {
+      return -1;
+   }
+}
+
+// ---------------------------------------------------------------------
+int environment::get_frame_skip() const
+{
+   if(world_type == SPACEINV)
+   {
+      return spaceinv_ptr->get_frame_skip();
+   }
+   else
+   {
+      return -1;
+   }
+}
+
+// ---------------------------------------------------------------------
+double environment::get_max_score_per_episode() const
+{
+   if(world_type == SPACEINV)
+   {
+      return spaceinv_ptr->get_max_score_per_episode();
+   }
+   else
+   {
+      return -1;
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -254,3 +299,4 @@ vector<genvector*>* environment::get_all_afterstates(int player_value)
    }
    return NULL;
 }
+

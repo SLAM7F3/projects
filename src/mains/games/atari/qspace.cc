@@ -1,5 +1,5 @@
 // ==========================================================================
-// Program SPACEINV
+// Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
 // Last updated on 12/1/16; 12/2/16
 // ==========================================================================
@@ -13,6 +13,7 @@
 #include "general/filefuncs.h"
 #include "games/spaceinv.h"
 #include "numrec/nrfuncs.h"
+#include "time/timefuncs.h"
 #include "video/videofuncs.h"
 
 int main(int argc, char** argv) 
@@ -23,7 +24,17 @@ int main(int argc, char** argv)
    using std::string;
    using std::vector;
    
+   timefunc::initialize_timeofday_clock();
+   nrfunc::init_time_based_seed();
+//   long s = -11;
+//   cout << "Enter negative seed:" << endl;
+//   cin >> s;
+//   nrfunc::init_default_seed(s);
+
+// Instantiate Space Invaders ALE game:
+
    spaceinv *spaceinv_ptr = new spaceinv();
+   int n_actions = 6;
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
@@ -31,6 +42,28 @@ int main(int argc, char** argv)
    environment game_world(environment::SPACEINV);
    game_world.set_spaceinv(spaceinv_ptr);
 
+// Set neural network architecture parameters:
+
+   int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
+   int Dout = n_actions;
+   int Tmax = 1;
+
+   int H1 = 64;
+   int H2 = 32;
+   int H3 = 0;
+
+   vector<int> layer_dims;
+   layer_dims.push_back(Din);
+   layer_dims.push_back(H1);
+   if(H2 > 0)
+   {
+      layer_dims.push_back(H2);
+   }
+   if(H3 > 0)
+   {
+      layer_dims.push_back(H3);
+   }
+   layer_dims.push_back(Dout);
 
 
    bool export_frames_flag = false;
@@ -73,22 +106,6 @@ int main(int argc, char** argv)
            << game_world.get_episode_framenumber() << endl;
       spaceinv_ptr->get_ale().reset_game();
    } // loop over episodes
-   
-/*
-   double mu, sigma;
-   mathfunc::mean_and_std_dev(z_differences, mu, sigma);
-   cout << "z_difference = " << mu << " +/- " << sigma << endl;
-
-   mathfunc::mean_and_std_dev(scores, mu, sigma);
-   double median, qw;
-   mathfunc::median_value_and_quartile_width(scores, median, qw);
-
-   cout << "score = " << mu << " +/- " << sigma << endl;
-   cout << "median = " << median << " quartile width = " << qw << endl;
-   cout << "max score = " << mathfunc::maximal_value(scores) << endl;
-
-*/
-
 
    
 
