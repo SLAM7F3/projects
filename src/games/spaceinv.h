@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for spaceinv class 
 // ==========================================================================
-// Last modified on 12/1/16
+// Last modified on 12/1/16; 12/2/16
 // ==========================================================================
 
 #ifndef SPACEINV_H
@@ -10,9 +10,7 @@
 #include <vector>
 #include <SDL.h>
 #include <ale_interface.hpp>
-
-//#include "math/genmatrix.h"
-//#include "math/genvector.h"
+#include "math/genvector.h"
 
 class spaceinv
 {
@@ -27,20 +25,28 @@ class spaceinv
    friend std::ostream& operator<< 
       (std::ostream& outstream,const spaceinv& C);
 
+   int get_min_episode_framenumber() const;
+   double get_max_score_per_episode() const;
+   int get_frame_skip() const;
+   ALEInterface& get_ale();
+   const ALEInterface& get_ale() const;
+
 //   genvector* get_curr_legal_actions();
-//   genvector* get_state();
+   genvector* get_curr_state();
+   const genvector* get_curr_state() const;
 //   double get_reward() const;
 
-   void get_curr_state();
+   void crop_pool_difference_curr_frame(bool export_frames_flag);
+
 
   private: 
 
-   bool display_frames_flag;
    int random_seed;
    int difference_counter;
    ALEInterface ale;
    int screen_width, screen_height;
    int min_px, max_px, min_py, max_py;
+   int n_reduced_pixels;
    int min_episode_framenumber;
    int frame_skip;
    double max_score_per_episode;
@@ -52,6 +58,8 @@ class spaceinv
    std::vector<std::vector<unsigned char > > pooled_byte_array1;
    std::vector<std::vector<unsigned char > >* pooled_byte_array_ptr;
    std::vector<std::vector<unsigned char > >* other_pooled_byte_array_ptr;
+
+   genvector *curr_state;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -66,12 +74,42 @@ class spaceinv
 
 // Set and get member functions:
 
-/*
-inline int spaceinv::get_n_cells() const
+inline int spaceinv::get_min_episode_framenumber() const
 {
-   return n_cells;
+   return min_episode_framenumber;
 }
-*/
+
+inline int spaceinv::get_frame_skip() const
+{
+   return frame_skip;
+}
+
+inline double spaceinv::get_max_score_per_episode() const
+{
+   return max_score_per_episode;
+}
+
+inline ALEInterface& spaceinv::get_ale()
+{
+   return ale;
+}
+
+inline const ALEInterface& spaceinv::get_ale() const
+{
+   return ale;
+}
+
+inline genvector* spaceinv::get_curr_state()
+{
+   return curr_state;
+}
+
+inline const genvector* spaceinv::get_curr_state() const
+{
+   return curr_state;
+}
+
+
 
 
 //  enum Action {

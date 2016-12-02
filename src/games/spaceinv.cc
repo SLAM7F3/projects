@@ -1,7 +1,7 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/1/16
+// Last modified on 12/1/16; 12/2/16
 // ==========================================================================
 
 #include <iostream>
@@ -49,10 +49,9 @@ void spaceinv::initialize_grayscale_output_buffer()
 
 void spaceinv::initialize_member_objects()
 {
-   display_frames_flag = false;
-
    ale.setFloat("repeat_action_probability", 0.25);
    ale.setBool("display_screen", false);
+//   ale.setBool("display_screen", true);
    ale.loadROM("/usr/local/ALE/roms/space_invaders.bin");
    ale.setInt("random_seed", int(1000 * nrfunc::ran1()));
 
@@ -63,6 +62,10 @@ void spaceinv::initialize_member_objects()
    max_px = 138;
    min_py = 30;
    max_py = 192;
+
+   int n_reduced_xdim = (max_px - min_px) / 2;
+   int n_reduced_ydim = (max_py - min_py) / 2;
+   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4698
 
 // No screen content influencing game play appears before following
 // episode frame number:
@@ -83,7 +86,7 @@ void spaceinv::initialize_member_objects()
 
 void spaceinv::allocate_member_objects()
 {
-   
+   curr_state = new genvector(n_reduced_pixels);
 }		       
 
 // ---------------------------------------------------------------------
@@ -103,6 +106,7 @@ spaceinv::spaceinv(const spaceinv& S)
 // ---------------------------------------------------------------------
 spaceinv::~spaceinv()
 {
+   delete curr_state;
 }
 
 // ---------------------------------------------------------------------
@@ -114,7 +118,7 @@ ostream& operator<< (ostream& outstream,const spaceinv& S)
 
 // ==========================================================================
 
-void spaceinv::get_curr_state()
+void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
 {
    int curr_framenumber = ale.getEpisodeFrameNumber();
 
@@ -137,7 +141,7 @@ void spaceinv::get_curr_state()
       byte_array.push_back(curr_byte_row);
    } // loop over py
 
-   if(display_frames_flag)
+   if(export_frames_flag)
    {
       string output_frame = orig_subdir+"frame_"+
          stringfunc::integer_to_string(curr_framenumber,5)+".png";
@@ -172,7 +176,7 @@ void spaceinv::get_curr_state()
       pooled_byte_array_ptr->push_back(pooled_byte_row);
    } // loop over index r
 
-   if(display_frames_flag)
+   if(export_frames_flag)
    {
       string pooled_frame = pooled_subdir+"pooled_frame_"+
          stringfunc::integer_to_string(curr_framenumber,5)+".png";
@@ -185,8 +189,8 @@ void spaceinv::get_curr_state()
    vector<vector<unsigned char > > diff_pooled_byte_array;
    if(other_pooled_byte_array_ptr->size() > 0)
    {
-      for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); 
-          py++)
+      int p = 0;
+      for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); py++)
       {
          vector<unsigned char> diff_pooled_byte_row;
          for(unsigned int px = 0; 
@@ -196,14 +200,15 @@ void spaceinv::get_curr_state()
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
 //            z_differences.push_back(double(z_diff));
+            double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
+            curr_state->put(p++, ren_z_diff);
 
             diff_pooled_byte_row.push_back(z_diff);
-
          } // loop over px
          diff_pooled_byte_array.push_back(diff_pooled_byte_row);
       } // loop over py 
 
-      if(display_frames_flag)
+      if(export_frames_flag)
       {
          string diff_frame = differenced_subdir+"differenced_frame_"+
             stringfunc::integer_to_string(curr_framenumber,5)+".png";
