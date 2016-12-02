@@ -205,9 +205,9 @@ void genmatrix::get_row(int m,genvector& row) const
 
 void genmatrix::put_row(int m,const genvector& row) 
 {
-   for (unsigned int n=0; n<ndim; n++)
+   for (unsigned int n = 0 ; n < ndim; n++)
    {
-      put(m,n,row.get(n));
+      put(m, n, row.get(n));
    }
 }
 

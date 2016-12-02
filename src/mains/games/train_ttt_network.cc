@@ -282,7 +282,6 @@ int main (int argc, char* argv[])
 
          ttt_ptr->increment_n_agent_turns();
 
-
 // Step the environment and then retrieve new reward measurements:
 
          curr_reward = 0;
@@ -424,17 +423,9 @@ int main (int argc, char* argv[])
          curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-//         reinforce_agent_ptr->plot_loss_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_reward_history(
             output_subdir, extrainfo, lose_reward, win_reward);
          reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
-
-// Generate metafile for loss function history:
-
-//         string subtitle=
-//            "Old weights T="
-//            +stringfunc::number_to_string(old_weights_period)
-//            +";min eps="+stringfunc::number_to_string(min_epsilon);
          reinforce_agent_ptr->plot_log10_loss_history(
             output_subdir, extrainfo);
 
@@ -457,7 +448,6 @@ int main (int argc, char* argv[])
         << reinforce_agent_ptr->get_episode_number() << endl;
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
-
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir

@@ -69,6 +69,10 @@ void environment::start_new_episode(bool random_start)
    {
       maze_ptr->reset_game(random_start);
    }
+   else if(world_type == SPACEINV)
+   {
+      spaceinv_ptr->get_ale().reset_game();
+   }
    else if(world_type == TTT)
    {
       tictac3d_ptr->reset_board_state();
@@ -83,6 +87,10 @@ genvector* environment::get_curr_state()
    if(world_type == MAZE)
    {
       curr_state_ptr = maze_ptr->get_occupancy_state();
+   }
+   else if(world_type == SPACEINV)
+   {
+      curr_state_ptr = spaceinv_ptr->get_curr_state();
    }
    else if(world_type == TTT)
    {
@@ -133,6 +141,10 @@ genvector* environment::compute_next_state(int a, int player_value)
       bool erase_turtle_path = true;
       maze_ptr->move_turtle(curr_dir, erase_turtle_path);
       next_state_ptr = maze_ptr->get_occupancy_state();
+   }
+   else if (world_type == SPACEINV)
+   {
+      next_state_ptr = spaceinv_ptr->get_curr_state();
    }
    else if (world_type == TTT)
    {

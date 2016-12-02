@@ -19,7 +19,7 @@
 #include "machine_learning/reinforce.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
-#include "video/texture_rectangle.h"
+// #include "video/texture_rectangle.h"
 #include "image/TwoDarray.h"
 #include "video/videofuncs.h"
 
@@ -991,6 +991,13 @@ void reinforce::print_weights()
 
 void reinforce::plot_zeroth_layer_weights(string output_subdir)
 {
+
+
+// FAKE FAKE: Comment out this method to avoid conflict between ALE
+// and our texture_rectangle classes.
+// Fri Dec 2, 2016 at 7:47 am
+
+/*
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    int nx = sqrt(double(n_zeroth_layer_pixels));
@@ -1067,6 +1074,9 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
       delete enlarged_wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
+
+*/
+
 }
 
 // ---------------------------------------------------------------------
@@ -2096,14 +2106,11 @@ int reinforce::compute_legal_argmax_Q()
 
 int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
 {
-//   cout << "inside store_curr_state_into_replay_memory()" << endl;
    int d = -1;
    if(replay_memory_index < replay_memory_capacity)
    {
       d = replay_memory_index;
       replay_memory_index++;
-//      double fill_frac = double(replay_memory_index) / replay_memory_capacity;
-//      cout << "Replay memory fill frac = " << fill_frac << endl;
    }
    else
    {
@@ -2112,8 +2119,6 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
       replay_memory_index = 0;
       d = replay_memory_index;
    }
-//   cout << " d = " << d << endl;
-//   cout << "replay_memory_index = " << replay_memory_index << endl;
 
    s_curr->put_row(d, curr_s);
    return d;

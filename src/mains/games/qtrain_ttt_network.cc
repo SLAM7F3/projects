@@ -424,6 +424,8 @@ int main (int argc, char* argv[])
          n_recent_stalemates++;
       }
 
+// Periodically write status info to text console:
+
       if(curr_episode_number >= n_update - 1 && 
          curr_episode_number % n_update == 0)
       {

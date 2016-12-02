@@ -59,7 +59,7 @@ class spaceinv
    std::vector<std::vector<unsigned char > >* pooled_byte_array_ptr;
    std::vector<std::vector<unsigned char > >* other_pooled_byte_array_ptr;
 
-   genvector *curr_state;
+   genvector *curr_state_ptr;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -101,12 +101,12 @@ inline const ALEInterface& spaceinv::get_ale() const
 
 inline genvector* spaceinv::get_curr_state()
 {
-   return curr_state;
+   return curr_state_ptr;
 }
 
 inline const genvector* spaceinv::get_curr_state() const
 {
-   return curr_state;
+   return curr_state_ptr;
 }
 
 

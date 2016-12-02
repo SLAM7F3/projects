@@ -49,11 +49,17 @@ void spaceinv::initialize_grayscale_output_buffer()
 
 void spaceinv::initialize_member_objects()
 {
+   cout << "inside spaceinv::init_member_objs()" << endl;
+   
+   int random_seed = 1000 * nrfunc::ran1();
+   cout << "random_seed = " << random_seed << endl;
+   ale.setInt("random_seed", random_seed);
+
+
    ale.setFloat("repeat_action_probability", 0.25);
    ale.setBool("display_screen", false);
 //   ale.setBool("display_screen", true);
    ale.loadROM("/usr/local/ALE/roms/space_invaders.bin");
-   ale.setInt("random_seed", int(1000 * nrfunc::ran1()));
 
 // No screen content influencing game play appears outside following
 // pixel bbox:
@@ -86,7 +92,7 @@ void spaceinv::initialize_member_objects()
 
 void spaceinv::allocate_member_objects()
 {
-   curr_state = new genvector(n_reduced_pixels);
+   curr_state_ptr = new genvector(n_reduced_pixels);
 }		       
 
 // ---------------------------------------------------------------------
@@ -106,7 +112,7 @@ spaceinv::spaceinv(const spaceinv& S)
 // ---------------------------------------------------------------------
 spaceinv::~spaceinv()
 {
-   delete curr_state;
+   delete curr_state_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -201,7 +207,7 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
                other_pooled_byte_array_ptr->at(py).at(px);
 //            z_differences.push_back(double(z_diff));
             double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
-            curr_state->put(p++, ren_z_diff);
+            curr_state_ptr->put(p++, ren_z_diff);
 
             diff_pooled_byte_row.push_back(z_diff);
          } // loop over px
