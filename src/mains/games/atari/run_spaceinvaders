@@ -1,1 +1,1 @@
-./spaceinv /usr/local/ALE/roms/space_invaders.bin
+./ale_example /usr/local/ALE/roms/space_invaders.bin

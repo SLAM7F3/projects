@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 
 // Set neural network architecture parameters:
 
-   int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
+   int Din = spaceinv_ptr->get_curr_state()->get_mdim(); // Input dim
    int Dout = n_actions;
    int Tmax = 1;
 
@@ -64,6 +64,9 @@ int main(int argc, char** argv)
       layer_dims.push_back(H3);
    }
    layer_dims.push_back(Dout);
+
+   cout << "Din * H1 + H1 * H2 + H2 * Dout = "
+        << Din * H1 + H1 * H2 + H2 * Dout << endl;
 
 
    bool export_frames_flag = false;
