@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/1/16; 12/2/16
+// Last updated on 12/1/16; 12/2/16; 12/3/16
 // ==========================================================================
 
 #include <iostream>
@@ -216,7 +216,6 @@ int main(int argc, char** argv)
          }
          Action a = minimal_actions[curr_a];
          double curr_reward = spaceinv_ptr->get_ale().act(a);
-
          cout << "a = " << a << " curr_reward = " << curr_reward << endl;
 
          if(!state_updated_flag) continue;
@@ -227,10 +226,11 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->record_reward_for_action(renorm_cum_reward);
          reinforce_agent_ptr->increment_time_counters();
 
-         next_s = game_world.compute_next_state(curr_a);
+         next_s = game_world.compute_next_state(a);
 
          if(curr_s != NULL && next_s != NULL)
          {
+//            cout << " curr_s = " << *curr_s << endl;
             cout << "next_s - curr_s . mag = "
                  << (*next_s - *curr_s).magnitude() << endl;
 //          outputfunc::enter_continue_char();

@@ -47,6 +47,7 @@ class environment
    void start_new_episode(bool random_start = false);
    genvector* get_curr_state();
    std::string get_curr_state_string();
+   genvector* get_next_state();
    bool is_legal_action(int a);
    genvector* compute_next_state(int a, int player_value = 1);
    bool is_terminal_state();

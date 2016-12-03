@@ -144,7 +144,8 @@ genvector* environment::compute_next_state(int a, int player_value)
    }
    else if (world_type == SPACEINV)
    {
-      next_state_ptr = spaceinv_ptr->get_curr_state();
+      spaceinv_ptr->crop_pool_difference_curr_frame(false);
+      next_state_ptr = spaceinv_ptr->get_next_state();
    }
    else if (world_type == TTT)
    {

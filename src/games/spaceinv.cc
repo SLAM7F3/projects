@@ -1,7 +1,7 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/1/16; 12/2/16
+// Last modified on 12/1/16; 12/2/16; 12/3/16
 // ==========================================================================
 
 #include <iostream>
@@ -55,7 +55,6 @@ void spaceinv::initialize_member_objects()
    cout << "random_seed = " << random_seed << endl;
    ale.setInt("random_seed", random_seed);
 
-
    ale.setFloat("repeat_action_probability", 0.25);
    ale.setBool("display_screen", false);
 //   ale.setBool("display_screen", true);
@@ -92,7 +91,10 @@ void spaceinv::initialize_member_objects()
 
 void spaceinv::allocate_member_objects()
 {
-   curr_state_ptr = new genvector(n_reduced_pixels);
+   screen0_state_ptr = new genvector(n_reduced_pixels);
+   screen1_state_ptr = new genvector(n_reduced_pixels);
+   curr_state_ptr = screen0_state_ptr;
+   next_state_ptr = screen1_state_ptr;
 }		       
 
 // ---------------------------------------------------------------------
@@ -112,7 +114,8 @@ spaceinv::spaceinv(const spaceinv& S)
 // ---------------------------------------------------------------------
 spaceinv::~spaceinv()
 {
-   delete curr_state_ptr;
+   delete screen0_state_ptr;
+   delete screen1_state_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -155,7 +158,7 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
          byte_array, output_frame);
    }
 
-// 2x2 max pool cropped center for current frame:
+// Ping-pong pooled_byte_array and other_pooled_byte_array:
         
    if(difference_counter == 0)
    {
@@ -167,6 +170,8 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
       pooled_byte_array_ptr = &pooled_byte_array1;
       other_pooled_byte_array_ptr = &pooled_byte_array0;
    }
+
+// 2x2 max pool cropped center for current frame:
 
    for(unsigned int r = 0; r < byte_array.size(); r += 2)
    {
@@ -207,7 +212,16 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
                other_pooled_byte_array_ptr->at(py).at(px);
 //            z_differences.push_back(double(z_diff));
             double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
-            curr_state_ptr->put(p++, ren_z_diff);
+            
+
+            if(difference_counter == 0)
+            {
+               screen0_state_ptr->put(p++, ren_z_diff);
+            }
+            else
+            {
+               screen1_state_ptr->put(p++, ren_z_diff);
+            }
 
             diff_pooled_byte_row.push_back(z_diff);
          } // loop over px
@@ -231,4 +245,25 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
    other_pooled_byte_array_ptr->clear();
    
    difference_counter = 1 - difference_counter;
+   pingpong_curr_and_next_states();
+}
+
+// ---------------------------------------------------------------------
+// Member function pingpong_curr_and_next_states() resets
+// curr_state_ptr and next_state_ptr to point to screen0_state_ptr and
+// streen1_state_ptr based upon the current value of
+// difference_counter.
+
+void spaceinv::pingpong_curr_and_next_states()
+{
+   if(difference_counter == 0)
+   {
+      next_state_ptr = screen0_state_ptr;
+      curr_state_ptr = screen1_state_ptr;
+   }
+   else
+   {
+      curr_state_ptr = screen0_state_ptr;
+      next_state_ptr = screen1_state_ptr;
+   }
 }

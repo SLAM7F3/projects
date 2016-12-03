@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for spaceinv class 
 // ==========================================================================
-// Last modified on 12/1/16; 12/2/16
+// Last modified on 12/1/16; 12/2/16; 12/3/16
 // ==========================================================================
 
 #ifndef SPACEINV_H
@@ -31,13 +31,11 @@ class spaceinv
    ALEInterface& get_ale();
    const ALEInterface& get_ale() const;
 
-//   genvector* get_curr_legal_actions();
    genvector* get_curr_state();
    const genvector* get_curr_state() const;
-//   double get_reward() const;
-
+   genvector* get_next_state();
+   const genvector* get_next_state() const;
    void crop_pool_difference_curr_frame(bool export_frames_flag);
-
 
   private: 
 
@@ -59,13 +57,17 @@ class spaceinv
    std::vector<std::vector<unsigned char > >* pooled_byte_array_ptr;
    std::vector<std::vector<unsigned char > >* other_pooled_byte_array_ptr;
 
-   genvector *curr_state_ptr;
+   genvector *screen0_state_ptr;
+   genvector *screen1_state_ptr;
+   genvector *curr_state_ptr, *next_state_ptr;  // just pointers
 
    void allocate_member_objects();
    void initialize_member_objects();
    void initialize_output_subdirs();
    void initialize_grayscale_output_buffer();
    void docopy(const spaceinv& S);
+
+   void pingpong_curr_and_next_states();
 };
 
 // ==========================================================================
@@ -109,8 +111,15 @@ inline const genvector* spaceinv::get_curr_state() const
    return curr_state_ptr;
 }
 
+inline genvector* spaceinv::get_next_state()
+{
+   return next_state_ptr;
+}
 
-
+inline const genvector* spaceinv::get_next_state() const
+{
+   return next_state_ptr;
+}
 
 //  enum Action {
 //  PLAYER_A_NOOP           = 0,
