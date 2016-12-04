@@ -912,7 +912,7 @@ void reinforce::update_weights()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::update_running_reward(string extrainfo, int n_update)
+void reinforce::update_running_reward(int n_update)
 {
    if(first_running_reward_update)
    {
@@ -937,11 +937,16 @@ void reinforce::update_running_reward(string extrainfo, int n_update)
            << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
            << endl;
       cout << "batch_size = " << batch_size << " lambda = " << lambda << endl;
-      cout << extrainfo << endl;
       cout << "episode_number = " << episode_number << endl;
       cout << "  T = " << mu_T << " +/- " << sigma_T << endl;
       cout << "  Running reward mean = " << running_reward << endl;
    }
+}
+
+// ---------------------------------------------------------------------
+void reinforce::append_n_episode_frames(int n_frames)
+{
+   n_episode_frames.push_back(n_frames);
 }
 
 // ==========================================================================
@@ -1278,6 +1283,13 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 
 // ---------------------------------------------------------------------
 // Generate metafile plot of running reward sum versus time step samples.
+
+void reinforce::plot_reward_history(
+   std::string output_subdir, std::string extrainfo)
+{
+   double max_reward = mathfunc::maximal_value(running_reward_snapshots);
+   plot_reward_history(output_subdir, extrainfo, 0, max_reward);
+}
 
 void reinforce::plot_reward_history(
    std::string output_subdir, std::string extrainfo, 

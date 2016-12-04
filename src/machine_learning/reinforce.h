@@ -87,7 +87,8 @@ class reinforce
    void increment_time_counters();
    void update_T_values();
    void update_weights();
-   void update_running_reward(std::string extrainfo, int n_update);
+   void update_running_reward(int n_update);
+   void append_n_episode_frames(int n_frames);
 
 // Monitoring network training methods:
 
@@ -99,6 +100,7 @@ class reinforce
    void compute_weight_distributions();
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
+   void plot_reward_history(std::string output_subdir, std::string extrainfo);
    void plot_reward_history(
       std::string output_subdir, std::string extrainfo, 
       double min_reward, double max_reward);

@@ -75,7 +75,7 @@ int main(int argc, char** argv)
 
    int batch_size = 5;
 //   int replay_memory_capacity = batch_size * 100;
-   int replay_memory_capacity = 50;
+   int replay_memory_capacity = 100;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
@@ -103,9 +103,10 @@ int main(int argc, char** argv)
 
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -242,11 +243,14 @@ int main(int argc, char** argv)
 // -----------------------------------------------------------------------
 
       cout << "Episode finished" << endl;
-      cout << "cum_reward = " << cum_reward << endl;
+      cout << "  cum_reward = " << cum_reward << endl;
+      cout << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
-      reinforce_agent_ptr->increment_episode_number();
       reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(extrainfo, n_update);
+      reinforce_agent_ptr->update_running_reward(n_update);
+      reinforce_agent_ptr->append_n_episode_frames(
+         game_world.get_episode_framenumber());
+      reinforce_agent_ptr->increment_episode_number();      
 
 // Periodically copy current weights into old weights:
 
@@ -299,8 +303,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->plot_weight_distributions(
             output_subdir, extrainfo);
          reinforce_agent_ptr->snapshot_running_reward();
-         reinforce_agent_ptr->plot_reward_history(
-            output_subdir, extrainfo, 0, 1);
+         reinforce_agent_ptr->plot_reward_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_frames_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
             output_subdir, extrainfo);
