@@ -26,11 +26,11 @@ int main(int argc, char** argv)
    using std::vector;
    
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
-   long s = -11;
+   nrfunc::init_time_based_seed();
+//   long s = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> s;
-   nrfunc::init_default_seed(s);
+//   nrfunc::init_default_seed(s);
 
 // Instantiate Space Invaders ALE game:
 
@@ -121,10 +121,10 @@ int main(int argc, char** argv)
    double min_epsilon = 0.025;
 //   double min_epsilon = 0.05; 
 
-   int n_anneal_steps = 100;
+   int n_anneal_steps = 5;
    int n_update = 2;
-   int n_summarize = 100;
-   int n_snapshot = 1000;
+   int n_summarize = 4;
+   int n_snapshot = 10;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
