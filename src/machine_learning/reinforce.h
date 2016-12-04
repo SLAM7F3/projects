@@ -87,7 +87,7 @@ class reinforce
    void increment_time_counters();
    void update_T_values();
    void update_weights();
-   void update_running_reward(std::string extrainfo);
+   void update_running_reward(std::string extrainfo, int n_update);
 
 // Monitoring network training methods:
 
@@ -103,6 +103,7 @@ class reinforce
       std::string output_subdir, std::string extrainfo, 
       double min_reward, double max_reward);
    void plot_turns_history(std::string output_subdir, std::string extrainfo);
+   void plot_frames_history(std::string output_subdir, std::string extrainfo);
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
@@ -231,6 +232,7 @@ class reinforce
    std::vector<double> time_samples;
    std::vector<double> loss_values;
    std::vector<double> n_episode_turns_frac;
+   std::vector<double> n_episode_frames;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
    std::vector<std::vector<double> > weight_01, weight_05, weight_10;
@@ -244,6 +246,7 @@ class reinforce
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
    genvector *discounted_reward;  // T x 1
+   bool first_running_reward_update;
    double running_reward;
    double reward_sum;
    std::vector<double> running_reward_snapshots;

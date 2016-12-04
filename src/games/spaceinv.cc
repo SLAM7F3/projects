@@ -52,7 +52,6 @@ void spaceinv::initialize_member_objects()
 //    cout << "inside spaceinv::init_member_objs()" << endl;
    
    int random_seed = 1000 * nrfunc::ran1();
-   cout << "random_seed = " << random_seed << endl;
    ale.setInt("random_seed", random_seed);
 
    ale.setFloat("repeat_action_probability", 0.25);

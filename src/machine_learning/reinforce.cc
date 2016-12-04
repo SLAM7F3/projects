@@ -57,8 +57,9 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    lambda = 1E-3;	// L2 regularization coefficient (better than 1E-3)
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
-   running_reward = -1000;
+   running_reward = 0;
    reward_sum = 0;
+   first_running_reward_update = true;
    episode_number = 0;
 
    n_layers = n_nodes_per_layer.size();
@@ -911,11 +912,12 @@ void reinforce::update_weights()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::update_running_reward(string extrainfo)
+void reinforce::update_running_reward(string extrainfo, int n_update)
 {
-   if(episode_number == 0)
+   if(first_running_reward_update)
    {
       running_reward = reward_sum;
+      first_running_reward_update = false;
    }
    else
    {
@@ -923,9 +925,7 @@ void reinforce::update_running_reward(string extrainfo)
    }
    reward_sum = 0;
 
-   bool print_flag = false;
-   if(episode_number > 0 && episode_number % 5000 == 0) print_flag = true;
-   if(print_flag)
+   if(episode_number > 0 && episode_number % n_update == 0)
    {
       double mu_T, sigma_T;
       mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
@@ -1382,7 +1382,6 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
-   vector<double> smoothed_n_episode_turns_frac;
    if(gaussian_size < int(n_episode_turns_frac.size())) 
    {
       vector<double> h;
@@ -1397,6 +1396,70 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 
       curr_metafile.write_curve(
          0, episode_number, smoothed_n_episode_turns_frac, colorfunc::blue);
+   }
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of total number of ALE frames versus episode number.
+
+void reinforce::plot_frames_history(string output_subdir, string extrainfo)
+{
+   if(n_episode_frames.size() < 5) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir+"frames_history";
+   string title="Number of ALE frames per episode; bsize="+
+      stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+   }
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label="Episode number";
+   string y_label="Number of ALE frames";
+   double min_frames = 0;
+   double max_frames = mathfunc::maximal_value(n_episode_frames);
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, episode_number,
+      min_frames, max_frames);
+   curr_metafile.set_subtitle(subtitle);
+//   curr_metafile.set_ytic(0.2);
+//   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, episode_number, n_episode_frames);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy frames fraction values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   if(gaussian_size < int(n_episode_frames.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_n_episode_frames;
+      filterfunc::brute_force_filter(
+         n_episode_frames, h, smoothed_n_episode_frames, 
+         wrap_around_input_values);
+
+      curr_metafile.write_curve(
+         0, episode_number, smoothed_n_episode_frames, colorfunc::blue);
    }
    
    curr_metafile.closemetafile();
@@ -2234,8 +2297,8 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 
 double reinforce::update_neural_network()
 {
-   cout << "inside update_neural_network()" << endl;
-   cout << "episode_number = " << get_episode_number() << endl;
+//   cout << "inside update_neural_network()" << endl;
+//   cout << "episode_number = " << get_episode_number() << endl;
 
 // Nd = Number of random samples to be drawn from replay memory:
 
@@ -2711,6 +2774,7 @@ double reinforce::get_prev_afterstate_curr_value()
 {
    return compute_value(prev_afterstate_ptr);
 }
+
 
 
 

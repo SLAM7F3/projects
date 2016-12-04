@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/1/16; 12/2/16; 12/3/16
+// Last updated on 12/1/16; 12/2/16; 12/3/16; 12/4/16
 // ==========================================================================
 
 #include <iostream>
@@ -103,9 +103,9 @@ int main(int argc, char** argv)
 
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-//   reinforce_agent_ptr->set_base_learning_rate(1E-5);
+   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -217,9 +217,8 @@ int main(int argc, char** argv)
          double renorm_reward = curr_reward /
             game_world.get_max_score_per_episode();
          cum_reward += curr_reward;
-         renorm_cum_reward += renorm_reward;
 
-         reinforce_agent_ptr->record_reward_for_action(renorm_reward);
+         reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
 
          if(!state_updated_flag && !game_world.get_game_over()) continue;
@@ -243,11 +242,11 @@ int main(int argc, char** argv)
 // -----------------------------------------------------------------------
 
       cout << "Episode finished" << endl;
-      cout << "renorm_cum_reward = " << renorm_cum_reward << endl;
+      cout << "cum_reward = " << cum_reward << endl;
 
       reinforce_agent_ptr->increment_episode_number();
-//      reinforce_agent_ptr->update_T_values();
-//      reinforce_agent_ptr->update_running_reward(extrainfo);
+      reinforce_agent_ptr->update_T_values();
+      reinforce_agent_ptr->update_running_reward(extrainfo, n_update);
 
 // Periodically copy current weights into old weights:
 
@@ -286,7 +285,7 @@ int main(int argc, char** argv)
             cout << " log10(total_loss) = " << log10(total_loss) << endl;
             reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
          }
-         reinforce_agent_ptr->snapshot_running_reward();
+
          if(reinforce_agent_ptr->get_include_bias_terms()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
@@ -297,9 +296,12 @@ int main(int argc, char** argv)
          curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->plot_weight_distributions(
+            output_subdir, extrainfo);
+         reinforce_agent_ptr->snapshot_running_reward();
          reinforce_agent_ptr->plot_reward_history(
             output_subdir, extrainfo, 0, 1);
-         reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
+         reinforce_agent_ptr->plot_frames_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
             output_subdir, extrainfo);
       }
