@@ -46,12 +46,13 @@ int main(int argc, char** argv)
 // Set neural network architecture parameters:
 
    int Din = spaceinv_ptr->get_curr_state()->get_mdim(); // Input dim
+   cout << "Din = " << Din << endl;
    int Dout = n_actions;
    int n_max_episodes = 50 * 1000;
    int Tmax = n_max_episodes;
 
-   int H1 = 64;
-   int H2 = 32;
+   int H1 = 16;
+   int H2 = 8;
    int H3 = 0;
 
    vector<int> layer_dims;
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
       reinforce::RMSPROP);
 //      reinforce::ADAM);
 
-//   reinforce_agent_ptr->set_debug_flag(true);
+   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
 // Initialize output subdirectory within an experiments folder:
@@ -121,7 +122,7 @@ int main(int argc, char** argv)
 //   double min_epsilon = 0.05; 
 
    int n_anneal_steps = 100;
-   int n_update = 50;
+   int n_update = 2;
    int n_summarize = 100;
    int n_snapshot = 1000;
 
@@ -141,12 +142,10 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-
-   bool export_frames_flag = false;
-//   bool export_frames_flag = true;
+//   bool export_frames_flag = false;
+   bool export_frames_flag = true;
 
    // Get the vector of minimal legal actions
-
    ActionVect minimal_actions = spaceinv_ptr->get_ale().getMinimalActionSet();
 
 // ==========================================================================
@@ -182,8 +181,8 @@ int main(int argc, char** argv)
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
       double cum_reward = 0;
-      genvector* curr_s = NULL;
-      genvector* next_s = NULL;
+      double renorm_cum_reward = 0;
+      genvector* curr_diff_s = NULL;
       while(!game_world.get_game_over())
       {
          bool state_updated_flag = false;
@@ -197,15 +196,14 @@ int main(int argc, char** argv)
                   export_frames_flag);
                state_updated_flag = true;
                n_state_updates++;
-               curr_s = game_world.get_curr_state();
+               curr_diff_s = game_world.get_curr_state();
             } // curr_frame_number % frame_skip == 0 conditional
          } // curr_frame_number > min_episode_framenumber
 
-         if(curr_s != NULL && next_s != NULL && state_updated_flag && 
-            n_state_updates > 2)
+         if(state_updated_flag && n_state_updates > 2)
          {
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-               *curr_s);
+               *curr_diff_s);
          }
 
          int curr_a = prev_a;
@@ -216,48 +214,40 @@ int main(int argc, char** argv)
          }
          Action a = minimal_actions[curr_a];
          double curr_reward = spaceinv_ptr->get_ale().act(a);
-         cout << "a = " << a << " curr_reward = " << curr_reward << endl;
-
-         if(!state_updated_flag) continue;
-
-         cum_reward += curr_reward;
-         double renorm_cum_reward = cum_reward / 
+         double renorm_reward = curr_reward /
             game_world.get_max_score_per_episode();
-         reinforce_agent_ptr->record_reward_for_action(renorm_cum_reward);
+         cum_reward += curr_reward;
+         renorm_cum_reward += renorm_reward;
+
+         reinforce_agent_ptr->record_reward_for_action(renorm_reward);
          reinforce_agent_ptr->increment_time_counters();
 
-         next_s = game_world.compute_next_state(a);
+         if(!state_updated_flag && !game_world.get_game_over()) continue;
 
-         if(curr_s != NULL && next_s != NULL)
-         {
-//            cout << " curr_s = " << *curr_s << endl;
-            cout << "next_s - curr_s . mag = "
-                 << (*next_s - *curr_s).magnitude() << endl;
-//          outputfunc::enter_continue_char();
-         }
+         game_world.compute_next_state(a);
 
          if(game_world.get_game_over())
          {
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, renorm_cum_reward, *curr_s, 
-               game_world.get_game_over());
+            reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
+               d, curr_a, renorm_reward);
          }
-         else if (curr_s != NULL && next_s != NULL && n_state_updates > 2)
+         else if (n_state_updates > 2)
          {
+            genvector *next_diff_s = spaceinv_ptr->get_next_state();
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, renorm_cum_reward, *next_s, 
+               d, curr_a, renorm_reward, *next_diff_s, 
                game_world.get_game_over());
          }
-
       } // game_over while loop
 
 // -----------------------------------------------------------------------
 
       cout << "Episode finished" << endl;
+      cout << "renorm_cum_reward = " << renorm_cum_reward << endl;
 
       reinforce_agent_ptr->increment_episode_number();
-      reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(extrainfo);
+//      reinforce_agent_ptr->update_T_values();
+//      reinforce_agent_ptr->update_running_reward(extrainfo);
 
 // Periodically copy current weights into old weights:
 
@@ -278,8 +268,8 @@ int main(int argc, char** argv)
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-         double decay_factor = 0.99; 
-//         double decay_factor = 0.95;
+//         double decay_factor = 0.99; 
+         double decay_factor = 0.95;
 //         double decay_factor = 0.90; 
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
@@ -319,6 +309,8 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->export_snapshot(output_subdir);
       }
       
+      cout << "At end of episodes while loop " << endl;
+
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here

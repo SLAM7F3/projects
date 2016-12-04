@@ -25,11 +25,11 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
-//   long s = -11;
+//   nrfunc::init_time_based_seed();
+   long s = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> s;
-//   nrfunc::init_default_seed(s);
+   nrfunc::init_default_seed(s);
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;

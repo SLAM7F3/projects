@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genmatrix class 
 // ==========================================================================
-// Last modified on 10/17/16; 10/19/16; 10/20/16; 11/28/16
+// Last modified on 10/19/16; 10/20/16; 11/28/16; 12/4/16
 // ==========================================================================
 
 #ifndef GENMATRIX_H
@@ -37,8 +37,9 @@ class genmatrix:public genarray
 // Set and get member functions:
 
    genvector get_row(int m) const;
-   void get_row(int m,genvector& row) const;
-   void put_row(int m,const genvector& row);
+   void get_row(int m, genvector& row) const;
+   void put_row(int m, const genvector& row);
+   void copy_row(int m, const genmatrix& M);
    void renormalize_row(int m);
 
    genvector get_column(int n) const;

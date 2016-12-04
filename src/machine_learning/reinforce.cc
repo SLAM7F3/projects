@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/27/16; 11/28/16; 11/29/16; 11/30/16
+// Last modified on 11/28/16; 11/29/16; 11/30/16; 12/4/16
 // ==========================================================================
 
 #include <string>
@@ -2131,10 +2131,30 @@ void reinforce::store_arsprime_into_replay_memory(
    int d, int curr_a, double curr_r,
    const genvector& next_s, bool terminal_state_flag)
 {
+//   cout << "inside reinforce::store_arsprime_into_replay_mem()" << endl;
+
    a_curr->put(d, curr_a);
    r_curr->put(d, curr_r);
    s_next->put_row(d, next_s);
    terminal_state->put(d, terminal_state_flag);
+
+   genvector curr_s(next_s);
+   s_curr->get_row(d, curr_s);
+//   cout << "|next_s - curr_s| = " << (next_s - curr_s).magnitude()
+//        << endl;
+//   cout << "curr_r = " << curr_r << endl;
+}
+
+void reinforce::store_final_arsprime_into_replay_memory(
+   int d, int curr_a, double curr_r)
+{
+//   cout << "inside reinforce::store_final_arsprime_into_replay_memory()"
+//        << endl;
+   a_curr->put(d, curr_a);
+   r_curr->put(d, curr_r);
+   s_next->copy_row(d, *s_curr);
+   terminal_state->put(d, true);
+//   cout << "curr_r = " << curr_r << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -2214,8 +2234,8 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 
 double reinforce::update_neural_network()
 {
-//   cout << "inside update_neural_network()" << endl;
-//   cout << "episode_number = " << get_episode_number() << endl;
+   cout << "inside update_neural_network()" << endl;
+   cout << "episode_number = " << get_episode_number() << endl;
 
 // Nd = Number of random samples to be drawn from replay memory:
 
@@ -2324,6 +2344,7 @@ double reinforce::update_neural_network()
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
          *weights[l] -= learning_rate * (*nabla_weights[l]);
       }
+/*
       else if(solver_type == ADAM)
       {
          *adam_m[l] = beta1 * (*adam_m[l]) + (1 - beta1) * (*nabla_weights[l]);
@@ -2339,7 +2360,8 @@ double reinforce::update_neural_network()
          adam_m[l]->hadamard_division(*rms_weights_denom[l]);
          *weights[l] -= learning_rate * (*adam_m[l]);
       }
-      
+*/
+    
 //      debug_flag = true;
       if(debug_flag)
       {
@@ -2349,29 +2371,26 @@ double reinforce::update_neural_network()
          vector<double> curr_nabla_weights;
          vector<double> curr_nabla_weight_ratios;
          vector<double> curr_adam_ms;
-         
+
          for(int r = 0; r < mdim; r++)
          {
             for(int c = 0; c < ndim; c++)
             {
                curr_nabla_weights.push_back(
-                  fabs(nabla_weights[l]->get(c,r)));
-               curr_adam_ms.push_back(fabs(adam_m[l]->get(c,r)));
-//               cout << "r = " << r << " c = " << c
-//                    << " curr_nabla_weight = " 
-//                    << curr_nabla_weights.back() << endl;
-               double denom = weights[l]->get(c,r);
+                  fabs(nabla_weights[l]->get(r,c)));
+//               curr_adam_ms.push_back(fabs(adam_m[l]->get(c,r)));
+               double denom = weights[l]->get(r,c);
                if(fabs(denom) > 1E-10)
                {
                   curr_nabla_weight_ratios.push_back(
-                     fabs(nabla_weights[l]->get(c,r) / denom ));
+                     fabs(nabla_weights[l]->get(r,c) / denom ));
                }
             }
          }
          double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
          double mean_abs_nabla_weight_ratio = mathfunc::mean(
             curr_nabla_weight_ratios);
-         double mean_abs_adam_m = mathfunc::mean(curr_adam_ms);
+//         double mean_abs_adam_m = mathfunc::mean(curr_adam_ms);
             
          cout << "layer l = " << l
               << " mean |nabla weight| = " 
@@ -2384,9 +2403,9 @@ double reinforce::update_neural_network()
               << "  lr * mean_abs_nabla_weight_ratio = " 
               << learning_rate * mean_abs_nabla_weight_ratio << endl;
 
-         cout << " mean_abs_adam_m = " << mean_abs_adam_m
-              << " lr * mean_abs_adam_m = " << learning_rate * mean_abs_adam_m
-              << endl;
+//         cout << " mean_abs_adam_m = " << mean_abs_adam_m
+//              << " lr * mean_abs_adam_m = " << learning_rate * mean_abs_adam_m
+//              << endl;
          
       } // debug_flag conditional
       
@@ -2405,6 +2424,7 @@ double reinforce::update_neural_network()
 
 double reinforce::Q_backward_propagate(int d, int Nd)
 {
+//   cout << "inside Q_backward_propagate()" << endl;
    int t = 0;
 
    // Initialize "batch" weight gradients to zero:
@@ -2466,6 +2486,8 @@ double reinforce::Q_backward_propagate(int d, int Nd)
 // to curr layer nodes:
 
       weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
+
+// THIS NEXT LINE IS EXTREMELY SLOW!!!
       delta_prime[prev_layer]->matrix_mult(
          *weights_transpose[prev_layer], *delta_prime[curr_layer]);
 
@@ -2508,6 +2530,7 @@ double reinforce::Q_backward_propagate(int d, int Nd)
 // Accumulate biases' and weights' gradients for each network layer:
 
    double inverse_Nd = 1.0 / Nd;
+//   cout << "inverse_Nd = " << inverse_Nd << endl;
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)

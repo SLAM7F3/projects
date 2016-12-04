@@ -103,8 +103,6 @@ enum Action {
    int min_py = 30;
    int max_py = 192;
 
-
-
    // Play episodes
    int n_episodes = 10;
 
@@ -145,6 +143,9 @@ enum Action {
          // Apply the action and get the resulting reward
          float reward = ale.act(a);
          totalReward += reward;
+         cout << "frame = " << curr_frame_number
+              << " curr_reward = " << reward
+              << " total_reward = " << totalReward << endl;
       }
       cout << "Episode " << episode << " ended with score: " 
            << totalReward << endl;

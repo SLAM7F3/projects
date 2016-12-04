@@ -1,7 +1,7 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/1/16; 12/2/16; 12/3/16
+// Last modified on 12/1/16; 12/2/16; 12/3/16; 12/4/16
 // ==========================================================================
 
 #include <iostream>
@@ -49,7 +49,7 @@ void spaceinv::initialize_grayscale_output_buffer()
 
 void spaceinv::initialize_member_objects()
 {
-   cout << "inside spaceinv::init_member_objs()" << endl;
+//    cout << "inside spaceinv::init_member_objs()" << endl;
    
    int random_seed = 1000 * nrfunc::ran1();
    cout << "random_seed = " << random_seed << endl;
@@ -77,7 +77,11 @@ void spaceinv::initialize_member_objects()
 
    min_episode_framenumber = 100;
 
-   frame_skip = 3;
+// FAKE FAKE:  Sun Dec 4 at 7:09 am
+// For debugging only...
+
+   frame_skip = 1;
+//   frame_skip = 3;
 
    max_score_per_episode = 1000;  // Reasonable guestimate
    mu_zdiff = 0.94;     // Estimate from few hundred random episodes
@@ -130,6 +134,8 @@ ostream& operator<< (ostream& outstream,const spaceinv& S)
 void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
 {
    int curr_framenumber = ale.getEpisodeFrameNumber();
+//   cout << "inside spaceinv::crop_pool_difference_curr_frame()" << endl;
+//   cout << "curr framenumber = " << curr_framenumber << endl;
 
 // Retrieve curr frame's greyscale pixel values:
 
@@ -213,7 +219,6 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
 //            z_differences.push_back(double(z_diff));
             double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
             
-
             if(difference_counter == 0)
             {
                screen0_state_ptr->put(p++, ren_z_diff);
@@ -244,8 +249,8 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
    }
    other_pooled_byte_array_ptr->clear();
    
-   difference_counter = 1 - difference_counter;
    pingpong_curr_and_next_states();
+   difference_counter = 1 - difference_counter;
 }
 
 // ---------------------------------------------------------------------
@@ -258,12 +263,17 @@ void spaceinv::pingpong_curr_and_next_states()
 {
    if(difference_counter == 0)
    {
-      next_state_ptr = screen0_state_ptr;
       curr_state_ptr = screen1_state_ptr;
+      next_state_ptr = screen0_state_ptr;
    }
    else
    {
       curr_state_ptr = screen0_state_ptr;
       next_state_ptr = screen1_state_ptr;
    }
+
+//   cout << "inside spacenv::pingpong_curr_and_next_states()" << endl;
+//   cout << "|next_s - curr_s| = " 
+//        << (*next_state_ptr - *curr_state_ptr).magnitude() 
+//        << " diff_counter = " << difference_counter << endl;
 }

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/27/16; 11/28/16; 11/29/16; 11/30/16
+// Last modified on 11/28/16; 11/29/16; 11/30/16; 12/4/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -137,6 +137,8 @@ class reinforce
    void store_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r,
       const genvector& next_s, bool terminal_state_flag);
+   void store_final_arsprime_into_replay_memory(
+      int d, int curr_a, double curr_r);
    double update_neural_network();
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,

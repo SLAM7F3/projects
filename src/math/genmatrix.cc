@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genmatrix class member function definitions
 // ==========================================================================
-// Last modified on 10/17/16; 10/19/16; 10/20/16; 11/28/16
+// Last modified on 10/19/16; 10/20/16; 11/28/16; 12/4/16
 // =========================================================================
 
 #include <Eigen/Dense>
@@ -191,7 +191,7 @@ genvector genmatrix::get_row(int m) const
    return row;
 }
 
-void genmatrix::get_row(int m,genvector& row) const
+void genmatrix::get_row(int m, genvector& row) const
 {
    const double *a = get_e_ptr() + m * ndim;
    const double *aMax = a + ndim;
@@ -203,11 +203,22 @@ void genmatrix::get_row(int m,genvector& row) const
    }
 }
 
-void genmatrix::put_row(int m,const genvector& row) 
+void genmatrix::put_row(int m, const genvector& row) 
 {
    for (unsigned int n = 0 ; n < ndim; n++)
    {
       put(m, n, row.get(n));
+   }
+}
+
+// Member function copy_row() copies the mth row
+// from input genmatrix M into the mth row of *this:
+
+void genmatrix::copy_row(int m, const genmatrix& M) 
+{
+   for (unsigned int n = 0 ; n < ndim; n++)
+   {
+      put(m, n, M.get(m,n));
    }
 }
 
@@ -2067,14 +2078,23 @@ void genmatrix::matrix_mult(const genmatrix& A, const genmatrix& B)
 //        << " B.mdim = " << B.mdim << " B.ndim = " << B.ndim 
 //        << endl;
 
-   for (unsigned int i = 0; i < A.mdim; i++)
+   int A_mdim = A.mdim;
+   int A_ndim = A.ndim;
+   int B_mdim = B.mdim;
+   int B_ndim = B.ndim;
+
+   const double* A_e_ptr = A.get_e_ptr();
+   const double* B_e_ptr = B.get_e_ptr();
+   double* C_e_ptr = get_e_ptr();
+   
+   for (int i = 0; i < A_mdim; i++)
    {
-      for (unsigned int k = 0; k < A.ndim; k++)
+      for (int k = 0; k < A_ndim; k++)
       {
-         const double* a = A.get_e_ptr() + i * A.ndim + k;
-         const double* b = B.get_e_ptr() + k * B.ndim;
-         double *c = get_e_ptr() + i * B.ndim;
-         double *cMax = c + B.ndim;
+         const double* a = A_e_ptr + i * A_ndim + k;
+         const double* b = B_e_ptr + k * B_ndim;
+         double *c = C_e_ptr + i * B_ndim;
+         double *cMax = c + B_ndim;
          
          while(c < cMax)
          {
