@@ -103,10 +103,12 @@ int main(int argc, char** argv)
 
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
