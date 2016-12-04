@@ -309,8 +309,6 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->export_snapshot(output_subdir);
       }
       
-      cout << "At end of episodes while loop " << endl;
-
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
