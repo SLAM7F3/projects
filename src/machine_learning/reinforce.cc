@@ -2419,7 +2419,6 @@ double reinforce::update_neural_network()
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
          *weights[l] -= learning_rate * (*nabla_weights[l]);
       }
-/*
       else if(solver_type == ADAM)
       {
          *adam_m[l] = beta1 * (*adam_m[l]) + (1 - beta1) * (*nabla_weights[l]);
@@ -2435,8 +2434,7 @@ double reinforce::update_neural_network()
          adam_m[l]->hadamard_division(*rms_weights_denom[l]);
          *weights[l] -= learning_rate * (*adam_m[l]);
       }
-*/
-    
+      
 //      debug_flag = true;
       if(debug_flag)
       {
@@ -2452,13 +2450,16 @@ double reinforce::update_neural_network()
             for(int c = 0; c < ndim; c++)
             {
                curr_nabla_weights.push_back(
-                  fabs(nabla_weights[l]->get(r,c)));
+                  fabs(nabla_weights[l]->get(c,r)));
 //               curr_adam_ms.push_back(fabs(adam_m[l]->get(c,r)));
-               double denom = weights[l]->get(r,c);
+               cout << "r = " << r << " c = " << c
+                    << " curr_nabla_weight = " 
+                    << curr_nabla_weights.back() << endl;
+               double denom = weights[l]->get(c,r);
                if(fabs(denom) > 1E-10)
                {
                   curr_nabla_weight_ratios.push_back(
-                     fabs(nabla_weights[l]->get(r,c) / denom ));
+                     fabs(nabla_weights[l]->get(c,r) / denom ));
                }
             }
          }
