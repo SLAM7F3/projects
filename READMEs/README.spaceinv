@@ -5,6 +5,7 @@ Last updated on 12/4/16; 12/5/16
 ==========================================================================
 
 Random play results:
+-------------------
 
 reward = 159.6 +/- 16.6
 Median reward +/- quartile width = 158.3 +/- 10.7
@@ -13,16 +14,27 @@ n_frames / episode = 2132.3 +/- 670.7
 Median nframes/episode +/- quartile width = 2057 +/- 375
 
 
-BEST RESULTS SO FAR
--------------------
+BEST AGENT RESULTS SO FAR
+-------------------------
 
-3.  H1 = 16; H2 = 8; 
-    base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
-    solver = RMS_prop; frame_skip = 1
+17.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
-    Long term reward around 195 whereas chance is around 170.
-    nframes/episode around 2400 whereas chance is around 2200
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 7:50 am on Mon Dec 5
+    Mild evolution of weights over O(300) episodes
+
+   After 700 episodes:
+
+   n_frames / episode --> 3K
+   log10_loss = -0.25 +/- 0.5
+   reward --> 256
+   gentle evolution of weights over 700 episodes
+
 
 Terminated experiments
 ----------------------
@@ -225,6 +237,7 @@ Running experiments
     Discard 90% of 0-reward entries from memory store   
     Started on TM at 7:47 am on Mon Dec 5
     Relatively gentle evolution of weights over O(300) episodes
+    Results for expt 17 are better than those for expt 15.
 
 17.  H1 = 16; H2 = 8; 
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
@@ -278,3 +291,4 @@ Running experiments
     replay memory capacity = 5 * 2000
     Nd = 10
     Discard 90% of 0-reward entries from memory store   
+

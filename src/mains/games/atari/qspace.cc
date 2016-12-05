@@ -51,8 +51,8 @@ int main(int argc, char** argv)
    int n_max_episodes = 50 * 1000;
    int Tmax = n_max_episodes;
 
-//   int H1 = 16;
-   int H1 = 24;
+   int H1 = 16;
+//   int H1 = 24;
    int H2 = 8;
 //   int H2 = 12;
    int H3 = 0;
@@ -101,6 +101,9 @@ int main(int argc, char** argv)
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
+   string weights_subdir = output_subdir+"zeroth_layer_weights/";
+   filefunc::dircreate(weights_subdir);
+
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.95);
@@ -109,8 +112,8 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
@@ -344,6 +347,11 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
          reinforce_agent_ptr->export_snapshot(output_subdir);
+
+// Export trained weights in neural network's zeroth layer as
+// greyscale images to output_subdir
+
+         reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
       }
       
    } // n_episodes < n_max_episodes while loop
@@ -356,14 +364,6 @@ int main(int argc, char** argv)
         << reinforce_agent_ptr->get_episode_number() << endl;
    cout << "N_weights = " << reinforce_agent_ptr->count_weights()
         << endl;
-
-// Export trained weights in neural network's zeroth layer as
-// greyscale images to output_subdir
-
-   string weights_subdir = output_subdir+"zeroth_layer_weights/";
-   filefunc::dircreate(weights_subdir);
-   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
-
 
    delete reinforce_agent_ptr;
    delete spaceinv_ptr;
