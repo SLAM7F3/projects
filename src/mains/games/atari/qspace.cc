@@ -251,7 +251,8 @@ int main(int argc, char** argv)
 
             if(nearly_equal(renorm_reward,0))
             {
-               if(nrfunc::ran1() > 0.1) continue;
+               if(nrfunc::ran1() > 0.05) continue;
+//               if(nrfunc::ran1() > 0.1) continue;
 //               if(nrfunc::ran1() > 0.15) continue;
             }
 
