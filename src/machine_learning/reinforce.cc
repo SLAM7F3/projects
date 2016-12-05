@@ -1554,7 +1554,7 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo)
    curr_metafile.set_ysubtic(0.1);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(0, episode_number, n_episode_frames);
+   curr_metafile.write_curve(0, episode_number, epsilon_values);
    curr_metafile.set_thickness(3);
    
    curr_metafile.closemetafile();
