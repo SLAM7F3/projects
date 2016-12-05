@@ -1,5 +1,5 @@
 ==========================================================================
-Last updated on 10/18/10; 2/5/13; 12/8/13
+Last updated on 10/18/10; 2/5/13; 12/8/13; 12/5/16
 ==========================================================================
 
 touchy:X11R6% apt-cache search jpeg | sort | less
@@ -41,7 +41,7 @@ make any necessary ubuntu version changes (i.e. touchy2 is running gutsy
 ("G" version of ubuntu), while vision laptop is running hardy ("H" version
 of ubuntu)).  After making any changes to sources.list, we need to chant
 
-sudo apt-get update
+	sudo apt-get update
 
 before attempting to perform apt-cache search or apt-get install commands.
 
@@ -58,7 +58,12 @@ dpkg --list | cut -f 1-3 -d' ' > packages.txt
 MAKE CERTAIN TO ELIMINATE ANY PACKAGES REFERRING TO NVIDIA BEFORE
 TRANSFERING THIS PACKAGES FILE TO A NEW MACHINE !!!
 
-Install all of those packages:
+*.  On 12/5/16, we used the following grep command to eliminate all lines
+within a "packages" file which contain "amd64":
+
+grep -v ":amd64" ./Thinkmate_packages_120516.txt > temp && mv temp new_packages.txt
+
+*.  Install all of those packages:
 
 Create install_packages script with following contents:
 

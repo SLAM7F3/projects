@@ -159,6 +159,19 @@ Terminated experiments
     Reward went up for 150 episodes.  Then it fell precipitously for next
     250 episodes!  Terminated!
 
+16.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Divergent loss function
+    Significant movement among weights over O(300) episodes
+    Reward starts trending downwards after O(200) episodes.
+    This base learning rate is very likely too high.  TERMINATED
+
 18.  H1 = 16; H2 = 8; 
     base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
     solver = RMSPROP; frame_skip = 1
@@ -172,19 +185,19 @@ Terminated experiments
     Reward increased for O(100) episodes to roughly random play value.
     But then it decreases for next 150 episodes!  TERMINATED.
 
-Running experiments
---------------------
-
-16.  H1 = 16; H2 = 8; 
+19.  H1 = 16; H2 = 8; 
     base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
     solver = RMSPROP; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
     replay memory capacity = 5 * 2000
-    Nd = 10
-    Discard 90% of 0-reward entries from memory store   
-    Divergent loss function
-    Significant movement among weights over O(300) episodes
+    Nd = 16
+    Discard 85% of 0-reward entries from memory store   
+    Started on TM at 11:30 am on Mon Dec 5
+    Diverging loss function; dropping reward; TERMINATED
+
+Running experiments
+--------------------
 
 15.  H1 = 16; H2 = 8; 
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
@@ -207,17 +220,6 @@ Running experiments
     Discard 90% of 0-reward entries from memory store   
     Started on TM at 7:50 am on Mon Dec 5
     Mile evolution of weights over O(300) episodes
-
-
-19.  H1 = 16; H2 = 8; 
-    base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
-    solver = RMSPROP; frame_skip = 1
-    old weights period = 10; min_epsilon = 0.025
-    epsilon decay factor = 0.95
-    replay memory capacity = 5 * 2000
-    Nd = 16
-    Discard 85% of 0-reward entries from memory store   
-    Started on TM at 11:30 am on Mon Dec 5
 
 20.  H1 = 16; H2 = 8; 
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 5

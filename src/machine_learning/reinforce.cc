@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/28/16; 11/29/16; 11/30/16; 12/4/16
+// Last modified on 11/29/16; 11/30/16; 12/4/16; 12/5/16
 // ==========================================================================
 
 #include <string>
@@ -988,6 +988,11 @@ void reinforce::append_n_episode_frames(int n_frames)
    n_episode_frames.push_back(n_frames);
 }
 
+void reinforce::append_epsilon()
+{
+   epsilon_values.push_back(epsilon);
+}
+
 // ==========================================================================
 // Monitoring network training methods
 // ==========================================================================
@@ -1512,6 +1517,45 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo)
       curr_metafile.write_curve(
          0, episode_number, smoothed_n_episode_frames, colorfunc::blue);
    }
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of epsilon vs episode number
+
+void reinforce::plot_epsilon_history(string output_subdir, string extrainfo)
+{
+   if(n_episode_frames.size() < 5) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir+"epsilon_history";
+   string title="Epsilon vs episode; bsize="+
+      stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+   }
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label="Episode number";
+   string y_label="Epsilon";
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, episode_number, 0, 1);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, episode_number, n_episode_frames);
+   curr_metafile.set_thickness(3);
    
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";

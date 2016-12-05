@@ -1,7 +1,7 @@
 ========================================================================
 GITHUB notes
 ========================================================================
-Last updated 7/6/16; 9/25/16; 9/29/16; 11/19/16
+Last updated 9/25/16; 9/29/16; 11/19/16; 12/5/16
 ========================================================================
 
 *.  On 12/6/15, we followed directions provided by Brad Westfall in his
@@ -277,3 +277,20 @@ use_math: true
 ---
 
 
+*.  Checking out new instance of "projects" onto a new linux box:
+
+1.  Create ~/programs/c++/git/projects and ~/programs/c++/git/eyeglass.
+
+2.  Create soft link
+
+    ln -s ~/programs/c++/git ~/programs/c++/svn2git
+
+3.  Login to github, select "projects" and look up git clone command
+
+4.  On local machine inside ~/programs/c++/git/projects/, chant
+
+	git clone git@github.com:PeterCho/projects.git
+
+5.  On local machine inside ~/programs/c++/git/, chant
+
+        git clone git@github.com:PeterCho/eyeglass.git
