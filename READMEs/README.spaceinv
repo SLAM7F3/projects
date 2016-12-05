@@ -91,15 +91,6 @@ Terminated experiments
     Started on m6700 at 8:16 on Sun Dec 4
     Terminated
 
-
-10.  H1 = 16; H2 = 8; 
-    base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
-    solver = RMS_prop; frame_skip = 1
-    old weights period = 10; min_epsilon = 0.025
-    epsilon decay factor = 0.95
-    Renorm reward to 0,1
-    Terminated
-
 10.  H1 = 16; H2 = 8; 
     base learning rate = 1E-2; rms_decay = 0.9; batch size = 5
     solver = SGD; frame_skip = 1
