@@ -4,6 +4,15 @@ Deep Q learning notes for Space Invaders
 Last updated on 12/4/16; 12/5/16
 ==========================================================================
 
+Random play results:
+
+reward = 159.6 +/- 16.6
+Median reward +/- quartile width = 158.3 +/- 10.7
+
+n_frames / episode = 2132.3 +/- 670.7
+Median nframes/episode +/- quartile width = 2057 +/- 375
+
+
 BEST RESULTS SO FAR
 -------------------
 
@@ -44,8 +53,11 @@ Terminated experiments
     Started on TM at 2:07 on Sun Dec 4
     Long term reward around 160; Frames per episodes around 2100
 
-    Random reward is roughly 170.
-    Random n_frames/episode is roughly 2200.
+    Random reward = 159.6 +/- 16.6
+    Median reward +/- quartile width = 158.3 +/- 10.7
+
+    n_frames / episode = 2132.3 +/- 670.7
+    Median nframes/episode +/- quartile width = 2057 +/- 375
 
 5.  H1 = 16; H2 = 8; 
     base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
@@ -134,9 +146,6 @@ Terminated experiments
     Started on TM at 7:05 am on Mon Dec 5
     Major weight evolution in first 50 episodes
 
-Running experiments
---------------------
-
 14.  H1 = 16; H2 = 8; 
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
     solver = RMSPROP; frame_skip = 1
@@ -146,37 +155,9 @@ Running experiments
     Nd = 5
     Discard 90% of 0-reward entries from memory store   
     Started on TM at 7:18 am on Mon Dec 5
-    Gentle weight evolution in first 30 episodes
-
-15.  H1 = 16; H2 = 8; 
-    base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
-    solver = RMSPROP; frame_skip = 1
-    old weights period = 10; min_epsilon = 0.025
-    epsilon decay factor = 0.95
-    replay memory capacity = 5 * 2000
-    Nd = 10
-    Discard 90% of 0-reward entries from memory store   
-    Started on TM at 7:47 am on Mon Dec 5
-
-16.  H1 = 16; H2 = 8; 
-    base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
-    solver = RMSPROP; frame_skip = 1
-    old weights period = 10; min_epsilon = 0.025
-    epsilon decay factor = 0.95
-    replay memory capacity = 5 * 2000
-    Nd = 10
-    Discard 90% of 0-reward entries from memory store   
-    Divergent loss function
-
-17.  H1 = 16; H2 = 8; 
-    base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
-    solver = RMSPROP; frame_skip = 1
-    old weights period = 10; min_epsilon = 0.025
-    epsilon decay factor = 0.95
-    replay memory capacity = 5 * 2000
-    Nd = 10
-    Discard 90% of 0-reward entries from memory store   
-    Started on TM at 7:50 am on Mon Dec 5
+    Gentle weight evolution in first 120 episodes
+    Reward went up for 150 episodes.  Then it fell precipitously for next
+    250 episodes!  Terminated!
 
 18.  H1 = 16; H2 = 8; 
     base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
@@ -187,3 +168,74 @@ Running experiments
     Nd = 10
     Discard 90% of 0-reward entries from memory store   
     Started on TM at 8:01 am on Mon Dec 5
+    Very little evolution of weights over 250 episodes.
+    Reward increased for O(100) episodes to roughly random play value.
+    But then it decreases for next 150 episodes!  TERMINATED.
+
+Running experiments
+--------------------
+
+16.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Divergent loss function
+    Significant movement among weights over O(300) episodes
+
+15.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 7:47 am on Mon Dec 5
+    Relatively gentle evolution of weights over O(300) episodes
+
+17.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 7:50 am on Mon Dec 5
+    Mile evolution of weights over O(300) episodes
+
+
+19.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 16
+    Discard 85% of 0-reward entries from memory store   
+    Started on TM at 11:30 am on Mon Dec 5
+
+20.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 16
+    Discard 85% of 0-reward entries from memory store   
+    Started on TM at 11:30 am on Mon Dec 5
+
+21.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 16
+    Discard 85% of 0-reward entries from memory store   
+    Started on TM at 11:30 am on Mon Dec 5
+

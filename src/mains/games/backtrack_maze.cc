@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program BACKTRACK_MAZE
 // ==========================================================================
-// Last updated on 11/14/16; 11/16/16; 11/28/16; 11/29/16
+// Last updated on 11/16/16; 11/28/16; 11/29/16; 12/5/16
 // ==========================================================================
 
 #include <iostream>
@@ -277,7 +277,8 @@ int main (int argc, char* argv[])
       if(curr_episode_number > 0 && curr_episode_number % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         int Nd = 32;
+         total_loss = reinforce_agent_ptr->update_neural_network(Nd);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)

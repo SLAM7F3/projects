@@ -110,8 +110,8 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
 // Periodically decrease learning rate down to some minimal floor
@@ -248,7 +248,8 @@ int main(int argc, char** argv)
 
             if(nearly_equal(renorm_reward,0))
             {
-               if(nrfunc::ran1() > 0.1) continue;
+//               if(nrfunc::ran1() > 0.1) continue;
+               if(nrfunc::ran1() > 0.15) continue;
             }
 
             genvector *next_diff_s = spaceinv_ptr->get_next_state();
@@ -291,7 +292,8 @@ int main(int argc, char** argv)
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
 //         int Nd = 5;  // number of samples to be drawn from replay memory
-         int Nd = 10;  // number of samples to be drawn from replay memory
+//         int Nd = 10;  // number of samples to be drawn from replay memory
+         int Nd = 16;  // number of samples to be drawn from replay memory
          total_loss = reinforce_agent_ptr->update_neural_network(Nd);
       }
 

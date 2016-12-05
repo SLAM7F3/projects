@@ -1,7 +1,7 @@
 =============================================================================
 CMAKE notes
 =============================================================================
-Last updated on 11/18/16
+Last updated on 11/18/16; 12/5/16
 =============================================================================
 
 *.  Each subfolder of ~/sputnik/pwin/ now contains a CMakeLists.txt file
@@ -19,3 +19,58 @@ set(XDAT_SRC
     xdat_tiger.c
     xdat_tiger.h)
 
+*.  On 12/5/16, Weiyu told us that updated instructions for building a
+debug version of pwin via cmake which can work with eclipse are sitting in
+https://github.geo.apple.com/geo-flyover/sputnik/tree/master/pwin . Open up
+Apple github and goto the sputnik project.  Then select the "pwin" folder
+within the main list near the top of the github page.  Read the "Building
+pwin" directions inside README.md.
+
+*.  Weiyu also taught us that we needed to delete the previous "make"
+version of the eclipse pwin project and create a new "cmake" version pwin
+project.  See
+http://stackoverflow.com/questions/3772779/a-project-with-that-name-already-exists-in-the-workspace-eclipse
+. 
+
+*.  Out-of-source build trees (excerpted from
+https://cmake.org/Wiki/CMake_FAQ#Out-of-source_build_trees):
+
+When your build generates files, they have to go somewhere. An in-source
+build puts them in your source tree. An out-of-source build puts them in a
+completely separate directory, so that your source tree is unchanged.
+
+In the first example, an in-place build is performed, i.e., the binaries
+are placed in the same directory as the source code.
+
+ cd Hello
+ ccmake .
+ make
+
+In the second example, an out-of-place build is performed, i.e., the source
+code, libraries, and executables are produced in a directory separate from
+the source code directory(ies).
+
+ mkdir HelloBuild
+ cd HelloBuild
+ ccmake ../Hello
+ make
+
+Out-of-source builds are recommended, as you can build multiple variants in
+separate directories, e.g., HelloBuildDebug, HelloBuildRelease.
+
+** IMPORTANT NOTE **: Before performing an out-of-source build, ensure that
+all CMake generated in-source build information is removed from the source
+directory, e.g., CMakeFiles directory, CMakeCache.txt.  I run an
+out-of-source build but CMake generates in-source anyway. Why?
+
+This means that there is a CMakeCache.txt file in the source tree, possibly
+as part of an existing in-source build. If CMake is given the path to a
+directory with a CMakeCache.txt file, it assumes the directory is a build
+tree. Therefore if one runs "cmake ../mysrc" to build out-of-source but
+there is a mysrc/CMakeCache.txt file then cmake will treat mysrc as the
+build tree.
+
+This is a side-effect of the feature that allows "cmake ." to be used to
+regenerate a build tree. The behavior will not be changed because mixing
+in-source and out-of-source builds is not safe anyway (configured headers
+may be found in the wrong place).
