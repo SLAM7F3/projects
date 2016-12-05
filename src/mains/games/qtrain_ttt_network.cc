@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 11/26/16; 11/27/16; 11/28/16; 11/30/16
+// Last updated on 11/27/16; 11/28/16; 11/30/16; 12/5/16
 // ==========================================================================
 
 #include <iostream>
@@ -374,7 +374,7 @@ int main (int argc, char* argv[])
 
       reinforce_agent_ptr->increment_episode_number();
       reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(extrainfo);
+      reinforce_agent_ptr->update_running_reward(n_update);
 
 // Periodically copy current weights into old weights:
 
@@ -388,7 +388,8 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         int Nd = 32;
+         total_loss = reinforce_agent_ptr->update_neural_network(Nd);
       }
 
 // Periodically anneal epsilon:

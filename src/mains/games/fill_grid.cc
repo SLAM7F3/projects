@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program FILL_GRID
 // ==========================================================================
-// Last updated on 10/30/16; 11/1/16; 11/7/16; 11/27/16
+// Last updated on 11/1/16; 11/7/16; 11/27/16; 12/5/16
 // ==========================================================================
 
 #include <iostream>
@@ -168,7 +168,7 @@ int main (int argc, char* argv[])
       }
 
       reinforce_agent_ptr->update_weights();
-      reinforce_agent_ptr->update_running_reward(extrainfo);
+      reinforce_agent_ptr->update_running_reward(n_update);
 
       cout << "Game over   curr_reward = " << curr_reward << endl;
       ttt_ptr->display_board_state();
