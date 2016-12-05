@@ -324,3 +324,14 @@ Running experiments
     Discard 90% of 0-reward entries from memory store   
     Resize ROI to capture mother ships
     Started on TM at 6:18 pm on Mon Dec 5
+
+29.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-4; rms_decay = 0.95; batch size = 10
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Resize ROI to capture mother ships
+    Started on TM at 6:11 pm on Mon Dec 5

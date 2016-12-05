@@ -78,8 +78,8 @@ int main(int argc, char** argv)
    int batch_size = 10;
 //   int batch_size = 20;
 //   int replay_memory_capacity = batch_size * 100;
-//   int replay_memory_capacity = 5 * 2000;
-   int replay_memory_capacity = 10 * 2000;
+   int replay_memory_capacity = 5 * 2000;
+//   int replay_memory_capacity = 10 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
@@ -109,7 +109,8 @@ int main(int argc, char** argv)
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.95);
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-1);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
