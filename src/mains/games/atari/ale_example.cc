@@ -63,7 +63,7 @@ enum Action {
    //The default is already 0.25, this is just an example
    ale.setFloat("repeat_action_probability", 0.25);
 
-   ale.setBool("display_screen", false);
+//   ale.setBool("display_screen", false);
    ale.setBool("display_screen", true);
 //   ale.setBool("sound", true);
 
@@ -98,10 +98,21 @@ enum Action {
 
 // Screen ROI for space invaders:
 
-   int min_px = 22;
-   int max_px = 138;
-   int min_py = 30;
-   int max_py = 192;
+//   int min_px = 22;
+   int min_px = 27;
+//   int max_px = 138;
+   int max_px = 133;
+//   int min_py = 0;
+   int min_py = 12;
+//   int min_py = 30;
+   int max_py = 190;
+//   int max_py = 192;
+
+// (max_px - min_px) * (max_py - min_py) =
+// (133 - 27) * (190 - 12) = 
+// 106 * 178
+// --> 53 * 89
+
 
    // Play episodes
    int n_episodes = 10;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/1/16; 12/2/16; 12/3/16; 12/4/16
+// Last modified on 12/2/16; 12/3/16; 12/4/16; 12/5/16
 // ==========================================================================
 
 #include <iostream>
@@ -60,16 +60,21 @@ void spaceinv::initialize_member_objects()
    ale.loadROM("/usr/local/ALE/roms/space_invaders.bin");
 
 // No screen content influencing game play appears outside following
-// pixel bbox:
+// pixel bbox [but which retains top region for mother ship!]:
 
-   min_px = 22;
-   max_px = 138;
-   min_py = 30;
-   max_py = 192;
+   min_px = 27;
+   max_px = 133;
+   min_py = 12;
+   max_py = 190;
+
+//   min_px = 22;
+//   max_px = 138;
+//   min_py = 30;
+//   max_py = 192;
 
    int n_reduced_xdim = (max_px - min_px) / 2;
    int n_reduced_ydim = (max_py - min_py) / 2;
-   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4698
+   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4717 
 
 // No screen content influencing game play appears before following
 // episode frame number:
