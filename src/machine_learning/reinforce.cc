@@ -2558,7 +2558,7 @@ double reinforce::Q_backward_propagate(int d, int Nd)
       d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
    double target_value = 
       compute_target(curr_r, next_s_sample, terminal_state_flag);
-   cout << "curr_r = " << curr_r << " target_value = " << target_value
+   cout << "  curr_r = " << curr_r << " target_value = " << target_value
         << endl;
 
 // First need to perform forward propagation for *curr_s_sample in

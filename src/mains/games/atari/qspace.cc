@@ -107,11 +107,12 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-1);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
-   reinforce_agent_ptr->set_base_learning_rate(1E-2);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
    int n_anneal_steps = 5;
    int n_update = 2;
    int n_summarize = 4;
-   int n_snapshot = 10;
+   int n_snapshot = 50;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
@@ -289,8 +290,8 @@ int main(int argc, char** argv)
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         int Nd = 5;  // number of samples to be drawn from replay memory
-//         int Nd = 10;  // number of samples to be drawn from replay memory
+//         int Nd = 5;  // number of samples to be drawn from replay memory
+         int Nd = 10;  // number of samples to be drawn from replay memory
          total_loss = reinforce_agent_ptr->update_neural_network(Nd);
       }
 
