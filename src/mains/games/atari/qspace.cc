@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
    int batch_size = 10;
 //   int replay_memory_capacity = batch_size * 100;
-   int replay_memory_capacity = 1000;
+   int replay_memory_capacity = 5 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
@@ -105,10 +105,11 @@ int main(int argc, char** argv)
 
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-1);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
+   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
@@ -220,11 +221,9 @@ int main(int argc, char** argv)
          double curr_reward = spaceinv_ptr->get_ale().act(a);
          cum_reward += curr_reward;
 
-// Follow original Atari paper and cap reward at 1.0:
-
 //         double renorm_reward = curr_reward /
 //            game_world.get_max_score_per_episode();
-         double renorm_reward = basic_math::min(curr_reward, 1.0);
+         double renorm_reward = curr_reward / 10.0;
 
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
@@ -240,10 +239,29 @@ int main(int argc, char** argv)
          }
          else if (n_state_updates > 2)
          {
+
+// As of 6:45 am on Mon Dec 5, we experiment with discarding some
+// fraction of zero reward states in order to increase chances of
+// agent seeing non-zero reward states without having to perform a
+// huge number of expensive backpropagations:
+
+            if(nearly_equal(renorm_reward,0))
+            {
+               if(nrfunc::ran1() > 0.1) continue;
+            }
+
             genvector *next_diff_s = spaceinv_ptr->get_next_state();
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, renorm_reward, *next_diff_s, 
                game_world.get_game_over());
+
+            if(renorm_reward > 0)
+            {
+               cout << "episode = " << curr_episode_number
+                    << " frame = " << curr_frame_number
+                    << " curr_reward = " << curr_reward
+                    << " renorm_reward = " << renorm_reward << endl;
+            }
          }
       } // game_over while loop
 
@@ -271,7 +289,9 @@ int main(int argc, char** argv)
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         int Nd = 5;  // number of samples to be drawn from replay memory
+//         int Nd = 10;  // number of samples to be drawn from replay memory
+         total_loss = reinforce_agent_ptr->update_neural_network(Nd);
       }
 
 // Periodically anneal epsilon:

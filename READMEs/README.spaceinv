@@ -7,6 +7,14 @@ Last updated on 12/4/16; 12/5/16
 BEST RESULTS SO FAR
 -------------------
 
+3.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
+    solver = RMS_prop; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    Long term reward around 195 whereas chance is around 170.
+    nframes/episode around 2400 whereas chance is around 2200
+
 Terminated experiments
 ----------------------
 
@@ -15,21 +23,26 @@ Terminated experiments
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
+    Learning rate too high
 
 2.  H1 = 16; H2 = 8; 
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
+    Long term reward comparable to chance
 
 3.  H1 = 16; H2 = 8; 
     base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
+    Long term reward around 195 whereas chance is around 170.
+    nframes/episode around 2400
 
 4.  Random play
     Started on TM at 2:07 on Sun Dec 4
+    Long term reward around 160; Frames per episodes around 2100
 
     Random reward is roughly 170.
     Random n_frames/episode is roughly 2200.
@@ -40,6 +53,7 @@ Terminated experiments
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
     Started on TM at 2:27 pm on Sun Dec 4
+    Long term reward decreases down to around 170
 
 6.  H1 = 16; H2 = 8; 
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
@@ -47,6 +61,7 @@ Terminated experiments
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
     Started on TM at 2:27 pm on Sun Dec 4
+    Long term reward around 162
 
 7.  H1 = 16; H2 = 8; 
     base learning rate = 3E-2; rms_decay = 0.9; batch size = 5
@@ -54,7 +69,7 @@ Terminated experiments
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
     Started on TM at 2:27 pm on Sun Dec 4
-
+    Long term reward around 176; nframes/episode around 2285
 
 8.  Random play
     Started on m6700 at 3:38 on Sun Dec 4
@@ -65,21 +80,53 @@ Terminated experiments
     Terminated
 
 
-Running experiments
---------------------
-
 10.  H1 = 16; H2 = 8; 
     base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
     Renorm reward to 0,1
-    Started on TM at 3:47 am on Mon Dec 5
+    Terminated
 
-11.  H1 = 16; H2 = 8; 
-    base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
-    solver = RMS_prop; frame_skip = 1
+Running experiments
+--------------------
+
+10.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-2; rms_decay = 0.9; batch size = 5
+    solver = SGD; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
-    Renorm reward to 0,1
-    Started on TM at 3:47 am on Mon Dec 5
+    replay memory capacity = 5 * 2000
+    Nd = 5
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 6:55 am on Mon Dec 5
+
+11.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-2; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 5
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 7:05 am on Mon Dec 5
+
+12.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-1; rms_decay = 0.9; batch size = 5
+    solver = SGD; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 5
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 6:55 am on Mon Dec 5
+
+13.  H1 = 16; H2 = 8; 
+    base learning rate = 1E-1; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 5
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 7:05 am on Mon Dec 5

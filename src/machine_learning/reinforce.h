@@ -142,7 +142,7 @@ class reinforce
       const genvector& next_s, bool terminal_state_flag);
    void store_final_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r);
-   double update_neural_network();
+   double update_neural_network(int Nd);
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
