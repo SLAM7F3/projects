@@ -76,8 +76,10 @@ int main(int argc, char** argv)
 // Construct reinforcement learning agent:
 
    int batch_size = 10;
+//   int batch_size = 20;
 //   int replay_memory_capacity = batch_size * 100;
-   int replay_memory_capacity = 5 * 2000;
+//   int replay_memory_capacity = 5 * 2000;
+   int replay_memory_capacity = 10 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
@@ -251,8 +253,8 @@ int main(int argc, char** argv)
 
             if(nearly_equal(renorm_reward,0))
             {
-               if(nrfunc::ran1() > 0.05) continue;
-//               if(nrfunc::ran1() > 0.1) continue;
+//               if(nrfunc::ran1() > 0.05) continue;
+               if(nrfunc::ran1() > 0.1) continue;
 //               if(nrfunc::ran1() > 0.15) continue;
             }
 
