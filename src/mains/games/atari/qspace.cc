@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/1/16; 12/2/16; 12/3/16; 12/4/16
+// Last updated on 12/2/16; 12/3/16; 12/4/16; 12/5/16
 // ==========================================================================
 
 #include <iostream>
@@ -51,10 +51,10 @@ int main(int argc, char** argv)
    int n_max_episodes = 50 * 1000;
    int Tmax = n_max_episodes;
 
-//   int H1 = 16;
-   int H1 = 24;
-//   int H2 = 8;
-   int H2 = 12;
+   int H1 = 16;
+//   int H1 = 24;
+   int H2 = 8;
+//   int H2 = 12;
    int H3 = 0;
 
    vector<int> layer_dims;
@@ -75,9 +75,9 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 5;
+   int batch_size = 10;
 //   int replay_memory_capacity = batch_size * 100;
-   int replay_memory_capacity = 100;
+   int replay_memory_capacity = 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
@@ -218,9 +218,13 @@ int main(int argc, char** argv)
          }
          Action a = minimal_actions[curr_a];
          double curr_reward = spaceinv_ptr->get_ale().act(a);
-         double renorm_reward = curr_reward /
-            game_world.get_max_score_per_episode();
          cum_reward += curr_reward;
+
+// Follow original Atari paper and cap reward at 1.0:
+
+//         double renorm_reward = curr_reward /
+//            game_world.get_max_score_per_episode();
+         double renorm_reward = basic_math::min(curr_reward, 1.0);
 
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
