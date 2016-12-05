@@ -143,15 +143,27 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          layer_dims[l+1], layer_dims[l]);
       genmatrix *curr_old_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
-      genmatrix *curr_velocity = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);  // used for momentum solver type
-      genmatrix *prev_velocity = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);  // used for Nesterov solver type
-
-      genmatrix *curr_adam_m = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);  // used for ADAM solver type
-      genmatrix *curr_adam_v = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);  // used for ADAM solver type
+      genmatrix *curr_velocity = NULL;
+      if(solver_type == MOMENTUM || solver_type == NESTEROV)
+      {
+         curr_velocity = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);  // used for momentum solver type
+      }
+      genmatrix *prev_velocity = NULL;
+      if(solver_type == NESTEROV)
+      {
+         prev_velocity = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);  // used for Nesterov solver type
+      }
+      genmatrix *curr_adam_m = NULL;
+      genmatrix *curr_adam_v = NULL;
+      if(solver_type == ADAM)
+      {
+         curr_adam_m = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);  // used for ADAM solver type
+         curr_adam_v = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);  // used for ADAM solver type
+      }
 
       int mdim = layer_dims[l+1];
       int ndim = layer_dims[l];
@@ -164,16 +176,25 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          layer_dims[l], layer_dims[l+1]);
       weights_transpose.push_back(curr_weights_transpose);
 
-      curr_velocity->clear_values();
-      velocities.push_back(curr_velocity);
-      prev_velocity->clear_values();
-      prev_velocities.push_back(prev_velocity);
-
-      curr_adam_m->clear_values();
-      adam_m.push_back(curr_adam_m);
-      curr_adam_v->clear_values();
-      adam_v.push_back(curr_adam_v);
-
+      if(curr_velocity != NULL)
+      {
+         curr_velocity->clear_values();
+         velocities.push_back(curr_velocity);
+      }
+      if(prev_velocity != NULL)
+      {
+         prev_velocity->clear_values();
+         prev_velocities.push_back(prev_velocity);
+      }
+      
+      if(curr_adam_m != NULL)
+      {
+         curr_adam_m->clear_values();
+         adam_m.push_back(curr_adam_m);
+         curr_adam_v->clear_values();
+         adam_v.push_back(curr_adam_v);
+      }
+      
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       curr_nabla_weights->clear_values();
@@ -184,15 +205,18 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       curr_delta_nabla_weights->clear_values();
       delta_nabla_weights.push_back(curr_delta_nabla_weights);
 
-      genmatrix *curr_rmsprop_weights = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);
-      curr_rmsprop_weights->clear_values();
-      rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+      if(solver_type == RMSPROP)
+      {
+         genmatrix *curr_rmsprop_weights = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);
+         curr_rmsprop_weights->clear_values();
+         rmsprop_weights_cache.push_back(curr_rmsprop_weights);
 
-      genmatrix *curr_rms_weights_denom = 
-         new genmatrix(layer_dims[l+1], layer_dims[l]);
-      curr_rms_weights_denom->clear_values();
-      rms_weights_denom.push_back(curr_rms_weights_denom);
+         genmatrix *curr_rms_weights_denom = 
+            new genmatrix(layer_dims[l+1], layer_dims[l]);
+         curr_rms_weights_denom->clear_values();
+         rms_weights_denom.push_back(curr_rms_weights_denom);
+      }
 
 // Xavier initialize weights connecting network layers l and l+1 to be
 // gaussian random vars distributed according to N(0,1/sqrt(n_in)):
@@ -310,12 +334,24 @@ reinforce::~reinforce()
       delete weights_transpose[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
-      delete rmsprop_weights_cache[l];
-      delete rms_weights_denom[l];
-      delete velocities[l];
-      delete prev_velocities[l];
-      delete adam_m[l];
-      delete adam_v[l];
+      if(velocities.size() > 0)
+      {
+         delete velocities[l];
+      }
+      if(prev_velocities.size() > 0)
+      {
+         delete prev_velocities[l];
+      }
+      if(rmsprop_weights_cache.size() > 0)
+      {
+         delete rmsprop_weights_cache[l];
+         delete rms_weights_denom[l];
+      }
+      if(adam_m.size() > 0)
+      {
+         delete adam_m[l];
+         delete adam_v[l];
+      }
    }
 
    delete p_action;
@@ -346,7 +382,6 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
    outstream << "gamma = " << R.gamma << endl;
    return outstream;
 }
-
 
 // ---------------------------------------------------------------------
 void reinforce::hardwire_output_action(int a)
@@ -469,7 +504,6 @@ void reinforce::discount_rewards()
 //           << discounted_reward->get(t) << endl;
       }
    } // sigma > 0 conditional
-   
 }
 
 // ---------------------------------------------------------------------

@@ -7,35 +7,40 @@ Last updated on 12/4/16
 BEST RESULTS SO FAR
 -------------------
 
+Terminated experiments
+----------------------
+
+8.  Random play
+    Started on m6700 at 3:38 on Sun Dec 4
+    Terminated
+
 
 Running experiments
 --------------------
-
 
 1.  H1 = 16; H2 = 8; 
     base learning rate = 1E-2; rms_decay = 0.9; batch size = 5
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
-    Started on TM at 1:40 pm on Sun Dec 4
 
 2.  H1 = 16; H2 = 8; 
     base learning rate = 1E-3; rms_decay = 0.9; batch size = 5
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
-    Started on TM at 1:40 pm on Sun Dec 4
 
 3.  H1 = 16; H2 = 8; 
     base learning rate = 1E-4; rms_decay = 0.9; batch size = 5
     solver = RMS_prop; frame_skip = 1
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
-    Started on TM at 1:40 pm on Sun Dec 4
 
 4.  Random play
     Started on TM at 2:07 on Sun Dec 4
 
+    Random reward is roughly 170.
+    Random n_frames/episode is roughly 2200.
 
 5.  H1 = 16; H2 = 8; 
     base learning rate = 3E-3; rms_decay = 0.9; batch size = 5
@@ -57,3 +62,7 @@ Running experiments
     old weights period = 10; min_epsilon = 0.025
     epsilon decay factor = 0.95
     Started on TM at 2:27 pm on Sun Dec 4
+
+9.  Random play
+    Started on m6700 at 8:16 on Sun Dec 4
+    Terminated

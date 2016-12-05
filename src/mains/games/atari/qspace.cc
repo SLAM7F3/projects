@@ -51,8 +51,10 @@ int main(int argc, char** argv)
    int n_max_episodes = 50 * 1000;
    int Tmax = n_max_episodes;
 
-   int H1 = 16;
-   int H2 = 8;
+//   int H1 = 16;
+   int H1 = 24;
+//   int H2 = 8;
+   int H2 = 12;
    int H3 = 0;
 
    vector<int> layer_dims;
@@ -84,7 +86,7 @@ int main(int argc, char** argv)
       reinforce::RMSPROP);
 //      reinforce::ADAM);
 
-   reinforce_agent_ptr->set_debug_flag(true);
+//   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
 // Initialize output subdirectory within an experiments folder:
@@ -103,12 +105,12 @@ int main(int argc, char** argv)
 
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-   reinforce_agent_ptr->set_base_learning_rate(3E-2);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -184,7 +186,6 @@ int main(int argc, char** argv)
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
       double cum_reward = 0;
-      double renorm_cum_reward = 0;
       genvector* curr_diff_s = NULL;
       while(!game_world.get_game_over())
       {

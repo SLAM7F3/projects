@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for spaceinv class 
 // ==========================================================================
-// Last modified on 12/1/16; 12/2/16; 12/3/16
+// Last modified on 12/1/16; 12/2/16; 12/3/16; 12/4/16
 // ==========================================================================
 
 #ifndef SPACEINV_H
@@ -22,8 +22,6 @@ class spaceinv
    spaceinv();
    spaceinv(const spaceinv& C);
    ~spaceinv();
-   friend std::ostream& operator<< 
-      (std::ostream& outstream,const spaceinv& C);
 
    int get_min_episode_framenumber() const;
    double get_max_score_per_episode() const;

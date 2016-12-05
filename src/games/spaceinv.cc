@@ -121,13 +121,6 @@ spaceinv::~spaceinv()
    delete screen1_state_ptr;
 }
 
-// ---------------------------------------------------------------------
-// Overload << operator:
-
-ostream& operator<< (ostream& outstream,const spaceinv& S)
-{
-}
-
 // ==========================================================================
 
 void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
