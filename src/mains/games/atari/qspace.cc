@@ -75,8 +75,8 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 10;
-//   int batch_size = 20;
+//   int batch_size = 10;
+   int batch_size = 20;
 //   int replay_memory_capacity = batch_size * 100;
    int replay_memory_capacity = 5 * 2000;
 //   int replay_memory_capacity = 10 * 2000;
@@ -131,8 +131,8 @@ int main(int argc, char** argv)
 //   int old_weights_period = 32;  
 
 //   double min_epsilon = 0.01;	
-//   double min_epsilon = 0.025;
-   double min_epsilon = 0.05; 
+   double min_epsilon = 0.025;
+//   double min_epsilon = 0.05; 
 
    int n_anneal_steps = 5;
    int n_update = 2;
@@ -310,8 +310,8 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
 //         double decay_factor = 0.99; 
-//         double decay_factor = 0.95;
-         double decay_factor = 0.90; 
+         double decay_factor = 0.95;
+//         double decay_factor = 0.90; 
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 

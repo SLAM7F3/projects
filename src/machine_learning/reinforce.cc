@@ -887,7 +887,8 @@ void reinforce::update_weights()
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
-      const double eps = 1E-5;
+      const double eps = 1E-3;
+//      const double eps = 1E-5;
       for(int l = 0; l < n_layers - 1; l++)
       {
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
