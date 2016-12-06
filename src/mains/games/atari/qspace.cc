@@ -109,8 +109,8 @@ int main(int argc, char** argv)
 // Gamma = discount factor for reward:
 
    reinforce_agent_ptr->set_gamma(0.95);
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-1);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
@@ -131,8 +131,8 @@ int main(int argc, char** argv)
 //   int old_weights_period = 32;  
 
 //   double min_epsilon = 0.01;	
-   double min_epsilon = 0.025;
-//   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.025;
+   double min_epsilon = 0.05; 
 
    int n_anneal_steps = 5;
    int n_update = 2;
@@ -310,8 +310,8 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
 //         double decay_factor = 0.99; 
-         double decay_factor = 0.95;
-//         double decay_factor = 0.90; 
+//         double decay_factor = 0.95;
+         double decay_factor = 0.90; 
          reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
       }
 
