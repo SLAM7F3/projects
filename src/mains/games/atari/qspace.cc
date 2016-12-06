@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/2/16; 12/3/16; 12/4/16; 12/5/16
+// Last updated on 12/3/16; 12/4/16; 12/5/16; 12/6/16
 // ==========================================================================
 
 #include <iostream>
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
    int Din = spaceinv_ptr->get_curr_state()->get_mdim(); // Input dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
-   int n_max_episodes = 50 * 1000;
+   int n_max_episodes = 10 * 1000;
    int Tmax = n_max_episodes;
 
    int H1 = 16;
@@ -106,20 +106,30 @@ int main(int argc, char** argv)
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
 
-// Gamma = discount factor for reward:
-
-   reinforce_agent_ptr->set_gamma(0.95);
+   int Nd = 10;  // number of samples to be drawn from replay memory
+//   int Nd = 16;  // number of samples to be drawn from replay memory
+   reinforce_agent_ptr->set_Nd(Nd);  // # samples to be drawn from replay mem
+   
+   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-1);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-2);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+
+//   double eps_decay_factor = 0.99; 
+   double eps_decay_factor = 0.95;
+//   double eps_decay_factor = 0.90; 
+   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
+
+//   double min_epsilon = 0.01;	
+   double min_epsilon = 0.025;
+//   double min_epsilon = 0.05; 
+   reinforce_agent_ptr->set_min_epsilon(min_epsilon);
+   
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -130,10 +140,6 @@ int main(int argc, char** argv)
    int n_episodes_period = 1 * 1000;
 //   int old_weights_period = 10; 
    int old_weights_period = 32;  
-
-//   double min_epsilon = 0.01;	
-   double min_epsilon = 0.025;
-//   double min_epsilon = 0.05; 
 
    int n_anneal_steps = 5;
    int n_update = 2;
@@ -156,11 +162,14 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-//   bool export_frames_flag = false;
-   bool export_frames_flag = true;
+   bool export_frames_flag = false;
+//   bool export_frames_flag = true;
 
    // Get the vector of minimal legal actions
    ActionVect minimal_actions = spaceinv_ptr->get_ale().getMinimalActionSet();
+
+   string params_filename = output_subdir + "params.dat";
+   reinforce_agent_ptr->summarize_parameters(params_filename);
 
 // ==========================================================================
 // Reinforcement training loop starts here
@@ -300,20 +309,14 @@ int main(int argc, char** argv)
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-//         int Nd = 5;  // number of samples to be drawn from replay memory
-         int Nd = 10;  // number of samples to be drawn from replay memory
-//         int Nd = 16;  // number of samples to be drawn from replay memory
-         total_loss = reinforce_agent_ptr->update_neural_network(Nd);
+         total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
 // Periodically anneal epsilon:
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-//         double decay_factor = 0.99; 
-         double decay_factor = 0.95;
-//         double decay_factor = 0.90; 
-         reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
+         reinforce_agent_ptr->anneal_epsilon();
       }
 
 // Periodically write status info to text console:

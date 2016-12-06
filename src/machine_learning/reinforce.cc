@@ -20,6 +20,7 @@
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
 #include "video/texture_rectangle.h"
+#include "time/timefuncs.h"
 #include "image/TwoDarray.h"
 #include "video/videofuncs.h"
 
@@ -39,6 +40,75 @@ using std::vector;
 // Initialization, constructor and destructor functions:
 // ---------------------------------------------------------------------
 
+void reinforce::summarize_parameters(string params_filename)
+{
+   ofstream params_stream;
+   filefunc::openfile(params_filename, params_stream);
+
+   params_stream << timefunc::getcurrdate() << endl << endl;
+   params_stream << "Neural net params:" << endl;
+   params_stream << "   n_layers = " << n_layers << endl;
+   int n_weights = 0;
+   for(int l = 0; l< n_layers; l++)
+   {
+      params_stream << "    layer = " << l
+                    << " n_dims = " << layer_dims[l] << endl;
+      if(l < n_layers - 1)
+      {
+         n_weights += layer_dims[l] * layer_dims[l+1];
+      }
+   }
+   params_stream << "   n_weights = " << n_weights << " (FC)" << endl 
+                 << endl;
+   
+   params_stream << "batch_size = " << batch_size << endl;
+   params_stream << "n_max_episodes = " << Tmax << endl;
+   params_stream << "base_learning_rate = " << base_learning_rate << endl
+                 << endl;
+
+   if(solver_type == SGD)
+   {
+      params_stream << "solver type = SGD" << endl;
+   }
+   else if(solver_type == RMSPROP)
+   {
+      params_stream << "solver type = RMSPROP" << endl;
+      params_stream << "   rmsprop_decay_rate = " << rmsprop_decay_rate
+                    << endl;
+   }
+   else if(solver_type == MOMENTUM)
+   {
+      params_stream << "solver type = MOMENTUM" << endl;
+      params_stream << "  mu = " << mu << endl;
+   }
+   else if(solver_type == NESTEROV)
+   {
+      params_stream << "solver type = NESTEROV" << endl;
+      params_stream << "   beta1 = " << beta1 << " beta2 = " << beta2 << endl;
+   }
+   else if(solver_type == ADAM)
+   {
+      params_stream << "solver type = ADAM" << endl;
+   }
+   params_stream << "L2 regularization lambda coeff = " << lambda << endl
+                 << endl;
+
+   params_stream << "Replay memory capacity = " << replay_memory_capacity
+                 << endl;
+   params_stream << "Number random samples drawn from replay memory Nd = "
+                 << Nd << endl;
+   params_stream << "Discount factor gamma = " << gamma << endl << endl;
+   
+   params_stream << "Epsilon decay factor = " << epsilon_decay_factor << endl;
+   params_stream << "Minimum epsilon = " << min_epsilon << endl;
+
+   params_stream << "frame_skip = " << environment_ptr->get_frame_skip() 
+                 << endl;
+   
+   filefunc::closefile(params_filename, params_stream);
+}
+
+
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
    include_bias_terms = false;
@@ -53,8 +123,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    base_learning_rate = 1E-4;  //
    learning_rate = base_learning_rate;
    mu = 0.9;		// Coefficient for momentum solver type
-//   lambda = 0.0;	// L2 regularization coefficient (better than 1E-3)
-   lambda = 1E-3;	// L2 regularization coefficient (better than 1E-3)
+   lambda = 0.0;	// L2 regularization coefficient 
+//   lambda = 1E-3;	
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
    running_reward = 0;
@@ -293,12 +363,12 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax,
                      int solver_type)
 {
    this->Tmax = Tmax;
-   this->batch_size = batch_size;
    this->replay_memory_capacity = replay_memory_capacity;
    this->solver_type = solver_type;
 
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
+   this->batch_size = batch_size;
 }
 
 // ---------------------------------------------------------------------
@@ -2026,20 +2096,6 @@ int reinforce::get_random_legal_action() const
 // ---------------------------------------------------------------------
 // Member function anneal_epsilon()
 
-double reinforce::anneal_epsilon(double decay_factor, double min_epsilon)
-{
-   if(epsilon < min_epsilon)
-   {
-      epsilon = min_epsilon;
-   }
-   else
-   {
-      epsilon *= decay_factor;
-   }
-//    cout << "epsilon = " << epsilon << endl;
-   return epsilon;
-}
-
 void reinforce::set_epsilon(double eps)
 {
    epsilon = eps;
@@ -2047,6 +2103,30 @@ void reinforce::set_epsilon(double eps)
 
 double reinforce::get_epsilon() const
 {
+   return epsilon;
+}
+
+void reinforce::set_epsilon_decay_factor(double decay)
+{
+   epsilon_decay_factor = decay;
+}
+
+void reinforce::set_min_epsilon(double min_eps)
+{
+   min_epsilon = min_eps;
+}
+
+double reinforce::anneal_epsilon()
+{
+   if(epsilon < min_epsilon)
+   {
+      epsilon = min_epsilon;
+   }
+   else
+   {
+      epsilon *= epsilon_decay_factor;
+   }
+//    cout << "epsilon = " << epsilon << endl;
    return epsilon;
 }
 
@@ -2381,7 +2461,7 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 // Member function update_neural_network() takes in Nd = number of
 // random samples to be drawn from replay memory.
 
-double reinforce::update_neural_network(int Nd)
+double reinforce::update_neural_network()
 {
    cout << "inside update_neural_network()" << endl;
    cout << "episode_number = " << get_episode_number() << endl;

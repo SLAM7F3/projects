@@ -1,0 +1,16 @@
+==========================================================================
+Arcade Learning Environment notes
+==========================================================================
+Last updated on 12/6/16
+==========================================================================
+
+*.  In order to avoid a conflict with ffmpeg headers used by our
+texture_rectangle class, we need to change the following typedef within
+ALE/src/common/Array.hxx:
+
+typedef Common::Array<int>   IntArray;   -->
+typedef Common::Array<int>   ALEIntArray;   -->
+
+
+It turns out that this particular STELLA typedef is not actually used
+anywhere within ALE.

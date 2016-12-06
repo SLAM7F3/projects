@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/29/16; 11/30/16; 12/4/16; 12/5/16
+// Last modified on 11/30/16; 12/4/16; 12/5/16; 12/6/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -64,6 +64,7 @@ class reinforce
    void set_batch_size(double bsize);
    int get_batch_size() const;
    void set_lambda(double lambda);
+   void set_Nd(int Nd);
    void set_gamma(double gamma);
    double get_gamma() const;
    void set_rmsprop_decay_rate(double rate);
@@ -93,6 +94,7 @@ class reinforce
 
 // Monitoring network training methods:
 
+   void summarize_parameters(std::string params_filename);
    int count_weights();
    void print_biases();
    void print_weights();
@@ -127,9 +129,12 @@ class reinforce
    void copy_weights_onto_old_weights();
    int get_random_action() const;
    int get_random_legal_action() const;
-   double anneal_epsilon(double decay_factor, double min_epsilon);
+
    void set_epsilon(double eps);
    double get_epsilon() const;
+   void set_epsilon_decay_factor(double decay);
+   void set_min_epsilon(double min_eps);
+   double anneal_epsilon();
 
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
@@ -144,7 +149,7 @@ class reinforce
       const genvector& next_s, bool terminal_state_flag);
    void store_final_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r);
-   double update_neural_network(int Nd);
+   double update_neural_network();
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
@@ -264,7 +269,10 @@ class reinforce
    bool replay_memory_full_flag;
    int replay_memory_capacity;
    int replay_memory_index; // 0 <=replay_memory_index < replay_memory_capacity
+   int Nd;  // Number of random samples to be drawn from replay memory
    double epsilon;	// Select random action with probability epsilon
+   double epsilon_decay_factor;
+   double min_epsilon;  // Minimal value for annealed epsilon
    genmatrix *s_curr;  // replay_memory_capacity x Din
    genvector *a_curr;  // replay_memory_capacity x 1 (Holds action indices)
    genvector *r_curr;  // replay_memory_capacity x 1  (Holds rewards)
@@ -385,6 +393,11 @@ inline int reinforce::get_batch_size() const
 inline void reinforce::set_lambda(double lambda)
 {
    this->lambda = lambda;
+}
+
+inline void reinforce::set_Nd(int Nd)
+{
+   this->Nd = Nd;
 }
 
 inline void reinforce::set_gamma(double gamma)
