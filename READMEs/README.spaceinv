@@ -17,6 +17,32 @@ Median nframes/episode +/- quartile width = 2057 +/- 375
 BEST AGENT RESULTS SO FAR
 -------------------------
 
+38.  Tue Dec  6 07:23:18 2016  (increase gamma)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 5
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+   log10_loss = -0.5 +/- 1.25
+   reward --> 250
+   n_frames / episode --> (2.6 +/- 0.2)K
+   gentle evolution of weights over O(4K) episodes
+
 27.  H1 = 16; H2 = 8; 
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 10
     solver = RMSPROP; frame_skip = 1
@@ -52,7 +78,26 @@ BEST AGENT RESULTS SO FAR
    gentle evolution of weights over 800+ episodes
 
 
-Terminated experiments
+17.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 5
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    Nd = 10
+    Discard 90% of 0-reward entries from memory store   
+    Started on TM at 7:50 am on Mon Dec 5
+    Mild evolution of weights over O(300) episodes
+
+   After 700 episodes:
+
+   log10_loss = -0.25 +/- 0.5
+   reward --> 256
+   n_frames / episode --> 3K
+   gentle evolution of weights over 700 episodes
+
+----------------------
+TERMINATED EXPERIMENTS
 ----------------------
 
 1.  H1 = 16; H2 = 8; 
@@ -425,9 +470,6 @@ Terminated experiments
     Resize ROI to capture mother ships
     Started on TM at 4:11 am on Tues Dec 6
 
-Running experiments
---------------------
-
 35.  Tue Dec  6 07:17:20 2016  (baseline)
 Neural net params:
    n_layers = 4
@@ -445,9 +487,11 @@ Replay memory capacity = 10000
 Number random samples drawn from replay memory Nd = 10
 Discount factor gamma = 0.95 frame_skip = 1
 Epsilon decay factor = 0.95; minimum epsilon = 0.025
-
 Discard 90% of 0-reward entries from memory store    
 Old weights period = 32
+
+Disappointing results
+
 
 36.  Tue Dec  6 07:19:10 2016 (discard 95% of zero reward entries)
 Neural net params:
@@ -470,6 +514,9 @@ Epsilon decay factor = 0.95; minimum epsilon = 0.025
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
  
+  Conclusion:  Discarding 95% of 0-reward entries from memory store seems
+               to be better than discarding 90%.
+
 37.  Tue Dec  6 07:21:13 2016  (increase eps decay factor and min eps)
 Neural net params:
    n_layers = 4
@@ -491,26 +538,7 @@ Epsilon decay factor = 0.99; minimum epsilon = 0.05
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
 
-38.  Tue Dec  6 07:23:18 2016  (increase gamma)
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 4717
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 8
-   layer = 3 n_nodes = 6
-   n_weights = 75648 (FC)
-base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 10000
-Number random samples drawn from replay memory Nd = 10
-Discount factor gamma = 0.99 frame_skip = 1
-Epsilon decay factor = 0.99; minimum epsilon = 0.05
-
-Discard 95% of 0-reward entries from memory store    
-Old weights period = 32
+  Conclusion: Definitely good idea to increase min_eps and eps decay factor
 
 39.  Tue Dec  6 07:23:18 2016  (increase old weights period)
 Neural net params:
@@ -532,3 +560,198 @@ Epsilon decay factor = 0.99; minimum epsilon = 0.05
 
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 320
+n_anneal_steps = 5
+
+Conclusion: Increasing old weights period by order of magnitude hurt
+performance
+
+40.  Tue Dec  6 07:59:25 2016  (Try to find reasonable baseline)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.95 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+
+Discard 90% of 0-reward entries from memory store    
+Old weights period = 10
+n_anneal_steps = 10
+
+Conclusion:  batch_size = 1 seems to run noticeably slower (by roughly
+factor of 2) compared to batch_size = 10
+
+
+41.  Tue Dec  6 12:01:52 2016  (increase batch size --> 20)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 20; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+Reward rises for 1K episodes and then falls below random play for next 1K
+episodes !
+
+
+43.  Tue Dec  6 12:06:41 2016  (H1 --> 24)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 24
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 113448 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+Reward rises for 1K episodes and then falls for next 1K!
+
+--------------------
+RUNNING EXPERIMENTS
+--------------------
+
+38.  Tue Dec  6 07:23:18 2016  (increase gamma)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 5
+
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+  Conclusion :  Increasing gamma --> 0.99 might be a good idea
+
+
+42.  Tue Dec  6 12:03:50 2016  (new "baseline")
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+Loss function looks dangerously large 
+Fairly slow rise in reward over nearly 2K episodes
+
+
+44. Tue Dec  6 12:08:05 2016  (H3 = 8)
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 8
+   layer = 4 n_nodes = 6
+   n_weights = 75712 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+Extremely slow rise in reward over 1K episodes
+
+45.  Tue Dec  6 15:37:24 2016  (H1 = H2 = 16)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 6
+   n_weights = 75824 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+46.  Tue Dec  6 15:38:41 2016 (H1 = 16, H2 = 32)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32

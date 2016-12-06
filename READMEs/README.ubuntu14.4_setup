@@ -1,7 +1,7 @@
 ======================================================================
 Notes for setting up new ubuntu 14.4 box
 ======================================================================
-Last updated on 1/7/16; 1/20/16; 1/23/16; 2/11/16
+Last updated on 1/20/16; 1/23/16; 2/11/16; 12/6/16
 ======================================================================
 
 *.  Copy .cshrc old machine to new machine.
@@ -16,6 +16,12 @@ dpkg --list | cut -f 1-3 -d' ' > packages.txt
 
 MAKE CERTAIN TO ELIMINATE ANY PACKAGES REFERRING TO NVIDIA BEFORE
 TRANSFERING THIS PACKAGES FILE TO A NEW MACHINE !!!
+
+
+ On 12/5/16, we used the following grep command to eliminate all lines
+within a "packages" file which contain "amd64":
+
+grep -v ":amd64" ./Thinkmate_packages_120516.txt > temp && mv temp new_packages.txt
 
 Install all of those packages:
 
@@ -182,7 +188,7 @@ link between /usr/local/include/activemq-cpp-2.0.1 and
 /usr/local/include/ .  Create soft link to /usr/local/include/dlib .
 
 *.  Download latest version of eigen (3.2.4 as of Apr 2015; 3.2.6 as of Oct
-2015)
+2015).  Build using cmake.
 
 *.  Download latest version of Google Log (0.3.4 as of Apr 2015 ?) and
 google flags.
@@ -190,7 +196,7 @@ google flags.
 *.  Unpack levmar-2.6_OK.tgz and build liblevmar.  Manually copy
 liblevmar.a into /usr/local/lib/ and levmar.h into /usr/local/include/
 
-*.  Build FANN and flann libraries.
+*.  Build FANN via cmake.  Build flann libraries.
 
 *.  Build ffmpeg_checkout_May23_2010.  Some linking errors as of Apr 2015.
 Need to add #include "libavformat/internal.h" near top of ffserver.c . 
@@ -236,16 +242,24 @@ as of Apr 2015).  Place into /opt/java/ and create link from
 /opt/java/jdk1.7.0_80 to /opt/java/jdk)
 
 *.  Unpack and make lear_gist-1.2_gcc.4.6.3.  Rename executable
-compute_gist as /usr/local/bin/lear_gist.
+compute_gist as /usr/local/bin/lear_gist.  [Need to have fftw3 installed:
+sudo apt-get install libfftw3-dev]
 
 *.  Unpack and install libcmt-0.1.0.tgz.  Latest version as of Oct 2015.
 
-*.  Unpack and install libsiftfast-1.2.tgz.  Latest version as of Oct 2015.
+*.  Unpack and install (via cmake) libsiftfast-1.2.tgz.  Latest version as
+of Oct 2015.
 
 *.  Unpack and install lmfit-3.5.tgz.  We may need
 /usr/local/lib/liblmmin.a which comes from this older version of lmfit.
 Then unpack and install lmfit-5.1.tgz.  This newer version of lmfit does
 not install any version of liblmmin.a . 
+
+
+
+..(continue building on titan 1 from here as of 12:24 pm on Tues Dec 6, 2016)
+
+
 
 *.  Unpack and install mallet-2.0.7.  (Latest version as of Apr 2015 =
 mallet-2.0.7; latest version as of Oct 2015 = mallet-2.0.8RC2).  Chant ant

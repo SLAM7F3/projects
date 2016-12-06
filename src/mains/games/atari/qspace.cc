@@ -53,9 +53,12 @@ int main(int argc, char** argv)
 
    int H1 = 16;
 //   int H1 = 24;
-   int H2 = 8;
+//   int H2 = 8;
+//   int H2 = 16;
+   int H2 = 32;
 //   int H2 = 12;
    int H3 = 0;
+//   int H3 = 8;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -127,7 +130,6 @@ int main(int argc, char** argv)
    double min_epsilon = 0.05; 
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
-
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
@@ -136,13 +138,16 @@ int main(int argc, char** argv)
 
    int n_episodes_period = 1 * 1000;
 //   int old_weights_period = 10; 
-//   int old_weights_period = 32;
-   int old_weights_period = 320;
+   int old_weights_period = 32;
+//   int old_weights_period = 320;
 
-   int n_anneal_steps = 5;
-   int n_update = 2;
-   int n_summarize = 4;
-   int n_snapshot = 50;
+//   int n_anneal_steps = 5;
+   int n_anneal_steps = 6;
+//   int n_anneal_steps = 7;
+//   int n_anneal_steps = 10;
+   int n_update = 5;
+   int n_summarize = 5;
+   int n_snapshot = 100;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
