@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/29/16; 11/30/16; 12/4/16; 12/5/16
+// Last modified on 11/30/16; 12/4/16; 12/5/16; 12/6/16
 // ==========================================================================
 
 #include <string>
@@ -19,7 +19,7 @@
 #include "machine_learning/reinforce.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
-// #include "video/texture_rectangle.h"
+#include "video/texture_rectangle.h"
 #include "image/TwoDarray.h"
 #include "video/videofuncs.h"
 
@@ -1041,13 +1041,6 @@ void reinforce::print_weights()
 
 void reinforce::plot_zeroth_layer_weights(string output_subdir)
 {
-
-
-// FAKE FAKE: Comment out this method to avoid conflict between ALE
-// and our texture_rectangle classes.
-// Fri Dec 2, 2016 at 7:47 am
-
-/*
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    int nx = sqrt(double(n_zeroth_layer_pixels));
@@ -1124,8 +1117,6 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
       delete enlarged_wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
-
-*/
 
 }
 
