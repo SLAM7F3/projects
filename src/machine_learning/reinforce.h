@@ -199,6 +199,7 @@ class reinforce
    double lambda;	// L2 regularization coefficient
    double gamma;	// Discount factor for reward
    double rmsprop_decay_rate; // Decay factor for RMSProp leaky sum of grad**2
+   double rmsprop_denom_const;  // const added to denom in RMSProp
 
    std::vector<genvector*> biases, old_biases;
 //	Bias STL vectors are nonzero for layers 1 thru n_layers-1

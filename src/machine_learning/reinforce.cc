@@ -58,6 +58,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 //   lambda = 1E-3;	
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
+   rmsprop_denom_const = 1E-5;
    running_reward = 0;
    reward_sum = 0;
    first_running_reward_update = true;
@@ -888,14 +889,11 @@ void reinforce::update_weights()
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
-      const double eps = 1E-3;
-//      const double eps = 1E-5;
       for(int l = 0; l < n_layers - 1; l++)
       {
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         rms_weights_denom[l]->hadamard_sum(eps);
+         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
-
          *weights[l] -= learning_rate * (*nabla_weights[l]);
 
          if(debug_flag)
@@ -999,7 +997,6 @@ void reinforce::append_epsilon()
 // Monitoring network training methods
 // ==========================================================================
 
-
 // Member function summarize_parameters() exports most parameters and
 // hyperparameters used for Deep Reinforcement Learning to a specified
 // text file for book-keeping purposes.
@@ -1009,17 +1006,21 @@ void reinforce::summarize_parameters(string params_filename)
    ofstream params_stream;
    filefunc::openfile(params_filename, params_stream);
 
-   params_stream << timefunc::getcurrdate() << endl << endl;
+   params_stream << timefunc::getcurrdate() << endl;
    params_stream << "Neural net params:" << endl;
    params_stream << "   n_layers = " << n_layers << endl;
-   params_stream << "   n_weights = " << count_weights() << " (FC)" << endl 
+   for(int l = 0; l < n_layers; l++)
+   {
+      params_stream << "   layer = " << l << " n_nodes = " 
+                    << layer_dims[l] << endl;
+   }
+   params_stream << "   n_weights = " << count_weights() << " (FC)" 
                  << endl;
+ 
+   params_stream << "base_learning_rate = " << base_learning_rate 
+                 << "; batch_size = " << batch_size
+                 << "; n_max_episodes = " << Tmax << endl;
    
-   params_stream << "batch_size = " << batch_size << endl;
-   params_stream << "n_max_episodes = " << Tmax << endl;
-   params_stream << "base_learning_rate = " << base_learning_rate << endl
-                 << endl;
-
    if(solver_type == SGD)
    {
       params_stream << "solver type = SGD" << endl;
@@ -1028,6 +1029,8 @@ void reinforce::summarize_parameters(string params_filename)
    {
       params_stream << "solver type = RMSPROP" << endl;
       params_stream << "   rmsprop_decay_rate = " << rmsprop_decay_rate
+                    << endl;
+      params_stream << "   rmsprop_denom_const = " << rmsprop_denom_const
                     << endl;
    }
    else if(solver_type == MOMENTUM)
@@ -1044,21 +1047,18 @@ void reinforce::summarize_parameters(string params_filename)
    {
       params_stream << "solver type = ADAM" << endl;
    }
-   params_stream << "L2 regularization lambda coeff = " << lambda << endl
-                 << endl;
-
+   params_stream << "L2 regularization lambda coeff = " << lambda << endl;
    params_stream << "Replay memory capacity = " << replay_memory_capacity
                  << endl;
    params_stream << "Number random samples drawn from replay memory Nd = "
                  << Nd << endl;
-   params_stream << "Discount factor gamma = " << gamma << endl << endl;
-   
-   params_stream << "Epsilon decay factor = " << epsilon_decay_factor << endl;
-   params_stream << "Minimum epsilon = " << min_epsilon << endl;
-
-   params_stream << "frame_skip = " << environment_ptr->get_frame_skip() 
+   params_stream << "Discount factor gamma = " << gamma 
+                 << " frame_skip = " << environment_ptr->get_frame_skip() 
                  << endl;
    
+   params_stream << "Epsilon decay factor = " << epsilon_decay_factor
+                 << "; minimum epsilon = " << min_epsilon << endl;
+
    filefunc::closefile(params_filename, params_stream);
 }
 
@@ -2461,8 +2461,8 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 
 double reinforce::update_neural_network()
 {
-   cout << "inside update_neural_network()" << endl;
-   cout << "episode_number = " << get_episode_number() << endl;
+//   cout << "inside update_neural_network()" << endl;
+//   cout << "episode_number = " << get_episode_number() << endl;
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);
@@ -2473,7 +2473,7 @@ double reinforce::update_neural_network()
       double curr_loss = Q_backward_propagate(curr_d, Nd);
       if(curr_loss >= 0) total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
-   cout << "total_loss = " << total_loss << endl;
+//   cout << "total_loss = " << total_loss << endl;
 
    if(solver_type == RMSPROP)
    {
@@ -2506,8 +2506,7 @@ double reinforce::update_neural_network()
          else if (solver_type == RMSPROP)
          {
             rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
-            const double TINY = 1E-5;
-            rms_biases_denom[l]->hadamard_sum(TINY);
+            rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
             nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
             *biases[l] -= learning_rate * (*nabla_biases[l]);
          }
@@ -2561,8 +2560,7 @@ double reinforce::update_neural_network()
       else if(solver_type == RMSPROP)
       {
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         const double TINY = 1E-5;
-         rms_weights_denom[l]->hadamard_sum(TINY);
+         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
          *weights[l] -= learning_rate * (*nabla_weights[l]);
       }

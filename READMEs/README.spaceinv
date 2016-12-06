@@ -17,6 +17,23 @@ Median nframes/episode +/- quartile width = 2057 +/- 375
 BEST AGENT RESULTS SO FAR
 -------------------------
 
+27.  H1 = 16; H2 = 8; 
+    base learning rate = 3E-4; rms_decay = 0.9; batch size = 10
+    solver = RMSPROP; frame_skip = 1
+    old weights period = 10; min_epsilon = 0.025
+    epsilon decay factor = 0.95
+    replay memory capacity = 5 * 2000
+    lambda = 1E-3
+    Nd = 10
+    Discard 95% of 0-reward entries from memory store   
+    Resize ROI to capture mother ships
+    Started on TM at 6:13 pm on Mon Dec 5
+
+   log10_loss = -0.3 +/- 0.3
+   reward --> 230 +/- 10
+   n_frames / episode --> (2.7 +/- 0.2)K
+   gentle evolution of weights over O(700) episodes
+
 26.  H1 = 16; H2 = 8; 
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 10
     solver = RMSPROP; frame_skip = 1
@@ -24,12 +41,13 @@ BEST AGENT RESULTS SO FAR
     epsilon decay factor = 0.95
     replay memory capacity = 5 * 2000
     Nd = 10
+    lambda = 1E-3
     Discard 90% of 0-reward entries from memory store   
     Resize ROI to capture mother ships
     Started on TM at 6:11 pm on Mon Dec 5
 
    log10_loss = 0 +/- 0.3
-   reward --> 250 +/- 10
+   reward --> 230 +/- 10
    n_frames / episode --> (2.4 +/- 0.2)K
    gentle evolution of weights over 800+ episodes
 
@@ -343,9 +361,6 @@ Terminated experiments
     Started on m6700 around 6:30 pm on Mon, Dec 5
 
 
-Running experiments
---------------------
-
 26.  H1 = 16; H2 = 8; 
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 10
     solver = RMSPROP; eps const added to denom in RMSprop = 1E-5;
@@ -370,6 +385,8 @@ Running experiments
     Resize ROI to capture mother ships
     Started on TM at 4 am on Tues Dec 6
 
+    Conclusion:  Need bigger epsilon decay factor (not smaller!)
+
 32.  H1 = 16; H2 = 8; 
     base learning rate = 3E-4; rms_decay = 0.9; batch size = 20
     solver = RMSPROP; eps const added to denom in RMSprop = 1E-3;
@@ -381,6 +398,8 @@ Running experiments
     Discard 90% of 0-reward entries from memory store   
     Resize ROI to capture mother ships
     Started on TM at 4:05 am on Tues Dec 6
+
+    Conclusion:  eps const added to denom = 1E-3 is probably too big!
 
 33.  H1 = 16; H2 = 8; 
     base learning rate = 2.5E-4; rms_decay = 0.9; batch size = 10
@@ -405,3 +424,111 @@ Running experiments
     Discard 90% of 0-reward entries from memory store   
     Resize ROI to capture mother ships
     Started on TM at 4:11 am on Tues Dec 6
+
+Running experiments
+--------------------
+
+35.  Tue Dec  6 07:17:20 2016  (baseline)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.95 frame_skip = 1
+Epsilon decay factor = 0.95; minimum epsilon = 0.025
+
+Discard 90% of 0-reward entries from memory store    
+Old weights period = 32
+
+36.  Tue Dec  6 07:19:10 2016 (discard 95% of zero reward entries)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.95 frame_skip = 1
+Epsilon decay factor = 0.95; minimum epsilon = 0.025
+
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+ 
+37.  Tue Dec  6 07:21:13 2016  (increase eps decay factor and min eps)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.95 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+38.  Tue Dec  6 07:23:18 2016  (increase gamma)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+39.  Tue Dec  6 07:23:18 2016  (increase old weights period)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 320

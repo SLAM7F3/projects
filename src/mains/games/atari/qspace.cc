@@ -106,11 +106,9 @@ int main(int argc, char** argv)
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
 
-   int Nd = 10;  // number of samples to be drawn from replay memory
-//   int Nd = 16;  // number of samples to be drawn from replay memory
-   reinforce_agent_ptr->set_Nd(Nd);  // # samples to be drawn from replay mem
-   
-   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
+   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
+//   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
@@ -120,14 +118,13 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
-//   double eps_decay_factor = 0.99; 
-   double eps_decay_factor = 0.95;
+   double eps_decay_factor = 0.99; 
+//   double eps_decay_factor = 0.95;
 //   double eps_decay_factor = 0.90; 
    reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
 
-//   double min_epsilon = 0.01;	
-   double min_epsilon = 0.025;
-//   double min_epsilon = 0.05; 
+//   double min_epsilon = 0.025;
+   double min_epsilon = 0.05; 
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
 
@@ -139,7 +136,8 @@ int main(int argc, char** argv)
 
    int n_episodes_period = 1 * 1000;
 //   int old_weights_period = 10; 
-   int old_weights_period = 32;  
+//   int old_weights_period = 32;
+   int old_weights_period = 320;
 
    int n_anneal_steps = 5;
    int n_update = 2;
@@ -264,8 +262,8 @@ int main(int argc, char** argv)
 
             if(nearly_equal(renorm_reward,0))
             {
-//               if(nrfunc::ran1() > 0.05) continue;
-               if(nrfunc::ran1() > 0.1) continue;
+               if(nrfunc::ran1() > 0.05) continue;
+//               if(nrfunc::ran1() > 0.1) continue;
 //               if(nrfunc::ran1() > 0.15) continue;
             }
 
