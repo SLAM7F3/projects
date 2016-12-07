@@ -53,9 +53,9 @@ int main(int argc, char** argv)
 
    int H1 = 16;
 //   int H1 = 24;
-//   int H2 = 8;
+   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
+//   int H2 = 32;
 //   int H2 = 12;
    int H3 = 0;
 //   int H3 = 8;
@@ -142,8 +142,8 @@ int main(int argc, char** argv)
 //   int old_weights_period = 320;
 
 //   int n_anneal_steps = 5;
-   int n_anneal_steps = 6;
-//   int n_anneal_steps = 7;
+//   int n_anneal_steps = 6;
+   int n_anneal_steps = 7;
 //   int n_anneal_steps = 10;
    int n_update = 5;
    int n_summarize = 5;
@@ -245,6 +245,10 @@ int main(int argc, char** argv)
 //            game_world.get_max_score_per_episode();
          double renorm_reward = curr_reward / 10.0;
 
+         double live_timestep_reward = 0.0;
+//         double live_timestep_reward = 50.0 / 2000.0;
+         renorm_reward += live_timestep_reward;
+
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
 
@@ -254,8 +258,19 @@ int main(int argc, char** argv)
 
          if(game_world.get_game_over())
          {
+
+// Experiment with penalizing agent for dying:
+
+            const double death_penalty = 15;
+            renorm_reward -= death_penalty;
+
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
+
+            cout << "episode = " << curr_episode_number
+                 << " frame = " << curr_frame_number
+                 << " curr_reward = " << curr_reward
+                 << " renorm_reward = " << renorm_reward << endl;
          }
          else if (n_state_updates > 2)
          {
@@ -265,7 +280,7 @@ int main(int argc, char** argv)
 // agent seeing non-zero reward states without having to perform a
 // huge number of expensive backpropagations:
 
-            if(nearly_equal(renorm_reward,0))
+            if(nearly_equal(renorm_reward, live_timestep_reward))
             {
                if(nrfunc::ran1() > 0.05) continue;
 //               if(nrfunc::ran1() > 0.1) continue;
@@ -277,7 +292,7 @@ int main(int argc, char** argv)
                d, curr_a, renorm_reward, *next_diff_s, 
                game_world.get_game_over());
 
-            if(renorm_reward > 0)
+            if(renorm_reward > live_timestep_reward)
             {
                cout << "episode = " << curr_episode_number
                     << " frame = " << curr_frame_number

@@ -755,3 +755,48 @@ Epsilon decay factor = 0.99; minimum epsilon = 0.05
 n_anneal_steps = 6
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
+
+47.  Tue Dec  6 17:47:02 2016  (m6700)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+live_timestep_reward = 50.0 / 2000.0 = 1 / 40.0 = 0.025
+death penalty = 0;
+
+48.  Tue Dec  6 18:55:53 2016  (m6700)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+
+live_timestep_reward = 50.0 / 2000.0 = 1 / 40.0 = 0.025
+death penalty = -15;
