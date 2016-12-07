@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 
    bool export_frames_flag = false;
 //   bool export_frames_flag = true;
-   bool use_big_states_flag = true;
+    bool use_big_states_flag = true;
 //   bool use_big_states_flag = false;
    game_world.set_use_big_states_flag(use_big_states_flag);
 
@@ -337,6 +337,8 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward << endl;
       cout << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
+//       spaceinv_ptr->mu_and_sigma_for_pooled_zvalues();
+
       reinforce_agent_ptr->update_T_values();
       reinforce_agent_ptr->update_running_reward(n_update);
       reinforce_agent_ptr->append_n_episode_frames(
@@ -403,13 +405,19 @@ int main(int argc, char** argv)
       {
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
+/*
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
-         int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
-         int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
-         reinforce_agent_ptr->plot_zeroth_layer_weights(
-            n_reduced_xdim, n_reduced_ydim, weights_subdir);
+         if(!use_big_states_flag)
+         {
+            int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
+            int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
+            reinforce_agent_ptr->plot_zeroth_layer_weights(
+               n_reduced_xdim, n_reduced_ydim, weights_subdir);
+         }
+*/
+
       }
       
    } // n_episodes < n_max_episodes while loop

@@ -1,7 +1,7 @@
 =============================================================================
 PWIN notes
 =============================================================================
-Last updated on 7/22/16; 7/28/16; 8/9/16; 11/30/16
+Last updated on 7/28/16; 8/9/16; 11/30/16; 12/7/16
 =============================================================================
 
 *.  In order to avoid having to chant "c3 lab_pcho" at a pwin command
@@ -878,3 +878,18 @@ array of bytes (containing jpeg imagery content).  A char* URL is generated
 for this "mfile" which can then be passed into methods such as
 "p_info_imf(url, &xdim, &ydim)" to recover horizontal & vertical image
 dimensions.
+
+*.  On 12/7/16, we learned from Petter and Vinay that projects can
+generally contain imagery coming from either the "J125" and/or "T300"
+hardware configurations.  
+
+J125: 1 forward-right facing fisheye [0]. 1 right-side-facing camera [1],
+1 backward-right facing fisheye [2], 1 backward-left facing fisheye [3],
+1 left-side-facing camera [4], 1 forward-left facing fisheye [5].
+
+T300: 1 forward-facing camera [0], 2 right-side-facing cameras [1, 2], 1
+backward facing camera [3], 2 left-side-facing cameras [4, 5] and 2 fisheye
+cameras looking upwards
+
+Vinay pointed out that map_resource_t has a map_sensor_system_type_t
+sensor_type field member.  

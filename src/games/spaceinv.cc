@@ -68,11 +68,6 @@ void spaceinv::initialize_member_objects()
    min_py = 12;
    max_py = 190;
 
-//   min_px = 22;
-//   max_px = 138;
-//   min_py = 30;
-//   max_py = 192;
-
    n_reduced_xdim = (max_px - min_px) / 2;   // 53
    n_reduced_ydim = (max_py - min_py) / 2;   // 89
    n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4717 
@@ -93,6 +88,8 @@ void spaceinv::initialize_member_objects()
    n_screen_states = 2;
    screen_state_counter = 0;
 
+   mu_z = 20.2752;	// Estimate from 70 random episodes
+   sigma_z = 45.0156;   // Estimate from 70 random episodes
    mu_zdiff = 0.94;     // Estimate from few hundred random episodes
    sigma_zdiff = 11.0;  // Estimated from few hundred random episodes
 
@@ -228,9 +225,11 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
          unsigned char z01 = byte_array[r][c+1];
          unsigned char z10 = byte_array[r+1][c];
          unsigned char z11 = byte_array[r+1][c+1];
-
          unsigned char max_z = basic_math::max(z00, z01, z10, z11);
          pooled_byte_row.push_back(max_z);
+
+//         double zpool(max_z);
+//         pooled_scrn_values.push_back(zpool);
       } // loop over index c
       pooled_byte_array_ptr->push_back(pooled_byte_row);
    } // loop over index r
@@ -259,7 +258,7 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
             double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
-            
+
             if(difference_counter == 0)
             {
                screen0_state_ptr->put(p++, ren_z_diff);
@@ -384,8 +383,20 @@ void spaceinv::crop_pool_curr_frame(bool export_frames_flag)
          unsigned char z11 = byte_array[r+1][c+1];
          unsigned char max_z = basic_math::max(z00, z01, z10, z11);
 
-         curr_screen_state_ptr->put(reduced_pixel_counter, double(max_z));
+         double zpool(max_z);
+         double ren_zpool = (zpool - mu_z) / sigma_z;
+         curr_screen_state_ptr->put(reduced_pixel_counter, ren_zpool);
          reduced_pixel_counter++;
+
       } // loop over index c
    } // loop over index r
+}
+
+void spaceinv::mu_and_sigma_for_pooled_zvalues()
+{
+   double mu, sigma;
+   mathfunc::mean_and_std_dev(pooled_scrn_values, mu, sigma);
+   cout << "pooled_scrn_values.size = " << pooled_scrn_values.size()
+        << endl;
+   cout << "mu = " << mu << " sigma = " << sigma << endl;
 }

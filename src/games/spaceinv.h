@@ -42,6 +42,7 @@ class spaceinv
    std::vector<genvector*>& get_screen_state_ptrs();
    const std::vector<genvector*>& get_screen_state_ptrs() const;
    void crop_pool_curr_frame(bool export_frames_flag);
+   void mu_and_sigma_for_pooled_zvalues();
 
    genvector* update_curr_big_state();
    genvector* get_curr_big_state();
@@ -59,6 +60,7 @@ class spaceinv
    int min_episode_framenumber;
    int frame_skip;
    double max_score_per_episode;
+   double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
    std::string output_subdir, orig_subdir, pooled_subdir, differenced_subdir;
 
@@ -73,7 +75,7 @@ class spaceinv
    int screen_state_counter;
    std::vector<genvector*> screen_state_ptrs;
    genvector *curr_big_state_ptr;
-
+   std::vector<double> pooled_scrn_values;
 
    genvector *screen0_state_ptr;
    genvector *screen1_state_ptr;

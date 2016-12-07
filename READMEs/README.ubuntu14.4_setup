@@ -255,12 +255,6 @@ of Oct 2015.
 Then unpack and install lmfit-5.1.tgz.  This newer version of lmfit does
 not install any version of liblmmin.a . 
 
-
-
-..(continue building on titan 1 from here as of 12:24 pm on Tues Dec 6, 2016)
-
-
-
 *.  Unpack and install mallet-2.0.7.  (Latest version as of Apr 2015 =
 mallet-2.0.7; latest version as of Oct 2015 = mallet-2.0.8RC2).  Chant ant
 inside mallet subdir.
@@ -274,6 +268,11 @@ Manually copy ogdf header files into /usr/local/include/ .  Manually copy
 _release/libOGDF.a into /usr/local/lib/ . Make sure
 /usr/local/include/ogdf/ and all its subdirectories are globally readable
 and executable.
+
+
+
+..(continue building on titan 1 from here as of 11:45 pm on Weds, Dec 7, 2016)
+
 
 *.  Unpack philbinj-fastann-1f65a4d/  Chant cmake within main directory
 (and not inside a new build subdir).  Then chant make.

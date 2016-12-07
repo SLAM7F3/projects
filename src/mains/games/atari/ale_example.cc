@@ -98,15 +98,10 @@ enum Action {
 
 // Screen ROI for space invaders:
 
-//   int min_px = 22;
    int min_px = 27;
-//   int max_px = 138;
    int max_px = 133;
-//   int min_py = 0;
    int min_py = 12;
-//   int min_py = 30;
    int max_py = 190;
-//   int max_py = 192;
 
 // (max_px - min_px) * (max_py - min_py) =
 // (133 - 27) * (190 - 12) = 
@@ -166,7 +161,3 @@ enum Action {
    return 0;
 }
 
-
-// Space invaders:  
-// 20 <= px <= 140
-// 30 <= py <= 193
