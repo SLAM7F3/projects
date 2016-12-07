@@ -144,10 +144,34 @@ genvector* environment::compute_next_state(int a, int player_value)
    }
    else if (world_type == SPACEINV)
    {
-      bool export_frames_flag = true;
-//      bool export_frames_flag = false;
+      bool export_frames_flag = false;
       spaceinv_ptr->crop_pool_difference_curr_frame(export_frames_flag);
       next_state_ptr = spaceinv_ptr->get_next_state();
+
+      spaceinv_ptr->crop_pool_curr_frame(export_frames_flag);
+      spaceinv_ptr->update_curr_big_state();
+      genvector *curr_big_state = spaceinv_ptr->get_curr_big_state();
+
+/*
+      int big_mdim = curr_big_state->get_mdim();
+
+      int istart = 40 * 53 + 20;
+      cout << "================================================" << endl;
+      cout << "episode frame number = "
+           << spaceinv_ptr->get_ale().getEpisodeFrameNumber()
+           << endl;
+      for(int i = istart; i < istart+10; i++)
+      {
+         cout << "i = " << i << " curr_big_state[i] = "
+              << curr_big_state->get(i) << endl;
+      }
+      for(int i = istart; i < istart+10; i++)
+      {
+         cout << "i = " << i+big_mdim/2 << " curr_big_state[i] = "
+              << curr_big_state->get(i+big_mdim/2) << endl;
+      }
+*/
+
    }
    else if (world_type == TTT)
    {

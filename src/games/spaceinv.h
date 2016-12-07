@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for spaceinv class 
 // ==========================================================================
-// Last modified on 12/1/16; 12/2/16; 12/3/16; 12/4/16
+// Last modified on 12/2/16; 12/3/16; 12/4/16; 12/7/16
 // ==========================================================================
 
 #ifndef SPACEINV_H
@@ -35,6 +35,15 @@ class spaceinv
    const genvector* get_next_state() const;
    void crop_pool_difference_curr_frame(bool export_frames_flag);
 
+   int get_screen_state_counter() const;
+   std::vector<genvector*>& get_screen_state_ptrs();
+   const std::vector<genvector*>& get_screen_state_ptrs() const;
+   void crop_pool_curr_frame(bool export_frames_flag);
+
+   void update_curr_big_state();
+   genvector* get_curr_big_state();
+   const genvector* get_curr_big_state() const;
+
   private: 
 
    int random_seed;
@@ -50,10 +59,17 @@ class spaceinv
    std::string output_subdir, orig_subdir, pooled_subdir, differenced_subdir;
 
    std::vector<unsigned char> grayscale_output_buffer;
+
    std::vector<std::vector<unsigned char > > pooled_byte_array0;
    std::vector<std::vector<unsigned char > > pooled_byte_array1;
    std::vector<std::vector<unsigned char > >* pooled_byte_array_ptr;
    std::vector<std::vector<unsigned char > >* other_pooled_byte_array_ptr;
+
+   int n_screen_states;
+   int screen_state_counter;
+   std::vector<genvector*> screen_state_ptrs;
+   genvector *curr_big_state_ptr;
+
 
    genvector *screen0_state_ptr;
    genvector *screen1_state_ptr;
@@ -65,7 +81,9 @@ class spaceinv
    void initialize_grayscale_output_buffer();
    void docopy(const spaceinv& S);
 
+   void update_big_state(int screen_counter, genvector* big_state_ptr);
    void pingpong_curr_and_next_states();
+
 };
 
 // ==========================================================================
@@ -117,6 +135,33 @@ inline genvector* spaceinv::get_next_state()
 inline const genvector* spaceinv::get_next_state() const
 {
    return next_state_ptr;
+}
+
+inline int spaceinv::get_screen_state_counter() const
+{
+   return screen_state_counter;
+}
+
+
+inline std::vector<genvector*>& spaceinv::get_screen_state_ptrs()
+{
+   return screen_state_ptrs;
+}
+
+inline const std::vector<genvector*>& spaceinv::get_screen_state_ptrs() const
+{
+   return screen_state_ptrs;
+}
+
+
+inline genvector* spaceinv::get_curr_big_state()
+{
+   return curr_big_state_ptr;
+}
+
+inline const genvector* spaceinv::get_curr_big_state() const
+{
+   return curr_big_state_ptr;
 }
 
 //  enum Action {

@@ -1,11 +1,12 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/2/16; 12/3/16; 12/4/16; 12/5/16
+// Last modified on 12/3/16; 12/4/16; 12/5/16; 12/7/16
 // ==========================================================================
 
 #include <iostream>
 #include <string>
+#include "math/basic_math.h"
 #include "general/filefuncs.h"
 #include "numrec/nrfuncs.h"
 #include "games/spaceinv.h"
@@ -72,8 +73,8 @@ void spaceinv::initialize_member_objects()
 //   min_py = 30;
 //   max_py = 192;
 
-   int n_reduced_xdim = (max_px - min_px) / 2;
-   int n_reduced_ydim = (max_py - min_py) / 2;
+   int n_reduced_xdim = (max_px - min_px) / 2;   // 53
+   int n_reduced_ydim = (max_py - min_py) / 2;   // 89
    n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4717 
 
 // No screen content influencing game play appears before following
@@ -88,6 +89,10 @@ void spaceinv::initialize_member_objects()
 //   frame_skip = 3;
 
    max_score_per_episode = 1000;  // Reasonable guestimate
+
+   n_screen_states = 2;
+   screen_state_counter = 0;
+
    mu_zdiff = 0.94;     // Estimate from few hundred random episodes
    sigma_zdiff = 11.0;  // Estimated from few hundred random episodes
 
@@ -103,7 +108,45 @@ void spaceinv::allocate_member_objects()
    screen1_state_ptr = new genvector(n_reduced_pixels);
    curr_state_ptr = screen0_state_ptr;
    next_state_ptr = screen1_state_ptr;
+
+   for(int s = 0; s < n_screen_states; s++)
+   {
+      genvector* curr_screen_state_ptr = new genvector(n_reduced_pixels);
+      curr_screen_state_ptr->clear_values();
+      screen_state_ptrs.push_back(curr_screen_state_ptr);
+   }
+
+   curr_big_state_ptr = new genvector(n_screen_states * n_reduced_pixels);
+   curr_big_state_ptr->clear_values();
 }		       
+
+// ---------------------------------------------------------------------
+// Member function update_big_state() assembles the contents of
+// screen_state_ptrs[screen_counter],
+// screen_state_ptrs[screen_counter+1 mod n_screen_states], ...,
+// screen_state_ptrs[screen_counter+n_screen_states-1 mod n_screen_states] 
+// into output genvector *big_state_ptr.  
+
+void spaceinv::update_big_state(int screen_counter, genvector* big_state_ptr)
+{
+   int big_index = 0;
+   for(int s = screen_counter - (n_screen_states - 1); 
+       s <= screen_counter; s++)
+   {
+      int reduced_s = modulo(s, n_screen_states);
+      for(int i = 0; i < n_reduced_pixels; i++)
+      {
+         big_state_ptr->put(big_index, screen_state_ptrs[reduced_s]->get(i));
+         big_index++;
+      }
+   }
+}
+
+void spaceinv::update_curr_big_state()
+{
+   update_big_state(screen_state_counter, curr_big_state_ptr);
+}
+
 
 // ---------------------------------------------------------------------
 spaceinv::spaceinv()
@@ -124,6 +167,11 @@ spaceinv::~spaceinv()
 {
    delete screen0_state_ptr;
    delete screen1_state_ptr;
+
+   for(int s = 0; s < n_screen_states; s++)
+   {
+      delete screen_state_ptrs[s];
+   }
 }
 
 // ==========================================================================
@@ -157,12 +205,11 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
    {
       string output_frame = orig_subdir+"frame_"+
          stringfunc::integer_to_string(curr_framenumber,5)+".png";
-      videofunc::write_8bit_greyscale_pngfile(
-         byte_array, output_frame);
+      videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
    }
 
 // Ping-pong pooled_byte_array and other_pooled_byte_array:
-        
+      
    if(difference_counter == 0)
    {
       pooled_byte_array_ptr = &pooled_byte_array0;
@@ -185,7 +232,9 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
          unsigned char z01 = byte_array[r][c+1];
          unsigned char z10 = byte_array[r+1][c];
          unsigned char z11 = byte_array[r+1][c+1];
-         pooled_byte_row.push_back(basic_math::max(z00, z01, z10, z11));
+
+         unsigned char max_z = basic_math::max(z00, z01, z10, z11);
+         pooled_byte_row.push_back(max_z);
       } // loop over index c
       pooled_byte_array_ptr->push_back(pooled_byte_row);
    } // loop over index r
@@ -213,7 +262,6 @@ void spaceinv::crop_pool_difference_curr_frame(bool export_frames_flag)
             unsigned char z_diff = 
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
-//            z_differences.push_back(double(z_diff));
             double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
             
             if(difference_counter == 0)
@@ -269,8 +317,79 @@ void spaceinv::pingpong_curr_and_next_states()
       next_state_ptr = screen1_state_ptr;
    }
 
+   if(screen_state_counter == 0)
+   {
+      curr_state_ptr = screen_state_ptrs[1];
+      next_state_ptr = screen_state_ptrs[0];
+   }
+   else if (screen_state_counter == 1)
+   {
+      curr_state_ptr = screen_state_ptrs[0];
+      next_state_ptr = screen_state_ptrs[1];
+   }
+   
 //   cout << "inside spacenv::pingpong_curr_and_next_states()" << endl;
 //   cout << "|next_s - curr_s| = " 
 //        << (*next_state_ptr - *curr_state_ptr).magnitude() 
 //        << " diff_counter = " << difference_counter << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function crop_pool_curr_frame()
+
+void spaceinv::crop_pool_curr_frame(bool export_frames_flag)
+{
+   int curr_framenumber = ale.getEpisodeFrameNumber();
+//   cout << "inside spaceinv::crop_pool_curr_frame()" << endl;
+//   cout << "curr framenumber = " << curr_framenumber << endl;
+
+// Retrieve curr frame's greyscale pixel values:
+
+   grayscale_output_buffer.clear();
+   ale.getScreenGrayscale(grayscale_output_buffer);
+
+// Crop out center RoI from current frame:
+
+   vector<vector<unsigned char > > byte_array;
+   for(int py = min_py; py < max_py; py++)
+   {
+      vector<unsigned char> curr_byte_row;
+      for(int px = min_px; px <  max_px; px++)
+      {
+         int curr_pixel = px + py * screen_width;
+         curr_byte_row.push_back(grayscale_output_buffer[curr_pixel]);
+      } // loop over px
+      byte_array.push_back(curr_byte_row);
+   } // loop over py
+
+   if(export_frames_flag)
+   {
+      string output_frame = orig_subdir+"frame_"+
+         stringfunc::integer_to_string(curr_framenumber,5)+".png";
+      videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
+   }
+
+   screen_state_counter = curr_framenumber;
+   genvector *curr_screen_state_ptr = screen_state_ptrs[
+      screen_state_counter % n_screen_states];
+
+// rskip x cskip max pool cropped center for current frame:
+
+   int reduced_pixel_counter = 0;
+   const int rskip = 2;
+   const int cskip = 2;
+   for(unsigned int r = 0; r < byte_array.size(); r += rskip)
+   {
+      for (unsigned int c = 0; c < byte_array[0].size(); c+= cskip)
+      {
+         unsigned char z00 = byte_array[r][c];
+         unsigned char z01 = byte_array[r][c+1];
+         unsigned char z10 = byte_array[r+1][c];
+         unsigned char z11 = byte_array[r+1][c+1];
+         unsigned char max_z = basic_math::max(z00, z01, z10, z11);
+
+         curr_screen_state_ptr->put(reduced_pixel_counter, double(max_z));
+         reduced_pixel_counter++;
+      } // loop over index c
+   } // loop over index r
 }

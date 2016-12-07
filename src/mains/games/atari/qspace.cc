@@ -221,7 +221,7 @@ int main(int argc, char** argv)
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
       double cum_reward = 0;
-      genvector* curr_diff_s = NULL;
+      genvector* curr_s = NULL;
       while(!game_world.get_game_over())
       {
          bool state_updated_flag = false;
@@ -235,14 +235,14 @@ int main(int argc, char** argv)
                   export_frames_flag);
                state_updated_flag = true;
                n_state_updates++;
-               curr_diff_s = game_world.get_curr_state();
+               curr_s = game_world.get_curr_state();
             } // curr_frame_number % frame_skip == 0 conditional
          } // curr_frame_number > min_episode_framenumber
 
          if(state_updated_flag && n_state_updates > 2)
          {
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-               *curr_diff_s);
+               *curr_s);
          }
 
          int curr_a = prev_a;
@@ -302,9 +302,9 @@ int main(int argc, char** argv)
                if(nrfunc::ran1() > 1 - discard_0_reward_frac) continue;
             }
 
-            genvector *next_diff_s = spaceinv_ptr->get_next_state();
+            genvector *next_s = spaceinv_ptr->get_next_state();
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, renorm_reward, *next_diff_s, 
+               d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
 
             if(renorm_reward > live_timestep_reward)
