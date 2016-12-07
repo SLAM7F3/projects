@@ -1105,3 +1105,50 @@ Use big states flag = 1
 
 After 2.5K episodes, reward --> 240.  Nframes/episode --> 2.5K.  Acceptable
 loss values.
+
+58.  H2 --> 64, min_eps = 0.1
+
+Wed Dec  7 15:35:11 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 6
+   n_weights = 76880 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+59.  Repeat expt 58: H2 --> 64, min_eps = 0.1
+Wed Dec  7 15:35:23 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 6
+   n_weights = 76880 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1

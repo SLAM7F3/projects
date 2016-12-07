@@ -56,8 +56,8 @@ int main(int argc, char** argv)
 //   int H1 = 24;
 //   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 
    int H3 = 0;
 //   int H3 = 8;
@@ -112,8 +112,8 @@ int main(int argc, char** argv)
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
 
-//   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
-   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
@@ -130,8 +130,8 @@ int main(int argc, char** argv)
 //   double eps_decay_factor = 0.90; 
    reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
 
-   double min_epsilon = 0.05; 
-//   double min_epsilon = 0.10;
+//   double min_epsilon = 0.05; 
+   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
 // Periodically decrease learning rate down to some minimal floor
