@@ -73,8 +73,8 @@ void spaceinv::initialize_member_objects()
 //   min_py = 30;
 //   max_py = 192;
 
-   int n_reduced_xdim = (max_px - min_px) / 2;   // 53
-   int n_reduced_ydim = (max_py - min_py) / 2;   // 89
+   n_reduced_xdim = (max_px - min_px) / 2;   // 53
+   n_reduced_ydim = (max_py - min_py) / 2;   // 89
    n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4717 
 
 // No screen content influencing game play appears before following
@@ -121,32 +121,28 @@ void spaceinv::allocate_member_objects()
 }		       
 
 // ---------------------------------------------------------------------
-// Member function update_big_state() assembles the contents of
-// screen_state_ptrs[screen_counter],
-// screen_state_ptrs[screen_counter+1 mod n_screen_states], ...,
-// screen_state_ptrs[screen_counter+n_screen_states-1 mod n_screen_states] 
-// into output genvector *big_state_ptr.  
+// Member function update_curr_big_state() assembles the contents of
+// screen_state_ptrs[screen_state_counter],
+// screen_state_ptrs[screen_state_counter+1 mod n_screen_states], ...,
+// screen_state_ptrs[screen_state_counter+n_screen_states-1 mod
+// n_screen_states] into member genvector *curr_big_state_ptr.
 
-void spaceinv::update_big_state(int screen_counter, genvector* big_state_ptr)
+genvector* spaceinv::update_curr_big_state()
 {
    int big_index = 0;
-   for(int s = screen_counter - (n_screen_states - 1); 
-       s <= screen_counter; s++)
+   for(int s = screen_state_counter - (n_screen_states - 1); 
+       s <= screen_state_counter; s++)
    {
       int reduced_s = modulo(s, n_screen_states);
       for(int i = 0; i < n_reduced_pixels; i++)
       {
-         big_state_ptr->put(big_index, screen_state_ptrs[reduced_s]->get(i));
+         curr_big_state_ptr->put(
+            big_index, screen_state_ptrs[reduced_s]->get(i));
          big_index++;
       }
-   }
+   } // loop over index s labeling screen states
+   return curr_big_state_ptr;
 }
-
-void spaceinv::update_curr_big_state()
-{
-   update_big_state(screen_state_counter, curr_big_state_ptr);
-}
-
 
 // ---------------------------------------------------------------------
 spaceinv::spaceinv()

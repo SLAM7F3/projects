@@ -848,7 +848,6 @@ still strongly suspect that adding more network capacity is wise
 RUNNING EXPERIMENTS
 --------------------
 
-
 46.  Tue Dec  6 15:38:41 2016 (H1 = 16, H2 = 32)
 Neural net params:
    n_layers = 4
@@ -963,6 +962,30 @@ solver type = RMSPROP
 L2 regularization lambda coeff = 0
 Replay memory capacity = 10000
 Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
+
+53.  Expt 46 repeat (to test that major code changes have not destroyed
+results from yesterday)
+
+Wed Dec  7 08:19:50 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
 Discount factor gamma = 0.99 frame_skip = 1
 Epsilon decay factor = 0.99; minimum epsilon = 0.05
 n_anneal_steps = 6

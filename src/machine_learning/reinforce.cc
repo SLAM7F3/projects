@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 11/30/16; 12/4/16; 12/5/16; 12/6/16
+// Last modified on 12/4/16; 12/5/16; 12/6/16; 12/7/16
 // ==========================================================================
 
 #include <string>
@@ -1109,10 +1109,16 @@ void reinforce::print_weights()
 
 void reinforce::plot_zeroth_layer_weights(string output_subdir)
 {
-   int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    int nx = sqrt(double(n_zeroth_layer_pixels));
    int ny = nx;
+   plot_zeroth_layer_weights(nx, ny, output_subdir);
+}
+
+void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
+{
+   int n_zeroth_layer_weights = weights[0]->get_mdim();
+   int n_zeroth_layer_pixels = weights[0]->get_ndim();
    
    double min_weight_val = POSITIVEINFINITY;
    double max_weight_val = NEGATIVEINFINITY;

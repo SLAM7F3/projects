@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/26/16; 11/27/16; 12/1/16; 12/2/16
+// Last modified on 11/27/16; 12/1/16; 12/2/16; 12/7/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -34,6 +34,7 @@ class environment
    friend std::ostream& operator<< 
       (std::ostream& outstream,const environment& E);
 
+   void set_use_big_states_flag(bool flag);
    void set_maze(maze* m_ptr);
    maze* get_maze();
    const maze* get_maze() const;
@@ -70,6 +71,7 @@ class environment
 
   private:
 
+   bool use_big_states_flag;
    int world_type;
 
    maze *maze_ptr;
@@ -85,6 +87,11 @@ class environment
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void environment::set_use_big_states_flag(bool flag)
+{
+   use_big_states_flag = flag;
+}
 
 inline void environment::set_maze(maze* m_ptr)
 {

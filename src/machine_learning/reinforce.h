@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 11/30/16; 12/4/16; 12/5/16; 12/6/16
+// Last modified on 12/4/16; 12/5/16; 12/6/16; 12/7/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -99,6 +99,7 @@ class reinforce
    void print_biases();
    void print_weights();
    void plot_zeroth_layer_weights(std::string output_subdir);
+   void plot_zeroth_layer_weights(int nx, int ny, std::string output_subdir);
    void compute_bias_distributions();
    void compute_weight_distributions();
    std::string init_subtitle();

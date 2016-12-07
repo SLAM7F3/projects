@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 
 // Set neural network architecture parameters:
 
-   int Din = spaceinv_ptr->get_curr_state()->get_mdim(); // Input dim
+   int Din = game_world.get_curr_state()->get_mdim();   // Input layer dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
    int n_max_episodes = 10 * 1000;
@@ -147,6 +147,7 @@ int main(int argc, char** argv)
 
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
+
    const double discard_0_reward_frac = 0.95;  
 
 //   int n_anneal_steps = 5;
@@ -174,6 +175,9 @@ int main(int argc, char** argv)
 
    bool export_frames_flag = false;
 //   bool export_frames_flag = true;
+   bool use_big_states_flag = true;
+//   bool use_big_states_flag = false;
+   game_world.set_use_big_states_flag(use_big_states_flag);
 
    // Get the vector of minimal legal actions
    ActionVect minimal_actions = spaceinv_ptr->get_ale().getMinimalActionSet();
@@ -186,6 +190,7 @@ int main(int argc, char** argv)
    params_stream << "Old weights period = " << old_weights_period << endl;
    params_stream << "Discard zero reward frac = " 
                  << discard_0_reward_frac << endl;
+   params_stream << "Use big states flag = " << use_big_states_flag << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -231,11 +236,21 @@ int main(int argc, char** argv)
          {
             if(curr_frame_number % game_world.get_frame_skip() == 0)
             {
-               spaceinv_ptr->crop_pool_difference_curr_frame(
-                  export_frames_flag);
                state_updated_flag = true;
                n_state_updates++;
-               curr_s = game_world.get_curr_state();
+
+               if(use_big_states_flag)
+               {
+                  spaceinv_ptr->crop_pool_curr_frame(export_frames_flag);
+                  curr_s = spaceinv_ptr->update_curr_big_state();
+               }
+               else
+               {
+                  spaceinv_ptr->crop_pool_difference_curr_frame(
+                     export_frames_flag);
+                  curr_s = game_world.get_curr_state();
+               }
+
             } // curr_frame_number % frame_skip == 0 conditional
          } // curr_frame_number > min_episode_framenumber
 
@@ -270,7 +285,7 @@ int main(int argc, char** argv)
 
          if(!state_updated_flag && !game_world.get_game_over()) continue;
 
-         game_world.compute_next_state(a);
+         genvector* next_s = game_world.compute_next_state(a);
 
          if(game_world.get_game_over())
          {
@@ -302,7 +317,6 @@ int main(int argc, char** argv)
                if(nrfunc::ran1() > 1 - discard_0_reward_frac) continue;
             }
 
-            genvector *next_s = spaceinv_ptr->get_next_state();
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
@@ -392,7 +406,10 @@ int main(int argc, char** argv)
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
-         reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
+         int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
+         int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
+         reinforce_agent_ptr->plot_zeroth_layer_weights(
+            n_reduced_xdim, n_reduced_ydim, weights_subdir);
       }
       
    } // n_episodes < n_max_episodes while loop

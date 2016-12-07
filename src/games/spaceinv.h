@@ -23,6 +23,9 @@ class spaceinv
    spaceinv(const spaceinv& C);
    ~spaceinv();
 
+   int get_n_reduced_xdim() const;
+   int get_n_reduced_ydim() const;
+
    int get_min_episode_framenumber() const;
    double get_max_score_per_episode() const;
    int get_frame_skip() const;
@@ -40,7 +43,7 @@ class spaceinv
    const std::vector<genvector*>& get_screen_state_ptrs() const;
    void crop_pool_curr_frame(bool export_frames_flag);
 
-   void update_curr_big_state();
+   genvector* update_curr_big_state();
    genvector* get_curr_big_state();
    const genvector* get_curr_big_state() const;
 
@@ -48,6 +51,7 @@ class spaceinv
 
    int random_seed;
    int difference_counter;
+   int n_reduced_xdim, n_reduced_ydim;
    ALEInterface ale;
    int screen_width, screen_height;
    int min_px, max_px, min_py, max_py;
@@ -81,7 +85,6 @@ class spaceinv
    void initialize_grayscale_output_buffer();
    void docopy(const spaceinv& S);
 
-   void update_big_state(int screen_counter, genvector* big_state_ptr);
    void pingpong_curr_and_next_states();
 
 };
@@ -91,6 +94,16 @@ class spaceinv
 // ==========================================================================
 
 // Set and get member functions:
+
+inline int spaceinv::get_n_reduced_xdim() const
+{
+   return n_reduced_xdim;
+}
+
+inline int spaceinv::get_n_reduced_ydim() const
+{
+   return n_reduced_ydim;
+}
 
 inline int spaceinv::get_min_episode_framenumber() const
 {

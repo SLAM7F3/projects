@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/25/16; 11/26/16; 11/27/16; 12/2/16
+// Last modified on 11/26/16; 11/27/16; 12/2/16; 12/7/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -23,6 +23,9 @@ void environment::initialize_member_objects()
 {
    maze_ptr = NULL;
    tictac3d_ptr = NULL;
+
+   use_big_states_flag = false;
+//   use_big_states_flag = true;
 }
 
 // ---------------------------------------------------------------------
@@ -90,7 +93,14 @@ genvector* environment::get_curr_state()
    }
    else if(world_type == SPACEINV)
    {
-      curr_state_ptr = spaceinv_ptr->get_curr_state();
+      if(use_big_states_flag)
+      {
+         curr_state_ptr = spaceinv_ptr->get_curr_big_state();
+      }
+      else
+      {
+         curr_state_ptr = spaceinv_ptr->get_curr_state();
+      }
    }
    else if(world_type == TTT)
    {
@@ -145,33 +155,17 @@ genvector* environment::compute_next_state(int a, int player_value)
    else if (world_type == SPACEINV)
    {
       bool export_frames_flag = false;
-      spaceinv_ptr->crop_pool_difference_curr_frame(export_frames_flag);
-      next_state_ptr = spaceinv_ptr->get_next_state();
-
-      spaceinv_ptr->crop_pool_curr_frame(export_frames_flag);
-      spaceinv_ptr->update_curr_big_state();
-      genvector *curr_big_state = spaceinv_ptr->get_curr_big_state();
-
-/*
-      int big_mdim = curr_big_state->get_mdim();
-
-      int istart = 40 * 53 + 20;
-      cout << "================================================" << endl;
-      cout << "episode frame number = "
-           << spaceinv_ptr->get_ale().getEpisodeFrameNumber()
-           << endl;
-      for(int i = istart; i < istart+10; i++)
+      if(use_big_states_flag)
       {
-         cout << "i = " << i << " curr_big_state[i] = "
-              << curr_big_state->get(i) << endl;
+         spaceinv_ptr->crop_pool_curr_frame(export_frames_flag);
+         spaceinv_ptr->update_curr_big_state();
+         next_state_ptr = spaceinv_ptr->get_curr_big_state();
       }
-      for(int i = istart; i < istart+10; i++)
+      else
       {
-         cout << "i = " << i+big_mdim/2 << " curr_big_state[i] = "
-              << curr_big_state->get(i+big_mdim/2) << endl;
+         spaceinv_ptr->crop_pool_difference_curr_frame(export_frames_flag);
+         next_state_ptr = spaceinv_ptr->get_next_state();
       }
-*/
-
    }
    else if (world_type == TTT)
    {
