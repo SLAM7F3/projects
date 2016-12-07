@@ -152,7 +152,6 @@ int main(int argc, char** argv)
 //   int n_anneal_steps = 5;
    int n_anneal_steps = 6;
 //   int n_anneal_steps = 7;
-//   int n_anneal_steps = 10;
    int n_update = 5;
    int n_summarize = 5;
    int n_snapshot = 100;

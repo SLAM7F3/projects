@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/28/16; 11/29/16; 11/30/16; 12/5/16
+// Last updated on 11/29/16; 11/30/16; 12/5/16; 12/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -25,11 +25,11 @@ int main (int argc, char* argv[])
    using std::vector;
 
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
-   long s = -11;
+   nrfunc::init_time_based_seed();
+//   long s = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> s;
-   nrfunc::init_default_seed(s);
+//   nrfunc::init_default_seed(s);
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -120,9 +120,8 @@ int main (int argc, char* argv[])
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
-// Gamma = discount factor for reward:
-
-   reinforce_agent_ptr->set_gamma(0.95);
+   reinforce_agent_ptr->set_Nd(32);
+   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
@@ -139,9 +138,10 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
 //   int old_weights_period = 32;  
 
-//   double min_epsilon = 0.01;	// Seems optimal for n_grid_size = 8
+   double eps_decay_factor = 0.90; // Probably optimal for n_size_grid = 8
+   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
    double min_epsilon = 0.025;
-//   double min_epsilon = 0.05; 
+   reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
    int n_anneal_steps = 1000;
    int n_update = 500;
@@ -256,16 +256,15 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         int Nd = 32;
-         total_loss = reinforce_agent_ptr->update_neural_network(Nd);
+         total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
 // Periodically anneal epsilon:
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-         double decay_factor = 0.90; // Probably optimal for n_size_grid = 8
-         reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
+
+         reinforce_agent_ptr->anneal_epsilon();
       }
 
       if(curr_episode_number%n_update == 0 && curr_episode_number > 0)

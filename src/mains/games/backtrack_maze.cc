@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program BACKTRACK_MAZE
 // ==========================================================================
-// Last updated on 11/16/16; 11/28/16; 11/29/16; 12/5/16
+// Last updated on 11/28/16; 11/29/16; 12/5/16; 12/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -105,6 +105,7 @@ int main (int argc, char* argv[])
 
 // Gamma = discount factor for reward:
 
+   reinforce_agent_ptr->set_Nd(32);
    reinforce_agent_ptr->set_gamma(0.95);
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
@@ -128,9 +129,13 @@ int main (int argc, char* argv[])
    //   int old_weights_period = 300;
    //   int old_weights_period = 1000;
 
+   double eps_decay_factor = 0.975;
+   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
+
 //   double min_epsilon = 0.05;
    double min_epsilon = 0.1; // Optimal for n_grid_size = 7, 10
-//   double min_epsilon = 0.15;
+   reinforce_agent_ptr->set_min_epsilon(min_epsilon);
+
 
 // Initialize Deep Q replay memory:
 
@@ -277,17 +282,12 @@ int main (int argc, char* argv[])
       if(curr_episode_number > 0 && curr_episode_number % 
          reinforce_agent_ptr->get_batch_size() == 0)
       {
-         int Nd = 32;
-         total_loss = reinforce_agent_ptr->update_neural_network(Nd);
+         total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-//         double decay_factor = 0.995;
-//         double decay_factor = 0.99;
-         double decay_factor = 0.975;
-//         double decay_factor = 0.95;
-         reinforce_agent_ptr->anneal_epsilon(decay_factor, min_epsilon);
+         reinforce_agent_ptr->anneal_epsilon();
       }
 
       if(curr_episode_number%n_update == 0)
