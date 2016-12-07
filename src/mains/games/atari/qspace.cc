@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/3/16; 12/4/16; 12/5/16; 12/6/16
+// Last updated on 12/4/16; 12/5/16; 12/6/16; 12/7/16
 // ==========================================================================
 
 #include <iostream>
@@ -22,6 +22,7 @@ int main(int argc, char** argv)
    using std::cin;
    using std::cout;
    using std::endl;
+   using std::ofstream;
    using std::string;
    using std::vector;
    
@@ -53,10 +54,11 @@ int main(int argc, char** argv)
 
    int H1 = 16;
 //   int H1 = 24;
-   int H2 = 8;
+//   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
-//   int H2 = 12;
+   int H2 = 32;
+//   int H2 = 64;
+
    int H3 = 0;
 //   int H3 = 8;
 
@@ -79,6 +81,7 @@ int main(int argc, char** argv)
 // Construct reinforcement learning agent:
 
    int batch_size = 10;
+//   int batch_size = 16;
 //   int batch_size = 20;
 //   int replay_memory_capacity = batch_size * 100;
    int replay_memory_capacity = 5 * 2000;
@@ -110,6 +113,7 @@ int main(int argc, char** argv)
    filefunc::dircreate(weights_subdir);
 
    reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
@@ -126,12 +130,12 @@ int main(int argc, char** argv)
 //   double eps_decay_factor = 0.90; 
    reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
 
-//   double min_epsilon = 0.025;
    double min_epsilon = 0.05; 
+//   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
 // Periodically decrease learning rate down to some minimal floor
-// value:
+// value:<
 
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
@@ -141,9 +145,13 @@ int main(int argc, char** argv)
    int old_weights_period = 32;
 //   int old_weights_period = 320;
 
+// Fraction of zero-reward (S,A,R,S') states to NOT include within
+// replay memory:
+   const double discard_0_reward_frac = 0.95;  
+
 //   int n_anneal_steps = 5;
-//   int n_anneal_steps = 6;
-   int n_anneal_steps = 7;
+   int n_anneal_steps = 6;
+//   int n_anneal_steps = 7;
 //   int n_anneal_steps = 10;
    int n_update = 5;
    int n_summarize = 5;
@@ -173,6 +181,13 @@ int main(int argc, char** argv)
 
    string params_filename = output_subdir + "params.dat";
    reinforce_agent_ptr->summarize_parameters(params_filename);
+   ofstream params_stream;
+   filefunc::appendfile(params_filename, params_stream);
+   params_stream << "n_anneal_steps = " << n_anneal_steps << endl;
+   params_stream << "Old weights period = " << old_weights_period << endl;
+   params_stream << "Discard zero reward frac = " 
+                 << discard_0_reward_frac << endl;
+   filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
 // Reinforcement training loop starts here
@@ -245,9 +260,11 @@ int main(int argc, char** argv)
 //            game_world.get_max_score_per_episode();
          double renorm_reward = curr_reward / 10.0;
 
+// Experiment with rewarding agent for living (bad results so far)
+
          double live_timestep_reward = 0.0;
 //         double live_timestep_reward = 50.0 / 2000.0;
-         renorm_reward += live_timestep_reward;
+//         renorm_reward += live_timestep_reward;
 
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
@@ -259,10 +276,11 @@ int main(int argc, char** argv)
          if(game_world.get_game_over())
          {
 
-// Experiment with penalizing agent for dying:
+// Experiment with penalizing agent for dying (bad results so far)
 
-            const double death_penalty = 15;
-            renorm_reward -= death_penalty;
+//            const double death_penalty = 0;
+//            const double death_penalty = 15;
+//            renorm_reward -= death_penalty;
 
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
@@ -282,9 +300,7 @@ int main(int argc, char** argv)
 
             if(nearly_equal(renorm_reward, live_timestep_reward))
             {
-               if(nrfunc::ran1() > 0.05) continue;
-//               if(nrfunc::ran1() > 0.1) continue;
-//               if(nrfunc::ran1() > 0.15) continue;
+               if(nrfunc::ran1() > 1 - discard_0_reward_frac) continue;
             }
 
             genvector *next_diff_s = spaceinv_ptr->get_next_state();

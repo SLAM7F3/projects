@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Space Invaders
 ==========================================================================
-Last updated on 12/4/16; 12/5/16; 12/6/16
+Last updated on 12/4/16; 12/5/16; 12/6/16; 12/7/16
 ==========================================================================
 
 Random play results:
@@ -16,6 +16,35 @@ Median nframes/episode +/- quartile width = 2057 +/- 375
 
 BEST AGENT RESULTS SO FAR
 -------------------------
+
+46.  Tue Dec  6 15:38:41 2016 (H1 = 16, H2 = 32)
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+
+After O(5K) episodes:
+
+Loss = -0.5 +/- 0.5
+Reward --> 245
+Nframes / episode = 3.2K !!
+Gentle evolution of all weights
+
 
 38.  Tue Dec  6 07:23:18 2016  (increase gamma)
 Neural net params:
@@ -38,6 +67,7 @@ n_anneal_steps = 5
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
 
+After O(10K) frames:
    log10_loss = -0.5 +/- 1.25
    reward --> 250
    n_frames / episode --> (2.6 +/- 0.2)K
@@ -637,9 +667,61 @@ Discard 95% of 0-reward entries from memory store
 Old weights period = 32
 Reward rises for 1K episodes and then falls for next 1K!
 
---------------------
-RUNNING EXPERIMENTS
---------------------
+47.  Tue Dec  6 17:47:02 2016  (m6700) : living reward
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+live_timestep_reward = 50.0 / 2000.0 = 1 / 40.0 = 0.025
+death penalty = 0;
+
+Over O(2K) episodes, reward falls!  Nframes per episode also shows no
+significant increase.
+
+conclusion:  Living reward doesn't help at least with these hyperparams.
+
+48.  Tue Dec  6 18:55:53 2016  (m6700) : dying penalty
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 8
+   layer = 3 n_nodes = 6
+   n_weights = 75648 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 7
+Discard 95% of 0-reward entries from memory store    
+Old weights period = 32
+live_timestep_reward = 50.0 / 2000.0 = 1 / 40.0 = 0.025
+death penalty = -15;
+
+Over O(2K) episodes, reward falls!.  And Nframes/episode also doesn't
+increase.
+
+Conclusion:  Death penalty doesn't help (at least with these hyperparams)
 
 38.  Tue Dec  6 07:23:18 2016  (increase gamma)
 Neural net params:
@@ -689,6 +771,15 @@ Old weights period = 32
 Loss function looks dangerously large 
 Fairly slow rise in reward over nearly 2K episodes
 
+Results are definitely not as good as those from experiment 38.
+
+After O(8K) episodes:
+
+Loss = +0.25 +/- 0.5
+Reward --> 240
+nframes/episode = (2.4 +/- 0.5)K
+Gentle evolution of weights
+
 
 44. Tue Dec  6 12:08:05 2016  (H3 = 8)
 Neural net params:
@@ -714,6 +805,14 @@ Old weights period = 32
 
 Extremely slow rise in reward over 1K episodes
 
+After O(8K) episodes:
+
+Loss = -0.25 +/- 0.5
+Reward stays around 180 which is not much better than chance!
+Nframes/episode = 2.4K
+
+conclusion: 3rd FC layer is bad (at least with these hyperparams)
+
 45.  Tue Dec  6 15:37:24 2016  (H1 = H2 = 16)
 Neural net params:
    n_layers = 4
@@ -734,6 +833,21 @@ Epsilon decay factor = 0.99; minimum epsilon = 0.05
 n_anneal_steps = 6
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
+
+After O(7K) episodes:
+
+loss = 0.125 +/- 0.5
+Reward --> 230
+nframes/episode = 2.5K 
+
+Conclusion : H2 = 16 naively yields poorer results than H2 = 8.  But we
+still strongly suspect that adding more network capacity is wise
+
+
+--------------------
+RUNNING EXPERIMENTS
+--------------------
+
 
 46.  Tue Dec  6 15:38:41 2016 (H1 = 16, H2 = 32)
 Neural net params:
@@ -756,14 +870,21 @@ n_anneal_steps = 6
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
 
-47.  Tue Dec  6 17:47:02 2016  (m6700)
+After O(5K) episodes:
+
+Loss = -0.5 +/- 0.5
+Reward --> 245
+Nframes / episode = 3.2K !!
+Gentle evolution of all weights
+
+49.  Tue Dec  6 19:56:13 2016 (m6700): H1 = 16, H2 = 64
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 4717
    layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 8
+   layer = 2 n_nodes = 64
    layer = 3 n_nodes = 6
-   n_weights = 75648 (FC)
+   n_weights = 76880 (FC)
 base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
@@ -773,21 +894,24 @@ Replay memory capacity = 10000
 Number random samples drawn from replay memory Nd = 10
 Discount factor gamma = 0.99 frame_skip = 1
 Epsilon decay factor = 0.99; minimum epsilon = 0.05
-n_anneal_steps = 7
+n_anneal_steps = 6
 Discard 95% of 0-reward entries from memory store    
 Old weights period = 32
 
-live_timestep_reward = 50.0 / 2000.0 = 1 / 40.0 = 0.025
-death penalty = 0;
+After O(1.5K) episodes, reward very slowly increases (but not much beyond
+random play).  Nframes/episode also slowly increases.
 
-48.  Tue Dec  6 18:55:53 2016  (m6700)
+Conclusion:  H2 = 64 probably doesn't hurt. 
+
+50.  Expt 46 but with min_eps --> 0.1  (m6700)
+Wed Dec  7 04:10:11 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 4717
    layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 8
+   layer = 2 n_nodes = 32
    layer = 3 n_nodes = 6
-   n_weights = 75648 (FC)
+   n_weights = 76176 (FC)
 base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
@@ -796,7 +920,51 @@ L2 regularization lambda coeff = 0
 Replay memory capacity = 10000
 Number random samples drawn from replay memory Nd = 10
 Discount factor gamma = 0.99 frame_skip = 1
-Epsilon decay factor = 0.99; minimum epsilon = 0.05
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
 
-live_timestep_reward = 50.0 / 2000.0 = 1 / 40.0 = 0.025
-death penalty = -15;
+51.  Expt 46 with batch size --> 16 (m6700)
+Wed Dec  7 04:13:01 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 16; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
+
+52.  Expt 46 with Nd --> 16 (m6700)
+Wed Dec  7 04:14:30 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
