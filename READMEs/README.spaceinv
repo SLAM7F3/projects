@@ -1017,6 +1017,10 @@ Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
 
+After O(3K) episodes, reward --> 300 !!  And nframes/episode --> 3K.
+Reasonable loss values.
+
+
 55.  Expt 46 params but with 2 "big" state vectors rather than one small
 "diff" state vector
 
@@ -1041,3 +1045,63 @@ n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
+
+
+After O(2.7K) episodes, reward --> 280 after having gone over 600 and
+fallen back!  And nframes/episode --> 3K after having gone over 4K.  
+Reasonable loss values.
+
+56.  Expt 46 params but with 2 "big" state vectors rather than one small
+"diff" state vector; batch_size --> 16
+
+Wed Dec  7 12:24:56 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 16; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+After 3K episodes, reward --> 70 !!  Nframes/episode --> 2K.  Small loss.
+
+57.  Expt 46 params but with 2 "big" state vectors rather than one small
+"diff" state vector; Nd --> 16
+
+Wed Dec  7 12:26:44 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4717
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 76176 (FC)
+base_learning_rate = 0.0003; batch_size = 10; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.05
+n_anneal_steps = 6
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+After 2.5K episodes, reward --> 240.  Nframes/episode --> 2.5K.  Acceptable
+loss values.

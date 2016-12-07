@@ -49,7 +49,7 @@ int main(int argc, char** argv)
    int Din = game_world.get_curr_state()->get_mdim();   // Input layer dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
-   int n_max_episodes = 10 * 1000;
+   int n_max_episodes = 16 * 1000;
    int Tmax = n_max_episodes;
 
    int H1 = 16;
@@ -112,8 +112,8 @@ int main(int argc, char** argv)
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
 
-   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
-//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
