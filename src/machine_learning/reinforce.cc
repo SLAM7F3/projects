@@ -1101,18 +1101,15 @@ void reinforce::print_weights()
 void reinforce::plot_zeroth_layer_weights(string output_subdir)
 {
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
-   int nx = sqrt(double(n_zeroth_layer_pixels));
-   int ny = nx;
-   plot_zeroth_layer_weights(nx, ny, output_subdir);
+   int ncols = sqrt(double(n_zeroth_layer_pixels));
+   int nrows = ncols;
+   plot_zeroth_layer_weights(ncols, nrows, output_subdir);
 }
-
-// nx = number of columns
-// ny = number of rows
 
 void reinforce::plot_zeroth_layer_weights(
    int ncols, int nrows, string output_subdir)
 {
-   cout << "n_rows = " << nrows << " n_cols = " << ncols << endl;
+//   cout << "n_rows = " << nrows << " n_cols = " << ncols << endl;
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    
@@ -1133,7 +1130,6 @@ void reinforce::plot_zeroth_layer_weights(
 
    for(int n = 0; n < n_zeroth_layer_weights; n++)
    {
-      cout << "n = " << n << endl;
       twoDarray* wtwoDarray_ptr = new twoDarray(ncols, nrows);
       environment_ptr->append_wtwoDarray(wtwoDarray_ptr);
 
@@ -1150,8 +1146,8 @@ void reinforce::plot_zeroth_layer_weights(
       int magnify_factor = 16;
       int mag_nrows = magnify_factor * nrows;
       int mag_ncols = magnify_factor * ncols;
-      cout << "mag_nrows = " << mag_nrows
-           << " mag_ncols = " << mag_ncols << endl;
+//      cout << "mag_nrows = " << mag_nrows
+//           << " mag_ncols = " << mag_ncols << endl;
 
 // On 12/7/16, we discovered that the next twoDarray constructor line
 // can fail for reasons we don't understand...
@@ -1162,21 +1158,15 @@ void reinforce::plot_zeroth_layer_weights(
           row++)
       {
          int pv = row / magnify_factor;
-         cout << "row = " << row << " pv = " << pv << endl;
          for(unsigned int col = 0; col < enlarged_wtwoDarray_ptr->get_mdim(); 
              col++)
          {
             int pu = col / magnify_factor;
             
             double curr_weight_val = wtwoDarray_ptr->get(pu, pv);
-//            cout << "pu = " << pu << " pv = " << pv 
-//                 << " col = " << col << " row = " << row << endl;
-//            enlarged_wtwoDarray_ptr->put(row, col, curr_weight_val);
             enlarged_wtwoDarray_ptr->put(col, row, curr_weight_val);
          }
       }
-
-// tr_ptr has correct shape
 
       int n_channels = 3;
       texture_rectangle* tr_ptr = new texture_rectangle(
@@ -1190,7 +1180,6 @@ void reinforce::plot_zeroth_layer_weights(
 
       string output_filename=output_subdir + 
          "weights_"+stringfunc::integer_to_string(n,3)+".png";
-      cout << "output_filename = " << output_filename << endl;
       tr_ptr->write_curr_frame(output_filename);
       string banner="Exported "+output_filename;
       outputfunc::write_banner(banner);

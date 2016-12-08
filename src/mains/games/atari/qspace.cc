@@ -44,10 +44,8 @@ int main(int argc, char** argv)
    environment game_world(environment::SPACEINV);
    game_world.set_spaceinv(spaceinv_ptr);
 
-// FAKE FAKE:  Thurs Dec 8 at 6:22 am
-
-//     bool use_big_states_flag = true;
-  bool use_big_states_flag = false;
+     bool use_big_states_flag = true;
+//  bool use_big_states_flag = false;
 
    game_world.set_use_big_states_flag(use_big_states_flag);
    game_world.set_frame_skip(3);
@@ -148,10 +146,9 @@ int main(int argc, char** argv)
    const double discard_0_reward_frac = 0.95;  
 
    int n_anneal_steps = 3;
-//   int n_anneal_steps = 5;
    int n_update = 5;
    int n_summarize = 5;
-   int n_snapshot = 100;
+   int n_snapshot = 50;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
@@ -436,7 +433,6 @@ int main(int argc, char** argv)
       {
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
-/*
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
@@ -444,16 +440,8 @@ int main(int argc, char** argv)
          int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
          reinforce_agent_ptr->plot_zeroth_layer_weights(
             n_reduced_xdim, n_reduced_ydim, weights_subdir);
-*/
 
       }
-
-// FAKE FAKE:  Thurs Dec 8 at 6:21 am
-
-      int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
-      int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
-      reinforce_agent_ptr->plot_zeroth_layer_weights(
-         n_reduced_xdim, n_reduced_ydim, weights_subdir);
       
    } // n_episodes < n_max_episodes while loop
 
