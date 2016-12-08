@@ -1265,6 +1265,42 @@ After over 7K episodes, reward is around 200 with large swings.
 
 Conclusion:  Increasing H2 to 64 might be OK, but not sure.
 
+
+64.  m6700: batch_size = 1; Nd = 32; n_anneal_steps = 7; replay mem cap = 20K
+
+Thu Dec  8 04:07:53 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4576
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 73920 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 7
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+
+65.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
+
+66.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
+
+67.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
+
+For expts 64-67, reward and nframes/episode not much better than those for
+random play after 500 episodes.  But epsilon = 0.5 after 500 episodes.  So
+we can't draw any meaningful conclusions from these 4 expts.
+
 68.  TM: 2 big states rather than one small diff state
 
 Thu Dec  8 05:45:58 2016
@@ -1330,36 +1366,6 @@ episodes.  Miniscule movement in weight values.
 --------------------
 RUNNING EXPERIMENTS
 --------------------
-
-64.  m6700: batch_size = 1; Nd = 32; n_anneal_steps = 7; replay mem cap = 20K
-
-Thu Dec  8 04:07:53 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 4576
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 6
-   n_weights = 73920 (FC)
-base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 16000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = 32
-Discount factor gamma = 0.99 frame_skip = 1
-Epsilon decay factor = 0.99; minimum epsilon = 0.1
-n_anneal_steps = 7
-Old weights period = 100
-Discard zero reward frac = 0.95
-Use big states flag = 1
-
-65.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
-
-66.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
-
-67.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
 
 71.  TM:  Repeat of expt 69
 After 300 episodes:
