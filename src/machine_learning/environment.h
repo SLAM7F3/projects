@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 11/27/16; 12/1/16; 12/2/16; 12/7/16
+// Last modified on 12/1/16; 12/2/16; 12/7/16; 12/8/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -35,6 +35,8 @@ class environment
       (std::ostream& outstream,const environment& E);
 
    void set_use_big_states_flag(bool flag);
+   void set_frame_skip(int skip);
+   int get_frame_skip() const;
    void set_maze(maze* m_ptr);
    maze* get_maze();
    const maze* get_maze() const;
@@ -57,7 +59,6 @@ class environment
 
    int get_episode_framenumber() const;
    int get_min_episode_framenumber() const;
-   int get_frame_skip() const;
    double get_max_score_per_episode() const;
 
    std::string get_state_action_string(std::string state_str, int a);
@@ -73,6 +74,7 @@ class environment
 
    bool use_big_states_flag;
    int world_type;
+   int frame_skip;
 
    maze *maze_ptr;
    spaceinv *spaceinv_ptr;
@@ -92,6 +94,17 @@ inline void environment::set_use_big_states_flag(bool flag)
 {
    use_big_states_flag = flag;
 }
+
+inline void environment::set_frame_skip(int skip)
+{
+   frame_skip = skip;
+}
+
+inline int environment::get_frame_skip() const
+{
+   return frame_skip;
+}
+
 
 inline void environment::set_maze(maze* m_ptr)
 {

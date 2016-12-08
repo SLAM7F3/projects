@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/4/16; 11/25/16; 11/26/16; 11/27/16
+// Last modified on 11/25/16; 11/26/16; 11/27/16; 12/8/16
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -163,8 +163,8 @@ class tictac3d
 
    int latest_O_move, latest_X_move;
 
-// wtwoDarray_ptr points to a twoDarray which contains renormalized
-// trained weight values:
+// wtwoDarray_ptrs holds pointers to twoDarrays which contain
+// renormalized trained weight values:
 
    std::vector<twoDarray*> wtwoDarray_ptrs;
 

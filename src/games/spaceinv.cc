@@ -1,7 +1,7 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/3/16; 12/4/16; 12/5/16; 12/7/16
+// Last modified on 12/4/16; 12/5/16; 12/7/16; 12/8/16
 // ==========================================================================
 
 #include <iostream>
@@ -80,12 +80,6 @@ void spaceinv::initialize_member_objects()
 // episode frame number:
 
    min_episode_framenumber = 100;
-
-// FAKE FAKE:  Sun Dec 4 at 7:09 am
-// For debugging only...
-
-   frame_skip = 1;
-//   frame_skip = 3;
 
    max_score_per_episode = 1000;  // Reasonable guestimate
 

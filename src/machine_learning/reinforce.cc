@@ -1,7 +1,6 @@
+// ==========================================================================// reinforce class member function definitions
 // ==========================================================================
-// reinforce class member function definitions
-// ==========================================================================
-// Last modified on 12/4/16; 12/5/16; 12/6/16; 12/7/16
+// Last modified on 12/5/16; 12/6/16; 12/7/16; 12/8/16
 // ==========================================================================
 
 #include <string>
@@ -135,9 +134,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
 // Weights link layer l with layer l+1:
 
-// FAKE FAKE:  Tues Nov 29 at 5:15 am
-// Should really only instantiate genmatrices which are needed depending
-// upon selected solver type
+// Only instantiate genmatrices which are needed depending upon
+// selected solver type:
     
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -227,10 +225,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       {
          for(int j = 0; j < layer_dims[l]; j++)
          {
-
-// FAKE FAKE:  Mon Dec 5 at 6:25 am
-
-//            curr_weights->put(i, j, 0.01 * nrfunc::gasdev() );
             curr_weights->put(i, j, nrfunc::gasdev() / sqrt(layer_dims[l]) );
             curr_old_weights->put(i, j, curr_weights->get(i, j));
          } // loop over index j labeling node in next layer
@@ -1053,12 +1047,9 @@ void reinforce::summarize_parameters(string params_filename)
    params_stream << "Number random samples drawn from replay memory Nd = "
                  << Nd << endl;
    params_stream << "Discount factor gamma = " << gamma 
-                 << " frame_skip = " << environment_ptr->get_frame_skip() 
                  << endl;
-   
-   params_stream << "Epsilon decay factor = " << epsilon_decay_factor
+   params_stream << "Initial epsilon decay factor = " << epsilon_decay_factor
                  << "; minimum epsilon = " << min_epsilon << endl;
-
    filefunc::closefile(params_filename, params_stream);
 }
 
@@ -1115,14 +1106,13 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
    plot_zeroth_layer_weights(nx, ny, output_subdir);
 }
 
-void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
+// nx = number of columns
+// ny = number of rows
+
+void reinforce::plot_zeroth_layer_weights(
+   int ncols, int nrows, string output_subdir)
 {
-
-/*
-// WE NEED TO RUN VALGRIND ON THIS METHOD.  IT VERY LIKELY CONTAINS
-// SOME SERIOUS MEMORY ERROR !!!
-
-//   cout << "nx = " << nx << " ny = " << ny << endl;
+   cout << "n_rows = " << nrows << " n_cols = " << ncols << endl;
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    
@@ -1141,51 +1131,56 @@ void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
 
 // Renormalize image weight values to range from 0 to 255:
 
-   vector<twoDarray*> weight_image_ptrs;
-   
    for(int n = 0; n < n_zeroth_layer_weights; n++)
    {
-      twoDarray* wtwoDarray_ptr = new twoDarray(nx, ny);
+      cout << "n = " << n << endl;
+      twoDarray* wtwoDarray_ptr = new twoDarray(ncols, nrows);
       environment_ptr->append_wtwoDarray(wtwoDarray_ptr);
 
       for(int p = 0; p < n_zeroth_layer_pixels; p++)
       {
-         int pu = p % ny;
-         int pv = p / ny;
+         int pu = p % ncols;
+         int pv = p / ncols;
          double curr_weight_val = 255 * 
             (weights[0]->get(n,p) - min_weight_val) / 
             (max_weight_val - min_weight_val);
          wtwoDarray_ptr->put(pu, pv, curr_weight_val);
       }
 
-//      int magnify_factor = 2;
       int magnify_factor = 16;
-      int mag_nx = magnify_factor * nx;
-      int mag_ny = magnify_factor * ny;
-      
+      int mag_nrows = magnify_factor * nrows;
+      int mag_ncols = magnify_factor * ncols;
+      cout << "mag_nrows = " << mag_nrows
+           << " mag_ncols = " << mag_ncols << endl;
 
 // On 12/7/16, we discovered that the next twoDarray constructor line
 // can fail for reasons we don't understand...
 
-      cout << "Before enlarged" << endl;
-      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(mag_nx, mag_ny);
-      cout << "After enlarged" << endl;
+      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(mag_ncols, mag_nrows);
 
-      for(unsigned int py = 0; py < enlarged_wtwoDarray_ptr->get_mdim(); py++)
+      for(unsigned int row = 0; row < enlarged_wtwoDarray_ptr->get_ndim(); 
+          row++)
       {
-         int pv = py / magnify_factor;
-         for(unsigned int px = 0; px < enlarged_wtwoDarray_ptr->get_ndim(); 
-             px++)
+         int pv = row / magnify_factor;
+         cout << "row = " << row << " pv = " << pv << endl;
+         for(unsigned int col = 0; col < enlarged_wtwoDarray_ptr->get_mdim(); 
+             col++)
          {
-            int pu = px / magnify_factor;
+            int pu = col / magnify_factor;
+            
             double curr_weight_val = wtwoDarray_ptr->get(pu, pv);
-            enlarged_wtwoDarray_ptr->put(px, py, curr_weight_val);
+//            cout << "pu = " << pu << " pv = " << pv 
+//                 << " col = " << col << " row = " << row << endl;
+//            enlarged_wtwoDarray_ptr->put(row, col, curr_weight_val);
+            enlarged_wtwoDarray_ptr->put(col, row, curr_weight_val);
          }
       }
 
+// tr_ptr has correct shape
+
       int n_channels = 3;
       texture_rectangle* tr_ptr = new texture_rectangle(
-         magnify_factor * nx, magnify_factor * ny, 1, n_channels, NULL);
+         mag_ncols, mag_nrows, 1, n_channels, NULL);
 
       tr_ptr->convert_single_twoDarray_to_three_channels(
          enlarged_wtwoDarray_ptr, true);
@@ -1204,7 +1199,6 @@ void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
       delete enlarged_wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
-*/
 
 }
 

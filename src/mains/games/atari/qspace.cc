@@ -44,12 +44,20 @@ int main(int argc, char** argv)
    environment game_world(environment::SPACEINV);
    game_world.set_spaceinv(spaceinv_ptr);
 
+// FAKE FAKE:  Thurs Dec 8 at 6:22 am
+
+//     bool use_big_states_flag = true;
+  bool use_big_states_flag = false;
+
+   game_world.set_use_big_states_flag(use_big_states_flag);
+   game_world.set_frame_skip(3);
+
 // Set neural network architecture parameters:
 
    int Din = game_world.get_curr_state()->get_mdim();   // Input layer dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
-   int n_max_episodes = 16 * 1000;
+   int n_max_episodes = 10 * 1000;
    int Tmax = n_max_episodes;
 
    int H1 = 16;
@@ -58,7 +66,6 @@ int main(int argc, char** argv)
 //   int H2 = 16;
    int H2 = 32;
 //   int H2 = 64;
-
    int H3 = 0;
 //   int H3 = 8;
 
@@ -75,20 +82,12 @@ int main(int argc, char** argv)
    }
    layer_dims.push_back(Dout);
 
-   cout << "Din * H1 + H1 * H2 + H2 * Dout = "
-        << Din * H1 + H1 * H2 + H2 * Dout << endl;
-
 // Construct reinforcement learning agent:
 
-   int batch_size = 1;
-//   int batch_size = 10;
-//   int batch_size = 16;
-//   int batch_size = 20;
-//   int replay_memory_capacity = batch_size * 100;
 //   int replay_memory_capacity = 5 * 2000;
    int replay_memory_capacity = 10 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, batch_size, replay_memory_capacity,
+      layer_dims, Tmax, 1, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -113,23 +112,18 @@ int main(int argc, char** argv)
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
 
-//   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
 //   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
-   double eps_decay_factor = 0.99; 
-//   double eps_decay_factor = 0.95;
-//   double eps_decay_factor = 0.90; 
+   double eps_decay_factor = 0.95; 
    reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
 
 //   double min_epsilon = 0.05; 
@@ -142,7 +136,7 @@ int main(int argc, char** argv)
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
-   int n_episodes_period = 1 * 1000;
+   int n_lr_episodes_period = 1 * 1000;
 //   int old_weights_period = 10; 
 //   int old_weights_period = 32;
    int old_weights_period = 100;
@@ -153,9 +147,8 @@ int main(int argc, char** argv)
 
    const double discard_0_reward_frac = 0.95;  
 
+   int n_anneal_steps = 3;
 //   int n_anneal_steps = 5;
-//   int n_anneal_steps = 6;
-   int n_anneal_steps = 7;
    int n_update = 5;
    int n_summarize = 5;
    int n_snapshot = 100;
@@ -178,9 +171,6 @@ int main(int argc, char** argv)
 
    bool export_frames_flag = false;
 //   bool export_frames_flag = true;
-    bool use_big_states_flag = true;
-//   bool use_big_states_flag = false;
-   game_world.set_use_big_states_flag(use_big_states_flag);
 
    // Get the vector of minimal legal actions
    ActionVect minimal_actions = spaceinv_ptr->get_ale().getMinimalActionSet();
@@ -189,11 +179,14 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->summarize_parameters(params_filename);
    ofstream params_stream;
    filefunc::appendfile(params_filename, params_stream);
-   params_stream << "n_anneal_steps = " << n_anneal_steps << endl;
+   params_stream << "Initial n_anneal_steps = " << n_anneal_steps << endl;
+   params_stream << "Learning rate decrease period = " 
+                 << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period << endl;
    params_stream << "Discard zero reward frac = " 
                  << discard_0_reward_frac << endl;
    params_stream << "Use big states flag = " << use_big_states_flag << endl;
+   params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -210,13 +203,14 @@ int main(int argc, char** argv)
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
-      if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
+      if(curr_episode_number > 0 && curr_episode_number%n_lr_episodes_period 
+         == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
             reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_episodes_period *= 1.2;
+            n_lr_episodes_period *= 1.2;
          }
       }
 
@@ -229,7 +223,7 @@ int main(int argc, char** argv)
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
       double cum_reward = 0;
-      genvector* curr_s = NULL;
+
       while(!game_world.get_game_over())
       {
          bool state_updated_flag = false;
@@ -245,20 +239,26 @@ int main(int argc, char** argv)
                if(use_big_states_flag)
                {
                   spaceinv_ptr->crop_pool_curr_frame(export_frames_flag);
-                  curr_s = spaceinv_ptr->update_curr_big_state();
                }
                else
                {
                   spaceinv_ptr->crop_pool_difference_curr_frame(
                      export_frames_flag);
-                  curr_s = game_world.get_curr_state();
                }
-
             } // curr_frame_number % frame_skip == 0 conditional
          } // curr_frame_number > min_episode_framenumber
 
          if(state_updated_flag && n_state_updates > 2)
          {
+            genvector* curr_s = NULL;
+            if(use_big_states_flag)
+            {
+               curr_s = spaceinv_ptr->get_curr_big_state();
+            }
+            else
+            {
+               curr_s = game_world.get_curr_state();
+            }
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
                *curr_s);
          }
@@ -358,8 +358,7 @@ int main(int argc, char** argv)
          update_old_weights_counter = 1;
       }
 
-      if(reinforce_agent_ptr->get_replay_memory_full() && 
-         curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
+      if(reinforce_agent_ptr->get_replay_memory_full())
       {
          total_loss = reinforce_agent_ptr->update_neural_network();
       }
@@ -369,6 +368,35 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
          reinforce_agent_ptr->anneal_epsilon();
+
+// Increase n_anneal_steps and epsilon decay factor as epsilon
+// decreases:
+
+         if(reinforce_agent_ptr->get_epsilon() < 0.9)
+         {
+            n_anneal_steps = 4;
+            reinforce_agent_ptr->set_epsilon_decay_factor(0.96);
+         }
+         else if(reinforce_agent_ptr->get_epsilon() < 0.7)
+         {
+            n_anneal_steps = 5;
+            reinforce_agent_ptr->set_epsilon_decay_factor(0.97);
+         }
+         else if(reinforce_agent_ptr->get_epsilon() < 0.5)
+         {
+            n_anneal_steps = 6;
+            reinforce_agent_ptr->set_epsilon_decay_factor(0.98);
+         }
+         else if(reinforce_agent_ptr->get_epsilon() < 0.3)
+         {
+            n_anneal_steps = 7;
+            reinforce_agent_ptr->set_epsilon_decay_factor(0.99);
+         }
+         else if(reinforce_agent_ptr->get_epsilon() < 0.2)
+         {
+            reinforce_agent_ptr->set_epsilon_decay_factor(0.999);
+            n_anneal_steps = 8;
+         }
       }
 
 // Periodically write status info to text console:
@@ -419,6 +447,13 @@ int main(int argc, char** argv)
 */
 
       }
+
+// FAKE FAKE:  Thurs Dec 8 at 6:21 am
+
+      int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
+      int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
+      reinforce_agent_ptr->plot_zeroth_layer_weights(
+         n_reduced_xdim, n_reduced_ydim, weights_subdir);
       
    } // n_episodes < n_max_episodes while loop
 

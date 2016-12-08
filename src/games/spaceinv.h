@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for spaceinv class 
 // ==========================================================================
-// Last modified on 12/2/16; 12/3/16; 12/4/16; 12/7/16
+// Last modified on 12/3/16; 12/4/16; 12/7/16; 12/8/16
 // ==========================================================================
 
 #ifndef SPACEINV_H
@@ -11,6 +11,7 @@
 #include <SDL.h>
 #include <ale_interface.hpp>
 #include "math/genvector.h"
+#include "image/TwoDarray.h"
 
 class spaceinv
 {
@@ -47,6 +48,7 @@ class spaceinv
    genvector* update_curr_big_state();
    genvector* get_curr_big_state();
    const genvector* get_curr_big_state() const;
+   void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
   private: 
 
@@ -81,6 +83,11 @@ class spaceinv
    genvector *screen1_state_ptr;
    genvector *curr_state_ptr, *next_state_ptr;  // just pointers
 
+// wtwoDarray_ptrs holds pointers to twoDarrays which contain
+// renormalized trained weight values:
+
+   std::vector<twoDarray*> wtwoDarray_ptrs;
+
    void allocate_member_objects();
    void initialize_member_objects();
    void initialize_output_subdirs();
@@ -88,7 +95,6 @@ class spaceinv
    void docopy(const spaceinv& S);
 
    void pingpong_curr_and_next_states();
-
 };
 
 // ==========================================================================
@@ -177,6 +183,11 @@ inline genvector* spaceinv::get_curr_big_state()
 inline const genvector* spaceinv::get_curr_big_state() const
 {
    return curr_big_state_ptr;
+}
+
+inline void spaceinv::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
+{
+   wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
 }
 
 //  enum Action {

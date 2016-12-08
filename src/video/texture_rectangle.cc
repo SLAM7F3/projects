@@ -3818,9 +3818,9 @@ void texture_rectangle::write_curr_frame(
    unsigned int py_start,unsigned int py_stop,
    string output_filename,int n_horiz_output_pixels)
 {
-   outputfunc::write_banner("Writing current subframe to output file:");
-   cout << "inside texture_rectangle::write_curr_frame() #3" << endl;
-   cout << "output_filename = " << output_filename << endl;
+//   outputfunc::write_banner("Writing current subframe to output file:");
+//   cout << "inside texture_rectangle::write_curr_frame() #3" << endl;
+//   cout << "output_filename = " << output_filename << endl;
 
    px_start=basic_math::max(Unsigned_Zero,px_start);
    px_stop=basic_math::min(getWidth()-1,px_stop);
@@ -3837,22 +3837,22 @@ void texture_rectangle::write_curr_frame(
    unsigned int width=basic_math::min(getWidth(),px_stop-px_start+1);
    unsigned int height=basic_math::min(getHeight(),py_stop-py_start+1);
  
-   cout << "px_start = " << px_start << " px_stop = " << px_stop << endl;
-   cout << "py_start = " << py_start << " py_stop = " << py_stop << endl;
-   cout << "width = " << width << " height = " << height << endl;
-   cout << "getHeight() = " << getHeight() << endl;
-   cout << "getWidth() = " << getWidth() << endl;
-   cout << "getNchannels() = " << getNchannels() << endl;
+//   cout << "px_start = " << px_start << " px_stop = " << px_stop << endl;
+//   cout << "py_start = " << py_start << " py_stop = " << py_stop << endl;
+//   cout << "width = " << width << " height = " << height << endl;
+//   cout << "getHeight() = " << getHeight() << endl;
+//   cout << "getWidth() = " << getWidth() << endl;
+//   cout << "getNchannels() = " << getNchannels() << endl;
    
    int subimage_size_in_bytes=width*height*getNchannels();
    unsigned char* m_subimage = new unsigned char[ subimage_size_in_bytes ];
-   cout << "subimage_size_in_bytes = " << subimage_size_in_bytes << endl;
+   //cout << "subimage_size_in_bytes = " << subimage_size_in_bytes << endl;
 
 // Copy image data already read into image's data array into scratch
 // data array m_subimage:
 
    unsigned int p=py_start*getWidth()+px_start;
-   cout << "p = " << p << endl;
+//   cout << "p = " << p << endl;
    unsigned int i=0;
    for (unsigned int h=0; h<height; h++)
    {
@@ -3868,17 +3868,10 @@ void texture_rectangle::write_curr_frame(
       } // loop over w index
    } // loop over h index
 
-   cout << "Before setimage()" << endl;
-
    subimage_ptr->setImage( width,height,GLimageDepth,
                            GLinternalTextureFormat,GLformat,GLtype,
                            m_subimage, allocation_mode, GLpacking );
-
-   cout << "Before writeimage" << endl;
-
    osgDB::writeImageFile(*subimage_ptr,output_filename);
-
-   cout << "before flipVertical" << endl;
    get_image_ptr()->flipVertical();
 
 // If n_horiz_output_pixels > 0, resample image file using

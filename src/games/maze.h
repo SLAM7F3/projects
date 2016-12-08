@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for maze class 
 // ==========================================================================
-// Last modified on 11/13/16; 11/15/16; 11/17/16; 11/18/16
+// Last modified on 11/15/16; 11/17/16; 11/18/16; 12/8/16
 // ==========================================================================
 
 #ifndef MAZE_H
@@ -189,8 +189,8 @@ class maze
    PROBLEM_CELLS_MAP problem_cells_map;
    PROBLEM_CELLS_MAP::iterator problem_cells_iter;
 
-// wtwoDarray_ptr points to a twoDarray which contains renormalized
-// trained weight values:
+// wtwoDarray_ptrs holds pointers to twoDarrays which contain
+// renormalized trained weight values:
 
    std::vector<twoDarray*> wtwoDarray_ptrs;
 

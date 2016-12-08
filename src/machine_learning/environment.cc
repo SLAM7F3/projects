@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 11/26/16; 11/27/16; 12/2/16; 12/7/16
+// Last modified on 11/27/16; 12/2/16; 12/7/16; 12/8/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -21,6 +21,7 @@ using std::vector;
 
 void environment::initialize_member_objects()
 {
+   frame_skip = -1;
    maze_ptr = NULL;
    tictac3d_ptr = NULL;
 
@@ -249,19 +250,6 @@ int environment::get_min_episode_framenumber() const
 }
 
 // ---------------------------------------------------------------------
-int environment::get_frame_skip() const
-{
-   if(world_type == SPACEINV)
-   {
-      return spaceinv_ptr->get_frame_skip();
-   }
-   else
-   {
-      return -1;
-   }
-}
-
-// ---------------------------------------------------------------------
 double environment::get_max_score_per_episode() const
 {
    if(world_type == SPACEINV)
@@ -320,6 +308,15 @@ void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
    else if(world_type == TTT)
    {
       tictac3d_ptr->append_wtwoDarray(wtwoDarray_ptr);
+   }
+   else if(world_type == SPACEINV)
+   {
+      spaceinv_ptr->append_wtwoDarray(wtwoDarray_ptr);
+   }
+   else
+   {
+      cout << "Error in environment::append_wtwoDarray()!" << endl;
+      exit(-1);
    }
 }
 

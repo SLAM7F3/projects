@@ -1093,13 +1093,7 @@ Conclusion from these 4 experiments with identical starting params:
   This set of input params is probably reasonable.  We'll use it as a 
   our latest baseline set of params.
 
-
---------------------
-RUNNING EXPERIMENTS
---------------------
-
-54.  Expt 46 params but with 2 "big" state vectors rather than one small
-"diff" state vector
+54.  Expt 46 params
 
 Wed Dec  7 12:13:00 2016
 Neural net params:
@@ -1128,8 +1122,7 @@ Reasonable loss values.
 After 10K episodes, reward --> 240 with large swings throughout simul.
 nframes/episode --> 3K with large swings.
 
-55.  Expt 46 params but with 2 "big" state vectors rather than one small
-"diff" state vector
+55.  Expt 46 params
 
 Wed Dec  7 12:16:19 2016
 Neural net params:
@@ -1160,8 +1153,7 @@ Reasonable loss values.
 After 10K episodes, reward --> 250 after one giant burst up to 600 when eps
 was decaying to around 0.2.  nframes/episode --> 3K.  Acceptable loss values.
 
-56.  Expt 46 params but with 2 "big" state vectors rather than one small
-"diff" state vector; batch_size --> 16
+56.  Expt 46 params ; batch_size --> 16
 
 Wed Dec  7 12:24:56 2016
 Neural net params:
@@ -1189,8 +1181,7 @@ After 3K episodes, reward --> 70 !!  Nframes/episode --> 2K.  Small loss.
 After 10K episode, reward stayed around 70 and nframes/episode stayed
 around 2K.  Reward never recovered from initial huge fall.
 
-57.  Expt 46 params but with 2 "big" state vectors rather than one small
-"diff" state vector; Nd --> 16
+57.  Expt 46 params ; Nd --> 16
 
 Wed Dec  7 12:26:44 2016
 Neural net params:
@@ -1275,6 +1266,10 @@ After over 7K episodes, reward is around 200 with large swings.
 Conclusion:  Increasing H2 to 64 might be OK, but not sure.
 
 
+--------------------
+RUNNING EXPERIMENTS
+--------------------
+
 64.  m6700: batch_size = 1; Nd = 32; n_anneal_steps = 7; replay mem cap = 20K
 
 Thu Dec  8 04:07:53 2016
@@ -1304,4 +1299,28 @@ Use big states flag = 1
 66.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
 
 67.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
+
+68.  TM: 2 big states rather than one small diff state
+
+Thu Dec  8 05:45:58 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 9152
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 147136 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 7
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
 
