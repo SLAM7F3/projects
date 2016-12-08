@@ -63,13 +63,17 @@ void spaceinv::initialize_member_objects()
 // No screen content influencing game play appears outside following
 // pixel bbox [but which retains top region for mother ship!]:
 
-   min_px = 27;
-   max_px = 133;
-   min_py = 12;
-   max_py = 190;
+//   min_px = 27;
+//   max_px = 133;
+   min_px = 28;
+   max_px = 132;
 
-   n_reduced_xdim = (max_px - min_px) / 2;   // 53
-   n_reduced_ydim = (max_py - min_py) / 2;   // 89
+   min_py = 12;
+   max_py = 188;
+//   max_py = 190;
+
+   n_reduced_xdim = (max_px - min_px) / 2;   // 53  --> 52
+   n_reduced_ydim = (max_py - min_py) / 2;   // 89  --> 88
    n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4717 
 
 // No screen content influencing game play appears before following

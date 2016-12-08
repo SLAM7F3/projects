@@ -346,6 +346,7 @@ MYLIBS = $(LIBDIR)/libspace.a \
 # representing a C++ compiler:
 
 CC = gcc
+# CFLAGS= -g -msse4 -Wall  -I. -I$(INCLUDEDIR)
 CFLAGS= -O3 -msse4 -Wall  -I. -I$(INCLUDEDIR)
 
 CXX = g++
@@ -448,6 +449,7 @@ LD = g++
 
 $(program): $(OBJ) $(MYLIBS) 
 #	$(LD) -pg  $^ $(LIBS) -o $(program)
+#	$(LD) `Magick++-config --ldflags --libs` -pg $^ $(LIBS) -o $(program)
 	$(LD) `Magick++-config --ldflags --libs` -O3 $^ $(LIBS) -o $(program)
 # 	$(LD) $^ $(LIBS) -o $(program)
 

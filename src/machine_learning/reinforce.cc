@@ -1117,6 +1117,12 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
 
 void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
 {
+
+/*
+// WE NEED TO RUN VALGRIND ON THIS METHOD.  IT VERY LIKELY CONTAINS
+// SOME SERIOUS MEMORY ERROR !!!
+
+//   cout << "nx = " << nx << " ny = " << ny << endl;
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    
@@ -1132,9 +1138,6 @@ void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
             max_weight_val, weights[0]->get(n, p));
       }
    } // loop over index n labeling weight images
-
-//   cout << "min_weight_val = " << min_weight_val
-//        << " max_weight_val = " << max_weight_val << endl;
 
 // Renormalize image weight values to range from 0 to 255:
 
@@ -1155,9 +1158,18 @@ void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
          wtwoDarray_ptr->put(pu, pv, curr_weight_val);
       }
 
-      int magnify_factor = 15;
-      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(
-         magnify_factor * nx, magnify_factor * ny);
+//      int magnify_factor = 2;
+      int magnify_factor = 16;
+      int mag_nx = magnify_factor * nx;
+      int mag_ny = magnify_factor * ny;
+      
+
+// On 12/7/16, we discovered that the next twoDarray constructor line
+// can fail for reasons we don't understand...
+
+      cout << "Before enlarged" << endl;
+      twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(mag_nx, mag_ny);
+      cout << "After enlarged" << endl;
 
       for(unsigned int py = 0; py < enlarged_wtwoDarray_ptr->get_mdim(); py++)
       {
@@ -1174,6 +1186,7 @@ void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
       int n_channels = 3;
       texture_rectangle* tr_ptr = new texture_rectangle(
          magnify_factor * nx, magnify_factor * ny, 1, n_channels, NULL);
+
       tr_ptr->convert_single_twoDarray_to_three_channels(
          enlarged_wtwoDarray_ptr, true);
 
@@ -1182,15 +1195,16 @@ void reinforce::plot_zeroth_layer_weights(int nx, int ny, string output_subdir)
 
       string output_filename=output_subdir + 
          "weights_"+stringfunc::integer_to_string(n,3)+".png";
+      cout << "output_filename = " << output_filename << endl;
       tr_ptr->write_curr_frame(output_filename);
       string banner="Exported "+output_filename;
       outputfunc::write_banner(banner);
 
       delete tr_ptr;
-//      delete wtwoDarray_ptr;
       delete enlarged_wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
+*/
 
 }
 

@@ -843,11 +843,6 @@ nframes/episode = 2.5K
 Conclusion : H2 = 16 naively yields poorer results than H2 = 8.  But we
 still strongly suspect that adding more network capacity is wise
 
-
---------------------
-RUNNING EXPERIMENTS
---------------------
-
 46.  Tue Dec  6 15:38:41 2016 (H1 = 16, H2 = 32)
 Neural net params:
    n_layers = 4
@@ -899,6 +894,7 @@ Old weights period = 32
 
 After O(1.5K) episodes, reward very slowly increases (but not much beyond
 random play).  Nframes/episode also slowly increases.
+After O(3K) episodes, reward is not much better than random.
 
 Conclusion:  H2 = 64 probably doesn't hurt. 
 
@@ -924,6 +920,9 @@ n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
 
+After 2K episodes, reward not much better than random play.
+nframes/episode stops evolving after epsilon reaches 0.1
+
 51.  Expt 46 with batch size --> 16 (m6700)
 Wed Dec  7 04:13:01 2016
 Neural net params:
@@ -946,6 +945,11 @@ n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
 
+After 2K episodes, reward --> 250 and continues to climb.  Reasonable loss
+values.  nframes/episode --> 2.5K.  
+
+Conclusion: batch size = 16 is probably reasonable
+
 52.  Expt 46 with Nd --> 16 (m6700)
 Wed Dec  7 04:14:30 2016
 Neural net params:
@@ -967,6 +971,12 @@ Epsilon decay factor = 0.99; minimum epsilon = 0.05
 n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
+
+After 2K episodes, reward --> 255 and continues to climb.
+nframes/episode --> 2.8K and continues to slowly climb.
+Reasonable loss values.  
+
+Conclusion:  Nd = 16 is probably reasonable
 
 53.  Expt 46 repeat (to test that major code changes have not destroyed
 results from yesterday)
@@ -991,6 +1001,10 @@ Epsilon decay factor = 0.99; minimum epsilon = 0.05
 n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
+
+--------------------
+RUNNING EXPERIMENTS
+--------------------
 
 54.  Expt 46 params but with 2 "big" state vectors rather than one small
 "diff" state vector
@@ -1045,7 +1059,6 @@ n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
-
 
 After O(2.7K) episodes, reward --> 280 after having gone over 600 and
 fallen back!  And nframes/episode --> 3K after having gone over 4K.  
@@ -1152,3 +1165,37 @@ n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
+
+60.  m6700: batch_size = 16; Nd = 16; min_eps = 0.1; old weights period = 100
+
+Wed Dec  7 19:29:20 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4576
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 73920 (FC)
+base_learning_rate = 0.0003; batch_size = 16; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 6
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+61.  m6700: copy of expt 60
+   started at 7:30 pm on Weds, Dec 7
+
+62.  m6700: copy of expt 60
+   started at 7:30 pm on Weds, Dec 7
+
+63.  m6700: copy of expt 60
+   started at 7:30 pm on Weds, Dec 7
+

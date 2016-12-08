@@ -56,8 +56,8 @@ int main(int argc, char** argv)
 //   int H1 = 24;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
-   int H2 = 64;
+   int H2 = 32;
+//   int H2 = 64;
 
    int H3 = 0;
 //   int H3 = 8;
@@ -80,8 +80,8 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 10;
-//   int batch_size = 16;
+//   int batch_size = 10;
+   int batch_size = 16;
 //   int batch_size = 20;
 //   int replay_memory_capacity = batch_size * 100;
    int replay_memory_capacity = 5 * 2000;
@@ -112,8 +112,8 @@ int main(int argc, char** argv)
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
 
-   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
-//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
@@ -142,7 +142,8 @@ int main(int argc, char** argv)
 
    int n_episodes_period = 1 * 1000;
 //   int old_weights_period = 10; 
-   int old_weights_period = 32;
+//   int old_weights_period = 32;
+   int old_weights_period = 100;
 //   int old_weights_period = 320;
 
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
@@ -409,13 +410,10 @@ int main(int argc, char** argv)
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
-         if(!use_big_states_flag)
-         {
-            int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
-            int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
-            reinforce_agent_ptr->plot_zeroth_layer_weights(
-               n_reduced_xdim, n_reduced_ydim, weights_subdir);
-         }
+         int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
+         int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
+         reinforce_agent_ptr->plot_zeroth_layer_weights(
+            n_reduced_xdim, n_reduced_ydim, weights_subdir);
 */
 
       }
