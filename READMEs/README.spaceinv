@@ -1265,6 +1265,67 @@ After over 7K episodes, reward is around 200 with large swings.
 
 Conclusion:  Increasing H2 to 64 might be OK, but not sure.
 
+68.  TM: 2 big states rather than one small diff state
+
+Thu Dec  8 05:45:58 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 9152
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 147136 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 7
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+Terminated after 250 episodes.  Reward close to random value.  Frequently
+we observed nabla_weight = 0.  
+
+69.  TM:  2 big states rather than one small diff state; 0th-level weights
+should be plotted; better epsilon annealing; frame skip = 3
+
+Thu Dec  8 08:21:20 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 9152
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 147136 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+Initial epsilon decay factor = 0.95; minimum epsilon = 0.1
+Initial n_anneal_steps = 3
+Learning rate decrease period = 1000 episodes
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+
+Terminated.  Reward and nframes/episode not much better than random play.
+
+70.  TM:  Repeat of expt 69
+
+FALL in reward values after 100 episodes which never recovered in next 150
+episodes.  Miniscule movement in weight values.
+
 
 --------------------
 RUNNING EXPERIMENTS
@@ -1300,59 +1361,24 @@ Use big states flag = 1
 
 67.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
 
-
-68.  TM: 2 big states rather than one small diff state
-
-Thu Dec  8 05:45:58 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 9152
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 6
-   n_weights = 147136 (FC)
-base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 16000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = 32
-Discount factor gamma = 0.99 frame_skip = 1
-Epsilon decay factor = 0.99; minimum epsilon = 0.1
-n_anneal_steps = 7
-Old weights period = 100
-Discard zero reward frac = 0.95
-Use big states flag = 1
-
-69.  TM:  2 big states rather than one small diff state; 0th-level weights
-should be plotted; better epsilon annealing; frame skip = 3
-
-Thu Dec  8 08:21:20 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 9152
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 6
-   n_weights = 147136 (FC)
-base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 10000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = 32
-Discount factor gamma = 0.99
-Initial epsilon decay factor = 0.95; minimum epsilon = 0.1
-Initial n_anneal_steps = 3
-Learning rate decrease period = 1000 episodes
-Old weights period = 100
-Discard zero reward frac = 0.95
-Use big states flag = 1
-Frame skip = 3
-
-70.  TM:  Repeat of expt 69
-
 71.  TM:  Repeat of expt 69
+After 300 episodes:
+
+Reward climbing past 220.  nframes/episode --> 2.8K.  
+Miniscule movement in weights.
+
+
+Conclusion from repeated expts 69, 70, 71:
+  We've seen catastrophic downward movement in reward, basically no
+movement in reward and steadily increasing movement in reward after 300
+episodes.  blr = 3E-4 seems to be too small for this latest set of
+hyperparameters.
+
+
+
+72.
+
+73.
+
+74.
 

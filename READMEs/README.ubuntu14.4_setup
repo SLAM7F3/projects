@@ -270,10 +270,6 @@ _release/libOGDF.a into /usr/local/lib/ . Make sure
 and executable.
 
 
-
-..(continue building on titan 1 from here as of 11:45 pm on Weds, Dec 7, 2016)
-
-
 *.  Unpack philbinj-fastann-1f65a4d/  Chant cmake within main directory
 (and not inside a new build subdir).  Then chant make.
 
@@ -281,6 +277,13 @@ and executable.
 within main dir.  Then chant make.  Manually copy include header files into
 /usr/local/include/trianglepp/ . Manually copy lib/libdel.a to
 /usr/local/lib/
+
+
+
+..(continue building on titan 1 from here as of 12:52 pm on Thurs, Dec 8,
+2016)
+
+
 
 *.  Unpack pngwriter-master.zip (latest version as of Apr 2015; As of Oct
 2015, newer pngwriter version is available via github at
