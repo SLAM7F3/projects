@@ -150,14 +150,14 @@ class reinforce
       const genvector& next_s, bool terminal_state_flag);
    void store_final_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r);
-   double update_neural_network();
+   double update_neural_network(bool verbose_flag = false);
    bool get_memory_replay_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
    double max_Q(genvector& next_s);
    double compute_target(double curr_r, genvector* next_s, 
                          bool terminal_state_flag);
-   double Q_backward_propagate(int d, int Nd);
+   double Q_backward_propagate(int d, int Nd, bool verbose_flag = false);
 
    void set_Q_value(std::string state_action_str, double Qvalue);
    double get_Q_value(std::string state_action_str);

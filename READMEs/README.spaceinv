@@ -1328,7 +1328,7 @@ Use big states flag = 1
 69.  TM:  2 big states rather than one small diff state; 0th-level weights
 should be plotted; better epsilon annealing; frame skip = 3
 
-Thu Dec  8 07:44:33 2016
+Thu Dec  8 08:21:20 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 9152

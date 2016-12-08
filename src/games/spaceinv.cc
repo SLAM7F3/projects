@@ -83,7 +83,7 @@ void spaceinv::initialize_member_objects()
 
    max_score_per_episode = 1000;  // Reasonable guestimate
 
-   n_screen_states = 2;
+   n_screen_states = 1;
    screen_state_counter = 0;
 
    mu_z = 20.2752;	// Estimate from 70 random episodes

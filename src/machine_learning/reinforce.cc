@@ -1149,9 +1149,6 @@ void reinforce::plot_zeroth_layer_weights(
 //      cout << "mag_nrows = " << mag_nrows
 //           << " mag_ncols = " << mag_ncols << endl;
 
-// On 12/7/16, we discovered that the next twoDarray constructor line
-// can fail for reasons we don't understand...
-
       twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(mag_ncols, mag_nrows);
 
       for(unsigned int row = 0; row < enlarged_wtwoDarray_ptr->get_ndim(); 
@@ -2174,6 +2171,8 @@ int reinforce::select_legal_action_for_curr_state()
 
 void reinforce::compute_deep_Qvalues()
 {
+//   cout << "inside reinforce::compute_deep_Qvalues()" << endl;
+   
    vector<genvector*> curr_states = environment_ptr->get_all_curr_states();
    vector<string> curr_state_strings = 
       environment_ptr->get_all_curr_state_strings();
@@ -2462,7 +2461,7 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 // Member function update_neural_network() takes in Nd = number of
 // random samples to be drawn from replay memory.
 
-double reinforce::update_neural_network()
+double reinforce::update_neural_network(bool verbose_flag)
 {
 //   cout << "inside update_neural_network()" << endl;
 //   cout << "episode_number = " << get_episode_number() << endl;
@@ -2473,7 +2472,7 @@ double reinforce::update_neural_network()
    for(unsigned int j = 0; j < d_samples.size(); j++)
    {
       int curr_d = d_samples[j];
-      double curr_loss = Q_backward_propagate(curr_d, Nd);
+      double curr_loss = Q_backward_propagate(curr_d, Nd, verbose_flag);
       if(curr_loss >= 0) total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
 //   cout << "total_loss = " << total_loss << endl;
@@ -2615,20 +2614,23 @@ double reinforce::update_neural_network()
             curr_nabla_weight_ratios);
 //         double mean_abs_adam_m = mathfunc::mean(curr_adam_ms);
             
-         cout << "layer l = " << l
-              << " mean |nabla weight| = " 
-              << mean_abs_nabla_weight 
-              << " mean |nabla weight/weight| = " 
-              << mean_abs_nabla_weight_ratio  << endl;
-         
-         cout << " lr * mean |nabla_weight| = " 
-              << learning_rate * mean_abs_nabla_weight 
-              << "  lr * mean |nabla_weight/weight| = " 
-              << learning_rate * mean_abs_nabla_weight_ratio << endl;
-
+         if(verbose_flag)
+         {
+            cout << "layer l = " << l
+                 << " mean |nabla weight| = " 
+                 << mean_abs_nabla_weight 
+                 << " mean |nabla weight/weight| = " 
+                 << mean_abs_nabla_weight_ratio  << endl;
+            
+            cout << " lr * mean |nabla_weight| = " 
+                 << learning_rate * mean_abs_nabla_weight 
+                 << "  lr * mean |nabla_weight/weight| = " 
+                 << learning_rate * mean_abs_nabla_weight_ratio << endl;
+            
 //         cout << " mean_abs_adam_m = " << mean_abs_adam_m
 //              << " lr * mean_abs_adam_m = " << learning_rate * mean_abs_adam_m
 //              << endl;
+         }
          
       } // debug_flag conditional
       
@@ -2645,9 +2647,8 @@ double reinforce::update_neural_network()
 // ---------------------------------------------------------------------
 // Member function Q_backward_propagate()
 
-double reinforce::Q_backward_propagate(int d, int Nd)
+double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 {
-   cout << "inside Q_backward_propagate()" << endl;
    int t = 0;
 
    // Initialize "batch" weight gradients to zero:
@@ -2673,8 +2674,13 @@ double reinforce::Q_backward_propagate(int d, int Nd)
       d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
    double target_value = 
       compute_target(curr_r, next_s_sample, terminal_state_flag);
-   cout << "  curr_r = " << curr_r << " target_value = " << target_value
-        << endl;
+
+   if(verbose_flag)
+   {
+      cout << "inside Q_backward_propagate()" << endl;
+      cout << "  curr_r = " << curr_r << " target_value = " << target_value
+           << endl;
+   }
 
 // First need to perform forward propagation for *curr_s_sample in
 // order to repopulate linear z inputs and nonlinear a outputs for

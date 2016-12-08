@@ -81,10 +81,9 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 1;
-   int replay_memory_capacity = 10 * batch_size * sqr(n_grid_size);
+   int replay_memory_capacity = 10 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, batch_size, replay_memory_capacity,
+      layer_dims, Tmax, 1, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -253,8 +252,7 @@ int main (int argc, char* argv[])
          update_old_weights_counter = 1;
       }
 
-      if(reinforce_agent_ptr->get_replay_memory_full() && 
-         curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
+      if(reinforce_agent_ptr->get_replay_memory_full())
       {
          total_loss = reinforce_agent_ptr->update_neural_network();
       }

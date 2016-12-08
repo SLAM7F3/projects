@@ -24,6 +24,8 @@ class spaceinv
    spaceinv(const spaceinv& C);
    ~spaceinv();
 
+   void set_n_screen_states(int n);
+   int get_n_screen_states() const;
    int get_n_reduced_xdim() const;
    int get_n_reduced_ydim() const;
 
@@ -102,6 +104,16 @@ class spaceinv
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void spaceinv::set_n_screen_states(int n)
+{
+   n_screen_states = n;
+}
+
+inline int spaceinv::get_n_screen_states() const
+{
+   return n_screen_states;
+}
 
 inline int spaceinv::get_n_reduced_xdim() const
 {

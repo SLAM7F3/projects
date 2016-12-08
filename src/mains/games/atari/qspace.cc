@@ -37,6 +37,9 @@ int main(int argc, char** argv)
 
    spaceinv *spaceinv_ptr = new spaceinv();
    int n_actions = 6;
+//   int n_screen_states = 1;
+   int n_screen_states = 2;
+   spaceinv_ptr->set_n_screen_states(n_screen_states);
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
@@ -44,9 +47,11 @@ int main(int argc, char** argv)
    environment game_world(environment::SPACEINV);
    game_world.set_spaceinv(spaceinv_ptr);
 
-     bool use_big_states_flag = true;
-//  bool use_big_states_flag = false;
-
+   bool use_big_states_flag = false;
+   if(n_screen_states > 1)
+   {
+      use_big_states_flag = true;
+   }
    game_world.set_use_big_states_flag(use_big_states_flag);
    game_world.set_frame_skip(3);
 
@@ -184,6 +189,8 @@ int main(int argc, char** argv)
                  << discard_0_reward_frac << endl;
    params_stream << "Use big states flag = " << use_big_states_flag << endl;
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
+   params_stream << "1 big state = n_screen_states = "
+                 << spaceinv_ptr->get_n_screen_states() << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -357,7 +364,9 @@ int main(int argc, char** argv)
 
       if(reinforce_agent_ptr->get_replay_memory_full())
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         bool verbose_flag = true;
+         total_loss = reinforce_agent_ptr->update_neural_network(
+            verbose_flag);
       }
 
 // Periodically anneal epsilon:
@@ -438,11 +447,14 @@ int main(int argc, char** argv)
 
          int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
          int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
+         if(use_big_states_flag)
+         {
+            n_reduced_ydim *= n_screen_states;
+         }
          reinforce_agent_ptr->plot_zeroth_layer_weights(
             n_reduced_xdim, n_reduced_ydim, weights_subdir);
-
       }
-      
+
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
