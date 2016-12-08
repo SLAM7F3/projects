@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/4/16; 12/5/16; 12/6/16; 12/7/16
+// Last updated on 12/5/16; 12/6/16; 12/7/16; 12/8/16
 // ==========================================================================
 
 #include <iostream>
@@ -80,12 +80,13 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
+   int batch_size = 1;
 //   int batch_size = 10;
-   int batch_size = 16;
+//   int batch_size = 16;
 //   int batch_size = 20;
 //   int replay_memory_capacity = batch_size * 100;
-   int replay_memory_capacity = 5 * 2000;
-//   int replay_memory_capacity = 10 * 2000;
+//   int replay_memory_capacity = 5 * 2000;
+   int replay_memory_capacity = 10 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
@@ -113,7 +114,8 @@ int main(int argc, char** argv)
    filefunc::dircreate(weights_subdir);
 
 //   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
-   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
@@ -152,8 +154,8 @@ int main(int argc, char** argv)
    const double discard_0_reward_frac = 0.95;  
 
 //   int n_anneal_steps = 5;
-   int n_anneal_steps = 6;
-//   int n_anneal_steps = 7;
+//   int n_anneal_steps = 6;
+   int n_anneal_steps = 7;
    int n_update = 5;
    int n_summarize = 5;
    int n_snapshot = 100;

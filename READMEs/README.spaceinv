@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Space Invaders
 ==========================================================================
-Last updated on 12/4/16; 12/5/16; 12/6/16; 12/7/16
+Last updated on 12/5/16; 12/6/16; 12/7/16; 12/8/16
 ==========================================================================
 
 Random play results:
@@ -16,6 +16,36 @@ Median nframes/episode +/- quartile width = 2057 +/- 375
 
 BEST AGENT RESULTS SO FAR
 -------------------------
+
+60.  batch_size = 16; Nd = 16; min_eps = 0.1; old weights period = 100
+Wed Dec  7 19:29:20 2016 on m6700
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4576
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 73920 (FC)
+base_learning_rate = 0.0003; batch_size = 16; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 6
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+After O(1.7K) episodes:
+ reasonable loss values
+ reward --> 230 and increasing
+ nframes/episode --> 2.4K and slowly increasing
+ gentle evolution of all weights
+
 
 46.  Tue Dec  6 15:38:41 2016 (H1 = 16, H2 = 32)
 Neural net params:
@@ -1002,6 +1032,68 @@ n_anneal_steps = 6
 Old weights period = 32
 Discard zero reward frac = 0.95
 
+60.  m6700: batch_size = 16; Nd = 16; min_eps = 0.1; old weights period = 100
+
+Wed Dec  7 19:29:20 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4576
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 73920 (FC)
+base_learning_rate = 0.0003; batch_size = 16; n_max_episodes = 16000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99 frame_skip = 1
+Epsilon decay factor = 0.99; minimum epsilon = 0.1
+n_anneal_steps = 6
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+
+After O(1.7K) episodes:
+ reasonable loss values
+ reward --> 230 and increasing
+ nframes/episode --> 2.4K and slowly increasing
+ gentle evolution of all weights
+
+61.  m6700: copy of expt 60
+   started at 7:30 pm on Weds, Dec 7
+
+After O(1.8K) episodes:
+  reasonable loss values
+  reward --> 100 !! and decreasing
+  nframes/episode --> 2K 
+  gentle evolution of all weights
+
+62.  m6700: copy of expt 60
+   started at 7:30 pm on Weds, Dec 7
+After O(1.7K) episodes
+   reasonable loss values
+   reward --> 230 and increasing
+   nframes/episode --> 2.4K and slowly increasing
+    gentle evolution of all weights
+
+63.  m6700: copy of expt 60
+   started at 7:30 pm on Weds, Dec 7
+After O(1.8K) episodes
+   reasonable loss values
+   reward --> 180 and increasing after having decreaseed
+   nframes/episode --> 2.4K and slowly increasing
+   gentle evolution of all weights
+
+Conclusion from these 4 experiments with identical starting params:
+
+  Large random variation in agent performance at least after O(2K) episodes.
+  This set of input params is probably reasonable.  We'll use it as a 
+  our latest baseline set of params.
+
+
 --------------------
 RUNNING EXPERIMENTS
 --------------------
@@ -1033,7 +1125,8 @@ Use big states flag = 1
 
 After O(3K) episodes, reward --> 300 !!  And nframes/episode --> 3K.
 Reasonable loss values.
-
+After 10K episodes, reward --> 240 with large swings throughout simul.
+nframes/episode --> 3K with large swings.
 
 55.  Expt 46 params but with 2 "big" state vectors rather than one small
 "diff" state vector
@@ -1064,6 +1157,9 @@ After O(2.7K) episodes, reward --> 280 after having gone over 600 and
 fallen back!  And nframes/episode --> 3K after having gone over 4K.  
 Reasonable loss values.
 
+After 10K episodes, reward --> 250 after one giant burst up to 600 when eps
+was decaying to around 0.2.  nframes/episode --> 3K.  Acceptable loss values.
+
 56.  Expt 46 params but with 2 "big" state vectors rather than one small
 "diff" state vector; batch_size --> 16
 
@@ -1090,6 +1186,8 @@ Discard zero reward frac = 0.95
 Use big states flag = 1
 
 After 3K episodes, reward --> 70 !!  Nframes/episode --> 2K.  Small loss.
+After 10K episode, reward stayed around 70 and nframes/episode stayed
+around 2K.  Reward never recovered from initial huge fall.
 
 57.  Expt 46 params but with 2 "big" state vectors rather than one small
 "diff" state vector; Nd --> 16
@@ -1119,6 +1217,9 @@ Use big states flag = 1
 After 2.5K episodes, reward --> 240.  Nframes/episode --> 2.5K.  Acceptable
 loss values.
 
+After 5K episodes, reward --> 220 after large swings.  Nframes/episode -->
+2.8K after also large swings.
+
 58.  H2 --> 64, min_eps = 0.1
 
 Wed Dec  7 15:35:11 2016
@@ -1143,6 +1244,8 @@ Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
 
+After 8K episodes, reward is below 100!  nframes/episode is below 2K.
+
 59.  Repeat expt 58: H2 --> 64, min_eps = 0.1
 Wed Dec  7 15:35:23 2016
 Neural net params:
@@ -1166,9 +1269,15 @@ Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
 
-60.  m6700: batch_size = 16; Nd = 16; min_eps = 0.1; old weights period = 100
+After over 7K episodes, reward is around 200 with large swings.
+  nframes/episode --> 2.6K
 
-Wed Dec  7 19:29:20 2016
+Conclusion:  Increasing H2 to 64 might be OK, but not sure.
+
+
+64.  m6700: batch_size = 1; Nd = 32; n_anneal_steps = 7; replay mem cap = 20K
+
+Thu Dec  8 04:07:53 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 4576
@@ -1176,26 +1285,23 @@ Neural net params:
    layer = 2 n_nodes = 32
    layer = 3 n_nodes = 6
    n_weights = 73920 (FC)
-base_learning_rate = 0.0003; batch_size = 16; n_max_episodes = 16000
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 16000
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0
-Replay memory capacity = 10000
-Number random samples drawn from replay memory Nd = 16
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
 Discount factor gamma = 0.99 frame_skip = 1
 Epsilon decay factor = 0.99; minimum epsilon = 0.1
-n_anneal_steps = 6
+n_anneal_steps = 7
 Old weights period = 100
 Discard zero reward frac = 0.95
 Use big states flag = 1
 
-61.  m6700: copy of expt 60
-   started at 7:30 pm on Weds, Dec 7
+65.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
 
-62.  m6700: copy of expt 60
-   started at 7:30 pm on Weds, Dec 7
+66.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
 
-63.  m6700: copy of expt 60
-   started at 7:30 pm on Weds, Dec 7
+67.  m6700: repeat expt 64 around 4 am on Thurs Dec 8
 
