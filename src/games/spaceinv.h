@@ -20,10 +20,11 @@ class spaceinv
 
 // Initialization, constructor and destructor functions:
 
-   spaceinv();
+   spaceinv(int n_screen_states);
    spaceinv(const spaceinv& C);
    ~spaceinv();
 
+   int get_n_screen_states() const;
    int get_n_reduced_xdim() const;
    int get_n_reduced_ydim() const;
 
@@ -102,6 +103,12 @@ class spaceinv
 // ==========================================================================
 
 // Set and get member functions:
+
+
+inline int spaceinv::get_n_screen_states() const
+{
+   return n_screen_states;
+}
 
 inline int spaceinv::get_n_reduced_xdim() const
 {

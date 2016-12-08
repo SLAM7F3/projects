@@ -83,7 +83,6 @@ void spaceinv::initialize_member_objects()
 
    max_score_per_episode = 1000;  // Reasonable guestimate
 
-   n_screen_states = 2;
    screen_state_counter = 0;
 
    mu_z = 20.2752;	// Estimate from 70 random episodes
@@ -140,8 +139,9 @@ genvector* spaceinv::update_curr_big_state()
 }
 
 // ---------------------------------------------------------------------
-spaceinv::spaceinv()
+spaceinv::spaceinv(int n_screen_states)
 {
+   this->n_screen_states = n_screen_states;
    initialize_member_objects();
    allocate_member_objects();
 }
