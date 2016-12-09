@@ -1,6 +1,7 @@
-// ==========================================================================// reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/5/16; 12/6/16; 12/7/16; 12/8/16
+// reinforce class member function definitions
+// ==========================================================================
+// Last modified on 12/6/16; 12/7/16; 12/8/16; 12/9/16
 // ==========================================================================
 
 #include <string>
@@ -1048,7 +1049,9 @@ void reinforce::summarize_parameters(string params_filename)
                  << Nd << endl;
    params_stream << "Discount factor gamma = " << gamma 
                  << endl;
-   params_stream << "Initial epsilon decay factor = " << epsilon_decay_factor
+//   params_stream << "Initial epsilon decay factor = " << epsilon_decay_factor
+//                 << "; minimum epsilon = " << min_epsilon << endl;
+   params_stream << "Epsilon time constant = " << epsilon_tau
                  << "; minimum epsilon = " << min_epsilon << endl;
    filefunc::closefile(params_filename, params_stream);
 }
@@ -2095,7 +2098,7 @@ int reinforce::get_random_legal_action() const
 }
 
 // ---------------------------------------------------------------------
-// Member function anneal_epsilon()
+// Member function 
 
 void reinforce::set_epsilon(double eps)
 {
@@ -2107,27 +2110,27 @@ double reinforce::get_epsilon() const
    return epsilon;
 }
 
-void reinforce::set_epsilon_decay_factor(double decay)
-{
-   epsilon_decay_factor = decay;
-}
-
 void reinforce::set_min_epsilon(double min_eps)
 {
    min_epsilon = min_eps;
 }
 
-double reinforce::anneal_epsilon()
+void reinforce::set_epsilon_time_constant(double tau)
 {
-   if(epsilon < min_epsilon)
+   epsilon_tau = tau;
+}
+
+double reinforce::exponentially_decay_epsilon(double t, double tstart)
+{
+   if(t < tstart)
    {
-      epsilon = min_epsilon;
+      epsilon = 1;
    }
    else
    {
-      epsilon *= epsilon_decay_factor;
+      epsilon = min_epsilon + (1 - min_epsilon) * 
+         exp(- (t - tstart) / epsilon_tau);
    }
-//    cout << "epsilon = " << epsilon << endl;
    return epsilon;
 }
 

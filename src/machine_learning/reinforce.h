@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/5/16; 12/6/16; 12/7/16; 12/8/16
+// Last modified on 12/6/16; 12/7/16; 12/8/16; 12/9/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -133,9 +133,9 @@ class reinforce
 
    void set_epsilon(double eps);
    double get_epsilon() const;
-   void set_epsilon_decay_factor(double decay);
    void set_min_epsilon(double min_eps);
-   double anneal_epsilon();
+   void set_epsilon_time_constant(double tau);
+   double exponentially_decay_epsilon(double t, double tstart);
 
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
@@ -275,6 +275,8 @@ class reinforce
    double epsilon;	// Select random action with probability epsilon
    double epsilon_decay_factor;
    double min_epsilon;  // Minimal value for annealed epsilon
+   double epsilon_tau; // Exponential time constant for epsilon
+
    genmatrix *s_curr;  // replay_memory_capacity x Din
    genvector *a_curr;  // replay_memory_capacity x 1 (Holds action indices)
    genvector *r_curr;  // replay_memory_capacity x 1  (Holds rewards)

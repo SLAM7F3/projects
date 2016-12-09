@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/5/16; 12/6/16; 12/7/16; 12/8/16
+// Last updated on 12/6/16; 12/7/16; 12/8/16; 12/9/16
 // ==========================================================================
 
 #include <iostream>
@@ -127,10 +127,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   double eps_decay_factor = 0.95; 
-   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
-
-//   double min_epsilon = 0.05; 
+   reinforce_agent_ptr->set_epsilon_time_constant(200);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -151,7 +148,6 @@ int main(int argc, char** argv)
 
    const double discard_0_reward_frac = 0.95;  
 
-   int n_anneal_steps = 3;
    int n_update = 5;
    int n_summarize = 5;
    int n_snapshot = 50;
@@ -182,7 +178,6 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->summarize_parameters(params_filename);
    ofstream params_stream;
    filefunc::appendfile(params_filename, params_stream);
-   params_stream << "Initial n_anneal_steps = " << n_anneal_steps << endl;
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period << endl;
@@ -365,41 +360,10 @@ int main(int argc, char** argv)
             verbose_flag);
       }
 
-// Periodically anneal epsilon:
+// Expontentially decay epsilon:
 
-      if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
-      {
-         reinforce_agent_ptr->anneal_epsilon();
-
-// Increase n_anneal_steps and epsilon decay factor as epsilon
-// decreases:
-
-         if(reinforce_agent_ptr->get_epsilon() < 0.9)
-         {
-            n_anneal_steps = 4;
-            reinforce_agent_ptr->set_epsilon_decay_factor(0.96);
-         }
-         else if(reinforce_agent_ptr->get_epsilon() < 0.7)
-         {
-            n_anneal_steps = 5;
-            reinforce_agent_ptr->set_epsilon_decay_factor(0.97);
-         }
-         else if(reinforce_agent_ptr->get_epsilon() < 0.5)
-         {
-            n_anneal_steps = 6;
-            reinforce_agent_ptr->set_epsilon_decay_factor(0.98);
-         }
-         else if(reinforce_agent_ptr->get_epsilon() < 0.3)
-         {
-            n_anneal_steps = 7;
-            reinforce_agent_ptr->set_epsilon_decay_factor(0.99);
-         }
-         else if(reinforce_agent_ptr->get_epsilon() < 0.2)
-         {
-            reinforce_agent_ptr->set_epsilon_decay_factor(0.999);
-            n_anneal_steps = 8;
-         }
-      }
+      reinforce_agent_ptr->exponentially_decay_epsilon(
+         curr_episode_number, 30);
 
 // Periodically write status info to text console:
 
