@@ -63,17 +63,19 @@ void spaceinv::initialize_member_objects()
 // No screen content influencing game play appears outside following
 // pixel bbox [but which retains top region for mother ship!]:
 
-//   min_px = 27;
-//   max_px = 133;
-   min_px = 28;
-   max_px = 132;
+   min_px = 20;
+   max_px = 140;
+   min_py = 10;
+   max_py = 190;
 
-   min_py = 12;
-   max_py = 188;
-//   max_py = 190;
+//   min_px = 28;
+//   max_px = 132;
+//   min_py = 12;
+//   max_py = 188;
 
-   n_reduced_xdim = (max_px - min_px) / 2;   // 53  --> 52
-   n_reduced_ydim = (max_py - min_py) / 2;   // 89  --> 88
+   n_reduced_xdim = (max_px - min_px) / 2;   // 52  --> 60
+//   n_reduced_ydim = (max_py - min_py) / 2;   // 88  --> 90
+   n_reduced_ydim = (max_py - min_py) / 3;   // 88  --> 90
    n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 4717 
 
 // No screen content influencing game play appears before following
@@ -83,7 +85,6 @@ void spaceinv::initialize_member_objects()
 
    max_score_per_episode = 1000;  // Reasonable guestimate
 
-   n_screen_states = 1;
    screen_state_counter = 0;
 
    mu_z = 20.2752;	// Estimate from 70 random episodes
@@ -140,8 +141,9 @@ genvector* spaceinv::update_curr_big_state()
 }
 
 // ---------------------------------------------------------------------
-spaceinv::spaceinv()
+spaceinv::spaceinv(int n_screen_states)
 {
+   this->n_screen_states = n_screen_states;
    initialize_member_objects();
    allocate_member_objects();
 }
@@ -336,6 +338,8 @@ void spaceinv::crop_pool_curr_frame(bool export_frames_flag)
 //   cout << "inside spaceinv::crop_pool_curr_frame()" << endl;
 //   cout << "curr framenumber = " << curr_framenumber << endl;
 
+
+
 // Retrieve curr frame's greyscale pixel values:
 
    grayscale_output_buffer.clear();
@@ -366,28 +370,53 @@ void spaceinv::crop_pool_curr_frame(bool export_frames_flag)
    genvector *curr_screen_state_ptr = screen_state_ptrs[
       screen_state_counter % n_screen_states];
 
+   pooled_byte_array_ptr = &pooled_byte_array0;
+
 // rskip x cskip max pool cropped center for current frame:
 
    int reduced_pixel_counter = 0;
-   const int rskip = 2;
+   const int rskip = 3;
+//   const int rskip = 2;
    const int cskip = 2;
    for(unsigned int r = 0; r < byte_array.size(); r += rskip)
    {
+      vector<unsigned char> pooled_byte_row;
       for (unsigned int c = 0; c < byte_array[0].size(); c+= cskip)
       {
          unsigned char z00 = byte_array[r][c];
          unsigned char z01 = byte_array[r][c+1];
          unsigned char z10 = byte_array[r+1][c];
          unsigned char z11 = byte_array[r+1][c+1];
-         unsigned char max_z = basic_math::max(z00, z01, z10, z11);
+         unsigned char z20 = byte_array[r+2][c];
+         unsigned char z21 = byte_array[r+2][c+1];
+         unsigned char max_z = basic_math::max(z00, z01, z10, z11, z20, z21);
 
          double zpool(max_z);
+
          double ren_zpool = (zpool - mu_z) / sigma_z;
          curr_screen_state_ptr->put(reduced_pixel_counter, ren_zpool);
          reduced_pixel_counter++;
 
+         pooled_byte_row.push_back(max_z);
       } // loop over index c
+      pooled_byte_array_ptr->push_back(pooled_byte_row);
    } // loop over index r
+
+   if(export_frames_flag)
+   {
+      string pooled_frame = pooled_subdir+"pooled_frame_"+
+         stringfunc::integer_to_string(curr_framenumber,5)+".png";
+      videofunc::write_8bit_greyscale_pngfile(
+         *pooled_byte_array_ptr, pooled_frame);
+   }
+
+// Clear other pooled byte array:
+   for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); py++)
+   {
+      pooled_byte_array_ptr->at(py).clear();
+   }
+   pooled_byte_array_ptr->clear();
+
 }
 
 void spaceinv::mu_and_sigma_for_pooled_zvalues()

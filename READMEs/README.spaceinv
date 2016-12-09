@@ -1373,7 +1373,6 @@ After 300 episodes:
 Reward climbing past 220.  nframes/episode --> 2.8K.  
 Miniscule movement in weights.
 
-
 Conclusion from repeated expts 69, 70, 71:
   We've seen catastrophic downward movement in reward, basically no
 movement in reward and steadily increasing movement in reward after 300
@@ -1381,10 +1380,68 @@ episodes.  blr = 3E-4 seems to be too small for this latest set of
 hyperparameters.
 
 
+72.  TM Thurs pm; Different Xavier init; BLR = 3E-3; aggresive eps
+annealing; Write all (including repeat action) SARS' tuples to replay
+memory
 
-72.
+Thu Dec  8 13:30:50 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 9152
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 147136 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 10000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+Initial epsilon decay factor = 0.95; minimum epsilon = 0.1
+Initial n_anneal_steps = 3
+Learning rate decrease period = 1000 episodes
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
 
-73.
+73  TM: Repeat of expt 72
 
-74.
+74  TM:  Repeat of expt 72
 
+75.  TM:  3x2 max pooling --> 60x60 = 3600 nodes in input layer; also
+decrease Tmax down to 3K.
+
+Thu Dec  8 20:08:29 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 7200
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 115904 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+Initial epsilon decay factor = 0.95; minimum epsilon = 0.1
+Initial n_anneal_steps = 3
+Learning rate decrease period = 1000 episodes
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+
+
+76.  TM: repeat expt 75
+
+77.  TM repeat expt 75

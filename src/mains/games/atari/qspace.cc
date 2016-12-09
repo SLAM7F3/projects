@@ -35,11 +35,10 @@ int main(int argc, char** argv)
 
 // Instantiate Space Invaders ALE game:
 
-   spaceinv *spaceinv_ptr = new spaceinv();
-   int n_actions = 6;
 //   int n_screen_states = 1;
    int n_screen_states = 2;
-   spaceinv_ptr->set_n_screen_states(n_screen_states);
+   spaceinv *spaceinv_ptr = new spaceinv(n_screen_states);
+   int n_actions = 6;
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
@@ -60,7 +59,7 @@ int main(int argc, char** argv)
    int Din = game_world.get_curr_state()->get_mdim();   // Input layer dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
-   int n_max_episodes = 10 * 1000;
+   int n_max_episodes = 3 * 1000;
    int Tmax = n_max_episodes;
 
    int H1 = 16;
@@ -121,8 +120,10 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
+
+   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
@@ -275,11 +276,8 @@ int main(int argc, char** argv)
          }
          Action a = minimal_actions[curr_a];
          double curr_reward = spaceinv_ptr->get_ale().act(a);
-         cum_reward += curr_reward;
-
-//         double renorm_reward = curr_reward /
-//            game_world.get_max_score_per_episode();
          double renorm_reward = curr_reward / 10.0;
+         cum_reward += curr_reward;
 
 // Experiment with rewarding agent for living (bad results so far)
 
@@ -290,9 +288,13 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
 
-         if(!state_updated_flag && !game_world.get_game_over()) continue;
-
-         genvector* next_s = game_world.compute_next_state(a);
+         if(renorm_reward > live_timestep_reward)
+         {
+            cout << "episode = " << curr_episode_number
+                 << " frame = " << curr_frame_number
+                 << " curr_reward = " << curr_reward
+                 << " renorm_reward = " << renorm_reward << endl;
+         }
 
          if(game_world.get_game_over())
          {
@@ -313,6 +315,7 @@ int main(int argc, char** argv)
          }
          else if (n_state_updates > 2)
          {
+            genvector* next_s = game_world.compute_next_state(a);
 
 // As of 6:45 am on Mon Dec 5, we experiment with discarding some
 // fraction of zero reward states in order to increase chances of
@@ -328,13 +331,6 @@ int main(int argc, char** argv)
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
 
-            if(renorm_reward > live_timestep_reward)
-            {
-               cout << "episode = " << curr_episode_number
-                    << " frame = " << curr_frame_number
-                    << " curr_reward = " << curr_reward
-                    << " renorm_reward = " << renorm_reward << endl;
-            }
          }
       } // game_over while loop
 

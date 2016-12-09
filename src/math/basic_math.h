@@ -4,7 +4,7 @@
 // does NOT exist a "basic_math.cc" file corresponding to this
 // "basic_math.h" file.
 // ==========================================================================
-// Last updated on 6/23/05; 3/21/08; 9/5/08; 8/19/16
+// Last updated on 3/21/08; 9/5/08; 8/19/16; 12/8/16
 // ==========================================================================
 
 #ifndef BASIC_MATH_H
@@ -141,6 +141,11 @@ namespace basic_math
       return max(a,max(w,x,y,z));
    }
 
+   template <class T> inline T max(T w,T x,T y,T z,T a, T b)
+   {
+      return max(b,max(w,x,y,z,a));
+   }
+
    template <class T> inline T min(T x,T y)
    {
       if (x < y)
@@ -166,6 +171,11 @@ namespace basic_math
    template <class T> inline T min(T w,T x,T y,T z,T a)
    {
       return min(a,min(w,x,y,z));
+   }
+
+   template <class T> inline T min(T w,T x,T y,T z,T a, T b)
+   {
+      return min(b,min(w,x,y,z,a));
    }
 
 } // basic_math namespace

@@ -1149,6 +1149,9 @@ void reinforce::plot_zeroth_layer_weights(
 //      cout << "mag_nrows = " << mag_nrows
 //           << " mag_ncols = " << mag_ncols << endl;
 
+// On 12/7/16, we discovered that the next twoDarray constructor line
+// can fail for reasons we don't understand...
+
       twoDarray* enlarged_wtwoDarray_ptr = new twoDarray(mag_ncols, mag_nrows);
 
       for(unsigned int row = 0; row < enlarged_wtwoDarray_ptr->get_ndim(); 
@@ -2171,8 +2174,6 @@ int reinforce::select_legal_action_for_curr_state()
 
 void reinforce::compute_deep_Qvalues()
 {
-//   cout << "inside reinforce::compute_deep_Qvalues()" << endl;
-   
    vector<genvector*> curr_states = environment_ptr->get_all_curr_states();
    vector<string> curr_state_strings = 
       environment_ptr->get_all_curr_state_strings();
@@ -2649,6 +2650,7 @@ double reinforce::update_neural_network(bool verbose_flag)
 
 double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 {
+
    int t = 0;
 
    // Initialize "batch" weight gradients to zero:
