@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Space Invaders
 ==========================================================================
-Last updated on 12/5/16; 12/6/16; 12/7/16; 12/8/16; 12/9/16
+Last updated on 12/6/16; 12/7/16; 12/8/16; 12/9/16
 ==========================================================================
 
 Random play results:
@@ -1400,6 +1400,12 @@ of square blockers plus score digits at top.  Low values for loss function.
 
 Similar results to those for expt 75
 
+77.  m6700: repeat expt 75
+
+After 900 episodes, reward --> 200 and continues to slowly rise.
+nframes/episode --> 2.7K.  small loss values.  0th layer weights show signs
+of square blockers and score digits at top.  
+
 --------------------
 RUNNING EXPERIMENTS
 --------------------
@@ -1450,12 +1456,6 @@ Frame skip = 3
 
 74  TM:  Repeat of expt 72
 
-77.  m6700: repeat expt 75
-
-After 900 episodes, reward --> 200 and continues to slowly rise.
-nframes/episode --> 2.7K.  small loss values.  0th layer weights show signs
-of square blockers and score digits at top.  
-
 
 78  m6700:  Work with expontentially decaying epsilon
 
@@ -1484,3 +1484,5 @@ Frame skip = 3
 1 big state = n_screen_states = 2
 
 79  m6700: repeat of expt 78
+
+80 m6700: repeat of expt 78
