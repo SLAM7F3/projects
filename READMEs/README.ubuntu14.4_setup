@@ -30,6 +30,10 @@ order for curl headers to be installed inside /usr/include/curl:
     sudo apt-get install libcggl
     sudo apt-get install libglew-dev
     sudo apt-get install libncurses5-dev
+    sudo apt-get install libxmu-dev
+    sudo apt-get install libsqlite3-dev
+    sudo apt-get install freeglut3-dev
+
 
 Install all of those packages:
 
@@ -258,10 +262,10 @@ sudo apt-get install libfftw3-dev]
 *.  Unpack and install (via cmake) libsiftfast-1.2.tgz.  Latest version as
 of Oct 2015.
 
-*.  Unpack and install lmfit-3.5.tgz.  We may need
+*.  Unpack and install lmfit-3.5.tgz.  We very likely need to get
 /usr/local/lib/liblmmin.a which comes from this older version of lmfit.
-Then unpack and install lmfit-5.1.tgz.  This newer version of lmfit does
-not install any version of liblmmin.a . 
+Then unpack and install lmfit-5.1.tgz.  Be sure to chant sudo make install.
+This newer version of lmfit does not install any version of liblmmin.a .
 
 *.  Unpack and install mallet-2.0.7.  (Latest version as of Apr 2015 =
 mallet-2.0.7; latest version as of Oct 2015 = mallet-2.0.8RC2).  Chant ant
@@ -335,7 +339,6 @@ line 200:
 //        inline bool isNaN(double v) { return isnan(v); }
     #endif
 #endif
-
 
 
 *.  Unpack Arcade-Learning-Environment_070416.tgz directly within

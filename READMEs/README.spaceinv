@@ -1562,3 +1562,7 @@ Frame skip = 3
 85.  TM : repeat of expt 84
 
 86.  TM : repeat of expt 84
+
+87.  Fly1:  Expt 84 but with n_screen_states = 2
+
+88.  Fly1:  Expt 84 but with n_screen_states = 2
