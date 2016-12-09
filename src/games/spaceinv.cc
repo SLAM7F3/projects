@@ -1,7 +1,7 @@
 // ==========================================================================
 // spaceinv class member function definitions
 // ==========================================================================
-// Last modified on 12/4/16; 12/5/16; 12/7/16; 12/8/16
+// Last modified on 12/5/16; 12/7/16; 12/8/16; 12/9/16
 // ==========================================================================
 
 #include <iostream>
@@ -59,6 +59,7 @@ void spaceinv::initialize_member_objects()
    ale.setBool("display_screen", false);
 //   ale.setBool("display_screen", true);
    ale.loadROM("/usr/local/ALE/roms/space_invaders.bin");
+
 
 // No screen content influencing game play appears outside following
 // pixel bbox [but which retains top region for mother ship!]:
@@ -419,6 +420,7 @@ void spaceinv::crop_pool_curr_frame(bool export_frames_flag)
 
 }
 
+// ---------------------------------------------------------------------
 void spaceinv::mu_and_sigma_for_pooled_zvalues()
 {
    double mu, sigma;
@@ -426,4 +428,15 @@ void spaceinv::mu_and_sigma_for_pooled_zvalues()
    cout << "pooled_scrn_values.size = " << pooled_scrn_values.size()
         << endl;
    cout << "mu = " << mu << " sigma = " << sigma << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function save_screen() writes out an RGB image corresponding
+// to the current ALE screen.
+
+void spaceinv::save_screen(string curr_screen_filename)
+{
+   string curr_screen_path = screen_exports_subdir + curr_screen_filename;
+   screen_exporter_ptr->save(ale.getScreen(), curr_screen_path);
+//   cout << "Exported " << curr_screen_path << endl;
 }

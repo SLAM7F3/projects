@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for spaceinv class 
 // ==========================================================================
-// Last modified on 12/3/16; 12/4/16; 12/7/16; 12/8/16
+// Last modified on 12/4/16; 12/7/16; 12/8/16; 12/9/16
 // ==========================================================================
 
 #ifndef SPACEINV_H
@@ -51,6 +51,9 @@ class spaceinv
    const genvector* get_curr_big_state() const;
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
+   void set_screen_exports_subdir(std::string subdir);
+   void save_screen(std::string curr_screen_filename);  
+
   private: 
 
    int random_seed;
@@ -66,6 +69,7 @@ class spaceinv
    double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
    std::string output_subdir, orig_subdir, pooled_subdir, differenced_subdir;
+   std::string screen_exports_subdir;
 
    std::vector<unsigned char> grayscale_output_buffer;
 
@@ -88,6 +92,8 @@ class spaceinv
 // renormalized trained weight values:
 
    std::vector<twoDarray*> wtwoDarray_ptrs;
+
+   ScreenExporter* screen_exporter_ptr;
 
    void allocate_member_objects();
    void initialize_member_objects();
@@ -196,6 +202,13 @@ inline void spaceinv::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
 {
    wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
 }
+
+inline void spaceinv::set_screen_exports_subdir(std::string subdir)
+{
+   screen_exports_subdir = subdir;
+   screen_exporter_ptr = ale.createScreenExporter(screen_exports_subdir);
+}
+
 
 //  enum Action {
 //  PLAYER_A_NOOP           = 0,

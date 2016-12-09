@@ -36,7 +36,8 @@ int main(int argc, char** argv)
 // Instantiate Space Invaders ALE game:
 
 //   int n_screen_states = 1;
-   int n_screen_states = 2;
+//   int n_screen_states = 2;
+   int n_screen_states = 3;
    spaceinv *spaceinv_ptr = new spaceinv(n_screen_states);
    int n_actions = 6;
 
@@ -113,6 +114,9 @@ int main(int argc, char** argv)
 
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
+   string screen_exports_subdir = output_subdir+"screen_exports/";
+   filefunc::dircreate(screen_exports_subdir);
+   spaceinv_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
 //   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
@@ -325,8 +329,22 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
-
          }
+
+// Periodically save an episode's worth of screens to output
+// subdirectory:
+
+         bool export_RGB_screens_flag = false;
+         if(curr_episode_number% 50 == 0) export_RGB_screens_flag = true;
+         if(curr_frame_number < 110) export_RGB_screens_flag = false;
+         if(export_RGB_screens_flag)
+         {
+            string curr_screen_filename="screen_"+
+               stringfunc::integer_to_string(curr_episode_number,5)+"_"+
+               stringfunc::integer_to_string(curr_frame_number,5)+".png";
+            spaceinv_ptr->save_screen(curr_screen_filename);
+         }
+
       } // game_over while loop
 
 // -----------------------------------------------------------------------
