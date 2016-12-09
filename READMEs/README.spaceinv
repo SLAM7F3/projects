@@ -1497,6 +1497,23 @@ are all reasonably small.  Epsilon almost decays to 0.1 after 900 episodes.
 Weights do not move very much.   Square blockers and score markings are
 barely visible within 0th layer weights.
 
+
+87.  Fly1: Expt 84 but with n_screen_states = 2 
+Coredumped!
+
+
+88.  Fly1:  Expt 84 but with n_screen_states = 2
+
+Unimpressive reward & nframes/episode result after 400 episodes.
+TERMINATED.
+
+89.  Fly1:  Expt 84 but with n_screen_states = 2
+Unimpressive reward & nframes/episode result after 400 episodes.
+TERMINATED.
+
+
+
+
 --------------------
 RUNNING EXPERIMENTS
 --------------------
@@ -1561,8 +1578,64 @@ Frame skip = 3
 
 85.  TM : repeat of expt 84
 
-86.  TM : repeat of expt 84
+86.  TM : repeat of expt 84 All weight evolution completely stopped.  Lousy
+reward and nframes/episode results.  TERMINATED.
 
-87.  Fly1:  Expt 84 but with n_screen_states = 2
 
-88.  Fly1:  Expt 84 but with n_screen_states = 2
+90.  Fly1: H1 = 32, H2 = 64, 2 screen states
+
+Fri Dec  9 13:26:44 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 7200 = 2 * 3600
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 6
+   n_weights = 232832 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+
+91.  Fly 1:  Repeat of expt 90
+
+92.  Fly 3:  H1 = 16, H2 = 64, 3 screen states
+
+Fri Dec  9 15:55:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 10800
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 6
+   n_weights = 174208 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 3
+
+93.  Fly 3:  repeat of expt 92
+
+94.  Fly 3:  repeat of expt 92
