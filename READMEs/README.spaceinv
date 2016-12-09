@@ -1461,6 +1461,42 @@ After 900 episodes, reward --> 200 and continues to slowly rise.
 nframes/episode --> 2.7K.  small loss values.  0th layer weights show signs
 of square blockers and score digits at top.  
 
+81.  TM : Periodically saving RGB screen states; n_screen_states = 3
+
+Fri Dec  9 07:17:34 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 10800
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 173504 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 3
+
+82:  TM: Repeat of expt 81
+
+83:  TM: Repeat of expt 81
+
+After 900 episodes, expts 81, 82 and 83 have reward and nframes/episode
+values which are not much larger than those from random play.  Loss values
+are all reasonably small.  Epsilon almost decays to 0.1 after 900 episodes.
+Weights do not move very much.   Square blockers and score markings are
+barely visible within 0th layer weights.
+
 --------------------
 RUNNING EXPERIMENTS
 --------------------
@@ -1495,9 +1531,11 @@ Frame skip = 3
 
 80 m6700: repeat of expt 78
 
-81.  TM : Periodically saving RGB screen states; n_screen_states = 3
 
-Fri Dec  9 07:17:34 2016
+84.  TM : Try returning to hyperparams closer to those for expt 46.  But
+keep n_screen_states = 3
+
+Fri Dec  9 11:45:37 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 10800
@@ -1505,22 +1543,22 @@ Neural net params:
    layer = 2 n_nodes = 32
    layer = 3 n_nodes = 6
    n_weights = 173504 (FC)
-base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = 32
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 10
 Discount factor gamma = 0.99
 Epsilon time constant = 200; minimum epsilon = 0.1
 Learning rate decrease period = 1000 episodes
-Old weights period = 100
+Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
 Frame skip = 3
 1 big state = n_screen_states = 3
 
-82:  TM: Repeat of expt 81
+85.  TM : repeat of expt 84
 
-83:  TM: Repeat of expt 81
+86.  TM : repeat of expt 84

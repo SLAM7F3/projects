@@ -1,7 +1,7 @@
 ======================================================================
 Notes for setting up new ubuntu 14.4 box
 ======================================================================
-Last updated on 1/20/16; 1/23/16; 2/11/16; 12/6/16
+Last updated on 1/23/16; 2/11/16; 12/6/16; 12/9/16
 ======================================================================
 
 *.  Copy .cshrc old machine to new machine.
@@ -22,6 +22,14 @@ TRANSFERING THIS PACKAGES FILE TO A NEW MACHINE !!!
 within a "packages" file which contain "amd64":
 
 grep -v ":amd64" ./Thinkmate_packages_120516.txt > temp && mv temp new_packages.txt
+
+On 12/9/16, we found that we needed to include the following AMD package in
+order for curl headers to be installed inside /usr/include/curl:
+
+    sudo apt-get install libcurl4-openssl-dev:amd64
+    sudo apt-get install libcggl
+    sudo apt-get install libglew-dev
+    sudo apt-get install libncurses5-dev
 
 Install all of those packages:
 
@@ -278,13 +286,6 @@ within main dir.  Then chant make.  Manually copy include header files into
 /usr/local/include/trianglepp/ . Manually copy lib/libdel.a to
 /usr/local/lib/
 
-
-
-..(continue building on titan 1 from here as of 12:52 pm on Thurs, Dec 8,
-2016)
-
-
-
 *.  Unpack pngwriter-master.zip (latest version as of Apr 2015; As of Oct
 2015, newer pngwriter version is available via github at
 https://github.com/pngwriter/pngwriter).  mkdir build, cd build, cmake ..
@@ -310,11 +311,46 @@ As of Oct 2015, latest version = 2.6.1).
 
 *.  Unpack header files within 2015 version of OleanderStemming.  Place
 them into indexing, stemming and utilities subdirs of
-/usr/local/OleanderStemming/.  
+/usr/local/include/OleanderStemming/.  
 
 *.  Unpack and install OSG_OP_OT-1.2 within ~/osg_stuff/.  For gcc 4.8.2,
 we needed to add a few "this->" entries into a few header files.  For gcc
 4.8.4, we had to add "this->" entries into more header files.
+
+In /usr/local/include/osg/Math, we had to change the following lines around
+line 200:
+
+#if defined(WIN32) && !defined(__CYGWIN__) && !defined(__MWERKS__)
+    inline bool isNaN(float v) { return _isnan(v)!=0; }
+    inline bool isNaN(double v) { return _isnan(v)!=0; }
+#else
+    #if defined(__APPLE__)
+        inline bool isNaN(float v) { return std::isnan(v); }
+        inline bool isNaN(double v) { return std::isnan(v); }
+    #else
+        // Need to use to std::isnan to avoid undef problem from <cmath>
+        inline bool isNaN(float v) { return false; }
+        inline bool isNaN(double v) { return false; }
+//        inline bool isNaN(float v) { return isnan(v); }
+//        inline bool isNaN(double v) { return isnan(v); }
+    #endif
+#endif
+
+
+
+*.  Unpack Arcade-Learning-Environment_070416.tgz directly within
+/usr/local/.  Create link from /usr/local/
+Arcade-Learning-Environment_070416/ to /usr/local/ALE/.  Use cmake to build
+ALE within /usr/local/ALE.  Be sure to reset line near bottom of
+/usr/local/Arcade-Learning-Environment_070416/src/common/Array.hxx to read
+as follows in order to avoid conflict with ffmpeg header typedef for
+IntArray:
+
+typedef Common::Array<int>   Stella_IntArray;
+
+Also copy contents of ALE_roms.tgz into /usr/local/ALE/roms/
+
+..(continue building on titan 1 from here as of 8 am on Fri, Dec 9, 2016)
 
 *.  On 11/5/15, we ran into lots of conflicts between SuiteSparse, bundler
 and pwin!  As of Nov 2015, we believe that these 3 code packages are

@@ -87,8 +87,8 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-//   int replay_memory_capacity = 5 * 2000;
-   int replay_memory_capacity = 10 * 2000;
+   int replay_memory_capacity = 5 * 2000;
+//   int replay_memory_capacity = 10 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, 1, replay_memory_capacity,
 //      reinforce::SGD);
@@ -118,16 +118,17 @@ int main(int argc, char** argv)
    filefunc::dircreate(screen_exports_subdir);
    spaceinv_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
+   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
 //   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
-   reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
-   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
@@ -143,8 +144,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 //   int old_weights_period = 10; 
-//   int old_weights_period = 32;
-   int old_weights_period = 100;
+   int old_weights_period = 32;
+//   int old_weights_period = 100;
 //   int old_weights_period = 320;
 
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
@@ -335,7 +336,7 @@ int main(int argc, char** argv)
 // subdirectory:
 
          bool export_RGB_screens_flag = false;
-         if(curr_episode_number% 50 == 0) export_RGB_screens_flag = true;
+         if(curr_episode_number% 75 == 0) export_RGB_screens_flag = true;
          if(curr_frame_number < 110) export_RGB_screens_flag = false;
          if(export_RGB_screens_flag)
          {
