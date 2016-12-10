@@ -343,7 +343,6 @@ int main(int argc, char** argv)
                game_world.get_game_over());
          }
 
-/*
       if(reinforce_agent_ptr->get_replay_memory_full() &&
          curr_episode_number % nn_update_frame_period == 0)
       {
@@ -351,7 +350,6 @@ int main(int argc, char** argv)
          total_loss = reinforce_agent_ptr->update_neural_network(
             verbose_flag);
       }
-*/
 
 // Periodically save an episode's worth of screens to output
 // subdirectory:
