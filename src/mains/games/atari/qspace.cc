@@ -36,8 +36,8 @@ int main(int argc, char** argv)
 // Instantiate Space Invaders ALE game:
 
 //   int n_screen_states = 1;
-//   int n_screen_states = 2;
-   int n_screen_states = 3;
+   int n_screen_states = 2;
+//   int n_screen_states = 3;
    spaceinv *spaceinv_ptr = new spaceinv(n_screen_states);
    int n_actions = 6;
 
@@ -63,12 +63,17 @@ int main(int argc, char** argv)
    int n_max_episodes = 3 * 1000;
    int Tmax = n_max_episodes;
 
-   int H1 = 16;
+   int H1 = 256;
+//   int H1 = 128;
 //   int H1 = 24;
+//   int H1 = 64;
+
+   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
+//   int H2 = 32;
 //   int H2 = 64;
+
    int H3 = 0;
 //   int H3 = 8;
 
@@ -118,8 +123,8 @@ int main(int argc, char** argv)
    filefunc::dircreate(screen_exports_subdir);
    spaceinv_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
-   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
-//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
 //   reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
@@ -143,6 +148,9 @@ int main(int argc, char** argv)
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
    int n_lr_episodes_period = 1 * 1000;
+
+   int nn_update_frame_period = 500;
+   
 //   int old_weights_period = 10; 
    int old_weights_period = 32;
 //   int old_weights_period = 100;
@@ -192,6 +200,8 @@ int main(int argc, char** argv)
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    params_stream << "1 big state = n_screen_states = "
                  << spaceinv_ptr->get_n_screen_states() << endl;
+   params_stream << "nn_update_frame_period = "
+                 << nn_update_frame_period << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -264,6 +274,7 @@ int main(int argc, char** argv)
             {
                curr_s = game_world.get_curr_state();
             }
+
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
                *curr_s);
          }
@@ -281,7 +292,7 @@ int main(int argc, char** argv)
 
 // Experiment with rewarding agent for living (bad results so far)
 
-         double live_timestep_reward = 0.0;
+         const double live_timestep_reward = 0.0;
 //         double live_timestep_reward = 50.0 / 2000.0;
 //         renorm_reward += live_timestep_reward;
 
@@ -331,6 +342,16 @@ int main(int argc, char** argv)
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
          }
+
+/*
+      if(reinforce_agent_ptr->get_replay_memory_full() &&
+         curr_episode_number % nn_update_frame_period == 0)
+      {
+         bool verbose_flag = true;
+         total_loss = reinforce_agent_ptr->update_neural_network(
+            verbose_flag);
+      }
+*/
 
 // Periodically save an episode's worth of screens to output
 // subdirectory:

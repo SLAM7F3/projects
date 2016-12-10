@@ -2351,7 +2351,6 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
       replay_memory_index = 0;
       d = replay_memory_index;
    }
-
    s_curr->put_row(d, curr_s);
    return d;
 }

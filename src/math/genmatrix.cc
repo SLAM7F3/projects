@@ -205,7 +205,7 @@ void genmatrix::get_row(int m, genvector& row) const
 
 void genmatrix::put_row(int m, const genvector& row) 
 {
-   for (unsigned int n = 0 ; n < ndim; n++)
+   for (unsigned int n = 0; n < ndim; n++)
    {
       put(m, n, row.get(n));
    }
@@ -2080,7 +2080,6 @@ void genmatrix::matrix_mult(const genmatrix& A, const genmatrix& B)
 
    int A_mdim = A.mdim;
    int A_ndim = A.ndim;
-   int B_mdim = B.mdim;
    int B_ndim = B.ndim;
 
    const double* A_e_ptr = A.get_e_ptr();
