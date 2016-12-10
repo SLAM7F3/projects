@@ -149,7 +149,7 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 500;
+   int nn_update_frame_period = 5000;
    
 //   int old_weights_period = 10; 
    int old_weights_period = 32;
