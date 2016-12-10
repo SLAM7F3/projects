@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Space Invaders
 ==========================================================================
-Last updated on 12/6/16; 12/7/16; 12/8/16; 12/9/16
+Last updated on 12/7/16; 12/8/16; 12/9/16; 12/10/16
 ==========================================================================
 
 Random play results:
@@ -1461,6 +1461,43 @@ After 900 episodes, reward --> 200 and continues to slowly rise.
 nframes/episode --> 2.7K.  small loss values.  0th layer weights show signs
 of square blockers and score digits at top.  
 
+78.  m6700:  Work with expontentially decaying epsilon
+
+Fri Dec  9 05:13:49 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 7200
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 6
+   n_weights = 115904 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 100
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+
+After 3K episodes, reward --> 180 & nframes/episodes --> 2.5K.
+
+
+79.  m6700: repeat of expt 78
+
+After 3K episodes, reward --> 185 & nframes/episodes --> 2.6K.
+
+80. m6700: repeat of expt 78
+
+After 3K episodes, reward --> 182 & nframes/episodes --> 2.4K.
+
 81.  TM : Periodically saving RGB screen states; n_screen_states = 3
 
 Fri Dec  9 07:17:34 2016
@@ -1591,39 +1628,6 @@ somewhat; 1st layer weights basically constant.
 After 2.4K episodes, reward --> 140.  nframes/episode -> 2.2K.  Small loss
 values.
 
---------------------
-RUNNING EXPERIMENTS
---------------------
-
-78.  m6700:  Work with expontentially decaying epsilon
-
-Fri Dec  9 05:13:49 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 7200
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 6
-   n_weights = 115904 (FC)
-base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = 32
-Discount factor gamma = 0.99
-Epsilon time constant = 200; minimum epsilon = 0.1
-Learning rate decrease period = 1000 episodes
-Old weights period = 100
-Discard zero reward frac = 0.95
-Use big states flag = 1
-Frame skip = 3
-1 big state = n_screen_states = 2
-
-79.  m6700: repeat of expt 78
-
-80. m6700: repeat of expt 78
 
 92.  Fly 3:  H1 = 16, H2 = 64, 3 screen states
 
@@ -1651,9 +1655,23 @@ Use big states flag = 1
 Frame skip = 3
 1 big state = n_screen_states = 3
 
+After 3K episodes, reward --> 180 & nframes/episode --> 2.4K
+Almost no movement in weight dists;  Should really increase epsilon tau -->
+500  Small loss values.
+
 93.  Fly 3:  repeat of expt 92
 
+After 3K episodes, reward --> 138 & nframes/episode --> 2.4K
+Some movement in weight dists.  3K episodes finished in approx 4 hours.
+small loss values
+
 94.  Fly 3:  repeat of expt 92
+
+After 3K episodes, reward --> 221 & nframes/episode --> 2.6K
+Some movement in weight dists.  3K episodes finished in approx 4 hours.
+Small loss values
+
+Conclusion:  No obvious harm or benefit to increasing H2 --> 64.
 
 
 95.  Fly 1: H1 = 256, H2 = 0, n_screen_states = 2, nn_update_frame_period =
@@ -1683,9 +1701,23 @@ Frame skip = 3
 1 big state = n_screen_states = 2
 nn_update_frame_period = 500
 
-96.  Fly 1:  Repeat of expt 95
+After 800 episodes, reward -> 200 & nframes/episode --> 2K.  Loss
+acceptable.  Very faint signs of blockers and score digits in just a few of
+the 256 0th layer weight images.
+
+
+96.  Fly 1: Repeat of expt 95
+
+After 750 episodes, reward -> 180 & nframes/episode --> 2.2K.  Loss
+larger than unity.
 
 97.  Fly 1:  Repeat of expt 95
+
+After 725 episodes, reward -> 196 & nframes/episode --> 2.2K.  Loss
+larger than unity.
+
+Conclusion:  For current setup, working with H1 = 256, H2 = 0 +
+nn_update_frame_period = 500 is not helpful
 
 98.  TM: H1 = 256, H2 = 0, n_screen_states = 2, nn_update_frame_period =
 5000
@@ -1714,7 +1746,17 @@ Frame skip = 3
 1 big state = n_screen_states = 2
 nn_update_frame_period = 5000
 
+After 630 episodes, reward --> 190 & nframes/episode -> 2.2K
+
 99.  TM:  repeat of expt 98
+
+After 650 episodes, reward --> 175 & nframes/episode --> 3K
 
 100. TM:  repeat of expt 98
 
+After 650 episodes, reward --> 186 & nframes/episode --> 2.6K
+
+
+--------------------
+RUNNING EXPERIMENTS
+--------------------
