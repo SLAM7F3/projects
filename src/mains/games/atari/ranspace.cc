@@ -2,7 +2,7 @@
 // Program RANSPACE randomly executes Space Invader actions.  It
 // serves as a control for Space Invader deep Q-learning.
 // ==========================================================================
-// Last updated on 12/1/16; 12/2/16; 12/3/16; 12/4/16
+// Last updated on 12/2/16; 12/3/16; 12/4/16; 12/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -35,8 +35,9 @@ int main(int argc, char** argv)
 
 // Instantiate Space Invaders ALE game:
 
-   spaceinv *spaceinv_ptr = new spaceinv();
-   int n_actions = 6;
+   int n_screen_states = 1;
+   spaceinv *spaceinv_ptr = new spaceinv(n_screen_states);
+   int n_actions = spaceinv_ptr->get_n_actions();
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:

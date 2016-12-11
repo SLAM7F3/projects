@@ -1,11 +1,11 @@
 // ==========================================================================
-// Header file for spaceinv class 
+// Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/7/16; 12/8/16; 12/9/16; 12/10/16
+// Last modified on 12/10/16
 // ==========================================================================
 
-#ifndef SPACEINV_H
-#define SPACEINV_H
+#ifndef BREAKOUT_H
+#define BREAKOUT_H
 
 #include <vector>
 #include <SDL.h>
@@ -13,16 +13,16 @@
 #include "math/genvector.h"
 #include "image/TwoDarray.h"
 
-class spaceinv
+class breakout
 {
    
   public:
 
 // Initialization, constructor and destructor functions:
 
-   spaceinv(int n_screen_states);
-   spaceinv(const spaceinv& C);
-   ~spaceinv();
+   breakout(int n_screen_states);
+   breakout(const breakout& C);
+   ~breakout();
 
    int get_n_actions() const;
    int get_n_screen_states() const;
@@ -100,7 +100,7 @@ class spaceinv
    void initialize_member_objects();
    void initialize_output_subdirs();
    void initialize_grayscale_output_buffer();
-   void docopy(const spaceinv& S);
+   void docopy(const breakout& S);
 
    void pingpong_curr_and_next_states();
 };
@@ -111,104 +111,104 @@ class spaceinv
 
 // Set and get member functions:
 
-inline int spaceinv::get_n_actions() const
+inline int breakout::get_n_actions() const
 {
-   return 6;
+   return 4;
 }
 
-inline int spaceinv::get_n_screen_states() const
+inline int breakout::get_n_screen_states() const
 {
    return n_screen_states;
 }
 
-inline int spaceinv::get_n_reduced_xdim() const
+inline int breakout::get_n_reduced_xdim() const
 {
    return n_reduced_xdim;
 }
 
-inline int spaceinv::get_n_reduced_ydim() const
+inline int breakout::get_n_reduced_ydim() const
 {
    return n_reduced_ydim;
 }
 
-inline int spaceinv::get_min_episode_framenumber() const
+inline int breakout::get_min_episode_framenumber() const
 {
    return min_episode_framenumber;
 }
 
-inline int spaceinv::get_frame_skip() const
+inline int breakout::get_frame_skip() const
 {
    return frame_skip;
 }
 
-inline double spaceinv::get_max_score_per_episode() const
+inline double breakout::get_max_score_per_episode() const
 {
    return max_score_per_episode;
 }
 
-inline ALEInterface& spaceinv::get_ale()
+inline ALEInterface& breakout::get_ale()
 {
    return ale;
 }
 
-inline const ALEInterface& spaceinv::get_ale() const
+inline const ALEInterface& breakout::get_ale() const
 {
    return ale;
 }
 
-inline genvector* spaceinv::get_curr_state()
+inline genvector* breakout::get_curr_state()
 {
    return curr_state_ptr;
 }
 
-inline const genvector* spaceinv::get_curr_state() const
+inline const genvector* breakout::get_curr_state() const
 {
    return curr_state_ptr;
 }
 
-inline genvector* spaceinv::get_next_state()
+inline genvector* breakout::get_next_state()
 {
    return next_state_ptr;
 }
 
-inline const genvector* spaceinv::get_next_state() const
+inline const genvector* breakout::get_next_state() const
 {
    return next_state_ptr;
 }
 
-inline int spaceinv::get_screen_state_counter() const
+inline int breakout::get_screen_state_counter() const
 {
    return screen_state_counter;
 }
 
 
-inline std::vector<genvector*>& spaceinv::get_screen_state_ptrs()
+inline std::vector<genvector*>& breakout::get_screen_state_ptrs()
 {
    return screen_state_ptrs;
 }
 
-inline const std::vector<genvector*>& spaceinv::get_screen_state_ptrs() const
+inline const std::vector<genvector*>& breakout::get_screen_state_ptrs() const
 {
    return screen_state_ptrs;
 }
 
 
-inline genvector* spaceinv::get_curr_big_state()
+inline genvector* breakout::get_curr_big_state()
 {
    return curr_big_state_ptr;
 }
 
-inline const genvector* spaceinv::get_curr_big_state() const
+inline const genvector* breakout::get_curr_big_state() const
 {
    return curr_big_state_ptr;
 }
 
-inline void spaceinv::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
+inline void breakout::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
 {
    wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
 }
 
-inline void spaceinv::set_screen_exports_subdir(std::string subdir)
+inline void breakout::set_screen_exports_subdir(std::string subdir)
 {
    screen_exports_subdir = subdir;
    screen_exporter_ptr = ale.createScreenExporter(screen_exports_subdir);
@@ -236,9 +236,8 @@ inline void spaceinv::set_screen_exports_subdir(std::string subdir)
 //  PLAYER_A_DOWNLEFTFIRE   = 17,
 //  }
 
-// Space invaders actions: 0, 1, 3, 4, 11, 12
+// Breakout actions: 0, 1, 3, 4
 
-
-#endif  // spaceinv.h
+#endif  // breakout.h
 
 

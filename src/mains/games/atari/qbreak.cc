@@ -1,7 +1,7 @@
 // ==========================================================================
-// Program QSPACE solves the Space Invaders atari game via deep Q-learning.
+// Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/7/16; 12/8/16; 12/9/16; 12/10/16
+// Last updated on 12/10/16
 // ==========================================================================
 
 #include <iostream>
@@ -9,11 +9,11 @@
 #include <vector>
 #include <SDL.h>
 #include <ale_interface.hpp>
+#include "games/breakout.h"
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
-#include "games/spaceinv.h"
 #include "time/timefuncs.h"
 #include "video/videofuncs.h"
 
@@ -33,19 +33,19 @@ int main(int argc, char** argv)
 //   cin >> s;
 //   nrfunc::init_default_seed(s);
 
-// Instantiate Space Invaders ALE game:
+// Instantiate Breakout ALE game:
 
 //   int n_screen_states = 1;
    int n_screen_states = 2;
 //   int n_screen_states = 3;
-   spaceinv *spaceinv_ptr = new spaceinv(n_screen_states);
-   int n_actions = spaceinv_ptr->get_n_actions();
+   breakout *breakout_ptr = new breakout(n_screen_states);
+   int n_actions = breakout_ptr->get_n_actions();
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
 
-   environment game_world(environment::SPACEINV);
-   game_world.set_spaceinv(spaceinv_ptr);
+   environment game_world(environment::BREAKOUT);
+   game_world.set_breakout(breakout_ptr);
 
    bool use_big_states_flag = false;
    if(n_screen_states > 1)
@@ -63,15 +63,16 @@ int main(int argc, char** argv)
    int n_max_episodes = 3 * 1000;
    int Tmax = n_max_episodes;
 
-   int H1 = 256;
+//   int H1 = 256;
 //   int H1 = 128;
 //   int H1 = 24;
-//   int H1 = 64;
+//   int H1 = 32;
+   int H1 = 64;
 
-   int H2 = 0;
+//   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
+   int H2 = 32;
 //   int H2 = 64;
 
    int H3 = 0;
@@ -92,8 +93,9 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 5 * 2000;
-//   int replay_memory_capacity = 10 * 2000;
+//   int replay_memory_capacity = 5 * 1000;
+   int replay_memory_capacity = 10 * 1000;
+//   int replay_memory_capacity = 20 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, Tmax, 1, replay_memory_capacity,
 //      reinforce::SGD);
@@ -107,7 +109,7 @@ int main(int argc, char** argv)
 
 // Initialize output subdirectory within an experiments folder:
 
-   string experiments_subdir="./experiments/spaceinv/";
+   string experiments_subdir="./experiments/breakout/";
    filefunc::dircreate(experiments_subdir);
 
    int expt_number;
@@ -121,7 +123,7 @@ int main(int argc, char** argv)
    filefunc::dircreate(weights_subdir);
    string screen_exports_subdir = output_subdir+"screen_exports/";
    filefunc::dircreate(screen_exports_subdir);
-   spaceinv_ptr->set_screen_exports_subdir(screen_exports_subdir);
+   breakout_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
 //   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
@@ -137,7 +139,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(200);
+   reinforce_agent_ptr->set_epsilon_time_constant(300);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -149,7 +151,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 5000;
+//   int nn_update_frame_period = 1000;
+   int nn_update_frame_period = 1000000;
    
 //   int old_weights_period = 10; 
    int old_weights_period = 32;
@@ -161,9 +164,9 @@ int main(int argc, char** argv)
 
    const double discard_0_reward_frac = 0.95;  
 
-   int n_update = 5;
-   int n_summarize = 5;
-   int n_snapshot = 50;
+   int n_update = 10;
+   int n_summarize = 10;
+   int n_snapshot = 100;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
@@ -181,11 +184,11 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-   bool export_frames_flag = false;
-//   bool export_frames_flag = true;
+//   bool export_frames_flag = false;
+   bool export_frames_flag = true;
 
    // Get the vector of minimal legal actions
-   ActionVect minimal_actions = spaceinv_ptr->get_ale().getMinimalActionSet();
+   ActionVect minimal_actions = breakout_ptr->get_ale().getMinimalActionSet();
 
    string params_filename = output_subdir + "params.dat";
    reinforce_agent_ptr->summarize_parameters(params_filename);
@@ -199,7 +202,7 @@ int main(int argc, char** argv)
    params_stream << "Use big states flag = " << use_big_states_flag << endl;
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    params_stream << "1 big state = n_screen_states = "
-                 << spaceinv_ptr->get_n_screen_states() << endl;
+                 << breakout_ptr->get_n_screen_states() << endl;
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
    filefunc::closefile(params_filename, params_stream);
@@ -235,6 +238,7 @@ int main(int argc, char** argv)
       cout << "************  Start of Game " << curr_episode_number
            << " ***********" << endl;
 
+      int prev_nlives = breakout_ptr->get_ale().lives();
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
       double cum_reward = 0;
@@ -243,6 +247,8 @@ int main(int argc, char** argv)
       {
          bool state_updated_flag = false;
          int curr_frame_number = game_world.get_episode_framenumber();
+//         cout << "curr_frame_number = " << curr_frame_number
+//              << " n_lives = " << breakout_ptr->get_ale().lives() << endl;
          
          if(curr_frame_number > game_world.get_min_episode_framenumber())
          {
@@ -253,11 +259,11 @@ int main(int argc, char** argv)
 
                if(use_big_states_flag)
                {
-                  spaceinv_ptr->crop_pool_curr_frame(export_frames_flag);
+                  breakout_ptr->crop_pool_curr_frame(export_frames_flag);
                }
                else
                {
-                  spaceinv_ptr->crop_pool_difference_curr_frame(
+                  breakout_ptr->crop_pool_difference_curr_frame(
                      export_frames_flag);
                }
             } // curr_frame_number % frame_skip == 0 conditional
@@ -268,7 +274,7 @@ int main(int argc, char** argv)
             genvector* curr_s = NULL;
             if(use_big_states_flag)
             {
-               curr_s = spaceinv_ptr->get_curr_big_state();
+               curr_s = breakout_ptr->get_curr_big_state();
             }
             else
             {
@@ -277,6 +283,7 @@ int main(int argc, char** argv)
 
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
                *curr_s);
+            if(d%1000 == 0) cout << "d = " << d << endl;
          }
 
          int curr_a = prev_a;
@@ -286,9 +293,23 @@ int main(int argc, char** argv)
             prev_a = curr_a;
          }
          Action a = minimal_actions[curr_a];
-         double curr_reward = spaceinv_ptr->get_ale().act(a);
-         double renorm_reward = curr_reward / 10.0;
+         double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
+
+         double renorm_reward = 0;
+         if(curr_reward > 0)
+         {
+            renorm_reward = 1;
+         }
+
+// Penalize agent whenever it misses the ball:
+
+         int curr_nlives = breakout_ptr->get_ale().lives();
+         if(curr_nlives < prev_nlives)
+         {
+            renorm_reward = -1;
+            prev_nlives = curr_nlives;
+         }
 
 // Experiment with rewarding agent for living (bad results so far)
 
@@ -299,7 +320,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->record_reward_for_action(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
 
-         if(renorm_reward > live_timestep_reward)
+         if(!nearly_equal(renorm_reward, live_timestep_reward))
          {
             cout << "episode = " << curr_episode_number
                  << " frame = " << curr_frame_number
@@ -355,14 +376,14 @@ int main(int argc, char** argv)
 // subdirectory:
 
          bool export_RGB_screens_flag = false;
-         if(curr_episode_number% 75 == 0) export_RGB_screens_flag = true;
+         if(curr_episode_number% 100 == 0) export_RGB_screens_flag = true;
          if(curr_frame_number < 110) export_RGB_screens_flag = false;
          if(export_RGB_screens_flag)
          {
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_frame_number,5)+".png";
-            spaceinv_ptr->save_screen(curr_screen_filename);
+            breakout_ptr->save_screen(curr_screen_filename);
          }
 
       } // game_over while loop
@@ -373,7 +394,7 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward << endl;
       cout << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
-//       spaceinv_ptr->mu_and_sigma_for_pooled_zvalues();
+//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->update_T_values();
       reinforce_agent_ptr->update_running_reward(n_update);
@@ -401,7 +422,7 @@ int main(int argc, char** argv)
 // Expontentially decay epsilon:
 
       reinforce_agent_ptr->exponentially_decay_epsilon(
-         curr_episode_number, 30);
+         curr_episode_number, 40);
 
 // Periodically write status info to text console:
 
@@ -443,8 +464,8 @@ int main(int argc, char** argv)
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
-         int n_reduced_xdim = spaceinv_ptr->get_n_reduced_xdim();
-         int n_reduced_ydim = spaceinv_ptr->get_n_reduced_ydim();
+         int n_reduced_xdim = breakout_ptr->get_n_reduced_xdim();
+         int n_reduced_ydim = breakout_ptr->get_n_reduced_ydim();
          if(use_big_states_flag)
          {
             n_reduced_ydim *= n_screen_states;
@@ -465,6 +486,6 @@ int main(int argc, char** argv)
         << endl;
 
    delete reinforce_agent_ptr;
-   delete spaceinv_ptr;
+   delete breakout_ptr;
 }
 

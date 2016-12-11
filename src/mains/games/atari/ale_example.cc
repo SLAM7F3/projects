@@ -96,12 +96,25 @@ enum Action {
    string output_subdir="./cropped_frames/";
    filefunc::dircreate(output_subdir);
 
+// Screen ROI for Breakout:
+
+   int min_px = 6;
+   int max_px = 156;
+
+   int min_py = 40;
+   int max_py = 240;
+
+//   int min_px = 23;
+//   int max_px = 129;
+//   int min_py = 16;
+//   int max_py = 175;
+
 // Screen ROI for space invaders:
 
-   int min_px = 27;
-   int max_px = 133;
-   int min_py = 12;
-   int max_py = 190;
+//   int min_px = 27;
+//   int max_px = 133;
+//   int min_py = 12;
+//   int max_py = 190;
 
 // (max_px - min_px) * (max_py - min_py) =
 // (133 - 27) * (190 - 12) = 
@@ -118,8 +131,9 @@ enum Action {
       while (!ale.game_over()) {
 
          int curr_frame_number = ale.getEpisodeFrameNumber();
-//         cout << "Epsiode frame number = " << ale.getEpisodeFrameNumber()
-//              << endl;
+         cout << "Episode frame number = " << ale.getEpisodeFrameNumber()
+              << " n_lives = " << ale.lives() 
+              << endl;
          grayscale_output_buffer.clear();
          ale.getScreenGrayscale(grayscale_output_buffer);
 
