@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/10/16
+// Last updated on 12/10/16; 12/11/16
 // ==========================================================================
 
 #include <iostream>
@@ -60,19 +60,19 @@ int main(int argc, char** argv)
    int Din = game_world.get_curr_state()->get_mdim();   // Input layer dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
-   int n_max_episodes = 6 * 1000;
+   int n_max_episodes = 3 * 1000;
    int Tmax = n_max_episodes;
 
-//   int H1 = 256;
-   int H1 = 128;
+   int H1 = 256;
+//   int H1 = 64;
 //   int H1 = 24;
 //   int H1 = 32;
 //   int H1 = 64;
 
-//   int H2 = 0;
+   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
+//   int H2 = 32;
 //   int H2 = 64;
 
    int H3 = 0;
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(400);
+   reinforce_agent_ptr->set_epsilon_time_constant(200);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -152,7 +152,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 100;
+//   int nn_update_frame_period = 100;
+   int nn_update_frame_period = 500;
 //   int nn_update_frame_period = 1000000;
    
 //   int old_weights_period = 10; 

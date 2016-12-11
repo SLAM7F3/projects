@@ -1,8 +1,12 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/10/16
+Last updated on 12/10/16; 12/11/16
 ==========================================================================
+
+Working with breakout ROM obtained from
+http://www.atarimania.com/rom_collection_archive_atari_2600_roms.html which
+returns n_lives information.
 
 Random play results:
 -------------------
@@ -16,6 +20,40 @@ Median nframes/episode +/- quartile width = ?
 ----------------------
 TERMINATED EXPERIMENTS
 ----------------------
+
+10.  m6700:  H1 = 64, H2 = 16
+
+Sat Dec 10 23:19:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 4
+   n_weights = 321088 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 6000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 100
+
+TERMINATED
+
+11.  m6700:  repeat expt 10
+
+TERMINATED
+
 
 
 --------------------
@@ -35,15 +73,16 @@ RUNNING EXPERIMENTS
  
 6.  Titan 1: Repeat expt 4
 
+
 7.  Titan3:  H1 = 128, H2 = 64
 
 8.  Titan3:  Repeat expt 7
 
 9.  Titan3:  Repeat expt 7
 
-10.  m6700:  H1 = 64, H2 = 16
+12.  m6700
 
-Sat Dec 10 23:03:49 2016
+Sun Dec 11 14:37:08 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 5000
@@ -56,21 +95,17 @@ solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0
-Replay memory capacity = 10000
+Replay memory capacity = 15000
 Number random samples drawn from replay memory Nd = 16
 Discount factor gamma = 0.99
-Epsilon time constant = 300; minimum epsilon = 0.1
+Epsilon time constant = 200; minimum epsilon = 0.1
 Learning rate decrease period = 1000 episodes
 Old weights period = 32
 Discard zero reward frac = 0.95
 Use big states flag = 1
 Frame skip = 3
 1 big state = n_screen_states = 2
-nn_update_frame_period = 1000000
+nn_update_frame_period = 500
 
 
-11.  m6700:  repeat expt 10
-
-12.  m6700:  repeat expt 10
-
-
+13. m6700:  repeat of expt 12
