@@ -63,16 +63,16 @@ int main(int argc, char** argv)
    int n_max_episodes = 6 * 1000;
    int Tmax = n_max_episodes;
 
-   int H1 = 256;
-//   int H1 = 128;
+//   int H1 = 256;
+   int H1 = 128;
 //   int H1 = 24;
 //   int H1 = 32;
 //   int H1 = 64;
 
-   int H2 = 0;
+//   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
+   int H2 = 32;
 //   int H2 = 64;
 
    int H3 = 0;
