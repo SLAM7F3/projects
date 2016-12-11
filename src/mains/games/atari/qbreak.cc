@@ -71,8 +71,8 @@ int main(int argc, char** argv)
 
 //   int H2 = 0;
 //   int H2 = 8;
-//   int H2 = 16;
-   int H2 = 32;
+   int H2 = 16;
+//   int H2 = 32;
 //   int H2 = 64;
 
    int H3 = 0;
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
 // Periodically decrease learning rate down to some minimal floor
-// value:<
+// value:
 
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
