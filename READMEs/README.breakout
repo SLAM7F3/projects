@@ -21,7 +21,6 @@ Median nframes/episode +/- quartile width = ?
 TERMINATED EXPERIMENTS
 ----------------------
 
-
 1.  TM:  H1 = 128, H2 = 32
 
 Sun Dec 11 17:14:16 2016
@@ -88,7 +87,6 @@ nn_update_frame_period = 500
 5.  Titan 1: Repeat expt 4
  
 6.  Titan 1: Repeat expt 4
-
 
 Expts 4 - 6 ran for approx 12 hours on Sunday night for approx 700 episodes
 before they almost certainly ran out of memory due to some memory leak.  In
@@ -165,45 +163,6 @@ TERMINATED
 
 11.  m6700:  repeat expt 10
 
-18.  Titan 3: Repeat of expt 17
-	Terminated because metafiles stopped being written after 9:30 am
-
-19.  Titan 3: Repeat of expt 17
-	Terminated because metafiles stopped being written after 9:30 am
-
-
---------------------
-RUNNING EXPERIMENTS
---------------------
-
-12.  m6700
-
-Sun Dec 11 14:37:08 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 5000
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 16
-   layer = 3 n_nodes = 4
-   n_weights = 321088 (FC)
-base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 15000
-Number random samples drawn from replay memory Nd = 16
-Discount factor gamma = 0.99
-Epsilon time constant = 200; minimum epsilon = 0.1
-Learning rate decrease period = 1000 episodes
-Old weights period = 32
-Discard zero reward frac = 0.95
-Use big states flag = 1
-Frame skip = 3
-1 big state = n_screen_states = 2
-nn_update_frame_period = 500
-
-13. m6700:  repeat of expt 12
 
 14.  Titan1:
 
@@ -289,6 +248,11 @@ Frame skip = 3
 1 big state = n_screen_states = 1
 nn_update_frame_period = 500
 
+18.  Titan 3: Repeat of expt 17
+	Terminated because metafiles stopped being written after 9:30 am
+
+19.  Titan 3: Repeat of expt 17
+	Terminated because metafiles stopped being written after 9:30 am
 
 20.  Titan 3
 Mon Dec 12 12:00:16 2016
@@ -319,6 +283,176 @@ nn_update_frame_period = 500
 
 21.  Titan 3: repeat expt 20
 
+
+22.  Titan 1:  Try to write out quasi-random weight values; 3 hidden layers
+
+Mon Dec 12 12:35:01 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 16
+   layer = 4 n_nodes = 4
+   n_weights = 324672 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 500
+
+23.  Titan 1:  Repeat of expt 22 
+
+24.  Titan 1:  Repeat of expt 22 
+
+
+
+--------------------
+RUNNING EXPERIMENTS
+--------------------
+
+12.  m6700
+
+Sun Dec 11 14:37:08 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 4
+   n_weights = 321088 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+13. m6700:  repeat of expt 12
+
+
+
+
+25.  Titan 3:  
+
+Mon Dec 12 15:19:25 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 16
+   layer = 4 n_nodes = 4
+   n_weights = 324672 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+26.  Titan 3:  Repeat expt 25
+
+27.  Titan 3:  Repeat expt 25
+
+28.  Titan 1:
+
+Mon Dec 12 15:21:29 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 324224 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+29.  Titan 1:  Repeat expt 28
+
+30.  Titan 1:  Repeat expt 28
+
+
+31.  TM: H1 = 128, H2 = 64, H3 = 32
+
+Mon Dec 12 15:38:04 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 4
+   n_weights = 330368 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+32.  TM:  repeat of expt 31
+
+33.  TM:  repeat of expt 31
+
+
+
+
 TODO:
 
 D.  Implement batch normalization
@@ -329,7 +463,6 @@ forming much smaller input layer for a much smaller neural net
 F.  Perhaps experiment with 3 hidden layer neural network but only after
 implementing batch normalization 
 
-G.  Trace individual weights' evolutions
 
 DONE:
 
@@ -340,3 +473,5 @@ containing 2 screen states
 
 C.  Fix exporting of each individual screen rather than every 3rd or 4th
 one
+
+G.  Trace individual weights' evolutions
