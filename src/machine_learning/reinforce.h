@@ -123,6 +123,8 @@ class reinforce
       std::string output_subdir, std::string extrainfo);
    void plot_weight_distributions(
       std::string output_subdir, std::string extrainfo);
+   void generate_summary_plots(
+      std::string output_subdir, std::string extrainfo);
 
    void create_snapshots_subdir(std::string output_subdir);
    void export_snapshot(std::string output_subdir);

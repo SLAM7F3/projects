@@ -75,8 +75,8 @@ int main(int argc, char** argv)
    int H2 = 32;
 //   int H2 = 64;
 
-   int H3 = 0;
-//   int H3 = 8;
+//   int H3 = 0;
+   int H3 = 8;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(300);
+   reinforce_agent_ptr->set_epsilon_time_constant(400);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -250,8 +250,6 @@ int main(int argc, char** argv)
       {
          bool state_updated_flag = false;
          int curr_frame_number = game_world.get_episode_framenumber();
-//         cout << "curr_frame_number = " << curr_frame_number
-//              << " n_lives = " << breakout_ptr->get_ale().lives() << endl;
          
          if(curr_frame_number > game_world.get_min_episode_framenumber())
          {
@@ -313,13 +311,10 @@ int main(int argc, char** argv)
             prev_nlives = curr_nlives;
          }
 
-// Experiment with rewarding agent for living (bad results so far)
-
-         const double live_timestep_reward = 0.0;
          reinforce_agent_ptr->accumulate_reward(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
 
-         if(!nearly_equal(renorm_reward, live_timestep_reward))
+         if(!nearly_equal(renorm_reward, 0))
          {
             cout << "episode = " << curr_episode_number
                  << " frame = " << curr_frame_number
@@ -346,7 +341,7 @@ int main(int argc, char** argv)
 // agent seeing non-zero reward states without having to perform a
 // huge number of expensive backpropagations:
 
-            if(nearly_equal(renorm_reward, live_timestep_reward))
+            if(nearly_equal(renorm_reward, 0))
             {
                if(nrfunc::ran1() < discard_0_reward_frac)
                {
@@ -360,6 +355,11 @@ int main(int argc, char** argv)
       if(reinforce_agent_ptr->get_replay_memory_full() &&
          curr_episode_number % nn_update_frame_period == 0)
       {
+         cout << "Episode number = " << curr_episode_number
+              << " frame number = " << curr_frame_number
+              << " remaining n_lives = " << breakout_ptr->get_ale().lives()
+              << endl;
+
          bool verbose_flag = true;
          total_loss = reinforce_agent_ptr->update_neural_network(
             verbose_flag);
@@ -441,21 +441,13 @@ int main(int argc, char** argv)
       if(curr_episode_number >= n_summarize - 1 && 
          curr_episode_number % n_summarize == 0)
       {
-         reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_weight_distributions(
-            output_subdir, extrainfo);
-         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
-         bool plot_cumulative_reward = true;
-         reinforce_agent_ptr->plot_reward_history(output_subdir, extrainfo,
-                                                  plot_cumulative_reward);
-         reinforce_agent_ptr->plot_epsilon_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_frames_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, extrainfo);
+         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
+         reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as

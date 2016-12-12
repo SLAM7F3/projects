@@ -229,22 +229,16 @@ Frame skip = 3
 1 big state = n_screen_states = 2
 nn_update_frame_period = 500
 
-15.  Titan1: Repeat expt 14
+15.  Titan1: n_screen_states = 1; tau = 300; 
 
-16.  Titan1:  Repeat expt 14
-
-
-17.  Titan 3:
-
-Mon Dec 12 07:53:03 2016
+Mon Dec 12 08:16:46 2016
 Neural net params:
-   n_layers = 5
-   layer = 0 n_nodes = 5000
+   n_layers = 4
+   layer = 0 n_nodes = 2500
    layer = 1 n_nodes = 128
    layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 8
-   layer = 4 n_nodes = 4
-   n_weights = 644384 (FC)
+   layer = 3 n_nodes = 4
+   n_weights = 324224 (FC)
 base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
@@ -253,13 +247,43 @@ L2 regularization lambda coeff = 0
 Replay memory capacity = 15000
 Number random samples drawn from replay memory Nd = 16
 Discount factor gamma = 0.99
-Epsilon time constant = 200; minimum epsilon = 0.1
+Epsilon time constant = 300; minimum epsilon = 0.1
 Learning rate decrease period = 1000 episodes
 Old weights period = 32
 Discard zero reward frac = 0.85
-Use big states flag = 1
+Use big states flag = 0
 Frame skip = 3
-1 big state = n_screen_states = 2
+1 big state = n_screen_states = 1
+nn_update_frame_period = 500
+
+16.  Titan1:  Repeat expt 15
+
+17.  Titan 3:
+
+Mon Dec 12 08:20:19 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 8
+   layer = 4 n_nodes = 4
+   n_weights = 324384 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 300; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
 nn_update_frame_period = 500
 
 18.  Titan 3: Repeat of expt 17

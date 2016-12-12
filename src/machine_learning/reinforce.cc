@@ -1927,6 +1927,21 @@ void reinforce::plot_weight_distributions(
 }
 
 // ---------------------------------------------------------------------
+// Member fucntion generate_summary_plots() outputs metafile plots of
+// weight distributions, rewards, epsilon, nframes/episode and loss
+// histories.
+
+void reinforce::generate_summary_plots(string output_subdir, string extrainfo)
+{
+   plot_weight_distributions(output_subdir, extrainfo);
+   bool plot_cumulative_reward = true;
+   plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward);
+   plot_epsilon_history(output_subdir, extrainfo);
+   plot_frames_history(output_subdir, extrainfo);
+   plot_log10_loss_history(output_subdir, extrainfo);
+}
+
+// ---------------------------------------------------------------------
 // Member function create_snapshots_subdir()
 
 void reinforce::create_snapshots_subdir(string output_subdir)
