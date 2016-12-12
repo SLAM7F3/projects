@@ -450,6 +450,38 @@ nn_update_frame_period = 250
 
 33.  TM:  repeat of expt 31
 
+34.  m6700:  H1 = 64, H2 = 128
+
+Mon Dec 12 17:26:35 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 4
+   n_weights = 168704 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+35.  m6700 repeat of expt 34
+
+36.  m6700 repeat of expt 34
+
+
 
 
 
