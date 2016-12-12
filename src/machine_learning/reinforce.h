@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/6/16; 12/7/16; 12/8/16; 12/9/16
+// Last modified on 12/7/16; 12/8/16; 12/9/16; 12/12/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -84,6 +84,8 @@ class reinforce
    void set_current_action(int output_action);
    void periodically_snapshot_loss_value();
    void snapshot_running_reward();
+   void snapshot_cumulative_reward(double cum_reward);
+   void accumulate_reward(double curr_reward);
    void record_reward_for_action(double curr_reward);
    void increment_time_counters();
    void update_T_values();
@@ -104,10 +106,12 @@ class reinforce
    void compute_weight_distributions();
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
-   void plot_reward_history(std::string output_subdir, std::string extrainfo);
+   void plot_reward_history(std::string output_subdir, std::string extrainfo,
+      bool plot_cumulative_reward = false);
    void plot_reward_history(
       std::string output_subdir, std::string extrainfo, 
-      double min_reward, double max_reward);
+      double min_reward, double max_reward,
+      const std::vector<double>& reward_snapshots);
    void plot_turns_history(std::string output_subdir, std::string extrainfo);
    void plot_frames_history(std::string output_subdir, std::string extrainfo);
    void plot_epsilon_history(std::string output_subdir, std::string extrainfo);
@@ -262,6 +266,7 @@ class reinforce
    double running_reward;
    double reward_sum;
    std::vector<double> running_reward_snapshots;
+   std::vector<double> cumulative_reward_snapshots;
    int episode_number;
 
    std::string snapshots_subdir;

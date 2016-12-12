@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/6/16; 12/7/16; 12/8/16; 12/9/16
+// Last modified on 12/7/16; 12/8/16; 12/9/16; 12/12/16
 // ==========================================================================
 
 #include <string>
@@ -805,11 +805,25 @@ void reinforce::snapshot_running_reward()
    running_reward_snapshots.push_back(running_reward);
 }
 
+void reinforce::snapshot_cumulative_reward(double cum_reward)
+{
+   cumulative_reward_snapshots.push_back(cum_reward);
+}
+
+// ---------------------------------------------------------------------
+void reinforce::accumulate_reward(double curr_reward)
+{
+   reward_sum += curr_reward;
+}
+
 // ---------------------------------------------------------------------
 void reinforce::record_reward_for_action(double curr_reward)
 {
-   reward_sum += curr_reward;
-   reward->put(curr_timestep, curr_reward);
+   accumulate_reward(curr_reward);
+   if(curr_timestep < int(reward->get_mdim()))
+   {
+      reward->put(curr_timestep, curr_reward);
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -1395,17 +1409,30 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 // Generate metafile plot of running reward sum versus time step samples.
 
 void reinforce::plot_reward_history(
-   std::string output_subdir, std::string extrainfo)
+   string output_subdir, string extrainfo, bool plot_cumulative_reward)
 {
    double max_reward = mathfunc::maximal_value(running_reward_snapshots);
-   plot_reward_history(output_subdir, extrainfo, 0, max_reward);
+   if(plot_cumulative_reward)
+   {
+      max_reward = mathfunc::maximal_value(cumulative_reward_snapshots);
+      plot_reward_history(output_subdir, extrainfo, 0, max_reward,
+                          cumulative_reward_snapshots);
+   }
+   else
+   {
+      max_reward = mathfunc::maximal_value(running_reward_snapshots);
+      plot_reward_history(output_subdir, extrainfo, 0, max_reward,
+                          running_reward_snapshots);
+   }
+   
 }
 
 void reinforce::plot_reward_history(
-   std::string output_subdir, std::string extrainfo, 
-   double min_reward, double max_reward)
+   string output_subdir, string extrainfo, 
+   double min_reward, double max_reward, 
+   const vector<double>& reward_snapshots)
 {
-   if(running_reward_snapshots.size() < 5) return;
+   if(reward_snapshots.size() < 5) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"reward_history";
@@ -1430,7 +1457,7 @@ void reinforce::plot_reward_history(
    curr_metafile.set_ysubtic(0.5 * ytic);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(0, episode_number, running_reward_snapshots);
+   curr_metafile.write_curve(0, episode_number, reward_snapshots);
 
 // Temporally smooth noisy loss values:
 
@@ -1439,7 +1466,7 @@ void reinforce::plot_reward_history(
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
    vector<double> smoothed_reward_snapshots;
-   if(gaussian_size < int(running_reward_snapshots.size())) 
+   if(gaussian_size < int(reward_snapshots.size())) 
    {
       vector<double> h;
       h.reserve(gaussian_size);
@@ -1447,7 +1474,7 @@ void reinforce::plot_reward_history(
       
       bool wrap_around_input_values = false;
       filterfunc::brute_force_filter(
-         running_reward_snapshots, h, smoothed_reward_snapshots, 
+         reward_snapshots, h, smoothed_reward_snapshots, 
          wrap_around_input_values);
 
       curr_metafile.set_thickness(3);
@@ -2379,8 +2406,6 @@ void reinforce::store_arsprime_into_replay_memory(
 void reinforce::store_final_arsprime_into_replay_memory(
    int d, int curr_a, double curr_r)
 {
-//   cout << "inside reinforce::store_final_arsprime_into_replay_memory()"
-//        << endl;
    a_curr->put(d, curr_a);
    r_curr->put(d, curr_r);
    s_next->copy_row(d, *s_curr);

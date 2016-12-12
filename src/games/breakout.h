@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/10/16
+// Last modified on 12/10/16; 12/12/16
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -39,6 +39,9 @@ class breakout
    const genvector* get_curr_state() const;
    genvector* get_next_state();
    const genvector* get_next_state() const;
+
+   
+
    void crop_pool_difference_curr_frame(bool export_frames_flag);
 
    int get_screen_state_counter() const;
@@ -53,7 +56,7 @@ class breakout
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
    void set_screen_exports_subdir(std::string subdir);
-   void save_screen(std::string curr_screen_filename);  
+   void save_screen(int episode_number, std::string curr_screen_filename);  
 
   private: 
 
@@ -101,6 +104,11 @@ class breakout
    void initialize_output_subdirs();
    void initialize_grayscale_output_buffer();
    void docopy(const breakout& S);
+
+   void crop_center_ROI(std::vector<std::vector<unsigned char > >& byte_array);
+   unsigned char max_pool(
+      int r, int c, const std::vector<std::vector<unsigned char > >& 
+      byte_array);
 
    void pingpong_curr_and_next_states();
 };

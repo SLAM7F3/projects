@@ -1,7 +1,7 @@
 // ==========================================================================
 // breakout class member function definitions
 // ==========================================================================
-// Last modified on 12/10/16
+// Last modified on 12/10/16; 12/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -165,15 +165,14 @@ breakout::~breakout()
    {
       delete screen_state_ptrs[s];
    }
+
+   delete curr_big_state_ptr;
 }
 
 // ==========================================================================
 
-void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
+void breakout::crop_center_ROI(vector<vector<unsigned char > >& byte_array)
 {
-   int curr_framenumber = ale.getEpisodeFrameNumber();
-//   cout << "inside breakout::crop_pool_difference_curr_frame()" << endl;
-//   cout << "curr framenumber = " << curr_framenumber << endl;
 
 // Retrieve curr frame's greyscale pixel values:
 
@@ -182,7 +181,6 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 
 // Crop out center RoI from current frame:
 
-   vector<vector<unsigned char > > byte_array;
    for(int py = min_py; py < max_py; py++)
    {
       vector<unsigned char> curr_byte_row;
@@ -193,13 +191,50 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
       } // loop over px
       byte_array.push_back(curr_byte_row);
    } // loop over py
+}
 
-   if(export_frames_flag)
-   {
-      string output_frame = orig_subdir+"frame_"+
-         stringfunc::integer_to_string(curr_framenumber,5)+".png";
-      videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
-   }
+// ---------------------------------------------------------------------
+
+// Member function max_pool() takes in row and column values within
+// unsigned char array byte_array.  It returns the maximum pooled
+// unsigned char value over a 4x3 cell.
+
+unsigned char breakout::max_pool(
+   int r, int c, const vector<vector<unsigned char > >& byte_array)
+{
+   unsigned char z00 = byte_array[r][c];
+   unsigned char z01 = byte_array[r][c+1];
+   unsigned char z02 = byte_array[r][c+2];
+   unsigned char max_z0 = basic_math::max(z00, z01, z02);
+
+   unsigned char z10 = byte_array[r+1][c];
+   unsigned char z11 = byte_array[r+1][c+1];
+   unsigned char z12 = byte_array[r+1][c+2];
+   unsigned char max_z1 = basic_math::max(z10, z11, z12);
+
+   unsigned char z20 = byte_array[r+2][c];
+   unsigned char z21 = byte_array[r+2][c+1];
+   unsigned char z22 = byte_array[r+2][c+2];
+   unsigned char max_z2 = basic_math::max(z20, z21, z22);
+
+   unsigned char z30 = byte_array[r+3][c];
+   unsigned char z31 = byte_array[r+3][c+1];
+   unsigned char z32 = byte_array[r+3][c+2];
+   unsigned char max_z3 = basic_math::max(z30, z31, z32);
+
+   unsigned char max_z = basic_math::max(max_z0, max_z1, max_z2, max_z3);
+   return max_z;
+}
+
+// ---------------------------------------------------------------------
+void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
+{
+   int curr_framenumber = ale.getEpisodeFrameNumber();
+//   cout << "inside breakout::crop_pool_difference_curr_frame()" << endl;
+//   cout << "curr framenumber = " << curr_framenumber << endl;
+
+   vector<vector<unsigned char> > byte_array;
+   crop_center_ROI(byte_array);
 
 // Ping-pong pooled_byte_array and other_pooled_byte_array:
       
@@ -214,18 +249,16 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
       other_pooled_byte_array_ptr = &pooled_byte_array0;
    }
 
-// 2x2 max pool cropped center for current frame:
+// 4x3 max pool cropped center for current frame:
 
-   for(unsigned int r = 0; r < byte_array.size(); r += 2)
+   const int rskip = 4;
+   const int cskip = 3;
+   for(unsigned int r = 0; r < byte_array.size(); r += rskip)
    {
       vector<unsigned char> pooled_byte_row;
-      for (unsigned int c = 0; c < byte_array[0].size(); c+= 2)
+      for (unsigned int c = 0; c < byte_array[0].size(); c += cskip)
       {
-         unsigned char z00 = byte_array[r][c];
-         unsigned char z01 = byte_array[r][c+1];
-         unsigned char z10 = byte_array[r+1][c];
-         unsigned char z11 = byte_array[r+1][c+1];
-         unsigned char max_z = basic_math::max(z00, z01, z10, z11);
+         unsigned char max_z = max_pool(r, c, byte_array);
          pooled_byte_row.push_back(max_z);
 
 //         double zpool(max_z);
@@ -338,24 +371,8 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
 //   cout << "inside breakout::crop_pool_curr_frame()" << endl;
 //   cout << "curr framenumber = " << curr_framenumber << endl;
 
-// Retrieve curr frame's greyscale pixel values:
-
-   grayscale_output_buffer.clear();
-   ale.getScreenGrayscale(grayscale_output_buffer);
-
-// Crop out center RoI from current frame:
-
-   vector<vector<unsigned char > > byte_array;
-   for(int py = min_py; py < max_py; py++)
-   {
-      vector<unsigned char> curr_byte_row;
-      for(int px = min_px; px <  max_px; px++)
-      {
-         int curr_pixel = px + py * screen_width;
-         curr_byte_row.push_back(grayscale_output_buffer[curr_pixel]);
-      } // loop over px
-      byte_array.push_back(curr_byte_row);
-   } // loop over py
+   vector<vector<unsigned char> > byte_array;
+   crop_center_ROI(byte_array);
 
    if(export_frames_flag)
    {
@@ -380,28 +397,7 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
       vector<unsigned char> pooled_byte_row;
       for (unsigned int c = 0; c < byte_array[0].size(); c+= cskip)
       {
-         unsigned char z00 = byte_array[r][c];
-         unsigned char z01 = byte_array[r][c+1];
-         unsigned char z02 = byte_array[r][c+2];
-         unsigned char max_z0 = basic_math::max(z00, z01, z02);
-
-         unsigned char z10 = byte_array[r+1][c];
-         unsigned char z11 = byte_array[r+1][c+1];
-         unsigned char z12 = byte_array[r+1][c+2];
-         unsigned char max_z1 = basic_math::max(z10, z11, z12);
-
-         unsigned char z20 = byte_array[r+2][c];
-         unsigned char z21 = byte_array[r+2][c+1];
-         unsigned char z22 = byte_array[r+2][c+2];
-         unsigned char max_z2 = basic_math::max(z20, z21, z22);
-
-         unsigned char z30 = byte_array[r+3][c];
-         unsigned char z31 = byte_array[r+3][c+1];
-         unsigned char z32 = byte_array[r+3][c+2];
-         unsigned char max_z3 = basic_math::max(z30, z31, z32);
-
-         unsigned char max_z = basic_math::max(max_z0, max_z1, max_z2, max_z3);
-
+         unsigned char max_z = max_pool(r, c, byte_array);
          double zpool(max_z);
          pooled_scrn_values.push_back(zpool);
 
@@ -445,9 +441,13 @@ void breakout::mu_and_sigma_for_pooled_zvalues()
 // Member function save_screen() writes out an RGB image corresponding
 // to the current ALE screen.
 
-void breakout::save_screen(string curr_screen_filename)
+void breakout::save_screen(int episode_number, string curr_screen_filename)
 {
-   string curr_screen_path = screen_exports_subdir + curr_screen_filename;
+   string episode_subdir = screen_exports_subdir+
+      stringfunc::integer_to_string(episode_number,5)+"/";
+   filefunc::dircreate(episode_subdir);
+   string curr_screen_path = episode_subdir + curr_screen_filename;
    screen_exporter_ptr->save(ale.getScreen(), curr_screen_path);
 //   cout << "Exported " << curr_screen_path << endl;
 }
+

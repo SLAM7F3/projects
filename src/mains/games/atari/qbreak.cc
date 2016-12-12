@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/10/16; 12/11/16
+// Last updated on 12/10/16; 12/11/16; 12/12/16
 // ==========================================================================
 
 #include <iostream>
@@ -60,6 +60,7 @@ int main(int argc, char** argv)
    int Din = game_world.get_curr_state()->get_mdim();   // Input layer dim
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
+
    int n_max_episodes = 3 * 1000;
    int Tmax = n_max_episodes;
 
@@ -71,8 +72,8 @@ int main(int argc, char** argv)
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
-   int H2 = 64;
+   int H2 = 32;
+//   int H2 = 64;
 
    int H3 = 0;
 //   int H3 = 8;
@@ -133,9 +134,9 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
-//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
@@ -163,7 +164,8 @@ int main(int argc, char** argv)
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
-   const double discard_0_reward_frac = 0.95;  
+   const double discard_0_reward_frac = 0.85;  
+//   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 10;
    int n_summarize = 10;
@@ -315,10 +317,7 @@ int main(int argc, char** argv)
 // Experiment with rewarding agent for living (bad results so far)
 
          const double live_timestep_reward = 0.0;
-//         double live_timestep_reward = 50.0 / 2000.0;
-//         renorm_reward += live_timestep_reward;
-
-         reinforce_agent_ptr->record_reward_for_action(curr_reward);
+         reinforce_agent_ptr->accumulate_reward(curr_reward);
          reinforce_agent_ptr->increment_time_counters();
 
          if(!nearly_equal(renorm_reward, live_timestep_reward))
@@ -331,13 +330,6 @@ int main(int argc, char** argv)
 
          if(game_world.get_game_over())
          {
-
-// Experiment with penalizing agent for dying (bad results so far)
-
-//            const double death_penalty = 0;
-//            const double death_penalty = 15;
-//            renorm_reward -= death_penalty;
-
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
 
@@ -357,12 +349,13 @@ int main(int argc, char** argv)
 
             if(nearly_equal(renorm_reward, live_timestep_reward))
             {
-               if(nrfunc::ran1() > 1 - discard_0_reward_frac) continue;
+               if(nrfunc::ran1() < discard_0_reward_frac)
+               {
+                  reinforce_agent_ptr->store_arsprime_into_replay_memory(
+                     d, curr_a, renorm_reward, *next_s, 
+                     game_world.get_game_over());
+               }
             }
-
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, renorm_reward, *next_s, 
-               game_world.get_game_over());
          }
 
       if(reinforce_agent_ptr->get_replay_memory_full() &&
@@ -378,13 +371,15 @@ int main(int argc, char** argv)
 
          bool export_RGB_screens_flag = false;
          if(curr_episode_number% 200 == 0) export_RGB_screens_flag = true;
-         if(curr_frame_number < 110) export_RGB_screens_flag = false;
+
+//         if(curr_frame_number < 110) export_RGB_screens_flag = false;
          if(export_RGB_screens_flag)
          {
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_frame_number,5)+".png";
-            breakout_ptr->save_screen(curr_screen_filename);
+            breakout_ptr->save_screen(
+               curr_episode_number, curr_screen_filename);
          }
 
       } // game_over while loop
@@ -450,8 +445,10 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_weight_distributions(
             output_subdir, extrainfo);
-         reinforce_agent_ptr->snapshot_running_reward();
-         reinforce_agent_ptr->plot_reward_history(output_subdir, extrainfo);
+         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+         bool plot_cumulative_reward = true;
+         reinforce_agent_ptr->plot_reward_history(output_subdir, extrainfo,
+                                                  plot_cumulative_reward);
          reinforce_agent_ptr->plot_epsilon_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_frames_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
