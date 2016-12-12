@@ -35,8 +35,8 @@ int main(int argc, char** argv)
 
 // Instantiate Breakout ALE game:
 
-//   int n_screen_states = 1;
-   int n_screen_states = 2;
+   int n_screen_states = 1;
+//   int n_screen_states = 2;
 //   int n_screen_states = 3;
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
@@ -75,8 +75,8 @@ int main(int argc, char** argv)
    int H2 = 32;
 //   int H2 = 64;
 
-//   int H3 = 0;
-   int H3 = 8;
+   int H3 = 0;
+//   int H3 = 8;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(200);
+   reinforce_agent_ptr->set_epsilon_time_constant(300);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -283,7 +283,6 @@ int main(int argc, char** argv)
             {
                curr_s = game_world.get_curr_state();
             }
-
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
                *curr_s);
             if(d%1000 == 0) cout << "d = " << d << endl;

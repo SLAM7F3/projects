@@ -1415,12 +1415,14 @@ void reinforce::plot_reward_history(
    if(plot_cumulative_reward)
    {
       max_reward = mathfunc::maximal_value(cumulative_reward_snapshots);
+      if(max_reward < 1) max_reward = 1;
       plot_reward_history(output_subdir, extrainfo, 0, max_reward,
                           cumulative_reward_snapshots);
    }
    else
    {
       max_reward = mathfunc::maximal_value(running_reward_snapshots);
+      if(max_reward < 1) max_reward = 1;
       plot_reward_history(output_subdir, extrainfo, 0, max_reward,
                           running_reward_snapshots);
    }
@@ -2365,6 +2367,7 @@ int reinforce::compute_legal_argmax_Q()
 
 int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
 {
+//   cout << "inside store_curr_state_into_replay_memory()" << endl;
    int d = -1;
    if(replay_memory_index < replay_memory_capacity)
    {
@@ -2378,6 +2381,9 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
       replay_memory_index = 0;
       d = replay_memory_index;
    }
+//   cout << "d = " << d << endl;
+//   cout << "s_curr: mdim = " << s_curr->get_mdim()
+//        << " ndim = " << s_curr->get_ndim() << endl;
    s_curr->put_row(d, curr_s);
    return d;
 }

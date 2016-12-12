@@ -334,6 +334,9 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 
 void breakout::pingpong_curr_and_next_states()
 {
+//   cout << "inside spacenv::pingpong_curr_and_next_states()" << endl;
+//   cout << "difference_counter = " << difference_counter << endl;
+
    if(difference_counter == 0)
    {
       curr_state_ptr = screen1_state_ptr;
@@ -345,6 +348,7 @@ void breakout::pingpong_curr_and_next_states()
       next_state_ptr = screen1_state_ptr;
    }
 
+/*
    if(screen_state_counter == 0)
    {
       curr_state_ptr = screen_state_ptrs[1];
@@ -355,11 +359,16 @@ void breakout::pingpong_curr_and_next_states()
       curr_state_ptr = screen_state_ptrs[0];
       next_state_ptr = screen_state_ptrs[1];
    }
+*/
+
+//   cout << "curr_state_ptr = " << curr_state_ptr << endl;
+//   cout << "next_state_ptr = " << next_state_ptr << endl;
+//   cout << "curr_state_ptr->mdim = " << curr_state_ptr->get_mdim() << endl;
+//   cout << "next_state_ptr->mdim = " << next_state_ptr->get_mdim() << endl;
    
-//   cout << "inside spacenv::pingpong_curr_and_next_states()" << endl;
 //   cout << "|next_s - curr_s| = " 
 //        << (*next_state_ptr - *curr_state_ptr).magnitude() 
-//        << " diff_counter = " << difference_counter << endl;
+//        << endl;
 }
 
 // ---------------------------------------------------------------------
