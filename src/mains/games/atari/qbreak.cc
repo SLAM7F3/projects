@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 //   int H2 = 64;
 
 //   int H3 = 0;
-   int H3 = 8;
+   int H3 = 16;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -168,7 +168,6 @@ int main(int argc, char** argv)
 //   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 10;
-   int n_summarize = 10;
    int n_snapshot = 100;
 
    string subtitle=
@@ -371,7 +370,6 @@ int main(int argc, char** argv)
          bool export_RGB_screens_flag = false;
          if(curr_episode_number% 200 == 0) export_RGB_screens_flag = true;
 
-//         if(curr_frame_number < 110) export_RGB_screens_flag = false;
          if(export_RGB_screens_flag)
          {
             string curr_screen_filename="screen_"+
@@ -435,19 +433,16 @@ int main(int argc, char** argv)
          if(reinforce_agent_ptr->get_include_bias_terms()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
-         reinforce_agent_ptr->compute_weight_distributions();
-      }
 
-      if(curr_episode_number >= n_summarize - 1 && 
-         curr_episode_number % n_summarize == 0)
-      {
+         reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->store_quasirandom_weight_values();
+         reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
-         reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as

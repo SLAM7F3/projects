@@ -104,6 +104,8 @@ class reinforce
    void plot_zeroth_layer_weights(int nx, int ny, std::string output_subdir);
    void compute_bias_distributions();
    void compute_weight_distributions();
+   void store_quasirandom_weight_values();
+
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
    void plot_reward_history(std::string output_subdir, std::string extrainfo,
@@ -122,6 +124,8 @@ class reinforce
    void plot_bias_distributions(
       std::string output_subdir, std::string extrainfo);
    void plot_weight_distributions(
+      std::string output_subdir, std::string extrainfo);
+   void plot_quasirandom_weight_values(
       std::string output_subdir, std::string extrainfo);
    void generate_summary_plots(
       std::string output_subdir, std::string extrainfo);
@@ -260,6 +264,13 @@ class reinforce
    std::vector<std::vector<double> > bias_01, bias_05, bias_10, bias_25;
    std::vector<std::vector<double>  >bias_35, bias_50, bias_65, bias_75;
    std::vector<std::vector<double> > bias_90, bias_95, bias_99;
+
+// Store histories for 9 "quasi-random" weights for each layer within
+// following vectors of vectors:
+
+   std::vector<std::vector<double> > weight_1, weight_2, weight_3;
+   std::vector<std::vector<double> > weight_4, weight_5, weight_6;
+   std::vector<std::vector<double> > weight_7, weight_8, weight_9;
 
    genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1

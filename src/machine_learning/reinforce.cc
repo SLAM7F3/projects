@@ -243,6 +243,17 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       weight_90.push_back(dummy_dist);
       weight_95.push_back(dummy_dist);
       weight_99.push_back(dummy_dist);
+
+      weight_1.push_back(dummy_dist);
+      weight_2.push_back(dummy_dist);
+      weight_3.push_back(dummy_dist);
+      weight_4.push_back(dummy_dist);
+      weight_5.push_back(dummy_dist);
+      weight_6.push_back(dummy_dist);
+      weight_7.push_back(dummy_dist);
+      weight_8.push_back(dummy_dist);
+      weight_9.push_back(dummy_dist);
+      
    } // loop over index l labeling neural net layers
 
    snapshots_subdir="";
@@ -1297,6 +1308,62 @@ void reinforce::compute_weight_distributions()
 }
 
 // ---------------------------------------------------------------------
+void reinforce::store_quasirandom_weight_values()
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      vector<double> weight_values;
+      int n_weights_for_layer = weights[l]->get_mdim() * 
+         weights[l]->get_ndim();
+      int weight_skip = n_weights_for_layer / 9;
+      for(unsigned int i = 1; i <= 9; i++)
+      {
+         int weight_index = i * weight_skip;
+         int r = weight_index / weights[l]->get_ndim();
+         int c = weight_index % weights[l]->get_ndim();
+         double curr_w = weights[l]->get(r,c);
+
+         if(i == 1)
+         {
+            weight_1[l].push_back(curr_w);
+         }
+         else if (i == 2)
+         {
+            weight_2[l].push_back(curr_w);
+         }
+         else if (i == 3)
+         {
+            weight_3[l].push_back(curr_w);
+         }
+         else if (i == 4)
+         {
+            weight_4[l].push_back(curr_w);
+         }
+         else if (i == 5)
+         {
+            weight_5[l].push_back(curr_w);
+         }
+         else if (i == 6)
+         {
+            weight_6[l].push_back(curr_w);
+         }
+         else if (i == 7)
+         {
+            weight_7[l].push_back(curr_w);
+         }
+         else if (i == 8)
+         {
+            weight_8[l].push_back(curr_w);
+         }
+         else if (i == 9)
+         {
+            weight_9[l].push_back(curr_w);
+         }
+      }
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
 string reinforce::init_subtitle()
 {
    string subtitle=
@@ -1927,6 +1994,104 @@ void reinforce::plot_weight_distributions(
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of quasi-random weight values versus episode number.
+
+void reinforce::plot_quasirandom_weight_values(
+   string output_subdir, string extrainfo)
+{
+   for(unsigned int l = 0; l < weight_50.size(); l++)
+   {
+      metafile curr_metafile;
+      string meta_filename=output_subdir + "/weight_values_"+
+         stringfunc::number_to_string(l);
+
+      string title="Quasi random weight values for layer "
+         +stringfunc::number_to_string(l);
+      title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
+      title += ";bsize="+stringfunc::number_to_string(batch_size);
+
+      string subtitle=init_subtitle();
+      subtitle += ";"+extrainfo;
+      string x_label="Episode number";
+      string y_label="Weight values";
+
+      double max_weight = NEGATIVEINFINITY;
+      double min_weight = POSITIVEINFINITY; 
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_1[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_2[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_3[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_4[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_5[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_6[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_7[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_8[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_9[l]));
+
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_1[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_2[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_3[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_4[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_5[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_6[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_7[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_8[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_9[l]));
+
+      curr_metafile.set_parameters(
+         meta_filename, title, x_label, y_label, 0, 
+         episode_number, min_weight, max_weight);
+      curr_metafile.set_subtitle(subtitle);
+      curr_metafile.openmetafile();
+      curr_metafile.write_header();
+      curr_metafile.set_thickness(2);
+
+      curr_metafile.write_curve(
+         0, episode_number, weight_1[l], colorfunc::get_color(0));
+      curr_metafile.write_curve(
+         0, episode_number, weight_2[l], colorfunc::get_color(1));
+      curr_metafile.write_curve(
+         0, episode_number, weight_3[l], colorfunc::get_color(2));
+      curr_metafile.write_curve(
+         0, episode_number, weight_4[l], colorfunc::get_color(3));
+      curr_metafile.write_curve(
+         0, episode_number, weight_5[l], colorfunc::get_color(4));
+      curr_metafile.write_curve(
+         0, episode_number, weight_6[l], colorfunc::get_color(5));
+      curr_metafile.write_curve(
+         0, episode_number, weight_7[l], colorfunc::get_color(6));
+      curr_metafile.write_curve(
+         0, episode_number, weight_8[l], colorfunc::get_color(7));
+      curr_metafile.write_curve(
+         0, episode_number, weight_9[l], colorfunc::get_color(8));
+
+      curr_metafile.closemetafile();
+      string banner="Exported metafile "+meta_filename+".meta";
+      outputfunc::write_banner(banner);
+
+      string unix_cmd="meta_to_jpeg "+meta_filename;
+      sysfunc::unix_command(unix_cmd);
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
 // Member fucntion generate_summary_plots() outputs metafile plots of
 // weight distributions, rewards, epsilon, nframes/episode and loss
 // histories.
@@ -1934,6 +2099,7 @@ void reinforce::plot_weight_distributions(
 void reinforce::generate_summary_plots(string output_subdir, string extrainfo)
 {
    plot_weight_distributions(output_subdir, extrainfo);
+   plot_quasirandom_weight_values(output_subdir, extrainfo);
    bool plot_cumulative_reward = true;
    plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward);
    plot_epsilon_history(output_subdir, extrainfo);
