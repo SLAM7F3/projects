@@ -153,7 +153,8 @@ int main(int argc, char** argv)
    int n_lr_episodes_period = 1 * 1000;
 
 //   int nn_update_frame_period = 100;
-   int nn_update_frame_period = 500;
+   int nn_update_frame_period = 250;
+//   int nn_update_frame_period = 500;
 //   int nn_update_frame_period = 1000000;
    
 //   int old_weights_period = 10; 
@@ -352,7 +353,7 @@ int main(int argc, char** argv)
          }
 
       if(reinforce_agent_ptr->get_replay_memory_full() &&
-         curr_episode_number % nn_update_frame_period == 0)
+         curr_frame_number % nn_update_frame_period == 0)
       {
          cout << "Episode number = " << curr_episode_number
               << " frame number = " << curr_frame_number
@@ -407,6 +408,7 @@ int main(int argc, char** argv)
 
       if(reinforce_agent_ptr->get_replay_memory_full())
       {
+         cout << "Episode number = " << curr_episode_number << endl;
          bool verbose_flag = true;
          total_loss = reinforce_agent_ptr->update_neural_network(
             verbose_flag);
