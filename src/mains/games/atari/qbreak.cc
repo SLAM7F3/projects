@@ -187,8 +187,8 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-//   bool export_frames_flag = false;
-   bool export_frames_flag = true;
+   bool export_frames_flag = false;
+//   bool export_frames_flag = true;
 
    // Get the vector of minimal legal actions
    ActionVect minimal_actions = breakout_ptr->get_ale().getMinimalActionSet();
