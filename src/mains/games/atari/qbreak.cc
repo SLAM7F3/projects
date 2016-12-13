@@ -72,14 +72,14 @@ int main(int argc, char** argv)
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-//   int H2 = 64;
-   int H2 = 128;
+   int H2 = 64;
+//   int H2 = 128;
 
 //   int H3 = 0;
 //   int H3 = 16;
 //   int H3 = 32;
-//   int H3 = 64;
-   int H3 = 128;
+   int H3 = 64;
+//   int H3 = 128;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(400);
+   reinforce_agent_ptr->set_epsilon_time_constant(500);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -169,8 +169,8 @@ int main(int argc, char** argv)
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
-   const double discard_0_reward_frac = 0.85;  
-//   const double discard_0_reward_frac = 0.95;  
+//   const double discard_0_reward_frac = 0.85;  
+   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 25;
    int n_snapshot = 100;
