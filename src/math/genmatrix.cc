@@ -2120,6 +2120,7 @@ void genmatrix::matrix_column_mult(const genmatrix& A, const genmatrix& B,
       put(i, bcol, sum);
    }
 }
+
 void genmatrix::matrix_column_mult_sum(
    const genmatrix& A, const genmatrix& B, const genvector& V, int bcol)
 {

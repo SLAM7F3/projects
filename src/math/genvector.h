@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for genvector class 
 // ==========================================================================
-// Last modified on 2/8/16; 10/17/16; 10/19/16; 11/29/16
+// Last modified on 10/17/16; 10/19/16; 11/29/16; 12/13/16
 // ==========================================================================
 
 #ifndef GENVECTOR_H
@@ -92,6 +92,8 @@ class genvector:public genmatrix
    friend genvector operator* (const genvector& X,const genmatrix& A);
 
    void matrix_vector_mult(const genmatrix& A,const genvector& X);
+   void matrix_vector_mult_sum(const genmatrix& A,const genvector& X,
+                               const genvector& V);
    void vector_increment(double alpha, const genvector& B);
    void copy_matrix_column(const genmatrix& A, int c);
 

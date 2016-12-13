@@ -1,7 +1,7 @@
 // ==========================================================================
 // Genvector class member function definitions
 // ==========================================================================
-// Last modified on 2/8/16; 10/17/16; 10/19/16; 11/29/16
+// Last modified on 10/17/16; 10/19/16; 11/29/16; 12/13/16
 // ==========================================================================
 
 #include <math.h>
@@ -585,6 +585,20 @@ void genvector::matrix_vector_mult(const genmatrix& A,const genvector& X)
       for (unsigned int j = 0; j < A.get_ndim(); j++)
       {
          sum += A.get(i,j) * X.get(j);
+      }
+      put(i, sum);
+   }
+}
+
+void genvector::matrix_vector_mult_sum(
+   const genmatrix& A,const genvector& X, const genvector& V)
+{
+   for (unsigned int i = 0; i < A.get_mdim(); i++)
+   {
+      double sum = 0;
+      for (unsigned int j = 0; j < A.get_ndim(); j++)
+      {
+         sum += A.get(i,j) * X.get(j) + V.get(j);
       }
       put(i, sum);
    }

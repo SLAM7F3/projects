@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/7/16; 12/8/16; 12/9/16; 12/12/16
+// Last modified on 12/8/16; 12/9/16; 12/12/16; 12/13/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -235,15 +235,18 @@ class reinforce
 
 // Node weighted inputs:
 
-   std::vector<genmatrix*> z;
+//   std::vector<genmatrix*> z;
+   std::vector<genvector*> Z_Prime;
 
 // Node activation outputs:
-   std::vector<genmatrix*> a;
+//   std::vector<genmatrix*> a;          // n_actions x T
+   std::vector<genvector*> A_Prime;    // n_actions x 1
    int hardwired_output_action;
 
 // Node errors:
    std::vector<genmatrix*> delta_prime; // n_actions x T
-
+   std::vector<genvector*> Delta_Prime; // n_actions x 1 
+   
    genvector *x_input;          // Din x 1
    genvector *p_action;		// n_actions x 1  
    genvector *pcum_action;	// n_actions x 1  
