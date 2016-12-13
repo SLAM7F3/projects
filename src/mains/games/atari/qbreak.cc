@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/10/16; 12/11/16; 12/12/16
+// Last updated on 12/10/16; 12/11/16; 12/12/16; 12/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -62,7 +62,6 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
    int n_max_episodes = 3 * 1000;
-   int Tmax = n_max_episodes;
 
 //   int H1 = 32;
 //   int H1 = 64;
@@ -99,7 +98,7 @@ int main(int argc, char** argv)
    int replay_memory_capacity = 15 * 1000;
 //   int replay_memory_capacity = 20 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, 1, replay_memory_capacity,
+      layer_dims, 1, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -153,8 +152,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-//   int nn_update_frame_period = 100;
-   int nn_update_frame_period = 250;
+   int nn_update_frame_period = 100;
+//   int nn_update_frame_period = 250;
 //   int nn_update_frame_period = 500;
 //   int nn_update_frame_period = 1000000;
    
@@ -169,7 +168,7 @@ int main(int argc, char** argv)
    const double discard_0_reward_frac = 0.85;  
 //   const double discard_0_reward_frac = 0.95;  
 
-   int n_update = 10;
+   int n_update = 25;
    int n_snapshot = 100;
 
    string subtitle=
@@ -209,6 +208,7 @@ int main(int argc, char** argv)
                  << breakout_ptr->get_n_screen_states() << endl;
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
+   params_stream << "n_max_episodes = " << n_max_episodes << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -361,7 +361,7 @@ int main(int argc, char** argv)
               << " remaining n_lives = " << breakout_ptr->get_ale().lives()
               << endl;
 
-         bool verbose_flag = true;
+         bool verbose_flag = false;
          total_loss = reinforce_agent_ptr->update_neural_network(
             verbose_flag);
       }
@@ -391,8 +391,6 @@ int main(int argc, char** argv)
 
 //       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
-      reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(n_update);
       reinforce_agent_ptr->append_n_episode_frames(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->append_epsilon();
@@ -409,8 +407,11 @@ int main(int argc, char** argv)
 
       if(reinforce_agent_ptr->get_replay_memory_full())
       {
-         cout << "Episode number = " << curr_episode_number << endl;
-         bool verbose_flag = true;
+         bool verbose_flag = false;
+         if(curr_episode_number % 10 == 0)
+         {
+            verbose_flag = true;
+         }
          total_loss = reinforce_agent_ptr->update_neural_network(
             verbose_flag);
       }

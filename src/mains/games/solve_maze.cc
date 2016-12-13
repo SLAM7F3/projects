@@ -53,7 +53,6 @@ int main (int argc, char* argv[])
 
    int Din = curr_maze.get_occupancy_state()->get_mdim(); // Input dim
    int Dout = n_actions;
-   int Tmax = 1;
 
 //   int H1 = 8;
    int H1 = 10;
@@ -83,7 +82,7 @@ int main (int argc, char* argv[])
 
    int replay_memory_capacity = 10 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, 1, replay_memory_capacity,
+      layer_dims, 1, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);

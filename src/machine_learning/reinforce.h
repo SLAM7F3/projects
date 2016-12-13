@@ -37,8 +37,8 @@ class reinforce
 
 // Initialization, constructor and destructor functions:
 
-   reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax);
-   reinforce(const std::vector<int>& n_nodes_per_layer, int Tmax,
+   reinforce(const std::vector<int>& n_nodes_per_layer);
+   reinforce(const std::vector<int>& n_nodes_per_layer,
              int batch_size, int replay_memory_capacity, 
              int solver_type = SGD);
    reinforce();
@@ -189,7 +189,6 @@ class reinforce
    int curr_timestep;
    int T;		// number of time steps in current episode
    std::deque<double> T_values;  // Holds latest T values
-   int Tmax;  	        
    int batch_size;  	// Perform parameter update after this many episodes
    double base_learning_rate;
    double learning_rate;

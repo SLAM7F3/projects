@@ -280,19 +280,17 @@ void reinforce::allocate_member_objects()
 }		       
 
 // ---------------------------------------------------------------------
-reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax)
+reinforce::reinforce(const vector<int>& n_nodes_per_layer)
 {
-   this->Tmax = Tmax;
    this->replay_memory_capacity = 1;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 }
 
-reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax,
+reinforce::reinforce(const vector<int>& n_nodes_per_layer, 
                      int batch_size, int replay_memory_capacity,
                      int solver_type)
 {
-   this->Tmax = Tmax;
    this->replay_memory_capacity = replay_memory_capacity;
    this->solver_type = solver_type;
 
@@ -304,7 +302,6 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer, int Tmax,
 // ---------------------------------------------------------------------
 reinforce::reinforce()
 {
-   Tmax = 1;
    allocate_member_objects();
    import_snapshot();
 }
@@ -517,7 +514,7 @@ void reinforce::summarize_parameters(string params_filename)
  
    params_stream << "base_learning_rate = " << base_learning_rate 
                  << "; batch_size = " << batch_size
-                 << "; n_max_episodes = " << Tmax << endl;
+                 << endl;
    
    if(solver_type == SGD)
    {
@@ -2342,8 +2339,6 @@ double reinforce::update_neural_network(bool verbose_flag)
 
 double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 {
-//   int t = 0;
-
    // Initialize "batch" weight gradients to zero:
 
    if(include_bias_terms)
@@ -2389,7 +2384,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
       double curr_Q = A_Prime[curr_layer]->get(j);
-
       double curr_activation = 0;
       if(j == curr_a)
       {
@@ -2399,8 +2393,19 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       Delta_Prime[curr_layer]->put(j, curr_activation);
    }
 
+   if(curr_loss <= 0)
+   {
+      cout << " Current loss = " << curr_loss << endl;
+      return curr_loss;
+   }
+   
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
+
+// Don't bother backpropagating if currently layer has zero content:
+
+      if(Delta_Prime[curr_layer]->magnitude() <= 0) break;
+
       int prev_layer = curr_layer - 1;
 
 // Eqn BP2A:
