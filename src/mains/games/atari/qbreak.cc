@@ -72,12 +72,14 @@ int main(int argc, char** argv)
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-   int H2 = 64;
+//   int H2 = 64;
+   int H2 = 128;
 
 //   int H3 = 0;
 //   int H3 = 16;
 //   int H3 = 32;
-   int H3 = 64;
+//   int H3 = 64;
+   int H3 = 128;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
