@@ -137,8 +137,9 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
 //   int old_weights_period = 32;  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(500);
-   double min_epsilon = 0.025;
+   reinforce_agent_ptr->set_epsilon_time_constant(20000 * n_grid_size / 6.0);
+//   double min_epsilon = 0.025;
+   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
    int n_update = 500;
