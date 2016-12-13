@@ -163,6 +163,34 @@ TERMINATED
 
 11.  m6700:  repeat expt 10
 
+12.  m6700
+
+Sun Dec 11 14:37:08 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 4
+   n_weights = 321088 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+13. m6700:  repeat of expt 12
 
 14.  Titan1:
 
@@ -317,22 +345,18 @@ nn_update_frame_period = 500
 24.  Titan 1:  Repeat of expt 22 
 
 
+31.  TM: H1 = 128, H2 = 64, H3 = 32
 
---------------------
-RUNNING EXPERIMENTS
---------------------
-
-12.  m6700
-
-Sun Dec 11 14:37:08 2016
+Mon Dec 12 15:38:04 2016
 Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 5000
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 16
-   layer = 3 n_nodes = 4
-   n_weights = 321088 (FC)
-base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 4
+   n_weights = 330368 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
@@ -340,19 +364,31 @@ L2 regularization lambda coeff = 0
 Replay memory capacity = 15000
 Number random samples drawn from replay memory Nd = 16
 Discount factor gamma = 0.99
-Epsilon time constant = 200; minimum epsilon = 0.1
+Epsilon time constant = 400; minimum epsilon = 0.1
 Learning rate decrease period = 1000 episodes
 Old weights period = 32
-Discard zero reward frac = 0.95
-Use big states flag = 1
+Discard zero reward frac = 0.85
+Use big states flag = 0
 Frame skip = 3
-1 big state = n_screen_states = 2
-nn_update_frame_period = 500
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
 
-13. m6700:  repeat of expt 12
+After O(700) episodes, reward has decreased from 1 to 0.5 and
+nframes/episode has stayed fixed at 1K.  H3 layer coeffs still somewhat
+evolving, but other hidden layer coeffs have frozen.
+
+32.  TM:  repeat of expt 31
+
+After 700 episodes, no significant change in reward or nframes/episode.
+
+33.  TM:  repeat of expt 31
+
+After 700 episodes, reward and nframes/episode have decreased.
 
 
-
+--------------------
+RUNNING EXPERIMENTS
+--------------------
 
 25.  Titan 3:  
 
@@ -382,9 +418,20 @@ Frame skip = 3
 1 big state = n_screen_states = 1
 nn_update_frame_period = 250
 
+After O(1K) episodes, reward shows no sign of increasing.  Frames/episode
+perhaps increases slightly from 1K --> 1.2K.  H3 weights contnue to evolve
+while other layers have stopped evolving.  Very small losses.
+
 26.  Titan 3:  Repeat expt 25
 
+After O(1K) episodes, reward has decreased and nframes/episode shows no
+signs of increasing.
+
 27.  Titan 3:  Repeat expt 25
+
+After O(1K) episodes, reward has increased slightly from 1 to 1.8.
+nframes/episodes increased from 1K to 1.2K.  But weight coeffs have all
+frozen.
 
 28.  Titan 1:
 
@@ -413,42 +460,18 @@ Frame skip = 3
 1 big state = n_screen_states = 1
 nn_update_frame_period = 250
 
+After O(1K) episodes, reward has decreased and nepisodes/frame has remained
+around 1K.  
+
 29.  Titan 1:  Repeat expt 28
+
+After O(1K) episdes, reward has remained basically around 1.
+nepisodes/frame has remained around 1K.
 
 30.  Titan 1:  Repeat expt 28
 
-
-31.  TM: H1 = 128, H2 = 64, H3 = 32
-
-Mon Dec 12 15:38:04 2016
-Neural net params:
-   n_layers = 5
-   layer = 0 n_nodes = 2500
-   layer = 1 n_nodes = 128
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 32
-   layer = 4 n_nodes = 4
-   n_weights = 330368 (FC)
-base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 15000
-Number random samples drawn from replay memory Nd = 16
-Discount factor gamma = 0.99
-Epsilon time constant = 400; minimum epsilon = 0.1
-Learning rate decrease period = 1000 episodes
-Old weights period = 32
-Discard zero reward frac = 0.85
-Use big states flag = 0
-Frame skip = 3
-1 big state = n_screen_states = 1
-nn_update_frame_period = 250
-
-32.  TM:  repeat of expt 31
-
-33.  TM:  repeat of expt 31
+After O(1K) episdes, reward has remained basically around 1.
+nepisodes/frame has remained around 1K.
 
 34.  m6700:  H1 = 64, H2 = 128
 
@@ -480,7 +503,6 @@ nn_update_frame_period = 250
 35.  m6700 repeat of expt 34
 
 36.  m6700 repeat of expt 34
-
 
 As of 4 am on Tues Dec 30, O(400) episodes have been played for expts 34 -
 36 on m6700.  Reward is no better than for random play.  But eps is roughly

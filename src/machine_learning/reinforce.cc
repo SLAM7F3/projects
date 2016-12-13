@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/7/16; 12/8/16; 12/9/16; 12/12/16
+// Last modified on 12/8/16; 12/9/16; 12/12/16; 12/13/16
 // ==========================================================================
 
 #include <string>
@@ -2092,12 +2092,16 @@ void reinforce::plot_quasirandom_weight_values(
 }
 
 // ---------------------------------------------------------------------
-// Member fucntion generate_summary_plots() outputs metafile plots of
+// Member function generate_summary_plots() outputs metafile plots of
 // weight distributions, rewards, epsilon, nframes/episode and loss
 // histories.
 
 void reinforce::generate_summary_plots(string output_subdir, string extrainfo)
 {
+   if(get_include_bias_terms()){
+      plot_bias_distributions(output_subdir, extrainfo);
+   }
+
    plot_weight_distributions(output_subdir, extrainfo);
    plot_quasirandom_weight_values(output_subdir, extrainfo);
    bool plot_cumulative_reward = true;

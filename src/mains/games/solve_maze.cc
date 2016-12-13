@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/29/16; 11/30/16; 12/5/16; 12/7/16
+// Last updated on 11/30/16; 12/5/16; 12/7/16; 12/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -81,10 +81,9 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 1;
-   int replay_memory_capacity = 10 * batch_size * sqr(n_grid_size);
+   int replay_memory_capacity = 10 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, batch_size, replay_memory_capacity,
+      layer_dims, Tmax, 1, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -138,12 +137,10 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
 //   int old_weights_period = 32;  
 
-   double eps_decay_factor = 0.90; // Probably optimal for n_size_grid = 8
-   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
+   reinforce_agent_ptr->set_epsilon_time_constant(500);
    double min_epsilon = 0.025;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
-   int n_anneal_steps = 1000;
    int n_update = 500;
    int n_progress = 10000;
    double Qmap_score = -1;
@@ -242,6 +239,9 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
     
+      reinforce_agent_ptr->append_n_episode_frames(
+         game_world.get_episode_framenumber());
+      reinforce_agent_ptr->append_epsilon();
       reinforce_agent_ptr->increment_episode_number();
 
 // Periodically copy current weights into old weights:
@@ -253,19 +253,15 @@ int main (int argc, char* argv[])
          update_old_weights_counter = 1;
       }
 
-      if(reinforce_agent_ptr->get_replay_memory_full() && 
-         curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
+      if(reinforce_agent_ptr->get_replay_memory_full())
       {
          total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
-// Periodically anneal epsilon:
+// Exponentially decay epsilon:
 
-      if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
-      {
-
-         reinforce_agent_ptr->anneal_epsilon();
-      }
+      reinforce_agent_ptr->exponentially_decay_epsilon(
+         curr_episode_number, 0);
 
       if(curr_episode_number%n_update == 0 && curr_episode_number > 0)
       {
@@ -298,18 +294,21 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
       {
-//         reinforce_agent_ptr->plot_reward_history(
-//            output_subdir, extrainfo, lose_reward, win_reward);
+         reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->store_quasirandom_weight_values();
+         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+
          reinforce_agent_ptr->plot_Qmap_score_history(
             output_subdir, subtitle, extrainfo);
-         reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, extrainfo);
-         if(reinforce_agent_ptr->get_include_bias_terms()){
-            reinforce_agent_ptr->plot_bias_distributions(
-               output_subdir, extrainfo);
-         }
-         reinforce_agent_ptr->plot_weight_distributions(
-            output_subdir, extrainfo);
+
+//         reinforce_agent_ptr->plot_log10_loss_history(
+//            output_subdir, extrainfo);
+//         if(reinforce_agent_ptr->get_include_bias_terms()){
+//            reinforce_agent_ptr->plot_bias_distributions(
+//               output_subdir, extrainfo);
+//         }
+//         reinforce_agent_ptr->plot_weight_distributions(
+//            output_subdir, extrainfo);
       }
 
    } // n_episodes < n_max_episodes while loop

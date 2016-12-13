@@ -439,7 +439,6 @@ int main(int argc, char** argv)
 
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
