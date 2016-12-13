@@ -17,9 +17,9 @@ Median reward +/- quatile width = ?
 n_frames / episode = ?
 Median nframes/episode +/- quartile width = ?
 
-----------------------
+-------------------------------------------------------------
 TERMINATED EXPERIMENTS
-----------------------
+-------------------------------------------------------------
 
 1.  TM:  H1 = 128, H2 = 32
 
@@ -311,7 +311,6 @@ nn_update_frame_period = 500
 
 21.  Titan 3: repeat expt 20
 
-
 22.  Titan 1:  Try to write out quasi-random weight values; 3 hidden layers
 
 Mon Dec 12 12:35:01 2016
@@ -343,52 +342,6 @@ nn_update_frame_period = 500
 23.  Titan 1:  Repeat of expt 22 
 
 24.  Titan 1:  Repeat of expt 22 
-
-
-31.  TM: H1 = 128, H2 = 64, H3 = 32
-
-Mon Dec 12 15:38:04 2016
-Neural net params:
-   n_layers = 5
-   layer = 0 n_nodes = 2500
-   layer = 1 n_nodes = 128
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 32
-   layer = 4 n_nodes = 4
-   n_weights = 330368 (FC)
-base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 15000
-Number random samples drawn from replay memory Nd = 16
-Discount factor gamma = 0.99
-Epsilon time constant = 400; minimum epsilon = 0.1
-Learning rate decrease period = 1000 episodes
-Old weights period = 32
-Discard zero reward frac = 0.85
-Use big states flag = 0
-Frame skip = 3
-1 big state = n_screen_states = 1
-nn_update_frame_period = 250
-
-After O(700) episodes, reward has decreased from 1 to 0.5 and
-nframes/episode has stayed fixed at 1K.  H3 layer coeffs still somewhat
-evolving, but other hidden layer coeffs have frozen.
-
-32.  TM:  repeat of expt 31
-
-After 700 episodes, no significant change in reward or nframes/episode.
-
-33.  TM:  repeat of expt 31
-
-After 700 episodes, reward and nframes/episode have decreased.
-
-
---------------------
-RUNNING EXPERIMENTS
---------------------
 
 25.  Titan 3:  
 
@@ -433,6 +386,7 @@ After O(1K) episodes, reward has increased slightly from 1 to 1.8.
 nframes/episodes increased from 1K to 1.2K.  But weight coeffs have all
 frozen.
 
+
 28.  Titan 1:
 
 Mon Dec 12 15:21:29 2016
@@ -473,6 +427,51 @@ nepisodes/frame has remained around 1K.
 After O(1K) episdes, reward has remained basically around 1.
 nepisodes/frame has remained around 1K.
 
+
+31.  TM: H1 = 128, H2 = 64, H3 = 32
+
+Mon Dec 12 15:38:04 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 4
+   n_weights = 330368 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+After O(700) episodes, reward has decreased from 1 to 0.5 and
+nframes/episode has stayed fixed at 1K.  H3 layer coeffs still somewhat
+evolving, but other hidden layer coeffs have frozen.
+
+32.  TM:  repeat of expt 31
+
+After 700 episodes, no significant change in reward or nframes/episode.
+
+33.  TM:  repeat of expt 31
+
+After 700 episodes, reward and nframes/episode have decreased.
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
 34.  m6700:  H1 = 64, H2 = 128
 
 Mon Dec 12 17:26:35 2016
@@ -508,7 +507,71 @@ As of 4 am on Tues Dec 30, O(400) episodes have been played for expts 34 -
 36 on m6700.  Reward is no better than for random play.  But eps is roughly
 0.5.  Weights continue to evolve.
 
+37:  Titan 3:  
 
+Tue Dec 13 07:58:44 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   layer = 4 n_nodes = 4
+   n_weights = 168448 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 100
+n_max_episodes = 6000
+
+38:  Titan 3:  Repeat expt 34
+
+39:  Titan 3:  Repeat expt 34
+
+40:  Titan 1:  
+
+Tue Dec 13 08:04:05 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 128
+   layer = 4 n_nodes = 4
+   n_weights = 185088 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 100
+n_max_episodes = 6000
+
+41:  Titan 1:  Repeat expt 40
+
+42:  Titan 1:  Repeat expt 40
 
 
 TODO:
@@ -517,9 +580,6 @@ D.  Implement batch normalization
 
 E.  Experiment with trying to extract ball and paddle posn and velocity and
 forming much smaller input layer for a much smaller neural net
-
-F.  Perhaps experiment with 3 hidden layer neural network but only after
-implementing batch normalization 
 
 
 DONE:
@@ -533,3 +593,7 @@ C.  Fix exporting of each individual screen rather than every 3rd or 4th
 one
 
 G.  Trace individual weights' evolutions
+
+F.  Perhaps experiment with 3 hidden layer neural network but only after
+implementing batch normalization 
+
