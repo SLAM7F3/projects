@@ -53,7 +53,6 @@ class reinforce
    void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
    bool get_debug_flag() const;
-   int get_curr_timestep() const;
    int get_episode_number() const;
    int increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
@@ -74,10 +73,6 @@ class reinforce
    void snapshot_running_reward();
    void snapshot_cumulative_reward(double cum_reward);
    void accumulate_reward(double curr_reward);
-   void record_reward_for_action(double curr_reward);
-   void increment_time_counters();
-   void update_T_values();
-   void update_running_reward(int n_update);
    void append_n_episode_frames(int n_frames);
    void append_epsilon();
 
@@ -185,9 +180,6 @@ class reinforce
    std::vector<int> layer_dims;
    environment* environment_ptr;
    
-   int cum_time_counter;  // Cumulative time step counter
-   int curr_timestep;
-   int T;		// number of time steps in current episode
    std::deque<double> T_values;  // Holds latest T values
    int batch_size;  	// Perform parameter update after this many episodes
    double base_learning_rate;
@@ -255,9 +247,6 @@ class reinforce
    std::vector<std::vector<double> > weight_4, weight_5, weight_6;
    std::vector<std::vector<double> > weight_7, weight_8, weight_9;
 
-   genvector *reward;  // T x 1
-   bool first_running_reward_update;
-   double running_reward;
    double reward_sum;
    std::vector<double> running_reward_snapshots;
    std::vector<double> cumulative_reward_snapshots;
@@ -333,11 +322,6 @@ inline void reinforce::set_debug_flag(bool flag)
 inline bool reinforce::get_debug_flag() const
 {
    return debug_flag;
-}
-
-inline int reinforce::get_curr_timestep() const
-{
-   return curr_timestep;
 }
 
 inline int reinforce::get_episode_number() const

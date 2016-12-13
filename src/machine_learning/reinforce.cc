@@ -44,7 +44,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
    include_bias_terms = false;
    debug_flag = false;
-   cum_time_counter = 0;
 
 // This particular set of hyperparameters yields perfect reinforcement
 // learning for an agent not to place any of its pieces into already
@@ -58,9 +57,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
    rmsprop_denom_const = 1E-5;
-   running_reward = 0;
    reward_sum = 0;
-   first_running_reward_update = true;
    episode_number = 0;
 
    n_layers = n_nodes_per_layer.size();
@@ -355,8 +352,6 @@ reinforce::~reinforce()
       }
    }
 
-   delete reward;
-
    delete s_curr;
    delete a_curr;
    delete r_curr;
@@ -393,17 +388,9 @@ void reinforce::initialize_episode()
    {
       Delta_Prime[i]->clear_values();
    }
-   
-   curr_timestep = 0;
-   T = 0;
 }
 
 // ---------------------------------------------------------------------
-void reinforce::snapshot_running_reward()
-{
-   running_reward_snapshots.push_back(running_reward);
-}
-
 void reinforce::snapshot_cumulative_reward(double cum_reward)
 {
    cumulative_reward_snapshots.push_back(cum_reward);
@@ -413,68 +400,6 @@ void reinforce::snapshot_cumulative_reward(double cum_reward)
 void reinforce::accumulate_reward(double curr_reward)
 {
    reward_sum += curr_reward;
-}
-
-// ---------------------------------------------------------------------
-void reinforce::record_reward_for_action(double curr_reward)
-{
-   accumulate_reward(curr_reward);
-   if(curr_timestep < int(reward->get_mdim()))
-   {
-      reward->put(curr_timestep, curr_reward);
-   }
-}
-
-// ---------------------------------------------------------------------
-void reinforce::increment_time_counters()
-{
-   cum_time_counter++;
-   curr_timestep++;
-   T++;
-}
-
-// ---------------------------------------------------------------------
-void reinforce::update_T_values()
-{
-//   cout << "inside update_T_values()" << endl;
-
-   T_values.push_back(T);
-   if(T_values.size() > 1000)
-   {
-      T_values.pop_front();
-   }
-}
-
-// ---------------------------------------------------------------------
-void reinforce::update_running_reward(int n_update)
-{
-   if(first_running_reward_update)
-   {
-      running_reward = reward_sum;
-      first_running_reward_update = false;
-   }
-   else
-   {
-      running_reward = 0.95 * running_reward + 0.05 * reward_sum;
-   }
-   reward_sum = 0;
-
-   if(episode_number > 0 && episode_number % n_update == 0)
-   {
-      double mu_T, sigma_T;
-      mathfunc::mean_and_std_dev(T_values, mu_T, sigma_T);
-      cout << "base learning rate="+stringfunc::scinumber_to_string(
-         base_learning_rate,2)
-           << " learning_rate="+stringfunc::scinumber_to_string(
-              learning_rate, 2);
-      cout << " gamma="+stringfunc::number_to_string(gamma,3)
-           << " rms_decay="+stringfunc::number_to_string(rmsprop_decay_rate,3)
-           << endl;
-      cout << "batch_size = " << batch_size << " lambda = " << lambda << endl;
-      cout << "episode_number = " << episode_number << endl;
-      cout << "  T = " << mu_T << " +/- " << sigma_T << endl;
-      cout << "  Running reward mean = " << running_reward << endl;
-   }
 }
 
 // ---------------------------------------------------------------------

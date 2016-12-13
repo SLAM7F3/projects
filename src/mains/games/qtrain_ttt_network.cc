@@ -1,3 +1,8 @@
+
+// As of 12/13/16, reward and timestep member vars in reinforce class
+// have been significantly altered.  So these quantities need to be
+// reworked inside this program...
+
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
@@ -285,7 +290,7 @@ int main (int argc, char* argv[])
       genvector* next_s;
       while(!game_world.get_game_over())
       {
-         int curr_timestep = reinforce_agent_ptr->get_curr_timestep();
+         int curr_timestep = -1; // reinforce_agent_ptr->get_curr_timestep();
 
 // AI move:
 
@@ -300,7 +305,7 @@ int main (int argc, char* argv[])
             {
                game_world.set_game_over(true);
                curr_reward = lose_reward; // Agent loses!
-               reinforce_agent_ptr->record_reward_for_action(curr_reward);
+//                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
          
@@ -308,7 +313,7 @@ int main (int argc, char* argv[])
             {
                game_world.set_game_over(true);
                curr_reward = stalemate_reward; // Entire board filled
-               reinforce_agent_ptr->record_reward_for_action(curr_reward);
+//                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
          } // AI_moves_first || timestep > 0 conditional
@@ -350,8 +355,8 @@ int main (int argc, char* argv[])
             curr_reward = stalemate_reward;
          }
 
-         reinforce_agent_ptr->record_reward_for_action(curr_reward);
-         reinforce_agent_ptr->increment_time_counters();
+//          reinforce_agent_ptr->record_reward_for_action(curr_reward);
+//          reinforce_agent_ptr->increment_time_counters();
 
          if(game_world.get_game_over())
          {
@@ -368,8 +373,6 @@ int main (int argc, char* argv[])
 // -----------------------------------------------------------------------
 
       reinforce_agent_ptr->increment_episode_number();
-      reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(n_update);
 
 // Periodically copy current weights into old weights:
 
@@ -472,7 +475,7 @@ int main (int argc, char* argv[])
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
-         reinforce_agent_ptr->snapshot_running_reward();
+//          reinforce_agent_ptr->snapshot_running_reward();
          if(reinforce_agent_ptr->get_include_bias_terms()){
            reinforce_agent_ptr->compute_bias_distributions();
          }

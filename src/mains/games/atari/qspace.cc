@@ -295,9 +295,6 @@ int main(int argc, char** argv)
 //         double live_timestep_reward = 50.0 / 2000.0;
 //         renorm_reward += live_timestep_reward;
 
-         reinforce_agent_ptr->record_reward_for_action(curr_reward);
-         reinforce_agent_ptr->increment_time_counters();
-
          if(renorm_reward > live_timestep_reward)
          {
             cout << "episode = " << curr_episode_number
@@ -374,8 +371,6 @@ int main(int argc, char** argv)
 
 //       spaceinv_ptr->mu_and_sigma_for_pooled_zvalues();
 
-      reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(n_update);
       reinforce_agent_ptr->append_n_episode_frames(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->append_epsilon();
@@ -425,14 +420,9 @@ int main(int argc, char** argv)
          curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_weight_distributions(
-            output_subdir, extrainfo);
-         reinforce_agent_ptr->snapshot_running_reward();
-         reinforce_agent_ptr->plot_reward_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_epsilon_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_frames_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, extrainfo);
+         reinforce_agent_ptr->store_quasirandom_weight_values();
+         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)

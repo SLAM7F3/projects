@@ -318,7 +318,6 @@ int main(int argc, char** argv)
          }
 
          reinforce_agent_ptr->accumulate_reward(curr_reward);
-         reinforce_agent_ptr->increment_time_counters();
 
          if(!nearly_equal(renorm_reward, 0))
          {

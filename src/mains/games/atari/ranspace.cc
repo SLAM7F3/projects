@@ -222,9 +222,6 @@ int main(int argc, char** argv)
             game_world.get_max_score_per_episode();
          cum_reward += curr_reward;
 
-         reinforce_agent_ptr->record_reward_for_action(curr_reward);
-         reinforce_agent_ptr->increment_time_counters();
-
          if(!state_updated_flag && !game_world.get_game_over()) continue;
 
          game_world.compute_next_state(a);
@@ -249,8 +246,6 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward << endl;
       cout << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
-      reinforce_agent_ptr->update_T_values();
-      reinforce_agent_ptr->update_running_reward(n_update);
       reinforce_agent_ptr->append_n_episode_frames(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->increment_episode_number();      
@@ -307,7 +302,6 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_weight_distributions(
             output_subdir, extrainfo);
-         reinforce_agent_ptr->snapshot_running_reward();
          reinforce_agent_ptr->plot_reward_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_frames_history(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_log10_loss_history(
