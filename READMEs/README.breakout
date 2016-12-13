@@ -474,31 +474,6 @@ RUNNING EXPERIMENTS
 
 34.  m6700:  H1 = 64, H2 = 128
 
-Mon Dec 12 17:26:35 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 2500
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 4
-   n_weights = 168704 (FC)
-base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0
-Replay memory capacity = 15000
-Number random samples drawn from replay memory Nd = 16
-Discount factor gamma = 0.99
-Epsilon time constant = 400; minimum epsilon = 0.1
-Learning rate decrease period = 1000 episodes
-Old weights period = 32
-Discard zero reward frac = 0.85
-Use big states flag = 0
-Frame skip = 3
-1 big state = n_screen_states = 1
-nn_update_frame_period = 250
-
 35.  m6700 repeat of expt 34
 
 36.  m6700 repeat of expt 34
@@ -509,15 +484,14 @@ As of 4 am on Tues Dec 30, O(400) episodes have been played for expts 34 -
 
 37:  Titan 3:  
 
-Tue Dec 13 07:58:44 2016
+
+Tue Dec 13 08:39:19 2016
 Neural net params:
-   n_layers = 5
+   n_layers = 3
    layer = 0 n_nodes = 2500
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 64
-   layer = 4 n_nodes = 4
-   n_weights = 168448 (FC)
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 4
+   n_weights = 641024 (FC)
 base_learning_rate = 0.01; batch_size = 1
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
@@ -526,15 +500,15 @@ L2 regularization lambda coeff = 0
 Replay memory capacity = 15000
 Number random samples drawn from replay memory Nd = 16
 Discount factor gamma = 0.99
-Epsilon time constant = 400; minimum epsilon = 0.1
+Epsilon time constant = 800; minimum epsilon = 0.1
 Learning rate decrease period = 1000 episodes
 Old weights period = 32
-Discard zero reward frac = 0.85
+Discard zero reward frac = 0.95
 Use big states flag = 0
 Frame skip = 3
 1 big state = n_screen_states = 1
 nn_update_frame_period = 100
-n_max_episodes = 6000
+n_max_episodes = 30000
 
 38:  Titan 3:  Repeat expt 34
 
@@ -542,15 +516,14 @@ n_max_episodes = 6000
 
 40:  Titan 1:  
 
-Tue Dec 13 08:04:05 2016
+Tue Dec 13 08:43:18 2016
 Neural net params:
-   n_layers = 5
+   n_layers = 4
    layer = 0 n_nodes = 2500
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 128
-   layer = 4 n_nodes = 4
-   n_weights = 185088 (FC)
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 648320 (FC)
 base_learning_rate = 0.01; batch_size = 1
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
@@ -559,15 +532,15 @@ L2 regularization lambda coeff = 0
 Replay memory capacity = 15000
 Number random samples drawn from replay memory Nd = 16
 Discount factor gamma = 0.99
-Epsilon time constant = 400; minimum epsilon = 0.1
+Epsilon time constant = 800; minimum epsilon = 0.1
 Learning rate decrease period = 1000 episodes
 Old weights period = 32
-Discard zero reward frac = 0.85
+Discard zero reward frac = 0.95
 Use big states flag = 0
 Frame skip = 3
 1 big state = n_screen_states = 1
 nn_update_frame_period = 100
-n_max_episodes = 6000
+n_max_episodes = 30000
 
 41:  Titan 1:  Repeat expt 40
 
