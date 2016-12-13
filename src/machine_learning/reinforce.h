@@ -68,28 +68,15 @@ class reinforce
    void set_gamma(double gamma);
    double get_gamma() const;
    void set_rmsprop_decay_rate(double rate);
-   genvector* get_p_action();
    void set_ADAM_params(double beta1, double beta2);
 
-   void hardwire_output_action(int a);
    void initialize_episode();
-   void compute_action_probs(
-      genvector* x_input, bool enforce_constraints_flag,
-      genvector* legal_actions = NULL);
-   void renormalize_action_distribution();
-
-   void redistribute_action_probs();
-   void print_p_action() const;
-   int get_candidate_current_action();
-   void set_current_action(int output_action);
-   void periodically_snapshot_loss_value();
    void snapshot_running_reward();
    void snapshot_cumulative_reward(double cum_reward);
    void accumulate_reward(double curr_reward);
    void record_reward_for_action(double curr_reward);
    void increment_time_counters();
    void update_T_values();
-   void update_weights();
    void update_running_reward(int n_update);
    void append_n_episode_frames(int n_frames);
    void append_epsilon();
@@ -231,26 +218,20 @@ class reinforce
 
 // STL vector index ranges over layers l = 0, 1, ..., n_layers
 // row index ranges over lth layer nodes j = 0, 1, ... n_nodes_in_lth_layer
-// column index ranges over t = 0, 1, ... T
 
 // Node weighted inputs:
 
-//   std::vector<genmatrix*> z;
    std::vector<genvector*> Z_Prime;
 
 // Node activation outputs:
-//   std::vector<genmatrix*> a;          // n_actions x T
+
    std::vector<genvector*> A_Prime;    // n_actions x 1
    int hardwired_output_action;
 
 // Node errors:
-   std::vector<genmatrix*> delta_prime; // n_actions x T
+
    std::vector<genvector*> Delta_Prime; // n_actions x 1 
    
-   genvector *x_input;          // Din x 1
-   genvector *p_action;		// n_actions x 1  
-   genvector *pcum_action;	// n_actions x 1  
-
 // Episode datastructures:
 
    std::vector<double> time_samples;
@@ -275,9 +256,7 @@ class reinforce
    std::vector<std::vector<double> > weight_4, weight_5, weight_6;
    std::vector<std::vector<double> > weight_7, weight_8, weight_9;
 
-   genvector *y; // T x 1 (holds index for action taken at t = 1, 2, ... T)
    genvector *reward;  // T x 1
-   genvector *discounted_reward;  // T x 1
    bool first_running_reward_update;
    double running_reward;
    double reward_sum;
@@ -318,13 +297,7 @@ class reinforce
    double beta1, beta2;
    double curr_beta1_pow, curr_beta2_pow;
 
-   void policy_forward(int t, bool enforce_constraints_flag,
-      genvector *legal_actions = NULL);
-   void get_softmax_action_probs(int t);
    void compute_cumulative_action_dist();
-   double compute_cross_entropy_loss(int t);
-   void discount_rewards();
-   void policy_backward();
    void update_biases_cache(double decay_rate);
    void update_rmsprop_cache(double decay_rate);
 
@@ -438,11 +411,6 @@ inline double reinforce::get_gamma() const
 inline void reinforce::set_rmsprop_decay_rate(double rate)
 {
    rmsprop_decay_rate = rate;
-}
-
-inline genvector* reinforce::get_p_action()
-{
-   return p_action;
 }
 
 inline reinforce::Q_MAP* reinforce::get_qmap_ptr()

@@ -55,7 +55,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    learning_rate = base_learning_rate;
    mu = 0.9;		// Coefficient for momentum solver type
    lambda = 0.0;	// L2 regularization coefficient 
-//   lambda = 1E-3;	
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
    rmsprop_denom_const = 1E-5;
@@ -69,24 +68,15 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    for(int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
-//      genmatrix *curr_z = new genmatrix(layer_dims.back(), Tmax);
       genvector *curr_Z_Prime = new genvector(layer_dims.back());
-//      genmatrix *curr_a = new genmatrix(layer_dims.back(), Tmax);
       genvector *curr_A_Prime = new genvector(layer_dims.back());
-      genmatrix *curr_delta_prime = new genmatrix(layer_dims.back(), Tmax);
       genvector *curr_Delta_Prime = new genvector(layer_dims.back());
-//      z.push_back(curr_z);
       Z_Prime.push_back(curr_Z_Prime);
-//      a.push_back(curr_a);
       A_Prime.push_back(curr_A_Prime);
-      delta_prime.push_back(curr_delta_prime);
       Delta_Prime.push_back(curr_Delta_Prime);
    }
    n_actions = layer_dims.back();
    hardwired_output_action = -1;
-
-   p_action = new genvector(n_actions);
-   pcum_action = new genvector(n_actions);
 
 // Biases for all network layers:
 
@@ -278,10 +268,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // ---------------------------------------------------------------------
 void reinforce::allocate_member_objects()
 {
-   y = new genvector(Tmax);
-   reward = new genvector(Tmax);
-   discounted_reward = new genvector(Tmax);
-
    s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
    a_curr = new genvector(replay_memory_capacity);
    r_curr = new genvector(replay_memory_capacity);
@@ -328,11 +314,8 @@ reinforce::~reinforce()
 {
    for(unsigned int l = 0; l < Z_Prime.size(); l++)
    {
-//      delete z[l];
       delete Z_Prime[l];
-//      delete a[l];
       delete A_Prime[l];
-      delete delta_prime[l];
       delete Delta_Prime[l];
    }
 
@@ -375,11 +358,7 @@ reinforce::~reinforce()
       }
    }
 
-   delete p_action;
-   delete pcum_action;
-   delete y;
    delete reward;
-   delete discounted_reward;
 
    delete s_curr;
    delete a_curr;
@@ -405,428 +384,21 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::hardwire_output_action(int a)
-{
-   hardwired_output_action = a;
-}
-
-// ---------------------------------------------------------------------
-// Member function policy_forward returns the output of the network
-// given an input set of values.  See "Forward & backward propagation
-// for one episode of reinforcement learning" notes dated 10/18/2016.
-
-void reinforce::policy_forward(int t, bool enforce_constraints_flag,
-                               genvector *legal_actions)
-{
-/*
-//   cout << "inside policy_forward(), t = " << t << endl;
-   a[0]->put_column(t, *x_input);
- 
-   for(int l = 0; l < n_layers-2; l++)
-   {
-      z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
-      machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
-   }
-
-   z[n_layers-1]->matrix_column_mult(*weights[n_layers-2], *a[n_layers-2], t);
-
-   if(!enforce_constraints_flag)
-   {
-      machinelearning_func::softmax(t, *z[n_layers-1], *a[n_layers-1]);
-   }
-   else
-   {
-      if(hardwired_output_action >= 0)
-      {
-         machinelearning_func::hardwire_output_action(
-            t, hardwired_output_action, *a[n_layers-1]);
-         hardwired_output_action = -1;
-      }
-      else
-      {
-         if(legal_actions != NULL)
-         {
-            machinelearning_func::constrained_softmax(
-               t, *legal_actions, *z[n_layers-1], *a[n_layers-1]);
-         }
-         else
-         {
-            machinelearning_func::constrained_softmax(
-               t, *x_input, *z[n_layers-1], *a[n_layers-1]);
-         }
-         
-      } 
-   } // enforce_constraints_flag conditional
-*/
-
-}
-
-// ---------------------------------------------------------------------
-void reinforce::get_softmax_action_probs(int t)
-{
-/*
-   *p_action = a[n_layers-1]->get_column(t);
-   compute_cumulative_action_dist();
-*/
-
-}
-
-// ---------------------------------------------------------------------
-double reinforce::compute_cross_entropy_loss(int t) 
-{
-   get_softmax_action_probs(t);
-   int a_star = y->get(t);
-   double curr_prob = p_action->get(a_star);
-   double curr_loss = 15;
-   double exp_neg_15 = 3.05902321E-7;
-   if(curr_prob > exp_neg_15)
-   {
-      curr_loss = -log(curr_prob);
-   }
-   return curr_loss;
-}
-
-// ---------------------------------------------------------------------
-void reinforce::discount_rewards()
-{
-   double running_add = 0;
-
-   for(int t = T-1; t >= 0; t--)
-   {
-      running_add = gamma * running_add + reward->get(t);
-      discounted_reward->put(t, running_add);
-   }
-
-// Standardize discounted rewards to be unit normal to help control
-// the gradient estimator variance:
-
-   double mean = 0;
-   for(int t = 0; t < T; t++)
-   {
-      mean += discounted_reward->get(t);
-   }
-   mean /= T;
-
-   double sigma = 1;
-   if(T > 1)
-   {
-      double sigmasqr = 0;
-      for(int t = 0; t < T; t++)
-      {
-         double curr_reward = discounted_reward->get(t) - mean;
-         discounted_reward->put(t, curr_reward);
-         sigmasqr += sqr(curr_reward);
-      }
-      sigmasqr /= T;
-      sigma = sqrt(sigmasqr);
-   }
-
-   if(sigma > 0)
-   {
-      for(int t = 0; t < T; t++)
-      {
-         double curr_reward = discounted_reward->get(t) / sigma;
-         discounted_reward->put(t, curr_reward);
-//      cout << "t = " << t << " discounted_reward = "
-//           << discounted_reward->get(t) << endl;
-      }
-   } // sigma > 0 conditional
-}
-
-// ---------------------------------------------------------------------
-// See "Forward & backward propagation for one episode of
-// reinforcement learning" notes dated 10/18/2016.
-
-void reinforce::policy_backward()
-{
-/*
-//   cout << "inside policy_backward()"  << endl;
-
-// Initialize "episode" weight gradients to zero:
-
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      delta_nabla_weights[l]->clear_values();
-   }
-
-   int curr_layer = n_layers - 1;
-   for(int t = 0; t < T; t++)
-   {
-      
-// Eqn BP1:
-
-      for(int j = 0; j < layer_dims[curr_layer]; j++)
-      {
-         double curr_activation = a[curr_layer]->get(j, t);
-         if(j == y->get(t)) curr_activation -= 1.0;
-
-// Modulate the gradient with advantage (Policy Gradient magic happens
-// right here):
-
-         delta_prime[curr_layer]->put(
-            j, t, discounted_reward->get(t) * curr_activation);
-      }
-   } // loop over index t
-
-//   if(debug_flag)
-//   {
-//      cout << "*delta_prime[curr_layer] = " << *delta_prime[curr_layer]
-//           << endl;
-//   }
- 
-   for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
-   {
-      int prev_layer = curr_layer - 1;
-
-//      if(debug_flag)
-//      {
-//         cout << "prev_layer = " << prev_layer 
-//              << " curr_layer = " << curr_layer << endl;
-//      }
-
-// Eqn BP2A:
-
-// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
-// to curr layer nodes:
-
-      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
-      delta_prime[prev_layer]->matrix_mult(
-         *weights_transpose[prev_layer], *delta_prime[curr_layer]);
-
-//      if(debug_flag)
-//      {
-//         cout << "*delta_prime[prev_layer] = " << *delta_prime[prev_layer]
-//              << endl;
-//      }
-
-// Eqn BP2B:
-      for(int j = 0; j < layer_dims[prev_layer]; j++)
-      {
-         for(int t = 0; t < T; t++)
-         {
-            if(z[prev_layer]->get(j, t) < 0)
-            {
-               delta_prime[prev_layer]->put(j, t, 0);
-            }
-         } // loop over t index
-      } // loop over j index
-
-// Accumulate weight gradients over episode:
-
-      for(int t = 0; t < T; t++)
-      {
-// Eqn BP4:
-
-         delta_nabla_weights[prev_layer]->accumulate_outerprod(
-            delta_prime[curr_layer]->get_column(t),
-            a[prev_layer]->get_column(t));
-
-      } // loop over index t 
-
-// As of 11/4/16, we comment out L2-regularization for deep
-// reinforcement learning:
-
-//      const double TINY = 1E-8;
-//      if(lambda > TINY)
-//      {
-//         *delta_nabla_weights[prev_layer] += 
-//            2 * lambda * (*weights[prev_layer]);
-//      }
-    
-      if(debug_flag)
-      {
-         cout << "prev_layer = " << prev_layer << endl;
-         cout << "*delta_nabla_weights[prev_layer] = " 
-              << *delta_nabla_weights[prev_layer]
-              << endl;
-      }
-
-   } // loop over curr_layer index
-*/
-
-} 
-
-// ---------------------------------------------------------------------
 void reinforce::initialize_episode()
 {
    for(unsigned int i = 0; i < Z_Prime.size(); i++)
    {
-//      z[i]->clear_values();
       Z_Prime[i]->clear_values();
-//      a[i]->clear_values();
       A_Prime[i]->clear_values();
    }
 
-   for(unsigned int i = 0; i < delta_prime.size(); i++)
+   for(unsigned int i = 0; i < Delta_Prime.size(); i++)
    {
-      delta_prime[i]->clear_values();
       Delta_Prime[i]->clear_values();
-   }
-
-   for(int t = 0; t < Tmax; t++)
-   {
-      y->put(t, 0);
-      reward->put(t, 0);
-      discounted_reward->put(t, 0);
    }
    
    curr_timestep = 0;
    T = 0;
-}
-
-// ---------------------------------------------------------------------
-// Member function compute_action_probs() imports an input
-// state vector.  
-
-void reinforce::compute_action_probs(
-   genvector *x_input, bool enforce_constraints_flag, genvector* legal_actions)
-{
-//   cout << "curr_timestep = " << curr_timestep << endl;
-   this->x_input = x_input;
-   policy_forward(curr_timestep, enforce_constraints_flag, legal_actions);
-   get_softmax_action_probs(curr_timestep);  // n_actions x 1
-
-   compute_cumulative_action_dist();
-}
-
-// ---------------------------------------------------------------------
-// Member function normalize_action_distribution()
-// renormalizes action probabilities and computes their cumulative
-// probability distribution.
-
-// Note as of 11/4/16, we believe that explicit prob dist
-// renormalization no longer needs to be performed !!!
-
-void reinforce::renormalize_action_distribution()
-{
-//   cout << "inside renormalize_action_dist()" << endl;
-   double denom = 0;
-   for(int a = 0; a < n_actions; a++)
-   {
-      denom += p_action->get(a);
-   }
-//    print_p_action();
-
-/*
-   const double TINY=1E-100;
-   if(denom < TINY)
-   {
-      cout << "denom = " << denom << endl;
-      redistribute_action_probs();
-   }
-   else
-*/
-   {
-      for(int a = 0; a < n_actions; a++)
-      {
-         p_action->put(a, p_action->get(a) / denom);
-      }
-   }
-
-   compute_cumulative_action_dist();
-}
-
-// ---------------------------------------------------------------------
-void reinforce::compute_cumulative_action_dist()
-{
-//   cout << "inside compute_cum_action_dist()" << endl;
-   double pcum = 0;
-   for(int a = 0; a < n_actions; a++)
-   {
-      pcum += p_action->get(a);
-      pcum_action->put(a, pcum);
-   }
-//   cout << "pcum = " << pcum << endl;
-
-   if(pcum < 0.999 || pcum > 1.001)
-   {
-      cout << "Danger in compute_cum_action_dist(): pcum = " << pcum << endl;
-      print_p_action();
-      redistribute_action_probs();
-   }   
-}
-
-// ---------------------------------------------------------------------
-void reinforce::redistribute_action_probs()
-{
-   int n_unoccupied_cells = 0;
-   for(unsigned int i = 0; i < x_input->get_mdim(); i++)
-   {
-      if(nearly_equal(x_input->get(i), 0))
-      {
-         n_unoccupied_cells++;
-      }
-   }
-
-   p_action->clear_values();
-   for(unsigned int i = 0; i < x_input->get_mdim(); i++)
-   {
-      if(nearly_equal(x_input->get(i), 0))
-      {
-         p_action->put(i, 1.0 / n_unoccupied_cells);
-      }
-   }
-   compute_cumulative_action_dist();
-}
-
-// ---------------------------------------------------------------------
-void reinforce::print_p_action() const
-{ 
-  for(int a = 0; a < n_actions; a++)
-   {
-      cout << "a = " << a << " p_action = " << p_action->get(a)
-           << " p_cum = " << pcum_action->get(a)
-           << endl;
-   }
-}
-
-// ---------------------------------------------------------------------
-// Member function get_candidate_current_action() returns the index
-// for the action which is probabilistically selected based upon the
-// current softmax action distribution.
-
-int reinforce::get_candidate_current_action()
-{
-
-// Generate uniformly-distributed random variable.  Use it to
-// inversely sample cumulative probability distribution to set action
-// a_star:
-
-//   if(debug_flag) print_p_action();
-
-   int a_star = 0;
-   double q = nrfunc::ran1();
-   for(int a = 0; a < n_actions; a++)
-   {
-      double plo, phi;
-      if(a == 0)
-      {
-         plo = 0;
-         phi = pcum_action->get(a);
-      }
-      else if (a == n_actions - 1)
-      {
-         plo = pcum_action->get(a - 1);
-         phi = 1.01;
-      }
-      else
-      {
-         plo = pcum_action->get(a - 1);
-         phi = pcum_action->get(a);
-      }
-
-      if(q >= plo && q < phi)
-      {
-         a_star = a;
-      }
-   }
-   return a_star;
-}
-
-// ---------------------------------------------------------------------
-void reinforce::set_current_action(int a_star)
-{
-   y->put(curr_timestep, a_star);
 }
 
 // ---------------------------------------------------------------------
@@ -865,16 +437,6 @@ void reinforce::increment_time_counters()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::periodically_snapshot_loss_value()
-{
-   if(cum_time_counter > 0 && cum_time_counter%3000 == 0)
-   {
-      time_samples.push_back(cum_time_counter);
-      loss_values.push_back(compute_cross_entropy_loss(curr_timestep));
-   }
-}
-
-// ---------------------------------------------------------------------
 void reinforce::update_T_values()
 {
 //   cout << "inside update_T_values()" << endl;
@@ -884,109 +446,6 @@ void reinforce::update_T_values()
    {
       T_values.pop_front();
    }
-}
-
-// ---------------------------------------------------------------------
-void reinforce::update_weights()
-{
-//   cout << "inside update_weights()" << endl;
-
-   update_T_values();
-
-// Compute the discounted reward backwards through time:
-
-   discount_rewards();
-
-   policy_backward();
-
-// Accumulate weights' gradients for each network layer:
-
-   double inverse_T = 1.0 / T;
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      nabla_weights[l]->matrix_increment(inverse_T, *delta_nabla_weights[l]);
-   }
-   
-// Perform RMSprop parameter update every batch_size episodes:
-
-   if(episode_number > 0 && episode_number % batch_size == 0)
-   {
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
-         {
-            for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
-            {
-               double curr_val = 
-                  rmsprop_decay_rate * rmsprop_weights_cache[l]->get(i,j)
-                  + (1 - rmsprop_decay_rate) * sqr(nabla_weights[l]->get(i,j));
-               rmsprop_weights_cache[l]->put(i,j,curr_val);
-            } // loop over index j labeling columns
-         } // loop over index i labeling rows
-      }
-
-// Update weights and biases for each network layer by their nabla
-// values averaged over the current mini-batch:
-
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
-         nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
-         *weights[l] -= learning_rate * (*nabla_weights[l]);
-
-         if(debug_flag)
-         {
-            int mdim = nabla_weights[l]->get_mdim();
-            int ndim = nabla_weights[l]->get_ndim();
-
-            vector<double> curr_nabla_weights;
-            vector<double> curr_nabla_weight_ratios;
-            for(int r = 0; r < mdim; r++)
-            {
-               for(int c = 0; c < ndim; c++)
-               {
-                  curr_nabla_weights.push_back(
-                     fabs(nabla_weights[l]->get(c,r)));
-//               cout << "r = " << r << " c = " << c
-//                    << " curr_nabla_weight = " 
-//                    << curr_nabla_weights.back() << endl;
-                  double denom = weights[l]->get(c,r);
-                  if(fabs(denom) > 1E-10)
-                  {
-                     curr_nabla_weight_ratios.push_back(
-                        fabs(nabla_weights[l]->get(c,r) / denom ));
-                  }
-               }
-            }
-            double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
-            double mean_abs_nabla_weight_ratio = mathfunc::mean(
-               curr_nabla_weight_ratios);
-            
-//         double median_abs_nabla_weight = mathfunc::median_value(
-//            curr_nabla_weights);
-//         double median_abs_nabla_weight_ratio = mathfunc::median_value(
-//            curr_nabla_weight_ratios);
-            cout << "layer l = " << l
-                 << " mean |nabla weight| = " 
-                 << mean_abs_nabla_weight 
-//              << " median |nabla weight| = " 
-//              << median_abs_nabla_weight  
-                 << " mean |nabla weight/weight| = " 
-                 << mean_abs_nabla_weight_ratio  << endl;
-
-            cout << " lr = " << learning_rate
-                 << " lr * mean weight ratio = " 
-                 << learning_rate * mean_abs_nabla_weight 
-                 << " lr * mean weight ratio = " 
-                 << learning_rate * mean_abs_nabla_weight_ratio << endl;
-         } // debug_flag conditional
-         
-         nabla_weights[l]->clear_values();
-      }
-//       cout << endl;
-//      print_weights();
-   } // episode % batch_size == 0 conditional
 }
 
 // ---------------------------------------------------------------------
@@ -2414,16 +1873,13 @@ void reinforce::compute_deep_Qvalues()
    vector<string> curr_state_strings = 
       environment_ptr->get_all_curr_state_strings();
 
-//    int t = 0;
    for(unsigned int s = 0; s < curr_states.size(); s++)
    {
       Q_forward_propagate(curr_states[s]);
-//      for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
       for(unsigned int i = 0; i < Z_Prime[n_layers-1]->get_mdim(); i++)
       {
          string state_action_str = environment_ptr->
             get_state_action_string(curr_state_strings[s], i);
-//         double Qvalue = a[n_layers-1]->get(i, t);
          double Qvalue = A_Prime[n_layers-1]->get(i);
          set_Q_value(state_action_str, Qvalue);
 //         cout << "s = " << s << " a = " << i << " Qvalue = " << Qvalue
@@ -2439,8 +1895,6 @@ void reinforce::compute_deep_Qvalues()
 void reinforce::Q_forward_propagate(
    genvector* s_input, bool use_old_weights_flag)
 {
-//   int t = 0;
-//   a[0]->put_column(t, *s_input);
    *A_Prime[0] = *s_input;
  
    for(int l = 0; l < n_layers-2; l++)
@@ -2449,14 +1903,11 @@ void reinforce::Q_forward_propagate(
       {
          if(include_bias_terms)
          {
-//            z[l+1]->matrix_column_mult_sum(
-//               *old_weights[l], *a[l], *old_biases[l+1], t);
             Z_Prime[l+1]->matrix_vector_mult_sum(
                *old_weights[l], *A_Prime[l], *old_biases[l+1]);
          }
          else
          {
-//            z[l+1]->matrix_column_mult(*old_weights[l], *a[l], t);
             Z_Prime[l+1]->matrix_vector_mult(*old_weights[l], *A_Prime[l]);
          }
       }
@@ -2464,18 +1915,14 @@ void reinforce::Q_forward_propagate(
       {
          if(include_bias_terms)
          {
-//            z[l+1]->matrix_column_mult_sum(
-//               *weights[l], *a[l], *biases[l+1], t);
             Z_Prime[l+1]->matrix_vector_mult_sum(
                *weights[l], *A_Prime[l], *biases[l+1]);
          }
          else
          {
-//            z[l+1]->matrix_column_mult(*weights[l], *a[l], t);
             Z_Prime[l+1]->matrix_vector_mult(*weights[l], *A_Prime[l]);
          }
       }
-//      machinelearning_func::ReLU(t, *z[l+1], *a[l+1]);
       machinelearning_func::ReLU(*Z_Prime[l+1], *A_Prime[l+1]);
    }
 
@@ -2483,17 +1930,12 @@ void reinforce::Q_forward_propagate(
    {
       if(include_bias_terms)
       {
-//         z[n_layers-1]->matrix_column_mult_sum(
-//            *old_weights[n_layers-2], *a[n_layers-2], 
-//            *old_biases[n_layers-1], t);
          Z_Prime[n_layers-1]->matrix_vector_mult_sum(
             *old_weights[n_layers-2], *A_Prime[n_layers-2], 
             *old_biases[n_layers-1]);
       }
       else
       {
-//         z[n_layers-1]->matrix_column_mult(
-//            *old_weights[n_layers-2], *a[n_layers-2], t);
          Z_Prime[n_layers-1]->matrix_vector_mult(
             *old_weights[n_layers-2], *A_Prime[n_layers-2]);
       }
@@ -2502,24 +1944,18 @@ void reinforce::Q_forward_propagate(
    {
       if(include_bias_terms)
       {
-//         z[n_layers-1]->matrix_column_mult_sum(
-//            *weights[n_layers-2], *a[n_layers-2], *biases[n_layers-1], t);
          Z_Prime[n_layers-1]->matrix_vector_mult_sum(
             *weights[n_layers-2], *A_Prime[n_layers-2], *biases[n_layers-1]);
       }
       else
       {
-//         z[n_layers-1]->matrix_column_mult(
-//            *weights[n_layers-2], *a[n_layers-2], t);
          Z_Prime[n_layers-1]->matrix_vector_mult(
             *weights[n_layers-2], *A_Prime[n_layers-2]);
       }
    } // use_old_weights_flag conditional
 
-//   for(unsigned int i = 0; i < z[n_layers-1]->get_mdim(); i++)
    for(unsigned int i = 0; i < Z_Prime[n_layers-1]->get_mdim(); i++)
    {
-//      a[n_layers-1]->put(i, t, z[n_layers-1]->get(i,t));
       *A_Prime[n_layers - 1] = *Z_Prime[n_layers-1];
    }
 }
@@ -2530,12 +1966,9 @@ void reinforce::Q_forward_propagate(
 int reinforce::compute_argmax_Q()
 {
    double Qstar = NEGATIVEINFINITY;
-//   int t = 0;
    int curr_a = -1;
-//   for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
    for(unsigned int i = 0; i < A_Prime[n_layers-1]->get_mdim(); i++)
    {
-//      double curr_activation = a[n_layers-1]->get(i,t);
       double curr_activation = A_Prime[n_layers-1]->get(i);
 
 // As of 11/17/16, we experiment with randomly breaking "ties" between
@@ -2561,14 +1994,11 @@ int reinforce::compute_argmax_Q()
 int reinforce::compute_legal_argmax_Q()
 {
    double Qstar = NEGATIVEINFINITY;
-//   int t = 0;
    int curr_a = -1;
-//   for(unsigned int i = 0; i < a[n_layers-1]->get_mdim(); i++)
    for(unsigned int i = 0; i < A_Prime[n_layers-1]->get_mdim(); i++)
    {
       if(!environment_ptr->is_legal_action(i)) continue;
 
-//      double curr_activation = a[n_layers-1]->get(i,t);
       double curr_activation = A_Prime[n_layers-1]->get(i);
    
 // As of 11/17/16, we experiment with randomly breaking "ties" between
@@ -2679,12 +2109,9 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
       bool use_old_weights_flag = true;
       Q_forward_propagate(next_s, use_old_weights_flag);
       double Qmax = A_Prime[n_layers-1]->get(0);
-//      double Qmax = a[n_layers-1]->get(0,0);
-//      for(unsigned int j = 0; j < a[n_layers-1]->get_mdim(); j++)
       for(unsigned int j = 0; j < A_Prime[n_layers-1]->get_mdim(); j++)
       {
          Qmax = basic_math::max(Qmax, A_Prime[n_layers-1]->get(j));
-//         Qmax = basic_math::max(Qmax, a[n_layers-1]->get(j,0));
       }
       return curr_r + gamma * Qmax;
    }
@@ -2962,7 +2389,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
       double curr_Q = A_Prime[curr_layer]->get(j);
-//      double curr_Q = a[curr_layer]->get(j, t);
 
       double curr_activation = 0;
       if(j == curr_a)
@@ -2990,7 +2416,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 // Eqn BP2B (ReLU):
       for(int j = 0; j < layer_dims[prev_layer]; j++)
       {
-//         if(z[prev_layer]->get(j, t) < 0)
          if(Z_Prime[prev_layer]->get(j) < 0)
          {
             Delta_Prime[prev_layer]->put(j, 0);
@@ -3003,13 +2428,12 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
       if(include_bias_terms)
       {
-         *delta_nabla_biases[curr_layer] = *delta_prime[curr_layer];
+         *delta_nabla_biases[curr_layer] = *Delta_Prime[curr_layer];
       }
 
 // Eqn BP4:
 
       delta_nabla_weights[prev_layer]->accumulate_outerprod(
-//         *Delta_Prime[curr_layer], a[prev_layer]->get_column(t));
          *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
 /*
       const double TINY = 1E-8;
@@ -3123,7 +2547,6 @@ double reinforce::compute_value(
 {
    Q_forward_propagate(curr_afterstate, use_old_weights_flag);
    return A_Prime[n_layers-1]->get(0);
-//   return a[n_layers-1]->get(0,0);
 }
 
 // ---------------------------------------------------------------------
