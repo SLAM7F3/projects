@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/10/16; 12/11/16; 12/12/16
+Last updated on 12/10/16; 12/11/16; 12/12/16; 12/13/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -481,6 +481,10 @@ nn_update_frame_period = 250
 
 36.  m6700 repeat of expt 34
 
+
+As of 4 am on Tues Dec 30, O(400) episodes have been played for expts 34 -
+36 on m6700.  Reward is no better than for random play.  But eps is roughly
+0.5.  Weights continue to evolve.
 
 
 
