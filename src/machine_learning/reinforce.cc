@@ -66,9 +66,13 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
       genvector *curr_Z_Prime = new genvector(layer_dims.back());
+      genvector *curr_gamma = new genvector(layer_dims.back());
+      genvector *curr_beta = new genvector(layer_dims.back());
       genvector *curr_A_Prime = new genvector(layer_dims.back());
       genvector *curr_Delta_Prime = new genvector(layer_dims.back());
       Z_Prime.push_back(curr_Z_Prime);
+      gammas.push_back(curr_gamma);
+      betas.push_back(curr_beta);
       A_Prime.push_back(curr_A_Prime);
       Delta_Prime.push_back(curr_Delta_Prime);
    }
@@ -309,6 +313,8 @@ reinforce::~reinforce()
    for(unsigned int l = 0; l < Z_Prime.size(); l++)
    {
       delete Z_Prime[l];
+      delete gammas[l];
+      delete betas[l];
       delete A_Prime[l];
       delete Delta_Prime[l];
    }
@@ -1845,6 +1851,8 @@ void reinforce::Q_forward_propagate(
             Z_Prime[l+1]->matrix_vector_mult(*weights[l], *A_Prime[l]);
          }
       }
+//      machinelearning_func::batch_normalization(
+//         *Z_Prime[l+1], *gammas[l+1], *betas[l+1]);
       machinelearning_func::ReLU(*Z_Prime[l+1], *A_Prime[l+1]);
    }
 

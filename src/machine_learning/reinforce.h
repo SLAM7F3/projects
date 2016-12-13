@@ -213,6 +213,7 @@ class reinforce
 // Node weighted inputs:
 
    std::vector<genvector*> Z_Prime;
+   std::vector<genvector*> gammas, betas;  // Batch normalization parameters
 
 // Node activation outputs:
 

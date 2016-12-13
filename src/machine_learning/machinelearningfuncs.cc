@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 11/4/16; 11/6/16; 11/8/16; 11/17/16
+// Last updated on 11/6/16; 11/8/16; 11/17/16; 12/13/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -71,6 +71,21 @@ namespace machinelearning_func
       return output;
    }
 
+   
+// --------------------------------------------------------------------------
+// Method batch_normalization() performs a linear transformation upon
+// each coordinate within input genvector Z.
+
+   void batch_normalization(
+      genvector& Z, const genvector& gamma, const genvector& beta)
+   {
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         Z.put(i, gamma.get(i) * Z.get(i) + beta.get(i));
+      }
+   }
+
+// --------------------------------------------------------------------------
    void ReLU(genvector& X)
    {
       for(unsigned int i = 0; i < X.get_mdim(); i++)
@@ -489,7 +504,6 @@ namespace machinelearning_func
       delete mean;
       delete sqrmean;
    }
-   
 
    
 } // machinelearning_func namespace

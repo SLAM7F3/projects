@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 10/29/16; 11/4/16; 11/6/16; 11/8/16
+// Last updated on 11/4/16; 11/6/16; 11/8/16; 12/13/16
 // ==========================================================================
 
 #include <vector>
@@ -16,6 +16,9 @@ namespace machinelearning_func
 
    double deriv_sigmoid(double z);
    genvector deriv_sigmoid(genvector& z);
+
+   void batch_normalization(
+      genvector& Z, const genvector& gamma, const genvector& beta);
 
    void ReLU(genvector& X);
    void ReLU(const genvector& Z, genvector& A);
