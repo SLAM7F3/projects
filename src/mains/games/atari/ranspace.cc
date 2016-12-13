@@ -2,7 +2,7 @@
 // Program RANSPACE randomly executes Space Invader actions.  It
 // serves as a control for Space Invader deep Q-learning.
 // ==========================================================================
-// Last updated on 12/2/16; 12/3/16; 12/4/16; 12/10/16
+// Last updated on 12/3/16; 12/4/16; 12/10/16; 12/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -51,7 +51,6 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
    int n_max_episodes = 50 * 1000;
-   int Tmax = n_max_episodes;
 
    int H1 = 16;
    int H2 = 8;
@@ -79,7 +78,7 @@ int main(int argc, char** argv)
 //   int replay_memory_capacity = batch_size * 100;
    int replay_memory_capacity = 100;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, batch_size, replay_memory_capacity,
+      layer_dims, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);

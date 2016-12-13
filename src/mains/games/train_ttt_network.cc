@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK trains a neural network via V-learning.
 // ==========================================================================
-// Last updated on 11/28/16; 11/29/16; 12/5/16; 12/7/16
+// Last updated on 11/29/16; 12/5/16; 12/7/16; 12/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -118,7 +118,7 @@ int main (int argc, char* argv[])
 //   int batch_size = 3;
    int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, n_max_turns, batch_size, replay_memory_capacity,
+      layer_dims, batch_size, replay_memory_capacity,
       reinforce::SGD);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->set_n_actions(n_actions);
@@ -149,7 +149,6 @@ int main (int argc, char* argv[])
    int n_update = 100;
    int n_summarize = 1000;
    int n_snapshot = 20000;
-   int n_anneal_steps = 2000;
 
    int n_losses = 0;
    int n_stalemates = 0;
@@ -171,9 +170,8 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
 
-   double eps_decay_factor = 0.99; 
-   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
-   double min_epsilon = 0.05;
+   reinforce_agent_ptr->set_epsilon_time_constant(1000);
+   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
    int AI_value = -1;     // "X" pieces
@@ -333,14 +331,12 @@ int main (int argc, char* argv[])
       {
          total_loss = reinforce_agent_ptr->update_neural_network();
       }
-
-// Periodically anneal epsilon:
-
-      if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
-      {
-         reinforce_agent_ptr->anneal_epsilon();
-      }
       
+// Exponentially decay epsilon:
+
+      reinforce_agent_ptr->exponentially_decay_epsilon(
+         curr_episode_number, 0);
+
       if(nearly_equal(curr_reward, lose_reward))
       {
          n_losses++;
@@ -419,12 +415,8 @@ int main (int argc, char* argv[])
          curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_reward_history(
-            output_subdir, extrainfo, lose_reward, win_reward);
-         reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, extrainfo);
-
+         reinforce_agent_ptr->store_quasirandom_weight_values();
+         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }

@@ -61,26 +61,26 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int n_max_episodes = 6 * 1000;
+   int n_max_episodes = 30 * 1000;
 
 //   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 64;
-   int H1 = 128;
-//   int H1 = 256;
+//   int H1 = 128;
+   int H1 = 256;
 
-//   int H2 = 0;
+   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-   int H2 = 64;
+//   int H2 = 64;
 //   int H2 = 128;
 
-//   int H3 = 0;
+   int H3 = 0;
 //   int H3 = 16;
 //   int H3 = 32;
 //   int H3 = 64;
-   int H3 = 128;
+//   int H3 = 128;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(500);
+   reinforce_agent_ptr->set_epsilon_time_constant(800);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -173,8 +173,8 @@ int main(int argc, char** argv)
 //   const double discard_0_reward_frac = 0.85;  
    const double discard_0_reward_frac = 0.95;  
 
-   int n_update = 25;
-   int n_snapshot = 100;
+   int n_update = 50;
+   int n_snapshot = 200;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)

@@ -34,7 +34,6 @@ int main (int argc, char* argv[])
 
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = nsize * nsize * n_zlevels;// Output dimensionality
-   int Tmax = nsize * nsize * n_zlevels;
 
    int H1 = 300;
    int H2 = 64;
@@ -49,7 +48,7 @@ int main (int argc, char* argv[])
    layer_dims.push_back(H2);
    layer_dims.push_back(Dout);
 
-   reinforce* reinforce_agent_ptr = new reinforce(layer_dims, Tmax);
+   reinforce* reinforce_agent_ptr = new reinforce(layer_dims);
 
 // Gamma = discount factor for reward:
 

@@ -137,7 +137,6 @@ int main (int argc, char* argv[])
 //   int old_weights_period = 32;  
 
    reinforce_agent_ptr->set_epsilon_time_constant(20000 * n_grid_size / 6.0);
-//   double min_epsilon = 0.025;
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
@@ -297,18 +296,8 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
-
          reinforce_agent_ptr->plot_Qmap_score_history(
             output_subdir, subtitle, extrainfo);
-
-//         reinforce_agent_ptr->plot_log10_loss_history(
-//            output_subdir, extrainfo);
-//         if(reinforce_agent_ptr->get_include_bias_terms()){
-//            reinforce_agent_ptr->plot_bias_distributions(
-//               output_subdir, extrainfo);
-//         }
-//         reinforce_agent_ptr->plot_weight_distributions(
-//            output_subdir, extrainfo);
       }
 
    } // n_episodes < n_max_episodes while loop

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 11/28/16; 11/30/16; 12/5/16; 12/7/16
+// Last updated on 11/30/16; 12/5/16; 12/7/16; 12/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -124,7 +124,7 @@ int main (int argc, char* argv[])
 //   int batch_size = 3;
    int replay_memory_capacity = 10 * batch_size * n_max_turns;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, n_max_turns, batch_size, replay_memory_capacity,
+      layer_dims, batch_size, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -192,7 +192,6 @@ int main (int argc, char* argv[])
    int n_update = 250;
    int n_summarize = 250;
    int n_snapshot = 20000;
-   int n_anneal_steps = 2000;
 
    int n_illegal_moves = 0;
    int n_losses = 0;
@@ -217,9 +216,8 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
 
-   double eps_decay_factor = 0.99; 
-   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
-   double min_epsilon = 0.025;
+   reinforce_agent_ptr->set_epsilon_time_constant(1000);
+   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
    int AI_value = -1;     // "X" pieces
@@ -336,7 +334,6 @@ int main (int argc, char* argv[])
             next_s = game_world.compute_next_state(curr_a, agent_value);
          } // curr_a is legal action conditional
 
-         reinforce_agent_ptr->set_current_action(curr_a);
          ttt_ptr->increment_n_agent_turns();
 //          ttt_ptr->display_board_state();
 
@@ -389,12 +386,10 @@ int main (int argc, char* argv[])
          total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
-// Periodically anneal epsilon:
+// Exponentially decay epsilon:
 
-      if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
-      {
-         reinforce_agent_ptr->anneal_epsilon();
-      }
+      reinforce_agent_ptr->exponentially_decay_epsilon(
+         curr_episode_number, 0);
       
       if(nearly_equal(curr_reward, illegal_reward))
       {
@@ -481,7 +476,6 @@ int main (int argc, char* argv[])
          if(reinforce_agent_ptr->get_include_bias_terms()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
-         reinforce_agent_ptr->compute_weight_distributions();
 
          ttt_ptr->append_game_illegal_frac(illegal_frac);
          ttt_ptr->append_game_loss_frac(loss_frac);
@@ -492,18 +486,8 @@ int main (int argc, char* argv[])
       if(curr_episode_number > 0 && curr_episode_number % n_summarize == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-//         reinforce_agent_ptr->plot_loss_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_reward_history(
-            output_subdir, extrainfo, lose_reward, win_reward);
-         reinforce_agent_ptr->plot_turns_history(output_subdir, extrainfo);
-         reinforce_agent_ptr->plot_log10_loss_history(
-            output_subdir, extrainfo);
-         if(reinforce_agent_ptr->get_include_bias_terms()){
-            reinforce_agent_ptr->plot_bias_distributions(
-               output_subdir, extrainfo);
-         }
-         reinforce_agent_ptr->plot_weight_distributions(
-            output_subdir, extrainfo);
+         reinforce_agent_ptr->store_quasirandom_weight_values();
+         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }

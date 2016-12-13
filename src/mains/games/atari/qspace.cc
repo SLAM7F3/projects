@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/7/16; 12/8/16; 12/9/16; 12/10/16
+// Last updated on 12/8/16; 12/9/16; 12/10/16; 12/13/16
 // ==========================================================================
 
 #include <iostream>
@@ -61,7 +61,6 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
    int n_max_episodes = 3 * 1000;
-   int Tmax = n_max_episodes;
 
    int H1 = 256;
 //   int H1 = 128;
@@ -95,7 +94,7 @@ int main(int argc, char** argv)
    int replay_memory_capacity = 5 * 2000;
 //   int replay_memory_capacity = 10 * 2000;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, Tmax, 1, replay_memory_capacity,
+      layer_dims, 1, replay_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);

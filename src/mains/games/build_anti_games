@@ -1,6 +1,4 @@
-/bin/rm ./backtrack_maze
 /bin/rm ./create_maze
-/bin/rm ./fill_grid
 /bin/rm ./qtrain_ttt_network
 /bin/rm ./solve_maze
 /bin/rm ./test_ttt_network
