@@ -360,7 +360,7 @@ int main(int argc, char** argv)
             verbose_flag);
       }
 
-// Expontentially decay epsilon:
+// Exponentially decay epsilon:
 
       reinforce_agent_ptr->exponentially_decay_epsilon(
          curr_episode_number, 30);

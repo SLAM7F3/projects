@@ -138,12 +138,13 @@ int main (int argc, char* argv[])
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
 //   int old_weights_period = 32;  
 
-   double eps_decay_factor = 0.90; // Probably optimal for n_size_grid = 8
-   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
+//   double eps_decay_factor = 0.90; // Probably optimal for n_size_grid = 8
+//   reinforce_agent_ptr->set_epsilon_decay_factor(eps_decay_factor);
+   reinforce_agent_ptr->set_epsilon_time_constant(20000);
    double min_epsilon = 0.025;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
-   int n_anneal_steps = 1000;
+//   int n_anneal_steps = 1000;
    int n_update = 500;
    int n_progress = 10000;
    double Qmap_score = -1;
@@ -259,13 +260,19 @@ int main (int argc, char* argv[])
          total_loss = reinforce_agent_ptr->update_neural_network();
       }
 
+// Exponentially decay epsilon:
+
+      reinforce_agent_ptr->exponentially_decay_epsilon(
+         curr_episode_number, 0);
+
+/*
 // Periodically anneal epsilon:
 
       if(curr_episode_number > 0 && curr_episode_number % n_anneal_steps == 0)
       {
-
          reinforce_agent_ptr->anneal_epsilon();
       }
+*/
 
       if(curr_episode_number%n_update == 0 && curr_episode_number > 0)
       {
