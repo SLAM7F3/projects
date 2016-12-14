@@ -2349,15 +2349,21 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
    if(curr_loss <= 0)
    {
       cout << " Current loss = " << curr_loss << endl;
+      for(int j = 0; j < layer_dims[curr_layer]; j++)
+      {
+         double curr_Q = A_Prime[curr_layer]->get(j);
+         cout << "   j = " << j << " curr_Q = " << curr_Q 
+              << " curr_a = " << curr_a << endl;
+      }
       return curr_loss;
    }
-   
+ 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
 
 // Don't bother backpropagating if currently layer has zero content:
 
-      if(Delta_Prime[curr_layer]->magnitude() <= 0) break;
+//      if(Delta_Prime[curr_layer]->magnitude() <= 0) break;
 
       int prev_layer = curr_layer - 1;
 
