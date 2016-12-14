@@ -18,6 +18,7 @@
 #include <SDL.h>
 #include <ale_interface.hpp>
 #include "general/filefuncs.h"
+#include "numrec/nrfuncs.h"
 #include "video/videofuncs.h"
 
 using namespace std;
@@ -29,6 +30,7 @@ int main(int argc, char** argv) {
    }
 
    ALEInterface ale;
+   nrfunc::init_time_based_seed();
 
 /*
 enum Action {
@@ -88,7 +90,6 @@ enum Action {
    cout << "curr_screen.width = " << width
         << " curr_screen.height = " << height << endl;
 
-
    int n_pixels = curr_screen.width() * curr_screen.height();
    vector<unsigned char> grayscale_output_buffer;
    grayscale_output_buffer.reserve(n_pixels);
@@ -121,18 +122,29 @@ enum Action {
 // 106 * 178
 // --> 53 * 89
 
-
    // Play episodes
    int n_episodes = 10;
 
    for (int episode = 0; episode< n_episodes; episode++) {
       cout << "Starting episode " << episode << endl;
       float totalReward = 0;
+      int life_frame_counter = 0;
+      int n_prev_lives = -1;
       while (!ale.game_over()) {
 
+         int n_curr_lives = ale.lives();
+         if(n_curr_lives != n_prev_lives)
+         {
+            life_frame_counter =  0;
+            n_prev_lives = n_curr_lives;
+         }
+         
          int curr_frame_number = ale.getEpisodeFrameNumber();
-         cout << "Episode frame number = " << ale.getEpisodeFrameNumber()
+         life_frame_counter++;
+         cout << "Episode = " << episode 
+              << " episode frame = " << ale.getEpisodeFrameNumber()
               << " n_lives = " << ale.lives() 
+              << " life_frame_counter = " << life_frame_counter 
               << endl;
          grayscale_output_buffer.clear();
          ale.getScreenGrayscale(grayscale_output_buffer);
@@ -159,7 +171,27 @@ enum Action {
          } // curr_frame_number % 3 == 0 conditional
          
 
-         Action a = legal_actions[rand() % legal_actions.size()];
+         int action_index = 0; // no operation
+         if(life_frame_counter < 5)
+         {
+            action_index = 1;  // fire ball
+         }
+         else
+         {
+            double curr_random = nrfunc::ran1();
+            if(curr_random < 0.33)
+            {
+               action_index = 3;   // right move
+            }
+            else if (curr_random >= 0.33 && curr_random < 0.66)
+            {
+               action_index = 4;   // left move
+            }
+         }
+
+//         Action a = legal_actions[rand() % legal_actions.size()];
+         Action a = legal_actions[action_index];
+
          // Apply the action and get the resulting reward
          float reward = ale.act(a);
          totalReward += reward;
