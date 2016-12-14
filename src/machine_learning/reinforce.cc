@@ -1991,8 +1991,8 @@ void reinforce::store_arsprime_into_replay_memory(
    s_next->put_row(d, next_s);
    terminal_state->put(d, terminal_state_flag);
 
-   genvector curr_s(next_s);
-   s_curr->get_row(d, curr_s);
+//   genvector curr_s(next_s);
+//   s_curr->get_row(d, curr_s);
 //   cout << "|next_s - curr_s| = " << (next_s - curr_s).magnitude()
 //        << endl;
 //   cout << "curr_r = " << curr_r << endl;

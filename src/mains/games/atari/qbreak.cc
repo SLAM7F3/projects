@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/10/16; 12/11/16; 12/12/16; 12/13/16
+// Last updated on 12/11/16; 12/12/16; 12/13/16; 12/14/16
 // ==========================================================================
 
 #include <iostream>
@@ -61,13 +61,13 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int n_max_episodes = 30 * 1000;
+   int n_max_episodes = 50 * 1000;
 
 //   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 64;
-//   int H1 = 128;
-   int H1 = 256;
+   int H1 = 128;
+//   int H1 = 256;
 
 //   int H2 = 0;
 //   int H2 = 8;
@@ -143,9 +143,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
-   reinforce_agent_ptr->set_epsilon_time_constant(800);
+//   reinforce_agent_ptr->set_epsilon_time_constant(800);
+   reinforce_agent_ptr->set_epsilon_time_constant(1000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -157,9 +157,9 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 100;
+   int nn_update_frame_period = 50;
+//   int nn_update_frame_period = 100;
 //   int nn_update_frame_period = 250;
-//   int nn_update_frame_period = 500;
 //   int nn_update_frame_period = 1000000;
    
 //   int old_weights_period = 10; 
@@ -170,8 +170,8 @@ int main(int argc, char** argv)
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
-//   const double discard_0_reward_frac = 0.85;  
-   const double discard_0_reward_frac = 0.95;  
+   const double discard_0_reward_frac = 0.75;  
+//   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 50;
    int n_snapshot = 200;
@@ -195,8 +195,12 @@ int main(int argc, char** argv)
    bool export_frames_flag = false;
 //   bool export_frames_flag = true;
 
-   // Get the vector of minimal legal actions
-   ActionVect minimal_actions = breakout_ptr->get_ale().getMinimalActionSet();
+   // Set vector of minimal legal actions:
+
+   ActionVect minimal_actions;
+   minimal_actions.push_back(PLAYER_A_NOOP);  
+   minimal_actions.push_back(PLAYER_A_RIGHT);
+   minimal_actions.push_back(PLAYER_A_LEFT);
 
    string params_filename = output_subdir + "params.dat";
    reinforce_agent_ptr->summarize_parameters(params_filename);
@@ -218,6 +222,10 @@ int main(int argc, char** argv)
 
 // ==========================================================================
 // Reinforcement training loop starts here
+
+   int n_fire_ball_frames = 10;
+   int cum_framenumber = 0;
+   int nframes_per_epoch = 50 * 1000;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -247,16 +255,21 @@ int main(int argc, char** argv)
       cout << "************  Start of Game " << curr_episode_number
            << " ***********" << endl;
 
-      int prev_nlives = breakout_ptr->get_ale().lives();
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
+      int life_frame_counter = 0;
+      int n_prev_lives = -1;
       double cum_reward = 0;
 
       while(!game_world.get_game_over())
       {
+         int n_curr_lives = breakout_ptr->get_ale().lives();
+
          bool state_updated_flag = false;
          int curr_frame_number = game_world.get_episode_framenumber();
-         
+         life_frame_counter++;         
+         cum_framenumber++;
+
          if(curr_frame_number > game_world.get_min_episode_framenumber())
          {
             if(curr_frame_number % game_world.get_frame_skip() == 0)
@@ -289,16 +302,28 @@ int main(int argc, char** argv)
             }
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
                *curr_s);
-            if(d%1000 == 0) cout << "d = " << d << endl;
+            if(d%1000 == 0) 
+               cout << "Replay memory index d = " << d << endl;
          }
 
-         int curr_a = prev_a;
-         if(state_updated_flag)
+         Action a;
+         int curr_a = -1;
+
+         if(life_frame_counter < n_fire_ball_frames)
          {
-            curr_a = reinforce_agent_ptr->select_action_for_curr_state();
-            prev_a = curr_a;
+            a = PLAYER_A_FIRE;  // fire ball
          }
-         Action a = minimal_actions[curr_a];
+         else
+         {
+            curr_a = prev_a;
+            if(state_updated_flag)
+            {
+               curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+               prev_a = curr_a;
+            }
+            a = minimal_actions[curr_a];
+         }
+
          double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
 
@@ -310,15 +335,23 @@ int main(int argc, char** argv)
 
 // Penalize agent whenever it misses the ball:
 
-         int curr_nlives = breakout_ptr->get_ale().lives();
-         if(curr_nlives < prev_nlives)
+         if(n_curr_lives != n_prev_lives)
          {
-            renorm_reward = -1;
-            prev_nlives = curr_nlives;
+            if(n_prev_lives > 0)
+            {
+               renorm_reward = -1;
+            }
+
+            n_prev_lives = n_curr_lives;
+            life_frame_counter = 0;
+//            cout << "n_curr_lives = " << n_curr_lives
+//                 << " n_prev_lives = " << n_prev_lives
+//                 << " renorm_reward = " << renorm_reward << endl;
          }
 
          reinforce_agent_ptr->accumulate_reward(curr_reward);
 
+/*
          if(!nearly_equal(renorm_reward, 0))
          {
             cout << "episode = " << curr_episode_number
@@ -326,18 +359,14 @@ int main(int argc, char** argv)
                  << " curr_reward = " << curr_reward
                  << " renorm_reward = " << renorm_reward << endl;
          }
+*/
 
          if(game_world.get_game_over())
          {
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
-
-            cout << "episode = " << curr_episode_number
-                 << " frame = " << curr_frame_number
-                 << " curr_reward = " << curr_reward
-                 << " renorm_reward = " << renorm_reward << endl;
          }
-         else if (n_state_updates > 2)
+         else if (n_state_updates > 2 && curr_a >= 0)
          {
             genvector* next_s = game_world.compute_next_state(a);
 
@@ -346,24 +375,32 @@ int main(int argc, char** argv)
 // agent seeing non-zero reward states without having to perform a
 // huge number of expensive backpropagations:
 
+            bool ignore_curr_state = false;
             if(nearly_equal(renorm_reward, 0))
             {
                if(nrfunc::ran1() < discard_0_reward_frac)
                {
-                  reinforce_agent_ptr->store_arsprime_into_replay_memory(
-                     d, curr_a, renorm_reward, *next_s, 
-                     game_world.get_game_over());
+                  ignore_curr_state = true;
                }
+            }
+
+            if(!ignore_curr_state)
+            {
+               reinforce_agent_ptr->store_arsprime_into_replay_memory(
+                  d, curr_a, renorm_reward, *next_s, 
+                  game_world.get_game_over());
             }
          }
 
       if(reinforce_agent_ptr->get_replay_memory_full() &&
          curr_frame_number % nn_update_frame_period == 0)
       {
-         cout << "Episode number = " << curr_episode_number
-              << " frame number = " << curr_frame_number
-              << " remaining n_lives = " << breakout_ptr->get_ale().lives()
-              << endl;
+//         cout << "Episode=" << curr_episode_number
+//              << " cum frame=" << cum_framenumber
+//              << " episode frame=" << curr_frame_number
+//              << " n_lives=" << breakout_ptr->get_ale().lives()
+//              << "  cum_reward=" << cum_reward 
+//              << endl;
 
          bool verbose_flag = false;
          total_loss = reinforce_agent_ptr->update_neural_network(
@@ -374,7 +411,11 @@ int main(int argc, char** argv)
 // subdirectory:
 
          bool export_RGB_screens_flag = false;
-         if(curr_episode_number% 200 == 0) export_RGB_screens_flag = true;
+         if(curr_episode_number% 500 == 0) export_RGB_screens_flag = true;
+
+// FAKE FAKE:
+
+         if(curr_frame_number > 10000) export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
@@ -389,9 +430,13 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------------
 
+      int epoch = cum_framenumber / nframes_per_epoch;
+
       cout << "Episode finished" << endl;
-      cout << "  cum_reward = " << cum_reward << endl;
-      cout << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
+      cout << "  epoch = " << epoch 
+           << "  cum_frame = " << cum_framenumber << endl;
+      cout << "  cum_reward = " << cum_reward 
+           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
 //       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 

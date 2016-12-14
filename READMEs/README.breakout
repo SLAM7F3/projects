@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/10/16; 12/11/16; 12/12/16; 12/13/16
+Last updated on 12/11/16; 12/12/16; 12/13/16; 12/14/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -386,7 +386,6 @@ After O(1K) episodes, reward has increased slightly from 1 to 1.8.
 nframes/episodes increased from 1K to 1.2K.  But weight coeffs have all
 frozen.
 
-
 28.  Titan 1:
 
 Mon Dec 12 15:21:29 2016
@@ -468,10 +467,6 @@ After 700 episodes, no significant change in reward or nframes/episode.
 
 After 700 episodes, reward and nframes/episode have decreased.
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
 34.  m6700:  H1 = 64, H2 = 128
 
 35.  m6700 repeat of expt 34
@@ -483,7 +478,6 @@ As of 4 am on Tues Dec 30, O(400) episodes have been played for expts 34 -
 0.5.  Weights continue to evolve.
 
 37:  Titan 3:  
-
 
 Tue Dec 13 08:39:19 2016
 Neural net params:
@@ -579,11 +573,20 @@ n_max_episodes = 30000
 45:  TM:  Repeat expt 43
 
 
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+46.
+
+
 TODO:
 
-D.  Implement batch normalization
+A.  Implement weight normalization 
 
-E.  Experiment with trying to extract ball and paddle posn and velocity and
+B.  Implement data-dependent weight initialization
+
+C.  Experiment with trying to extract ball and paddle posn and velocity and
 forming much smaller input layer for a much smaller neural net
 
 

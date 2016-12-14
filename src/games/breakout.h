@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/10/16; 12/12/16
+// Last modified on 12/10/16; 12/12/16; 12/14/16
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -121,7 +121,7 @@ class breakout
 
 inline int breakout::get_n_actions() const
 {
-   return 4;
+   return 3;  // no_op, move right, move left
 }
 
 inline int breakout::get_n_screen_states() const
