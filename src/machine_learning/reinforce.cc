@@ -2366,6 +2366,28 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       return curr_loss;
    }
  
+/*
+Current loss = 0
+  curr_s_sample.mag = 32.1886
+l = 0 A_Prime.mag = 32.1886
+l = 1 A_Prime.mag = 0
+l = 2 A_Prime.mag = 0
+l = 3 A_Prime.mag = 0
+   j = 0 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
+   j = 1 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
+   j = 2 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
+Current loss = 0
+  curr_s_sample.mag = 23.5941
+l = 0 A_Prime.mag = 23.5941
+l = 1 A_Prime.mag = 0
+l = 2 A_Prime.mag = 0
+l = 3 A_Prime.mag = 0
+   j = 0 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
+   j = 1 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
+   j = 2 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
+*/
+
+
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
 
