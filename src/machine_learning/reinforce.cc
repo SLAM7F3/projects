@@ -310,7 +310,7 @@ reinforce::reinforce()
 // ---------------------------------------------------------------------
 reinforce::~reinforce()
 {
-   for(unsigned int l = 0; l < Z_Prime.size(); l++)
+   for(int l = 0; l < n_layers; l++)
    {
       delete Z_Prime[l];
       delete gammas[l];
@@ -321,7 +321,7 @@ reinforce::~reinforce()
 
    if(include_bias_terms)
    {
-      for(unsigned int l = 0; l < biases.size(); l++)
+      for(int l = 0; l < n_layers; l++)
       {
          delete biases[l];
          delete old_biases[l];
@@ -331,7 +331,7 @@ reinforce::~reinforce()
       }
    } // include_bias_terms flag
 
-   for(unsigned int l = 0; l < weights.size(); l++)
+   for(int l = 0; l < n_layers; l++)
    {
       delete weights[l];
       delete old_weights[l];
@@ -384,15 +384,11 @@ ostream& operator<< (ostream& outstream,const reinforce& R)
 // ---------------------------------------------------------------------
 void reinforce::initialize_episode()
 {
-   for(unsigned int i = 0; i < Z_Prime.size(); i++)
+   for(int l = 0; l < n_layers; l++)
    {
-      Z_Prime[i]->clear_values();
-      A_Prime[i]->clear_values();
-   }
-
-   for(unsigned int i = 0; i < Delta_Prime.size(); i++)
-   {
-      Delta_Prime[i]->clear_values();
+      Z_Prime[l]->clear_values();
+      A_Prime[l]->clear_values();
+      Delta_Prime[l]->clear_values();
    }
 }
 
@@ -2351,6 +2347,13 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       cout << "Current loss = " << curr_loss << endl;
       cout << "  curr_s_sample.mag = " << curr_s_sample->magnitude()
            << endl;
+      for(int l = 0; l < n_layers; l++)
+      {
+         cout << "l = " << l
+              << " A_Prime.mag = " << A_Prime[l]->magnitude()
+              << endl;
+      }
+
       for(int j = 0; j < layer_dims[curr_layer]; j++)
       {
          double curr_Q = A_Prime[curr_layer]->get(j);
