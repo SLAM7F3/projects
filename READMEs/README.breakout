@@ -577,7 +577,69 @@ n_max_episodes = 30000
 RUNNING EXPERIMENTS
 -------------------------------------------------------------
 
-46.
+46.  Titan 3: Fixed serious logic bugs in qbreak.cc: H1 = 128; H2 = 64
+
+Wed Dec 14 07:00:54 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 328384 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+n_max_episodes = 50000
+
+47.  Titan 3: Repeat expt 46
+
+48.  Titan 3: Repeat expt 46
+
+49.  Titan 1: Fixed serious logic bugs in qbreak.cc: H1 = 256; H2 = 64
+
+Wed Dec 14 07:11:41 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 656576 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+n_max_episodes = 50000
+
+50.  Titan 1: Repeat expt 49
+
+51.  Titan 1: Repeat expt 49
 
 
 TODO:
