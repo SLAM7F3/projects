@@ -149,9 +149,17 @@ namespace machinelearning_func
    }
 
 // --------------------------------------------------------------------------
+
+   double leaky_ReLU_small_slope = 0.03;
+   
+   void set_leaky_ReLU_small_slope(double slope)
+   {
+      leaky_ReLU_small_slope = slope;
+   }
+
    double get_leaky_ReLU_small_slope()
    {
-      return 0.03;
+      return leaky_ReLU_small_slope;
    }
 
    void leaky_ReLU(genvector& X)

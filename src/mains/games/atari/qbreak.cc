@@ -12,6 +12,7 @@
 #include "games/breakout.h"
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
+#include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
 #include "time/timefuncs.h"
@@ -224,6 +225,7 @@ int main(int argc, char** argv)
 
    int n_fire_ball_frames = 10;
    int cum_framenumber = 0;
+   machinelearning_func::set_leaky_ReLU_small_slope(0.03);   
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {

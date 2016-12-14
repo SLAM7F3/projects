@@ -26,7 +26,8 @@ namespace machinelearning_func
    void ReLU(const genmatrix& Z, genmatrix& A);
    void ReLU(int zcol, const genmatrix& Z, genmatrix& A);
 
-   double get_leaky_small_slope();
+   void set_leaky_ReLU_small_slope(double slope);
+   double get_leaky_ReLU_small_slope();
    void leaky_ReLU(genvector& X);
    void leaky_ReLU(const genvector& Z, genvector& A);
 

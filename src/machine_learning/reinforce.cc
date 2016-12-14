@@ -1841,7 +1841,7 @@ void reinforce::Q_forward_propagate(
 {
    *A_Prime[0] = *s_input;
  
-   for(int l = 0; l < n_layers-2; l++)
+   for(int l = 0; l < n_layers-1; l++)
    {
       if(use_old_weights_flag)
       {
@@ -1866,43 +1866,22 @@ void reinforce::Q_forward_propagate(
          {
             Z_Prime[l+1]->matrix_vector_mult(*weights[l], *A_Prime[l]);
          }
-      }
+      } // use_old_weights_flag conditional
+
 //      machinelearning_func::batch_normalization(
 //         *Z_Prime[l+1], *gammas[l+1], *betas[l+1]);
-      machinelearning_func::ReLU(*Z_Prime[l+1], *A_Prime[l+1]);
-   }
 
-   if(use_old_weights_flag)
-   {
-      if(include_bias_terms)
+      if(l == n_layers - 2)
       {
-         Z_Prime[n_layers-1]->matrix_vector_mult_sum(
-            *old_weights[n_layers-2], *A_Prime[n_layers-2], 
-            *old_biases[n_layers-1]);
+         for(unsigned int i = 0; i < Z_Prime[l+1]->get_mdim(); i++)
+         {
+            *A_Prime[l+1] = *Z_Prime[l+1];
+         }
       }
       else
       {
-         Z_Prime[n_layers-1]->matrix_vector_mult(
-            *old_weights[n_layers-2], *A_Prime[n_layers-2]);
+         machinelearning_func::leaky_ReLU(*Z_Prime[l+1], *A_Prime[l+1]);
       }
-   }
-   else
-   {
-      if(include_bias_terms)
-      {
-         Z_Prime[n_layers-1]->matrix_vector_mult_sum(
-            *weights[n_layers-2], *A_Prime[n_layers-2], *biases[n_layers-1]);
-      }
-      else
-      {
-         Z_Prime[n_layers-1]->matrix_vector_mult(
-            *weights[n_layers-2], *A_Prime[n_layers-2]);
-      }
-   } // use_old_weights_flag conditional
-
-   for(unsigned int i = 0; i < Z_Prime[n_layers-1]->get_mdim(); i++)
-   {
-      *A_Prime[n_layers - 1] = *Z_Prime[n_layers-1];
    }
 }
 
@@ -2342,6 +2321,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       Delta_Prime[curr_layer]->put(j, curr_activation);
    }
 
+/*
    if(curr_loss <= 0)
    {
       cout << "Current loss = " << curr_loss << endl;
@@ -2365,7 +2345,8 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       }
       return curr_loss;
    }
- 
+*/
+
 /*
 Current loss = 0
   curr_s_sample.mag = 32.1886
@@ -2407,12 +2388,15 @@ l = 3 A_Prime.mag = 0
       Delta_Prime[prev_layer]->matrix_vector_mult(
          *weights_transpose[prev_layer], *Delta_Prime[curr_layer]);
 
-// Eqn BP2B (ReLU):
+// Eqn BP2B (Leaky ReLU):
       for(int j = 0; j < layer_dims[prev_layer]; j++)
       {
          if(Z_Prime[prev_layer]->get(j) < 0)
          {
-            Delta_Prime[prev_layer]->put(j, 0);
+//            Delta_Prime[prev_layer]->put(j, 0);
+            Delta_Prime[prev_layer]->put(
+               j, machinelearning_func::get_leaky_ReLU_small_slope() * 
+               Delta_Prime[prev_layer]->get(j));
          }
       } // loop over j index
 

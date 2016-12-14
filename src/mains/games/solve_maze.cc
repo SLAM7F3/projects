@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 11/30/16; 12/5/16; 12/7/16; 12/13/16
+// Last updated on 12/5/16; 12/7/16; 12/13/16; 12/14/16
 // ==========================================================================
 
 #include <iostream>
@@ -9,6 +9,7 @@
 #include <vector>
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
+#include "machine_learning/machinelearningfuncs.h"
 #include "games/maze.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
@@ -55,13 +56,13 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
 
 //   int H1 = 8;
-   int H1 = 10;
-//   int H1 = 12;
+//   int H1 = 10;
+   int H1 = 12;
 
 //   int H2 = 0;
 //   int H2 = 8;
-   int H2 = 10;
-//   int H2 = 12;
+//   int H2 = 10;
+   int H2 = 12;
 
    int H3 = 0;
 
@@ -80,7 +81,8 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 10 * sqr(n_grid_size);
+//   int replay_memory_capacity = 10 * sqr(n_grid_size);
+   int replay_memory_capacity = 25 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity,
 //      reinforce::SGD);
@@ -118,7 +120,8 @@ int main (int argc, char* argv[])
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
-   reinforce_agent_ptr->set_Nd(32);
+//   reinforce_agent_ptr->set_Nd(32);
+   reinforce_agent_ptr->set_Nd(64);
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
@@ -141,7 +144,7 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
    int n_update = 500;
-   int n_progress = 10000;
+   int n_progress = 25000;
    double Qmap_score = -1;
 
    string basename = "maze";
@@ -167,6 +170,7 @@ int main (int argc, char* argv[])
 
    int update_old_weights_counter = 0;
    double total_loss = -1;
+   machinelearning_func::set_leaky_ReLU_small_slope(0.03);
 
 // ==========================================================================
 // Reinforcement training loop starts here
@@ -320,9 +324,9 @@ int main (int argc, char* argv[])
 
 // Generate metafiles for Qmap and loss function histories:
 
+   reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
    reinforce_agent_ptr->plot_Qmap_score_history(
       output_subdir, subtitle, extrainfo);
-   reinforce_agent_ptr->plot_log10_loss_history(output_subdir, extrainfo);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
