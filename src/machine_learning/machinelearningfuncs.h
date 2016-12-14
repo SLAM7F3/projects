@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 11/4/16; 11/6/16; 11/8/16; 12/13/16
+// Last updated on 11/6/16; 11/8/16; 12/13/16; 12/14/16
 // ==========================================================================
 
 #include <vector>
@@ -25,6 +25,11 @@ namespace machinelearning_func
    void ReLU(genmatrix& Z);
    void ReLU(const genmatrix& Z, genmatrix& A);
    void ReLU(int zcol, const genmatrix& Z, genmatrix& A);
+
+   double get_leaky_small_slope();
+   void leaky_ReLU(genvector& X);
+   void leaky_ReLU(const genvector& Z, genvector& A);
+
    void softmax(const genvector& Z, genvector& A);
    void softmax(const genmatrix& Z, genmatrix& A);
    void softmax(int zcol, const genmatrix& Z, genmatrix& A);

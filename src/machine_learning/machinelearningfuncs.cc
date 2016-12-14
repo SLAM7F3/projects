@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 11/6/16; 11/8/16; 11/17/16; 12/13/16
+// Last updated on 11/8/16; 11/17/16; 12/13/16; 12/14/16
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -102,7 +102,7 @@ namespace machinelearning_func
          double Zi = Z.get(i);
          if(Zi > 0)
          {
-            A.put(i, Z.get(i));
+            A.put(i, Zi);
          }
       }
    }
@@ -144,6 +144,40 @@ namespace machinelearning_func
          if(curr_Z > 0)
          {
             A.put(i, zcol, curr_Z);
+         }
+      }
+   }
+
+// --------------------------------------------------------------------------
+   double get_leaky_ReLU_small_slope()
+   {
+      return 0.03;
+   }
+
+   void leaky_ReLU(genvector& X)
+   {
+      const double small_slope = get_leaky_ReLU_small_slope();
+      for(unsigned int i = 0; i < X.get_mdim(); i++)
+      {
+         double curr_x = X.get(i);
+         if(curr_x < 0) X.put(i,small_slope * curr_x);
+      }
+   }
+
+   void leaky_ReLU(const genvector& Z, genvector& A)
+   {
+      const double small_slope = get_leaky_ReLU_small_slope();      
+      A.clear_values();
+      for(unsigned int i = 0; i < Z.get_mdim(); i++)
+      {
+         double Zi = Z.get(i);
+         if(Zi > 0)
+         {
+            A.put(i, Zi);
+         }
+         else
+         {
+            A.put(i, small_slope * Zi);
          }
       }
    }
