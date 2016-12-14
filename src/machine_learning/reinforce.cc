@@ -2348,12 +2348,17 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
    if(curr_loss <= 0)
    {
-      cout << " Current loss = " << curr_loss << endl;
+      cout << "Current loss = " << curr_loss << endl;
+      cout << "  curr_s_sample.mag = " << curr_s_sample->magnitude()
+           << endl;
       for(int j = 0; j < layer_dims[curr_layer]; j++)
       {
          double curr_Q = A_Prime[curr_layer]->get(j);
          cout << "   j = " << j << " curr_Q = " << curr_Q 
-              << " curr_a = " << curr_a << endl;
+              << " target = " << target_value
+              << " curr_a = " << curr_a 
+              << " curr_r = " << curr_r 
+              << endl;
       }
       return curr_loss;
    }
