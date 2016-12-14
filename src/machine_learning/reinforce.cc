@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/8/16; 12/9/16; 12/12/16; 12/13/16
+// Last modified on 12/9/16; 12/12/16; 12/13/16; 12/14/16
 // ==========================================================================
 
 #include <string>
@@ -1337,11 +1337,15 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo)
 void reinforce::plot_weight_distributions(
    string output_subdir, string extrainfo)
 {
+   string script_filename=output_subdir + "view_weight_dists";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
    for(unsigned int l = 0; l < weight_50.size(); l++)
    {
       metafile curr_metafile;
-      string meta_filename=output_subdir + "/weight_dists_"+
-         stringfunc::number_to_string(l);
+      string basename="weight_dists_"+stringfunc::number_to_string(l);
+      string meta_filename=output_subdir + basename;
 
       string title="Weight dists for layer "+stringfunc::number_to_string(l);
       title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
@@ -1396,7 +1400,14 @@ void reinforce::plot_weight_distributions(
 
       string unix_cmd="meta_to_jpeg "+meta_filename;
       sysfunc::unix_command(unix_cmd);
+
+      string jpg_filename=basename+".jpg";
+      script_stream << "view "+jpg_filename << endl;
+
    } // loop over index l labeling network layers
+
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
 }
 
 // ---------------------------------------------------------------------
@@ -1405,12 +1416,15 @@ void reinforce::plot_weight_distributions(
 void reinforce::plot_quasirandom_weight_values(
    string output_subdir, string extrainfo)
 {
+   string script_filename=output_subdir + "view_weight_values";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
    for(unsigned int l = 0; l < weight_50.size(); l++)
    {
       metafile curr_metafile;
-      string meta_filename=output_subdir + "/weight_values_"+
-         stringfunc::number_to_string(l);
-
+      string basename="weight_values_"+stringfunc::number_to_string(l);
+      string meta_filename=output_subdir + basename;
       string title="Quasi random weight values for layer "
          +stringfunc::number_to_string(l);
       title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
@@ -1494,7 +1508,13 @@ void reinforce::plot_quasirandom_weight_values(
 
       string unix_cmd="meta_to_jpeg "+meta_filename;
       sysfunc::unix_command(unix_cmd);
+
+      string jpg_filename=basename+".jpg";
+      script_stream << "view "+jpg_filename << endl;
    } // loop over index l labeling network layers
+
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
 }
 
 // ---------------------------------------------------------------------

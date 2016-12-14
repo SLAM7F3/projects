@@ -61,16 +61,13 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int n_max_episodes = 50 * 1000;
 
-//   int H1 = 32;
-//   int H1 = 64;
+
 //   int H1 = 64;
    int H1 = 128;
 //   int H1 = 256;
 
 //   int H2 = 0;
-//   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
    int H2 = 64;
@@ -97,10 +94,13 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-//   int replay_memory_capacity = 5 * 1000;
-//   int replay_memory_capacity = 10 * 1000;
-   int replay_memory_capacity = 15 * 1000;
-//   int replay_memory_capacity = 20 * 1000;
+   int nframes_per_epoch = 50 * 1000;
+   int n_max_epochs = 1000;
+   int approx_nframes_per_episode = 1 * 1000;
+   int n_episodes_per_epoch = nframes_per_epoch / approx_nframes_per_episode;
+   int n_max_episodes = n_max_epochs * n_episodes_per_epoch;
+   
+   int replay_memory_capacity = nframes_per_epoch * 1;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity,
 //      reinforce::SGD);
@@ -130,7 +130,6 @@ int main(int argc, char** argv)
    filefunc::dircreate(screen_exports_subdir);
    breakout_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
-//   reinforce_agent_ptr->set_Nd(10);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
 //   reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
@@ -217,6 +216,8 @@ int main(int argc, char** argv)
                  << breakout_ptr->get_n_screen_states() << endl;
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
+   params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
+   params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "n_max_episodes = " << n_max_episodes << endl;
    filefunc::closefile(params_filename, params_stream);
 
@@ -225,7 +226,6 @@ int main(int argc, char** argv)
 
    int n_fire_ball_frames = 10;
    int cum_framenumber = 0;
-   int nframes_per_epoch = 50 * 1000;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
@@ -308,7 +308,6 @@ int main(int argc, char** argv)
 
          Action a;
          int curr_a = -1;
-
          if(life_frame_counter < n_fire_ball_frames)
          {
             a = PLAYER_A_FIRE;  // fire ball
@@ -333,10 +332,11 @@ int main(int argc, char** argv)
             renorm_reward = 1;
          }
 
-// Penalize agent whenever it misses the ball:
-
          if(n_curr_lives != n_prev_lives)
          {
+
+// Penalize agent whenever it misses the ball:
+
             if(n_prev_lives > 0)
             {
                renorm_reward = -1;
@@ -350,16 +350,6 @@ int main(int argc, char** argv)
          }
 
          reinforce_agent_ptr->accumulate_reward(curr_reward);
-
-/*
-         if(!nearly_equal(renorm_reward, 0))
-         {
-            cout << "episode = " << curr_episode_number
-                 << " frame = " << curr_frame_number
-                 << " curr_reward = " << curr_reward
-                 << " renorm_reward = " << renorm_reward << endl;
-         }
-*/
 
          if(game_world.get_game_over())
          {
@@ -425,7 +415,6 @@ int main(int argc, char** argv)
             breakout_ptr->save_screen(
                curr_episode_number, curr_screen_filename);
          }
-
       } // game_over while loop
 
 // -----------------------------------------------------------------------
