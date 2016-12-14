@@ -443,6 +443,7 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->append_n_episode_frames(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->append_epsilon();
+      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 
 // Periodically copy current weights into old weights:
@@ -489,7 +490,6 @@ int main(int argc, char** argv)
 
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
 
