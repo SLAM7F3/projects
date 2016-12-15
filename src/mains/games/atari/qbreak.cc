@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/11/16; 12/12/16; 12/13/16; 12/14/16
+// Last updated on 12/12/16; 12/13/16; 12/14/16; 12/15/16
 // ==========================================================================
 
 #include <iostream>
@@ -111,7 +111,8 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
-   reinforce_agent_ptr->set_lambda(0.01);
+//   reinforce_agent_ptr->set_lambda(0.0);
+   reinforce_agent_ptr->set_lambda(1E-2);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
