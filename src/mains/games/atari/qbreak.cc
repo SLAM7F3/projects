@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 //   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 50;
-   int n_snapshot = 200;
+   int n_snapshot = 5000;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
@@ -438,6 +438,13 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 
+      cout << "  total loss = " << total_loss << endl;
+      if(total_loss > 0)
+      {
+         cout << " log10(total_loss) = " << log10(total_loss) << endl;
+         reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
+      }
+
 // Periodically copy current weights into old weights:
 
       update_old_weights_counter++;
@@ -469,17 +476,10 @@ int main(int argc, char** argv)
          curr_episode_number % n_update == 0)
       {
          cout << "Q-learning" << endl;
-         cout << "  Total loss = " << total_loss << endl;
-         if(total_loss > 0)
-         {
-            cout << " log10(total_loss) = " << log10(total_loss) << endl;
-            reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
-         }
 
          if(reinforce_agent_ptr->get_include_bias_terms()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
-
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
