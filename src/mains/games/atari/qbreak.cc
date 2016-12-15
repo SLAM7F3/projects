@@ -63,14 +63,15 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 64;
-   int H1 = 128;
+//   int H1 = 128;
+   int H1 = 200;
 //   int H1 = 256;
 
-//   int H2 = 0;
+   int H2 = 0;
 //   int H2 = 16;
 //   int H2 = 32;
 //   int H2 = 64;
-   int H2 = 128;
+//   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;
@@ -171,11 +172,12 @@ int main(int argc, char** argv)
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
-   const double discard_0_reward_frac = 0.75;  
+//   const double discard_0_reward_frac = 0.75;  
+   const double discard_0_reward_frac = 0.85;  
 //   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 50;
-   int n_snapshot = 5000;
+   int n_snapshot = 500;
 
    string subtitle=
       "old weights T="+stringfunc::number_to_string(old_weights_period)
@@ -494,6 +496,7 @@ int main(int argc, char** argv)
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
+         n_snapshot *= 2;
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as
