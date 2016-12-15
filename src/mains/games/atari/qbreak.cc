@@ -62,9 +62,9 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int H1 = 64;
+//   int H1 = 64;
 //   int H1 = 128;
-//   int H1 = 256;
+   int H1 = 256;
 
 //   int H2 = 0;
 //   int H2 = 16;
