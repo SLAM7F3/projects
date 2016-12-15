@@ -207,6 +207,10 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->summarize_parameters(params_filename);
    ofstream params_stream;
    filefunc::appendfile(params_filename, params_stream);
+
+   params_stream << "Leaky ReLU small slope = "
+                 << machinelearning_func::get_leaky_ReLU_small_slope()
+                 << endl;
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period << endl;
