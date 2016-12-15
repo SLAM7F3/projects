@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 12/5/16; 12/7/16; 12/13/16; 12/14/16
+// Last updated on 12/7/16; 12/13/16; 12/14/16; 12/15/16
 // ==========================================================================
 
 #include <iostream>
@@ -56,13 +56,13 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
 
 //   int H1 = 8;
-//   int H1 = 10;
-   int H1 = 12;
+   int H1 = 10;
+//   int H1 = 12;
 
 //   int H2 = 0;
 //   int H2 = 8;
-//   int H2 = 10;
-   int H2 = 12;
+   int H2 = 10;
+//   int H2 = 12;
 
    int H3 = 0;
 
@@ -105,6 +105,10 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
+//   reinforce_agent_ptr->set_lambda(0);
+   reinforce_agent_ptr->set_lambda(1E-2);
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
 // Initialize output subdirectory within an experiments folder:
@@ -170,7 +174,6 @@ int main (int argc, char* argv[])
 
    int update_old_weights_counter = 0;
    double total_loss = -1;
-   machinelearning_func::set_leaky_ReLU_small_slope(0.03);
 
 // ==========================================================================
 // Reinforcement training loop starts here
@@ -295,10 +298,14 @@ int main (int argc, char* argv[])
                             display_qmap_flag);
       }
 
+      if(curr_episode_number > 0 && curr_episode_number % 100 == 0)
+      {
+         reinforce_agent_ptr->store_quasirandom_weight_values();
+      }
+
       if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->plot_Qmap_score_history(
             output_subdir, subtitle, extrainfo);

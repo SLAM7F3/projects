@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/9/16; 12/12/16; 12/13/16; 12/14/16
+// Last modified on 12/12/16; 12/13/16; 12/14/16; 12/15/16
 // ==========================================================================
 
 #include <string>
@@ -61,7 +61,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    episode_number = 0;
 
    n_layers = n_nodes_per_layer.size();
-
    for(int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
@@ -76,6 +75,9 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       A_Prime.push_back(curr_A_Prime);
       Delta_Prime.push_back(curr_Delta_Prime);
    }
+
+   n_weights = 0;
+   n_weights = count_weights();
    n_actions = layer_dims.back();
    hardwired_output_action = -1;
 
@@ -253,6 +255,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       
    } // loop over index l labeling neural net layers
 
+
    snapshots_subdir="";
 
 // Q learning variable initialization:
@@ -331,7 +334,7 @@ reinforce::~reinforce()
       }
    } // include_bias_terms flag
 
-   for(int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_layers - 1; l++)
    {
       delete weights[l];
       delete old_weights[l];
@@ -363,7 +366,6 @@ reinforce::~reinforce()
    delete r_curr;
    delete s_next;
    delete terminal_state;
-
    delete curr_s_sample;
    delete next_s_sample;
    delete prev_afterstate_ptr;
@@ -489,11 +491,15 @@ void reinforce::summarize_parameters(string params_filename)
 
 int reinforce::count_weights()
 {
-   int n_weights = 0;
-   for(int l = 0; l < n_layers - 1; l++)
+   if(n_weights == 0)
    {
-      n_weights += weights[l]->get_mdim() * weights[l]->get_ndim();
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+//         n_weights += weights[l]->get_mdim() * weights[l]->get_ndim();
+         n_weights += layer_dims[l] * layer_dims[l+1];
+      }
    }
+   
    return n_weights;
 }
 
@@ -813,6 +819,7 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
    }
    
    string subtitle=init_subtitle();
@@ -912,6 +919,7 @@ void reinforce::plot_reward_history(
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
    }
 
    string subtitle=init_subtitle();
@@ -975,6 +983,7 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
    }
 
    string subtitle=init_subtitle();
@@ -1040,6 +1049,7 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo)
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
    }
 
    string subtitle=init_subtitle();
@@ -1104,6 +1114,7 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo)
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
    }
 
    string subtitle=init_subtitle();
@@ -1206,8 +1217,8 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
    string meta_filename=output_subdir + "/log10_losses_history";
 
    string title="Log10(total loss)";
-   title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
-   title += ";bsize="+stringfunc::number_to_string(batch_size);
+   title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
+   title += "; nweights="+stringfunc::number_to_string(n_weights);
 
    string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
@@ -1423,8 +1434,8 @@ void reinforce::plot_quasirandom_weight_values(
       string meta_filename=output_subdir + basename;
       string title="Quasi random weight values for layer "
          +stringfunc::number_to_string(l);
-      title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
-      title += ";bsize="+stringfunc::number_to_string(batch_size);
+      title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
@@ -2321,7 +2332,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       Delta_Prime[curr_layer]->put(j, curr_activation);
    }
 
-/*
    if(curr_loss <= 0)
    {
       cout << "Current loss = " << curr_loss << endl;
@@ -2343,37 +2353,12 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
               << " curr_r = " << curr_r 
               << endl;
       }
-      return curr_loss;
    }
-*/
-
-/*
-Current loss = 0
-  curr_s_sample.mag = 32.1886
-l = 0 A_Prime.mag = 32.1886
-l = 1 A_Prime.mag = 0
-l = 2 A_Prime.mag = 0
-l = 3 A_Prime.mag = 0
-   j = 0 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
-   j = 1 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
-   j = 2 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
-Current loss = 0
-  curr_s_sample.mag = 23.5941
-l = 0 A_Prime.mag = 23.5941
-l = 1 A_Prime.mag = 0
-l = 2 A_Prime.mag = 0
-l = 3 A_Prime.mag = 0
-   j = 0 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
-   j = 1 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
-   j = 2 curr_Q = 0 target = 0 curr_a = 0 curr_r = 0
-*/
-
 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
 
-// Don't bother backpropagating if currently layer has zero content:
-
+// Don't bother backpropagating if current layer has zero content:
 //      if(Delta_Prime[curr_layer]->magnitude() <= 0) break;
 
       int prev_layer = curr_layer - 1;
@@ -2413,16 +2398,18 @@ l = 3 A_Prime.mag = 0
 
       delta_nabla_weights[prev_layer]->accumulate_outerprod(
          *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
-/*
+
       const double TINY = 1E-8;
       if(lambda > TINY)
       {
-         *delta_nabla_biases[curr_layer] += 
-            2 * lambda * (*biases[curr_layer]);
+//         if(include_bias_terms)
+//         {
+//            *delta_nabla_biases[curr_layer] += 
+//               2 * lambda * (*biases[curr_layer]);
+//         }
          *delta_nabla_weights[prev_layer] += 
-            2 * lambda * (*weights[prev_layer]);
+            2 * (lambda / n_weights) * (*weights[prev_layer]);
       }
-*/
 
    } // loop over curr_layer index
 
@@ -2441,6 +2428,25 @@ l = 3 A_Prime.mag = 0
    for(int l = 0; l < n_layers - 1; l++)
    {
       nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
+   }
+
+// Add L2 regularization term's contribution to total loss function:
+
+   const double TINY = 1E-8;
+   if(lambda > TINY)
+   {
+      double sqrd_weight_sum = 0;
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+         {
+            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+            {
+               sqrd_weight_sum += sqr(weights[l]->get(r,c));
+            }
+         }
+      } // loop over index l labeling network layers
+      curr_loss += (lambda / n_weights) * sqrd_weight_sum;
    }
 
    curr_loss *= inverse_Nd;

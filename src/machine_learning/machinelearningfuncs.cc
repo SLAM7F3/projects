@@ -150,7 +150,7 @@ namespace machinelearning_func
 
 // --------------------------------------------------------------------------
 
-   double leaky_ReLU_small_slope = 0.03;
+   double leaky_ReLU_small_slope = 0.01;
    
    void set_leaky_ReLU_small_slope(double slope)
    {

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/8/16; 12/9/16; 12/12/16; 12/13/16
+// Last modified on 12/9/16; 12/12/16; 12/13/16; 12/15/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -176,7 +176,7 @@ class reinforce
    bool include_bias_terms;
    bool debug_flag;
    int solver_type;
-   int n_layers, n_actions;
+   int n_layers, n_actions, n_weights;
    std::vector<int> layer_dims;
    environment* environment_ptr;
    

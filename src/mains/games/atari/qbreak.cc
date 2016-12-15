@@ -62,8 +62,8 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-//   int H1 = 64;
-   int H1 = 128;
+   int H1 = 64;
+//   int H1 = 128;
 //   int H1 = 256;
 
 //   int H2 = 0;
@@ -111,6 +111,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
 
+   reinforce_agent_ptr->set_lambda(0.01);
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+
 // Initialize output subdirectory within an experiments folder:
 
    string experiments_subdir="./experiments/breakout/";
@@ -142,7 +145,6 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-//   reinforce_agent_ptr->set_epsilon_time_constant(800);
    reinforce_agent_ptr->set_epsilon_time_constant(1000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
@@ -225,7 +227,7 @@ int main(int argc, char** argv)
 
    int n_fire_ball_frames = 10;
    int cum_framenumber = 0;
-   machinelearning_func::set_leaky_ReLU_small_slope(0.03);   
+
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
