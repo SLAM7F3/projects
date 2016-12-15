@@ -1281,8 +1281,8 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo)
          stringfunc::number_to_string(l);
 
       string title="Bias dists for layer "+stringfunc::number_to_string(l);
-      title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
-      title += ";bsize="+stringfunc::number_to_string(batch_size);
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
@@ -1355,8 +1355,8 @@ void reinforce::plot_weight_distributions(
       string meta_filename=output_subdir + basename;
 
       string title="Weight dists for layer "+stringfunc::number_to_string(l);
-      title += ";blr="+stringfunc::scinumber_to_string(base_learning_rate,2);
-      title += ";bsize="+stringfunc::number_to_string(batch_size);
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;

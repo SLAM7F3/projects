@@ -679,6 +679,8 @@ n_max_episodes = 50000
 
 59.  Titan 3:  Expt 52 with lambda = 1E-1
 
+61.  Titan 3:  Expt 52 with lambda = 1
+
 
 55.  Titan 1:  0.01 L2 regularization + leaky ReLU + bug fixes
 
@@ -715,6 +717,8 @@ n_max_episodes = 50000
 57.  Titan 1:  Expt 55 with lambda = 1E-4
 
 58.  Titan 1:  Expt 55 with lambda = 1E-1
+
+60.  Titan 1:  Expt 55 with lambda = 1
 
 
 TODO:

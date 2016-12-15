@@ -112,7 +112,7 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_environment(&game_world);
 
 //   reinforce_agent_ptr->set_lambda(0.0);
-   reinforce_agent_ptr->set_lambda(1E-2);
+   reinforce_agent_ptr->set_lambda(1E-3);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
@@ -199,7 +199,10 @@ int main(int argc, char** argv)
    // Set vector of minimal legal actions:
 
    ActionVect minimal_actions;
-   minimal_actions.push_back(PLAYER_A_NOOP);  
+   if(n_actions >= 3)
+   {
+      minimal_actions.push_back(PLAYER_A_NOOP);  
+   }
    minimal_actions.push_back(PLAYER_A_RIGHT);
    minimal_actions.push_back(PLAYER_A_LEFT);
 
@@ -208,9 +211,9 @@ int main(int argc, char** argv)
    ofstream params_stream;
    filefunc::appendfile(params_filename, params_stream);
 
+   params_stream << "n_actions = " << n_actions << endl;
    params_stream << "Leaky ReLU small slope = "
-                 << machinelearning_func::get_leaky_ReLU_small_slope()
-                 << endl;
+                 << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period << endl;
@@ -389,9 +392,9 @@ int main(int argc, char** argv)
             }
          }
 
-      if(reinforce_agent_ptr->get_replay_memory_full() &&
-         curr_frame_number % nn_update_frame_period == 0)
-      {
+         if(reinforce_agent_ptr->get_replay_memory_full() &&
+            curr_frame_number % nn_update_frame_period == 0)
+         {
 //         cout << "Episode=" << curr_episode_number
 //              << " cum frame=" << cum_framenumber
 //              << " episode frame=" << curr_frame_number
@@ -399,10 +402,10 @@ int main(int argc, char** argv)
 //              << "  cum_reward=" << cum_reward 
 //              << endl;
 
-         bool verbose_flag = false;
-         total_loss = reinforce_agent_ptr->update_neural_network(
-            verbose_flag);
-      }
+            bool verbose_flag = false;
+            total_loss = reinforce_agent_ptr->update_neural_network(
+               verbose_flag);
+         }
 
 // Periodically save an episode's worth of screens to output
 // subdirectory:
@@ -482,7 +485,7 @@ int main(int argc, char** argv)
          cout << "Q-learning" << endl;
 
          if(reinforce_agent_ptr->get_include_bias_terms()){
-           reinforce_agent_ptr->compute_bias_distributions();
+            reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
