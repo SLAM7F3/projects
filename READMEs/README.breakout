@@ -715,6 +715,43 @@ n_max_episodes = 50000
 60.  Titan 1:  Expt 55 with lambda = 1
 
 
+65.  Titan 3:  H1 = 128, H2 = 128, lambda = 1E-3, leaky slope = 0.01
+
+n_actions = 2
+Thu Dec 15 12:36:15 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 336640 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+66.  Titan 1:  Repeat expt 65
+
+67.  Titan 1:  Repeat expt 65
+
 -------------------------------------------------------------
 RUNNING EXPERIMENTS
 -------------------------------------------------------------
@@ -756,18 +793,15 @@ n_max_episodes = 50000
 
 64.  Titan 1:  Repeat expt 62
 
+68.  Titan 3: H1 = 200, H2 = 0; n_actions = 2; discard 0 reward frac = 0.85
 
-65.  Titan 3:  H1 = 128, H2 = 128, lambda = 1E-3, leaky slope = 0.01
-
-n_actions = 2
-Thu Dec 15 12:36:15 2016
+Thu Dec 15 15:05:05 2016
 Neural net params:
-   n_layers = 4
+   n_layers = 3
    layer = 0 n_nodes = 2500
-   layer = 1 n_nodes = 128
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 2
-   n_weights = 336640 (FC)
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 500400 (FC)
 base_learning_rate = 0.01; batch_size = 1
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
@@ -781,7 +815,7 @@ n_actions = 2
 Leaky ReLU small slope = 0.01
 Learning rate decrease period = 1000 episodes
 Old weights period = 32
-Discard zero reward frac = 0.75
+Discard zero reward frac = 0.85
 Use big states flag = 0
 Frame skip = 3
 1 big state = n_screen_states = 1
@@ -790,10 +824,46 @@ nframes / epoch = 50000
 n_max_epochs = 1000
 n_max_episodes = 50000
 
-66.  Titan 1:  Repeat expt 65
+69.  Titan 3: Repeat 68
 
-67.  Titan 1:  Repeat expt 65
+70.  Titan 3: Repeat 68
 
+
+71.  TM: H1 = H2 = H3 = 64; n_actions = 2; discard 0 reward frac = 0.85
+
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   layer = 4 n_nodes = 2
+   n_weights = 168320 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+72.  TM:  Repeat of expt 71
+
+73.  TM:  Repeat of expt 71
 
 ===========================================================
 TODO:
