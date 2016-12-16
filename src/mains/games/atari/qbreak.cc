@@ -67,21 +67,21 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int H1 = 32;
-//   int H1 = 64;
+//   int H1 = 32;
+   int H1 = 64;
 //   int H1 = 128;
 //   int H1 = 200;
 //   int H1 = 256;
 
 //   int H2 = 0;
 //   int H2 = 16;
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 //   int H2 = 128;
 
-//   int H3 = 0;
+   int H3 = 0;
 //   int H3 = 16;
-   int H3 = 32;
+//   int H3 = 32;
 //   int H3 = 64;
 //   int H3 = 128;
 
@@ -101,8 +101,8 @@ int main(int argc, char** argv)
 // Construct reinforcement learning agent:
 
    int nframes_per_epoch = 50 * 1000;
-   int n_max_epochs = 1000;
-   int approx_nframes_per_episode = 1 * 1000;
+   int n_max_epochs = 3000;
+   int approx_nframes_per_episode = 1000;
    int n_episodes_per_epoch = nframes_per_epoch / approx_nframes_per_episode;
    int n_max_episodes = n_max_epochs * n_episodes_per_epoch;
    
