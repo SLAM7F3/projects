@@ -299,29 +299,27 @@ int main(int argc, char** argv)
       {
          int n_curr_lives = breakout_ptr->get_ale().lives();
          bool state_updated_flag = false;
+         bool zero_input_state = false;
 
          curr_framenumber++;
          curr_life_framenumber++;
          cum_framenumber++;
 
-         if(curr_framenumber > game_world.get_min_episode_framenumber())
+         if(curr_framenumber % game_world.get_frame_skip() == 0)
          {
-            if(curr_framenumber % game_world.get_frame_skip() == 0)
-            {
-               state_updated_flag = true;
-               n_state_updates++;
+            state_updated_flag = true;
+            n_state_updates++;
 
-               if(use_big_states_flag)
-               {
-                  breakout_ptr->crop_pool_curr_frame(export_frames_flag);
-               }
-               else
-               {
-                  breakout_ptr->crop_pool_difference_curr_frame(
-                     export_frames_flag);
-               }
-            } // curr_framenumber % frame_skip == 0 conditional
-         } // curr_framenumber > min_episode_framenumber
+            if(use_big_states_flag)
+            {
+               breakout_ptr->crop_pool_curr_frame(export_frames_flag);
+            }
+            else
+            {
+               breakout_ptr->crop_pool_difference_curr_frame(
+                  export_frames_flag);
+            }
+         } // curr_framenumber % frame_skip == 0 conditional
 
          if(state_updated_flag && n_state_updates > 2)
          {
@@ -339,6 +337,7 @@ int main(int argc, char** argv)
 
             if(curr_s->magnitude() <= 0)
             {
+               zero_input_state = true;
             }
             else
             {
@@ -399,7 +398,7 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
          }
-         else if (n_state_updates > 2 && curr_a >= 0)
+         else if (n_state_updates > 2 && curr_a >= 0 && !zero_input_state)
          {
             genvector* next_s = game_world.compute_next_state(a);
 
