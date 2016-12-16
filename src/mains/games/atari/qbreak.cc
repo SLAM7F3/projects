@@ -62,21 +62,22 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int H1 = 64;
+   int H1 = 32;
+//   int H1 = 64;
 //   int H1 = 128;
 //   int H1 = 200;
 //   int H1 = 256;
 
 //   int H2 = 0;
 //   int H2 = 16;
-//   int H2 = 32;
-   int H2 = 64;
+   int H2 = 32;
+//   int H2 = 64;
 //   int H2 = 128;
 
-//   int H3 = 0;
+   int H3 = 0;
 //   int H3 = 16;
 //   int H3 = 32;
-   int H3 = 64;
+//   int H3 = 64;
 //   int H3 = 128;
 
    vector<int> layer_dims;
@@ -176,7 +177,7 @@ int main(int argc, char** argv)
    const double discard_0_reward_frac = 0.85;  
 //   const double discard_0_reward_frac = 0.95;  
 
-   int n_update = 50;
+   int n_update = 100;
    int n_snapshot = 500;
 
    string subtitle=
