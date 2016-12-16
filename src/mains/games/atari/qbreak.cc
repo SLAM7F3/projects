@@ -79,9 +79,9 @@ int main(int argc, char** argv)
 //   int H2 = 64;
 //   int H2 = 128;
 
-   int H3 = 0;
+//   int H3 = 0;
 //   int H3 = 16;
-//   int H3 = 32;
+   int H3 = 32;
 //   int H3 = 64;
 //   int H3 = 128;
 
