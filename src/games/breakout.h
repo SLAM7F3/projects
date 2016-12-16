@@ -40,8 +40,6 @@ class breakout
    genvector* get_next_state();
    const genvector* get_next_state() const;
 
-   
-
    void crop_pool_difference_curr_frame(bool export_frames_flag);
 
    int get_screen_state_counter() const;

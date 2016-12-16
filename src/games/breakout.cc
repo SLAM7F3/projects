@@ -55,7 +55,7 @@ void breakout::initialize_member_objects()
    int random_seed = 1000 * nrfunc::ran1();
    ale.setInt("random_seed", random_seed);
 
-   ale.setFloat("repeat_action_probability", 0.25);
+   ale.setFloat("repeat_action_probability", 0);
    ale.setBool("display_screen", false);
 //   ale.setBool("display_screen", true);
    ale.loadROM("/usr/local/ALE/roms/breakout.bin");
@@ -89,8 +89,11 @@ void breakout::initialize_member_objects()
    mu_z = 40.00;	// Estimate from 30 random episodes
    sigma_z = 58.5;      // Estimate from 30 random episodes
 
-   mu_zdiff = 0.94;     // Estimate from few hundred random episodes
-   sigma_zdiff = 11.0;  // Estimated from few hundred random episodes
+//   mu_zdiff = 0.94;     // Estimate from few hundred random episodes
+//   sigma_zdiff = 11.0;  // Estimated from few hundred random episodes
+
+//   median_zdiff = 0;      // Estimate from few dozen random episodes
+   sigma_zdiff = 4.7;     // Estimate from few dozen random episodes
 
    difference_counter = 0;
 
@@ -261,8 +264,6 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
          unsigned char max_z = max_pool(r, c, byte_array);
          pooled_byte_row.push_back(max_z);
 
-//         double zpool(max_z);
-//         pooled_scrn_values.push_back(zpool);
       } // loop over index c
       pooled_byte_array_ptr->push_back(pooled_byte_row);
    } // loop over index r
@@ -290,7 +291,16 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             unsigned char z_diff = 
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
-            double ren_z_diff = (double(z_diff) - mu_zdiff) / sigma_zdiff;
+//            double zpool(z_diff);
+//            pooled_scrn_values.push_back(zpool);
+
+// Recall the vast majority of z_diff values = 0!  So as of 12/16/16,
+// we choose to subtract off the zero-valued median rather than a
+// non-zero mean so as to yield state vectors which mostly have zero
+// coordinates.  But we still divide by sigma_zdiff so that the
+// non-zero coordinates have magnitudes close to unity:
+
+            double ren_z_diff = double(z_diff) / sigma_zdiff;
 
             if(difference_counter == 0)
             {
@@ -348,19 +358,6 @@ void breakout::pingpong_curr_and_next_states()
       next_state_ptr = screen1_state_ptr;
    }
 
-/*
-   if(screen_state_counter == 0)
-   {
-      curr_state_ptr = screen_state_ptrs[1];
-      next_state_ptr = screen_state_ptrs[0];
-   }
-   else if (screen_state_counter == 1)
-   {
-      curr_state_ptr = screen_state_ptrs[0];
-      next_state_ptr = screen_state_ptrs[1];
-   }
-*/
-
 //   cout << "curr_state_ptr = " << curr_state_ptr << endl;
 //   cout << "next_state_ptr = " << next_state_ptr << endl;
 //   cout << "curr_state_ptr->mdim = " << curr_state_ptr->get_mdim() << endl;
@@ -408,7 +405,7 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
       {
          unsigned char max_z = max_pool(r, c, byte_array);
          double zpool(max_z);
-         pooled_scrn_values.push_back(zpool);
+//         pooled_scrn_values.push_back(zpool);
 
          double ren_zpool = (zpool - mu_z) / sigma_z;
          curr_screen_state_ptr->put(reduced_pixel_counter, ren_zpool);
@@ -441,9 +438,15 @@ void breakout::mu_and_sigma_for_pooled_zvalues()
 {
    double mu, sigma;
    mathfunc::mean_and_std_dev(pooled_scrn_values, mu, sigma);
+   double median, quartile_width;
+   mathfunc::median_value_and_quartile_width(
+      pooled_scrn_values, median, quartile_width);
+
    cout << "pooled_scrn_values.size = " << pooled_scrn_values.size()
         << endl;
    cout << "mu = " << mu << " sigma = " << sigma << endl;
+   cout << "median = " << median << " quartile_width = " << quartile_width 
+        << endl;
 }
 
 // ---------------------------------------------------------------------

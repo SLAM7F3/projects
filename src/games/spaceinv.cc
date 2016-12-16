@@ -55,7 +55,8 @@ void spaceinv::initialize_member_objects()
    int random_seed = 1000 * nrfunc::ran1();
    ale.setInt("random_seed", random_seed);
 
-   ale.setFloat("repeat_action_probability", 0.25);
+   ale.setFloat("repeat_action_probability", 0);
+//   ale.setFloat("repeat_action_probability", 0.25);
    ale.setBool("display_screen", false);
 //   ale.setBool("display_screen", true);
    ale.loadROM("/usr/local/ALE/roms/space_invaders.bin");

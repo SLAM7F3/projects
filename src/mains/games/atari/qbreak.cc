@@ -42,6 +42,10 @@ int main(int argc, char** argv)
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
 
+// Disable ALE's random responsiveness to input actions:
+
+   breakout_ptr->get_ale().setFloat("repeat_action_probability",0);
+
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
 
@@ -54,7 +58,8 @@ int main(int argc, char** argv)
       use_big_states_flag = true;
    }
    game_world.set_use_big_states_flag(use_big_states_flag);
-   game_world.set_frame_skip(3);
+   game_world.set_frame_skip(1);
+//   game_world.set_frame_skip(3);
 
 // Set neural network architecture parameters:
 
@@ -269,7 +274,6 @@ int main(int argc, char** argv)
 
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
-      int life_frame_counter = 0;
       int n_prev_lives = -1;
       double cum_reward = 0;
 
@@ -278,21 +282,30 @@ int main(int argc, char** argv)
 // with no ball in play, we set an upper limit on the number of frames
 // per episode:
 
+// On 12/16/16, we discovered the hard way that the Arcade Learning
+// Environment's getEpisodeFrameNumber() method does NOT always return
+// contiguous increasing integers!  So we no longer use the following
+// line:
+
+//  int curr_frame_number = game_world.get_episode_framenumber();
+
+      int curr_framenumber = 0;  // n_frames since start of current episode
+      int curr_life_framenumber = 0;  // n_frames since start of current life
       int max_episode_framenumber = 12 * 1000;
 
       while(!game_world.get_game_over() && 
-            game_world.get_episode_framenumber() < max_episode_framenumber)
+            curr_framenumber < max_episode_framenumber)
       {
          int n_curr_lives = breakout_ptr->get_ale().lives();
-
          bool state_updated_flag = false;
-         int curr_frame_number = game_world.get_episode_framenumber();
-         life_frame_counter++;         
+
+         curr_framenumber++;
+         curr_life_framenumber++;
          cum_framenumber++;
 
-         if(curr_frame_number > game_world.get_min_episode_framenumber())
+         if(curr_framenumber > game_world.get_min_episode_framenumber())
          {
-            if(curr_frame_number % game_world.get_frame_skip() == 0)
+            if(curr_framenumber % game_world.get_frame_skip() == 0)
             {
                state_updated_flag = true;
                n_state_updates++;
@@ -306,8 +319,8 @@ int main(int argc, char** argv)
                   breakout_ptr->crop_pool_difference_curr_frame(
                      export_frames_flag);
                }
-            } // curr_frame_number % frame_skip == 0 conditional
-         } // curr_frame_number > min_episode_framenumber
+            } // curr_framenumber % frame_skip == 0 conditional
+         } // curr_framenumber > min_episode_framenumber
 
          if(state_updated_flag && n_state_updates > 2)
          {
@@ -328,7 +341,7 @@ int main(int argc, char** argv)
 
          Action a;
          int curr_a = -1;
-         if(life_frame_counter < n_fire_ball_frames)
+         if(curr_life_framenumber < n_fire_ball_frames)
          {
             a = PLAYER_A_FIRE;  // fire ball
          }
@@ -363,7 +376,7 @@ int main(int argc, char** argv)
             }
 
             n_prev_lives = n_curr_lives;
-            life_frame_counter = 0;
+            curr_life_framenumber = 0;
 //            cout << "n_curr_lives = " << n_curr_lives
 //                 << " n_prev_lives = " << n_prev_lives
 //                 << " renorm_reward = " << renorm_reward << endl;
@@ -403,11 +416,11 @@ int main(int argc, char** argv)
          }
 
          if(reinforce_agent_ptr->get_replay_memory_full() &&
-            curr_frame_number % nn_update_frame_period == 0)
+            curr_framenumber % nn_update_frame_period == 0)
          {
 //         cout << "Episode=" << curr_episode_number
 //              << " cum frame=" << cum_framenumber
-//              << " episode frame=" << curr_frame_number
+//              << " episode frame=" << curr_framenumber
 //              << " n_lives=" << breakout_ptr->get_ale().lives()
 //              << "  cum_reward=" << cum_reward 
 //              << endl;
@@ -427,7 +440,7 @@ int main(int argc, char** argv)
          {
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
-               stringfunc::integer_to_string(curr_frame_number,5)+".png";
+               stringfunc::integer_to_string(curr_framenumber,5)+".png";
             breakout_ptr->save_screen(
                curr_episode_number, curr_screen_filename);
          }
@@ -445,8 +458,7 @@ int main(int argc, char** argv)
 
 //       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
-      reinforce_agent_ptr->append_n_episode_frames(
-         game_world.get_episode_framenumber());
+      reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
       reinforce_agent_ptr->append_epsilon();
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      

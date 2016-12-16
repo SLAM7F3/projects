@@ -1977,8 +1977,11 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
       d = replay_memory_index;
    }
 //   cout << "d = " << d << endl;
+//   cout << "s_curr = " << s_curr << endl;
 //   cout << "s_curr: mdim = " << s_curr->get_mdim()
 //        << " ndim = " << s_curr->get_ndim() << endl;
+//   cout << "curr_s = " << curr_s << endl;
+   
    s_curr->put_row(d, curr_s);
    return d;
 }

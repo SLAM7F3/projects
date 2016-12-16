@@ -789,13 +789,18 @@ nframes / epoch = 50000
 n_max_epochs = 1000
 n_max_episodes = 50000
 
+Processed O(34K) episodes by 5 am on Fri Dec 16.  No increase in reward or
+nframes/episode.   Trained weights remain bounded within interval [-1,1].
+log10(loss) remains around -2.  Ball tracks clearly visible within several
+of 0th-layer trained weights.
+
 63.  Titan 1:  Repeat expt 62
 
 64.  Titan 1:  Repeat expt 62
 
 68.  Titan 3: H1 = 200, H2 = 0; n_actions = 2; discard 0 reward frac = 0.85
 
-Thu Dec 15 15:05:05 2016
+Thu Dec 15 15:56:05 2016
 Neural net params:
    n_layers = 3
    layer = 0 n_nodes = 2500
@@ -806,7 +811,7 @@ base_learning_rate = 0.01; batch_size = 1
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.001
+L2 regularization lambda coeff = 0.01
 Replay memory capacity = 50000
 Number random samples drawn from replay memory Nd = 16
 Discount factor gamma = 0.99
@@ -824,9 +829,16 @@ nframes / epoch = 50000
 n_max_epochs = 1000
 n_max_episodes = 50000
 
+Processed O(12K) episodes by 5 am on Fri, Dec 16.  No increase in reward or
+nframes/episode. Log10(loss) rises to 1.5 and then gradually declines
+towards 0.  Weight coeffs increase up to +5.
+
 69.  Titan 3: Repeat 68
 
 70.  Titan 3: Repeat 68
+
+Conclusion:  Working with just one large hidden layer as Kaparthy did for
+pong doesn't look promising.
 
 
 71.  TM: H1 = H2 = H3 = 64; n_actions = 2; discard 0 reward frac = 0.85
@@ -860,6 +872,11 @@ nn_update_frame_period = 50
 nframes / epoch = 50000
 n_max_epochs = 1000
 n_max_episodes = 50000
+
+After 18K episodes: |Weight values| roughly stay bounded inside [-2,2].
+Log10(loss) = -1.5.  0th layer weights exhibit faint tracks for ball.  But
+reward and nframes/episode do not grow at all.
+
 
 72.  TM:  Repeat of expt 71
 

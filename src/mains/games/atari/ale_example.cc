@@ -63,7 +63,8 @@ enum Action {
   // Get & Set the desired settings
    ale.setInt("random_seed", 123);
    //The default is already 0.25, this is just an example
-   ale.setFloat("repeat_action_probability", 0.25);
+//   ale.setFloat("repeat_action_probability", 0.25);
+   ale.setFloat("repeat_action_probability", 0);
 
 //   ale.setBool("display_screen", false);
    ale.setBool("display_screen", true);
@@ -99,16 +100,21 @@ enum Action {
 
 // Screen ROI for Breakout:
 
+/*
+
+// Buggy breakout_1978.bin which has life counter:
+
    int min_px = 6;
    int max_px = 156;
-
    int min_py = 40;
    int max_py = 240;
+*/
 
-//   int min_px = 23;
-//   int max_px = 129;
-//   int min_py = 16;
-//   int max_py = 175;
+
+   int min_px = 23;
+   int max_px = 129;
+   int min_py = 16;
+   int max_py = 175;
 
 // Screen ROI for space invaders:
 
@@ -141,11 +147,6 @@ enum Action {
          
          int curr_frame_number = ale.getEpisodeFrameNumber();
          life_frame_counter++;
-         cout << "Episode = " << episode 
-              << " episode frame = " << ale.getEpisodeFrameNumber()
-              << " n_lives = " << ale.lives() 
-              << " life_frame_counter = " << life_frame_counter 
-              << endl;
          grayscale_output_buffer.clear();
          ale.getScreenGrayscale(grayscale_output_buffer);
 
@@ -170,24 +171,26 @@ enum Action {
             videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
          } // curr_frame_number % 3 == 0 conditional
          
-
          int action_index = 0; // no operation
-         if(life_frame_counter < 5)
+         if(life_frame_counter < 20)
          {
             action_index = 1;  // fire ball
          }
          else
          {
-            double curr_random = nrfunc::ran1();
-            if(curr_random < 0.33)
+//            if(nrfunc::ran1() < 0.25)
+            if(life_frame_counter%2 == 0)
             {
                action_index = 3;   // right move
             }
-            else if (curr_random >= 0.33 && curr_random < 0.66)
+            else
             {
-               action_index = 4;   // left move
+               action_index = 4;   // right move
             }
          }
+
+// As with many other Atari games, the player paddle also moves every
+// other frame, adding a degree of temporal aliasing to the domain
 
 //         Action a = legal_actions[rand() % legal_actions.size()];
          Action a = legal_actions[action_index];
@@ -195,9 +198,18 @@ enum Action {
          // Apply the action and get the resulting reward
          float reward = ale.act(a);
          totalReward += reward;
-         cout << "frame = " << curr_frame_number
-              << " curr_reward = " << reward
-              << " total_reward = " << totalReward << endl;
+
+         cout << "Episode = " << episode 
+              << " life_frame_counter = " << life_frame_counter
+//               << " episode frame = " << ale.getEpisodeFrameNumber()
+              << " action_index = " << action_index
+//              << " n_lives = " << ale.lives() 
+//              << " life_frame_counter = " << life_frame_counter 
+              << endl;
+
+//         cout << "frame = " << curr_frame_number
+//              << " curr_reward = " << reward
+//              << " total_reward = " << totalReward << endl;
       }
       cout << "Episode " << episode << " ended with score: " 
            << totalReward << endl;
