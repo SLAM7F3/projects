@@ -79,9 +79,9 @@ int main(int argc, char** argv)
 //   int H2 = 64;
 //   int H2 = 128;
 
-//   int H3 = 0;
+   int H3 = 0;
 //   int H3 = 16;
-   int H3 = 32;
+//   int H3 = 32;
 //   int H3 = 64;
 //   int H3 = 128;
 
@@ -241,7 +241,8 @@ int main(int argc, char** argv)
 // ==========================================================================
 // Reinforcement training loop starts here
 
-   int n_fire_ball_frames = 20;
+   int n_fire_ball_frames = 2;
+//   int n_center_paddle_frames = 10;
    int cum_framenumber = 0;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
@@ -333,10 +334,19 @@ int main(int argc, char** argv)
             {
                curr_s = game_world.get_curr_state();
             }
-            d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-               *curr_s);
-            if(d%1000 == 0) 
-               cout << "Replay memory index d = " << d << endl;
+
+// If curr_s == 0, do NOT store it into the replay memory:
+
+            if(curr_s->magnitude() <= 0)
+            {
+            }
+            else
+            {
+               d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+                  *curr_s);
+               if(d%1000 == 0) 
+                  cout << "Replay memory index d = " << d << endl;
+            }            
          }
 
          Action a;
@@ -456,7 +466,7 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward 
            << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
-//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
+//      breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
       reinforce_agent_ptr->append_epsilon();

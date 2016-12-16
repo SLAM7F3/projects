@@ -1,8 +1,20 @@
 // ==========================================================================
 // breakout class member function definitions
 // ==========================================================================
-// Last modified on 12/10/16; 12/12/16
+// Last modified on 12/10/16; 12/12/16; 12/16/16
 // ==========================================================================
+
+// Notes: 
+
+// 1.  On 12/16/16, we explicitly verified that the ALE method act(a)
+// faithfully executes left/right paddle movements provided that the
+// ALE parameter repeat_action_probability = 0 !  
+
+// 2.  The extreme left location for the paddle is NOT against the
+// left wall of the gameboard.  Instead, it is a black space position
+// located to the right of the left wall.  On the other hand, the
+// extreme right position for the paddle is against the right wall of
+// the gameboard.  
 
 #include <iostream>
 #include <string>
@@ -80,7 +92,8 @@ void breakout::initialize_member_objects()
 // No screen content influencing game play appears before following
 // episode frame number:
 
-   min_episode_framenumber = 100;
+//   min_episode_framenumber = 100;
+   min_episode_framenumber = 0;
 
    max_score_per_episode = 1000;  // Reasonable guestimate
 
@@ -89,11 +102,10 @@ void breakout::initialize_member_objects()
    mu_z = 40.00;	// Estimate from 30 random episodes
    sigma_z = 58.5;      // Estimate from 30 random episodes
 
-//   mu_zdiff = 0.94;     // Estimate from few hundred random episodes
-//   sigma_zdiff = 11.0;  // Estimated from few hundred random episodes
-
-//   median_zdiff = 0;      // Estimate from few dozen random episodes
-   sigma_zdiff = 4.7;     // Estimate from few dozen random episodes
+   mu_zdiff = 0.10;     // Estimate from 50 random episodes
+   sigma_zdiff = 3.7;   // Estimate from 50 random episodes
+//   median_zdiff = 0;  // Estimate from 50 random episodes
+//   qw_zdiff = 0;      // Estimate from 50 random episodes
 
    difference_counter = 0;
 
@@ -291,6 +303,7 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             unsigned char z_diff = 
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
+
 //            double zpool(z_diff);
 //            pooled_scrn_values.push_back(zpool);
 
@@ -300,6 +313,7 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 // coordinates.  But we still divide by sigma_zdiff so that the
 // non-zero coordinates have magnitudes close to unity:
 
+//            double ren_z_diff = double(z_diff-mu_zdiff) / sigma_zdiff;
             double ren_z_diff = double(z_diff) / sigma_zdiff;
 
             if(difference_counter == 0)
