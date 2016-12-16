@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/12/16; 12/13/16; 12/14/16; 12/15/16
+// Last updated on 12/13/16; 12/14/16; 12/15/16; 12/16/16
 // ==========================================================================
 
 #include <iostream>
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(1000);
+   reinforce_agent_ptr->set_epsilon_time_constant(1500);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -236,7 +236,7 @@ int main(int argc, char** argv)
 // ==========================================================================
 // Reinforcement training loop starts here
 
-   int n_fire_ball_frames = 10;
+   int n_fire_ball_frames = 20;
    int cum_framenumber = 0;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
@@ -273,7 +273,15 @@ int main(int argc, char** argv)
       int n_prev_lives = -1;
       double cum_reward = 0;
 
-      while(!game_world.get_game_over())
+// As of 12/16/16, we still see that a starting ball can fail to fire
+// at the very beginning of a new life.  So to avoid an infinite loop
+// with no ball in play, we set an upper limit on the number of frames
+// per episode:
+
+      int max_episode_framenumber = 12 * 1000;
+
+      while(!game_world.get_game_over() && 
+            game_world.get_episode_framenumber() < max_episode_framenumber)
       {
          int n_curr_lives = breakout_ptr->get_ale().lives();
 
@@ -414,10 +422,6 @@ int main(int argc, char** argv)
 
          bool export_RGB_screens_flag = false;
          if(curr_episode_number% 500 == 0) export_RGB_screens_flag = true;
-
-// FAKE FAKE:
-
-         if(curr_frame_number > 10000) export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
