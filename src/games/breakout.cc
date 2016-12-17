@@ -233,8 +233,8 @@ int breakout::get_paddle_x() const
 
 bool breakout::increment_paddle_x() 
 {
-   cout << "paddle_x = " << paddle_x << " max_paddle_x = "
-        << get_max_paddle_x() << endl;
+//   cout << "paddle_x = " << paddle_x << " max_paddle_x = "
+//        << get_max_paddle_x() << endl;
    if(paddle_x >= get_max_paddle_x())
    {
       paddle_x = get_max_paddle_x();
@@ -249,9 +249,8 @@ bool breakout::increment_paddle_x()
 
 bool breakout::decrement_paddle_x() 
 {
-   cout << "paddle_x = " << paddle_x << " max_paddle_x = "
-        << get_max_paddle_x() << endl;
-
+//   cout << "paddle_x = " << paddle_x << " min_paddle_x = "
+//        << get_min_paddle_x() << endl;
    if(paddle_x <= get_min_paddle_x())
    {
       paddle_x = get_min_paddle_x();

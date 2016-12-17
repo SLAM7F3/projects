@@ -202,8 +202,8 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-//   bool export_frames_flag = false;
-   bool export_frames_flag = true;
+   bool export_frames_flag = false;
+//   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
@@ -324,6 +324,7 @@ int main(int argc, char** argv)
             if(use_big_states_flag)
             {
                breakout_ptr->crop_pool_curr_frame(export_frames_flag);
+               breakout_ptr->update_curr_big_state();
             }
             else
             {
@@ -349,6 +350,7 @@ int main(int argc, char** argv)
             if(curr_s->magnitude() <= 0)
             {
                zero_input_state = true;
+               cout << " zero input state for d = " << d << endl;
             }
             else
             {
@@ -485,7 +487,10 @@ int main(int argc, char** argv)
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_framenumber,5)+".png";
+            breakout_ptr->save_screen(
+               curr_episode_number, curr_screen_filename);
 
+/*
             string caption;
             if(a == PLAYER_A_NOOP)
             {
@@ -507,6 +512,8 @@ int main(int argc, char** argv)
                breakout_ptr->get_paddle_x());
             breakout_ptr->save_screen(
                curr_episode_number, curr_screen_filename, caption);
+*/
+
          }
       } // game_over while loop
 
@@ -580,7 +587,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as
-// greyscale images to output_subdir
+// colored images to output_subdir
 
          int n_reduced_xdim = breakout_ptr->get_n_reduced_xdim();
          int n_reduced_ydim = breakout_ptr->get_n_reduced_ydim();
