@@ -1,4 +1,5 @@
 /bin/rm ./ale_example
 /bin/rm ./qbreak
 /bin/rm ./qspace
+/bin/rm ./ranbreak
 /bin/rm ./ranspace
