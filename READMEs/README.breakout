@@ -915,7 +915,8 @@ n_max_episodes = 50000
 76.  Titan 1: H1 = H2 = 32; Removed ALE randomness; Input state vector
 mostly contains 0.
 
-Fri Dec 16 08:31:24 2016
+
+Fri Dec 16 12:21:25 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 2500
@@ -952,7 +953,7 @@ n_max_episodes = 50000
 
 79.  Titan 3:  H1 = H2 = H3 = 32; No ALE randomness; sparse input state vec
 
-Fri Dec 16 08:37:06 2016
+Fri Dec 16 12:50:51 2016
 Neural net params:
    n_layers = 5
    layer = 0 n_nodes = 2500
@@ -987,6 +988,142 @@ n_max_episodes = 50000
 
 81.  Titan 3:  Repeat expt 79
 
+82.  TM:  H1 = 64, H2 = 32
+
+Fri Dec 16 15:49:23 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 162112 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+83.  TM:  Repeat expt 82
+
+84.  Titan1:  H1 = 64, H2 = 64
+
+Fri Dec 16 15:56:29 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 164224 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+85.  Titan1:  Repeat expt 84
+
+86.  Titan3:  H1 = 64, H2 = 128
+
+Fri Dec 16 16:02:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 168448 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+87.  Titan3:  Repeat expt 86
+
+88.  TM:  H1 = 128, H2 = 32
+
+Fri Dec 16 16:05:40 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 324160 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+
+89.  TM:  Repeat expt 88
 
 ===========================================================
 TODO:
