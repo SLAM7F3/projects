@@ -528,7 +528,7 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward 
            << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
-//      breakout_ptr->mu_and_sigma_for_pooled_zvalues();
+//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
       reinforce_agent_ptr->append_epsilon();

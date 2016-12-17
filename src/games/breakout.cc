@@ -108,8 +108,8 @@ void breakout::initialize_member_objects()
 
    screen_state_counter = 0;
 
-   mu_z = 40.00;	// Estimate from 30 random episodes
-   sigma_z = 58.5;      // Estimate from 30 random episodes
+   mu_z = 40.5;		// 12/17/16 estimate from 50 random episodes
+   sigma_z = 60.8;      // 12/17/16 estimate from 50 random episodes
 
    mu_zdiff = 0.10;     // Estimate from 50 random episodes
    sigma_zdiff = 3.7;   // Estimate from 50 random episodes
@@ -362,7 +362,6 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
       videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
    }
 
-
 // Ping-pong pooled_byte_array and other_pooled_byte_array:
       
    if(difference_counter == 0)
@@ -531,7 +530,7 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
       {
          unsigned char max_z = max_pool(r, c, byte_array);
          double zpool(max_z);
-//         pooled_scrn_values.push_back(zpool);
+         pooled_scrn_values.push_back(zpool);
 
          double ren_zpool = (zpool - mu_z) / sigma_z;
          curr_screen_state_ptr->put(reduced_pixel_counter, ren_zpool);
