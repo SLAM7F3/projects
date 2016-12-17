@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/13/16; 12/14/16; 12/15/16; 12/16/16
+// Last updated on 12/14/16; 12/15/16; 12/16/16; 12/17/16
 // ==========================================================================
 
 #include <iostream>
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(1500);
+   reinforce_agent_ptr->set_epsilon_time_constant(2000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -165,9 +165,9 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 50;
+   int nn_update_frame_period = 25;
+//   int nn_update_frame_period = 50;
 //   int nn_update_frame_period = 100;
-//   int nn_update_frame_period = 250;
 //   int nn_update_frame_period = 1000000;
    
 //   int old_weights_period = 10; 
@@ -242,7 +242,7 @@ int main(int argc, char** argv)
 // Reinforcement training loop starts here
 
    int n_fire_ball_frames = 2;
-//   int n_center_paddle_frames = 10;
+   int n_center_paddle_frames = 10;
    int cum_framenumber = 0;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
@@ -353,6 +353,10 @@ int main(int argc, char** argv)
          if(curr_life_framenumber < n_fire_ball_frames)
          {
             a = PLAYER_A_FIRE;  // fire ball
+         }
+         else if(curr_life_framenumber < n_center_paddle_frames)
+         {
+            a = PLAYER_A_LEFT;  // move paddle towards center
          }
          else
          {

@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/13/16; 12/14/16; 12/15/16; 12/16/16
+Last updated on 12/14/16; 12/15/16; 12/16/16; 12/17/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -11,11 +11,9 @@ returns n_lives information.
 Random play results:
 -------------------
 
-reward = ?
-Median reward +/- quatile width = ?
-
-n_frames / episode = ?
-Median nframes/episode +/- quartile width = ?
+Log10(loss) averages around -4
+After 20K episodes, reward stays around 0.8
+nframes/episode stays around 800
 
 -------------------------------------------------------------
 TERMINATED EXPERIMENTS
@@ -875,10 +873,6 @@ reward and nframes/episode do not grow at all.
 
 73.  TM:  Repeat of expt 71
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
 74.  m6700:  H1 = H2 = 32
 Fri Dec 16 04:11:18 2016
 Neural net params:
@@ -911,6 +905,19 @@ n_max_epochs = 1000
 n_max_episodes = 50000
 
 75.  m6700: Repeat of expt 74
+
+
+90.  m6700:  Random play
+After 20K episodes, reward stays around 0.8
+nframes/episode stays around 800
+Log10(loss) averages around -4
+
+92.  m6700 Random play
+Similar results as for expt 90
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
 
 76.  Titan 1: H1 = H2 = 32; Removed ALE randomness; Input state vector
 mostly contains 0.
@@ -1122,8 +1129,9 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 n_max_episodes = 150000
 
-
 89.  TM:  Repeat expt 88
+
+
 
 ===========================================================
 TODO:
