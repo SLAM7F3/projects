@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/12/16; 12/13/16; 12/14/16; 12/15/16
+// Last modified on 12/13/16; 12/14/16; 12/15/16; 12/17/16
 // ==========================================================================
 
 #include <string>
@@ -941,6 +941,11 @@ void reinforce::plot_reward_history(
 // Temporally smooth noisy loss values:
 
    double sigma = 10;
+   if(log10_losses.size() > 100)
+   {
+      sigma += log10(log10_losses.size())/log10(2.0);
+   }
+
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
@@ -1073,6 +1078,10 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo)
 // Temporally smooth noisy frames fraction values:
 
    double sigma = 10;
+   if(log10_losses.size() > 100)
+   {
+      sigma += log10(log10_losses.size())/log10(2.0);
+   }
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
@@ -1242,7 +1251,12 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
 
 // Temporally smooth noisy log10(Total Loss) scores:
 
-   double sigma = 3;
+   double sigma = 10;
+   if(log10_losses.size() > 100)
+   {
+      sigma += log10(log10_losses.size())/log10(2.0);
+   }
+   
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 1.5);
    cout << "gaussian_size = " << gaussian_size << endl;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/10/16; 12/12/16; 12/14/16
+// Last modified on 12/10/16; 12/12/16; 12/14/16; 12/17/16
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -40,6 +40,15 @@ class breakout
    genvector* get_next_state();
    const genvector* get_next_state() const;
 
+   int get_min_paddle_x() const;
+   int get_max_paddle_x() const;
+   int get_default_starting_paddle_x() const;
+   int get_center_paddle_x() const;
+   void set_paddle_x(int x);
+   int get_paddle_x() const;
+   bool increment_paddle_x();
+   bool decrement_paddle_x();
+
    void crop_pool_difference_curr_frame(bool export_frames_flag);
 
    int get_screen_state_counter() const;
@@ -54,8 +63,11 @@ class breakout
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
    void set_screen_exports_subdir(std::string subdir);
-   void save_screen(int episode_number, std::string curr_screen_filename);  
-
+   std::string save_screen(int episode_number, 
+                           std::string curr_screen_filename);
+   std::string save_screen(int episode_number, 
+                           std::string curr_screen_filename,
+                           std::string caption);
   private: 
 
    int random_seed;
@@ -67,6 +79,7 @@ class breakout
    int n_reduced_pixels;
    int min_episode_framenumber;
    int frame_skip;
+   int paddle_x;
    double max_score_per_episode;
    double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
@@ -105,6 +118,9 @@ class breakout
 
    void crop_center_ROI(std::vector<std::vector<unsigned char > >& byte_array);
    unsigned char max_pool(
+      int r, int c, const std::vector<std::vector<unsigned char > >& 
+      byte_array);
+   unsigned char avg_pool(
       int r, int c, const std::vector<std::vector<unsigned char > >& 
       byte_array);
 

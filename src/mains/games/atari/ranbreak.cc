@@ -4,6 +4,12 @@
 // Last updated on 12/14/16; 12/15/16; 12/16/16; 12/17/16
 // ==========================================================================
 
+// Note: On 12/17/16, we learned the hard and painful way that left
+// and right actions continue to move the paddle even after it's hit a
+// sidewall.  So the paddle's position can have values exceeding the
+// visible part of the game board.  In these cases, the paddle appears
+// to be "pinned" to the side wall.  
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -36,8 +42,8 @@ int main(int argc, char** argv)
 
 // Instantiate Breakout ALE game:
 
-   int n_screen_states = 1;
-//   int n_screen_states = 2;
+//   int n_screen_states = 1;
+   int n_screen_states = 2;
 //   int n_screen_states = 3;
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
@@ -103,7 +109,7 @@ int main(int argc, char** argv)
 // Construct reinforcement learning agent:
 
    int nframes_per_epoch = 50 * 1000;
-   int n_max_epochs = 3000;
+   int n_max_epochs = 2000;
    int approx_nframes_per_episode = 1000;
    int n_episodes_per_epoch = nframes_per_epoch / approx_nframes_per_episode;
    int n_max_episodes = n_max_epochs * n_episodes_per_epoch;
@@ -155,7 +161,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(1500);
+   reinforce_agent_ptr->set_epsilon_time_constant(2000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -167,10 +173,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 50;
-//   int nn_update_frame_period = 100;
-//   int nn_update_frame_period = 250;
-//   int nn_update_frame_period = 1000000;
+   int nn_update_frame_period = 25;
+//   int nn_update_frame_period = 50;
    
 //   int old_weights_period = 10; 
    int old_weights_period = 32;
@@ -203,8 +207,8 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-   bool export_frames_flag = false;
-//   bool export_frames_flag = true;
+//   bool export_frames_flag = false;
+   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
@@ -244,7 +248,6 @@ int main(int argc, char** argv)
 // Reinforcement training loop starts here
 
    int n_fire_ball_frames = 2;
-//   int n_center_paddle_frames = 10;
    int cum_framenumber = 0;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
@@ -277,8 +280,18 @@ int main(int argc, char** argv)
 
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
+      int curr_a = -1;
+      Action a;
       int n_prev_lives = -1;
       double cum_reward = 0;
+
+// As of 12/17/16, we reset paddle's starting position to be at the
+// gameboard's horizontal center:
+
+      breakout_ptr->set_paddle_x(
+         breakout_ptr->get_default_starting_paddle_x());
+      int n_recenter_paddle_frames = 
+         breakout_ptr->get_paddle_x() - breakout_ptr->get_center_paddle_x();
 
 // As of 12/16/16, we still see that a starting ball can fail to fire
 // at the very beginning of a new life.  So to avoid an infinite loop
@@ -290,7 +303,7 @@ int main(int argc, char** argv)
 // contiguous increasing integers!  So we no longer use the following
 // line:
 
-//  int curr_frame_number = game_world.get_episode_framenumber();
+//       int curr_frame_number = game_world.get_episode_framenumber();
 
       int curr_framenumber = 0;  // n_frames since start of current episode
       int curr_life_framenumber = 0;  // n_frames since start of current life
@@ -302,6 +315,13 @@ int main(int argc, char** argv)
          int n_curr_lives = breakout_ptr->get_ale().lives();
          bool state_updated_flag = false;
          bool zero_input_state = false;
+
+         if(curr_framenumber != game_world.get_episode_framenumber())
+         {
+            cout << "curr_framenumber = " << curr_framenumber
+                 << " get_episode_framenumber = "
+                 << game_world.get_episode_framenumber() << endl;
+         }
 
          curr_framenumber++;
          curr_life_framenumber++;
@@ -350,12 +370,20 @@ int main(int argc, char** argv)
             }            
          }
 
-         Action a;
-         int curr_a = -1;
-         if(curr_life_framenumber < n_fire_ball_frames)
+// First reposition paddle so that it starts at screen's horizontal center:
+         if(curr_life_framenumber < n_recenter_paddle_frames)
+         {
+            a = PLAYER_A_LEFT;  // move paddle towards center
+         }
+
+// Next fire ball:
+         else if(curr_life_framenumber < 
+                 n_recenter_paddle_frames + n_fire_ball_frames)
          {
             a = PLAYER_A_FIRE;  // fire ball
          }
+
+// Now start playing game:
          else
          {
             curr_a = prev_a;
@@ -367,6 +395,22 @@ int main(int argc, char** argv)
             a = minimal_actions[curr_a];
          }
 
+// Do not allow paddle to move beyond right or left walls:
+         if(a == PLAYER_A_RIGHT)
+         {
+            if(!breakout_ptr->increment_paddle_x())
+            {
+               a = PLAYER_A_NOOP;
+            }
+         }
+         else if (a == PLAYER_A_LEFT)
+         {
+            if(!breakout_ptr->decrement_paddle_x())
+            {
+               a = PLAYER_A_NOOP;
+            }
+         }
+         
          double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
 
@@ -444,16 +488,37 @@ int main(int argc, char** argv)
 // Periodically save an episode's worth of screens to output
 // subdirectory:
 
-         bool export_RGB_screens_flag = false;
-         if(curr_episode_number% 500 == 0) export_RGB_screens_flag = true;
+         bool export_RGB_screens_flag = true;
+//         bool export_RGB_screens_flag = false;
+         if(curr_episode_number% 1000 == 0) export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_framenumber,5)+".png";
+
+            string caption;
+            if(a == PLAYER_A_NOOP)
+            {
+               caption = "No OP";
+            }
+            else if(a == PLAYER_A_RIGHT)
+            {
+               caption = "Move RIGHT";
+            }
+            else if(a == PLAYER_A_LEFT)
+            {
+               caption = "Move LEFT";
+            }
+            else if (a == PLAYER_A_FIRE)
+            {
+               caption = "Fire ball";
+            }
+            caption += "; paddle X = "+stringfunc::number_to_string(
+               breakout_ptr->get_paddle_x());
             breakout_ptr->save_screen(
-               curr_episode_number, curr_screen_filename);
+               curr_episode_number, curr_screen_filename, caption);
          }
       } // game_over while loop
 

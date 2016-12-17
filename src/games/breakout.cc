@@ -1,7 +1,7 @@
 // ==========================================================================
 // breakout class member function definitions
 // ==========================================================================
-// Last modified on 12/10/16; 12/12/16; 12/16/16
+// Last modified on 12/10/16; 12/12/16; 12/16/16; 12/17/16
 // ==========================================================================
 
 // Notes: 
@@ -19,9 +19,10 @@
 #include <iostream>
 #include <string>
 #include "math/basic_math.h"
-#include "general/filefuncs.h"
-#include "numrec/nrfuncs.h"
 #include "games/breakout.h"
+#include "general/filefuncs.h"
+#include "image/imagefuncs.h"
+#include "numrec/nrfuncs.h"
 #include "video/videofuncs.h"
 
 using std::cin;
@@ -75,19 +76,27 @@ void breakout::initialize_member_objects()
 // No screen content influencing game play appears outside following
 // pixel bbox:
 
-//   min_px = 23;
-//   max_px = 129;
-//   min_py = 16;
-//   max_py = 175;
+// ALE supported breakout ROM
+
+   min_px = 6;
+   max_px = 156;
+   min_py = 28;
+   max_py = 192;
+
+/*
+// breakout_1978 ROM
 
    min_px = 6;
    max_px = 156;
    min_py = 40;
    max_py = 240;
+*/
 
    n_reduced_xdim = (max_px - min_px) / 3;   // 150 / 3 = 50
-   n_reduced_ydim = (max_py - min_py) / 4;   // 200 / 4 = 50
-   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 2500
+//   n_reduced_ydim = (max_py - min_py) / 4;   // 200 / 4 = 50
+   n_reduced_ydim = (max_py - min_py) / 4;   // 164 / 4 = 41
+//   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 2500
+   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 2050
 
 // No screen content influencing game play appears before following
 // episode frame number:
@@ -186,6 +195,76 @@ breakout::~breakout()
 
 // ==========================================================================
 
+// Horizontal paddle positions for ALE supported breakout ROM range
+// from X = 0 (left wall) through 25 (right wall) for ALE supported
+// ROM.  ALE supported ROM's default starting position for paddle is X
+// = 16 .  X = 12 corresponds to the paddle's horizontal center
+// position.
+
+int breakout::get_min_paddle_x() const
+{
+   return 0; // left wall
+}
+
+int breakout::get_max_paddle_x() const
+{
+   return 25; // right wall
+}
+
+int breakout::get_default_starting_paddle_x() const
+{
+   return 16;
+}
+
+int breakout::get_center_paddle_x() const
+{
+   return 12;
+}
+
+void breakout::set_paddle_x(int x)
+{
+   paddle_x = x;
+}
+
+int breakout::get_paddle_x() const
+{
+   return paddle_x;
+}
+
+bool breakout::increment_paddle_x() 
+{
+   cout << "paddle_x = " << paddle_x << " max_paddle_x = "
+        << get_max_paddle_x() << endl;
+   if(paddle_x >= get_max_paddle_x())
+   {
+      paddle_x = get_max_paddle_x();
+      return false;
+   }
+   else
+   {
+      paddle_x++;
+      return true;
+   }
+}
+
+bool breakout::decrement_paddle_x() 
+{
+   cout << "paddle_x = " << paddle_x << " max_paddle_x = "
+        << get_max_paddle_x() << endl;
+
+   if(paddle_x <= get_min_paddle_x())
+   {
+      paddle_x = get_min_paddle_x();
+      return false;
+   }
+   else
+   {
+      paddle_x--;
+      return true;
+   }
+}
+
+// ---------------------------------------------------------------------
 void breakout::crop_center_ROI(vector<vector<unsigned char > >& byte_array)
 {
 
@@ -209,7 +288,6 @@ void breakout::crop_center_ROI(vector<vector<unsigned char > >& byte_array)
 }
 
 // ---------------------------------------------------------------------
-
 // Member function max_pool() takes in row and column values within
 // unsigned char array byte_array.  It returns the maximum pooled
 // unsigned char value over a 4x3 cell.
@@ -241,6 +319,33 @@ unsigned char breakout::max_pool(
    return max_z;
 }
 
+unsigned char breakout::avg_pool(
+   int r, int c, const vector<vector<unsigned char > >& byte_array)
+{
+   unsigned char z00 = byte_array[r][c];
+   unsigned char z01 = byte_array[r][c+1];
+   unsigned char z02 = byte_array[r][c+2];
+   int z0_sum = int(z00) + int(z01) + int(z02);
+
+   unsigned char z10 = byte_array[r+1][c];
+   unsigned char z11 = byte_array[r+1][c+1];
+   unsigned char z12 = byte_array[r+1][c+2];
+   int z1_sum = int(z10) + int(z11) + int(z12);
+
+   unsigned char z20 = byte_array[r+2][c];
+   unsigned char z21 = byte_array[r+2][c+1];
+   unsigned char z22 = byte_array[r+2][c+2];
+   int z2_sum = int(z20) + int(z21) + int(z22);
+
+   unsigned char z30 = byte_array[r+3][c];
+   unsigned char z31 = byte_array[r+3][c+1];
+   unsigned char z32 = byte_array[r+3][c+2];
+   int z3_sum = int(z30) + int(z31) + int(z32);
+
+   int z_avg = (z0_sum + z1_sum + z2_sum + z3_sum) / 4.0;
+   return static_cast<unsigned char>(z_avg);
+}
+
 // ---------------------------------------------------------------------
 void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 {
@@ -250,6 +355,14 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 
    vector<vector<unsigned char> > byte_array;
    crop_center_ROI(byte_array);
+
+   if(export_frames_flag)
+   {
+      string output_frame = orig_subdir+"frame_"+
+         stringfunc::integer_to_string(curr_framenumber,5)+".png";
+      videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
+   }
+
 
 // Ping-pong pooled_byte_array and other_pooled_byte_array:
       
@@ -467,13 +580,30 @@ void breakout::mu_and_sigma_for_pooled_zvalues()
 // Member function save_screen() writes out an RGB image corresponding
 // to the current ALE screen.
 
-void breakout::save_screen(int episode_number, string curr_screen_filename)
+string breakout::save_screen(int episode_number, string curr_screen_filename)
+{
+   string caption="";
+   return save_screen(episode_number, curr_screen_filename, caption);
+}
+
+string breakout::save_screen(int episode_number, string curr_screen_filename,
+                             string caption)
 {
    string episode_subdir = screen_exports_subdir+
       stringfunc::integer_to_string(episode_number,5)+"/";
    filefunc::dircreate(episode_subdir);
    string curr_screen_path = episode_subdir + curr_screen_filename;
    screen_exporter_ptr->save(ale.getScreen(), curr_screen_path);
-//   cout << "Exported " << curr_screen_path << endl;
+
+   if(caption.size() > 0)
+   {
+      imagefunc::add_text_to_image(
+         "purple", caption, "west", "north", curr_screen_path, 
+         curr_screen_path);
+   }
+
+   return curr_screen_path;
 }
+
+
 
