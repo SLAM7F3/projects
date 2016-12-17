@@ -73,8 +73,8 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int H1 = 32;
-//   int H1 = 64;
+//   int H1 = 32;
+   int H1 = 64;
 //   int H1 = 128;
 
 //   int H2 = 0;
@@ -122,7 +122,8 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_environment(&game_world);
 
 //   reinforce_agent_ptr->set_lambda(0.0);
-   reinforce_agent_ptr->set_lambda(1E-3);
+   reinforce_agent_ptr->set_lambda(1E-2);
+//   reinforce_agent_ptr->set_lambda(1E-3);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
