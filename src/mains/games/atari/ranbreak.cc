@@ -1,8 +1,7 @@
 // ==========================================================================
-// Program RANBREAK is a variant of QBREAK in which the agent always acts
-// randomly.
+// Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/14/16; 12/15/16; 12/16/16; 12/17/16
+// Last updated on 12/15/16; 12/16/16; 12/17/16; 12/18/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -45,12 +44,15 @@ int main(int argc, char** argv)
 
 // Instantiate Breakout ALE game:
 
-//   int n_screen_states = 1;
-   int n_screen_states = 2;
+   int n_screen_states = 1;
+//   int n_screen_states = 2;
 //   int n_screen_states = 3;
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
 
+   breakout_ptr->set_compute_difference_flag(false);
+   breakout_ptr->set_compute_max_flag(true);
+   
 // Disable ALE's random responsiveness to input actions:
 
    breakout_ptr->get_ale().setFloat("repeat_action_probability",0);
@@ -77,14 +79,17 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
    int H1 = 4;
+//   int H1 = 8;
+//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
    int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
+   //   int H2 = 32;
 //   int H2 = 64;
+//   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;
@@ -160,7 +165,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(2000);
+   reinforce_agent_ptr->set_epsilon_time_constant(4000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -172,7 +177,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 25;
+   int nn_update_frame_period = 10;
+//   int nn_update_frame_period = 25;
 //   int nn_update_frame_period = 50;
    
 //   int old_weights_period = 10; 
@@ -236,6 +242,15 @@ int main(int argc, char** argv)
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    params_stream << "1 big state = n_screen_states = "
                  << breakout_ptr->get_n_screen_states() << endl;
+   if(breakout_ptr->get_n_screen_states() == 1)
+   {
+      params_stream << "  Compute difference flag = "
+                    << breakout_ptr->get_compute_difference_flag()
+                    << endl;
+      params_stream << "  Compute max flag = "
+                    << breakout_ptr->get_compute_max_flag()
+                    << endl;
+   }
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
@@ -308,7 +323,7 @@ int main(int argc, char** argv)
 
       int curr_framenumber = 0;  // n_frames since start of current episode
       int curr_life_framenumber = 0;  // n_frames since start of current life
-      int max_episode_framenumber = 12 * 1000;
+      int max_episode_framenumber = 100 * 1000;
 
       while(!game_world.get_game_over() && 
             curr_framenumber < max_episode_framenumber)
@@ -323,18 +338,34 @@ int main(int argc, char** argv)
 
          if(curr_framenumber % game_world.get_frame_skip() == 0)
          {
-            state_updated_flag = true;
             n_state_updates++;
 
             if(use_big_states_flag)
             {
-               breakout_ptr->crop_pool_curr_frame(export_frames_flag);
-               breakout_ptr->update_curr_big_state();
+               if(breakout_ptr->crop_pool_curr_frame(export_frames_flag))
+               {
+                  state_updated_flag = true;
+                  breakout_ptr->update_curr_big_state();
+               }
             }
             else
             {
-               breakout_ptr->crop_pool_difference_curr_frame(
-                  export_frames_flag);
+               if(breakout_ptr->get_compute_difference_flag())
+               {
+                  if(breakout_ptr->crop_pool_difference_curr_frame(
+                        export_frames_flag))
+                  {
+                     state_updated_flag = true;
+                  }
+               }
+               else if (breakout_ptr->get_compute_max_flag())
+               {
+                  if(breakout_ptr->crop_pool_sum_curr_frame(
+                        export_frames_flag))
+                  {
+                     state_updated_flag = true;
+                  }
+               }
             }
          } // curr_framenumber % frame_skip == 0 conditional
 
@@ -355,7 +386,7 @@ int main(int argc, char** argv)
             if(curr_s->magnitude() <= 0)
             {
                zero_input_state = true;
-               cout << " zero input state for d = " << d << endl;
+//               cout << " Zero input state detected" << endl;
             }
             else
             {
@@ -364,15 +395,17 @@ int main(int argc, char** argv)
                if(d%1000 == 0) 
                   cout << "Replay memory index d = " << d << endl;
             }            
-         }
+         } // state_updated_flag && n_state_updates > 2 conditional
 
 // First reposition paddle so that it starts at screen's horizontal center:
+
          if(curr_life_framenumber < n_recenter_paddle_frames)
          {
             a = PLAYER_A_LEFT;  // move paddle towards center
          }
 
 // Next fire ball:
+
          else if(curr_life_framenumber < 
                  n_recenter_paddle_frames + n_fire_ball_frames)
          {
@@ -380,6 +413,7 @@ int main(int argc, char** argv)
          }
 
 // Now start playing game:
+
          else
          {
             curr_a = prev_a;
@@ -391,7 +425,8 @@ int main(int argc, char** argv)
             a = minimal_actions[curr_a];
          }
 
-// Do not allow paddle to move beyond right or left walls:
+// As of 12/18/16 we do not not allow the paddle to move beyond the
+// right or left walls:
          if(a == PLAYER_A_RIGHT)
          {
             if(!breakout_ptr->increment_paddle_x())
@@ -435,12 +470,13 @@ int main(int argc, char** argv)
 
          reinforce_agent_ptr->accumulate_reward(curr_reward);
 
-         if(game_world.get_game_over())
+         if(d >= 0 && game_world.get_game_over())
          {
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
          }
-         else if (n_state_updates > 2 && curr_a >= 0 && !zero_input_state)
+         else if (d >= 0 && state_updated_flag && n_state_updates > 2 && 
+                  curr_a >= 0 && !zero_input_state)
          {
             genvector* next_s = game_world.compute_next_state(a);
 
