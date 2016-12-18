@@ -1653,6 +1653,12 @@ Random seed = -80019
 
 111.  Titan 3:  Repeat expt 110
 
+112.  TM: H1 = H2 = 32; nscreenstates = 1; work with differences between
+genuine pairs of incremented screen states
+
+
+
+
 ===========================================================
 TODO:
 

@@ -356,20 +356,16 @@ unsigned char breakout::avg_pool(
 bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 {
    int curr_framenumber = ale.getEpisodeFrameNumber();
-//   cout << "inside breakout::crop_pool_difference_curr_frame()" << endl;
 
 // Do not process current frame if its number does NOT differ from
 // previously processed frame!
 
-   if(curr_framenumber <= prev_framenumber)
+   if(curr_framenumber == prev_framenumber)
    {
       return false;
    }
    prev_framenumber = curr_framenumber;
 
-//   export_frames_flag = true;
-   cout << "curr framenumber = " << curr_framenumber 
-        << " export_frames_flag = " << export_frames_flag << endl;
 
    vector<vector<unsigned char> > byte_array;
    crop_center_ROI(byte_array);
@@ -542,7 +538,7 @@ void breakout::pingpong_curr_and_next_states()
 bool breakout::crop_pool_curr_frame(bool export_frames_flag)
 {
    int curr_framenumber = ale.getEpisodeFrameNumber();
-//   cout << "inside breakout::crop_pool_difference_curr_frame()" << endl;
+//   cout << "inside breakout::crop_pool_curr_frame()" << endl;
 
 // Do not process current frame if its number does NOT differ from
 // previously processed frame!

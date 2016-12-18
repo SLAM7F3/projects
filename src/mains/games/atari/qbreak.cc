@@ -161,7 +161,7 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(2000);
+   reinforce_agent_ptr->set_epsilon_time_constant(4000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    
@@ -173,7 +173,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 25;
+   int nn_update_frame_period = 10;
+//   int nn_update_frame_period = 25;
 //   int nn_update_frame_period = 50;
    
 //   int old_weights_period = 10; 
@@ -207,8 +208,8 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-//   bool export_frames_flag = false;
-   bool export_frames_flag = true;
+   bool export_frames_flag = false;
+//   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
@@ -361,7 +362,7 @@ int main(int argc, char** argv)
             if(curr_s->magnitude() <= 0)
             {
                zero_input_state = true;
-               cout << " zero input state for d = " << d << endl;
+//               cout << " Zero input state detected" << endl;
             }
             else
             {
@@ -373,12 +374,14 @@ int main(int argc, char** argv)
          } // state_updated_flag && n_state_updates > 2 conditional
 
 // First reposition paddle so that it starts at screen's horizontal center:
+
          if(curr_life_framenumber < n_recenter_paddle_frames)
          {
             a = PLAYER_A_LEFT;  // move paddle towards center
          }
 
 // Next fire ball:
+
          else if(curr_life_framenumber < 
                  n_recenter_paddle_frames + n_fire_ball_frames)
          {
@@ -386,6 +389,7 @@ int main(int argc, char** argv)
          }
 
 // Now start playing game:
+
          else
          {
             curr_a = prev_a;
@@ -442,12 +446,12 @@ int main(int argc, char** argv)
 
          reinforce_agent_ptr->accumulate_reward(curr_reward);
 
-         if(game_world.get_game_over())
+         if(d >= 0 && game_world.get_game_over())
          {
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
          }
-         else if (state_updated_flag && n_state_updates > 2 && 
+         else if (d >= 0 && state_updated_flag && n_state_updates > 2 && 
                   curr_a >= 0 && !zero_input_state)
          {
             genvector* next_s = game_world.compute_next_state(a);
@@ -611,8 +615,6 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->plot_zeroth_layer_weights(
             n_reduced_xdim, n_reduced_ydim, weights_subdir);
       }
-
-      outputfunc::enter_continue_char();
 
    } // n_episodes < n_max_episodes while loop
 
