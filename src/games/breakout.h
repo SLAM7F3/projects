@@ -24,6 +24,11 @@ class breakout
    breakout(const breakout& C);
    ~breakout();
 
+   void set_compute_difference_flag(bool flag);
+   bool get_compute_difference_flag() const;
+   void set_compute_max_flag(bool flag);
+   bool get_compute_max_flag() const;
+
    int get_n_actions() const;
    int get_n_screen_states() const;
    int get_n_reduced_xdim() const;
@@ -49,6 +54,7 @@ class breakout
    bool decrement_paddle_x();
 
    bool crop_pool_difference_curr_frame(bool export_frames_flag);
+   bool crop_pool_sum_curr_frame(bool export_frames_flag);
 
    int get_screen_state_counter() const;
    std::vector<genvector*>& get_screen_state_ptrs();
@@ -69,6 +75,7 @@ class breakout
                            std::string caption);
   private: 
 
+   bool compute_difference_flag, compute_max_flag;
    int random_seed;
    int rskip, cskip;
    int prev_framenumber;
@@ -84,7 +91,7 @@ class breakout
    double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
    std::string output_subdir, orig_subdir, pooled_subdir;
-   std::string averaged_subdir, differenced_subdir;
+   std::string maxed_subdir, differenced_subdir;
    std::string screen_exports_subdir;
 
    std::vector<unsigned char> grayscale_output_buffer;
@@ -133,6 +140,26 @@ class breakout
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void breakout::set_compute_difference_flag(bool flag)
+{
+   compute_difference_flag = flag;
+}
+
+inline bool breakout::get_compute_difference_flag() const
+{
+   return compute_difference_flag;
+}
+
+inline void breakout::set_compute_max_flag(bool flag)
+{
+   compute_max_flag = flag;
+}
+
+inline bool breakout::get_compute_max_flag() const
+{
+   return compute_max_flag;
+}
 
 inline int breakout::get_n_actions() const
 {

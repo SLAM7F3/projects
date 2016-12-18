@@ -50,6 +50,9 @@ int main(int argc, char** argv)
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
 
+   breakout_ptr->set_compute_difference_flag(true);
+   breakout_ptr->set_compute_max_flag(false);
+   
 // Disable ALE's random responsiveness to input actions:
 
    breakout_ptr->get_ale().setFloat("repeat_action_probability",0);
@@ -238,6 +241,15 @@ int main(int argc, char** argv)
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    params_stream << "1 big state = n_screen_states = "
                  << breakout_ptr->get_n_screen_states() << endl;
+   if(breakout_ptr->get_n_screen_states() == 1)
+   {
+      params_stream << "  Compute difference flag = "
+                    << breakout_ptr->get_compute_difference_flag()
+                    << endl;
+      params_stream << "  Compute max flag = "
+                    << breakout_ptr->get_compute_max_flag()
+                    << endl;
+   }
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
@@ -337,10 +349,21 @@ int main(int argc, char** argv)
             }
             else
             {
-               if(breakout_ptr->crop_pool_difference_curr_frame(
-                     export_frames_flag))
+               if(breakout_ptr->get_compute_difference_flag())
                {
-                  state_updated_flag = true;
+                  if(breakout_ptr->crop_pool_difference_curr_frame(
+                        export_frames_flag))
+                  {
+                     state_updated_flag = true;
+                  }
+               }
+               else if (breakout_ptr->get_compute_max_flag())
+               {
+                  if(breakout_ptr->crop_pool_sum_curr_frame(
+                        export_frames_flag))
+                  {
+                     state_updated_flag = true;
+                  }
                }
             }
          } // curr_framenumber % frame_skip == 0 conditional

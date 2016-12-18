@@ -50,8 +50,8 @@ void breakout::initialize_output_subdirs()
    filefunc::dircreate(pooled_subdir);
    differenced_subdir=output_subdir+"differenced_frames/";
    filefunc::dircreate(differenced_subdir);
-   averaged_subdir=output_subdir+"averaged_frames/";
-   filefunc::dircreate(averaged_subdir);
+   maxed_subdir=output_subdir+"maxed_frames/";
+   filefunc::dircreate(maxed_subdir);
 }
 
 void breakout::initialize_grayscale_output_buffer()
@@ -66,7 +66,9 @@ void breakout::initialize_grayscale_output_buffer()
 void breakout::initialize_member_objects()
 {
 //    cout << "inside breakout::init_member_objs()" << endl;
-   
+
+   compute_difference_flag = true;
+   compute_max_flag = false;
    int random_seed = 1000 * nrfunc::ran1();
    ale.setInt("random_seed", random_seed);
 
@@ -375,7 +377,6 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
       string output_frame = orig_subdir+"frame_"+
          stringfunc::integer_to_string(curr_framenumber,5)+".png";
       videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
-      cout << "Exported " << output_frame << endl;
    }
 
 // Ping-pong pooled_byte_array and other_pooled_byte_array:
@@ -417,8 +418,6 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 
    vector<vector<unsigned char > > diff_pooled_byte_array;
    vector<unsigned char> diff_pooled_byte_row;
-//   vector<vector<unsigned char > > avgd_pooled_byte_array;
-//   vector<unsigned char> avgd_pooled_byte_row;
 
    if(other_pooled_byte_array_ptr->size() > 0)
    {
@@ -426,7 +425,6 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
       for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); py++)
       {
          diff_pooled_byte_row.clear();
-//         avgd_pooled_byte_row.clear();
          
          for(unsigned int px = 0; 
              px < pooled_byte_array_ptr->at(0).size(); px++)
@@ -434,10 +432,6 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             unsigned char z_diff = 
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
-//            unsigned char z_avg = 0.5 * (
-//               pooled_byte_array_ptr->at(py).at(px) +
-//               other_pooled_byte_array_ptr->at(py).at(px) );
-
 //            double zpool(z_diff);
 //            pooled_scrn_values.push_back(zpool);
 
@@ -448,30 +442,25 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 // non-zero coordinates have magnitudes close to unity:
 
             double ren_z_diff = double(z_diff) / sigma_zdiff;
-//            double ren_z_avg = double(z_avg - mu_z) / sigma_z;
 
             if(difference_counter == 0)
             {
                screen0_state_ptr->put(p++, ren_z_diff);
-//               screen0_state_ptr->put(p++, ren_z_avg);
             }
             else
             {
                screen1_state_ptr->put(p++, ren_z_diff);
-//               screen1_state_ptr->put(p++, ren_z_avg);
             }
 
             if(export_frames_flag)
             {
-            diff_pooled_byte_row.push_back(z_diff);
-//               avgd_pooled_byte_row.push_back(z_avg);
+               diff_pooled_byte_row.push_back(z_diff);
             }
             
          } // loop over px
          if(export_frames_flag)
          {
-         diff_pooled_byte_array.push_back(diff_pooled_byte_row);
-//            avgd_pooled_byte_array.push_back(avgd_pooled_byte_row);
+            diff_pooled_byte_array.push_back(diff_pooled_byte_row);
          }
       } // loop over py 
 
@@ -481,10 +470,6 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             stringfunc::integer_to_string(curr_framenumber,5)+".png";
          videofunc::write_8bit_greyscale_pngfile(
             diff_pooled_byte_array, diff_frame);
-//         string avgd_frame = averaged_subdir+"averaged_frame_"+
-//            stringfunc::integer_to_string(curr_framenumber,5)+".png";
-//         videofunc::write_8bit_greyscale_pngfile(
-//            avgd_pooled_byte_array, avgd_frame);
       }
    } // other_pooled_byte_array.size > 0 conditional
                
@@ -497,6 +482,141 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
    
    pingpong_curr_and_next_states();
    difference_counter = 1 - difference_counter;
+
+   return true;
+}
+
+// ---------------------------------------------------------------------
+// Boolean member function crop_pool_sum_curr_frame() returns
+// true if it successfully updates the current and previous ALE
+// frames.
+
+bool breakout::crop_pool_sum_curr_frame(bool export_frames_flag)
+{
+   int curr_framenumber = ale.getEpisodeFrameNumber();
+
+// Do not process current frame if its number does NOT differ from
+// previously processed frame!
+
+   if(curr_framenumber == prev_framenumber)
+   {
+      return false;
+   }
+   prev_framenumber = curr_framenumber;
+
+   vector<vector<unsigned char> > byte_array;
+   crop_center_ROI(byte_array);
+
+   if(export_frames_flag)
+   {
+      string output_frame = orig_subdir+"frame_"+
+         stringfunc::integer_to_string(curr_framenumber,5)+".png";
+      videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
+   }
+
+// Ping-pong pooled_byte_array and other_pooled_byte_array:
+      
+   if(difference_counter == 0)
+   {
+      pooled_byte_array_ptr = &pooled_byte_array0;
+      other_pooled_byte_array_ptr = &pooled_byte_array1;
+   }
+   else
+   {
+      pooled_byte_array_ptr = &pooled_byte_array1;
+      other_pooled_byte_array_ptr = &pooled_byte_array0;
+   }
+
+// 4x3 max pool cropped center for current frame:
+
+   for(unsigned int r = 0; r < byte_array.size(); r += rskip)
+   {
+      vector<unsigned char> pooled_byte_row;
+      for (unsigned int c = 0; c < byte_array[0].size(); c += cskip)
+      {
+         unsigned char max_z = max_pool(r, c, byte_array);
+         pooled_byte_row.push_back(max_z);
+
+      } // loop over index c
+      pooled_byte_array_ptr->push_back(pooled_byte_row);
+   } // loop over index r
+
+   if(export_frames_flag)
+   {
+      string pooled_frame = pooled_subdir+"pooled_frame_"+
+         stringfunc::integer_to_string(curr_framenumber,5)+".png";
+      videofunc::write_8bit_greyscale_pngfile(
+         *pooled_byte_array_ptr, pooled_frame);
+   }
+
+// Compute differences between current and other pooled byte arrays:
+
+   vector<vector<unsigned char > > maxed_pooled_byte_array;
+   vector<unsigned char> maxed_pooled_byte_row;
+
+   if(other_pooled_byte_array_ptr->size() > 0)
+   {
+      int p = 0;
+      for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); py++)
+      {
+         maxed_pooled_byte_row.clear();
+         
+         for(unsigned int px = 0; 
+             px < pooled_byte_array_ptr->at(0).size(); px++)
+         {
+            unsigned char z_max = basic_math::max(
+               pooled_byte_array_ptr->at(py).at(px) ,
+               other_pooled_byte_array_ptr->at(py).at(px) );
+
+// Recall the vast majority of z_diff values = 0!  So as of 12/16/16,
+// we choose to subtract off the zero-valued median rather than a
+// non-zero mean so as to yield state vectors which mostly have zero
+// coordinates.  But we still divide by sigma_zdiff so that the
+// non-zero coordinates have magnitudes close to unity:
+
+            double ren_z_max = double(z_max - mu_z) / sigma_z;
+
+            if(difference_counter == 0)
+            {
+               screen0_state_ptr->put(p++, ren_z_max);
+            }
+            else
+            {
+               screen1_state_ptr->put(p++, ren_z_max);
+            }
+
+            if(export_frames_flag)
+            {
+               maxed_pooled_byte_row.push_back(z_max);
+            }
+            
+         } // loop over px
+         if(export_frames_flag)
+         {
+            maxed_pooled_byte_array.push_back(maxed_pooled_byte_row);
+         }
+      } // loop over py 
+
+      if(export_frames_flag)
+      {
+         string maxed_frame = maxed_subdir+"maxed_frame_"+
+            stringfunc::integer_to_string(curr_framenumber,5)+".png";
+         videofunc::write_8bit_greyscale_pngfile(
+            maxed_pooled_byte_array, maxed_frame);
+      }
+   } // other_pooled_byte_array.size > 0 conditional
+               
+// Clear other pooled byte array:
+   for(unsigned int py = 0; py < other_pooled_byte_array_ptr->size(); py++)
+   {
+      other_pooled_byte_array_ptr->at(py).clear();
+   }
+   other_pooled_byte_array_ptr->clear();
+   
+   pingpong_curr_and_next_states();
+   difference_counter = 1 - difference_counter;
+
+   return true;
 }
 
 // ---------------------------------------------------------------------
@@ -648,6 +768,7 @@ string breakout::save_screen(int episode_number, string curr_screen_filename,
 
    return curr_screen_path;
 }
+
 
 
 
