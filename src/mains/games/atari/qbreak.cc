@@ -21,6 +21,7 @@
 #include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
+#include "general/sysfuncs.h"
 #include "time/timefuncs.h"
 #include "video/videofuncs.h"
 
@@ -32,13 +33,14 @@ int main(int argc, char** argv)
    using std::ofstream;
    using std::string;
    using std::vector;
-   
+   std::set_new_handler(sysfunc::out_of_memory);      
+
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
-   long seed = -11;
-   cout << "Enter negative seed:" << endl;
-   cin >> seed;
-   nrfunc::init_default_seed(seed);
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
+//   cout << "Enter negative seed:" << endl;
+//   cin >> seed;
+//   nrfunc::init_default_seed(seed);
 
 // Instantiate Breakout ALE game:
 
@@ -73,15 +75,15 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-   int H1 = 8;
+//   int H1 = 8;
 //   int H1 = 32;
-//   int H1 = 64;
+   int H1 = 64;
 //   int H1 = 128;
 
 //   int H2 = 0;
-   int H2 = 8;
+//   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
+   int H2 = 32;
 //   int H2 = 64;
 //   int H2 = 128;
 

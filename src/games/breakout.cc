@@ -530,7 +530,7 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
       {
          unsigned char max_z = max_pool(r, c, byte_array);
          double zpool(max_z);
-         pooled_scrn_values.push_back(zpool);
+//         pooled_scrn_values.push_back(zpool);
 
          double ren_zpool = (zpool - mu_z) / sigma_z;
          curr_screen_state_ptr->put(reduced_pixel_counter, ren_zpool);
@@ -555,7 +555,6 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
       pooled_byte_array_ptr->at(py).clear();
    }
    pooled_byte_array_ptr->clear();
-
 }
 
 // ---------------------------------------------------------------------

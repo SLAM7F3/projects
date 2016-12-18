@@ -320,8 +320,8 @@ namespace sysfunc
    void show_free_memory()
       {
          sleep(2);
-         string unixcommandstr="free -b";
-//   string unixcommandstr="free -m";
+//         string unixcommandstr="free -b";
+         string unixcommandstr="free -m";
          unix_command(unixcommandstr);
          outputfunc::newline();
          sleep(2);

@@ -622,9 +622,9 @@ void reinforce::plot_zeroth_layer_weights(
 
       delete tr_ptr;
       delete enlarged_wtwoDarray_ptr;
+      delete wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
-
 }
 
 // ---------------------------------------------------------------------
