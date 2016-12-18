@@ -1,5 +1,6 @@
 // ==========================================================================
-// Program RANBREAK is a random-play version of program QBREAK.
+// Program RANBREAK is a variant of QBREAK in which the agent always acts
+// randomly.
 // ==========================================================================
 // Last updated on 12/14/16; 12/15/16; 12/16/16; 12/17/16
 // ==========================================================================
@@ -21,6 +22,7 @@
 #include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
+#include "general/sysfuncs.h"
 #include "time/timefuncs.h"
 #include "video/videofuncs.h"
 
@@ -32,13 +34,14 @@ int main(int argc, char** argv)
    using std::ofstream;
    using std::string;
    using std::vector;
-   
+   std::set_new_handler(sysfunc::out_of_memory);      
+
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
-//   long s = -11;
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
-//   cin >> s;
-//   nrfunc::init_default_seed(s);
+//   cin >> seed;
+//   nrfunc::init_default_seed(seed);
 
 // Instantiate Breakout ALE game:
 
@@ -74,24 +77,19 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
    int H1 = 4;
-//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
-//   int H1 = 200;
-//   int H1 = 256;
 
    int H2 = 0;
-//   int H2 = 0;
+//   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
 //   int H2 = 64;
-//   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;
 //   int H3 = 32;
 //   int H3 = 64;
-//   int H3 = 128;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -127,7 +125,8 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_environment(&game_world);
 
 //   reinforce_agent_ptr->set_lambda(0.0);
-   reinforce_agent_ptr->set_lambda(1E-3);
+   reinforce_agent_ptr->set_lambda(1E-2);
+//   reinforce_agent_ptr->set_lambda(1E-3);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
@@ -207,8 +206,8 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-//   bool export_frames_flag = false;
-   bool export_frames_flag = true;
+   bool export_frames_flag = false;
+//   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
@@ -242,6 +241,7 @@ int main(int argc, char** argv)
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "n_max_episodes = " << n_max_episodes << endl;
+   params_stream << "Random seed = " << seed << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -291,7 +291,8 @@ int main(int argc, char** argv)
       breakout_ptr->set_paddle_x(
          breakout_ptr->get_default_starting_paddle_x());
       int n_recenter_paddle_frames = 
-         breakout_ptr->get_paddle_x() - breakout_ptr->get_center_paddle_x();
+         breakout_ptr->get_default_starting_paddle_x()  
+         - breakout_ptr->get_center_paddle_x();
 
 // As of 12/16/16, we still see that a starting ball can fail to fire
 // at the very beginning of a new life.  So to avoid an infinite loop
@@ -303,7 +304,7 @@ int main(int argc, char** argv)
 // contiguous increasing integers!  So we no longer use the following
 // line:
 
-//       int curr_frame_number = game_world.get_episode_framenumber();
+//  int curr_frame_number = game_world.get_episode_framenumber();
 
       int curr_framenumber = 0;  // n_frames since start of current episode
       int curr_life_framenumber = 0;  // n_frames since start of current life
@@ -315,13 +316,6 @@ int main(int argc, char** argv)
          int n_curr_lives = breakout_ptr->get_ale().lives();
          bool state_updated_flag = false;
          bool zero_input_state = false;
-
-         if(curr_framenumber != game_world.get_episode_framenumber())
-         {
-            cout << "curr_framenumber = " << curr_framenumber
-                 << " get_episode_framenumber = "
-                 << game_world.get_episode_framenumber() << endl;
-         }
 
          curr_framenumber++;
          curr_life_framenumber++;
@@ -335,6 +329,7 @@ int main(int argc, char** argv)
             if(use_big_states_flag)
             {
                breakout_ptr->crop_pool_curr_frame(export_frames_flag);
+               breakout_ptr->update_curr_big_state();
             }
             else
             {
@@ -360,6 +355,7 @@ int main(int argc, char** argv)
             if(curr_s->magnitude() <= 0)
             {
                zero_input_state = true;
+               cout << " zero input state for d = " << d << endl;
             }
             else
             {
@@ -410,7 +406,7 @@ int main(int argc, char** argv)
                a = PLAYER_A_NOOP;
             }
          }
-         
+
          double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
 
@@ -488,8 +484,7 @@ int main(int argc, char** argv)
 // Periodically save an episode's worth of screens to output
 // subdirectory:
 
-         bool export_RGB_screens_flag = true;
-//         bool export_RGB_screens_flag = false;
+         bool export_RGB_screens_flag = false;
          if(curr_episode_number% 1000 == 0) export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
@@ -497,7 +492,10 @@ int main(int argc, char** argv)
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_framenumber,5)+".png";
+            breakout_ptr->save_screen(
+               curr_episode_number, curr_screen_filename);
 
+/*
             string caption;
             if(a == PLAYER_A_NOOP)
             {
@@ -519,6 +517,8 @@ int main(int argc, char** argv)
                breakout_ptr->get_paddle_x());
             breakout_ptr->save_screen(
                curr_episode_number, curr_screen_filename, caption);
+*/
+
          }
       } // game_over while loop
 
@@ -532,7 +532,7 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward 
            << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
 
-//      breakout_ptr->mu_and_sigma_for_pooled_zvalues();
+//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
       reinforce_agent_ptr->append_epsilon();
@@ -592,7 +592,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->export_snapshot(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as
-// greyscale images to output_subdir
+// colored images to output_subdir
 
          int n_reduced_xdim = breakout_ptr->get_n_reduced_xdim();
          int n_reduced_ydim = breakout_ptr->get_n_reduced_ydim();
