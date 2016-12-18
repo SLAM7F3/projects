@@ -34,11 +34,11 @@ int main(int argc, char** argv)
    using std::vector;
    
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
-//   long s = -11;
-//   cout << "Enter negative seed:" << endl;
-//   cin >> s;
-//   nrfunc::init_default_seed(s);
+//   nrfunc::init_time_based_seed();
+   long seed = -11;
+   cout << "Enter negative seed:" << endl;
+   cin >> seed;
+   nrfunc::init_default_seed(seed);
 
 // Instantiate Breakout ALE game:
 
@@ -73,15 +73,15 @@ int main(int argc, char** argv)
    cout << "Din = " << Din << endl;
    int Dout = n_actions;
 
-//   int H1 = 32;
+   int H1 = 32;
 //   int H1 = 64;
-   int H1 = 128;
+//   int H1 = 128;
 
 //   int H2 = 0;
 //   int H2 = 16;
-   int H2 = 32;
+//   int H2 = 32;
 //   int H2 = 64;
-//   int H2 = 128;
+   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;
@@ -238,6 +238,7 @@ int main(int argc, char** argv)
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "n_max_episodes = " << n_max_episodes << endl;
+   params_stream << "Random seed = " << seed << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================

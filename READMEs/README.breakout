@@ -1304,6 +1304,7 @@ n_max_episodes = 100000
 96.  Titan 3: repeat expt 95
 
 97.  Titan 3: H1 = 64; H2 = 128; n_screens = 2; center & limit paddle_x
+TERMINATED DUE TO RAM LIMIT AND SWAPPING!
 
 Sat Dec 17 15:27:29 2016
 Neural net params:
@@ -1336,6 +1337,7 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 
 98.  Titan 1:  Repeat expt 97
+TERMINATED DUE TO RAM LIMIT AND SWAPPING!
 
 99.  Titan 1: H1 = H2 = 32; n_screens = 2; center & limit paddle_x
 
@@ -1404,9 +1406,11 @@ n_max_episodes = 100000
 
 102.  Titan 1:  Repeat expt 101
 
+
+
 103.  TM:  H1 = 32; H2 = 128; n_screens = 2; center & limit paddle_x
 
-Sat Dec 17 15:35:55 2016
+Sat Dec 17 16:25:46 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 4100
@@ -1435,6 +1439,7 @@ nn_update_frame_period = 25
 nframes / epoch = 50000
 n_max_epochs = 2000
 n_max_episodes = 100000
+Random seed = -13
 
 104.  TM:  Repeat expt 103
 
@@ -1471,7 +1476,38 @@ n_max_episodes = 100000
 
 106.  TM:  Repeat expt 105
 
+107.  TM:  Repeat expt 103
 
+Sat Dec 17 16:25:14 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 135552 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -12
 
 ===========================================================
 TODO:
