@@ -1,7 +1,7 @@
 // ==========================================================================
 // breakout class member function definitions
 // ==========================================================================
-// Last modified on 12/10/16; 12/12/16; 12/16/16; 12/17/16
+// Last modified on 12/12/16; 12/16/16; 12/17/16; 12/18/16
 // ==========================================================================
 
 // Notes: 
@@ -50,6 +50,8 @@ void breakout::initialize_output_subdirs()
    filefunc::dircreate(pooled_subdir);
    differenced_subdir=output_subdir+"differenced_frames/";
    filefunc::dircreate(differenced_subdir);
+   averaged_subdir=output_subdir+"averaged_frames/";
+   filefunc::dircreate(averaged_subdir);
 }
 
 void breakout::initialize_grayscale_output_buffer()
@@ -92,9 +94,11 @@ void breakout::initialize_member_objects()
    max_py = 240;
 */
 
-   n_reduced_xdim = (max_px - min_px) / 3;   // 150 / 3 = 50
+   rskip = 4;
+   cskip = 3;
+   n_reduced_xdim = (max_px - min_px) / cskip;   // 150 / 3 = 50
 //   n_reduced_ydim = (max_py - min_py) / 4;   // 200 / 4 = 50
-   n_reduced_ydim = (max_py - min_py) / 4;   // 164 / 4 = 41
+   n_reduced_ydim = (max_py - min_py) / rskip;   // 164 / 4 = 41
 //   n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 2500
    n_reduced_pixels = n_reduced_xdim * n_reduced_ydim;  // 2050
 
@@ -103,8 +107,7 @@ void breakout::initialize_member_objects()
 
 //   min_episode_framenumber = 100;
    min_episode_framenumber = 0;
-
-   max_score_per_episode = 1000;  // Reasonable guestimate
+   prev_framenumber = -1;
 
    screen_state_counter = 0;
 
@@ -346,11 +349,27 @@ unsigned char breakout::avg_pool(
 }
 
 // ---------------------------------------------------------------------
-void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
+// Boolean member function crop_pool_difference_curr_frame() returns
+// true if it successfully updates the current and previous ALE
+// frames.
+
+bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 {
    int curr_framenumber = ale.getEpisodeFrameNumber();
 //   cout << "inside breakout::crop_pool_difference_curr_frame()" << endl;
-//   cout << "curr framenumber = " << curr_framenumber << endl;
+
+// Do not process current frame if its number does NOT differ from
+// previously processed frame!
+
+   if(curr_framenumber <= prev_framenumber)
+   {
+      return false;
+   }
+   prev_framenumber = curr_framenumber;
+
+//   export_frames_flag = true;
+   cout << "curr framenumber = " << curr_framenumber 
+        << " export_frames_flag = " << export_frames_flag << endl;
 
    vector<vector<unsigned char> > byte_array;
    crop_center_ROI(byte_array);
@@ -360,6 +379,7 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
       string output_frame = orig_subdir+"frame_"+
          stringfunc::integer_to_string(curr_framenumber,5)+".png";
       videofunc::write_8bit_greyscale_pngfile(byte_array, output_frame);
+      cout << "Exported " << output_frame << endl;
    }
 
 // Ping-pong pooled_byte_array and other_pooled_byte_array:
@@ -377,8 +397,6 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 
 // 4x3 max pool cropped center for current frame:
 
-   const int rskip = 4;
-   const int cskip = 3;
    for(unsigned int r = 0; r < byte_array.size(); r += rskip)
    {
       vector<unsigned char> pooled_byte_row;
@@ -402,18 +420,27 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 // Compute differences between current and other pooled byte arrays:
 
    vector<vector<unsigned char > > diff_pooled_byte_array;
+   vector<unsigned char> diff_pooled_byte_row;
+//   vector<vector<unsigned char > > avgd_pooled_byte_array;
+//   vector<unsigned char> avgd_pooled_byte_row;
+
    if(other_pooled_byte_array_ptr->size() > 0)
    {
       int p = 0;
       for(unsigned int py = 0; py < pooled_byte_array_ptr->size(); py++)
       {
-         vector<unsigned char> diff_pooled_byte_row;
+         diff_pooled_byte_row.clear();
+//         avgd_pooled_byte_row.clear();
+         
          for(unsigned int px = 0; 
              px < pooled_byte_array_ptr->at(0).size(); px++)
          {
             unsigned char z_diff = 
                pooled_byte_array_ptr->at(py).at(px) - 
                other_pooled_byte_array_ptr->at(py).at(px);
+//            unsigned char z_avg = 0.5 * (
+//               pooled_byte_array_ptr->at(py).at(px) +
+//               other_pooled_byte_array_ptr->at(py).at(px) );
 
 //            double zpool(z_diff);
 //            pooled_scrn_values.push_back(zpool);
@@ -424,21 +451,32 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 // coordinates.  But we still divide by sigma_zdiff so that the
 // non-zero coordinates have magnitudes close to unity:
 
-//            double ren_z_diff = double(z_diff-mu_zdiff) / sigma_zdiff;
             double ren_z_diff = double(z_diff) / sigma_zdiff;
+//            double ren_z_avg = double(z_avg - mu_z) / sigma_z;
 
             if(difference_counter == 0)
             {
                screen0_state_ptr->put(p++, ren_z_diff);
+//               screen0_state_ptr->put(p++, ren_z_avg);
             }
             else
             {
                screen1_state_ptr->put(p++, ren_z_diff);
+//               screen1_state_ptr->put(p++, ren_z_avg);
             }
 
+            if(export_frames_flag)
+            {
             diff_pooled_byte_row.push_back(z_diff);
+//               avgd_pooled_byte_row.push_back(z_avg);
+            }
+            
          } // loop over px
+         if(export_frames_flag)
+         {
          diff_pooled_byte_array.push_back(diff_pooled_byte_row);
+//            avgd_pooled_byte_array.push_back(avgd_pooled_byte_row);
+         }
       } // loop over py 
 
       if(export_frames_flag)
@@ -447,6 +485,10 @@ void breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             stringfunc::integer_to_string(curr_framenumber,5)+".png";
          videofunc::write_8bit_greyscale_pngfile(
             diff_pooled_byte_array, diff_frame);
+//         string avgd_frame = averaged_subdir+"averaged_frame_"+
+//            stringfunc::integer_to_string(curr_framenumber,5)+".png";
+//         videofunc::write_8bit_greyscale_pngfile(
+//            avgd_pooled_byte_array, avgd_frame);
       }
    } // other_pooled_byte_array.size > 0 conditional
                
@@ -494,13 +536,22 @@ void breakout::pingpong_curr_and_next_states()
 }
 
 // ---------------------------------------------------------------------
-// Member function crop_pool_curr_frame()
+// Boolean member function crop_pool_curr_frame() returns true if it
+// successfully updates the current and previous ALE frames.
 
-void breakout::crop_pool_curr_frame(bool export_frames_flag)
+bool breakout::crop_pool_curr_frame(bool export_frames_flag)
 {
    int curr_framenumber = ale.getEpisodeFrameNumber();
-//   cout << "inside breakout::crop_pool_curr_frame()" << endl;
-//   cout << "curr framenumber = " << curr_framenumber << endl;
+//   cout << "inside breakout::crop_pool_difference_curr_frame()" << endl;
+
+// Do not process current frame if its number does NOT differ from
+// previously processed frame!
+
+   if(curr_framenumber <= prev_framenumber)
+   {
+      return false;
+   }
+   prev_framenumber = curr_framenumber;
 
    vector<vector<unsigned char> > byte_array;
    crop_center_ROI(byte_array);
@@ -521,8 +572,6 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
 // rskip x cskip max pool cropped center for current frame:
 
    int reduced_pixel_counter = 0;
-   const int rskip = 4;
-   const int cskip = 3;
    for(unsigned int r = 0; r < byte_array.size(); r += rskip)
    {
       vector<unsigned char> pooled_byte_row;
@@ -555,6 +604,8 @@ void breakout::crop_pool_curr_frame(bool export_frames_flag)
       pooled_byte_array_ptr->at(py).clear();
    }
    pooled_byte_array_ptr->clear();
+
+   return true;
 }
 
 // ---------------------------------------------------------------------

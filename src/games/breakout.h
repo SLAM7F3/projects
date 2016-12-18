@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/10/16; 12/12/16; 12/14/16; 12/17/16
+// Last modified on 12/12/16; 12/14/16; 12/17/16; 12/18/16
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -30,7 +30,6 @@ class breakout
    int get_n_reduced_ydim() const;
 
    int get_min_episode_framenumber() const;
-   double get_max_score_per_episode() const;
    int get_frame_skip() const;
    ALEInterface& get_ale();
    const ALEInterface& get_ale() const;
@@ -49,12 +48,12 @@ class breakout
    bool increment_paddle_x();
    bool decrement_paddle_x();
 
-   void crop_pool_difference_curr_frame(bool export_frames_flag);
+   bool crop_pool_difference_curr_frame(bool export_frames_flag);
 
    int get_screen_state_counter() const;
    std::vector<genvector*>& get_screen_state_ptrs();
    const std::vector<genvector*>& get_screen_state_ptrs() const;
-   void crop_pool_curr_frame(bool export_frames_flag);
+   bool crop_pool_curr_frame(bool export_frames_flag);
    void mu_and_sigma_for_pooled_zvalues();
 
    genvector* update_curr_big_state();
@@ -71,6 +70,8 @@ class breakout
   private: 
 
    int random_seed;
+   int rskip, cskip;
+   int prev_framenumber;
    int difference_counter;
    int n_reduced_xdim, n_reduced_ydim;
    ALEInterface ale;
@@ -80,10 +81,10 @@ class breakout
    int min_episode_framenumber;
    int frame_skip;
    int paddle_x;
-   double max_score_per_episode;
    double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
-   std::string output_subdir, orig_subdir, pooled_subdir, differenced_subdir;
+   std::string output_subdir, orig_subdir, pooled_subdir;
+   std::string averaged_subdir, differenced_subdir;
    std::string screen_exports_subdir;
 
    std::vector<unsigned char> grayscale_output_buffer;
@@ -162,11 +163,6 @@ inline int breakout::get_min_episode_framenumber() const
 inline int breakout::get_frame_skip() const
 {
    return frame_skip;
-}
-
-inline double breakout::get_max_score_per_episode() const
-{
-   return max_score_per_episode;
 }
 
 inline ALEInterface& breakout::get_ale()

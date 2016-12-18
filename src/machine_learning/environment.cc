@@ -300,10 +300,6 @@ double environment::get_max_score_per_episode() const
    {
       return spaceinv_ptr->get_max_score_per_episode();
    }
-   else if(world_type == BREAKOUT)
-   {
-      return breakout_ptr->get_max_score_per_episode();
-   }
    else
    {
       return -1;

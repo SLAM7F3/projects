@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/14/16; 12/15/16; 12/16/16; 12/17/16
+// Last updated on 12/15/16; 12/16/16; 12/17/16; 12/18/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -44,8 +44,8 @@ int main(int argc, char** argv)
 
 // Instantiate Breakout ALE game:
 
-//   int n_screen_states = 1;
-   int n_screen_states = 2;
+   int n_screen_states = 1;
+//   int n_screen_states = 2;
 //   int n_screen_states = 3;
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
@@ -83,9 +83,9 @@ int main(int argc, char** argv)
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
+   int H2 = 32;
 //   int H2 = 64;
-   int H2 = 128;
+//   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;
@@ -207,8 +207,8 @@ int main(int argc, char** argv)
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
-   bool export_frames_flag = false;
-//   bool export_frames_flag = true;
+//   bool export_frames_flag = false;
+   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
@@ -309,7 +309,7 @@ int main(int argc, char** argv)
 
       int curr_framenumber = 0;  // n_frames since start of current episode
       int curr_life_framenumber = 0;  // n_frames since start of current life
-      int max_episode_framenumber = 12 * 1000;
+      int max_episode_framenumber = 100 * 1000;
 
       while(!game_world.get_game_over() && 
             curr_framenumber < max_episode_framenumber)
@@ -324,18 +324,23 @@ int main(int argc, char** argv)
 
          if(curr_framenumber % game_world.get_frame_skip() == 0)
          {
-            state_updated_flag = true;
             n_state_updates++;
 
             if(use_big_states_flag)
             {
-               breakout_ptr->crop_pool_curr_frame(export_frames_flag);
-               breakout_ptr->update_curr_big_state();
+               if(breakout_ptr->crop_pool_curr_frame(export_frames_flag))
+               {
+                  state_updated_flag = true;
+                  breakout_ptr->update_curr_big_state();
+               }
             }
             else
             {
-               breakout_ptr->crop_pool_difference_curr_frame(
-                  export_frames_flag);
+               if(breakout_ptr->crop_pool_difference_curr_frame(
+                     export_frames_flag))
+               {
+                  state_updated_flag = true;
+               }
             }
          } // curr_framenumber % frame_skip == 0 conditional
 
@@ -365,7 +370,7 @@ int main(int argc, char** argv)
                if(d%1000 == 0) 
                   cout << "Replay memory index d = " << d << endl;
             }            
-         }
+         } // state_updated_flag && n_state_updates > 2 conditional
 
 // First reposition paddle so that it starts at screen's horizontal center:
          if(curr_life_framenumber < n_recenter_paddle_frames)
@@ -392,7 +397,8 @@ int main(int argc, char** argv)
             a = minimal_actions[curr_a];
          }
 
-// Do not allow paddle to move beyond right or left walls:
+// As of 12/18/16 we do not not allow the paddle to move beyond the
+// right or left walls:
          if(a == PLAYER_A_RIGHT)
          {
             if(!breakout_ptr->increment_paddle_x())
@@ -441,7 +447,8 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
          }
-         else if (n_state_updates > 2 && curr_a >= 0 && !zero_input_state)
+         else if (state_updated_flag && n_state_updates > 2 && 
+                  curr_a >= 0 && !zero_input_state)
          {
             genvector* next_s = game_world.compute_next_state(a);
 
@@ -604,6 +611,8 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->plot_zeroth_layer_weights(
             n_reduced_xdim, n_reduced_ydim, weights_subdir);
       }
+
+      outputfunc::enter_continue_char();
 
    } // n_episodes < n_max_episodes while loop
 
