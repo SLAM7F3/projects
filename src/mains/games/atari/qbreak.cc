@@ -79,8 +79,8 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-//   int H1 = 16;
-   int H1 = 32;
+   int H1 = 16;
+//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
@@ -597,6 +597,7 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
       reinforce_agent_ptr->append_epsilon();
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->compute_avg_max_eval_Qvalues();
       reinforce_agent_ptr->increment_episode_number();      
 
       if(total_loss > 0)
@@ -645,7 +646,6 @@ int main(int argc, char** argv)
          }
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->compute_avg_max_eval_Qvalues();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
 
