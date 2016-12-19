@@ -262,6 +262,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    environment_ptr = NULL;
    replay_memory_full_flag = false;
+   eval_memory_full_flag = false;
    replay_memory_index = 0;
    epsilon = 1.000001;
 
@@ -907,11 +908,8 @@ void reinforce::plot_avg_maxQ_history(string output_subdir, string extrainfo)
    string y_label="Average max Q";
 
    double max_Q = mathfunc::maximal_value(avg_max_eval_Qvalues) + 0.5;
-   double min_Q = mathfunc::maximal_value(avg_max_eval_Qvalues) - 0.5;
-
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, episode_number,
-      min_Q, max_Q);
+      meta_filename, title, x_label, y_label, 0, episode_number, 0, max_Q);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
@@ -974,7 +972,6 @@ void reinforce::plot_reward_history(
       plot_reward_history(output_subdir, extrainfo, 0, max_reward,
                           running_reward_snapshots);
    }
-   
 }
 
 void reinforce::plot_reward_history(
@@ -2140,7 +2137,6 @@ bool reinforce::get_replay_memory_entry(
 bool reinforce::store_curr_state_into_eval_memory(const genvector& curr_s)
 {
 //   cout << "inside store_curr_state_into_eval_memory()" << endl;
-   bool eval_memory_full_flag = false;
    if(eval_memory_index < eval_memory_capacity)
    {
       s_eval->put_row(eval_memory_index, curr_s);
@@ -2164,6 +2160,8 @@ bool reinforce::store_curr_state_into_eval_memory(const genvector& curr_s)
 void reinforce::compute_avg_max_eval_Qvalues()
 {
 //   cout << "inside compute_avg_max_eval_Qvalues()" << endl;
+
+   if(!eval_memory_full_flag) return;
 
    bool use_old_weights_flag = false;
    genvector eval_s(s_eval->get_ndim());

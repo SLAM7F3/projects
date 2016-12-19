@@ -79,16 +79,16 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-   int H1 = 16;
-//   int H1 = 32;
+//   int H1 = 16;
+   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -153,7 +153,8 @@ int main(int argc, char** argv)
    filefunc::dircreate(screen_exports_subdir);
    breakout_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
-   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+//   reinforce_agent_ptr->set_Nd(16);  // # samples to be drawn from replay mem
+   reinforce_agent_ptr->set_Nd(24);  // # samples to be drawn from replay mem
 //   reinforce_agent_ptr->set_Nd(32);  // # samples to be drawn from replay mem
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor

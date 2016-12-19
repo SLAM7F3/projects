@@ -266,7 +266,7 @@ class reinforce
    bool replay_memory_full_flag;
    int replay_memory_capacity;
    int replay_memory_index; // 0 <=replay_memory_index < replay_memory_capacity
-
+   bool eval_memory_full_flag;
    int eval_memory_capacity;
    int eval_memory_index; // 0 <= eval_memory_index < eval_memory_capacity
 
