@@ -79,8 +79,8 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-//   int H1 = 16;
-   int H1 = 32;
+   int H1 = 16;
+//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
    int n_episodes_per_epoch = nframes_per_epoch / approx_nframes_per_episode;
    int n_max_episodes = n_max_epochs * n_episodes_per_epoch;
    
-   int replay_memory_capacity = nframes_per_epoch * 1;
+   int replay_memory_capacity = nframes_per_epoch * 2;
    int eval_memory_capacity = 0.1 * replay_memory_capacity;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
@@ -133,7 +133,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_lambda(0.0);
    reinforce_agent_ptr->set_lambda(1E-2);
 //   reinforce_agent_ptr->set_lambda(1E-3);
-   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+   machinelearning_func::set_leaky_ReLU_small_slope(0.001); 
 
 // Initialize output subdirectory within an experiments folder:
 
@@ -186,16 +188,18 @@ int main(int argc, char** argv)
 //   int nn_update_frame_period = 50;
    
 //   int old_weights_period = 10; 
-   int old_weights_period = 32;
+//   int old_weights_period = 32;
 //   int old_weights_period = 100;
 //   int old_weights_period = 320;
+   int old_weights_period = 1000;
 
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
-   const double discard_0_reward_frac = 0.10;  
+//   const double discard_0_reward_frac = 0.10;  
+//   const double discard_0_reward_frac = 0.60;  
 //   const double discard_0_reward_frac = 0.75;  
-//   const double discard_0_reward_frac = 0.85;  
+   const double discard_0_reward_frac = 0.85;  
 //   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 100;
@@ -476,6 +480,11 @@ int main(int argc, char** argv)
 
          if(n_curr_lives != n_prev_lives)
          {
+
+// As of 3:30pm on Mon Dec 19, 2016, we experiment with treating
+// end-of-life as end-of-episode:
+
+//            game_world.set_game_over(true);
 
 /*
 
