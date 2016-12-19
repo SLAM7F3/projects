@@ -68,6 +68,7 @@ class reinforce
    double get_gamma() const;
    void set_rmsprop_decay_rate(double rate);
    void set_ADAM_params(double beta1, double beta2);
+   int get_n_backprops() const;
 
    void initialize_episode();
    void snapshot_running_reward();
@@ -182,6 +183,7 @@ class reinforce
    bool debug_flag;
    int solver_type;
    int n_layers, n_actions, n_weights;
+   int n_backprops;
    std::vector<int> layer_dims;
    environment* environment_ptr;
    
@@ -438,6 +440,11 @@ inline void reinforce::set_ADAM_params(double beta1, double beta2)
 {
    this->beta1 = beta1;
    this->beta2 = beta2;
+}
+
+inline int reinforce::get_n_backprops() const
+{
+   return n_backprops;
 }
 
 

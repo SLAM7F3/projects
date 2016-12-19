@@ -80,6 +80,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    n_weights = count_weights();
    n_actions = layer_dims.back();
    hardwired_output_action = -1;
+   n_backprops = 0;
 
 // Biases for all network layers:
 
@@ -299,7 +300,7 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer,
                      int eval_memory_capacity, int solver_type)
 {
    this->replay_memory_capacity = replay_memory_capacity;
-   this->eval_memory_capacity = replay_memory_capacity;
+   this->eval_memory_capacity = eval_memory_capacity;
    this->solver_type = solver_type;
 
    initialize_member_objects(n_nodes_per_layer);
@@ -2137,6 +2138,10 @@ bool reinforce::get_replay_memory_entry(
 bool reinforce::store_curr_state_into_eval_memory(const genvector& curr_s)
 {
 //   cout << "inside store_curr_state_into_eval_memory()" << endl;
+//   cout << "eval_memory_index = " << eval_memory_index
+//        << " eval_memory_capacity = " << eval_memory_capacity
+//        << endl;
+   
    if(eval_memory_index < eval_memory_capacity)
    {
       s_eval->put_row(eval_memory_index, curr_s);
@@ -2582,6 +2587,8 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
    {
       nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
    }
+
+   n_backprops++;
 
 // Add L2 regularization term's contribution to total loss function:
 

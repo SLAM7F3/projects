@@ -274,11 +274,11 @@ int main(int argc, char** argv)
 
    int n_fire_ball_frames = 2;
    int cum_framenumber = 0;
+   bool eval_memory_full_flag = false;
 
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      cout << "Starting episode " << curr_episode_number << endl;
       outputfunc::update_progress_and_remaining_time(
          curr_episode_number, n_update, n_max_episodes);
 
@@ -403,12 +403,13 @@ int main(int argc, char** argv)
 
 // Fill evaluation memory with randomly generated initial states:
 
-               bool eval_memory_full_flag = false;
                if(nrfunc::ran1() < 0.2)
                {
-                  reinforce_agent_ptr->store_curr_state_into_eval_memory(
-                     *curr_s);
+                  eval_memory_full_flag = 
+                     reinforce_agent_ptr->store_curr_state_into_eval_memory(
+                        *curr_s);
                }
+               
                if(eval_memory_full_flag)
                {
                   d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
@@ -582,13 +583,14 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------------
 
-      int epoch = cum_framenumber / nframes_per_epoch;
-
+      double epoch = cum_framenumber / nframes_per_epoch;
       cout << "Episode finished" << endl;
       cout << "  epoch = " << epoch 
            << "  cum_frame = " << cum_framenumber << endl;
       cout << "  cum_reward = " << cum_reward 
-           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
+           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
+           << "  n_backprops = " 
+           << reinforce_agent_ptr->get_n_backprops() << endl;
 
 //       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
@@ -597,7 +599,6 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 
-      cout << "  total loss = " << total_loss << endl;
       if(total_loss > 0)
       {
          cout << " log10(total_loss) = " << log10(total_loss) << endl;
