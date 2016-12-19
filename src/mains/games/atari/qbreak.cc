@@ -50,8 +50,8 @@ int main(int argc, char** argv)
    breakout *breakout_ptr = new breakout(n_screen_states);
    int n_actions = breakout_ptr->get_n_actions();
 
-   breakout_ptr->set_compute_difference_flag(false);
-   breakout_ptr->set_compute_max_flag(true);
+   breakout_ptr->set_compute_difference_flag(true);
+   breakout_ptr->set_compute_max_flag(false);
    
 // Disable ALE's random responsiveness to input actions:
 
@@ -79,7 +79,8 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-   int H1 = 32;
+   int H1 = 16;
+//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
@@ -117,8 +118,9 @@ int main(int argc, char** argv)
    int n_max_episodes = n_max_epochs * n_episodes_per_epoch;
    
    int replay_memory_capacity = nframes_per_epoch * 1;
+   int eval_memory_capacity = 0.1 * replay_memory_capacity;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, 1, replay_memory_capacity,
+      layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -167,7 +169,9 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_epsilon_time_constant(8000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
-   
+   double starting_episode_linear_eps_decay = 1 * 1000;
+   double stopping_episode_linear_eps_decay = 25 * 1000;
+
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
@@ -251,6 +255,11 @@ int main(int argc, char** argv)
                     << breakout_ptr->get_compute_max_flag()
                     << endl;
    }
+
+   params_stream << "Starting episode for learing epsilon decay = "
+                 << starting_episode_linear_eps_decay << endl;
+   params_stream << "Stopping episode for learing epsilon decay = "
+                 << stopping_episode_linear_eps_decay << endl;
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
@@ -390,10 +399,22 @@ int main(int argc, char** argv)
             }
             else
             {
-               d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-                  *curr_s);
-               if(d%1000 == 0) 
-                  cout << "Replay memory index d = " << d << endl;
+
+// Fill evaluation memory with randomly generated initial states:
+
+               bool eval_memory_full_flag = false;
+               if(nrfunc::ran1() < 0.2)
+               {
+                  reinforce_agent_ptr->store_curr_state_into_eval_memory(
+                     *curr_s);
+               }
+               if(eval_memory_full_flag)
+               {
+                  d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+                     *curr_s);
+                  if(d%1000 == 0) 
+                     cout << "Replay memory index d = " << d << endl;
+               }
             }            
          } // state_updated_flag && n_state_updates > 2 conditional
 
@@ -602,11 +623,14 @@ int main(int argc, char** argv)
             verbose_flag);
       }
 
-// Expontentially decay epsilon:
+// Slowly decay epsilon over time:
 
-      reinforce_agent_ptr->exponentially_decay_epsilon(
-         curr_episode_number, 40);
-
+//      reinforce_agent_ptr->exponentially_decay_epsilon(
+//         curr_episode_number, 40);
+      reinforce_agent_ptr->linearly_decay_epsilon(
+         curr_episode_number, starting_episode_linear_eps_decay,
+         stopping_episode_linear_eps_decay);
+      
 // Periodically write status info to text console:
 
       if(curr_episode_number >= n_update - 1 && 
@@ -619,6 +643,7 @@ int main(int argc, char** argv)
          }
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
+         reinforce_agent_ptr->compute_avg_max_eval_Qvalues();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
       }
 

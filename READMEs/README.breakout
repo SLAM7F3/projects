@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/15/16; 12/16/16; 12/17/16; 12/18/16
+Last updated on 12/16/16; 12/17/16; 12/18/16; 12/19/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -1537,17 +1537,6 @@ After 7.8K episodes, reward --> 2.1; nframes/episode --> 800.  log10(loss)
 Paddle stays pinned to left/right walls.
 TERMINATED
 
-122.  m6700: random play
-After 6.8K episodes, reward = 1.2 and nframes/episode = 697.
-
-123.  m6700: random play
-After 6.9K episodes, reward = 1.09 and nframes/episode = 676
-
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-95.  Titan 3:  Repeat of expt 116 running on Titan 1
 
 108.  Titan 3:  H1 = H2 = 64, H3 = 32
 
@@ -1582,7 +1571,34 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 n_max_episodes = 100000
 
+After 10K episodes, reward --> 2.1 and not rising.  nframes/episode --> 785
+and not rising.  log10(loss) around -2.  Weight dists acceptable.  0th
+layer weights OK.  Paddle stays largely pinned to walls.
+TERMINATED.
+
 109.  Titan 3: Repeat expt 108
+
+Qualitatively similar results as expt 108.  TERMINATED.
+
+
+122.  m6700: random play
+After 6.8K episodes, reward = 1.2 and nframes/episode = 697.
+
+123.  m6700: random play
+After 6.9K episodes, reward = 1.09 and nframes/episode = 676
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+95.  Titan 3:  Repeat of expt 116 running on Titan 1
+
+After 8.5K episodes, reward --> 1.8 very slowly rising.  nframes/episode
+--> 790 and very slowly rising.  Layer 1 weight dist beyond [-10,10] and
+diverging.  log10(loss) around -1.  0th layer weights exhibit some ball
+tracks and starting ball positions.  Most interesting game play seen so far
+(5:41 am on Mon Dec 19).  
+
 
 110.  Titan 3:  H1 = 64, H2 = H3 = 128
 
@@ -1736,6 +1752,16 @@ Random seed = -96739
 
 
 
+After 17K episodes, reward --> 1.5 and very slowly increasing.
+nframes/episode --> 745 and very slowly increasing.  log10(loss) around
+-1.  Weight dists for layer 1 in [-10,20] and diverging.  0th layer weights
+exhibit some ball tracks and starting locations.  Looks like there's
+redundancy in 0th layer weights.  Paddle gravitates toward side walls but
+doesn't always remain locked there.
+
+
+
+
 117.  TM: H1 = 32; H2 = 32; nscreenstates = 1; work with max sums
 between genuine pairs of incremented screen states
 
@@ -1772,7 +1798,15 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -96914
 
+After 30K episodes, reward --> 1.77 and is not rising.  nframes/episodes
+--> 773 and is not rising.  But at least paddle does not seem to get pinned
+to side walls.  log10(loss) around -2.5.  Reasonable/nontrivial weight
+dists.  0th layer weights weakly exhibit gameboard structure and some very
+modest ball tracks.
+
 118.  TM:  Repeat of expt 117
+
+Qualitatively similar results as for expt 117.
 
 119.  TM: H1 = 32; H2 = 64; nscreenstates = 1; work with max sums
 between genuine pairs of incremented screen states
@@ -1808,7 +1842,14 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 n_max_episodes = 100000
 
+After 30K episodes, reward --> 1.4 and is very slowly rising.
+nframes/episode --> 720 and very slowly rising.  log10(loss) around
+-2.5. Weight dists OK and interesting.    Very weak signal of game board
+and ball track in 0th layer weights.  Paddle still drawn towards side walls.
+
 120.  TM:  Repeat of expt 119
+
+Qualitatively similar results as for expt 119.
 
 121.  TM: H1 = 64; H2 = 64; nscreenstates = 1; work with max sums
 between genuine pairs of incremented screen states
@@ -1845,6 +1886,10 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -97088
+
+After 17.9K episodes, reward --> 700 and not rising.  nframes/episode -->
+700 and not rising.  log10(loss) around -2.5.  OK weight dists.  0th layer
+weights reflect gameboard.  Paddle not always pinned to side walls.
 
 124.  m6700: H1 = 64; H2 = 32; nscreenstates = 1; work with max sums
 between genuine pairs of incremented screen states; eps tau = 8000
@@ -1899,6 +1944,24 @@ weights.
 126.  m6700: H1 = 64; H2 = 32; nscreenstates = 1; work with max sums
 between genuine pairs of incremented screen states; eps tau = 8000; discard
 0 reward states frac --> 0.1
+
+
+GENERAL CONCLUSIONS FROM RUNS ON SUN DEC 18: 
+
+i.  Reward and nframes/episode seems to slowly increase so long as epsilon
+is significantly above 0.1.  But once eps --> 0.1, improvement basically
+stops.
+
+ii.  Working with difference frames seems to be as good as working with
+maxed frames.  
+
+iii.  H1 = 32 is probably as good as H1 = 64 (at least for differenced
+frames).  More important factor seems to be duration of random exploration
+period.
+
+iv.  Consider following Deep Mind Atari paper and linearly rather than
+exponentially decay epsilon in order to encourage more random exploration.  
+
 
 ===========================================================
 TODO:

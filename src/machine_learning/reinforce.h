@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/9/16; 12/12/16; 12/13/16; 12/15/16
+// Last modified on 12/12/16; 12/13/16; 12/15/16; 12/19/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -40,7 +40,7 @@ class reinforce
    reinforce(const std::vector<int>& n_nodes_per_layer);
    reinforce(const std::vector<int>& n_nodes_per_layer,
              int batch_size, int replay_memory_capacity, 
-             int solver_type = SGD);
+             int eval_memory_capacity, int solver_type = SGD);
    reinforce();
    ~reinforce();
    friend std::ostream& operator<< 
@@ -90,6 +90,8 @@ class reinforce
 
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
+   void plot_avg_maxQ_history(
+      std::string output_subdir, std::string extrainfo);
    void plot_reward_history(std::string output_subdir, std::string extrainfo,
       bool plot_cumulative_reward = false);
    void plot_reward_history(
@@ -128,6 +130,7 @@ class reinforce
    void set_min_epsilon(double min_eps);
    void set_epsilon_time_constant(double tau);
    double exponentially_decay_epsilon(double t, double tstart);
+   double linearly_decay_epsilon(double t, double tstart, double tstop);
 
    int select_action_for_curr_state();
    int select_legal_action_for_curr_state();
@@ -143,10 +146,12 @@ class reinforce
    void store_final_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r);
    double update_neural_network(bool verbose_flag = false);
-   bool get_memory_replay_entry(
+   bool get_replay_memory_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
-   double max_Q(genvector& next_s);
+   bool store_curr_state_into_eval_memory(const genvector& curr_s);
+   void compute_avg_max_eval_Qvalues();
+
    double compute_target(double curr_r, genvector* next_s, 
                          bool terminal_state_flag);
    double Q_backward_propagate(int d, int Nd, bool verbose_flag = false);
@@ -233,6 +238,7 @@ class reinforce
    std::vector<double> epsilon_values;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
+   std::vector<double> avg_max_eval_Qvalues;
    std::vector<std::vector<double> > weight_01, weight_05, weight_10;
    std::vector<std::vector<double> > weight_25, weight_35, weight_50;
    std::vector<std::vector<double> > weight_65, weight_75, weight_90;
@@ -260,11 +266,17 @@ class reinforce
    bool replay_memory_full_flag;
    int replay_memory_capacity;
    int replay_memory_index; // 0 <=replay_memory_index < replay_memory_capacity
+
+   int eval_memory_capacity;
+   int eval_memory_index; // 0 <= eval_memory_index < eval_memory_capacity
+
    int Nd;  // Number of random samples to be drawn from replay memory
    double epsilon;	// Select random action with probability epsilon
    double epsilon_decay_factor;
    double min_epsilon;  // Minimal value for annealed epsilon
    double epsilon_tau; // Exponential time constant for epsilon
+
+   genmatrix *s_eval;  // eval_memory_capacity x Din
 
    genmatrix *s_curr;  // replay_memory_capacity x Din
    genvector *a_curr;  // replay_memory_capacity x 1 (Holds action indices)

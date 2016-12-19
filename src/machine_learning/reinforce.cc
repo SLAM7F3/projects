@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/13/16; 12/14/16; 12/15/16; 12/17/16
+// Last modified on 12/14/16; 12/15/16; 12/17/16; 12/19/16
 // ==========================================================================
 
 #include <string>
@@ -272,6 +272,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // ---------------------------------------------------------------------
 void reinforce::allocate_member_objects()
 {
+   s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
    s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
    a_curr = new genvector(replay_memory_capacity);
    r_curr = new genvector(replay_memory_capacity);
@@ -287,15 +288,17 @@ void reinforce::allocate_member_objects()
 reinforce::reinforce(const vector<int>& n_nodes_per_layer)
 {
    this->replay_memory_capacity = 1;
+   this->eval_memory_capacity = 1;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 }
 
 reinforce::reinforce(const vector<int>& n_nodes_per_layer, 
                      int batch_size, int replay_memory_capacity,
-                     int solver_type)
+                     int eval_memory_capacity, int solver_type)
 {
    this->replay_memory_capacity = replay_memory_capacity;
+   this->eval_memory_capacity = replay_memory_capacity;
    this->solver_type = solver_type;
 
    initialize_member_objects(n_nodes_per_layer);
@@ -362,6 +365,7 @@ reinforce::~reinforce()
    }
 
    delete s_curr;
+   delete s_eval;
    delete a_curr;
    delete r_curr;
    delete s_next;
@@ -882,6 +886,74 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of averaged max Q for evaluation states
+// versus episode number.
+
+void reinforce::plot_avg_maxQ_history(string output_subdir, string extrainfo)
+{
+   if(avg_max_eval_Qvalues.size() < 3) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir + "/avg_maxQ_history";
+
+   string title="Averaged max Q for "+stringfunc::number_to_string(
+      eval_memory_capacity)+" evaluation states";
+   title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
+   title += "; nweights="+stringfunc::number_to_string(n_weights);
+
+   string subtitle=init_subtitle();
+   subtitle += ";"+extrainfo;
+   string x_label="Episode number";
+   string y_label="Average max Q";
+
+   double max_Q = mathfunc::maximal_value(avg_max_eval_Qvalues) + 0.5;
+   double min_Q = mathfunc::maximal_value(avg_max_eval_Qvalues) - 0.5;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, episode_number,
+      min_Q, max_Q);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, episode_number, avg_max_eval_Qvalues);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy avg maxQ values:
+
+   double sigma = 10;
+   if(avg_max_eval_Qvalues.size() > 100)
+   {
+      sigma += log10(avg_max_eval_Qvalues.size())/log10(2.0);
+   }
+   
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 1.5);
+
+   vector<double> smoothed_avg_max_eval_Qvalues;
+   if(gaussian_size < int(avg_max_eval_Qvalues.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      filterfunc::brute_force_filter(
+         avg_max_eval_Qvalues, h, smoothed_avg_max_eval_Qvalues, 
+         wrap_around_input_values);
+      curr_metafile.write_curve(
+         0, episode_number, smoothed_avg_max_eval_Qvalues, colorfunc::blue);
+   }
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of running reward sum versus time step samples.
 
 void reinforce::plot_reward_history(
@@ -938,12 +1010,12 @@ void reinforce::plot_reward_history(
    curr_metafile.write_header();
    curr_metafile.write_curve(0, episode_number, reward_snapshots);
 
-// Temporally smooth noisy loss values:
+// Temporally smooth noisy reward values:
 
    double sigma = 10;
-   if(log10_losses.size() > 100)
+   if(reward_snapshots.size() > 100)
    {
-      sigma += log10(log10_losses.size())/log10(2.0);
+      sigma += log10(reward_snapshots.size())/log10(2.0);
    }
 
    double dx = 1;
@@ -1078,9 +1150,9 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo)
 // Temporally smooth noisy frames fraction values:
 
    double sigma = 10;
-   if(log10_losses.size() > 100)
+   if(n_episode_frames.size() > 100)
    {
-      sigma += log10(log10_losses.size())/log10(2.0);
+      sigma += log10(n_episode_frames.size())/log10(2.0);
    }
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
@@ -1249,7 +1321,7 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
    curr_metafile.write_curve(0, episode_number, log10_losses);
    curr_metafile.set_thickness(3);
 
-// Temporally smooth noisy log10(Total Loss) scores:
+// Temporally smooth noisy log10(loss) scores:
 
    double sigma = 10;
    if(log10_losses.size() > 100)
@@ -1549,6 +1621,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo)
       plot_bias_distributions(output_subdir, extrainfo);
    }
 
+   plot_avg_maxQ_history(output_subdir, extrainfo);
    plot_weight_distributions(output_subdir, extrainfo);
    plot_quasirandom_weight_values(output_subdir, extrainfo);
    bool plot_cumulative_reward = true;
@@ -1795,6 +1868,19 @@ double reinforce::exponentially_decay_epsilon(double t, double tstart)
    return epsilon;
 }
 
+double reinforce::linearly_decay_epsilon(double t, double tstart, double tstop)
+{
+   if(t < tstart)
+   {
+      epsilon = 1;
+   }
+   else
+   {
+      epsilon = 1 + (min_epsilon - 1) * (t - tstart) / (tstop - tstart);
+   }
+   return epsilon;
+}
+
 // ---------------------------------------------------------------------
 // Member function select_action_for_curr_state()
 
@@ -2032,9 +2118,9 @@ void reinforce::store_final_arsprime_into_replay_memory(
 }
 
 // ---------------------------------------------------------------------
-// Member function get_memory_replay_entry()
+// Member function get_replay_memory_entry()
 
-bool reinforce::get_memory_replay_entry(
+bool reinforce::get_replay_memory_entry(
    int d, genvector& curr_s, int& curr_a, double& curr_r, genvector& next_s)
 {
    s_curr->get_row(d, curr_s);
@@ -2045,6 +2131,58 @@ bool reinforce::get_memory_replay_entry(
    s_next->get_row(d, next_s);
    bool terminal_state_flag = (terminal_state->get(d) > 0);
    return terminal_state_flag;
+}
+
+// ---------------------------------------------------------------------
+// Boolean member function store_curr_state_into_eval_memory() returns
+// true if the evaluation memory is full.
+
+bool reinforce::store_curr_state_into_eval_memory(const genvector& curr_s)
+{
+//   cout << "inside store_curr_state_into_eval_memory()" << endl;
+   bool eval_memory_full_flag = false;
+   if(eval_memory_index < eval_memory_capacity)
+   {
+      s_eval->put_row(eval_memory_index, curr_s);
+      eval_memory_index++;
+   }
+   else
+   {
+      eval_memory_full_flag = true;
+   }
+
+   return eval_memory_full_flag;
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_avg_max_eval_Qvalues() retrieves every
+// randomly generated state stored within evaluation memory genmatrix
+// s_eval.  It computes the maximum Q value for each evaluation state.
+// This method returns the average of the maximum Q values which
+// serves as a metric for Q learning.
+
+void reinforce::compute_avg_max_eval_Qvalues()
+{
+//   cout << "inside compute_avg_max_eval_Qvalues()" << endl;
+
+   bool use_old_weights_flag = false;
+   genvector eval_s(s_eval->get_ndim());
+
+   double avg_Qmax = 0;
+   for(int d = 0; d < eval_memory_capacity; d++)
+   {
+      s_eval->get_row(d, eval_s);
+
+      Q_forward_propagate(&eval_s, use_old_weights_flag);
+      double Qmax = A_Prime[n_layers-1]->get(0);
+      for(unsigned int j = 0; j < A_Prime[n_layers-1]->get_mdim(); j++)
+      {
+         Qmax = basic_math::max(Qmax, A_Prime[n_layers-1]->get(j));
+      }
+      avg_Qmax += Qmax;
+   } // loop over index d labeling evaluation states
+   avg_Qmax /= eval_memory_capacity;
+   avg_max_eval_Qvalues.push_back(avg_Qmax);
 }
 
 // ---------------------------------------------------------------------
@@ -2314,7 +2452,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
    int curr_a;
    double curr_r;
-   bool terminal_state_flag = get_memory_replay_entry(
+   bool terminal_state_flag = get_replay_memory_entry(
       d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
    double target_value = 
       compute_target(curr_r, next_s_sample, terminal_state_flag);
@@ -2633,6 +2771,7 @@ double reinforce::get_prev_afterstate_curr_value()
 {
    return compute_value(prev_afterstate_ptr);
 }
+
 
 
 
