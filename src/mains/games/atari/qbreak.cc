@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/15/16; 12/16/16; 12/17/16; 12/18/16
+// Last updated on 12/16/16; 12/17/16; 12/18/16; 12/19/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -188,8 +188,9 @@ int main(int argc, char** argv)
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
+   const double discard_0_reward_frac = 0.10;  
 //   const double discard_0_reward_frac = 0.75;  
-   const double discard_0_reward_frac = 0.85;  
+//   const double discard_0_reward_frac = 0.85;  
 //   const double discard_0_reward_frac = 0.95;  
 
    int n_update = 100;

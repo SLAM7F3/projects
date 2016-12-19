@@ -1882,7 +1882,23 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -1232
 
+After 9K episodes, 
+
+reward --> 1.5 and is very slowly rising. nframes/episode --> 730 and is
+very slowly rising.  log10(loss) is around -2.5.  Reasonable weight dists.
+0th layer weights have learned gross game structure but no obvious ball
+tracks.  Paddle doesn't seem to (yet) get pinned at side walls (though it
+still tends towards them).
+
 125. m6700 : repeat expt 124
+After 9.4K episodes, reward --> 1.7 and is very slowly rising.
+nframes/episode --> 780 and is very slowly rising.  log10(loss) is around
+-2.5.  Reasonable weight dists.  Gross gameboard structure in 0th layer
+weights.
+
+126.  m6700: H1 = 64; H2 = 32; nscreenstates = 1; work with max sums
+between genuine pairs of incremented screen states; eps tau = 8000; discard
+0 reward states frac --> 0.1
 
 ===========================================================
 TODO:
