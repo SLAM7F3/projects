@@ -602,7 +602,7 @@ int main(int argc, char** argv)
 
       if(total_loss > 0)
       {
-         cout << " log10(total_loss) = " << log10(total_loss) << endl;
+         cout << "  log10(total_loss) = " << log10(total_loss) << endl;
          reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
       }
 
