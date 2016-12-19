@@ -91,7 +91,7 @@ class reinforce
 
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
-   void plot_avg_maxQ_history(
+   void plot_maxQ_history(
       std::string output_subdir, std::string extrainfo);
    void plot_reward_history(std::string output_subdir, std::string extrainfo,
       bool plot_cumulative_reward = false);
@@ -151,7 +151,7 @@ class reinforce
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
    bool store_curr_state_into_eval_memory(const genvector& curr_s);
-   void compute_avg_max_eval_Qvalues();
+   void compute_max_eval_Qvalues_distribution();
 
    double compute_target(double curr_r, genvector* next_s, 
                          bool terminal_state_flag);
@@ -240,7 +240,14 @@ class reinforce
    std::vector<double> epsilon_values;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
-   std::vector<double> avg_max_eval_Qvalues;
+
+//    std::vector<double> avg_max_eval_Qvalues;
+   std::vector<double> max_eval_Qvalues_10;
+   std::vector<double> max_eval_Qvalues_25;
+   std::vector<double> max_eval_Qvalues_50;
+   std::vector<double> max_eval_Qvalues_75;
+   std::vector<double> max_eval_Qvalues_90;
+
    std::vector<std::vector<double> > weight_01, weight_05, weight_10;
    std::vector<std::vector<double> > weight_25, weight_35, weight_50;
    std::vector<std::vector<double> > weight_65, weight_75, weight_90;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // "Primitive" math functions 
 // ==========================================================================
-// Last updated on 2/10/16; 8/23/16; 10/18/16; 10/29/16
+// Last updated on 8/23/16; 10/18/16; 10/29/16; 12/19/16
 // ==========================================================================
 
 #include <algorithm>
@@ -2296,6 +2296,38 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
       const vector<double>& A,double& level_25,double& level_75)
    {
       lo_hi_values(A, 0.25, 0.75, level_25, level_75);
+   }
+
+   
+// ---------------------------------------------------------------------
+// Method percentile_values() sorts the contents for input STL vector
+// A.  It then computes and returns the values corresponding to the
+// input percentile fractions within the sorted vector.
+
+   void percentile_values(
+      const vector<double>& A, const vector<double>& percentile_fracs,
+      vector<double>& values)
+   {
+      unsigned int nbins=A.size();
+      if(nbins == 0) 
+      {
+         cout << "Error in mathfunc::percentile_values()!" << endl;
+         cout << "A.size() = 0" << endl;
+         exit(-1);
+      }
+      
+      vector<double> Acopy;
+      for (unsigned int i=0; i<nbins; i++)
+      {
+         Acopy.push_back(A[i]);
+      }
+      std::sort(Acopy.begin(),Acopy.end());
+
+      for(unsigned int p = 0; p < percentile_fracs.size(); p++)
+      {
+         values.push_back( Acopy[basic_math::round(
+                                 percentile_fracs[p] * nbins)] );
+      }
    }
    
 // ---------------------------------------------------------------------

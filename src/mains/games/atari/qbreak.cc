@@ -477,12 +477,20 @@ int main(int argc, char** argv)
          if(n_curr_lives != n_prev_lives)
          {
 
+/*
+
+// As of noontime on Mon Dec 19, 2016 we experiment with NOT
+// penalizing the agent when it misses the ball.  Q should then only
+// increase.
+
+
 // Penalize agent whenever it misses the ball:
 
             if(n_prev_lives > 0)
             {
                renorm_reward = -1;
             }
+*/
 
             n_prev_lives = n_curr_lives;
             curr_life_framenumber = 0;
@@ -597,7 +605,7 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
       reinforce_agent_ptr->append_epsilon();
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
-      reinforce_agent_ptr->compute_avg_max_eval_Qvalues();
+      reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
       reinforce_agent_ptr->increment_episode_number();      
 
       if(total_loss > 0)

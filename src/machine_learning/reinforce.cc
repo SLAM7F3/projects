@@ -888,17 +888,17 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of averaged max Q for evaluation states
+// Generate metafile plot of max Q distribution for evaluation states
 // versus episode number.
 
-void reinforce::plot_avg_maxQ_history(string output_subdir, string extrainfo)
+void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
 {
-   if(avg_max_eval_Qvalues.size() < 3) return;
+   if(max_eval_Qvalues_50.size() < 3) return;
 
    metafile curr_metafile;
-   string meta_filename=output_subdir + "/avg_maxQ_history";
+   string meta_filename=output_subdir + "/maxQ_history";
 
-   string title="Averaged max Q for "+stringfunc::number_to_string(
+   string title="Max Q percentiles for "+stringfunc::number_to_string(
       eval_memory_capacity)+" evaluation states";
    title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
    title += "; nweights="+stringfunc::number_to_string(n_weights);
@@ -906,18 +906,34 @@ void reinforce::plot_avg_maxQ_history(string output_subdir, string extrainfo)
    string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
    string x_label="Episode number";
-   string y_label="Average max Q";
+//   string y_label="Average max Q";
+   string y_label="Max Q percentiles";
 
-   double max_Q = mathfunc::maximal_value(avg_max_eval_Qvalues) + 0.5;
+   double max_Q = mathfunc::maximal_value(max_eval_Qvalues_90) + 0.5;
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, episode_number, 0, max_Q);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.set_thickness(2);
-   curr_metafile.write_curve(0, episode_number, avg_max_eval_Qvalues);
+
+//   curr_metafile.write_curve(0, episode_number, avg_max_eval_Qvalues);
+
+   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_10,
+                             colorfunc::get_color(0));
+   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_25,
+                             colorfunc::get_color(1));
+   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_50,
+                             colorfunc::get_color(2));
+   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_75,
+                             colorfunc::get_color(3));
+   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_90,
+                             colorfunc::get_color(4));
    curr_metafile.set_thickness(3);
 
+
+
+/*
 // Temporally smooth noisy avg maxQ values:
 
    double sigma = 10;
@@ -943,13 +959,27 @@ void reinforce::plot_avg_maxQ_history(string output_subdir, string extrainfo)
       curr_metafile.write_curve(
          0, episode_number, smoothed_avg_max_eval_Qvalues, colorfunc::blue);
    }
-   
+*/
+ 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
+
+// Generate executable script which displays reward, nframes/episode
+// max Q and epsilon history metafile outputs:
+
+   string script_filename=output_subdir + "view_scores";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+   script_stream << "view reward_history.jpg" << endl;
+   script_stream << "view frames_history.jpg" << endl;
+   script_stream << "view maxQ_history.jpg" << endl;
+   script_stream << "view epsilon_history.jpg" << endl;
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
 }
 
 // ---------------------------------------------------------------------
@@ -1619,7 +1649,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo)
       plot_bias_distributions(output_subdir, extrainfo);
    }
 
-   plot_avg_maxQ_history(output_subdir, extrainfo);
+   plot_maxQ_history(output_subdir, extrainfo);
    plot_weight_distributions(output_subdir, extrainfo);
    plot_quasirandom_weight_values(output_subdir, extrainfo);
    bool plot_cumulative_reward = true;
@@ -1871,6 +1901,10 @@ double reinforce::linearly_decay_epsilon(double t, double tstart, double tstop)
    if(t < tstart)
    {
       epsilon = 1;
+   }
+   else if (t > tstop)
+   {
+      epsilon = min_epsilon;
    }
    else
    {
@@ -2156,22 +2190,22 @@ bool reinforce::store_curr_state_into_eval_memory(const genvector& curr_s)
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_avg_max_eval_Qvalues() retrieves every
-// randomly generated state stored within evaluation memory genmatrix
-// s_eval.  It computes the maximum Q value for each evaluation state.
-// This method returns the average of the maximum Q values which
-// serves as a metric for Q learning.
+// Member function compute_max_eval_Qvalues_distribution() retrieves
+// every randomly generated state stored within evaluation memory
+// genmatrix s_eval.  It computes the maximum Q value for each
+// evaluation state.  This method returns the average of the maximum Q
+// values which serves as a metric for Q learning.
 
-void reinforce::compute_avg_max_eval_Qvalues()
+void reinforce::compute_max_eval_Qvalues_distribution()
 {
-//   cout << "inside compute_avg_max_eval_Qvalues()" << endl;
+//   cout << "inside compute_max_eval_Qvalues_distribution()" << endl;
 
    if(!eval_memory_full_flag) return;
 
    bool use_old_weights_flag = false;
    genvector eval_s(s_eval->get_ndim());
 
-   double avg_Qmax = 0;
+   vector<double> max_Qvalues;
    for(int d = 0; d < eval_memory_capacity; d++)
    {
       s_eval->get_row(d, eval_s);
@@ -2182,10 +2216,25 @@ void reinforce::compute_avg_max_eval_Qvalues()
       {
          Qmax = basic_math::max(Qmax, A_Prime[n_layers-1]->get(j));
       }
-      avg_Qmax += Qmax;
+      max_Qvalues.push_back(Qmax);
    } // loop over index d labeling evaluation states
-   avg_Qmax /= eval_memory_capacity;
-   avg_max_eval_Qvalues.push_back(avg_Qmax);
+
+   vector<double> percentile_fracs;
+   percentile_fracs.push_back(0.10);
+   percentile_fracs.push_back(0.25);
+   percentile_fracs.push_back(0.50);
+   percentile_fracs.push_back(0.75);
+   percentile_fracs.push_back(0.90);
+
+   vector<double> values;
+   mathfunc::percentile_values(max_Qvalues, percentile_fracs, values);
+
+//   avg_max_eval_Qvalues.push_back(mathfunc::mean(max_Qvalues));
+   max_eval_Qvalues_10.push_back(values[0]);
+   max_eval_Qvalues_25.push_back(values[1]);
+   max_eval_Qvalues_50.push_back(values[2]);
+   max_eval_Qvalues_75.push_back(values[3]);
+   max_eval_Qvalues_90.push_back(values[4]);
 }
 
 // ---------------------------------------------------------------------
