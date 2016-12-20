@@ -79,8 +79,8 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-   int H1 = 16;
-//   int H1 = 32;
+//   int H1 = 16;
+   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
@@ -114,7 +114,8 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 2000;
    
-   int replay_memory_capacity = nframes_per_epoch * 4;
+//   int replay_memory_capacity = nframes_per_epoch * 4;
+   int replay_memory_capacity = nframes_per_epoch * 8;
    int eval_memory_capacity = 0.1 * replay_memory_capacity;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
