@@ -1,7 +1,7 @@
 ========================================================================
 GITHUB notes
 ========================================================================
-Last updated 9/25/16; 9/29/16; 11/19/16; 12/5/16
+Last updated 9/29/16; 11/19/16; 12/5/16; 12/20/16
 ========================================================================
 
 *.  On 12/6/15, we followed directions provided by Brad Westfall in his
@@ -294,3 +294,15 @@ use_math: true
 5.  On local machine inside ~/programs/c++/git/, chant
 
         git clone git@github.com:PeterCho/eyeglass.git
+
+
+*.  If we have a bad bug in our projects "master" branch, follow these
+steps in order to checkout some old stable "projects" branch:
+
+  i.  Login to github
+
+  ii.  Click on PeterCho/projects 
+
+  iii.  Navigate to commits page.  Then 7-character names for each 
+        commit which has been checked into github/projects is listed
+        on RHS.  
