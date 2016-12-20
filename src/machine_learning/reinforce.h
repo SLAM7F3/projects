@@ -56,6 +56,8 @@ class reinforce
    int get_episode_number() const;
    int increment_episode_number();
    void append_n_episode_turns_frac(double curr_n_turns_frac);
+   void set_curr_epoch(double epoch);
+   double get_curr_epoch() const;
    void set_base_learning_rate(double rate);
    double get_base_learning_rate() const;
    void set_learning_rate(double rate);
@@ -74,7 +76,7 @@ class reinforce
    void snapshot_running_reward();
    void snapshot_cumulative_reward(double cum_reward);
    void accumulate_reward(double curr_reward);
-   void append_n_episode_frames(int n_frames);
+   void append_n_frames_per_episode(int n_frames);
    void append_epsilon();
 
 // Monitoring network training methods:
@@ -236,7 +238,7 @@ class reinforce
    std::vector<double> time_samples;
    std::vector<double> loss_values;
    std::vector<double> n_episode_turns_frac;
-   std::vector<double> n_episode_frames;
+   std::vector<double> n_frames_per_episode;
    std::vector<double> epsilon_values;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
@@ -267,6 +269,7 @@ class reinforce
    std::vector<double> running_reward_snapshots;
    std::vector<double> cumulative_reward_snapshots;
    int episode_number;
+   double curr_epoch;
 
    std::string snapshots_subdir;
 
@@ -355,6 +358,16 @@ inline int reinforce::increment_episode_number()
 {
    episode_number++;
    return episode_number;
+}
+
+inline void reinforce::set_curr_epoch(double epoch)
+{
+   curr_epoch = epoch;
+}
+
+inline double reinforce::get_curr_epoch() const
+{
+   return curr_epoch;
 }
 
 inline void reinforce::append_n_episode_turns_frac(double frac)

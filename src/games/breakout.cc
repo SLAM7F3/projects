@@ -67,6 +67,7 @@ void breakout::initialize_member_objects()
 {
 //    cout << "inside breakout::init_member_objs()" << endl;
 
+   forced_game_over = false;
    compute_difference_flag = true;
    compute_max_flag = false;
    int random_seed = 1000 * nrfunc::ran1();

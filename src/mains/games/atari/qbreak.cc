@@ -113,9 +113,6 @@ int main(int argc, char** argv)
 
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 2000;
-   int approx_nframes_per_episode = 1000;
-   int n_episodes_per_epoch = nframes_per_epoch / approx_nframes_per_episode;
-   int n_max_episodes = n_max_epochs * n_episodes_per_epoch;
    
    int replay_memory_capacity = nframes_per_epoch * 2;
    int eval_memory_capacity = 0.1 * replay_memory_capacity;
@@ -133,9 +130,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_lambda(0.0);
    reinforce_agent_ptr->set_lambda(1E-2);
 //   reinforce_agent_ptr->set_lambda(1E-3);
-   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
-//   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
-   machinelearning_func::set_leaky_ReLU_small_slope(0.001); 
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.001); 
 
 // Initialize output subdirectory within an experiments folder:
 
@@ -169,11 +166,10 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(8000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
-   double starting_episode_linear_eps_decay = 1 * 1000;
-   double stopping_episode_linear_eps_decay = 25 * 1000;
+   double starting_epoch_linear_eps_decay = 4.0;
+   double stopping_epoch_linear_eps_decay = 0.35 * n_max_epochs;
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -185,13 +181,7 @@ int main(int argc, char** argv)
 
    int nn_update_frame_period = 10;
 //   int nn_update_frame_period = 25;
-//   int nn_update_frame_period = 50;
-   
-//   int old_weights_period = 10; 
-//   int old_weights_period = 32;
-//   int old_weights_period = 100;
-//   int old_weights_period = 320;
-   int old_weights_period = 1000;
+   int old_weights_period_in_epochs = 2;    
 
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
@@ -200,14 +190,10 @@ int main(int argc, char** argv)
 //   const double discard_0_reward_frac = 0.60;  
 //   const double discard_0_reward_frac = 0.75;  
    const double discard_0_reward_frac = 0.85;  
-//   const double discard_0_reward_frac = 0.95;  
 
-   int n_update = 100;
-   int n_snapshot = 500;
+//    int n_snapshot = 500;
+   int n_episode_update = 100;
 
-   string subtitle=
-      "old weights T="+stringfunc::number_to_string(old_weights_period)
-      +";min eps="+stringfunc::number_to_string(min_epsilon);
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
    {
@@ -218,7 +204,6 @@ int main(int argc, char** argv)
       extrainfo += ";H3="+stringfunc::number_to_string(H3);
    }
 
-   int update_old_weights_counter = 0;
    double total_loss = -1;
 
    bool export_frames_flag = false;
@@ -244,7 +229,8 @@ int main(int argc, char** argv)
                  << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
-   params_stream << "Old weights period = " << old_weights_period << endl;
+   params_stream << "Old weights period = " << old_weights_period_in_epochs 
+                 << " epochs" << endl;
    params_stream << "Discard zero reward frac = " 
                  << discard_0_reward_frac << endl;
    params_stream << "Use big states flag = " << use_big_states_flag << endl;
@@ -261,35 +247,35 @@ int main(int argc, char** argv)
                     << endl;
    }
 
-   params_stream << "Starting episode for learing epsilon decay = "
-                 << starting_episode_linear_eps_decay << endl;
-   params_stream << "Stopping episode for learing epsilon decay = "
-                 << stopping_episode_linear_eps_decay << endl;
+   params_stream << "Starting epoch for linear epsilon decay = "
+                 << starting_epoch_linear_eps_decay << endl;
+   params_stream << "Stopping epoch for linear epsilon decay = "
+                 << stopping_epoch_linear_eps_decay << endl;
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
-   params_stream << "n_max_episodes = " << n_max_episodes << endl;
    params_stream << "Random seed = " << seed << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
 // Reinforcement training loop starts here
 
-   int n_fire_ball_frames = 2;
+   const int n_fire_ball_frames = 2;
    int cum_framenumber = 0;
    bool eval_memory_full_flag = false;
 
-   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
+   while(reinforce_agent_ptr->get_curr_epoch() < n_max_epochs)
    {
+      double curr_epoch = cum_framenumber / nframes_per_epoch;
+      reinforce_agent_ptr->set_curr_epoch(curr_epoch);
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, n_update, n_max_episodes);
 
       bool random_start = false;
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
+/*
       if(curr_episode_number > 0 && curr_episode_number%n_lr_episodes_period 
          == 0)
       {
@@ -300,11 +286,12 @@ int main(int argc, char** argv)
             n_lr_episodes_period *= 1.2;
          }
       }
+*/
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
-      cout << "************  Start of Game " << curr_episode_number
+      cout << "************  Start of episode " << curr_episode_number
            << " ***********" << endl;
 
       int d = -1, n_state_updates = 0;
@@ -323,11 +310,6 @@ int main(int argc, char** argv)
          breakout_ptr->get_default_starting_paddle_x()  
          - breakout_ptr->get_center_paddle_x();
 
-// As of 12/16/16, we still see that a starting ball can fail to fire
-// at the very beginning of a new life.  So to avoid an infinite loop
-// with no ball in play, we set an upper limit on the number of frames
-// per episode:
-
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
 // contiguous increasing integers!  So we no longer use the following
@@ -335,22 +317,22 @@ int main(int argc, char** argv)
 
 //  int curr_frame_number = game_world.get_episode_framenumber();
 
-      int curr_framenumber = 0;  // n_frames since start of current episode
+      int curr_episode_framenumber = 0;  // since start of current episode
       int curr_life_framenumber = 0;  // n_frames since start of current life
-      int max_episode_framenumber = 100 * 1000;
 
-      while(!game_world.get_game_over() && 
-            curr_framenumber < max_episode_framenumber)
+      while(!game_world.get_game_over())
       {
          int n_curr_lives = breakout_ptr->get_ale().lives();
          bool state_updated_flag = false;
          bool zero_input_state = false;
 
-         curr_framenumber++;
+         curr_episode_framenumber++;
          curr_life_framenumber++;
          cum_framenumber++;
+         curr_epoch = double(cum_framenumber) / nframes_per_epoch;
+         reinforce_agent_ptr->set_curr_epoch(curr_epoch);
 
-         if(curr_framenumber % game_world.get_frame_skip() == 0)
+         if(cum_framenumber % game_world.get_frame_skip() == 0)
          {
             n_state_updates++;
 
@@ -381,7 +363,7 @@ int main(int argc, char** argv)
                   }
                }
             }
-         } // curr_framenumber % frame_skip == 0 conditional
+         } // cum_framenumber % frame_skip == 0 conditional
 
          if(state_updated_flag && n_state_updates > 2)
          {
@@ -481,10 +463,15 @@ int main(int argc, char** argv)
          if(n_curr_lives != n_prev_lives)
          {
 
-// As of 3:30pm on Mon Dec 19, 2016, we experiment with treating
+/*
+// As of 6 pm on Mon Dec 19, 2016, we experiment with treating
 // end-of-life as end-of-episode:
 
-//            game_world.set_game_over(true);
+            if(n_prev_lives > 0)
+            {
+               game_world.set_game_over(true);
+            }
+*/
 
 /*
 
@@ -543,15 +530,8 @@ int main(int argc, char** argv)
          }
 
          if(reinforce_agent_ptr->get_replay_memory_full() &&
-            curr_framenumber % nn_update_frame_period == 0)
+            cum_framenumber % nn_update_frame_period == 0)
          {
-//         cout << "Episode=" << curr_episode_number
-//              << " cum frame=" << cum_framenumber
-//              << " episode frame=" << curr_framenumber
-//              << " n_lives=" << breakout_ptr->get_ale().lives()
-//              << "  cum_reward=" << cum_reward 
-//              << endl;
-
             bool verbose_flag = false;
             total_loss = reinforce_agent_ptr->update_neural_network(
                verbose_flag);
@@ -561,13 +541,14 @@ int main(int argc, char** argv)
 // subdirectory:
 
          bool export_RGB_screens_flag = false;
-         if(curr_episode_number% 1000 == 0) export_RGB_screens_flag = true;
+         if(curr_episode_number % 1000 == 0) export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
-               stringfunc::integer_to_string(curr_framenumber,5)+".png";
+               stringfunc::integer_to_string(curr_episode_framenumber,5)+
+               ".png";
             breakout_ptr->save_screen(
                curr_episode_number, curr_screen_filename);
 
@@ -600,9 +581,11 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------------
 
-      double epoch = cum_framenumber / nframes_per_epoch;
+//      breakout_ptr->set_forced_game_over(false);
+//      breakout_ptr->get_ale().reset_game();
+
       cout << "Episode finished" << endl;
-      cout << "  epoch = " << epoch 
+      cout << "  epoch = " << curr_epoch 
            << "  cum_frame = " << cum_framenumber << endl;
       cout << "  cum_reward = " << cum_reward 
            << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
@@ -611,7 +594,8 @@ int main(int argc, char** argv)
 
 //       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
-      reinforce_agent_ptr->append_n_episode_frames(curr_framenumber);
+      reinforce_agent_ptr->append_n_frames_per_episode(
+         curr_episode_framenumber);
       reinforce_agent_ptr->append_epsilon();
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
@@ -619,17 +603,16 @@ int main(int argc, char** argv)
 
       if(total_loss > 0)
       {
-         cout << "  log10(total_loss) = " << log10(total_loss) << endl;
          reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
       }
 
 // Periodically copy current weights into old weights:
 
-      update_old_weights_counter++;
-      if(update_old_weights_counter%old_weights_period == 0)
+      int n_oldweight_frames = old_weights_period_in_epochs * 
+         nframes_per_epoch;
+      if(cum_framenumber % n_oldweight_frames == 0)
       {
          reinforce_agent_ptr->copy_weights_onto_old_weights();
-         update_old_weights_counter = 1;
       }
 
       if(reinforce_agent_ptr->get_replay_memory_full())
@@ -645,31 +628,22 @@ int main(int argc, char** argv)
 
 // Slowly decay epsilon over time:
 
-//      reinforce_agent_ptr->exponentially_decay_epsilon(
-//         curr_episode_number, 40);
       reinforce_agent_ptr->linearly_decay_epsilon(
-         curr_episode_number, starting_episode_linear_eps_decay,
-         stopping_episode_linear_eps_decay);
+         curr_epoch, starting_epoch_linear_eps_decay,
+         stopping_epoch_linear_eps_decay);
       
-// Periodically write status info to text console:
+// Periodically export status info:
 
-      if(curr_episode_number >= n_update - 1 && 
-         curr_episode_number % n_update == 0)
+      if(curr_episode_number >= n_episode_update - 1 && 
+         curr_episode_number % n_episode_update == 0)
       {
-         cout << "Q-learning" << endl;
-
+         outputfunc::print_elapsed_time();
          if(reinforce_agent_ptr->get_include_bias_terms()){
             reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
-      }
-
-      if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
-      {
-         n_snapshot *= 2;
-         reinforce_agent_ptr->export_snapshot(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
@@ -684,16 +658,18 @@ int main(int argc, char** argv)
             n_reduced_xdim, n_reduced_ydim, weights_subdir);
       }
 
-   } // n_episodes < n_max_episodes while loop
+/*
+      if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
+      {
+         n_snapshot *= 2;
+         reinforce_agent_ptr->export_snapshot(output_subdir);
+      }
+*/
+
+   } // curr_epoch < n_max_epochs while loop
 
 // Reinforcement training loop ends here
 // ==========================================================================
-
-   outputfunc::print_elapsed_time();
-   cout << "Final episode number = "
-        << reinforce_agent_ptr->get_episode_number() << endl;
-   cout << "N_weights = " << reinforce_agent_ptr->count_weights()
-        << endl;
 
    delete reinforce_agent_ptr;
    delete breakout_ptr;

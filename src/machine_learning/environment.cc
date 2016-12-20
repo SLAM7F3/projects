@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 12/2/16; 12/7/16; 12/8/16; 12/10/16
+// Last modified on 12/7/16; 12/8/16; 12/10/16; 12/19/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -237,7 +237,8 @@ bool environment::get_game_over()
    }
    else if(world_type == BREAKOUT)
    {
-      return breakout_ptr->get_ale().game_over();
+      return (breakout_ptr->get_ale().game_over() ||
+              breakout_ptr->get_forced_game_over());
    }
    else if(world_type == TTT)
    {
@@ -251,11 +252,15 @@ void environment::set_game_over(bool flag)
 {
    if(world_type == MAZE)
    {
-      return maze_ptr->set_game_over(flag);
+      maze_ptr->set_game_over(flag);
+   }
+   else if(world_type == BREAKOUT)
+   {
+      breakout_ptr->set_forced_game_over(flag);
    }
    else if(world_type == TTT)
    {
-      return tictac3d_ptr->set_game_over(flag);
+      tictac3d_ptr->set_game_over(flag);
    }
 }
 

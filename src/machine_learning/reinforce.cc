@@ -59,6 +59,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    rmsprop_denom_const = 1E-5;
    reward_sum = 0;
    episode_number = 0;
+   curr_epoch = 0.0;
 
    n_layers = n_nodes_per_layer.size();
    for(int l = 0; l < n_layers; l++)
@@ -266,6 +267,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    eval_memory_full_flag = false;
    replay_memory_index = 0;
    epsilon = 1.000001;
+   epsilon_tau = -1;
 
    beta1 = beta2 = 0;
    curr_beta1_pow = curr_beta2_pow = 1;
@@ -413,9 +415,9 @@ void reinforce::accumulate_reward(double curr_reward)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::append_n_episode_frames(int n_frames)
+void reinforce::append_n_frames_per_episode(int n_frames)
 {
-   n_episode_frames.push_back(n_frames);
+   n_frames_per_episode.push_back(n_frames);
 }
 
 void reinforce::append_epsilon()
@@ -484,10 +486,12 @@ void reinforce::summarize_parameters(string params_filename)
                  << Nd << endl;
    params_stream << "Discount factor gamma = " << gamma 
                  << endl;
-//   params_stream << "Initial epsilon decay factor = " << epsilon_decay_factor
-//                 << "; minimum epsilon = " << min_epsilon << endl;
-   params_stream << "Epsilon time constant = " << epsilon_tau
-                 << "; minimum epsilon = " << min_epsilon << endl;
+   if(epsilon_tau > 0)
+   {
+      params_stream << "Epsilon time constant = " << epsilon_tau << endl;
+   }
+   params_stream << "minimum epsilon = " << min_epsilon << endl;
+         
    filefunc::closefile(params_filename, params_stream);
 }
 
@@ -889,7 +893,7 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 
 // ---------------------------------------------------------------------
 // Generate metafile plot of max Q distribution for evaluation states
-// versus episode number.
+// versus epoch.
 
 void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
 {
@@ -905,33 +909,28 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
 
    string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
-   string x_label="Episode number";
-//   string y_label="Average max Q";
+   string x_label="Epoch";
    string y_label="Max Q percentiles";
 
    double max_Q = mathfunc::maximal_value(max_eval_Qvalues_90) + 0.5;
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, episode_number, 0, max_Q);
+      meta_filename, title, x_label, y_label, 0, curr_epoch, 0, max_Q);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.set_thickness(2);
 
-//   curr_metafile.write_curve(0, episode_number, avg_max_eval_Qvalues);
-
-   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_10,
+   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_10,
                              colorfunc::get_color(0));
-   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_25,
+   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_25,
                              colorfunc::get_color(1));
-   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_50,
+   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_50,
                              colorfunc::get_color(2));
-   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_75,
+   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_75,
                              colorfunc::get_color(3));
-   curr_metafile.write_curve(0, episode_number, max_eval_Qvalues_90,
+   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_90,
                              colorfunc::get_color(4));
    curr_metafile.set_thickness(3);
-
-
 
 /*
 // Temporally smooth noisy avg maxQ values:
@@ -957,7 +956,7 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
          avg_max_eval_Qvalues, h, smoothed_avg_max_eval_Qvalues, 
          wrap_around_input_values);
       curr_metafile.write_curve(
-         0, episode_number, smoothed_avg_max_eval_Qvalues, colorfunc::blue);
+         0, curr_epoch, smoothed_avg_max_eval_Qvalues, colorfunc::blue);
    }
 */
  
@@ -974,6 +973,7 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
    string script_filename=output_subdir + "view_scores";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
+   script_stream << "view log10_losses_history.jpg" << endl;
    script_stream << "view reward_history.jpg" << endl;
    script_stream << "view frames_history.jpg" << endl;
    script_stream << "view maxQ_history.jpg" << endl;
@@ -1024,11 +1024,11 @@ void reinforce::plot_reward_history(
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
-   string x_label="Episode number";
+   string x_label="Epoch";
    string y_label="Running reward sum";
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, episode_number,
+      meta_filename, title, x_label, y_label, 0, curr_epoch,
       min_reward, max_reward);
    curr_metafile.set_subtitle(subtitle);
    double ytic = 0.1 * (max_reward - min_reward);
@@ -1036,7 +1036,7 @@ void reinforce::plot_reward_history(
    curr_metafile.set_ysubtic(0.5 * ytic);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(0, episode_number, reward_snapshots);
+   curr_metafile.write_curve(0, curr_epoch, reward_snapshots);
 
 // Temporally smooth noisy reward values:
 
@@ -1063,7 +1063,7 @@ void reinforce::plot_reward_history(
 
       curr_metafile.set_thickness(3);
       curr_metafile.write_curve(
-         0, episode_number, smoothed_reward_snapshots, colorfunc::blue);
+         0, curr_epoch, smoothed_reward_snapshots, colorfunc::blue);
    }
 
    curr_metafile.closemetafile();
@@ -1145,7 +1145,7 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 
 void reinforce::plot_frames_history(string output_subdir, string extrainfo)
 {
-   if(n_episode_frames.size() < 5) return;
+   if(n_frames_per_episode.size() < 5) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"frames_history";
@@ -1159,46 +1159,44 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo)
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
-   string x_label="Episode number";
+   string x_label="Epoch";
    string y_label="Number of ALE frames";
    double min_frames = 0;
-   double max_frames = mathfunc::maximal_value(n_episode_frames);
+   double max_frames = mathfunc::maximal_value(n_frames_per_episode);
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, episode_number,
+      meta_filename, title, x_label, y_label, 0, curr_epoch,
       min_frames, max_frames);
    curr_metafile.set_subtitle(subtitle);
-//   curr_metafile.set_ytic(0.2);
-//   curr_metafile.set_ysubtic(0.1);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(0, episode_number, n_episode_frames);
+   curr_metafile.write_curve(0, curr_epoch, n_frames_per_episode);
    curr_metafile.set_thickness(3);
 
 // Temporally smooth noisy frames fraction values:
 
    double sigma = 10;
-   if(n_episode_frames.size() > 100)
+   if(n_frames_per_episode.size() > 100)
    {
-      sigma += log10(n_episode_frames.size())/log10(2.0);
+      sigma += log10(n_frames_per_episode.size())/log10(2.0);
    }
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
-   if(gaussian_size < int(n_episode_frames.size())) 
+   if(gaussian_size < int(n_frames_per_episode.size())) 
    {
       vector<double> h;
       h.reserve(gaussian_size);
       filterfunc::gaussian_filter(dx, sigma, h);
 
       bool wrap_around_input_values = false;
-      vector<double> smoothed_n_episode_frames;
+      vector<double> smoothed_n_frames_per_episode;
       filterfunc::brute_force_filter(
-         n_episode_frames, h, smoothed_n_episode_frames, 
+         n_frames_per_episode, h, smoothed_n_frames_per_episode, 
          wrap_around_input_values);
 
       curr_metafile.write_curve(
-         0, episode_number, smoothed_n_episode_frames, colorfunc::blue);
+         0, curr_epoch, smoothed_n_frames_per_episode, colorfunc::blue);
    }
    
    curr_metafile.closemetafile();
@@ -1214,7 +1212,7 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo)
 
 void reinforce::plot_epsilon_history(string output_subdir, string extrainfo)
 {
-   if(n_episode_frames.size() < 5) return;
+   if(epsilon_values.size() < 5) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"epsilon_history";
@@ -1228,17 +1226,17 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo)
 
    string subtitle=init_subtitle();
    subtitle += " "+extrainfo;
-   string x_label="Episode number";
+   string x_label="Epoch";
    string y_label="Epsilon";
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, episode_number, 0, 1);
+      meta_filename, title, x_label, y_label, 0, curr_epoch, 0, 1);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.set_ytic(0.2);
    curr_metafile.set_ysubtic(0.1);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
-   curr_metafile.write_curve(0, episode_number, epsilon_values);
+   curr_metafile.write_curve(0, curr_epoch, epsilon_values);
    curr_metafile.set_thickness(3);
    
    curr_metafile.closemetafile();
@@ -1331,14 +1329,14 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
 
    string subtitle=init_subtitle();
    subtitle += ";"+extrainfo;
-   string x_label="Episode number";
+   string x_label="Epoch";
    string y_label="Log10(Total loss)";
 
    double max_score = mathfunc::maximal_value(log10_losses)+0.5;
    double min_score = mathfunc::minimal_value(log10_losses)-0.5;
 
    curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, episode_number,
+      meta_filename, title, x_label, y_label, 0, curr_epoch,
       min_score, max_score);
    curr_metafile.set_subtitle(subtitle);
    curr_metafile.set_ytic(0.5);
@@ -1346,7 +1344,7 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.set_thickness(2);
-   curr_metafile.write_curve(0, episode_number, log10_losses);
+   curr_metafile.write_curve(0, curr_epoch, log10_losses);
    curr_metafile.set_thickness(3);
 
 // Temporally smooth noisy log10(loss) scores:
@@ -1372,7 +1370,7 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo)
       filterfunc::brute_force_filter(
          log10_losses, h, smoothed_log10_losses, wrap_around_input_values);
       curr_metafile.write_curve(
-         0, episode_number, smoothed_log10_losses, colorfunc::blue);
+         0, curr_epoch, smoothed_log10_losses, colorfunc::blue);
    }
    
    curr_metafile.closemetafile();
@@ -1400,7 +1398,7 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo)
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
-      string x_label="Episode number";
+      string x_label="Epoch";
       string y_label="Bias distributions";
 
       double max_bias = NEGATIVEINFINITY;
@@ -1412,7 +1410,7 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo)
 
       curr_metafile.set_parameters(
          meta_filename, title, x_label, y_label, 0, 
-         episode_number, min_bias, max_bias);
+         curr_epoch, min_bias, max_bias);
       curr_metafile.set_subtitle(subtitle);
 //      curr_metafile.set_ytic(0.5);
 //      curr_metafile.set_ysubtic(0.25);
@@ -1421,27 +1419,27 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo)
       curr_metafile.set_thickness(2);
 
       curr_metafile.write_curve(
-         0, episode_number, bias_01[l], colorfunc::get_color(0));
+         0, curr_epoch, bias_01[l], colorfunc::get_color(0));
       curr_metafile.write_curve(
-         0, episode_number, bias_05[l], colorfunc::get_color(1));
+         0, curr_epoch, bias_05[l], colorfunc::get_color(1));
       curr_metafile.write_curve(
-         0, episode_number, bias_10[l], colorfunc::get_color(2));
+         0, curr_epoch, bias_10[l], colorfunc::get_color(2));
       curr_metafile.write_curve(
-         0, episode_number, bias_25[l], colorfunc::get_color(3));
+         0, curr_epoch, bias_25[l], colorfunc::get_color(3));
       curr_metafile.write_curve(
-         0, episode_number, bias_35[l], colorfunc::get_color(4));
+         0, curr_epoch, bias_35[l], colorfunc::get_color(4));
       curr_metafile.write_curve(
-         0, episode_number, bias_50[l], colorfunc::get_color(5));
+         0, curr_epoch, bias_50[l], colorfunc::get_color(5));
       curr_metafile.write_curve(
-         0, episode_number, bias_65[l], colorfunc::get_color(6));
+         0, curr_epoch, bias_65[l], colorfunc::get_color(6));
       curr_metafile.write_curve(
-         0, episode_number, bias_75[l], colorfunc::get_color(7));
+         0, curr_epoch, bias_75[l], colorfunc::get_color(7));
       curr_metafile.write_curve(
-         0, episode_number, bias_90[l], colorfunc::get_color(8));
+         0, curr_epoch, bias_90[l], colorfunc::get_color(8));
       curr_metafile.write_curve(
-         0, episode_number, bias_95[l], colorfunc::get_color(9));
+         0, curr_epoch, bias_95[l], colorfunc::get_color(9));
       curr_metafile.write_curve(
-         0, episode_number, bias_99[l], colorfunc::get_color(10));
+         0, curr_epoch, bias_99[l], colorfunc::get_color(10));
 
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
@@ -1474,7 +1472,7 @@ void reinforce::plot_weight_distributions(
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
-      string x_label="Episode number";
+      string x_label="Epoch";
       string y_label="Weight distributions";
 
       double max_weight = NEGATIVEINFINITY;
@@ -1486,34 +1484,34 @@ void reinforce::plot_weight_distributions(
 
       curr_metafile.set_parameters(
          meta_filename, title, x_label, y_label, 0, 
-         episode_number, min_weight, max_weight);
+         curr_epoch, min_weight, max_weight);
       curr_metafile.set_subtitle(subtitle);
       curr_metafile.openmetafile();
       curr_metafile.write_header();
       curr_metafile.set_thickness(2);
 
       curr_metafile.write_curve(
-         0, episode_number, weight_01[l], colorfunc::get_color(0));
+         0, curr_epoch, weight_01[l], colorfunc::get_color(0));
       curr_metafile.write_curve(
-         0, episode_number, weight_05[l], colorfunc::get_color(1));
+         0, curr_epoch, weight_05[l], colorfunc::get_color(1));
       curr_metafile.write_curve(
-         0, episode_number, weight_10[l], colorfunc::get_color(2));
+         0, curr_epoch, weight_10[l], colorfunc::get_color(2));
       curr_metafile.write_curve(
-         0, episode_number, weight_25[l], colorfunc::get_color(3));
+         0, curr_epoch, weight_25[l], colorfunc::get_color(3));
       curr_metafile.write_curve(
-         0, episode_number, weight_35[l], colorfunc::get_color(4));
+         0, curr_epoch, weight_35[l], colorfunc::get_color(4));
       curr_metafile.write_curve(
-         0, episode_number, weight_50[l], colorfunc::get_color(5));
+         0, curr_epoch, weight_50[l], colorfunc::get_color(5));
       curr_metafile.write_curve(
-         0, episode_number, weight_65[l], colorfunc::get_color(6));
+         0, curr_epoch, weight_65[l], colorfunc::get_color(6));
       curr_metafile.write_curve(
-         0, episode_number, weight_75[l], colorfunc::get_color(7));
+         0, curr_epoch, weight_75[l], colorfunc::get_color(7));
       curr_metafile.write_curve(
-         0, episode_number, weight_90[l], colorfunc::get_color(8));
+         0, curr_epoch, weight_90[l], colorfunc::get_color(8));
       curr_metafile.write_curve(
-         0, episode_number, weight_95[l], colorfunc::get_color(9));
+         0, curr_epoch, weight_95[l], colorfunc::get_color(9));
       curr_metafile.write_curve(
-         0, episode_number, weight_99[l], colorfunc::get_color(10));
+         0, curr_epoch, weight_99[l], colorfunc::get_color(10));
 
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
@@ -1553,7 +1551,7 @@ void reinforce::plot_quasirandom_weight_values(
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
-      string x_label="Episode number";
+      string x_label="Epoch";
       string y_label="Weight values";
 
       double max_weight = NEGATIVEINFINITY;
@@ -1598,30 +1596,30 @@ void reinforce::plot_quasirandom_weight_values(
 
       curr_metafile.set_parameters(
          meta_filename, title, x_label, y_label, 0, 
-         episode_number, min_weight, max_weight);
+         curr_epoch, min_weight, max_weight);
       curr_metafile.set_subtitle(subtitle);
       curr_metafile.openmetafile();
       curr_metafile.write_header();
       curr_metafile.set_thickness(2);
 
       curr_metafile.write_curve(
-         0, episode_number, weight_1[l], colorfunc::get_color(0));
+         0, curr_epoch, weight_1[l], colorfunc::get_color(0));
       curr_metafile.write_curve(
-         0, episode_number, weight_2[l], colorfunc::get_color(1));
+         0, curr_epoch, weight_2[l], colorfunc::get_color(1));
       curr_metafile.write_curve(
-         0, episode_number, weight_3[l], colorfunc::get_color(2));
+         0, curr_epoch, weight_3[l], colorfunc::get_color(2));
       curr_metafile.write_curve(
-         0, episode_number, weight_4[l], colorfunc::get_color(3));
+         0, curr_epoch, weight_4[l], colorfunc::get_color(3));
       curr_metafile.write_curve(
-         0, episode_number, weight_5[l], colorfunc::get_color(4));
+         0, curr_epoch, weight_5[l], colorfunc::get_color(4));
       curr_metafile.write_curve(
-         0, episode_number, weight_6[l], colorfunc::get_color(5));
+         0, curr_epoch, weight_6[l], colorfunc::get_color(5));
       curr_metafile.write_curve(
-         0, episode_number, weight_7[l], colorfunc::get_color(6));
+         0, curr_epoch, weight_7[l], colorfunc::get_color(6));
       curr_metafile.write_curve(
-         0, episode_number, weight_8[l], colorfunc::get_color(7));
+         0, curr_epoch, weight_8[l], colorfunc::get_color(7));
       curr_metafile.write_curve(
-         0, episode_number, weight_9[l], colorfunc::get_color(8));
+         0, curr_epoch, weight_9[l], colorfunc::get_color(8));
 
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
@@ -2300,7 +2298,6 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 double reinforce::update_neural_network(bool verbose_flag)
 {
 //   cout << "inside update_neural_network()" << endl;
-//   cout << "episode_number = " << get_episode_number() << endl;
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);

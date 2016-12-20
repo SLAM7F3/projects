@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/12/16; 12/14/16; 12/17/16; 12/18/16
+// Last modified on 12/14/16; 12/17/16; 12/18/16; 12/19/16
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -23,6 +23,9 @@ class breakout
    breakout(int n_screen_states);
    breakout(const breakout& C);
    ~breakout();
+
+   void set_forced_game_over(bool flag);
+   bool get_forced_game_over() const;
 
    void set_compute_difference_flag(bool flag);
    bool get_compute_difference_flag() const;
@@ -75,6 +78,7 @@ class breakout
                            std::string caption);
   private: 
 
+   bool forced_game_over;
    bool compute_difference_flag, compute_max_flag;
    int random_seed;
    int rskip, cskip;
@@ -140,6 +144,16 @@ class breakout
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void breakout::set_forced_game_over(bool flag)
+{
+   forced_game_over = flag;
+}
+
+inline bool breakout::get_forced_game_over() const
+{
+   return forced_game_over;
+}
 
 inline void breakout::set_compute_difference_flag(bool flag)
 {
