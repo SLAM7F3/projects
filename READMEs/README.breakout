@@ -1630,7 +1630,7 @@ After 6.8K episodes, reward = 1.2 and nframes/episode = 697.
 After 6.9K episodes, reward = 1.09 and nframes/episode = 676
 
 
-95.  Titan 3:  Repeat of expt 116 running on Titan 1
+95.  Titan 3:  Repeat of expt 116 on Titan 1
 
 After 8.5K episodes, reward --> 1.8 very slowly rising.  nframes/episode
 --> 790 and very slowly rising.  Layer 1 weight dist beyond [-10,10] and
@@ -2159,11 +2159,7 @@ period.
 iv.  Consider following Deep Mind Atari paper and linearly rather than
 exponentially decay epsilon in order to encourage more random exploration.  
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-135.  H1 = 16, H2 = 64, no penalty 
+135.  Titan 3:  H1 = 16, H2 = 64, no penalty 
 
 Mon Dec 19 12:19:19 2016
 Neural net params:
@@ -2200,7 +2196,16 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -78757
 
+After 50K episodes, extremely slow rise in reward--> 2.6 and
+nframes/episode --> 899.  Can't view maxQ since text file is probably too
+large.  Blurred signs of ball tracks in 0th layer weights.  Paddle stays
+almost always around left wall.  OK weight dists.   log10(loss) --> -3.5
+TERMINATED
+
 136.  Titan 3: repeat expt 135
+
+Qualitatively similar results to expt 135.
+TERMINATED
 
 137.  H1 = 16, H2 = 128, no penalty 
 
@@ -2239,7 +2244,14 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -78981
 
+After 53K episodes, reward --> 2.1 and very slowly rises; nframes/episode
+--> 808 and very slowly rises; log10(loss) --> -3.5; OK weight dists;
+blurred ball tracks in 0th layer weights.  Few glimmers of intelligent play
+in a few screen exports.  TERMINATED
+
 138.  Titan 3:  repeat expt 137
+
+Qualitatively similar results as for expt 137.  TERMINATED
 
 139.  Titan 1:  H1 = 32; H2 = 64; no penalty
 
@@ -2278,7 +2290,13 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -79084
 
+After 10K episodes, maxQ dists all die to zero.  TERMINATED.
+
 140.  Titan 1:  repeat expt 139
+
+After 30K epipsodes, maxQ dists all die to zero.  Paddle doesnt remain
+locked to side walls.  Stronger signs of ball tracks in 0th layer weights.
+TERMINATED.
 
 141.  Titan 1:  H1 = 32; H2 = 128; no penalty
 Mon Dec 19 12:26:01 2016
@@ -2316,7 +2334,19 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -79159
 
+After 10K episodes, maxQ dists all are extremey small but nonzero.  Reward
+slowly grows --> 2.15.  nframes/episode --> 844 and slowly grows.  Blurry
+signs of ball tracks in 0th layer weights.  TERMINATED.
+
+
 142.  Titan 1:  repeat expt 141
+
+After 30K episodes, max Q dists stay around 1.0.  Reward very slowly rises
+to 1.6; nframes/episode --> 783 and very slowly rises. log10(loss) = -1.
+Stronger signs of ball tracks in 0th layer weights.  Paddle doesn't remain
+locked to side walls.  TERMINATED.
+
+
 
 143.  TM:  Expt with ReLU again; Trying to understand why Qmax can decrease
 as n_episodes increases.
@@ -2356,6 +2386,9 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -86703
 
+After 8K episodes, Qmax --> 0 for all percentiles.
+TERMINATED.
+
 144.  TM:  H1 = 16, H2 = 64, old weights period = 1000; Discard 0 reward
 frac = 0.85; leaky ReLU slope = 1E-3
 
@@ -2394,7 +2427,28 @@ n_max_epochs = 2000
 n_max_episodes = 100000
 Random seed = -89408
 
+Over 25K episodes, Qmax scores grow extremely slowly.  Reward and
+nframes/episode also grow extremely slowly.  log10(loss) --> -2.  Weight
+dists for layer 2 in interval [0,-7]. Very weak ball tracks in 0th layer
+weights.  Paddle basically hovers around left wall.
+
+TERMINATED.
+
 145.  TM:  Repeat expt 144
+
+Max Q percentiles all extremely close to 0 for 25K episodes.
+TERMINATED.
+
+
+Conclusions from overnight experiments run on Monday, Dec 19:
+
+H1 = 32 might be better than H1 = 16.  But as of 12/20/16, we suspect that
+increasing replay memory size is far more important.
+
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
 
 146.  m6700: H1 = 16, H2 = 64, independent time var = epoch rather than
 episode
@@ -2445,6 +2499,8 @@ After 108 epochs, log10(loss) = -0.95; reard --> 1.12; nframes/episode -->
 689; median max Q --> 0.2 and slowly rising; weight dists and values look
 OK; 0th layer weights show signs of ball tracks; screen exports show paddle
 missing ball but at least not staying pinned to side walls.
+
+
 
 ===========================================================
 TODO:

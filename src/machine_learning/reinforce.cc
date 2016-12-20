@@ -922,10 +922,10 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
 
    curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_10,
                              colorfunc::get_color(0));
-   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_25,
-                             colorfunc::get_color(1));
-   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_75,
-                             colorfunc::get_color(3));
+//   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_25,
+//                             colorfunc::get_color(1));
+//   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_75,
+//                             colorfunc::get_color(3));
    curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_90,
                              colorfunc::get_color(4));
    curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_50,
@@ -970,7 +970,7 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
 // Generate executable script which displays reward, nframes/episode
 // max Q and epsilon history metafile outputs:
 
-   string script_filename=output_subdir + "view_scores";
+   string script_filename=output_subdir + "view_metrics";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
    script_stream << "view log10_losses_history.jpg" << endl;
