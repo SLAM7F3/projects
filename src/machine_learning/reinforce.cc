@@ -924,12 +924,12 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo)
                              colorfunc::get_color(0));
    curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_25,
                              colorfunc::get_color(1));
-   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_50,
-                             colorfunc::get_color(2));
    curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_75,
                              colorfunc::get_color(3));
    curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_90,
                              colorfunc::get_color(4));
+   curr_metafile.write_curve(0, curr_epoch, max_eval_Qvalues_50,
+                             colorfunc::get_color(2));
    curr_metafile.set_thickness(3);
 
 /*
