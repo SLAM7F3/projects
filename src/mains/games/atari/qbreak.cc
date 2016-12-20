@@ -79,8 +79,8 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-//   int H1 = 16;
-   int H1 = 32;
+   int H1 = 16;
+//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 
