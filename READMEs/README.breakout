@@ -56,9 +56,10 @@ n_max_epochs = 2000
 Random seed = -94849
 
 After 106 epochs, log10(loss) = -0.6; reward --> 1.05; nframes/episode -->
-666; epsilon = 0.865; median max Q --> 0.6 and slowly rising; 0th layer
-weights exhibit game board + some ball tracks; screen exports exhibit some
-of the most interesting game play we've seen to date.
+666; epsilon = 0.865; median max Q --> 0.6 and slowly rising; weight dists
+and values look reasonable; 0th layer weights exhibit game board + some
+ball tracks; screen exports exhibit some of the most interesting game play
+we've seen to date.
 
 -------------------------------------------------------------
 TERMINATED EXPERIMENTS
@@ -2433,16 +2434,17 @@ n_max_epochs = 2000
 Random seed = -94849
 
 After 106 epochs, log10(loss) = -0.6; reward --> 1.05; nframes/episode -->
-666; epsilon = 0.865; median max Q --> 0.6 and slowly rising; 0th layer
-weights exhibit game board + some ball tracks; screen exports exhibit some
-of the most interesting game play we've seen to date.
+666; epsilon = 0.865; median max Q --> 0.6 and slowly rising; weight dists
+and values look OK; 0th layer weights exhibit game board + some ball
+tracks; screen exports exhibit some of the most interesting game play we've
+seen to date.
 
 147.  m6700: Repeat of expt 146
 
 After 108 epochs, log10(loss) = -0.95; reard --> 1.12; nframes/episode -->
-689; median max Q --> 0.2 and slowly rising 0th layer weights show signs of
-ball tracks; screen exports show paddle missing ball but at least not
-staying pinned to side walls.
+689; median max Q --> 0.2 and slowly rising; weight dists and values look
+OK; 0th layer weights show signs of ball tracks; screen exports show paddle
+missing ball but at least not staying pinned to side walls.
 
 ===========================================================
 TODO:
