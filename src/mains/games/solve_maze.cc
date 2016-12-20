@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 12/7/16; 12/13/16; 12/14/16; 12/15/16
+// Last updated on 12/13/16; 12/14/16; 12/15/16; 12/20/16
 // ==========================================================================
 
 #include <iostream>
@@ -245,7 +245,7 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
     
-      reinforce_agent_ptr->append_n_episode_frames(
+      reinforce_agent_ptr->append_n_frames_per_episode(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->append_epsilon();
       reinforce_agent_ptr->increment_episode_number();
@@ -306,7 +306,9 @@ int main (int argc, char* argv[])
       if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
       {
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+         bool epoch_indep_var = false;
+         reinforce_agent_ptr->generate_summary_plots(
+            output_subdir, extrainfo, epoch_indep_var);
          reinforce_agent_ptr->plot_Qmap_score_history(
             output_subdir, subtitle, extrainfo);
       }

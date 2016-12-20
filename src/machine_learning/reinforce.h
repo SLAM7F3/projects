@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/12/16; 12/13/16; 12/15/16; 12/19/16
+// Last modified on 12/13/16; 12/15/16; 12/19/16; 20/20/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -94,28 +94,33 @@ class reinforce
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
    void plot_maxQ_history(
-      std::string output_subdir, std::string extrainfo);
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_reward_history(std::string output_subdir, std::string extrainfo,
-      bool plot_cumulative_reward = false);
+                            bool epoch_indep_var,
+                            bool plot_cumulative_reward = false);
+   
    void plot_reward_history(
       std::string output_subdir, std::string extrainfo, 
       double min_reward, double max_reward,
-      const std::vector<double>& reward_snapshots);
+      const std::vector<double>& reward_snapshots, bool epoch_indep_var);
    void plot_turns_history(std::string output_subdir, std::string extrainfo);
-   void plot_frames_history(std::string output_subdir, std::string extrainfo);
-   void plot_epsilon_history(std::string output_subdir, std::string extrainfo);
+   void plot_frames_history(std::string output_subdir, std::string extrainfo,
+                            bool epoch_indep_var);
+   void plot_epsilon_history(std::string output_subdir, std::string extrainfo,
+                             bool epoch_indep_var);
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
-      std::string output_subdir, std::string extrainfo);
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_bias_distributions(
-      std::string output_subdir, std::string extrainfo);
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_weight_distributions(
-      std::string output_subdir, std::string extrainfo);
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_quasirandom_weight_values(
-      std::string output_subdir, std::string extrainfo);
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void generate_summary_plots(
-      std::string output_subdir, std::string extrainfo);
+      std::string output_subdir, std::string extrainfo,
+      bool epoch_indep_var = true);
 
    void create_snapshots_subdir(std::string output_subdir);
    void export_snapshot(std::string output_subdir);
