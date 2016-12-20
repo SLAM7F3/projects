@@ -221,6 +221,8 @@ int main(int argc, char** argv)
    minimal_actions.push_back(PLAYER_A_RIGHT);
    minimal_actions.push_back(PLAYER_A_LEFT);
 
+// Generate text file summary of parameter values:
+
    string params_filename = output_subdir + "params.dat";
    reinforce_agent_ptr->summarize_parameters(params_filename);
    ofstream params_stream;

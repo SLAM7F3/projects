@@ -974,20 +974,6 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo,
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
-
-// Generate executable script which displays reward, nframes/episode
-// max Q and epsilon history metafile outputs:
-
-   string script_filename=output_subdir + "view_metrics";
-   ofstream script_stream;
-   filefunc::openfile(script_filename, script_stream);
-   script_stream << "view log10_losses_history.jpg" << endl;
-   script_stream << "view reward_history.jpg" << endl;
-   script_stream << "view frames_history.jpg" << endl;
-   script_stream << "view maxQ_history.jpg" << endl;
-   script_stream << "view epsilon_history.jpg" << endl;
-   filefunc::closefile(script_filename, script_stream);
-   filefunc::make_executable(script_filename);
 }
 
 // ---------------------------------------------------------------------
@@ -1708,6 +1694,22 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_epsilon_history(output_subdir, extrainfo, epoch_indep_var);
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
+
+// Generate executable script which displays reward, nframes/episode
+// max Q and epsilon history metafile outputs:
+
+   string script_filename=output_subdir + "view_metrics";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+   script_stream << "view log10_losses_history.jpg" << endl;
+   script_stream << "view reward_history.jpg" << endl;
+   script_stream << "view frames_history.jpg" << endl;
+   script_stream << "view maxQ_history.jpg" << endl;
+   script_stream << "view epsilon_history.jpg" << endl;
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
+
+   cout << "script_filename = " << script_filename << endl;
 }
 
 // ---------------------------------------------------------------------

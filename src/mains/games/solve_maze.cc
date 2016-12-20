@@ -15,6 +15,7 @@
 #include "general/outputfuncs.h"
 #include "machine_learning/reinforce.h"
 #include "general/stringfuncs.h"
+#include "general/sysfuncs.h"
 #include "time/timefuncs.h"
 
 int main (int argc, char* argv[])
@@ -22,15 +23,17 @@ int main (int argc, char* argv[])
    using std::cin;
    using std::cout;
    using std::endl;
+   using std::ofstream;
    using std::string;
    using std::vector;
+   std::set_new_handler(sysfunc::out_of_memory); 
 
    timefunc::initialize_timeofday_clock();
-   nrfunc::init_time_based_seed();
-//   long s = -11;
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
-//   cin >> s;
-//   nrfunc::init_default_seed(s);
+//   cin >> seed;
+//   nrfunc::init_default_seed(seed);
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -81,8 +84,8 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-//   int replay_memory_capacity = 10 * sqr(n_grid_size);
-   int replay_memory_capacity = 25 * sqr(n_grid_size);
+   int replay_memory_capacity = 10 * sqr(n_grid_size);
+//   int replay_memory_capacity = 25 * sqr(n_grid_size);
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity,
 //      reinforce::SGD);
@@ -105,9 +108,11 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
-//   reinforce_agent_ptr->set_lambda(0);
-   reinforce_agent_ptr->set_lambda(1E-2);
-   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+   reinforce_agent_ptr->set_lambda(0);
+//   reinforce_agent_ptr->set_lambda(1E-2);
+//   reinforce_agent_ptr->set_lambda(1E-4);
+   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
@@ -124,8 +129,8 @@ int main (int argc, char* argv[])
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
-//   reinforce_agent_ptr->set_Nd(32);
-   reinforce_agent_ptr->set_Nd(64);
+   reinforce_agent_ptr->set_Nd(32);
+//   reinforce_agent_ptr->set_Nd(64);
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
@@ -139,7 +144,7 @@ int main (int argc, char* argv[])
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
    int n_max_episodes = 1 * 1000 * 1000;
-   int n_episodes_period = 100 * 1000;
+   int n_lr_episodes_period = 100 * 1000;
    int old_weights_period = 10; // Seems optimal for n_grid_size = 8
 //   int old_weights_period = 32;  
 
@@ -175,6 +180,21 @@ int main (int argc, char* argv[])
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
+// Generate text file summary of parameter values:
+
+   string params_filename = output_subdir + "params.dat";
+   reinforce_agent_ptr->summarize_parameters(params_filename);
+   ofstream params_stream;
+   filefunc::appendfile(params_filename, params_stream);
+
+   params_stream << "n_actions = " << n_actions << endl;
+   params_stream << "Leaky ReLU small slope = "
+                 << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
+   params_stream << "Old weights period = " << old_weights_period
+                 << " episodes" << endl;
+   params_stream << "Random seed = " << seed << endl;
+   filefunc::closefile(params_filename, params_stream);
+
 // ==========================================================================
 // Reinforcement training loop starts here
       
@@ -189,20 +209,21 @@ int main (int argc, char* argv[])
       game_world.start_new_episode(random_turtle_start);
       reinforce_agent_ptr->initialize_episode();
 
-      if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
             reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_episodes_period *= 1.2;
+            n_lr_episodes_period *= 1.2;
          }
       }
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
-//      cout << "************  Start of Game " << curr_episode_number
+//      cout << "************  Start of episode " << curr_episode_number
 //           << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
@@ -215,6 +236,7 @@ int main (int argc, char* argv[])
          int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+//         cout << "   d = " << d << " curr_a = " << curr_a << endl;
 
          if(!game_world.is_legal_action(curr_a))
          {
@@ -228,13 +250,13 @@ int main (int argc, char* argv[])
             reward = curr_maze.compute_turtle_reward();
          } // curr_a is legal action conditional
 
-//         cout << " reward = " << reward 
+//         cout << "   reward = " << reward 
 //              << " game over = " << game_world.get_game_over() << endl;
 
-         if(game_world.get_game_over())
+         if(d >= 0 && game_world.get_game_over())
          {
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, reward, *curr_s, game_world.get_game_over());
+            reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
+               d, curr_a, reward);
          }
          else
          {

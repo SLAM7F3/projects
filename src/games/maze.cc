@@ -900,7 +900,7 @@ double maze::score_max_Qmap()
       if( (col == n_size - 1 && row == n_size - 1) ||
           (max_qmap_direction == soln_direction) ) n_correct_dirs++;
    }
-   cout << "n_correct_dirs = " << n_correct_dirs 
+   cout << "  n_correct_dirs = " << n_correct_dirs 
         << " max_qmap.size = " << max_qmap.size() << endl;
    double Qmap_score = double(n_correct_dirs) / n_cells;
    return Qmap_score;

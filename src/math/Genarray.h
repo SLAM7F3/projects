@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for templatized genarray class 
 // ==========================================================================
-// Last modified on 6/19/07; 10/17/08; 1/11/13; 3/28/14; 10/20/16
+// Last modified on 1/11/13; 3/28/14; 10/20/16; 12/20/16
 // ==========================================================================
 
 #ifndef T_GENARRAY_H
@@ -109,6 +109,7 @@ class Genarray:public Tensor<A>
 
 // typedef Genarray<complex> complexarray;
 typedef Genarray<double> genarray;
+typedef Genarray<float> genfloatarray;
 typedef Genarray<std::string> genstringarray;
 
 // ==========================================================================
