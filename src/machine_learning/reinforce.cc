@@ -57,7 +57,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    gamma = 0.5;	// Discount factor for reward
    rmsprop_decay_rate = 0.85;
    rmsprop_denom_const = 1E-5;
-   reward_sum = 0;
    episode_number = 0;
    curr_epoch = 0.0;
 
@@ -409,12 +408,6 @@ void reinforce::snapshot_cumulative_reward(double cum_reward)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::accumulate_reward(double curr_reward)
-{
-   reward_sum += curr_reward;
-}
-
-// ---------------------------------------------------------------------
 void reinforce::append_n_frames_per_episode(int n_frames)
 {
    n_frames_per_episode.push_back(n_frames);
@@ -555,7 +548,9 @@ void reinforce::plot_zeroth_layer_weights(string output_subdir)
 void reinforce::plot_zeroth_layer_weights(
    int ncols, int nrows, string output_subdir)
 {
+//   cout << "inside reinforce::plot_zeroth_layer_weights()" << endl;
 //   cout << "n_rows = " << nrows << " n_cols = " << ncols << endl;
+
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    

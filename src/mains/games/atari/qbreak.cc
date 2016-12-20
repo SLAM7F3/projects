@@ -499,8 +499,6 @@ int main(int argc, char** argv)
 //                 << " renorm_reward = " << renorm_reward << endl;
          }
 
-         reinforce_agent_ptr->accumulate_reward(curr_reward);
-
          if(d >= 0 && game_world.get_game_over())
          {
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/13/16; 12/15/16; 12/19/16; 20/20/16
+// Last modified on 12/13/16; 12/15/16; 12/19/16; 12/20/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -75,7 +75,6 @@ class reinforce
    void initialize_episode();
    void snapshot_running_reward();
    void snapshot_cumulative_reward(double cum_reward);
-   void accumulate_reward(double curr_reward);
    void append_n_frames_per_episode(int n_frames);
    void append_epsilon();
 
@@ -270,7 +269,6 @@ class reinforce
    std::vector<std::vector<double> > weight_4, weight_5, weight_6;
    std::vector<std::vector<double> > weight_7, weight_8, weight_9;
 
-   double reward_sum;
    std::vector<double> running_reward_snapshots;
    std::vector<double> cumulative_reward_snapshots;
    int episode_number;

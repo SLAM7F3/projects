@@ -84,10 +84,11 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 10 * sqr(n_grid_size);
-//   int replay_memory_capacity = 25 * sqr(n_grid_size);
+//   int replay_memory_capacity = 10 * sqr(n_grid_size);
+   int replay_memory_capacity = 25 * sqr(n_grid_size);
+   int eval_memory_capacity = 0.1 * replay_memory_capacity;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, 1, replay_memory_capacity,
+      layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
 //      reinforce::SGD);
 //      reinforce::MOMENTUM);
 //      reinforce::NESTEROV);
@@ -198,6 +199,7 @@ int main (int argc, char* argv[])
 // ==========================================================================
 // Reinforcement training loop starts here
       
+   bool eval_memory_full_flag = false;
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes &&
          Qmap_score < 0.999999)
    {
@@ -228,13 +230,23 @@ int main (int argc, char* argv[])
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
 
+      int d = -1;
       double reward;
       genvector* next_s;
+      double cum_reward = 0;
+
       while(!game_world.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
-         int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-            *curr_s);
+         eval_memory_full_flag = 
+            reinforce_agent_ptr->store_curr_state_into_eval_memory(*curr_s);
+
+         if(eval_memory_full_flag)
+         {
+            d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+               *curr_s);
+         }
+         
          int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
 //         cout << "   d = " << d << " curr_a = " << curr_a << endl;
 
@@ -252,17 +264,21 @@ int main (int argc, char* argv[])
 
 //         cout << "   reward = " << reward 
 //              << " game over = " << game_world.get_game_over() << endl;
+         cum_reward += reward;
 
-         if(d >= 0 && game_world.get_game_over())
+         if(d >= 0)
          {
-            reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
-               d, curr_a, reward);
-         }
-         else
-         {
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, reward, *next_s, game_world.get_game_over());
-         }
+            if(game_world.get_game_over())
+            {
+               reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
+                  d, curr_a, reward);
+            }
+            else 
+            {
+               reinforce_agent_ptr->store_arsprime_into_replay_memory(
+                  d, curr_a, reward, *next_s, game_world.get_game_over());
+            }
+         } // d >= 0 conditional
       } // game_over while loop
 
 // -----------------------------------------------------------------------
@@ -270,7 +286,15 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->append_n_frames_per_episode(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->append_epsilon();
+      reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
       reinforce_agent_ptr->increment_episode_number();
+      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+
+      if(total_loss > 0)
+      {
+         reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
+      }
+
 
 // Periodically copy current weights into old weights:
 
@@ -309,12 +333,6 @@ int main (int argc, char* argv[])
          cout << "  Qmap_score = " << Qmap_score << endl;
          reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
 
-         if(total_loss > 0)
-         {
-            cout << "  Total loss = " << total_loss 
-                 << " log10(total_loss) = " << log10(total_loss) << endl;
-            reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
-         }
 
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
@@ -355,7 +373,9 @@ int main (int argc, char* argv[])
 
 // Generate metafiles for Qmap and loss function histories:
 
-   reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+   bool epoch_indep_var = false;
+   reinforce_agent_ptr->generate_summary_plots(
+      output_subdir, extrainfo, epoch_indep_var);
    reinforce_agent_ptr->plot_Qmap_score_history(
       output_subdir, subtitle, extrainfo);
 
@@ -366,7 +386,7 @@ int main (int argc, char* argv[])
    filefunc::dircreate(weights_subdir);
    reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
 
-   curr_maze.DisplayTrainedZerothLayerWeights(weights_subdir);
+//   curr_maze.DisplayTrainedZerothLayerWeights(weights_subdir);
 
    delete reinforce_agent_ptr;
 }

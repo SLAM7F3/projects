@@ -775,7 +775,6 @@ void maze::DrawMaze(int counter, string output_subdir, string basename,
 {
    // prepare BGR image
    size_t DataSize = 3 * ImageSize * ImageSize;
-
    unsigned char* Img = new unsigned char[ DataSize ];
 
    memset( Img, 0, DataSize );
@@ -1031,17 +1030,23 @@ void maze::draw_max_Qmap(unsigned char* img)
 
 void maze::color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr)
 {
+   cout << "inside maze::color_cells, img = " << img << endl;
+   cout << "max_qmap.size = " << max_qmap.size() << endl;
+   cout << "*wtwoDArray_ptr = " << *wtwoDarray_ptr << endl;
+   
    for(max_qmap_iter = max_qmap.begin(); 
        max_qmap_iter != max_qmap.end(); max_qmap_iter++)
    {
       int turtle_cell = max_qmap_iter->first;
       int tx, ty;
       decompose_turtle_cell(turtle_cell, tx, ty);
+      cout << "turtle_cell = " << turtle_cell 
+           << " tx = " << tx << " ty = " << ty << endl;
       int px = tx / 2;
       int py = ty / 2;
-      int turtle_direction = max_qmap_iter->second.second;
 
       double curr_w = wtwoDarray_ptr->get(tx,ty);
+      cout << "curr_w = " << curr_w << endl;
       double h = (1 - curr_w/255.0) * 270;
       double s = 1;
       double v = 0.4;
@@ -1050,8 +1055,12 @@ void maze::color_cells(unsigned char* img, twoDarray* wtwoDarray_ptr)
       int R = 255 * r;
       int G = 255 * g;
       int B = 255 * b;
+      cout << "px = " << px << " py = " << py << " R = " << G
+           << " G = " << G << " B = " << B << endl;
       FillCell(img, px, py, R, G, B);
+      cout << "After FillCell" << endl;
    } // loop over max_qmap_iter
+   cout << "at end of maze::color_cells" << endl;
 }
 
 // ---------------------------------------------------------------------
