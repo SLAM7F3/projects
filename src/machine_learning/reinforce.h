@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/13/16; 12/15/16; 12/19/16; 12/20/16
+// Last modified on 12/15/16; 12/19/16; 12/20/16; 12/21/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -125,6 +125,10 @@ class reinforce
    void export_snapshot(std::string output_subdir);
    void import_snapshot();
 
+// General learning methods:
+
+   void clear_delta_nablas();
+
 // Q learning methods
 
    bool get_replay_memory_full() const;
@@ -182,6 +186,12 @@ class reinforce
    double compute_target(
       int curr_a, int player_value, double curr_r, bool terminal_state_flag);
    double get_prev_afterstate_curr_value();
+
+
+// Policy gradient learning methods
+
+
+   void P_forward_propagate(genvector* s_input);
 
   private:
 

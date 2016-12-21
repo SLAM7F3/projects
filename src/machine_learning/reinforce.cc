@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/15/16; 12/17/16; 12/19/16; 12/20/16
+// Last modified on 12/17/16; 12/19/16; 12/20/16; 12/21/16
 // ==========================================================================
 
 #include <string>
@@ -1859,6 +1859,29 @@ void reinforce::import_snapshot()
 }
 
 // ==========================================================================
+// General learning methods
+// ==========================================================================
+
+// Member function clear_delta_nablas() initializes "batch" weight and
+// bias gradients to zero.
+
+void reinforce::clear_delta_nablas()
+{
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         delta_nabla_biases[l]->clear_values();
+      }
+   }
+
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      delta_nabla_weights[l]->clear_values();
+   }
+}
+
+// ==========================================================================
 // Q learning methods
 // ==========================================================================
 
@@ -2532,20 +2555,7 @@ double reinforce::update_neural_network(bool verbose_flag)
 
 double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 {
-   // Initialize "batch" weight gradients to zero:
-
-   if(include_bias_terms)
-   {
-      for(int l = 0; l < n_layers; l++)
-      {
-         delta_nabla_biases[l]->clear_values();
-      }
-   }
-
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      delta_nabla_weights[l]->clear_values();
-   }
+   clear_delta_nablas();
 
 // Calculate target for curr transition sample:
 
@@ -2873,9 +2883,212 @@ double reinforce::get_prev_afterstate_curr_value()
    return compute_value(prev_afterstate_ptr);
 }
 
+// ==========================================================================
+// Policy gradient learning methods
+// ==========================================================================
+
+// Member function P_forward_propagate() performs a feedforward pass
+// for the input state s to get predicted probabilities for all
+// actions.
+
+void reinforce::P_forward_propagate(genvector* s_input)
+{
+   *A_Prime[0] = *s_input;
+ 
+   for(int l = 0; l < n_layers-1; l++)
+   {
+      if(include_bias_terms)
+      {
+         Z_Prime[l+1]->matrix_vector_mult_sum(
+            *weights[l], *A_Prime[l], *biases[l+1]);
+      }
+      else
+      {
+         Z_Prime[l+1]->matrix_vector_mult(*weights[l], *A_Prime[l]);
+      }
+
+//      machinelearning_func::batch_normalization(
+//         *Z_Prime[l+1], *gammas[l+1], *betas[l+1]);
+
+      if(l == n_layers - 2)
+      {
+         machinelearning_func::softmax(*Z_Prime[l+1], *A_Prime[l+1]);
+      }
+      else
+      {
+         machinelearning_func::leaky_ReLU(*Z_Prime[l+1], *A_Prime[l+1]);
+      }
+   } // loop over index l labeling network layers
+}
 
 
+/*
+// ---------------------------------------------------------------------
+// Member function P_backward_propagate()
 
+double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
+{
+   clear_delta_nablas();
 
+// Calculate target for curr transition sample:
 
+   int curr_a;
+   double curr_r;
+   bool terminal_state_flag = get_replay_memory_entry(
+      d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
+   double target_value = 
+      compute_target(curr_r, next_s_sample, terminal_state_flag);
 
+   if(verbose_flag)
+   {
+      cout << "inside Q_backward_propagate()" << endl;
+      cout << "  curr_r = " << curr_r << " target_value = " << target_value
+           << endl;
+   }
+
+// First need to perform forward propagation for *curr_s_sample in
+// order to repopulate linear z inputs and nonlinear a outputs for
+// each node in the neural network:
+
+   Q_forward_propagate(curr_s_sample);
+
+   int curr_layer = n_layers - 1;
+
+// Eqn BP1:
+
+   double curr_loss = -1;
+   for(int j = 0; j < layer_dims[curr_layer]; j++)
+   {
+      double curr_Q = A_Prime[curr_layer]->get(j);
+      double curr_activation = 0;
+      if(j == curr_a)
+      {
+         curr_activation = curr_Q - target_value;
+         curr_loss = 0.5 * sqr(curr_activation);
+      }
+      Delta_Prime[curr_layer]->put(j, curr_activation);
+   }
+
+   if(curr_loss <= 0)
+   {
+      cout << "Current loss = " << curr_loss << endl;
+      cout << "  curr_s_sample.mag = " << curr_s_sample->magnitude()
+           << endl;
+      for(int l = 0; l < n_layers; l++)
+      {
+         cout << "l = " << l
+              << " A_Prime.mag = " << A_Prime[l]->magnitude()
+              << endl;
+      }
+
+      for(int j = 0; j < layer_dims[curr_layer]; j++)
+      {
+         double curr_Q = A_Prime[curr_layer]->get(j);
+         cout << "   j = " << j << " curr_Q = " << curr_Q 
+              << " target = " << target_value
+              << " curr_a = " << curr_a 
+              << " curr_r = " << curr_r 
+              << endl;
+      }
+   }
+
+   for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
+   {
+
+// Don't bother backpropagating if current layer has zero content:
+//      if(Delta_Prime[curr_layer]->magnitude() <= 0) break;
+
+      int prev_layer = curr_layer - 1;
+
+// Eqn BP2A:
+
+// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
+// to curr layer nodes:
+
+      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
+
+      Delta_Prime[prev_layer]->matrix_vector_mult(
+         *weights_transpose[prev_layer], *Delta_Prime[curr_layer]);
+
+// Eqn BP2B (Leaky ReLU):
+      for(int j = 0; j < layer_dims[prev_layer]; j++)
+      {
+         if(Z_Prime[prev_layer]->get(j) < 0)
+         {
+//            Delta_Prime[prev_layer]->put(j, 0);
+            Delta_Prime[prev_layer]->put(
+               j, machinelearning_func::get_leaky_ReLU_small_slope() * 
+               Delta_Prime[prev_layer]->get(j));
+         }
+      } // loop over j index
+
+// Accumulate bias & weight gradients over batch of episodes:
+
+// Eqn BP3:
+
+      if(include_bias_terms)
+      {
+         *delta_nabla_biases[curr_layer] = *Delta_Prime[curr_layer];
+      }
+
+// Eqn BP4:
+
+      delta_nabla_weights[prev_layer]->accumulate_outerprod(
+         *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
+
+      const double TINY = 1E-8;
+      if(lambda > TINY)
+      {
+//         if(include_bias_terms)
+//         {
+//            *delta_nabla_biases[curr_layer] += 
+//               2 * lambda * (*biases[curr_layer]);
+//         }
+         *delta_nabla_weights[prev_layer] += 
+            2 * (lambda / n_weights) * (*weights[prev_layer]);
+      }
+
+   } // loop over curr_layer index
+
+// Accumulate biases' and weights' gradients for each network layer:
+
+   double inverse_Nd = 1.0 / Nd;
+//   cout << "inverse_Nd = " << inverse_Nd << endl;
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         nabla_biases[l]->vector_increment(inverse_Nd, *delta_nabla_biases[l]);
+      }
+   }
+   
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      nabla_weights[l]->matrix_increment(inverse_Nd, *delta_nabla_weights[l]);
+   }
+
+   n_backprops++;
+
+// Add L2 regularization term's contribution to total loss function:
+
+   const double TINY = 1E-8;
+   if(lambda > TINY)
+   {
+      double sqrd_weight_sum = 0;
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+         {
+            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+            {
+               sqrd_weight_sum += sqr(weights[l]->get(r,c));
+            }
+         }
+      } // loop over index l labeling network layers
+      curr_loss += (lambda / n_weights) * sqrd_weight_sum;
+   }
+
+   curr_loss *= inverse_Nd;
+   return curr_loss;
+}
+*/
