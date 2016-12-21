@@ -2638,10 +2638,191 @@ Conclusions after overnight runs from Tues Dec 20:  Replay memory should be
 at least 200K in size.  We should next try to increase backprop calls by a
 factor of 10 so that they are performed after every action.  
 
+156.  Titan 1:  Run pbreak with H1 = 64, H2 = 0
+
+Wed Dec 21 08:42:19 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 2
+   n_weights = 131328 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -38538
+
+Weights stop evolving around epoch 80.  No signs of learning.
+TERMINATED.
+
+157.  Titan 1:  Repeat expt 156
+
+Weights stop evolving.  No learning.
+TERMINATED.
+
+158.  Titan 1:  Run pbreak with H1 = 32, H2 = 32
+
+Wed Dec 21 08:43:43 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -38621
+
+Weights stop evolving.  Very small rise in reward and nframes/episode.
+TERMINATED.
+
+159.  Titan 1:  Repeat expt 158
+
+160.  Titan 3: H1 = 64; H2 = 0; leaky relu slope = 0.01
+
+Wed Dec 21 08:53:06 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 2
+   n_weights = 131328 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -39184
+
+Initial rise in reward & nframes/episode stops after weights cease to
+evolve.  TERMINATED.
+
+161.  TM:  H1 = H2 = 32; leaky relu slope = 0.01
+
+Wed Dec 21 08:54:03 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -39239
+
+No significant weight evolution.  TERMINATED.
+
+162.  TM:  H1 = H2 = 32; leaky relu slope = 0
+
+Wed Dec 21 09:44:57 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -42294
+
+Small rise in reward and nframes/episode.  But no intelligent game play.
+Weights also don't evolve much.  TERMINATED.  
+
+163.  TM:  H1 = 32; H2 = 64; leaky relu slope = 0.01
+
+Wed Dec 21 10:31:01 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -45059
+
+No siginficant weight evolution.  TERMINATED.
+
+164.  TM:  repeat expt 163
+
+TERMINATED.
+
+
 -------------------------------------------------------------
 RUNNING EXPERIMENTS
 -------------------------------------------------------------
-
 
 154.  Titan 3:  H1 = 16, H2 = 64; perform backprop after every action;
 replay mem size = 200K
@@ -2680,8 +2861,119 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -26640
 
-
 155.  Titan 3:  repeat expt 154
+
+165.  Titan 3:  H1 = H2 = 64; replay mem size = 4K; blr = 3E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:22:30 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -51747
+
+166. Titan 3:  repeat expt 165
+
+167.  Titan 1:  H1 = H2 = 64; replay mem size = 4K; blr = 1E-2; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:26:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.01; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -51963
+
+168.  Titan 1:  repeat expt 167
+
+169.  Titan 1:  H1 = 64; H2 = 128; replay mem size = 4K; blr = 3E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:27:54 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 139648 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -52072
+
+170.  Titan 1:  Repeat expt 169
+
+171.  TM:  H1 = 64; H2 = 128; replay mem size = 4K; blr = 1E-2; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:31:13 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 139648 (FC)
+base_learning_rate = 0.01; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -52269
+
+172  TM.  Repeat expt 171
 
 
 ===========================================================
