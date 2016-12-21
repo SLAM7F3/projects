@@ -113,8 +113,8 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_lambda(0.0);
    reinforce_agent_ptr->set_lambda(1E-2);
 //   reinforce_agent_ptr->set_lambda(1E-3);
-   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
-//   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
 
