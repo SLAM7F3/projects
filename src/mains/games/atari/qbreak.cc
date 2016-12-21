@@ -339,13 +339,12 @@ int main(int argc, char** argv)
 
          if(cum_framenumber % game_world.get_frame_skip() == 0)
          {
-            n_state_updates++;
-
             if(use_big_states_flag)
             {
                if(breakout_ptr->crop_pool_curr_frame(export_frames_flag))
                {
                   state_updated_flag = true;
+                  n_state_updates++;
                   breakout_ptr->update_curr_big_state();
                }
             }
@@ -357,6 +356,7 @@ int main(int argc, char** argv)
                         export_frames_flag))
                   {
                      state_updated_flag = true;
+                     n_state_updates++;
                   }
                }
                else if (breakout_ptr->get_compute_max_flag())
@@ -365,6 +365,7 @@ int main(int argc, char** argv)
                         export_frames_flag))
                   {
                      state_updated_flag = true;
+                     n_state_updates++;
                   }
                }
             }

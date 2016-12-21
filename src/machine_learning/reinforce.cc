@@ -256,7 +256,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       
    } // loop over index l labeling neural net layers
 
-
    snapshots_subdir="";
 
 // Q learning variable initialization:
@@ -275,12 +274,23 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // ---------------------------------------------------------------------
 void reinforce::allocate_member_objects()
 {
-   s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
+
    s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
    a_curr = new genvector(replay_memory_capacity);
    r_curr = new genvector(replay_memory_capacity);
    s_next = new genmatrix(replay_memory_capacity, layer_dims.front());
    terminal_state = new genvector(replay_memory_capacity);
+
+   if (learning_type == QLEARNING)
+   {
+      s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
+      prob_a = NULL;
+   }
+   else if(learning_type == PLEARNING)
+   {
+      s_eval = NULL;
+      prob_a = new genvector(replay_memory_capacity);      
+   }
 
    curr_s_sample = new genvector(layer_dims.front());
    next_s_sample = new genvector(layer_dims.front());
@@ -297,12 +307,26 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer)
 }
 
 reinforce::reinforce(const vector<int>& n_nodes_per_layer, 
+                     int replay_memory_capacity, int solver_type)
+{
+   this->replay_memory_capacity = replay_memory_capacity;
+   this->eval_memory_capacity = -1;
+   this->solver_type = solver_type;
+   this->learning_type = PLEARNING;
+
+   initialize_member_objects(n_nodes_per_layer);
+   allocate_member_objects();
+   this->batch_size = -1;
+}
+
+reinforce::reinforce(const vector<int>& n_nodes_per_layer, 
                      int batch_size, int replay_memory_capacity,
                      int eval_memory_capacity, int solver_type)
 {
    this->replay_memory_capacity = replay_memory_capacity;
    this->eval_memory_capacity = eval_memory_capacity;
    this->solver_type = solver_type;
+   this->learning_type = QLEARNING;
 
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
@@ -373,6 +397,7 @@ reinforce::~reinforce()
    delete r_curr;
    delete s_next;
    delete terminal_state;
+   delete prob_a;
    delete curr_s_sample;
    delete next_s_sample;
    delete prev_afterstate_ptr;
@@ -2220,6 +2245,11 @@ void reinforce::store_final_arsprime_into_replay_memory(
 //   cout << "curr_r = " << curr_r << endl;
 }
 
+void reinforce::store_action_prob_into_replay_memory(int d, double prob)
+{
+   prob_a->put(d, prob);
+}
+
 // ---------------------------------------------------------------------
 // Member function get_replay_memory_entry()
 
@@ -2488,8 +2518,7 @@ double reinforce::update_neural_network(bool verbose_flag)
          *weights[l] -= learning_rate * (*adam_m[l]);
       }
       
-      debug_flag = true;
-      if(debug_flag)
+      if(verbose_flag)
       {
          int mdim = nabla_weights[l]->get_mdim();
          int ndim = nabla_weights[l]->get_ndim();
@@ -2520,25 +2549,22 @@ double reinforce::update_neural_network(bool verbose_flag)
             curr_nabla_weight_ratios);
 //         double mean_abs_adam_m = mathfunc::mean(curr_adam_ms);
             
-         if(verbose_flag)
-         {
-            cout << "layer l = " << l
-                 << " mean |nabla weight| = " 
-                 << mean_abs_nabla_weight 
-                 << " mean |nabla weight/weight| = " 
-                 << mean_abs_nabla_weight_ratio  << endl;
+         cout << "layer l = " << l
+              << " mean |nabla weight| = " 
+              << mean_abs_nabla_weight 
+              << " mean |nabla weight/weight| = " 
+              << mean_abs_nabla_weight_ratio  << endl;
             
-            cout << " lr * mean |nabla_weight| = " 
-                 << learning_rate * mean_abs_nabla_weight 
-                 << "  lr * mean |nabla_weight/weight| = " 
-                 << learning_rate * mean_abs_nabla_weight_ratio << endl;
-            
+         cout << " lr * mean |nabla_weight| = " 
+              << learning_rate * mean_abs_nabla_weight 
+              << "  lr * mean |nabla_weight/weight| = " 
+              << learning_rate * mean_abs_nabla_weight_ratio << endl;
+         
 //         cout << " mean_abs_adam_m = " << mean_abs_adam_m
 //              << " lr * mean_abs_adam_m = " << learning_rate * mean_abs_adam_m
 //              << endl;
-         }
-         
-      } // debug_flag conditional
+
+      } // verbose_flag conditional
       
       if(include_bias_terms) nabla_biases[l]->clear_values();
       nabla_weights[l]->clear_values();
@@ -2921,30 +2947,46 @@ void reinforce::P_forward_propagate(genvector* s_input)
    } // loop over index l labeling network layers
 }
 
+// ---------------------------------------------------------------------
+// Member function get_P_action_for_curr_state() returns integer index
+// a for the action which is stochastically sampled from the
+// probability distribution encoded in the P-network's final layer.
+// It also returns the probability associated with the sampled action.
+
+int reinforce::get_P_action_for_curr_state(double& prob_a)
+{
+   genvector* curr_s = environment_ptr->get_curr_state();
+   P_forward_propagate(curr_s);
+
+   double ran_val = nrfunc::ran1();
+
+   double cum_p = 0;
+   for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
+   {
+      prob_a = A_Prime[n_layers-1]->get(a);
+      if(ran_val >= cum_p && ran_val <= cum_p + prob_a)
+      {
+         return a;
+      }
+      else
+      {
+         cum_p += prob_a;
+      }
+   }
+
+   cout << "Error in reinforce::get_P_action_for_curr_state()" << endl;
+   cout << "Should not have reached this point" << endl;
+   exit(-1);
+   return -1;
+}
 
 /*
 // ---------------------------------------------------------------------
 // Member function P_backward_propagate()
 
-double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
+double reinforce::P_backward_propagate(int d, bool verbose_flag)
 {
    clear_delta_nablas();
-
-// Calculate target for curr transition sample:
-
-   int curr_a;
-   double curr_r;
-   bool terminal_state_flag = get_replay_memory_entry(
-      d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
-   double target_value = 
-      compute_target(curr_r, next_s_sample, terminal_state_flag);
-
-   if(verbose_flag)
-   {
-      cout << "inside Q_backward_propagate()" << endl;
-      cout << "  curr_r = " << curr_r << " target_value = " << target_value
-           << endl;
-   }
 
 // First need to perform forward propagation for *curr_s_sample in
 // order to repopulate linear z inputs and nonlinear a outputs for
@@ -2967,29 +3009,6 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
          curr_loss = 0.5 * sqr(curr_activation);
       }
       Delta_Prime[curr_layer]->put(j, curr_activation);
-   }
-
-   if(curr_loss <= 0)
-   {
-      cout << "Current loss = " << curr_loss << endl;
-      cout << "  curr_s_sample.mag = " << curr_s_sample->magnitude()
-           << endl;
-      for(int l = 0; l < n_layers; l++)
-      {
-         cout << "l = " << l
-              << " A_Prime.mag = " << A_Prime[l]->magnitude()
-              << endl;
-      }
-
-      for(int j = 0; j < layer_dims[curr_layer]; j++)
-      {
-         double curr_Q = A_Prime[curr_layer]->get(j);
-         cout << "   j = " << j << " curr_Q = " << curr_Q 
-              << " target = " << target_value
-              << " curr_a = " << curr_a 
-              << " curr_r = " << curr_r 
-              << endl;
-      }
    }
 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
@@ -3015,7 +3034,6 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
       {
          if(Z_Prime[prev_layer]->get(j) < 0)
          {
-//            Delta_Prime[prev_layer]->put(j, 0);
             Delta_Prime[prev_layer]->put(
                j, machinelearning_func::get_leaky_ReLU_small_slope() * 
                Delta_Prime[prev_layer]->get(j));
@@ -3043,7 +3061,7 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 //         {
 //            *delta_nabla_biases[curr_layer] += 
 //               2 * lambda * (*biases[curr_layer]);
-//         }
+         //        }
          *delta_nabla_weights[prev_layer] += 
             2 * (lambda / n_weights) * (*weights[prev_layer]);
       }
@@ -3092,3 +3110,146 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
    return curr_loss;
 }
 */
+
+// ---------------------------------------------------------------------
+// Member function update_P_network() 
+
+double reinforce::update_P_network(bool verbose_flag)
+{
+//   cout << "inside update_P_network()" << endl;
+
+   compute_renormalized_discounted_eventual_rewards();
+
+// Compute total loss = -sum_i advantage_i * log(action prob_i)
+
+   double total_loss = 0;
+   for(int d = 0; d < replay_memory_capacity; d++)
+   {
+      double curr_advantage = r_curr->get(d);
+      double curr_loss = - curr_advantage * log(prob_a->get(d));
+
+// Backpropagate weights and biases given curr loss for dth entry
+// within replay memory:
+
+      total_loss += curr_loss;
+   } // loop over index j labeling replay memory samples
+   total_loss /= replay_memory_capacity;
+//   cout << "total_loss = " << total_loss << endl;
+
+   if(solver_type == RMSPROP)
+   {
+      if(include_bias_terms)
+      {
+         update_biases_cache(rmsprop_decay_rate);
+      }
+      update_rmsprop_cache(rmsprop_decay_rate);
+   }
+   
+// Update weights and biases for each network layer by their nabla
+// values averaged over the current mini-batch:
+
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         if (solver_type == RMSPROP)
+         {
+            rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+            rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
+            nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
+            *biases[l] -= learning_rate * (*nabla_biases[l]);
+         }
+//      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
+      } // loop over index l labeling network layers
+   } // include_bias_terms_flag
+   
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      if(solver_type == RMSPROP)
+      {
+         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
+         *weights[l] -= learning_rate * (*nabla_weights[l]);
+      }
+      
+      if(verbose_flag)
+      {
+         int mdim = nabla_weights[l]->get_mdim();
+         int ndim = nabla_weights[l]->get_ndim();
+         
+         vector<double> curr_nabla_weights;
+         vector<double> curr_nabla_weight_ratios;
+         for(int r = 0; r < mdim; r++)
+         {
+            for(int c = 0; c < ndim; c++)
+            {
+               curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(r,c)));
+               double denom = weights[l]->get(r,c);
+               if(fabs(denom) > 1E-10)
+               {
+                  curr_nabla_weight_ratios.push_back(
+                     fabs(nabla_weights[l]->get(r,c) / denom ));
+               }
+            }
+         }
+         double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+         double mean_abs_nabla_weight_ratio = mathfunc::mean(
+            curr_nabla_weight_ratios);
+            
+         cout << "layer l = " << l
+              << " mean |nabla weight| = " 
+              << mean_abs_nabla_weight 
+              << " mean |nabla weight/weight| = " 
+              << mean_abs_nabla_weight_ratio  << endl;
+         
+         cout << " lr * mean |nabla_weight| = " 
+              << learning_rate * mean_abs_nabla_weight 
+              << "  lr * mean |nabla_weight/weight| = " 
+              << learning_rate * mean_abs_nabla_weight_ratio << endl;
+      } // verbose_flag conditional
+      
+      if(include_bias_terms) nabla_biases[l]->clear_values();
+      nabla_weights[l]->clear_values();
+   }
+
+   return total_loss;
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_renormalized_discounted_eventual_rewards()
+// replaces the reward received at every time step with a renormalized
+// discounted eventual reward.
+
+void reinforce::compute_renormalized_discounted_eventual_rewards()
+{
+   double next_R = 0;
+   vector<double> discounted_eventual_rewards;
+   for(int d = replay_memory_capacity - 1; d >= 0; d--)
+   {
+      int curr_a;
+      double curr_r;
+      bool terminal_state = get_replay_memory_entry(
+         d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
+
+      if(terminal_state)
+      {
+         next_R = 0;
+      }
+      double curr_R = curr_r + gamma * next_R;
+      discounted_eventual_rewards.push_back(curr_R);
+      r_curr->put(d, curr_R);
+      next_R = curr_R;
+   } // loop over index d labeling replay memory entries
+
+// Renormalize discounted eventual rewards so that they have zero mean
+// and unit standard deviation:
+
+   double mu, sigma;
+   mathfunc::mean_and_std_dev(discounted_eventual_rewards, mu, sigma);
+   
+   for(int d = 0; d < replay_memory_capacity; d++)
+   {
+      r_curr->put(d, (r_curr->get(d) - mu) / sigma);
+   }
+}

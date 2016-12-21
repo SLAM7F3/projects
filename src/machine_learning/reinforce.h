@@ -24,6 +24,12 @@ class reinforce
   public:
 
    typedef enum{
+      QLEARNING = 0,
+      PLEARNING = 1,  // policy gradients
+      VLEARNING = 2
+   } learning_t;
+
+   typedef enum{
       SGD = 0,
       RMSPROP = 1,
       MOMENTUM = 2,
@@ -38,6 +44,8 @@ class reinforce
 // Initialization, constructor and destructor functions:
 
    reinforce(const std::vector<int>& n_nodes_per_layer);
+   reinforce(const std::vector<int>& n_nodes_per_layer,
+             int replay_memory_capacity, int solver_type = SGD);
    reinforce(const std::vector<int>& n_nodes_per_layer,
              int batch_size, int replay_memory_capacity, 
              int eval_memory_capacity, int solver_type = SGD);
@@ -156,6 +164,7 @@ class reinforce
       const genvector& next_s, bool terminal_state_flag);
    void store_final_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r);
+   void store_action_prob_into_replay_memory(int d, double prob);
    double update_neural_network(bool verbose_flag = false);
    bool get_replay_memory_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
@@ -187,16 +196,18 @@ class reinforce
       int curr_a, int player_value, double curr_r, bool terminal_state_flag);
    double get_prev_afterstate_curr_value();
 
-
 // Policy gradient learning methods
 
-
    void P_forward_propagate(genvector* s_input);
+   int get_P_action_for_curr_state(double& prob_a);
+   double update_P_network(bool verbose_flag);
+   void compute_renormalized_discounted_eventual_rewards();
 
   private:
 
    bool include_bias_terms;
    bool debug_flag;
+   int learning_type;
    int solver_type;
    int n_layers, n_actions, n_weights;
    int n_backprops;
@@ -308,6 +319,7 @@ class reinforce
    genvector *r_curr;  // replay_memory_capacity x 1  (Holds rewards)
    genmatrix *s_next;  // replay_memory_capacity x Din
    genvector *terminal_state;   // replay_memory_capacity x 1
+   genvector *prob_a;  // replay_memory_capacity x 1
 
    genvector *curr_s_sample, *next_s_sample;  // Din x 1 
 
