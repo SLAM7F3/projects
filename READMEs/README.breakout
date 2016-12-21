@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/17/16; 12/18/16; 12/19/16; 12/20/16
+Last updated on 12/18/16; 12/19/16; 12/20/16; 12/21/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -2445,10 +2445,6 @@ Conclusions from overnight experiments run on Monday, Dec 19:
 H1 = 32 might be better than H1 = 16.  But as of 12/20/16, we suspect that
 increasing replay memory size is far more important.
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
 146.  m6700: H1 = 16, H2 = 64, independent time var = epoch rather than
 episode
 
@@ -2535,7 +2531,16 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -42514
 
+After 500 epochs, log10(loss) = -1, epsilon = 0.3; reasonable weight dists
+and coeffs; reward --> 2.0 and very slowly rising; nframes/episode --> 824
+and very slowly rising; some signs of ball tracks in 0th layer weights;
+screen exports show paddle occasionally following ball away from side
+walls. maxQ very slowly rising.
+
+
 149. Titan 3:  Repeat expt 146
+
+Qualitatively similar results to expt 148
 
 150.  Titan 3:  Increase Nd --> 32 and replay memory size --> 200K
 Tue Dec 20 06:06:01 2016
@@ -2572,7 +2577,17 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -42759
 
+After 480 epochs, maxQ slowly rising; eps = 0.4; log10(loss) = -1; reward =
+1.9 and very slowly rising; nframes/episode = 804 and very slowly rising; 
+reasonable weight dists and values; Almost no signs of game board or tracks
+in 0th layer weights;  usually misses ball, but paddle doesn't always
+remain pinned to side walls
+
 151.  Titan 3:  Repeat expt 150
+
+Qualitatively similar results to expt 150.  But at least game board and
+ball tracks are more visible than in expt 150.  Glimmers of non-stupid play
+in screen exports.
 
 152.  Titan 1:  Nd = 32, replay mem cap = 400K
 
@@ -2610,7 +2625,22 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -43107
 
+After 480 epochs, maxQ is slowly rising.  eps = 0.4, reward and
+nframes/episode went up and then are starting to fall after 250 epochs;
+log10(loss) had big discontinuity around 200 epochs;  Visible tracks in 0th
+layer weights; glimmers of non-stupid play in screen exports;
+
 153.  Titan 1:  Repeat expt 152.
+
+Not great results after 480 epochs.
+
+Conclusions after overnight runs from Tues Dec 20:  Replay memory should be
+at least 200K in size.  We should next try to increase backprop calls by a
+factor of 10 so that they are performed after every action.  
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
 
 
 ===========================================================

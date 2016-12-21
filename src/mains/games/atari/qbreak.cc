@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/17/16; 12/18/16; 12/19/16; 12/20/16
+// Last updated on 12/18/16; 12/19/16; 12/20/16; 12/21/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -114,8 +114,8 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
    
-//   int replay_memory_capacity = nframes_per_epoch * 4;
-   int replay_memory_capacity = nframes_per_epoch * 8;
+   int replay_memory_capacity = nframes_per_epoch * 4;
+//   int replay_memory_capacity = nframes_per_epoch * 8;
    int eval_memory_capacity = basic_math::min(
       int(0.1 * replay_memory_capacity), 20000);
    reinforce* reinforce_agent_ptr = new reinforce(
@@ -181,7 +181,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 1 * 1000;
 
-   int nn_update_frame_period = 10;
+   int nn_update_frame_period = 1;
+//   int nn_update_frame_period = 10;
 //   int nn_update_frame_period = 25;
    int old_weights_period_in_epochs = 2;    
 
@@ -535,6 +536,10 @@ int main(int argc, char** argv)
             cum_framenumber % nn_update_frame_period == 0)
          {
             bool verbose_flag = false;
+            if(curr_episode_number % 10 == 0)
+            {
+               verbose_flag = true;
+            }
             total_loss = reinforce_agent_ptr->update_neural_network(
                verbose_flag);
          }
@@ -622,6 +627,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->copy_weights_onto_old_weights();
       }
 
+/*
       if(reinforce_agent_ptr->get_replay_memory_full())
       {
          bool verbose_flag = false;
@@ -632,6 +638,7 @@ int main(int argc, char** argv)
          total_loss = reinforce_agent_ptr->update_neural_network(
             verbose_flag);
       }
+*/
 
 // Slowly decay epsilon over time:
 
