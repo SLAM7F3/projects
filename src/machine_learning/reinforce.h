@@ -200,6 +200,7 @@ class reinforce
 
    void P_forward_propagate(genvector* s_input);
    int get_P_action_for_curr_state(double& prob_a);
+   double P_backward_propagate(int d, int Nd, bool verbose_flag);
    double update_P_network(bool verbose_flag);
    void compute_renormalized_discounted_eventual_rewards();
 

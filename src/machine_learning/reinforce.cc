@@ -2706,7 +2706,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 // Accumulate biases' and weights' gradients for each network layer:
 
    double inverse_Nd = 1.0 / Nd;
-//   cout << "inverse_Nd = " << inverse_Nd << endl;
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
@@ -2980,13 +2979,20 @@ int reinforce::get_P_action_for_curr_state(double& prob_a)
    return -1;
 }
 
-/*
 // ---------------------------------------------------------------------
 // Member function P_backward_propagate()
 
-double reinforce::P_backward_propagate(int d, bool verbose_flag)
+double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 {
    clear_delta_nablas();
+
+// Calculate target for curr transition sample:
+
+   int curr_a;
+   double curr_advantage;
+   bool terminal_state_flag = get_replay_memory_entry(
+      d, *curr_s_sample, curr_a, curr_advantage, *next_s_sample);
+   double action_prob = prob_a->get(d);
 
 // First need to perform forward propagation for *curr_s_sample in
 // order to repopulate linear z inputs and nonlinear a outputs for
@@ -2994,22 +3000,22 @@ double reinforce::P_backward_propagate(int d, bool verbose_flag)
 
    Q_forward_propagate(curr_s_sample);
 
+   double curr_loss = - curr_advantage * log(action_prob);
+
    int curr_layer = n_layers - 1;
 
 // Eqn BP1:
 
-   double curr_loss = -1;
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
-      double curr_Q = A_Prime[curr_layer]->get(j);
-      double curr_activation = 0;
+      double curr_activation = A_Prime[n_layers-1]->get(j);
       if(j == curr_a)
       {
-         curr_activation = curr_Q - target_value;
-         curr_loss = 0.5 * sqr(curr_activation);
+         curr_activation -= 1.0;
       }
-      Delta_Prime[curr_layer]->put(j, curr_activation);
+      Delta_Prime[curr_layer]->put(j, curr_advantage * curr_activation);
    }
+
 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
    {
@@ -3065,13 +3071,11 @@ double reinforce::P_backward_propagate(int d, bool verbose_flag)
          *delta_nabla_weights[prev_layer] += 
             2 * (lambda / n_weights) * (*weights[prev_layer]);
       }
-
    } // loop over curr_layer index
 
 // Accumulate biases' and weights' gradients for each network layer:
 
    double inverse_Nd = 1.0 / Nd;
-//   cout << "inverse_Nd = " << inverse_Nd << endl;
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
@@ -3087,7 +3091,7 @@ double reinforce::P_backward_propagate(int d, bool verbose_flag)
 
    n_backprops++;
 
-// Add L2 regularization term's contribution to total loss function:
+// Add L2 regularization term's contribution to current loss:
 
    const double TINY = 1E-8;
    if(lambda > TINY)
@@ -3109,7 +3113,6 @@ double reinforce::P_backward_propagate(int d, bool verbose_flag)
    curr_loss *= inverse_Nd;
    return curr_loss;
 }
-*/
 
 // ---------------------------------------------------------------------
 // Member function update_P_network() 
@@ -3125,15 +3128,10 @@ double reinforce::update_P_network(bool verbose_flag)
    double total_loss = 0;
    for(int d = 0; d < replay_memory_capacity; d++)
    {
-      double curr_advantage = r_curr->get(d);
-      double curr_loss = - curr_advantage * log(prob_a->get(d));
-
-// Backpropagate weights and biases given curr loss for dth entry
-// within replay memory:
-
+      double curr_loss = P_backward_propagate(
+         d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
-   total_loss /= replay_memory_capacity;
 //   cout << "total_loss = " << total_loss << endl;
 
    if(solver_type == RMSPROP)
