@@ -1,4 +1,5 @@
 ~/bin/MAKE program=ale_example
+~/bin/MAKE program=preak
 ~/bin/MAKE program=qbreak
 ~/bin/MAKE program=qspace
 ~/bin/MAKE program=ranbreak
