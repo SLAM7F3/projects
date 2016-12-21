@@ -655,6 +655,22 @@ void reinforce::plot_zeroth_layer_weights(
       delete wtwoDarray_ptr;
 
    } // loop over index n labeling weight images
+
+   string script_filename=output_subdir + "view_zeroth_layer_weights";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+   script_stream << "view weights_000.png" << endl;
+   script_stream << "view weights_001.png" << endl;
+   script_stream << "view weights_002.png" << endl;
+   script_stream << "view weights_003.png" << endl;
+   script_stream << "view weights_004.png" << endl;
+   script_stream << "view weights_005.png" << endl;
+   script_stream << "view weights_006.png" << endl;
+   script_stream << "view weights_007.png" << endl;
+   script_stream << "view weights_008.png" << endl;
+   script_stream << "view weights_009.png" << endl;
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
 }
 
 // ---------------------------------------------------------------------
@@ -1724,8 +1740,13 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    script_stream << "view log10_losses_history.jpg" << endl;
    script_stream << "view reward_history.jpg" << endl;
    script_stream << "view frames_history.jpg" << endl;
-   script_stream << "view maxQ_history.jpg" << endl;
-   script_stream << "view epsilon_history.jpg" << endl;
+
+   if(learning_type == QLEARNING)
+   {
+      script_stream << "view maxQ_history.jpg" << endl;
+      script_stream << "view epsilon_history.jpg" << endl;
+   }
+   
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
 

@@ -73,7 +73,8 @@ int main(int argc, char** argv)
 //   int H1 = 16;
 //   int H1 = 32;
 //   int H1 = 64;
-   int H1 = 128;
+//   int H1 = 128;
+   int H1 = 200;
 
    int H2 = 0;
 //   int H2 = 8;
@@ -105,8 +106,8 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
 
-   int replay_memory_capacity = 4 * 1000;
-//   int replay_memory_capacity = 10 * 1000;
+//   int replay_memory_capacity = 4 * 1000;
+   int replay_memory_capacity = 8 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
@@ -141,8 +142,8 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
-   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 
 // Periodically decrease learning rate down to some minimal floor
