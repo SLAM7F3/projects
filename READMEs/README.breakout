@@ -2975,6 +2975,32 @@ Random seed = -52269
 
 172  TM.  Repeat expt 171
 
+173.  TM:  H1 = 128; H2 = 0; replay mem size = 4K; blr = 3E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 14:24:38 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -59076
+
+174.  TM:  Repeat expt 173
 
 ===========================================================
 TODO:

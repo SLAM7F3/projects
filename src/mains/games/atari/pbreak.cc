@@ -72,14 +72,14 @@ int main(int argc, char** argv)
 //   int H1 = 8;
 //   int H1 = 16;
 //   int H1 = 32;
-   int H1 = 64;
-//   int H1 = 128;
+//   int H1 = 64;
+   int H1 = 128;
 
-//   int H2 = 0;
+   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-   int H2 = 64;
+//   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -140,6 +140,7 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
+//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
    reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
