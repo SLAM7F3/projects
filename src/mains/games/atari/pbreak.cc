@@ -75,11 +75,11 @@ int main(int argc, char** argv)
    int H1 = 64;
 //   int H1 = 128;
 
-   int H2 = 0;
+//   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-//   int H2 = 64;
+   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -105,7 +105,8 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
 
-   int replay_memory_capacity = 10 * 1000;
+   int replay_memory_capacity = 4 * 1000;
+//   int replay_memory_capacity = 10 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
@@ -139,9 +140,9 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
-//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
@@ -188,8 +189,8 @@ int main(int argc, char** argv)
    params_stream << "n_actions = " << n_actions << endl;
    params_stream << "Leaky ReLU small slope = "
                  << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
-   params_stream << "Learning rate decrease period = " 
-                 << n_lr_episodes_period << " episodes" << endl;
+//   params_stream << "Learning rate decrease period = " 
+//                 << n_lr_episodes_period << " episodes" << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "Random seed = " << seed << endl;
@@ -211,6 +212,10 @@ int main(int argc, char** argv)
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
+/*
+
+// Periodically decrease learning rate:
+
       if(curr_episode_number > 0 && curr_episode_number%n_lr_episodes_period 
          == 0)
       {
@@ -221,6 +226,7 @@ int main(int argc, char** argv)
             n_lr_episodes_period *= 1.2;
          }
       }
+*/
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
@@ -313,7 +319,6 @@ int main(int argc, char** argv)
             curr_a = prev_a;
             if(state_updated_flag)
             {
-
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
                   prob_a);
                prev_a = curr_a;
@@ -350,12 +355,14 @@ int main(int argc, char** argv)
          if(n_curr_lives != n_prev_lives)
          {
 
+/*
 // Penalize agent whenever it misses the ball:
 
             if(n_prev_lives > 0)
             {
                renorm_reward = -1;
             }
+*/
 
             n_prev_lives = n_curr_lives;
             curr_life_framenumber = 0;
