@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/18/16; 12/19/16; 12/20/16; 12/21/16
+Last updated on 12/19/16; 12/20/16; 12/21/16; 12/22/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -2997,7 +2997,15 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -26640
 
+After 500 epochs, nframes/episode very slowly rises to 800.  eps --> 0.35;
+maxQ very slowly rises; reward slowly rises to 2ish; log10(loss) = -1; 
+weight dists look reasonable
+
 155.  Titan 3:  repeat expt 154
+
+After 500 epochs, eps --> 0.35; reward very slowly rises to 1.5; 
+nframes/episode --> 800 and very slowly rising; maxQ very slowly rising;
+log10(loss) - -1;
 
 179.  Titan 3: H1 = 200; H2 = 0; replay mem size = 16K; blr = 1E-4
 
@@ -3023,7 +3031,14 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -66100
 
+After 140 epochs, nframes/episode is around 700 with no signs of rising ;
+reward is around 1.3 with no signs of rising; 
+
 180.  Titan 3:  repeat expt 179
+
+After 140 epochs, nframes/episode --> 800 with very slowly rise; reward -->
+2.0 with very slowly rise; log10(loss) = -2.25; Almost no movement in
+weight dists.
 
 TITAN 1:  
 --------
@@ -3053,7 +3068,15 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -61959
 
+After O(200) epochs, reward has gone no higher than 3 and often falls to
+zero.  nframes/episode goes no higher than 1.1K and often falls to minimum
+500.  log10(loss) = -3;
+
 174.  Titan 1:  repeat expt 173
+
+After O(200) epochs, reward approaches 4.  log10(loss) = -2.5;
+nframes/episode around 1.2K; weight dists reasonable and continuing to
+gradually evolve.  weight dists gradually evolve.  
 
 177.  Titan 1:  H1 = 200; H2 = 0; blr = 1E-4; replay mem cap = 8K
 
@@ -3079,7 +3102,15 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -65783
 
+After O(150K) epochs, reward hoves around 1.1 with no obvious growth;
+nframes/episode hovers around 700 with no obvious growth; log10(loss) =
+-2.2;
+
 178.  Titan 1:  repeat expt 177
+
+After O(150K) epochs, nframes/episode hovers around 800; reward hovers
+around 1.5 with no obvious signs of growth;  Very little movement in weight
+dists.  
 
 THINKMATE
 ---------
@@ -3109,7 +3140,14 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -59076
 
+After O(300) epochs, nframes/episode close to minimal 500; log10(loss)
+=-2.5; reward close to 0.
+
 174.  TM:  Repeat expt 173
+
+After O(300) epochs, reward close to 0; nframes/episode close to minimal
+500; log10(loss) = -2.2
+
 
 175.  TM:  H1 = 64, H2 = 128;  replay mem size = 8K; blr = 1E-3; No lr
 tapering; leaky relu slope = 0.01; no penalty for missing ball
@@ -3136,8 +3174,13 @@ Leaky ReLU small slope = 0.01
 nframes / epoch = 50000
 n_max_epochs = 3000
 
+After 400 epochs, nframes/episode oscillates around 950 +/- 50.
+log10(loss) =-3; reward oscillates around 2 +/- 1; 
+
 176. TM:  repeat expt 175
 
+After 500 epochs, reward remains stuck around 2.1 ; nframes/episode gets
+stuck around 900.  log10(loss) = -2.4; weight dists seem OK.
 
 ===========================================================
 TODO:
