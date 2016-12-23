@@ -189,10 +189,10 @@ int main(int argc, char** argv)
 // Fraction of zero-reward (S,A,R,S') states to NOT include within
 // replay memory:
 
-//   const double discard_0_reward_frac = 0.10;  
+   const double discard_0_reward_frac = 0.0;  
 //   const double discard_0_reward_frac = 0.60;  
 //   const double discard_0_reward_frac = 0.75;  
-   const double discard_0_reward_frac = 0.85;  
+//   const double discard_0_reward_frac = 0.85;  
 
 //    int n_snapshot = 500;
    int n_episode_update = 100;
