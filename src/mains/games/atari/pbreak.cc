@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradients
 // ==========================================================================
-// Last updated on 12/21/16
+// Last updated on 12/21/16; 12/23/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -107,7 +107,8 @@ int main(int argc, char** argv)
    int n_max_epochs = 3000;
 
 //   int replay_memory_capacity = 4 * 1000;
-   int replay_memory_capacity = 8 * 1000;
+//   int replay_memory_capacity = 8 * 1000;
+   int replay_memory_capacity = 16 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
@@ -142,8 +143,8 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 
 // Periodically decrease learning rate down to some minimal floor
