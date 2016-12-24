@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/19/16; 12/20/16; 12/21/16; 12/22/16
+Last updated on 12/20/16; 12/21/16; 12/22/16; 12/23/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -2638,6 +2638,64 @@ Conclusions after overnight runs from Tues Dec 20:  Replay memory should be
 at least 200K in size.  We should next try to increase backprop calls by a
 factor of 10 so that they are performed after every action.  
 
+154.  Titan 3:  H1 = 16, H2 = 64; perform backprop after every action;
+replay mem size = 200K
+
+Wed Dec 21 05:24:08 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 700
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -26640
+
+After 500 epochs, nframes/episode very slowly rises to 800.  eps --> 0.35;
+maxQ very slowly rises; reward slowly rises to 2ish; log10(loss) = -1; 
+weight dists look reasonable
+
+After 700 epochs, eps = 0.1; nframes/episode continues to rise very slowly
+to 900.  log10(loss) = -1; reward continues to rise very slowly to 2.2ish;
+maxQ continues to rise very slowly; 
+TERMINATED
+
+155.  Titan 3:  repeat expt 154
+
+After 500 epochs, eps --> 0.35; reward very slowly rises to 1.5; 
+nframes/episode --> 800 and very slowly rising; maxQ very slowly rising;
+log10(loss) - -1;
+
+
+After O(700) epochs, reward continues to rise very slowly to 2.2ish; eps =
+0.1; maxQ may be asymptoting; log10(loss) - -1; nframes/episode continues
+to rise very slowly to 900ish; 
+TERMINATED
+
 156.  Titan 1:  Run pbreak with H1 = 64, H2 = 0
 
 Wed Dec 21 08:42:19 2016
@@ -2953,167 +3011,6 @@ both settled back to beginning levels around  65th epoch.  TERMINATED.
 reward stays locked around 3 by 50th epoch.  Weight dists continue to
 evolve though perhaps diverge.  TERMINATED
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-TITAN 3:  
---------
-
-154.  Titan 3:  H1 = 16, H2 = 64; perform backprop after every action;
-replay mem size = 200K
-
-Wed Dec 21 05:24:08 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 2
-   n_weights = 33952 (FC)
-base_learning_rate = 0.01; batch_size = 1
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 200000
-Number random samples drawn from replay memory Nd = 32
-Discount factor gamma = 0.99
-minimum epsilon = 0.1
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 1000 episodes
-Old weights period = 2 epochs
-Discard zero reward frac = 0.85
-Use big states flag = 0
-Frame skip = 1
-1 big state = n_screen_states = 1
-  Compute difference flag = 1
-  Compute max flag = 0
-Starting epoch for linear epsilon decay = 4
-Stopping epoch for linear epsilon decay = 700
-nn_update_frame_period = 10
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -26640
-
-After 500 epochs, nframes/episode very slowly rises to 800.  eps --> 0.35;
-maxQ very slowly rises; reward slowly rises to 2ish; log10(loss) = -1; 
-weight dists look reasonable
-
-155.  Titan 3:  repeat expt 154
-
-After 500 epochs, eps --> 0.35; reward very slowly rises to 1.5; 
-nframes/episode --> 800 and very slowly rising; maxQ very slowly rising;
-log10(loss) - -1;
-
-179.  Titan 3: H1 = 200; H2 = 0; replay mem size = 16K; blr = 1E-4
-
-Wed Dec 21 16:21:42 2016
-Neural net params:
-   n_layers = 3
-   layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 200
-   layer = 2 n_nodes = 2
-   n_weights = 410400 (FC)
-base_learning_rate = 0.0001; batch_size = -1
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 16000
-Number random samples drawn from replay memory Nd = 0
-Discount factor gamma = 0.99
-minimum epsilon = 0
-n_actions = 2
-Leaky ReLU small slope = 0.01
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -66100
-
-After 140 epochs, nframes/episode is around 700 with no signs of rising ;
-reward is around 1.3 with no signs of rising; 
-
-180.  Titan 3:  repeat expt 179
-
-After 140 epochs, nframes/episode --> 800 with very slowly rise; reward -->
-2.0 with very slowly rise; log10(loss) = -2.25; Almost no movement in
-weight dists.
-
-TITAN 1:  
---------
-
-173.  Titan 1:  H1 = 200; H2 = 0; replay mem size = 8K; blr = 1E-3; No lr
-tapering; leaky relu slope = 0.01; no penalty for missing ball
-
-Wed Dec 21 15:12:43 2016
-Neural net params:
-   n_layers = 3
-   layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 200
-   layer = 2 n_nodes = 2
-   n_weights = 410400 (FC)
-base_learning_rate = 0.001; batch_size = -1
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 8000
-Number random samples drawn from replay memory Nd = 0
-Discount factor gamma = 0.99
-minimum epsilon = 0
-n_actions = 2
-Leaky ReLU small slope = 0.01
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -61959
-
-After O(200) epochs, reward has gone no higher than 3 and often falls to
-zero.  nframes/episode goes no higher than 1.1K and often falls to minimum
-500.  log10(loss) = -3;
-
-174.  Titan 1:  repeat expt 173
-
-After O(200) epochs, reward approaches 4.  log10(loss) = -2.5;
-nframes/episode around 1.2K; weight dists reasonable and continuing to
-gradually evolve.  weight dists gradually evolve.  
-
-177.  Titan 1:  H1 = 200; H2 = 0; blr = 1E-4; replay mem cap = 8K
-
-Wed Dec 21 16:16:25 2016
-Neural net params:
-   n_layers = 3
-   layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 200
-   layer = 2 n_nodes = 2
-   n_weights = 410400 (FC)
-base_learning_rate = 0.0001; batch_size = -1
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 8000
-Number random samples drawn from replay memory Nd = 0
-Discount factor gamma = 0.99
-minimum epsilon = 0
-n_actions = 2
-Leaky ReLU small slope = 0.01
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -65783
-
-After O(150K) epochs, reward hoves around 1.1 with no obvious growth;
-nframes/episode hovers around 700 with no obvious growth; log10(loss) =
--2.2;
-
-178.  Titan 1:  repeat expt 177
-
-After O(150K) epochs, nframes/episode hovers around 800; reward hovers
-around 1.5 with no obvious signs of growth;  Very little movement in weight
-dists.  
-
-THINKMATE
----------
 
 173.  TM:  H1 = 128; H2 = 0; replay mem size = 4K; blr = 3E-3; No lr
 tapering; leaky relu slope = 0.01; no penalty for missing ball
@@ -3181,6 +3078,243 @@ log10(loss) =-3; reward oscillates around 2 +/- 1;
 
 After 500 epochs, reward remains stuck around 2.1 ; nframes/episode gets
 stuck around 900.  log10(loss) = -2.4; weight dists seem OK.
+
+
+173.  Titan 1:  H1 = 200; H2 = 0; replay mem size = 8K; blr = 1E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 15:12:43 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 8000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -61959
+
+After O(200) epochs, reward has gone no higher than 3 and often falls to
+zero.  nframes/episode goes no higher than 1.1K and often falls to minimum
+500.  log10(loss) = -3;
+
+After O(320) epochs, reward seems to have asymptoted to 2.5ish;
+nframes/episode seems to have asymptoted to 800ish; log10(loss) = -2.7ish; 
+Significant movement in weight dists for both layers.
+
+TERMINATED
+
+174.  Titan 1:  repeat expt 173
+
+After O(200) epochs, reward approaches 4.  log10(loss) = -2.5;
+nframes/episode around 1.2K; weight dists reasonable and continuing to
+gradually evolve.  weight dists gradually evolve.  
+
+After O(320) epochs, reward continues to jump around and is around 2ish.
+nframes/episode jumps around is currently near 900ish.  log10(loss) around
+-3ish.  Significant movement in weight dists; 
+TERMINATED
+
+177.  Titan 1:  H1 = 200; H2 = 0; blr = 1E-4; replay mem cap = 8K
+
+Wed Dec 21 16:16:25 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 8000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -65783
+
+After O(150K) epochs, reward hovers around 1.1 with no obvious growth;
+nframes/episode hovers around 700 with no obvious growth; log10(loss) =
+-2.2;
+
+After O(320) epochs, reward rises extremely slowly to 1.3ish;
+nframes/episode rises extremely slwoly to 650ish; log10(loss) = -2.25;
+Small evolution of layer 1 weights; almost no movment in layer 0 weights.
+TERMINATED.
+
+178.  Titan 1:  repeat expt 177
+
+After O(150K) epochs, nframes/episode hovers around 800; reward hovers
+around 1.5 with no obvious signs of growth;  Very little movement in weight
+dists.  
+
+After O(340) epochs, nframes/episode rises very slowly to 800ish; reward
+rises very slowly to 1.8ish; log10(loss) = -2.5;  TERMINATED.
+
+Conclusion from expts 177 and 178;  blr = 1E-4 is too low!
+
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+TITAN 3:  
+--------
+
+179.  Titan 3: H1 = 200; H2 = 0; replay mem size = 16K; blr = 1E-4
+
+Wed Dec 21 16:21:42 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -66100
+
+After 140 epochs, nframes/episode is around 700 with no signs of rising ;
+reward is around 1.3 with no signs of rising; 
+
+After 300 epochs, nframes/episode --> 800ish with slight signs of rising;
+reward --> 2ish with slight signs of rising; log10(loss) = -2.5; very
+slight movement in layer1 weight dists; almost no movement in layer0 weight
+dists; 
+
+180.  Titan 3:  repeat expt 179
+
+After 140 epochs, nframes/episode --> 800 with very slowly rise; reward -->
+2.0 with very slowly rise; log10(loss) = -2.25; Almost no movement in
+weight dists.  
+
+After 300 epochs, nframes/episode --> 1000 with some rise; log(loss) =
+-2.5; reward --> 3ish with some downward turn; Almost no movement in 0th
+layer weight dists; But some slight movement in layer1 weight dists.
+
+181.  Titan 3:  qbreak; discard frames frac --> 0
+
+Fri Dec 23 07:16:18 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+182.  Titan 3:  qbreak; repeat expt 181
+
+TITAN 1:  
+--------
+
+183.  Titan 1:  pbreak with blr = 3E-3; replay mem size = 16K
+
+Fri Dec 23 08:05:20 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9094
+
+184.  Titan 1: pbreak; repeat expt 183
+
+185.  Titan 1:  pbreak with blr = 1E-2; replay mem size = 16K
+Fri Dec 23 08:05:20 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9385
+
+186.  Titan 1: pbreak; repeat expt 185
+
+
+THINKMATE
+---------
 
 ===========================================================
 TODO:

@@ -9,7 +9,7 @@
 // ==========================================================================
 // Header file for stand-alone "primitive" math functions.
 // ==========================================================================
-// Last updated on 2/10/16; 8/23/16; 10/18/16; 12/19/16
+// Last updated on 8/23/16; 10/18/16; 12/19/16; 12/23/16
 // ==========================================================================
 
 #ifndef MATHFUNCS_H
@@ -225,6 +225,7 @@ namespace mathfunc
 
    int median_value(int a,int b,int c);
    double median_value(const std::vector<double>& A);
+   float median_value(const std::vector<float>& A);
    void lo_hi_values(
       const std::vector<double>& A,double lo_frac, double hi_frac, 
       double& lo_value,double& hi_value);
@@ -254,6 +255,8 @@ namespace mathfunc
 
    double maximal_value(const std::vector<double>& A);
    double minimal_value(const std::vector<double>& A);
+   float maximal_value(const std::vector<float>& A);
+   float minimal_value(const std::vector<float>& A);
 
    double mean(const std::vector<double>& A);
    double std_dev(const std::vector<double>& A);

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program SOLVE_MAZE
 // ==========================================================================
-// Last updated on 12/13/16; 12/14/16; 12/15/16; 12/20/16
+// Last updated on 12/14/16; 12/15/16; 12/20/16; 12/24/16
 // ==========================================================================
 
 #include <iostream>
@@ -85,7 +85,9 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
 //   int replay_memory_capacity = 10 * sqr(n_grid_size);
-   int replay_memory_capacity = 25 * sqr(n_grid_size);
+//   int replay_memory_capacity = 25 * sqr(n_grid_size);
+   int replay_memory_capacity = 1 * 1000;
+//   int replay_memory_capacity = 10 * 1000;
    int eval_memory_capacity = 0.1 * replay_memory_capacity;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
@@ -109,11 +111,11 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
-   reinforce_agent_ptr->set_lambda(0);
-//   reinforce_agent_ptr->set_lambda(1E-2);
+//   reinforce_agent_ptr->set_lambda(0);
+   reinforce_agent_ptr->set_lambda(1E-2);
 //   reinforce_agent_ptr->set_lambda(1E-4);
-   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
-//   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
    curr_maze.set_qmap_ptr(reinforce_agent_ptr->get_qmap_ptr());
 
@@ -136,20 +138,21 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);
 
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
    double min_learning_rate = 
-      0.1 * reinforce_agent_ptr->get_base_learning_rate();
+      0.03 * reinforce_agent_ptr->get_base_learning_rate();
 
    int n_max_episodes = 1 * 1000 * 1000;
-   int n_lr_episodes_period = 100 * 1000;
-   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
-//   int old_weights_period = 32;  
+   int n_lr_episodes_period = 10 * 1000;
+//   int old_weights_period = 10; // Seems optimal for n_grid_size = 8
+   int old_weights_period = 32;  
 
-   reinforce_agent_ptr->set_epsilon_time_constant(20000 * n_grid_size / 6.0);
+   reinforce_agent_ptr->set_epsilon_time_constant(25000 * n_grid_size / 6.0);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
 
@@ -217,8 +220,8 @@ int main (int argc, char* argv[])
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_lr_episodes_period *= 1.2;
+            reinforce_agent_ptr->push_back_learning_rate(
+               0.8 * curr_learning_rate);
          }
       }
 
@@ -238,8 +241,15 @@ int main (int argc, char* argv[])
       while(!game_world.get_game_over())
       {
          genvector *curr_s = game_world.get_curr_state();
-         eval_memory_full_flag = 
-            reinforce_agent_ptr->store_curr_state_into_eval_memory(*curr_s);
+
+// Fill evaluation memory with randomly generated initial states:
+
+         if(nrfunc::ran1() < 0.2)
+         {
+            eval_memory_full_flag = 
+               reinforce_agent_ptr->store_curr_state_into_eval_memory(
+                  *curr_s);
+         }
 
          if(eval_memory_full_flag)
          {
@@ -307,7 +317,13 @@ int main (int argc, char* argv[])
 
       if(reinforce_agent_ptr->get_replay_memory_full())
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         bool verbose_flag = false;
+         if(curr_episode_number % 500000 == 0)
+         {
+            verbose_flag = true;
+         }
+         total_loss = reinforce_agent_ptr->update_neural_network(
+            verbose_flag);
       }
 
 // Exponentially decay epsilon:
@@ -345,14 +361,17 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
       {
+         reinforce_agent_ptr->push_back_learning_rate(
+            reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
+         reinforce_agent_ptr->plot_Qmap_score_history(
+            output_subdir, subtitle, extrainfo);
          bool epoch_indep_var = false;
          reinforce_agent_ptr->generate_summary_plots(
             output_subdir, extrainfo, epoch_indep_var);
-         reinforce_agent_ptr->plot_Qmap_score_history(
-            output_subdir, subtitle, extrainfo);
+         reinforce_agent_ptr->generate_view_metrics_script(
+            output_subdir, true);
       }
-
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
@@ -373,11 +392,15 @@ int main (int argc, char* argv[])
 
 // Generate metafiles for Qmap and loss function histories:
 
+   reinforce_agent_ptr->push_back_learning_rate(
+      reinforce_agent_ptr->get_learning_rate());
+   reinforce_agent_ptr->plot_Qmap_score_history(
+      output_subdir, subtitle, extrainfo);
    bool epoch_indep_var = false;
    reinforce_agent_ptr->generate_summary_plots(
       output_subdir, extrainfo, epoch_indep_var);
-   reinforce_agent_ptr->plot_Qmap_score_history(
-      output_subdir, subtitle, extrainfo);
+   reinforce_agent_ptr->generate_view_metrics_script(
+      output_subdir, true);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir

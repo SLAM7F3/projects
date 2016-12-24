@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/17/16; 12/19/16; 12/20/16; 12/21/16
+// Last modified on 12/19/16; 12/20/16; 12/21/16; 12/24/16
 // ==========================================================================
 
 #include <string>
@@ -50,8 +50,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // occupied cells within a 4x4 grid !
 
    batch_size = 1;	// Perform parameter update after this many episodes
-   base_learning_rate = 1E-4;  //
-   learning_rate = base_learning_rate;
    mu = 0.9;		// Coefficient for momentum solver type
    lambda = 0.0;	// L2 regularization coefficient 
    gamma = 0.5;	// Discount factor for reward
@@ -1298,6 +1296,53 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo,
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of learning rate vs episode number
+
+void reinforce::plot_lr_history(string output_subdir, string extrainfo,
+                                bool epoch_indep_var)
+{
+   if(epsilon_values.size() < 5) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir+"lr_history";
+   string title="Learning rate vs episode";
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
+   }
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label = "Episode";
+   double xmax = episode_number;
+   if(epoch_indep_var)
+   {
+      x_label="Epoch";
+      xmax = curr_epoch;
+   }
+   string y_label="Learning rate";
+
+   double max_lr = mathfunc::maximal_value(learning_rate);
+   double min_lr = mathfunc::minimal_value(learning_rate);
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, min_lr, max_lr);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, xmax, learning_rate);
+   curr_metafile.set_thickness(3);
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of Qmap score versus episode number.
 
 void reinforce::plot_Qmap_score_history(string output_subdir, 
@@ -1728,18 +1773,34 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
                        epoch_indep_var);
    plot_epsilon_history(output_subdir, extrainfo, epoch_indep_var);
+   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
+}
 
-// Generate executable script which displays reward, nframes/episode
-// max Q and epsilon history metafile outputs:
+// ---------------------------------------------------------------------
+// Member fucntion generate_view_metrics_script creates an executable
+// script which displays reward, nframes/episode, max Q and epsilon
+// history metafile outputs.
 
+void reinforce::generate_view_metrics_script(
+   string output_subdir, bool Qmap_score_flag)
+{
    string script_filename=output_subdir + "view_metrics";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
    script_stream << "view log10_losses_history.jpg" << endl;
-   script_stream << "view reward_history.jpg" << endl;
-   script_stream << "view frames_history.jpg" << endl;
+   script_stream << "view lr_history.jpg" << endl;
+
+   if(Qmap_score_flag)
+   {
+      script_stream << "view Qmap_score_history.jpg" << endl;
+   }
+   else
+   {
+      script_stream << "view reward_history.jpg" << endl;
+      script_stream << "view frames_history.jpg" << endl;
+   }
 
    if(learning_type == QLEARNING)
    {
@@ -1793,14 +1854,12 @@ void reinforce::export_snapshot(string output_subdir)
    
    outstream << batch_size << endl;
    outstream << base_learning_rate << endl;
-   outstream << learning_rate << endl;
    outstream << lambda << endl;
    outstream << gamma << endl;
    outstream << rmsprop_decay_rate << endl;
 
 //   cout << "batch_size = " << batch_size << endl;
 //   cout << "base_learning_rate = " << base_learning_rate << endl;
-//   cout << "learning_rate = " << learning_rate << endl;
 //   cout << "lambda = " << lambda << endl;
 //   cout << "gamma = " << gamma << endl;
 //   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
@@ -1861,14 +1920,12 @@ void reinforce::import_snapshot()
 
    instream >> batch_size;
    instream >> base_learning_rate;
-   instream >> learning_rate;
    instream >> lambda;
    instream >> gamma;
    instream >> rmsprop_decay_rate;
 
    cout << "batch_size = " << batch_size << endl;
    cout << "base_learning_rate = " << base_learning_rate << endl;
-   cout << "learning_rate = " << learning_rate << endl;
    cout << "lambda = " << lambda << endl;
    cout << "gamma = " << gamma << endl;
    cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
@@ -2460,14 +2517,14 @@ double reinforce::update_neural_network(bool verbose_flag)
       {
          if(solver_type == SGD)
          {
-            *biases[l] -= learning_rate * (*nabla_biases[l]);
+            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
          else if (solver_type == RMSPROP)
          {
             rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
             rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
             nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
-            *biases[l] -= learning_rate * (*nabla_biases[l]);
+            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
          else if (solver_type == ADAM)
          {
@@ -2488,7 +2545,7 @@ double reinforce::update_neural_network(bool verbose_flag)
             const double TINY = 1E-8;
             rms_biases_denom[l]->hadamard_sum(TINY);
             adam_m_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
-            *biases[l] -= learning_rate * (*adam_m_biases[l]);
+            *biases[l] -= learning_rate.back() * (*adam_m_biases[l]);
             */
 
          }
@@ -2500,19 +2557,19 @@ double reinforce::update_neural_network(bool verbose_flag)
    {
       if (solver_type == SGD)
       {
-         *weights[l] -= learning_rate * (*nabla_weights[l]);
+         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       else if (solver_type == MOMENTUM)
       {
          *velocities[l] = mu * (*velocities[l])
-            - learning_rate * (*nabla_weights[l]);
+            - learning_rate.back() * (*nabla_weights[l]);
          *weights[l] += *velocities[l];
       }
       else if (solver_type == NESTEROV)
       {
          *prev_velocities[l] = *velocities[l];
          *velocities[l] = mu * (*velocities[l])
-            - learning_rate * (*nabla_weights[l]);
+            - learning_rate.back() * (*nabla_weights[l]);
          *weights[l] += -mu * (*prev_velocities[l]) +
             (1 + mu) * (*velocities[l]);
       }
@@ -2521,7 +2578,7 @@ double reinforce::update_neural_network(bool verbose_flag)
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
          rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
-         *weights[l] -= learning_rate * (*nabla_weights[l]);
+         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       else if(solver_type == ADAM)
       {
@@ -2536,7 +2593,7 @@ double reinforce::update_neural_network(bool verbose_flag)
          const double TINY = 1E-8;
          rms_weights_denom[l]->hadamard_sum(TINY);
          adam_m[l]->hadamard_division(*rms_weights_denom[l]);
-         *weights[l] -= learning_rate * (*adam_m[l]);
+         *weights[l] -= learning_rate.back() * (*adam_m[l]);
       }
       
       if(verbose_flag)
@@ -2576,13 +2633,15 @@ double reinforce::update_neural_network(bool verbose_flag)
               << " mean |nabla weight/weight| = " 
               << mean_abs_nabla_weight_ratio  << endl;
             
-         cout << " lr * mean |nabla_weight| = " 
-              << learning_rate * mean_abs_nabla_weight 
-              << "  lr * mean |nabla_weight/weight| = " 
-              << learning_rate * mean_abs_nabla_weight_ratio << endl;
+         cout << "lr = " << learning_rate.back() 
+              << " lr * <|nabla_weight|> = " 
+              << learning_rate.back() * mean_abs_nabla_weight 
+              << "  lr * <|nabla_weight/weight|> = " 
+              << learning_rate.back() * mean_abs_nabla_weight_ratio << endl;
          
 //         cout << " mean_abs_adam_m = " << mean_abs_adam_m
-//              << " lr * mean_abs_adam_m = " << learning_rate * mean_abs_adam_m
+//              << " lr * mean_abs_adam_m = " 
+//              << learning_rate.back() * mean_abs_adam_m
 //              << endl;
 
       } // verbose_flag conditional
@@ -3176,7 +3235,7 @@ double reinforce::update_P_network(bool verbose_flag)
             rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
             rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
             nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
-            *biases[l] -= learning_rate * (*nabla_biases[l]);
+            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
       } // loop over index l labeling network layers
@@ -3189,7 +3248,7 @@ double reinforce::update_P_network(bool verbose_flag)
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
          rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
-         *weights[l] -= learning_rate * (*nabla_weights[l]);
+         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       
       if(verbose_flag)
@@ -3222,10 +3281,11 @@ double reinforce::update_P_network(bool verbose_flag)
               << " mean |nabla weight/weight| = " 
               << mean_abs_nabla_weight_ratio  << endl;
          
-         cout << " lr * mean |nabla_weight| = " 
-              << learning_rate * mean_abs_nabla_weight 
-              << "  lr * mean |nabla_weight/weight| = " 
-              << learning_rate * mean_abs_nabla_weight_ratio << endl;
+         cout << "lr = " << learning_rate.back()
+              << " lr * <|nabla_weight|> = " 
+              << learning_rate.back() * mean_abs_nabla_weight 
+              << "  lr * <|nabla_weight/weight|> = " 
+              << learning_rate.back() * mean_abs_nabla_weight_ratio << endl;
       } // verbose_flag conditional
       
       if(include_bias_terms) nabla_biases[l]->clear_values();

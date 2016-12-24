@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/15/16; 12/19/16; 12/20/16; 12/21/16
+// Last modified on 12/19/16; 12/20/16; 12/21/16; 12/24/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -68,7 +68,7 @@ class reinforce
    double get_curr_epoch() const;
    void set_base_learning_rate(double rate);
    double get_base_learning_rate() const;
-   void set_learning_rate(double rate);
+   void push_back_learning_rate(double rate);
    double get_learning_rate() const;
    void set_batch_size(double bsize);
    int get_batch_size() const;
@@ -115,6 +115,8 @@ class reinforce
                             bool epoch_indep_var);
    void plot_epsilon_history(std::string output_subdir, std::string extrainfo,
                              bool epoch_indep_var);
+   void plot_lr_history(std::string output_subdir, std::string extrainfo,
+                        bool epoch_indep_var);
    void plot_Qmap_score_history(std::string output_subdir, 
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
@@ -128,6 +130,8 @@ class reinforce
    void generate_summary_plots(
       std::string output_subdir, std::string extrainfo,
       bool epoch_indep_var = true);
+   void generate_view_metrics_script(
+      std::string output_subdir, bool Qmap_score_flag = false);
 
    void create_snapshots_subdir(std::string output_subdir);
    void export_snapshot(std::string output_subdir);
@@ -218,7 +222,7 @@ class reinforce
    std::deque<double> T_values;  // Holds latest T values
    int batch_size;  	// Perform parameter update after this many episodes
    double base_learning_rate;
-   double learning_rate;
+   std::vector<double> learning_rate;
    double mu;	  	// Damping coeff for momentum solver type
    double lambda;	// L2 regularization coefficient
    double gamma;	// Discount factor for reward
@@ -404,7 +408,7 @@ inline void reinforce::append_n_episode_turns_frac(double frac)
 inline void reinforce::set_base_learning_rate(double rate)
 {
    base_learning_rate = rate;
-   learning_rate = rate;
+   learning_rate.push_back(base_learning_rate);
 }
 
 inline double reinforce::get_base_learning_rate() const
@@ -412,14 +416,14 @@ inline double reinforce::get_base_learning_rate() const
    return base_learning_rate;
 }
 
-inline void reinforce::set_learning_rate(double rate)
+inline void reinforce::push_back_learning_rate(double rate)
 {
-   learning_rate = rate;
+   learning_rate.push_back(rate);
 }
 
 inline double reinforce::get_learning_rate() const
 {
-   return learning_rate;
+   return learning_rate.back();
 }
 
 inline void reinforce::set_batch_size(double bsize)

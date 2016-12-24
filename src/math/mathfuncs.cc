@@ -1,7 +1,7 @@
 // ==========================================================================
 // "Primitive" math functions 
 // ==========================================================================
-// Last updated on 8/23/16; 10/18/16; 10/29/16; 12/19/16
+// Last updated on 10/18/16; 10/29/16; 12/19/16; 12/23/16
 // ==========================================================================
 
 #include <algorithm>
@@ -1388,7 +1388,6 @@ return RMS;
          theta=PI-theta;
          phi=phi+PI;
       }
-
    }
 
 // ---------------------------------------------------------------------   
@@ -2213,6 +2212,27 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
       return Amin;
    }
 
+   float maximal_value(const vector<float>& A)
+   {
+//         double Amax=NEGATIVEINFINITY;
+      float Amax=-1E25;
+      for (unsigned int n=0; n<A.size(); n++)
+      {
+         Amax=basic_math::max(Amax,A[n]);
+      }
+      return Amax;
+   }
+
+   float minimal_value(const vector<float>& A)
+   {
+      float Amin=1E25;
+      for (unsigned int n=0; n<A.size(); n++)
+      {
+         Amin=basic_math::min(Amin,A[n]);
+      }
+      return Amin;
+   }
+
 // ---------------------------------------------------------------------
 // Method median_value() is a brute-force subroutine which works with
 // just 3 input integers.
@@ -2264,6 +2284,30 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
       return median;
    }
    
+   float median_value(const vector<float>& A)
+   {
+      unsigned int nbins=A.size();
+      if (nbins==0) return NEGATIVEINFINITY;
+
+      vector<float> Acopy;
+      for (unsigned int i=0; i<nbins; i++)
+      {
+         Acopy.push_back(A[i]);
+      }
+      std::sort(Acopy.begin(),Acopy.end());
+
+      float median=0;
+      if (is_odd(nbins))
+      {
+         median=Acopy[nbins/2];
+      }
+      else
+      {
+         median=0.5*(Acopy[nbins/2-1]+Acopy[nbins/2]);
+      }
+      return median;
+   }
+
 // ---------------------------------------------------------------------
 // Method lo_hi_values() sorts the contents for input STL vector A.
 // It then computes and returns the 25% and 75% values in the sorted
@@ -4028,6 +4072,7 @@ void covar_matrix(unsigned int mdim, double *mean, double **second_moment,
    } // errorfunc sub-namespace
 
 } // mathfunc namespace
+
 
 
 

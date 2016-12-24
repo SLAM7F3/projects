@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/18/16; 12/19/16; 12/20/16; 12/21/16
+// Last updated on 12/19/16; 12/20/16; 12/21/16; 12/24/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -162,9 +162,9 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
-   reinforce_agent_ptr->set_base_learning_rate(1E-2);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(2.5E-4);  
 
@@ -179,7 +179,7 @@ int main(int argc, char** argv)
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
-   int n_lr_episodes_period = 1 * 1000;
+   int n_lr_episodes_period = 10 * 1000;
 
    int nn_update_frame_period = 1;
 //   int nn_update_frame_period = 10;
@@ -280,18 +280,18 @@ int main(int argc, char** argv)
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
-/*
-      if(curr_episode_number > 0 && curr_episode_number%n_lr_episodes_period 
-         == 0)
+// Periodically decrease learning rate:
+
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_lr_episodes_period *= 1.2;
+            reinforce_agent_ptr->push_back_learning_rate(
+               0.8 * curr_learning_rate);
          }
       }
-*/
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
@@ -656,9 +656,13 @@ int main(int argc, char** argv)
          if(reinforce_agent_ptr->get_include_bias_terms()){
             reinforce_agent_ptr->compute_bias_distributions();
          }
+         reinforce_agent_ptr->push_back_learning_rate(
+            reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+         reinforce_agent_ptr->generate_view_metrics_script(
+            output_subdir, true);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir

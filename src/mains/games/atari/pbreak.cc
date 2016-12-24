@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradients
 // ==========================================================================
-// Last updated on 12/21/16; 12/23/16
+// Last updated on 12/21/16; 12/23/16; 12/24/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
    double min_learning_rate = 
       0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
-   int n_lr_episodes_period = 1 * 1000;
+   int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
    int n_episode_update = 100;
 
@@ -215,21 +215,18 @@ int main(int argc, char** argv)
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
-/*
-
 // Periodically decrease learning rate:
 
-      if(curr_episode_number > 0 && curr_episode_number%n_lr_episodes_period 
-         == 0)
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_lr_episodes_period *= 1.2;
+            reinforce_agent_ptr->push_back_learning_rate(
+               0.8 * curr_learning_rate);
          }
       }
-*/
 
 // -----------------------------------------------------------------------
 // Current episode starts here:
@@ -453,9 +450,12 @@ int main(int argc, char** argv)
          if(reinforce_agent_ptr->get_include_bias_terms()){
             reinforce_agent_ptr->compute_bias_distributions();
          }
+         reinforce_agent_ptr->push_back_learning_rate(
+            reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+         reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
