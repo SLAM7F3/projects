@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/14/16; 12/17/16; 12/18/16; 12/19/16
+// Last modified on 12/17/16; 12/18/16; 12/19/16; 12/26/16
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -55,6 +55,8 @@ class breakout
    int get_paddle_x() const;
    bool increment_paddle_x();
    bool decrement_paddle_x();
+   void push_back_paddle_x();
+   void plot_paddle_x_dist(std::string output_subdir, std::string extrainfo);
 
    bool crop_pool_difference_curr_frame(bool export_frames_flag);
    bool crop_pool_sum_curr_frame(bool export_frames_flag);
@@ -80,6 +82,7 @@ class breakout
 
    bool forced_game_over;
    bool compute_difference_flag, compute_max_flag;
+   bool paddle_x_values_filled;
    int random_seed;
    int rskip, cskip;
    int prev_framenumber;
@@ -119,6 +122,10 @@ class breakout
 // renormalized trained weight values:
 
    std::vector<twoDarray*> wtwoDarray_ptrs;
+
+   int d_paddle;
+   int max_paddle_x_size;
+   std::vector<int> paddle_x_values;
 
    ScreenExporter* screen_exporter_ptr;
 

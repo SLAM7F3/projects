@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradients
 // ==========================================================================
-// Last updated on 12/21/16; 12/23/16; 12/24/16
+// Last updated on 12/21/16; 12/23/16; 12/24/16; 12/26/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -106,9 +106,11 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
 
-//   int replay_memory_capacity = 4 * 1000;
+// FAKE FAKE:  Mon Dec 26 at 3:24 pm
+
+   int replay_memory_capacity = 4 * 1000;
 //   int replay_memory_capacity = 8 * 1000;
-   int replay_memory_capacity = 16 * 1000;
+//   int replay_memory_capacity = 16 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
@@ -342,6 +344,7 @@ int main(int argc, char** argv)
                a = PLAYER_A_NOOP;
             }
          }
+         breakout_ptr->push_back_paddle_x();
 
          double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
@@ -456,6 +459,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
+         breakout_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir

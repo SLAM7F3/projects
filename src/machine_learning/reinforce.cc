@@ -261,6 +261,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    environment_ptr = NULL;
    replay_memory_full_flag = false;
    eval_memory_full_flag = false;
+   eval_memory_index = 0;
    replay_memory_index = 0;
    epsilon = 1.000001;
    epsilon_tau = -1;

@@ -1,7 +1,7 @@
 // ==========================================================================
 // breakout class member function definitions
 // ==========================================================================
-// Last modified on 12/12/16; 12/16/16; 12/17/16; 12/18/16
+// Last modified on 12/16/16; 12/17/16; 12/18/16; 12/26/16
 // ==========================================================================
 
 // Notes: 
@@ -23,6 +23,7 @@
 #include "general/filefuncs.h"
 #include "image/imagefuncs.h"
 #include "numrec/nrfuncs.h"
+#include "math/prob_distribution.h"
 #include "video/videofuncs.h"
 
 using std::cin;
@@ -123,6 +124,13 @@ void breakout::initialize_member_objects()
 //   qw_zdiff = 0;      // Estimate from 50 random episodes
 
    difference_counter = 0;
+   d_paddle = 0;
+   max_paddle_x_size = 100 * 1000;
+   for(int d = 0; d < max_paddle_x_size; d++)
+   {
+      paddle_x_values.push_back(-999);
+   }
+   paddle_x_values_filled = false;
 
    initialize_output_subdirs();
    initialize_grayscale_output_buffer();
@@ -267,6 +275,41 @@ bool breakout::decrement_paddle_x()
       paddle_x--;
       return true;
    }
+}
+
+// ---------------------------------------------------------------------
+// Member function push_back_paddle_x
+
+void breakout::push_back_paddle_x()
+{
+   paddle_x_values[d_paddle] = get_paddle_x();
+   d_paddle++;
+   if(d_paddle >= max_paddle_x_size)
+   {
+      d_paddle = 0;
+      paddle_x_values_filled = true;
+   }
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of paddle X density probability distribution.
+
+void breakout::plot_paddle_x_dist(string output_subdir, string extrainfo)
+{
+   if(!paddle_x_values_filled) return;
+
+   vector<double> X;
+   for(int d = 0; d < max_paddle_x_size; d++)
+   {
+      X.push_back(double(paddle_x_values[d]));
+   }
+   double min_X = mathfunc::minimal_value(X);
+   double max_X = mathfunc::maximal_value(X);
+   int n_bins = max_X - min_X + 1;
+   prob_distribution prob_X(X, n_bins);
+
+   prob_X.set_densityfilenamestr(output_subdir+"paddle_X.meta");
+   prob_X.write_density_dist(false, true);
 }
 
 // ---------------------------------------------------------------------
@@ -439,10 +482,16 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
 // Recall the vast majority of z_diff values = 0!  So as of 12/16/16,
 // we choose to subtract off the zero-valued median rather than a
 // non-zero mean so as to yield state vectors which mostly have zero
-// coordinates.  But we still divide by sigma_zdiff so that the
-// non-zero coordinates have magnitudes close to unity:
+// coordinates.  As of 12/26/16, we reset any non-zero component to
+// unity.  So all screen state vectors are binary valued:
 
-            double ren_z_diff = double(z_diff) / sigma_zdiff;
+            double ren_z_diff = 0;
+            if(z_diff != 0)
+            {
+//               ren_z_diff = 1;
+               ren_z_diff = 255;
+            }
+//            double ren_z_diff = double(z_diff) / sigma_zdiff;
 
             if(difference_counter == 0)
             {
@@ -457,8 +506,8 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             {
                diff_pooled_byte_row.push_back(z_diff);
             }
-            
          } // loop over px
+
          if(export_frames_flag)
          {
             diff_pooled_byte_array.push_back(diff_pooled_byte_row);
@@ -769,7 +818,3 @@ string breakout::save_screen(int episode_number, string curr_screen_filename,
 
    return curr_screen_path;
 }
-
-
-
-

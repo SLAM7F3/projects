@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/19/16; 12/20/16; 12/21/16; 12/24/16
+// Last updated on 12/20/16; 12/21/16; 12/24/16; 12/26/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -456,6 +456,7 @@ int main(int argc, char** argv)
                a = PLAYER_A_NOOP;
             }
          }
+         breakout_ptr->push_back_paddle_x();
 
          double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
@@ -663,6 +664,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(
             output_subdir, true);
+         breakout_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
