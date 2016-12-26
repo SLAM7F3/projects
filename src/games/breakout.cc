@@ -473,9 +473,21 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
          for(unsigned int px = 0; 
              px < pooled_byte_array_ptr->at(0).size(); px++)
          {
-            unsigned char z_diff = 
-               pooled_byte_array_ptr->at(py).at(px) - 
-               other_pooled_byte_array_ptr->at(py).at(px);
+//            unsigned char z_diff = 
+//               pooled_byte_array_ptr->at(py).at(px) - 
+//               other_pooled_byte_array_ptr->at(py).at(px);
+
+            unsigned char z_diff;
+            if(py == pooled_byte_array_ptr->size() - 1)
+            {
+               z_diff = pooled_byte_array_ptr->at(py).at(px);
+            }
+            else
+            {
+               z_diff = pooled_byte_array_ptr->at(py).at(px) - 
+                  other_pooled_byte_array_ptr->at(py).at(px);
+            }
+
 //            double zpool(z_diff);
 //            pooled_scrn_values.push_back(zpool);
 
@@ -488,8 +500,8 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             double ren_z_diff = 0;
             if(z_diff != 0)
             {
-//               ren_z_diff = 1;
-               ren_z_diff = 255;
+               ren_z_diff = 1;
+//               ren_z_diff = 255;
             }
 //            double ren_z_diff = double(z_diff) / sigma_zdiff;
 
