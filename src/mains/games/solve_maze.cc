@@ -296,9 +296,13 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->append_n_frames_per_episode(
          game_world.get_episode_framenumber());
       reinforce_agent_ptr->append_epsilon();
-      reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
+
       reinforce_agent_ptr->increment_episode_number();
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+      if(curr_episode_number % 10 == 0)
+      {
+         reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
+      }
 
       if(total_loss > 0)
       {

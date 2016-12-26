@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/19/16; 12/20/16; 12/21/16; 12/24/16
+// Last modified on 12/20/16; 12/21/16; 12/24/16; 12/26/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -178,7 +178,9 @@ class reinforce
 
    double compute_target(double curr_r, genvector* next_s, 
                          bool terminal_state_flag);
+   double compute_curr_loss(int curr_a, double target_value);
    double Q_backward_propagate(int d, int Nd, bool verbose_flag = false);
+   void numerically_check_derivs();
 
    void set_Q_value(std::string state_action_str, double Qvalue);
    double get_Q_value(std::string state_action_str);

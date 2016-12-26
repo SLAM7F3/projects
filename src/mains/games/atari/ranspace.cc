@@ -164,13 +164,16 @@ int main(int argc, char** argv)
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
-      if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
+// Periodically decrease learning rate:
+
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
          double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
          if(curr_learning_rate > min_learning_rate)
          {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_episodes_period *= 1.2;
+            reinforce_agent_ptr->push_back_learning_rate(
+               0.8 * curr_learning_rate);
          }
       }
 

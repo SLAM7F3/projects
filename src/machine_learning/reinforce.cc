@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/19/16; 12/20/16; 12/21/16; 12/24/16
+// Last modified on 12/20/16; 12/21/16; 12/24/16; 12/26/16
 // ==========================================================================
 
 #include <string>
@@ -2657,38 +2657,13 @@ double reinforce::update_neural_network(bool verbose_flag)
 }
 
 // ---------------------------------------------------------------------
-// Member function Q_backward_propagate()
+// Member function compute_curr_loss() assumes that a forward
+// propagation has recently been performed.  It returns the current
+// contribution to the loss function for Q-learning.
 
-double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
+double reinforce::compute_curr_loss(int curr_a, double target_value)
 {
-   clear_delta_nablas();
-
-// Calculate target for curr transition sample:
-
-   int curr_a;
-   double curr_r;
-   bool terminal_state_flag = get_replay_memory_entry(
-      d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
-   double target_value = 
-      compute_target(curr_r, next_s_sample, terminal_state_flag);
-
-   if(verbose_flag)
-   {
-      cout << "inside Q_backward_propagate()" << endl;
-      cout << "  curr_r = " << curr_r << " target_value = " << target_value
-           << endl;
-   }
-
-// First need to perform forward propagation for *curr_s_sample in
-// order to repopulate linear z inputs and nonlinear a outputs for
-// each node in the neural network:
-
-   Q_forward_propagate(curr_s_sample);
-
    int curr_layer = n_layers - 1;
-
-// Eqn BP1:
-
    double curr_loss = -1;
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
@@ -2720,9 +2695,74 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
          cout << "   j = " << j << " curr_Q = " << curr_Q 
               << " target = " << target_value
               << " curr_a = " << curr_a 
-              << " curr_r = " << curr_r 
               << endl;
       }
+   }
+
+// Add L2 regularization term's contribution to loss function:
+
+   const double TINY = 1E-8;
+   if(lambda > TINY)
+   {
+      double sqrd_weight_sum = 0;
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+         {
+            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+            {
+               sqrd_weight_sum += sqr(weights[l]->get(r,c));
+            }
+         }
+      } // loop over index l labeling network layers
+      curr_loss += (lambda / n_weights) * sqrd_weight_sum;
+   }
+   return curr_loss;
+}
+
+// ---------------------------------------------------------------------
+// Member function Q_backward_propagate()
+
+double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
+{
+   clear_delta_nablas();
+
+// Calculate target for curr transition sample:
+
+   int curr_a;
+   double curr_r;
+   bool terminal_state_flag = get_replay_memory_entry(
+      d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
+   double target_value = 
+      compute_target(curr_r, next_s_sample, terminal_state_flag);
+   double inverse_Nd = 1.0 / Nd;
+
+   if(verbose_flag)
+   {
+      cout << "inside Q_backward_propagate()" << endl;
+      cout << "  curr_r = " << curr_r << " target_value = " << target_value
+           << endl;
+   }
+
+// First need to perform forward propagation for *curr_s_sample in
+// order to repopulate linear z inputs and nonlinear a outputs for
+// each node in the neural network:
+
+   Q_forward_propagate(curr_s_sample);
+
+   int curr_layer = n_layers - 1;
+
+// Eqn BP1:
+
+   for(int j = 0; j < layer_dims[curr_layer]; j++)
+   {
+      double curr_Q = A_Prime[curr_layer]->get(j);
+      double curr_activation = 0;
+      if(j == curr_a)
+      {
+         curr_activation = curr_Q - target_value;
+      }
+      Delta_Prime[curr_layer]->put(j, curr_activation);
    }
 
    for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
@@ -2769,23 +2809,20 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       delta_nabla_weights[prev_layer]->accumulate_outerprod(
          *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
 
+// Add L2 regularization contribution to delta_nabla_weights.  No such
+// regularization contribution is conventionally added to
+// delta_nabla_biases:
+
       const double TINY = 1E-8;
       if(lambda > TINY)
       {
-//         if(include_bias_terms)
-//         {
-//            *delta_nabla_biases[curr_layer] += 
-//               2 * lambda * (*biases[curr_layer]);
-//         }
          *delta_nabla_weights[prev_layer] += 
             2 * (lambda / n_weights) * (*weights[prev_layer]);
       }
-
    } // loop over curr_layer index
 
 // Accumulate biases' and weights' gradients for each network layer:
 
-   double inverse_Nd = 1.0 / Nd;
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
@@ -2801,27 +2838,61 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
    n_backprops++;
 
-// Add L2 regularization term's contribution to total loss function:
+   double curr_loss = compute_curr_loss(curr_a, target_value);
 
-   const double TINY = 1E-8;
-   if(lambda > TINY)
+// On 12/26/16, we explicitly spot-checked backpropagated
+// loss-function derivatives with their numerically calculated
+// counterparts.  To very good approximation, the two precisely
+// matched...
+
+/*
+// Numerically spot-check loss derivatives wrt a few random
+// weights:
+
+   if(nrfunc::ran1() < 1E-4)
    {
-      double sqrd_weight_sum = 0;
-      for(int l = 0; l < n_layers - 1; l++)
+      const double eps = 1E-6;
+      for(unsigned int l = 0; l < weights.size(); l++)
       {
-         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+         int row = nrfunc::ran1() * weights[l]->get_mdim();
+         int col = nrfunc::ran1() * weights[l]->get_ndim();
+         double orig_weight = weights[l]->get(row, col);
+         weights[l]->put(row, col, orig_weight + eps);
+         Q_forward_propagate(curr_s_sample);
+         double pos_loss = compute_curr_loss(curr_a, target_value);
+         weights[l]->put(row, col, orig_weight - eps);
+         Q_forward_propagate(curr_s_sample);      
+         double neg_loss = compute_curr_loss(curr_a, target_value);
+         double curr_deriv = (pos_loss - neg_loss) / (2 * eps);
+         cout.precision(12);
+         cout << "l = " << l << " row = " << row << " col = " << col << endl;
+         cout << "  pos_loss = " << pos_loss << " neg_loss = " << neg_loss
+              << endl;
+         cout << " curr_deriv = " << curr_deriv 
+              << " delta_nabla_weight = " 
+              << delta_nabla_weights[l]->get(row, col)
+              << endl;
+
+         if(fabs(curr_deriv) > 1E-10)
          {
-            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
-            {
-               sqrd_weight_sum += sqr(weights[l]->get(r,c));
-            }
+            double ratio = 
+               delta_nabla_weights[l]->get(row, col) / curr_deriv;
+            cout << "  delta_nabla_weight / curr_deriv = " << ratio << endl;
          }
+         
+         weights[l]->put(row, col, orig_weight);
       } // loop over index l labeling network layers
-      curr_loss += (lambda / n_weights) * sqrd_weight_sum;
    }
+*/
 
    curr_loss *= inverse_Nd;
    return curr_loss;
+}
+
+// ---------------------------------------------------------------------
+void reinforce::numerically_check_derivs()
+{
+
 }
 
 // ---------------------------------------------------------------------
@@ -3070,7 +3141,7 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 
    int curr_a;
    double curr_advantage;
-   bool terminal_state_flag = get_replay_memory_entry(
+   get_replay_memory_entry(
       d, *curr_s_sample, curr_a, curr_advantage, *next_s_sample);
    double action_prob = prob_a->get(d);
 
