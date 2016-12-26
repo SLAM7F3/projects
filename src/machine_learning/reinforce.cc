@@ -469,7 +469,19 @@ void reinforce::summarize_parameters(string params_filename)
    params_stream << "base_learning_rate = " << base_learning_rate 
                  << "; batch_size = " << batch_size
                  << endl;
-   
+   if(learning_type == QLEARNING)
+   {
+      params_stream << "Q learning" << endl;
+   }
+   else if(learning_type == PLEARNING)
+   {
+      params_stream << "P learning" << endl;
+   }
+   else if(learning_type == VLEARNING)
+   {
+      params_stream << "V learning" << endl;
+   }
+
    if(solver_type == SGD)
    {
       params_stream << "solver type = SGD" << endl;

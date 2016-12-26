@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/20/16; 12/21/16; 12/22/16; 12/23/16
+Last updated on 12/21/16; 12/22/16; 12/23/16; 12/26/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -3171,13 +3171,6 @@ rises very slowly to 1.8ish; log10(loss) = -2.5;  TERMINATED.
 Conclusion from expts 177 and 178;  blr = 1E-4 is too low!
 
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-TITAN 3:  
---------
-
 179.  Titan 3: H1 = 200; H2 = 0; replay mem size = 16K; blr = 1E-4
 
 Wed Dec 21 16:21:42 2016
@@ -3210,6 +3203,9 @@ reward --> 2ish with slight signs of rising; log10(loss) = -2.5; very
 slight movement in layer1 weight dists; almost no movement in layer0 weight
 dists; 
 
+After 900 epochs, bframes/episode --> 600 and is heading downwards; reward
+--> 0.5 and is heading downwards; log10(loss) = -2.5; 
+
 180.  Titan 3:  repeat expt 179
 
 After 140 epochs, nframes/episode --> 800 with very slowly rise; reward -->
@@ -3219,6 +3215,9 @@ weight dists.
 After 300 epochs, nframes/episode --> 1000 with some rise; log(loss) =
 -2.5; reward --> 3ish with some downward turn; Almost no movement in 0th
 layer weight dists; But some slight movement in layer1 weight dists.
+
+After 900 epochs, nframes/episode --> 900 with no obvious upward movement;
+reward --> 3ish with no obvious upward movement; log10(loss) = -2.25; 
 
 181.  Titan 3:  qbreak; discard frames frac --> 0
 
@@ -3256,10 +3255,14 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -6174
 
+After 100 epochs, reward --> 1.2 with no obvious upward movement; eps -->
+0.9; maxQ is completely flat; log10(loss) = -1; nframes/episode = 650 with
+no upward movememnt; 
+
 182.  Titan 3:  qbreak; repeat expt 181
 
-TITAN 1:  
---------
+After 100 epochs, reward --> 1.1 nframes/episode --> 650; eps --> 0.9; flat
+max Q; log10(loss) = -1.1; 
 
 183.  Titan 1:  pbreak with blr = 3E-3; replay mem size = 16K
 
@@ -3285,7 +3288,13 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -9094
 
+After 680 epochs, nframes/episode --> 1K and reward -->2.8 oscillate and
+slowly rise.  log10(loss) = -2.3;  Slow evolution of weight dists; 
+
 184.  Titan 1: pbreak; repeat expt 183
+
+After 680 epochs, nframes/episode --> 800 and reward --> 2.5.  No sign of
+growth.  log10(loss) = -3.
 
 185.  Titan 1:  pbreak with blr = 1E-2; replay mem size = 16K
 Fri Dec 23 08:05:20 2016
@@ -3295,7 +3304,7 @@ Neural net params:
    layer = 1 n_nodes = 200
    layer = 2 n_nodes = 2
    n_weights = 410400 (FC)
-base_learning_rate = 0.003; batch_size = -1
+base_learning_rate = 0.01; batch_size = -1
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
@@ -3310,11 +3319,105 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -9385
 
-186.  Titan 1: pbreak; repeat expt 185
+After 680 epochs, nframes/episode --> 1.3K, reward --> 3.9, log10(loss) =
+-2.5;  slow growth in weight dists; 
 
+186.  Titan 1: pbreak; repeat expt 185
+After 680 epochs, nframes/episode --> 600, reward --> 1 with no sign of
+growth; log10(loss) = -3; 
+
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+TITAN 3:  
+--------
+
+TITAN 1:  
+--------
 
 THINKMATE
 ---------
+
+187.  blr = 1E-3; binary valued screen; keep bottom row which includes
+entire paddle plot paddle X density dist
+
+Mon Dec 26 12:56:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+188.  TM: Repeat expt 187
+
+189.  blr = 3E-4; binary valued screen; keep bottom row which includes
+entire paddle plot paddle X density dist
+
+Mon Dec 26 12:59:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+190.  TM:  Repeat expt 189
+
 
 ===========================================================
 TODO:

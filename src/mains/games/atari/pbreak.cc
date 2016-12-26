@@ -70,17 +70,17 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-//   int H1 = 16;
+   int H1 = 16;
 //   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
-   int H1 = 200;
+//   int H1 = 200;
 
-   int H2 = 0;
+//   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-//   int H2 = 64;
+   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -106,11 +106,9 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
 
-// FAKE FAKE:  Mon Dec 26 at 3:24 pm
-
-   int replay_memory_capacity = 4 * 1000;
+//   int replay_memory_capacity = 4 * 1000;
 //   int replay_memory_capacity = 8 * 1000;
-//   int replay_memory_capacity = 16 * 1000;
+   int replay_memory_capacity = 16 * 1000;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
