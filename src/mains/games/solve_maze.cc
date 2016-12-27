@@ -33,7 +33,7 @@ int main (int argc, char* argv[])
 //   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> seed;
-//   nrfunc::init_default_seed(seed);
+   nrfunc::init_default_seed(seed);
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;

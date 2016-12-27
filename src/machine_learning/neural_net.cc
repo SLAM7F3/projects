@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 10/17/16; 10/18/16; 10/19/16; 10/20/16
+// Last modified on 10/18/16; 10/19/16; 10/20/16; 12/27/16
 // ==========================================================================
 
 #include <iostream>
@@ -224,7 +224,7 @@ void neural_net::feedforward(genvector* a_input)
       }
       else // perform ReLU on hidden layer's weight inputs
       {
-         machinelearning_func::ReLU(*z[l+1], *a[l+1]);
+         machinelearning_func::leaky_ReLU(*z[l+1], *a[l+1]);
       }
 //       cout << "a[l+1] = " << *a[l+1] << endl;
    }
@@ -239,7 +239,7 @@ genvector* neural_net::get_softmax_class_probs() const
 }
 
 // ---------------------------------------------------------------------
-double neural_net::get_sample_loss(DATA_PAIR& curr_data)
+double neural_net::get_sample_loss(const DATA_PAIR& curr_data)
 {
    genvector* class_probs = get_softmax_class_probs();
    int class_label = curr_data.second;
@@ -250,8 +250,36 @@ double neural_net::get_sample_loss(DATA_PAIR& curr_data)
    if(curr_prob > exp_neg_15)
    {
       curr_loss = -log(curr_prob);
+      curr_loss += L2_loss_contribution();
    }
    return curr_loss;
+}
+
+// ---------------------------------------------------------------------
+// Member function L2_loss_contribution() adds the L2 regularization
+// term's contribution to the loss function.
+
+double neural_net::L2_loss_contribution()
+{
+   double L2_loss = 0;
+
+   const double TINY = 1E-8;
+   if(lambda > TINY)
+   {
+      double sqrd_weight_sum = 0;
+      for(unsigned int l = 0; l < n_layers - 1; l++)
+      {
+         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+         {
+            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+            {
+               sqrd_weight_sum += sqr(weights[l]->get(r,c));
+            }
+         }
+      } // loop over index l labeling network layers
+      L2_loss += lambda * sqrd_weight_sum;
+   }
+   return L2_loss;
 }
 
 // ---------------------------------------------------------------------
@@ -486,23 +514,6 @@ void neural_net::plot_accuracies_history()
    {
       epochs.push_back(e);
    }
-   
-/*
-// Temporally smooth noisy training accuracy values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
-   vector<double> h;
-   h.reserve(gaussian_size);
-   filterfunc::gaussian_filter(dx, sigma, h);
-
-   bool wrap_around_input_values = false;
-   vector<double> smoothed_minibatch_loss;
-   filterfunc::brute_force_filter(
-      avg_minibatch_loss, h, smoothed_minibatch_loss, 
-      wrap_around_input_values);
-*/
 
    metafile curr_metafile;
    string meta_filename="accuracies";
@@ -525,8 +536,6 @@ void neural_net::plot_accuracies_history()
    curr_metafile.write_header();
 
    curr_metafile.write_curve(epochs, test_accuracy_history, colorfunc::red);
-//   curr_metafile.write_curve(e_effective, smoothed_minibatch_loss,
-//                             colorfunc::cyan);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
@@ -600,7 +609,6 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 // RMSprop
       nabla_weights[l]->hadamard_division(denom);
       *weights[l] -= learning_rate * (*nabla_weights[l]);
-//         nabla_weights[l]->hadamard_division(denom);
 
 // Vanilla SGD
 //      *weights[l] -= learning_rate * (*nabla_weights[l]);
@@ -616,6 +624,22 @@ double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
 }
 
 // ---------------------------------------------------------------------
+// Member function clear_delta_nablas() initializes "instantaneous"
+// (i.e. just for curr_data_pair) weight and bias gradients to zero:
+
+void neural_net::clear_delta_nablas()
+{
+   for(unsigned int l = 0; l < n_layers; l++)
+   {
+      delta_nabla_biases[l]->clear_values();
+   }
+   for(unsigned int l = 0; l < n_layers - 1; l++)
+   {
+      delta_nabla_weights[l]->clear_values();
+   }
+}
+
+// ---------------------------------------------------------------------
 // Member function backpropagate() takes in one training sample within
 // curr_data_pair.  It returns delta_nabla_biases and
 // delta_nabla_weights representing the gradient for cost function
@@ -627,22 +651,8 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 {
 //    cout << "inside neural_net::backpropagate()" << endl;
 
-//   double radius = curr_data_pair.first->magnitude();
    int y = basic_math::round(curr_data_pair.second);
-//   cout << "training input radius = " << radius
-//        << " y = " << y << endl;
-
-// Initialize "instantaneous" (i.e. just for curr_data_pair) weight
-// and bias gradients to zero:
-
-   for(unsigned int l = 0; l < n_layers; l++)
-   {
-      delta_nabla_biases[l]->clear_values();
-   }
-   for(unsigned int l = 0; l < n_layers - 1; l++)
-   {
-      delta_nabla_weights[l]->clear_values();
-   }
+   clear_delta_nablas();
 
    // Recall for layer l, delta_j = dC_x / dz_j
 
@@ -658,16 +668,16 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
    {
       double curr_activation = a[curr_layer]->get(j);
       if(j == y) curr_activation -= 1.0;
-      delta[curr_layer]->put( j, curr_activation );
+      delta[curr_layer]->put(j, curr_activation);
    }
    
-   for(int curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
+   for(int curr_layer = n_layers - 1; curr_layer >= 1; curr_layer--)
    {
       int prev_layer = curr_layer - 1;
 //      cout << "curr_layer = " << curr_layer
 //           << " prev_layer = " << prev_layer << endl;
 
-// Eqn BP2:
+// Eqn BP2 (Leaky ReLU):
 
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
@@ -679,7 +689,9 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       {
          if(z[prev_layer]->get(j) < 0)
          {
-            delta[prev_layer]->put(j, 0);
+            delta[prev_layer]->put(
+               j, machinelearning_func::get_leaky_ReLU_small_slope() * 
+               delta[prev_layer]->get(j));
          }
       }
 //      cout << "delta[curr_layer] = " << *delta[curr_layer] << endl;
@@ -690,8 +702,85 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
 
 // Eqn BP4:
+
       *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
-         *a[prev_layer]) + 2 * lambda * (*weights[prev_layer]);
+         *a[prev_layer]);
+
+// Add L2 regularization contribution to delta_nabla_weights.  No such
+// regularization contribution is conventionally added to
+// delta_nabla_biases:
+
+      *delta_nabla_weights[prev_layer] += 
+         2 * lambda * (*weights[prev_layer]);
 
    } // loop over curr_layer
+
+// Numerically spot-check loss derivatives wrt a few random
+// weights:
+
+   if(nrfunc::ran1() < 1E-2)
+   {
+      numerically_check_derivs(curr_data_pair);
+   }
+}
+
+// ---------------------------------------------------------------------
+// On 12/27/16, we numerically spot-checked soft-max loss function
+// derivatives wrt random neural network weights for synthetically
+// generated 2D spiral training data. We empirically found that the 
+// ratio of numerically derived to backpropagated derivatives lay
+// within the interval [0.99, 1.01] provided that the derivatives
+// absolute magnitude exceeded 1E-9 and eps = 1E-5.  (As eps --> 0, we
+// believe the numerical derivative becomes noisier.  So the ratio
+// lies within [0.99, 1.01] provided the derivatives' absolute
+// magnitude exceeds 1E-8 if eps = 1E-6.)  Derivatives with
+// smaller magnitudes effectively equal 0.  So their ratio becomes
+// noisier.
+
+void neural_net::numerically_check_derivs(const DATA_PAIR& curr_data_pair)
+{
+   const double eps = 1E-5;
+//   const double eps = 1E-6;
+//   const double eps = 1E-8;
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      int row = nrfunc::ran1() * weights[l]->get_mdim();
+      int col = nrfunc::ran1() * weights[l]->get_ndim();
+      double orig_weight = weights[l]->get(row, col);
+
+      weights[l]->put(row, col, orig_weight + eps);
+      feedforward(curr_data_pair.first);
+      double pos_loss = get_sample_loss(curr_data_pair);
+
+      weights[l]->put(row, col, orig_weight - eps);
+      feedforward(curr_data_pair.first);
+      double neg_loss = get_sample_loss(curr_data_pair);
+      double curr_deriv = (pos_loss - neg_loss) / (2 * eps);
+      
+      weights[l]->put(row, col, orig_weight);
+      cout.precision(12);
+      cout << "l = " << l << " row = " << row << " col = " << col 
+           << " orig_weight = " << orig_weight << endl;
+      cout << "  pos_loss = " << pos_loss << " neg_loss = " << neg_loss
+           << endl;
+      cout << "  pos - neg loss = " << pos_loss - neg_loss << endl;
+      cout << "  curr_deriv = " << curr_deriv 
+           << " delta_nabla_weight = " 
+           << delta_nabla_weights[l]->get(row, col)
+           << endl;
+
+      if(fabs(delta_nabla_weights[l]->get(row, col)) > 1E-10)
+      {
+         double ratio = 
+            curr_deriv / delta_nabla_weights[l]->get(row, col);
+         cout << "  curr_deriv / delta_nabla_weight = " << ratio << endl;
+
+         if(fabs(curr_deriv) > 1E-9 && (ratio < 0.99 || ratio > 1.01)) 
+         {
+            cout << endl;
+            outputfunc::enter_continue_char();
+         }
+      }
+         
+   } // loop over index l labeling network layers
 }

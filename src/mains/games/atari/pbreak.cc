@@ -79,8 +79,8 @@ int main(int argc, char** argv)
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-//   int H2 = 32;
-   int H2 = 64;
+   int H2 = 32;
+//   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -109,10 +109,12 @@ int main(int argc, char** argv)
 //   int replay_memory_capacity = 4 * 1000;
 //   int replay_memory_capacity = 8 * 1000;
    int replay_memory_capacity = 16 * 1000;
+
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
    reinforce_agent_ptr->set_environment(&game_world);
+
 //   reinforce_agent_ptr->set_lambda(0.0);
    reinforce_agent_ptr->set_lambda(1E-2);
 //   reinforce_agent_ptr->set_lambda(1E-3);
@@ -143,15 +145,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
-   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
-
-// Periodically decrease learning rate down to some minimal floor
-// value:
-
-   double min_learning_rate = 
-      0.1 * reinforce_agent_ptr->get_base_learning_rate();
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
@@ -192,8 +188,8 @@ int main(int argc, char** argv)
    params_stream << "n_actions = " << n_actions << endl;
    params_stream << "Leaky ReLU small slope = "
                  << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
-//   params_stream << "Learning rate decrease period = " 
-//                 << n_lr_episodes_period << " episodes" << endl;
+   params_stream << "Learning rate decrease period = " 
+                 << n_lr_episodes_period << " episodes" << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "Random seed = " << seed << endl;
@@ -220,12 +216,7 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && 
          curr_episode_number%n_lr_episodes_period == 0)
       {
-         double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
-         if(curr_learning_rate > min_learning_rate)
-         {
-            reinforce_agent_ptr->push_back_learning_rate(
-               0.8 * curr_learning_rate);
-         }
+         reinforce_agent_ptr->decrease_learning_rate();
       }
 
 // -----------------------------------------------------------------------
@@ -238,7 +229,7 @@ int main(int argc, char** argv)
       int prev_a = 0;
       int curr_a = -1;
       Action a;
-      double prob_a;
+
       int n_prev_lives = -1;
       double cum_reward = 0;
 
@@ -279,9 +270,10 @@ int main(int argc, char** argv)
             n_state_updates++;
          }
 
+         genvector* curr_s = NULL;
          if(state_updated_flag && n_state_updates > 2)
          {
-            genvector* curr_s = game_world.get_curr_state();
+            curr_s = game_world.get_curr_state();
 
 // If curr_s == 0, do NOT store it into the replay memory:
 
@@ -319,8 +311,9 @@ int main(int argc, char** argv)
             curr_a = prev_a;
             if(state_updated_flag)
             {
+               double prob_a;
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  prob_a);
+                  nrfunc::ran1(), curr_s, prob_a);
                prev_a = curr_a;
             }
             a = minimal_actions[curr_a];
@@ -376,8 +369,8 @@ int main(int argc, char** argv)
          {
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
-            reinforce_agent_ptr->store_action_prob_into_replay_memory(
-               d, prob_a);
+//            reinforce_agent_ptr->store_action_prob_into_replay_memory(
+//               d, prob_a);
          
          }
          else if (d >= 0 && state_updated_flag && n_state_updates > 2 && 
@@ -387,8 +380,8 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
-            reinforce_agent_ptr->store_action_prob_into_replay_memory(
-               d, prob_a);
+//            reinforce_agent_ptr->store_action_prob_into_replay_memory(
+//               d, prob_a);
          }
 
 // Update P-network when replay memory becomes completely full:
@@ -401,6 +394,7 @@ int main(int argc, char** argv)
                verbose_flag = true;
             }
             total_loss = reinforce_agent_ptr->update_P_network(verbose_flag);
+            reinforce_agent_ptr->clear_replay_memory();
          }
 
 // Periodically save an episode's worth of screens to output

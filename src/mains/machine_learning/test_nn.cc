@@ -1,11 +1,8 @@
 // ==========================================================================
 // Program TEST_NN
 // ==========================================================================
-// Last updated on 10/15/16; 10/16/16; 10/17/16
+// Last updated on 10/15/16; 10/16/16; 10/17/16; 12/27/16
 // ==========================================================================
-
-// junkcomment
-
 
 #include <stdint.h>
 #include <byteswap.h>
@@ -24,6 +21,7 @@
 #include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
+#include "time/timefuncs.h"
 
 using std::ifstream;
 using std::ofstream;
@@ -36,44 +34,53 @@ int main (int argc, char* argv[])
    using std::string;
    using std::vector;
 
-   nrfunc::init_time_based_seed();
+   timefunc::initialize_timeofday_clock();
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
+//   cout << "Enter negative seed:" << endl;
+//   cin >> seed;
+//   nrfunc::init_default_seed(seed);
 
    int Din = 2;   	// Number of input layer nodes
-//   int H = 3;		// Number of single hidden layer nodes
-//   int H = 5;		// Number of single hidden layer nodes
-   int H = 8;		// Number of single hidden layer nodes
-//   int H = 50;		// Number of single hidden layer nodes
+   int H1 = 10;		// Number of first hidden layer nodes
+   int H2 = 10;
+   int H3 = 4;
    int Dout = 2;   	// Number of output layer nodes
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
-   layer_dims.push_back(H);
+   layer_dims.push_back(H1);
+   layer_dims.push_back(H2);
+   layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
    neural_net NN(layer_dims);
    
-   int n_training_samples = 1000;
+   int n_training_samples = 2000;
 //   int n_training_samples = 200;
-   int n_testing_samples = 0.25 * n_training_samples;
-   int mini_batch_size = 10;
+   int n_testing_samples = 0.1 * n_training_samples;
+   int mini_batch_size = 20;
 
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> testing_samples;
 
+/*
    machinelearning_func::generate_2d_circular_data_samples(
       n_training_samples, training_samples);
    machinelearning_func::generate_2d_circular_data_samples(
       n_testing_samples, testing_samples);
+*/
 
-//   machinelearning_func::generate_2d_spiral_data_samples(
-//      n_training_samples, training_samples);
-//   machinelearning_func::generate_2d_spiral_data_samples(
-//      n_testing_samples, testing_samples);
+   machinelearning_func::generate_2d_spiral_data_samples(
+      n_training_samples, training_samples);
+   machinelearning_func::generate_2d_spiral_data_samples(
+      n_testing_samples, testing_samples);
 
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
 
    int n_epochs = 100;
    double learning_rate = 0.01;
+
    double lambda = 0.001;
    double rmsprop_decay_rate = 0.95;
    NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda, 
@@ -116,15 +123,14 @@ int main (int argc, char* argv[])
 
    metafile curr_metafile;
 
-
+/*
    string meta_filename="circle";
    string title="Toy circle data classification";
    string x_label="X";
    string y_label="Y";
    double min_val = -2;
    double max_val = 2;
-
-/*
+*/
 
    string meta_filename="spiral";
    string title="Toy spiral data classification";
@@ -132,7 +138,6 @@ int main (int argc, char* argv[])
    string y_label="Y";
    double min_val = -1;
    double max_val = 1;
-*/
 
    curr_metafile.set_legend_flag(true);
    curr_metafile.set_parameters(

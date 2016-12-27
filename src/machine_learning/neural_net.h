@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 2/8/16; 2/9/16; 10/17/16; 10/18/16
+// Last modified on 2/9/16; 10/17/16; 10/18/16; 12/27/16
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -53,7 +53,8 @@ class neural_net
 
    void feedforward(genvector* a_input);
    genvector* get_softmax_class_probs() const;
-   double get_sample_loss(DATA_PAIR& curr_data);
+   double get_sample_loss(const DATA_PAIR& curr_data);
+   double L2_loss_contribution();
    void sgd(int n_epochs, int mini_batch_size, double learning_rate,
             double lambda, double rmsprop_decay_rate);
 
@@ -102,7 +103,9 @@ class neural_net
    std::vector<int> incorrect_classifications;
 
    double update_mini_batch(std::vector<DATA_PAIR>& mini_batch);
+   void clear_delta_nablas();
    void backpropagate(const DATA_PAIR& curr_data_pair);
+   void numerically_check_derivs(const DATA_PAIR& curr_data_pair);
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);

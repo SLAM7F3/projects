@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/20/16; 12/21/16; 12/24/16; 12/26/16
+// Last updated on 12/21/16; 12/24/16; 12/26/16; 12/27/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -118,6 +118,7 @@ int main(int argc, char** argv)
 //   int replay_memory_capacity = nframes_per_epoch * 8;
    int eval_memory_capacity = basic_math::min(
       int(0.1 * replay_memory_capacity), 20000);
+
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
 //      reinforce::SGD);
@@ -172,12 +173,6 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    double starting_epoch_linear_eps_decay = 4.0;
    double stopping_epoch_linear_eps_decay = 0.35 * n_max_epochs;
-
-// Periodically decrease learning rate down to some minimal floor
-// value:
-
-   double min_learning_rate = 
-      0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
    int n_lr_episodes_period = 10 * 1000;
 
@@ -285,12 +280,7 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && 
          curr_episode_number%n_lr_episodes_period == 0)
       {
-         double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
-         if(curr_learning_rate > min_learning_rate)
-         {
-            reinforce_agent_ptr->push_back_learning_rate(
-               0.8 * curr_learning_rate);
-         }
+         reinforce_agent_ptr->decrease_learning_rate();
       }
 
 // -----------------------------------------------------------------------
@@ -538,7 +528,7 @@ int main(int argc, char** argv)
             cum_framenumber % nn_update_frame_period == 0)
          {
             bool verbose_flag = false;
-            if(curr_episode_number % 10 == 0)
+            if(curr_episode_number % 100 == 0)
             {
                verbose_flag = true;
             }

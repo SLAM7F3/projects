@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/20/16; 12/21/16; 12/24/16; 12/26/16
+// Last modified on 12/21/16; 12/24/16; 12/26/16; 12/27/16
 // ==========================================================================
 
 #include <string>
@@ -283,12 +283,12 @@ void reinforce::allocate_member_objects()
    if (learning_type == QLEARNING)
    {
       s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
-      prob_a = NULL;
+//       prob_a = NULL;
    }
    else if(learning_type == PLEARNING)
    {
       s_eval = NULL;
-      prob_a = new genvector(replay_memory_capacity);      
+//       prob_a = new genvector(replay_memory_capacity);      
    }
 
    curr_s_sample = new genvector(layer_dims.front());
@@ -396,7 +396,7 @@ reinforce::~reinforce()
    delete r_curr;
    delete s_next;
    delete terminal_state;
-   delete prob_a;
+//    delete prob_a;
    delete curr_s_sample;
    delete next_s_sample;
    delete prev_afterstate_ptr;
@@ -939,6 +939,55 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of average discounted eventual rewards for
+// P-learning versus epoch.
+
+void reinforce::plot_avg_discounted_eventual_reward(
+   string output_subdir, string extrainfo, bool epoch_indep_var)
+{
+   if(avg_discounted_eventual_rewards.size() < 3) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir + "/eventual_rewards_history";
+
+   string title="Average eventual rewards";
+   title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
+   title += "; nweights="+stringfunc::number_to_string(n_weights);
+
+   string subtitle=init_subtitle();
+   subtitle += ";"+extrainfo;
+   string x_label = "Episode";
+   double xmax = episode_number;
+   if(epoch_indep_var)
+   {
+      x_label="Epoch";
+      xmax = curr_epoch;
+   }
+   string y_label="Average eventual reward";
+
+   double min_reward = 0;
+   double max_reward = mathfunc::maximal_value(avg_discounted_eventual_rewards)
+      + 0.5;
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, min_reward, max_reward);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+
+   curr_metafile.write_curve(0, xmax, avg_discounted_eventual_rewards,
+                             colorfunc::get_color(2));
+   curr_metafile.set_thickness(3);
+ 
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of max Q distribution for evaluation states
 // versus epoch.
 
@@ -986,34 +1035,6 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo,
    curr_metafile.write_curve(0, xmax, max_eval_Qvalues_50,
                              colorfunc::get_color(2));
    curr_metafile.set_thickness(3);
-
-/*
-// Temporally smooth noisy avg maxQ values:
-
-   double sigma = 10;
-   if(avg_max_eval_Qvalues.size() > 100)
-   {
-      sigma += log10(avg_max_eval_Qvalues.size())/log10(2.0);
-   }
-   
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 1.5);
-
-   vector<double> smoothed_avg_max_eval_Qvalues;
-   if(gaussian_size < int(avg_max_eval_Qvalues.size())) 
-   {
-      vector<double> h;
-      h.reserve(gaussian_size);
-      filterfunc::gaussian_filter(dx, sigma, h);
-
-      bool wrap_around_input_values = false;
-      filterfunc::brute_force_filter(
-         avg_max_eval_Qvalues, h, smoothed_avg_max_eval_Qvalues, 
-         wrap_around_input_values);
-      curr_metafile.write_curve(
-         0, xmax, smoothed_avg_max_eval_Qvalues, colorfunc::blue);
-   }
-*/
  
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
@@ -1779,13 +1800,23 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
       plot_bias_distributions(output_subdir, extrainfo, epoch_indep_var);
    }
 
-   plot_maxQ_history(output_subdir, extrainfo, epoch_indep_var);
+   if (learning_type == QLEARNING)
+   {
+      plot_maxQ_history(output_subdir, extrainfo, epoch_indep_var);
+      plot_epsilon_history(output_subdir, extrainfo, epoch_indep_var);
+   }
+   else if (learning_type == PLEARNING)
+   {
+      plot_avg_discounted_eventual_reward(
+         output_subdir, extrainfo, epoch_indep_var);
+   }
+   
    plot_weight_distributions(output_subdir, extrainfo, epoch_indep_var);
    plot_quasirandom_weight_values(output_subdir, extrainfo, epoch_indep_var);
    bool plot_cumulative_reward = true;
    plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
                        epoch_indep_var);
-   plot_epsilon_history(output_subdir, extrainfo, epoch_indep_var);
+
    plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
@@ -1813,6 +1844,8 @@ void reinforce::generate_view_metrics_script(
    {
       script_stream << "view reward_history.jpg" << endl;
       script_stream << "view frames_history.jpg" << endl;
+      script_stream << "view paddle_X.jpg" << endl;
+      script_stream << "view eventual_rewards_history.jpg" << endl;
    }
 
    if(learning_type == QLEARNING)
@@ -1994,6 +2027,21 @@ void reinforce::clear_delta_nablas()
    for(int l = 0; l < n_layers - 1; l++)
    {
       delta_nabla_weights[l]->clear_values();
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function decrease_learning_rate decreases the learning rate
+// down to some minimal floor value.
+
+void reinforce::decrease_learning_rate()
+{
+   double curr_learning_rate = get_learning_rate();
+   double min_learning_rate = 0.1 * get_base_learning_rate();
+
+   if(curr_learning_rate > min_learning_rate)
+   {
+      push_back_learning_rate(0.8 * curr_learning_rate);
    }
 }
 
@@ -2336,10 +2384,12 @@ void reinforce::store_final_arsprime_into_replay_memory(
 //   cout << "curr_r = " << curr_r << endl;
 }
 
+/*
 void reinforce::store_action_prob_into_replay_memory(int d, double prob)
 {
    prob_a->put(d, prob);
 }
+*/
 
 // ---------------------------------------------------------------------
 // Member function get_replay_memory_entry()
@@ -2670,11 +2720,38 @@ double reinforce::update_neural_network(bool verbose_flag)
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_curr_loss() assumes that a forward
+// Member function L2_loss_contribution() adds the L2 regularization
+// term's contribution to the loss function.
+
+double reinforce::L2_loss_contribution()
+{
+   double L2_loss = 0;
+
+   const double TINY = 1E-8;
+   if(lambda > TINY)
+   {
+      double sqrd_weight_sum = 0;
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+         {
+            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+            {
+               sqrd_weight_sum += sqr(weights[l]->get(r,c));
+            }
+         }
+      } // loop over index l labeling network layers
+      L2_loss += (lambda / n_weights) * sqrd_weight_sum;
+   }
+   return L2_loss;
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_curr_Q_loss() assumes that a forward
 // propagation has recently been performed.  It returns the current
 // contribution to the loss function for Q-learning.
 
-double reinforce::compute_curr_loss(int curr_a, double target_value)
+double reinforce::compute_curr_Q_loss(int curr_a, double target_value)
 {
    int curr_layer = n_layers - 1;
    double curr_loss = -1;
@@ -2712,24 +2789,7 @@ double reinforce::compute_curr_loss(int curr_a, double target_value)
       }
    }
 
-// Add L2 regularization term's contribution to loss function:
-
-   const double TINY = 1E-8;
-   if(lambda > TINY)
-   {
-      double sqrd_weight_sum = 0;
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
-         {
-            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
-            {
-               sqrd_weight_sum += sqr(weights[l]->get(r,c));
-            }
-         }
-      } // loop over index l labeling network layers
-      curr_loss += (lambda / n_weights) * sqrd_weight_sum;
-   }
+   curr_loss += L2_loss_contribution();
    return curr_loss;
 }
 
@@ -2801,7 +2861,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       {
          if(Z_Prime[prev_layer]->get(j) < 0)
          {
-//            Delta_Prime[prev_layer]->put(j, 0);
             Delta_Prime[prev_layer]->put(
                j, machinelearning_func::get_leaky_ReLU_small_slope() * 
                Delta_Prime[prev_layer]->get(j));
@@ -2851,7 +2910,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
    n_backprops++;
 
-   double curr_loss = compute_curr_loss(curr_a, target_value);
+   double curr_loss = compute_curr_Q_loss(curr_a, target_value);
 
 // On 12/26/16, we explicitly spot-checked backpropagated
 // loss-function derivatives with their numerically calculated
@@ -2864,37 +2923,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
    if(nrfunc::ran1() < 1E-4)
    {
-      const double eps = 1E-6;
-      for(unsigned int l = 0; l < weights.size(); l++)
-      {
-         int row = nrfunc::ran1() * weights[l]->get_mdim();
-         int col = nrfunc::ran1() * weights[l]->get_ndim();
-         double orig_weight = weights[l]->get(row, col);
-         weights[l]->put(row, col, orig_weight + eps);
-         Q_forward_propagate(curr_s_sample);
-         double pos_loss = compute_curr_loss(curr_a, target_value);
-         weights[l]->put(row, col, orig_weight - eps);
-         Q_forward_propagate(curr_s_sample);      
-         double neg_loss = compute_curr_loss(curr_a, target_value);
-         double curr_deriv = (pos_loss - neg_loss) / (2 * eps);
-         cout.precision(12);
-         cout << "l = " << l << " row = " << row << " col = " << col << endl;
-         cout << "  pos_loss = " << pos_loss << " neg_loss = " << neg_loss
-              << endl;
-         cout << " curr_deriv = " << curr_deriv 
-              << " delta_nabla_weight = " 
-              << delta_nabla_weights[l]->get(row, col)
-              << endl;
-
-         if(fabs(curr_deriv) > 1E-10)
-         {
-            double ratio = 
-               delta_nabla_weights[l]->get(row, col) / curr_deriv;
-            cout << "  delta_nabla_weight / curr_deriv = " << ratio << endl;
-         }
-         
-         weights[l]->put(row, col, orig_weight);
-      } // loop over index l labeling network layers
+      numerically_check_Q_derivs(curr_a, target_value);
    }
 */
 
@@ -2903,9 +2932,41 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::numerically_check_derivs()
+void reinforce::numerically_check_Q_derivs(int curr_a, double target_value)
 {
+   const double eps = 1E-6;
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      int row = nrfunc::ran1() * weights[l]->get_mdim();
+      int col = nrfunc::ran1() * weights[l]->get_ndim();
+      double orig_weight = weights[l]->get(row, col);
+      weights[l]->put(row, col, orig_weight + eps);
+      Q_forward_propagate(curr_s_sample);
+      double pos_loss = compute_curr_Q_loss(curr_a, target_value);
+      weights[l]->put(row, col, orig_weight - eps);
+      Q_forward_propagate(curr_s_sample);      
+      double neg_loss = compute_curr_Q_loss(curr_a, target_value);
+      double curr_deriv = (pos_loss - neg_loss) / (2 * eps);
+      weights[l]->put(row, col, orig_weight);
 
+      cout.precision(12);
+      cout << "l = " << l << " row = " << row << " col = " << col << endl;
+      cout << "  pos_loss = " << pos_loss << " neg_loss = " << neg_loss
+           << endl;
+      cout << " curr_deriv = " << curr_deriv 
+           << " delta_nabla_weight = " 
+           << delta_nabla_weights[l]->get(row, col)
+           << endl;
+
+      if(fabs(curr_deriv) > 1E-10)
+      {
+         double ratio = 
+            delta_nabla_weights[l]->get(row, col) / curr_deriv;
+         cout << "  delta_nabla_weight / curr_deriv = " << ratio << endl;
+      }
+         
+
+   } // loop over index l labeling network layers
 }
 
 // ---------------------------------------------------------------------
@@ -3116,12 +3177,16 @@ void reinforce::P_forward_propagate(genvector* s_input)
 // probability distribution encoded in the P-network's final layer.
 // It also returns the probability associated with the sampled action.
 
-int reinforce::get_P_action_for_curr_state(double& prob_a)
+int reinforce::get_P_action_for_curr_state(genvector* curr_s, double& prob_a)
 {
-   genvector* curr_s = environment_ptr->get_curr_state();
-   P_forward_propagate(curr_s);
-
    double ran_val = nrfunc::ran1();
+   return get_P_action_for_curr_state(ran_val, curr_s, prob_a);
+}
+
+int reinforce::get_P_action_for_curr_state(
+   double ran_val, genvector* curr_s, double& prob_a)
+{
+   P_forward_propagate(curr_s);
 
    double cum_p = 0;
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
@@ -3144,6 +3209,17 @@ int reinforce::get_P_action_for_curr_state(double& prob_a)
 }
 
 // ---------------------------------------------------------------------
+// Member function compute_curr_P_loss
+
+double reinforce::compute_curr_P_loss(int d, double action_prob)
+{
+   double curr_advantage = get_advantage(d);
+   double curr_loss = - curr_advantage * log(action_prob);
+   curr_loss += L2_loss_contribution();
+   return curr_loss;
+}
+
+// ---------------------------------------------------------------------
 // Member function P_backward_propagate()
 
 double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
@@ -3152,36 +3228,34 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 
 // Calculate target for curr transition sample:
 
-   int curr_a;
-   double curr_advantage;
+   int stored_a;
+   double curr_R;
    get_replay_memory_entry(
-      d, *curr_s_sample, curr_a, curr_advantage, *next_s_sample);
-   double action_prob = prob_a->get(d);
+      d, *curr_s_sample, stored_a, curr_R, *next_s_sample);
 
 // First need to perform forward propagation for *curr_s_sample in
 // order to repopulate linear z inputs and nonlinear a outputs for
 // each node in the neural network:
 
-   Q_forward_propagate(curr_s_sample);
+//   P_forward_propagate(curr_s_sample);
 
-   double curr_loss = - curr_advantage * log(action_prob);
-
-   int curr_layer = n_layers - 1;
+   double ran_value = nrfunc::ran1();
+   double action_prob;
+   int actual_a = get_P_action_for_curr_state(
+      ran_value, curr_s_sample, action_prob);
+   double curr_advantage = get_advantage(d);
 
 // Eqn BP1:
 
+   int curr_layer = n_layers - 1;
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
-      double curr_activation = A_Prime[n_layers-1]->get(j);
-      if(j == curr_a)
-      {
-         curr_activation -= 1.0;
-      }
+      double curr_activation = A_Prime[curr_layer]->get(j);
+      if(j == actual_a) curr_activation -= 1.0;
       Delta_Prime[curr_layer]->put(j, curr_advantage * curr_activation);
    }
 
-
-   for(curr_layer = n_layers-1; curr_layer >= 1; curr_layer--)
+   for(curr_layer = n_layers - 1; curr_layer >= 1; curr_layer--)
    {
 
 // Don't bother backpropagating if current layer has zero content:
@@ -3224,14 +3298,13 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
       delta_nabla_weights[prev_layer]->accumulate_outerprod(
          *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
 
+// Add L2 regularization contribution to delta_nabla_weights.  No such
+// regularization contribution is conventionally added to
+// delta_nabla_biases:
+
       const double TINY = 1E-8;
       if(lambda > TINY)
       {
-//         if(include_bias_terms)
-//         {
-//            *delta_nabla_biases[curr_layer] += 
-//               2 * lambda * (*biases[curr_layer]);
-         //        }
          *delta_nabla_weights[prev_layer] += 
             2 * (lambda / n_weights) * (*weights[prev_layer]);
       }
@@ -3255,27 +3328,77 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 
    n_backprops++;
 
-// Add L2 regularization term's contribution to current loss:
+   double curr_loss = compute_curr_P_loss(d, action_prob);
 
-   const double TINY = 1E-8;
-   if(lambda > TINY)
+// On 12/27/16, we numerically spot-checked loss function
+// derivatives wrt random neural network weights.  We empirically
+// found that the ratio of numerically derived to backpropagated
+// derivatives lay within the interval [0.99, 1.01] provided that the
+// |pos_loss - neg_loss| > 1E-13 and eps = 1E-6. Derivatives with
+// smaller magnitudes effectively equal 0.  So their ratio becomes
+// noisier.
+
+/*
+   if(nrfunc::ran1() < 1E-3)
    {
-      double sqrd_weight_sum = 0;
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
-         {
-            for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
-            {
-               sqrd_weight_sum += sqr(weights[l]->get(r,c));
-            }
-         }
-      } // loop over index l labeling network layers
-      curr_loss += (lambda / n_weights) * sqrd_weight_sum;
+      numerically_check_P_derivs(curr_advantage, ran_value);
    }
+*/
 
    curr_loss *= inverse_Nd;
    return curr_loss;
+}
+
+// ---------------------------------------------------------------------
+void reinforce::numerically_check_P_derivs(int d, double ran_value)
+{
+   const double eps = 1E-6;
+   double action_prob;
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      int row = nrfunc::ran1() * weights[l]->get_mdim();
+      int col = nrfunc::ran1() * weights[l]->get_ndim();
+      double orig_weight = weights[l]->get(row, col);
+
+      weights[l]->put(row, col, orig_weight + eps);
+      int curr_a_pos = 
+         get_P_action_for_curr_state(ran_value, curr_s_sample, action_prob);
+      double pos_loss = compute_curr_P_loss(d, action_prob);
+
+      weights[l]->put(row, col, orig_weight - eps);
+      int curr_a_neg = 
+         get_P_action_for_curr_state(ran_value, curr_s_sample, action_prob);
+      double neg_loss = compute_curr_P_loss(d, action_prob);
+      double curr_deriv = (pos_loss - neg_loss) / (2 * eps);
+      
+      weights[l]->put(row, col, orig_weight);
+      cout.precision(12);
+      cout << "l = " << l << " row = " << row << " col = " << col 
+           << " orig_weight = " << orig_weight << endl;
+      cout << "  curr_a_pos = " << curr_a_pos 
+           << " curr_a_neg = " << curr_a_neg << endl;
+      cout << "  pos_loss = " << pos_loss << " neg_loss = " << neg_loss
+           << endl;
+      cout << "  pos - neg loss = " << pos_loss - neg_loss << endl;
+      cout << "  curr_deriv = " << curr_deriv 
+           << " delta_nabla_weight = " 
+           << delta_nabla_weights[l]->get(row, col)
+           << endl;
+
+      if(fabs(curr_deriv) > 1E-10)
+      {
+         double ratio = 
+            delta_nabla_weights[l]->get(row, col) / curr_deriv;
+         cout << "  delta_nabla_weight / curr_deriv = " << ratio << endl;
+
+         if(ratio < 0.99 || ratio > 1.01) 
+         {
+            cout << endl;
+            outputfunc::enter_continue_char();
+         }
+      }
+         
+   } // loop over index l labeling network layers
 }
 
 // ---------------------------------------------------------------------
@@ -3403,16 +3526,35 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
       discounted_eventual_rewards.push_back(curr_R);
       r_curr->put(d, curr_R);
       next_R = curr_R;
+//      cout << "d = " << d << " curr_R = " << curr_R << endl;
    } // loop over index d labeling replay memory entries
 
 // Renormalize discounted eventual rewards so that they have zero mean
 // and unit standard deviation:
 
-   double mu, sigma;
-   mathfunc::mean_and_std_dev(discounted_eventual_rewards, mu, sigma);
-   
-   for(int d = 0; d < replay_memory_capacity; d++)
-   {
-      r_curr->put(d, (r_curr->get(d) - mu) / sigma);
-   }
+   mathfunc::mean_and_std_dev(discounted_eventual_rewards, mu_R, sigma_R);
+   avg_discounted_eventual_rewards.push_back(mu_R);
+
+   cout << "mu_R = " << mu_R << endl;
+//   outputfunc::enter_continue_char();
 }
+
+// ---------------------------------------------------------------------
+double reinforce::get_advantage(int d) const
+{
+   double curr_R = r_curr->get(d);
+   double curr_advantage = (curr_R - mu_R) / sigma_R;
+   return curr_advantage;
+}
+
+// ---------------------------------------------------------------------
+void reinforce::clear_replay_memory()
+{
+   s_curr->clear_values();
+   a_curr->clear_values();
+   r_curr->clear_values();
+   s_next->clear_values();
+   terminal_state->clear_values();
+//    prob_a->clear_values();
+}
+

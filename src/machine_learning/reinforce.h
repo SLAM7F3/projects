@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/20/16; 12/21/16; 12/24/16; 12/26/16
+// Last modified on 12/21/16; 12/24/16; 12/26/16; 12/27/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -100,12 +100,13 @@ class reinforce
 
    std::string init_subtitle();
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
+   void plot_avg_discounted_eventual_reward(
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_maxQ_history(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_reward_history(std::string output_subdir, std::string extrainfo,
                             bool epoch_indep_var,
                             bool plot_cumulative_reward = false);
-   
    void plot_reward_history(
       std::string output_subdir, std::string extrainfo, 
       double min_reward, double max_reward,
@@ -140,6 +141,7 @@ class reinforce
 // General learning methods:
 
    void clear_delta_nablas();
+   void decrease_learning_rate();
 
 // Q learning methods
 
@@ -178,9 +180,10 @@ class reinforce
 
    double compute_target(double curr_r, genvector* next_s, 
                          bool terminal_state_flag);
-   double compute_curr_loss(int curr_a, double target_value);
+   double L2_loss_contribution();
+   double compute_curr_Q_loss(int curr_a, double target_value);
    double Q_backward_propagate(int d, int Nd, bool verbose_flag = false);
-   void numerically_check_derivs();
+   void numerically_check_Q_derivs(int curr_a, double target_value);
 
    void set_Q_value(std::string state_action_str, double Qvalue);
    double get_Q_value(std::string state_action_str);
@@ -205,10 +208,16 @@ class reinforce
 // Policy gradient learning methods
 
    void P_forward_propagate(genvector* s_input);
-   int get_P_action_for_curr_state(double& prob_a);
+   int get_P_action_for_curr_state(genvector* curr_s, double& prob_a);
+   int get_P_action_for_curr_state(
+      double ran_val, genvector* curr_s, double& prob_a);
+   double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
+   void numerically_check_P_derivs(int d, double ran_value);
    double update_P_network(bool verbose_flag);
+   void clear_replay_memory();
    void compute_renormalized_discounted_eventual_rewards();
+   double get_advantage(int d) const;
 
   private:
 
@@ -299,6 +308,8 @@ class reinforce
 
    std::vector<double> running_reward_snapshots;
    std::vector<double> cumulative_reward_snapshots;
+   std::vector<double> avg_discounted_eventual_rewards;
+   double mu_R, sigma_R;
    int episode_number;
    double curr_epoch;
 
@@ -326,7 +337,7 @@ class reinforce
    genvector *r_curr;  // replay_memory_capacity x 1  (Holds rewards)
    genmatrix *s_next;  // replay_memory_capacity x Din
    genvector *terminal_state;   // replay_memory_capacity x 1
-   genvector *prob_a;  // replay_memory_capacity x 1
+//    genvector *prob_a;  // replay_memory_capacity x 1
 
    genvector *curr_s_sample, *next_s_sample;  // Din x 1 
 
