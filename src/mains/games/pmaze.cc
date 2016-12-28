@@ -29,11 +29,11 @@ int main (int argc, char* argv[])
    std::set_new_handler(sysfunc::out_of_memory); 
 
    timefunc::initialize_timeofday_clock();
-//   long seed = nrfunc::init_time_based_seed();
-   long seed = -11;
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> seed;
-   nrfunc::init_default_seed(seed);
+//   nrfunc::init_default_seed(seed);
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -84,8 +84,10 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int n_rollouts = 10;
+//   int n_rollouts = 10;
+   int n_rollouts = 32;
 //   int n_rollouts = 100;
+//   int n_rollouts = 1000;
    int replay_memory_capacity = n_rollouts;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, 
@@ -121,7 +123,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1 * 1000 * 1000;
    int n_lr_episodes_period = 1000 * 1000;
 
-   int n_update = 10;
+   int n_update = 100;
 //   int n_update = 500;
    int n_progress = 25000;
    double Qmap_score = -1;

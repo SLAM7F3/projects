@@ -1506,10 +1506,13 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
 
 // Temporally smooth noisy log10(loss) scores:
 
-   double sigma = 10;
-   if(log10_losses.size() > 100)
+//   double sigma = 10;
+//   double sigma = 100;
+   double sigma = 1000;
+   if(log10_losses.size() > 2 * sigma)
    {
-      sigma += log10(log10_losses.size())/log10(2.0);
+      sigma += 5 * log10(log10_losses.size())/log10(2.0);
+//      sigma += log10(log10_losses.size())/log10(2.0);
    }
    
    double dx = 1;
