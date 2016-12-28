@@ -3335,7 +3335,7 @@ TITAN 3:
 --------
 
 191.  Titan 3: blr = 3E-3; binary valued screen; keep bottom row which
-includes entire paddle plot paddle X density dist
+includes entire paddle plot paddle X density dist; pbreak
 
 Mon Dec 26 13:34:00 2016
 Neural net params:
@@ -3360,10 +3360,10 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -9385
 
-192.  Titan 3:  repeat expt 191
+192.  Titan 3:  repeat expt 191; pbreak
 
-191.  Titan 3: blr = 1E-3; binary valued screen; keep bottom row which
-includes entire paddle plot paddle X density dist
+193.  Titan 3: blr = 1E-3; binary valued screen; keep bottom row which
+includes entire paddle plot paddle X density dist; pbreak
 
 Mon Dec 26 13:42:00 2016
 Neural net params:
@@ -3388,7 +3388,7 @@ nframes / epoch = 50000
 n_max_epochs = 3000
 Random seed = -9385
 
-194.  Titan 3:  repeat expt 193
+194.  Titan 3:  repeat expt 193; pbreak
 
 TITAN 1:  
 --------

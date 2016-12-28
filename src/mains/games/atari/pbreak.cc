@@ -1,5 +1,5 @@
 // ==========================================================================
-// Program PBREAK solves the BreakOut atari game via policy gradients
+// Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
 // Last updated on 12/21/16; 12/23/16; 12/24/16; 12/26/16
 // ==========================================================================
@@ -114,11 +114,7 @@ int main(int argc, char** argv)
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
    reinforce_agent_ptr->set_environment(&game_world);
-
-//   reinforce_agent_ptr->set_lambda(0.0);
    reinforce_agent_ptr->set_lambda(1E-2);
-//   reinforce_agent_ptr->set_lambda(1E-3);
-//   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
@@ -145,9 +141,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
@@ -369,9 +365,6 @@ int main(int argc, char** argv)
          {
             reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
                d, curr_a, renorm_reward);
-//            reinforce_agent_ptr->store_action_prob_into_replay_memory(
-//               d, prob_a);
-         
          }
          else if (d >= 0 && state_updated_flag && n_state_updates > 2 && 
                   curr_a >= 0 && !zero_input_state)
@@ -380,8 +373,6 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
-//            reinforce_agent_ptr->store_action_prob_into_replay_memory(
-//               d, prob_a);
          }
 
 // Update P-network when replay memory becomes completely full:
@@ -420,7 +411,6 @@ int main(int argc, char** argv)
       cout << "  epoch = " << curr_epoch 
            << "  cum_frame = " << cum_framenumber << endl;
       cout << "  cum_reward = " << cum_reward 
-           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
 
@@ -433,6 +423,8 @@ int main(int argc, char** argv)
 
       if(total_loss > 0)
       {
+         cout << "  total_loss = " << total_loss
+              << " log10(total_loss) = " << log10(total_loss) << endl;
          reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
       }
       

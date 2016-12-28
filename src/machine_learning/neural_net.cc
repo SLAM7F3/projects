@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 10/18/16; 10/19/16; 10/20/16; 12/27/16
+// Last modified on 10/19/16; 10/20/16; 12/27/16; 12/28/16
 // ==========================================================================
 
 #include <iostream>
@@ -439,7 +439,7 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
       for(unsigned int b = 0; b < mini_batches.size(); b++)
       {
          e_effective.push_back(e + double(b) / mini_batches.size());
-         avg_minibatch_loss.push_back(update_mini_batch(mini_batches[b]));
+         avg_minibatch_loss.push_back(update_nn_params(mini_batches[b]));
       } // loop over index b labeling mini batches
 
       test_accuracy_history.push_back(evaluate_model_on_test_set());
@@ -546,13 +546,13 @@ void neural_net::plot_accuracies_history()
 }
 
 // ---------------------------------------------------------------------
-// Member function update_mini_batch() updates the network's weights
+// Member function update_nn_params() updates the network's weights
 // and biases by applying gradient descent using backpropagation to a
 // single mini batch.  lambda = L2 regularization parameter.  This
 // method returns the loss averaged over all samples within the
 // current mini_batch.
 
-double neural_net::update_mini_batch(vector<DATA_PAIR>& mini_batch)
+double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 {
 
 // Initialize cumulative (over mini batch) weight and bias gradients
@@ -715,6 +715,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
    } // loop over curr_layer
 
+/*
 // Numerically spot-check loss derivatives wrt a few random
 // weights:
 
@@ -722,6 +723,8 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
    {
       numerically_check_derivs(curr_data_pair);
    }
+*/
+
 }
 
 // ---------------------------------------------------------------------

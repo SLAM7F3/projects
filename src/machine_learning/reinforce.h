@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/21/16; 12/24/16; 12/26/16; 12/27/16
+// Last modified on 12/24/16; 12/26/16; 12/27/16; 12/28/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -170,11 +170,16 @@ class reinforce
       const genvector& next_s, bool terminal_state_flag);
    void store_final_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r);
-   void store_action_prob_into_replay_memory(int d, double prob);
+   void store_ar_into_replay_memory(int d, int curr_a, double curr_r,
+      bool terminal_state_flag);
+
    double update_neural_network(bool verbose_flag = false);
    bool get_replay_memory_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);
+   void get_replay_memory_entry(
+      int d, genvector& curr_s, int& curr_a, double& curr_r);
+
    bool store_curr_state_into_eval_memory(const genvector& curr_s);
    void compute_max_eval_Qvalues_distribution();
 
@@ -208,9 +213,8 @@ class reinforce
 // Policy gradient learning methods
 
    void P_forward_propagate(genvector* s_input);
-   int get_P_action_for_curr_state(genvector* curr_s, double& prob_a);
-   int get_P_action_for_curr_state(
-      double ran_val, genvector* curr_s, double& prob_a);
+   int get_P_action_for_curr_state(genvector* curr_s);
+   int get_P_action_for_curr_state(double ran_val, genvector* curr_s);
    double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);
@@ -337,7 +341,6 @@ class reinforce
    genvector *r_curr;  // replay_memory_capacity x 1  (Holds rewards)
    genmatrix *s_next;  // replay_memory_capacity x Din
    genvector *terminal_state;   // replay_memory_capacity x 1
-//    genvector *prob_a;  // replay_memory_capacity x 1
 
    genvector *curr_s_sample, *next_s_sample;  // Din x 1 
 

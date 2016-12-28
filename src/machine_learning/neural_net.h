@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 2/9/16; 10/17/16; 10/18/16; 12/27/16
+// Last modified on 10/17/16; 10/18/16; 12/27/16; 12/28/16
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -102,7 +102,7 @@ class neural_net
 
    std::vector<int> incorrect_classifications;
 
-   double update_mini_batch(std::vector<DATA_PAIR>& mini_batch);
+   double update_nn_params(std::vector<DATA_PAIR>& mini_batch);
    void clear_delta_nablas();
    void backpropagate(const DATA_PAIR& curr_data_pair);
    void numerically_check_derivs(const DATA_PAIR& curr_data_pair);

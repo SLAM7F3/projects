@@ -116,7 +116,8 @@ int main (int argc, char* argv[])
          }
       }
       labels.push_back(testing_samples[i].second + color_offset);
-   }
+   } // loop over index i labeling data samples
+   
    
 // Generate metafile output whose markers are colored according to
 // class labels:

@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/21/16; 12/24/16; 12/26/16; 12/27/16
+// Last modified on 12/24/16; 12/26/16; 12/27/16; 12/28/16
 // ==========================================================================
 
 #include <string>
@@ -283,12 +283,10 @@ void reinforce::allocate_member_objects()
    if (learning_type == QLEARNING)
    {
       s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
-//       prob_a = NULL;
    }
    else if(learning_type == PLEARNING)
    {
       s_eval = NULL;
-//       prob_a = new genvector(replay_memory_capacity);      
    }
 
    curr_s_sample = new genvector(layer_dims.front());
@@ -396,7 +394,6 @@ reinforce::~reinforce()
    delete r_curr;
    delete s_next;
    delete terminal_state;
-//    delete prob_a;
    delete curr_s_sample;
    delete next_s_sample;
    delete prev_afterstate_ptr;
@@ -867,7 +864,7 @@ string reinforce::init_subtitle()
 
 void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 {
-   if(loss_values.size() < 3) return;
+//   if(loss_values.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"loss_history";
@@ -1449,7 +1446,7 @@ void reinforce::plot_Qmap_score_history(string output_subdir,
 void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
                                         bool epoch_indep_var)
 {
-   if(log10_losses.size() < 3) return;
+//   if(log10_losses.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir + "/log10_losses_history";
@@ -2329,8 +2326,8 @@ int reinforce::compute_legal_argmax_Q()
 
 int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
 {
-//   cout << "inside store_curr_state_into_replay_memory()" << endl;
-   int d = -1;
+//    cout << "inside store_curr_state_into_replay_memory()" << endl;
+   int d = -999;
    if(replay_memory_index < replay_memory_capacity)
    {
       d = replay_memory_index;
@@ -2384,12 +2381,18 @@ void reinforce::store_final_arsprime_into_replay_memory(
 //   cout << "curr_r = " << curr_r << endl;
 }
 
-/*
-void reinforce::store_action_prob_into_replay_memory(int d, double prob)
+// ---------------------------------------------------------------------
+// Member function store_ar_into_replay_memory()
+
+void reinforce::store_ar_into_replay_memory(int d, int curr_a, double curr_r,
+                                            bool terminal_state_flag)
 {
-   prob_a->put(d, prob);
+//   cout << "inside reinforce::store_ar_into_replay_mem()" << endl;
+
+   a_curr->put(d, curr_a);
+   r_curr->put(d, curr_r);
+   terminal_state->put(d, terminal_state_flag);
 }
-*/
 
 // ---------------------------------------------------------------------
 // Member function get_replay_memory_entry()
@@ -2405,6 +2408,15 @@ bool reinforce::get_replay_memory_entry(
    s_next->get_row(d, next_s);
    bool terminal_state_flag = (terminal_state->get(d) > 0);
    return terminal_state_flag;
+}
+
+void reinforce::get_replay_memory_entry(
+   int d, genvector& curr_s, int& curr_a, double& curr_r)
+{
+   s_curr->get_row(d, curr_s);
+   double a_val = a_curr->get(d);
+   curr_a = int(a_val);
+   curr_r = r_curr->get(d);
 }
 
 // ---------------------------------------------------------------------
@@ -3177,28 +3189,28 @@ void reinforce::P_forward_propagate(genvector* s_input)
 // probability distribution encoded in the P-network's final layer.
 // It also returns the probability associated with the sampled action.
 
-int reinforce::get_P_action_for_curr_state(genvector* curr_s, double& prob_a)
+int reinforce::get_P_action_for_curr_state(genvector* curr_s)
 {
    double ran_val = nrfunc::ran1();
-   return get_P_action_for_curr_state(ran_val, curr_s, prob_a);
+   return get_P_action_for_curr_state(ran_val, curr_s);
 }
 
-int reinforce::get_P_action_for_curr_state(
-   double ran_val, genvector* curr_s, double& prob_a)
+int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
 {
    P_forward_propagate(curr_s);
 
    double cum_p = 0;
+   double action_prob;
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
    {
-      prob_a = A_Prime[n_layers-1]->get(a);
-      if(ran_val >= cum_p && ran_val <= cum_p + prob_a)
+      action_prob = A_Prime[n_layers-1]->get(a);
+      if(ran_val >= cum_p && ran_val <= cum_p + action_prob)
       {
          return a;
       }
       else
       {
-         cum_p += prob_a;
+         cum_p += action_prob;
       }
    }
 
@@ -3213,9 +3225,19 @@ int reinforce::get_P_action_for_curr_state(
 
 double reinforce::compute_curr_P_loss(int d, double action_prob)
 {
+//   cout << "inside reinforce::compute_curr_P_loss()" << endl;
+//   cout << "d=" << d 
+//        << " action_prob=" << action_prob 
+//        << endl;
+
    double curr_advantage = get_advantage(d);
-   double curr_loss = - curr_advantage * log(action_prob);
+//   cout << " advantage=" << curr_advantage  << endl;
+      
+   double curr_loss = curr_advantage * -log(action_prob);
    curr_loss += L2_loss_contribution();
+//   cout << " curr_loss=" << curr_loss
+//        << endl;
+
    return curr_loss;
 }
 
@@ -3224,26 +3246,22 @@ double reinforce::compute_curr_P_loss(int d, double action_prob)
 
 double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 {
+//   cout << "inside P_backward_propagate, d = " << d << endl;
+   
    clear_delta_nablas();
 
 // Calculate target for curr transition sample:
 
    int stored_a;
-   double curr_R;
-   get_replay_memory_entry(
-      d, *curr_s_sample, stored_a, curr_R, *next_s_sample);
+   double curr_R, action_prob = -1;
+   get_replay_memory_entry(d, *curr_s_sample, stored_a, curr_R);
+   double curr_advantage = get_advantage(d);
 
 // First need to perform forward propagation for *curr_s_sample in
 // order to repopulate linear z inputs and nonlinear a outputs for
 // each node in the neural network:
 
-//   P_forward_propagate(curr_s_sample);
-
-   double ran_value = nrfunc::ran1();
-   double action_prob;
-   int actual_a = get_P_action_for_curr_state(
-      ran_value, curr_s_sample, action_prob);
-   double curr_advantage = get_advantage(d);
+   P_forward_propagate(curr_s_sample);
 
 // Eqn BP1:
 
@@ -3251,7 +3269,12 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {
       double curr_activation = A_Prime[curr_layer]->get(j);
-      if(j == actual_a) curr_activation -= 1.0;
+      if(j == stored_a)
+      {
+         action_prob = curr_activation;
+         curr_activation -= 1.0;
+      }
+
       Delta_Prime[curr_layer]->put(j, curr_advantage * curr_activation);
    }
 
@@ -3338,20 +3361,20 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 // smaller magnitudes effectively equal 0.  So their ratio becomes
 // noisier.
 
-/*
-   if(nrfunc::ran1() < 1E-3)
-   {
-      numerically_check_P_derivs(curr_advantage, ran_value);
-   }
-*/
+//   if(nrfunc::ran1() < 1E-3)
+//   {
+//      numerically_check_P_derivs(d, ran_value);
+//   }
 
    curr_loss *= inverse_Nd;
    return curr_loss;
 }
 
+/*
 // ---------------------------------------------------------------------
 void reinforce::numerically_check_P_derivs(int d, double ran_value)
 {
+//   cout << "inside numerically_check_P_derivs, d = " << d << endl;
    const double eps = 1E-6;
    double action_prob;
    for(unsigned int l = 0; l < weights.size(); l++)
@@ -3362,12 +3385,12 @@ void reinforce::numerically_check_P_derivs(int d, double ran_value)
 
       weights[l]->put(row, col, orig_weight + eps);
       int curr_a_pos = 
-         get_P_action_for_curr_state(ran_value, curr_s_sample, action_prob);
+         get_P_action_for_curr_state(ran_value, curr_s_sample);
       double pos_loss = compute_curr_P_loss(d, action_prob);
 
       weights[l]->put(row, col, orig_weight - eps);
       int curr_a_neg = 
-         get_P_action_for_curr_state(ran_value, curr_s_sample, action_prob);
+         get_P_action_for_curr_state(ran_value, curr_s_sample);
       double neg_loss = compute_curr_P_loss(d, action_prob);
       double curr_deriv = (pos_loss - neg_loss) / (2 * eps);
       
@@ -3400,6 +3423,7 @@ void reinforce::numerically_check_P_derivs(int d, double ran_value)
          
    } // loop over index l labeling network layers
 }
+*/
 
 // ---------------------------------------------------------------------
 // Member function update_P_network() 
@@ -3419,7 +3443,7 @@ double reinforce::update_P_network(bool verbose_flag)
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
-//   cout << "total_loss = " << total_loss << endl;
+   cout << "total_loss = " << total_loss << endl;
 
    if(solver_type == RMSPROP)
    {
@@ -3437,7 +3461,11 @@ double reinforce::update_P_network(bool verbose_flag)
    {
       for(int l = 0; l < n_layers; l++)
       {
-         if (solver_type == RMSPROP)
+         if (solver_type == SGD)
+         {
+            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
+         }
+         else if (solver_type == RMSPROP)
          {
             rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
             rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
@@ -3450,7 +3478,11 @@ double reinforce::update_P_network(bool verbose_flag)
    
    for(int l = 0; l < n_layers - 1; l++)
    {
-      if(solver_type == RMSPROP)
+      if (solver_type == SGD)
+      {
+         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
+      }
+      else if(solver_type == RMSPROP)
       {
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
          rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
@@ -3522,11 +3554,26 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
       {
          next_R = 0;
       }
-      double curr_R = curr_r + gamma * next_R;
+
+// FAKE FAKE:  For pmaze only, do NOT discount if next_R == -1:
+// Weds Dec 28 at 11:18 am
+
+      double curr_R = curr_r;
+      if(next_R > 0)
+      {
+         curr_R = curr_r + gamma * next_R;
+      }
+//      cout << "d = " << d 
+//           << " curr_r = " << curr_r
+//           << " curr_R = " << curr_R 
+//           << " next_R = " << next_R 
+//           << " terminal_state = " << terminal_state
+//           << endl;
+
       discounted_eventual_rewards.push_back(curr_R);
       r_curr->put(d, curr_R);
       next_R = curr_R;
-//      cout << "d = " << d << " curr_R = " << curr_R << endl;
+
    } // loop over index d labeling replay memory entries
 
 // Renormalize discounted eventual rewards so that they have zero mean
@@ -3536,6 +3583,11 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
    avg_discounted_eventual_rewards.push_back(mu_R);
 
    cout << "mu_R = " << mu_R << endl;
+
+// FAKE FAKE:  Weds Dec 28 at 7 am.
+// Hardwire sigma_R --> 1:
+
+   sigma_R = 1;
 //   outputfunc::enter_continue_char();
 }
 
@@ -3544,7 +3596,19 @@ double reinforce::get_advantage(int d) const
 {
    double curr_R = r_curr->get(d);
    double curr_advantage = (curr_R - mu_R) / sigma_R;
-   return curr_advantage;
+
+// FAKE FAKE :  Weds Dec 28 at 7:17 am
+
+   if(curr_R > 0)
+   {
+      curr_advantage = 1;
+   }
+   else
+   {
+      curr_advantage = -1;
+   }
+
+   return curr_advantage;   
 }
 
 // ---------------------------------------------------------------------
@@ -3555,6 +3619,5 @@ void reinforce::clear_replay_memory()
    r_curr->clear_values();
    s_next->clear_values();
    terminal_state->clear_values();
-//    prob_a->clear_values();
 }
 
