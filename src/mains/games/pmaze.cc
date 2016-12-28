@@ -85,6 +85,7 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
    int n_rollouts = 10;
+//   int n_rollouts = 100;
    int replay_memory_capacity = n_rollouts;
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, 
@@ -111,13 +112,14 @@ int main (int argc, char* argv[])
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
-   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
-//   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
+//   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
+   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
 
    int n_max_episodes = 1 * 1000 * 1000;
-   int n_lr_episodes_period = 10 * 1000;
+   int n_lr_episodes_period = 1000 * 1000;
 
    int n_update = 10;
 //   int n_update = 500;
@@ -192,7 +194,6 @@ int main (int argc, char* argv[])
 
       int d = -98;
       double reward;
-      genvector* next_s;
       double cum_reward = 0;
 
       while(!game_world.get_game_over())
@@ -209,7 +210,6 @@ int main (int argc, char* argv[])
 
          if(!game_world.is_legal_action(curr_a))
          {
-            next_s = NULL;
 //            reward = 0;
 
 // Penalize agent whenever it crashes into a wall:
@@ -218,7 +218,7 @@ int main (int argc, char* argv[])
          }
          else
          {
-            next_s = game_world.compute_next_state(curr_a);
+            game_world.compute_next_state(curr_a);
             reward = curr_maze.compute_turtle_reward();
          } // curr_a is legal action conditional
 
@@ -237,7 +237,7 @@ int main (int argc, char* argv[])
          if(cum_framenumber % replay_memory_capacity == 0)
          {
             bool verbose_flag = false;
-            if(cum_framenumber % 1000 == 0)
+            if(reinforce_agent_ptr->get_n_backprops() % (100 * 1000) == 0)
             {
 //               verbose_flag = true;
             }
@@ -275,6 +275,8 @@ int main (int argc, char* argv[])
          Qmap_score = curr_maze.score_max_Qmap();
          cout << "  Qmap_score = " << Qmap_score << endl;
          reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
+         cout << "  n_backprops = " 
+              << reinforce_agent_ptr->get_n_backprops() << endl;
 
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);

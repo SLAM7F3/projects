@@ -1,4 +1,5 @@
 /bin/rm ./create_maze
+/bin/rm ./pmaze
 /bin/rm ./qtrain_ttt_network
 /bin/rm ./solve_maze
 /bin/rm ./test_ttt_network

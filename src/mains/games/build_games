@@ -1,4 +1,5 @@
 ~/bin/MAKE program=create_maze
+~/bin/MAKE program=pmaze
 ~/bin/MAKE program=qtrain_ttt_network
 ~/bin/MAKE program=solve_maze
 ~/bin/MAKE program=test_ttt_network

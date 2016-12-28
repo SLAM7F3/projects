@@ -962,7 +962,8 @@ void reinforce::plot_avg_discounted_eventual_reward(
    }
    string y_label="Average eventual reward";
 
-   double min_reward = 0;
+   double min_reward = mathfunc::minimal_value(avg_discounted_eventual_rewards)
+      - 0.5;
    double max_reward = mathfunc::maximal_value(avg_discounted_eventual_rewards)
       + 0.5;
    curr_metafile.set_parameters(
@@ -973,8 +974,31 @@ void reinforce::plot_avg_discounted_eventual_reward(
    curr_metafile.set_thickness(2);
 
    curr_metafile.write_curve(0, xmax, avg_discounted_eventual_rewards,
-                             colorfunc::get_color(2));
+                             colorfunc::red);
    curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy eventual reward values:
+
+   double sigma = 10;
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   if(gaussian_size < int(avg_discounted_eventual_rewards.size()))
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_eventual_rewards;
+      filterfunc::brute_force_filter(
+         avg_discounted_eventual_rewards, h, smoothed_eventual_rewards, 
+         wrap_around_input_values);
+
+      curr_metafile.set_thickness(3);
+      curr_metafile.write_curve(0, xmax, smoothed_eventual_rewards, 
+                                colorfunc::blue);
+   }
  
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
@@ -1833,22 +1857,25 @@ void reinforce::generate_view_metrics_script(
    script_stream << "view log10_losses_history.jpg" << endl;
    script_stream << "view lr_history.jpg" << endl;
 
-   if(Qmap_score_flag)
+   if(Qmap_score_flag)  // maze solving
    {
       script_stream << "view Qmap_score_history.jpg" << endl;
    }
-   else
+   else // breakout
    {
       script_stream << "view reward_history.jpg" << endl;
       script_stream << "view frames_history.jpg" << endl;
       script_stream << "view paddle_X.jpg" << endl;
-      script_stream << "view eventual_rewards_history.jpg" << endl;
    }
 
    if(learning_type == QLEARNING)
    {
       script_stream << "view maxQ_history.jpg" << endl;
       script_stream << "view epsilon_history.jpg" << endl;
+   }
+   else if(learning_type == PLEARNING)
+   {
+      script_stream << "view eventual_rewards_history.jpg" << endl;
    }
    
    filefunc::closefile(script_filename, script_stream);
@@ -3443,7 +3470,7 @@ double reinforce::update_P_network(bool verbose_flag)
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
-   cout << "total_loss = " << total_loss << endl;
+//   cout << "total_loss = " << total_loss << endl;
 
    if(solver_type == RMSPROP)
    {
@@ -3579,10 +3606,12 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 // Renormalize discounted eventual rewards so that they have zero mean
 // and unit standard deviation:
 
-   mathfunc::mean_and_std_dev(discounted_eventual_rewards, mu_R, sigma_R);
-   avg_discounted_eventual_rewards.push_back(mu_R);
-
-   cout << "mu_R = " << mu_R << endl;
+//   if(nrfunc::ran1() < 0.01)
+   {
+      mathfunc::mean_and_std_dev(discounted_eventual_rewards, mu_R, sigma_R);
+      avg_discounted_eventual_rewards.push_back(mu_R);
+//      cout << "mu_R = " << mu_R << endl;
+   }
 
 // FAKE FAKE:  Weds Dec 28 at 7 am.
 // Hardwire sigma_R --> 1:
