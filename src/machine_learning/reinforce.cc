@@ -3674,6 +3674,10 @@ double reinforce::get_advantage(int d) const
       curr_advantage = 1;
 //      curr_advantage = 1+curr_R;
    }
+   else if (curr_R < -0.5) // breakout
+   {
+      curr_advantage = -2;
+   }
    else
    {
       curr_advantage = -1;
@@ -3692,7 +3696,6 @@ double reinforce::get_advantage(int d) const
            << endl;
    }
 */
-
 
    return curr_advantage;   
 }

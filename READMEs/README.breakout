@@ -3520,6 +3520,34 @@ Random seed = -9385
 
 198.  Titan 1:  Repeat of expt 197
 
+199.  Titan 3:  H1 = 32; H2 = 64; pbreak; n_rollout = 2 * 1000
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+200.  Titan 3:  repeat expt 199
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+201.  Titan 3:  H1 = 64; H2 = 64; pbreak; n_rollout = 2 * 1000
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+202.  Titan 3:  repeat expt 201
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+203.  Titan 1:  H1 = 128; H2 = 0; pbreak; n_rollout = 2 * 1000
+      Started around 8:20 pm Weds Dec 28
+      Paddle is pinned to RHS
+
+
+205.  Titan 1:  H1 = 128; H2 = 32; pbreak; n_rollout = 2 * 1000
+      Started around 8:25 pm Weds Dec 28
+      Paddle is pinned to RHS
+
+206.  Titan 1;  repeat expt 205
+      Paddle is pinned to RHS
+
 207.  m6700:  H1 = H2 = 64; nrollouts = 20K;
 
 Wed Dec 28 20:58:15 2016
@@ -3578,6 +3606,47 @@ Random seed = -77444
 
 After 200 epochs, paddle gets pinned to RHS.
 
+207.  TM: H1 = 32; H2 = 64; pbreak; n_rollout = 1 * 1000
+      Started around 8:40 pm Weds Dec 28
+      Paddle is pinned to RHS
+
+208.  TM:  repeat expt 207
+      Paddle is pinned to RHS
+
+209.  TM:  H1 = 32; H2 = 64; pbreak; n_rollout = 4 * 1000
+      Paddle is pinned to RHS
+
+210  TM:  repeat expt 209
+      Paddle is pinned to RHS
+
+
+209.  m6700; H1 = 200; H2 = 0; nrollouts = 50K; pbreak
+Thu Dec 29 07:00:32 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -12826
+
+After 12 epochs, paddle X dist became heavily skewed towards LHS.
+
 
 -------------------------------------------------------------
 RUNNING EXPERIMENTS
@@ -3586,48 +3655,68 @@ RUNNING EXPERIMENTS
 TITAN 3:  
 --------
 
-199.  Titan 3:  H1 = 32; H2 = 64; pbreak; n_rollout = 2 * 1000
-      Started around 8:15 pm Weds Dec 28
+215.  Titan 3:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 7:45 am on Thurs Dec 29
 
-200.  Titan 3:  repeat expt 199
-      Started around 8:15 pm Weds Dec 28
+216.  Titan 3:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 7:46 am on Thurs Dec 29
 
-201.  Titan 3:  H1 = 64; H2 = 64; pbreak; n_rollout = 2 * 1000
-      Started around 8:15 pm Weds Dec 28
+217.  Titan 3:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:51 am on Thurs Dec 29
 
-202.  Titan 3:  repeat expt 201
-      Started around 8:15 pm Weds Dec 28
+218.  Titan 3:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:52 am on Thurs Dec 29
+
+219.  Titan 3:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 7:53 am on Thurs Dec 29
+
 
 TITAN 1:  
 --------
 
-203.  Titan 1:  H1 = 128; H2 = 0; pbreak; n_rollout = 2 * 1000
+204.  Titan 1:  H1 = 128; H2 = 0; pbreak; n_rollout = 2 * 1000
       Started around 8:20 pm Weds Dec 28
+      After 150 epochs, paddle dist is distorted gaussian about X=9; 
+      nframes/episode --> 1665, reward --> 8.3;
+      log10(loss) = -0.55;  avg eventual reward --> 0.2ish and slowly
+      oscillating; Best pbreak results to date
 
-204  Titan 1:  repeat expt 203
+211.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:27 am Thurs Dec 29
 
-205.  Titan 1:  H1 = 128; H2 = 32; pbreak; n_rollout = 2 * 1000
-      Started around 8:25 pm Weds Dec 28
+212.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:29 am Thurs Dec 29
 
-206.  Titan 1;  repeat expt 205
+213.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 7:39 am Thurs Dec 29
+
+214.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 7:40 am Thurs Dec 29
 
 
 THINKMATE
 ---------
 
-207.  TM: H1 = 32; H2 = 64; pbreak; n_rollout = 1 * 1000
-      Started around 8:40 pm Weds Dec 28
+220.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 8:00 am on Thurs Dec 29
 
-208.  TM:  repeat expt 207
+221.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 8:01 am on Thurs Dec 29
 
-209.  TM:  H1 = 32; H2 = 64; pbreak; n_rollout = 4 * 1000
+222.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 8:02 am on Thurs Dec 29
 
-210  TM:  repeat expt 209
+223.  TM:  H1 = 128; H2 = 32; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 8:03 am
+
+224.  TM:  H1 = 128; H2 = 32; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 8:04 am
+
 
 m6700
 -----
 
-206.  H1 = 200; H2 = 0; pbreak; nrollouts = 20K
+206.  m6700: H1 = 200; H2 = 0; pbreak; nrollouts = 20K
 Wed Dec 28 21:00:32 2016
 Neural net params:
    n_layers = 3
@@ -3657,14 +3746,16 @@ gaussian centered around X=10, avg eventual rewards --> 0.08 and slowly
 rising.  No sign of ball tracks in 0th layer weights.  Best pbreak results
 to date.
 
-209.  H1 = 200; H2 = 0; nrollouts = 50K; pbreak
-Thu Dec 29 07:00:32 2016
+226.  m6700: H1 = 128; H2 = 0; pbreak; nrollouts = 50K; curr_advantage = +1
+for good grads, -2 for bad grads.
+
+Thu Dec 29 08:25:27 2016
 Neural net params:
    n_layers = 3
    layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 200
+   layer = 1 n_nodes = 128
    layer = 2 n_nodes = 2
-   n_weights = 410400 (FC)
+   n_weights = 262656 (FC)
 base_learning_rate = 0.0003; batch_size = -1
 P learning
 solver type = RMSPROP
@@ -3680,7 +3771,7 @@ Leaky ReLU small slope = 0.01
 Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
 n_max_epochs = 3000
-Random seed = -12826
+Random seed = -17925
 
 
 ===========================================================
