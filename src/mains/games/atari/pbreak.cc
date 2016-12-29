@@ -76,7 +76,7 @@ int main(int argc, char** argv)
 //   int H1 = 128;
    int H1 = 200;
 
-//   int H2 = 0;
+   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
@@ -418,13 +418,15 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 
+      double log10_total_loss = 0;
       if(total_loss > 0)
       {
-         cout << "  total_loss = " << total_loss
-              << " log10(total_loss) = " << log10(total_loss) << endl;
-         reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
+         log10_total_loss = log10(total_loss);
       }
-      
+      cout << "  total_loss = " << total_loss
+           << " log10(total_loss) = " << log10_total_loss << endl;
+      reinforce_agent_ptr->push_back_log10_loss(log10_total_loss);
+
 // Periodically export status info:
 
       if(curr_episode_number >= n_episode_update - 1 && 

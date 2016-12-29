@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for Breakout
 ==========================================================================
-Last updated on 12/21/16; 12/22/16; 12/23/16; 12/26/16
+Last updated on 12/23/16; 12/26/16; 12/28/16; 12/29/16
 ==========================================================================
 
 Working with breakout ROM obtained from
@@ -3327,12 +3327,83 @@ After 680 epochs, nframes/episode --> 600, reward --> 1 with no sign of
 growth; log10(loss) = -3; 
 
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
+187.  blr = 1E-3; binary valued screen; keep bottom row which includes
+entire paddle plot paddle X density dist; qbreak
 
-TITAN 3:  
---------
+Mon Dec 26 12:56:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+188.  TM: Repeat expt 187; qbreak
+
+189.  blr = 3E-4; binary valued screen; keep bottom row which includes
+entire paddle plot paddle X density dist; qbreak
+
+Mon Dec 26 12:59:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+190.  TM:  Repeat expt 189; qbreak
 
 191.  Titan 3: blr = 3E-3; binary valued screen; keep bottom row which
 includes entire paddle plot paddle X density dist; pbreak
@@ -3390,8 +3461,6 @@ Random seed = -9385
 
 194.  Titan 3:  repeat expt 193; pbreak
 
-TITAN 1:  
---------
 
 195.  Titan 1: blr = 1E-3; binary valued screen; keep bottom row which
 includes entire paddle plot paddle X density dist
@@ -3451,86 +3520,168 @@ Random seed = -9385
 
 198.  Titan 1:  Repeat of expt 197
 
+207.  m6700:  H1 = H2 = 64; nrollouts = 20K;
+
+Wed Dec 28 20:58:15 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -76692
+
+After 80 epochs, paddle X got pinned to RHS.  
+
+208.  m6700: H1 = 32; H2 = 64, nrollouts = 60K; pbreak
+
+Wed Dec 28 21:10:52 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 60000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -77444
+
+After 200 epochs, paddle gets pinned to RHS.
+
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+TITAN 3:  
+--------
+
+199.  Titan 3:  H1 = 32; H2 = 64; pbreak; n_rollout = 2 * 1000
+      Started around 8:15 pm Weds Dec 28
+
+200.  Titan 3:  repeat expt 199
+      Started around 8:15 pm Weds Dec 28
+
+201.  Titan 3:  H1 = 64; H2 = 64; pbreak; n_rollout = 2 * 1000
+      Started around 8:15 pm Weds Dec 28
+
+202.  Titan 3:  repeat expt 201
+      Started around 8:15 pm Weds Dec 28
+
+TITAN 1:  
+--------
+
+203.  Titan 1:  H1 = 128; H2 = 0; pbreak; n_rollout = 2 * 1000
+      Started around 8:20 pm Weds Dec 28
+
+204  Titan 1:  repeat expt 203
+
+205.  Titan 1:  H1 = 128; H2 = 32; pbreak; n_rollout = 2 * 1000
+      Started around 8:25 pm Weds Dec 28
+
+206.  Titan 1;  repeat expt 205
+
+
 THINKMATE
 ---------
 
-187.  blr = 1E-3; binary valued screen; keep bottom row which includes
-entire paddle plot paddle X density dist
+207.  TM: H1 = 32; H2 = 64; pbreak; n_rollout = 1 * 1000
+      Started around 8:40 pm Weds Dec 28
 
-Mon Dec 26 12:56:00 2016
+208.  TM:  repeat expt 207
+
+209.  TM:  H1 = 32; H2 = 64; pbreak; n_rollout = 4 * 1000
+
+210  TM:  repeat expt 209
+
+m6700
+-----
+
+206.  H1 = 200; H2 = 0; pbreak; nrollouts = 20K
+Wed Dec 28 21:00:32 2016
 Neural net params:
-   n_layers = 4
+   n_layers = 3
    layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 2
-   n_weights = 33952 (FC)
-base_learning_rate = 0.01; batch_size = 1
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.01
-Replay memory capacity = 200000
-Number random samples drawn from replay memory Nd = 32
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
 Discount factor gamma = 0.99
-minimum epsilon = 0.1
+minimum epsilon = -nan
 n_actions = 2
 Leaky ReLU small slope = 0.01
-Learning rate decrease period = 1000 episodes
-Old weights period = 2 epochs
-Discard zero reward frac = 0
-Use big states flag = 0
-Frame skip = 1
-1 big state = n_screen_states = 1
-  Compute difference flag = 1
-  Compute max flag = 0
-Starting epoch for linear epsilon decay = 4
-Stopping epoch for linear epsilon decay = 1050
-nn_update_frame_period = 1
+Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
 n_max_epochs = 3000
-Random seed = -6174
+Random seed = -76828
 
-188.  TM: Repeat expt 187
+After 98 epochs, reward --> 4.2, nframes/episode --> 1139, paddle_X is
+gaussian centered around X=10, avg eventual rewards --> 0.08 and slowly
+rising.  No sign of ball tracks in 0th layer weights.  Best pbreak results
+to date.
 
-189.  blr = 3E-4; binary valued screen; keep bottom row which includes
-entire paddle plot paddle X density dist
+209.  H1 = 200; H2 = 0; nrollouts = 50K; pbreak
 
-Mon Dec 26 12:59:00 2016
+Thu Dec 29 06:53:43 2016
 Neural net params:
-   n_layers = 4
+   n_layers = 3
    layer = 0 n_nodes = 2050
-   layer = 1 n_nodes = 16
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 2
-   n_weights = 33952 (FC)
-base_learning_rate = 0.01; batch_size = 1
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
 solver type = RMSPROP
    rmsprop_decay_rate = 0.9
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.01
-Replay memory capacity = 200000
-Number random samples drawn from replay memory Nd = 32
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
 Discount factor gamma = 0.99
-minimum epsilon = 0.1
+minimum epsilon = -nan
 n_actions = 2
 Leaky ReLU small slope = 0.01
-Learning rate decrease period = 1000 episodes
-Old weights period = 2 epochs
-Discard zero reward frac = 0
-Use big states flag = 0
-Frame skip = 1
-1 big state = n_screen_states = 1
-  Compute difference flag = 1
-  Compute max flag = 0
-Starting epoch for linear epsilon decay = 4
-Stopping epoch for linear epsilon decay = 1050
-nn_update_frame_period = 1
+Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
 n_max_epochs = 3000
-Random seed = -6174
-
-190.  TM:  Repeat expt 189
+Random seed = -12416
 
 
 ===========================================================

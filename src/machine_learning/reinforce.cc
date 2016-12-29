@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/24/16; 12/26/16; 12/27/16; 12/28/16
+// Last modified on 12/26/16; 12/27/16; 12/28/16; 12/29/16
 // ==========================================================================
 
 #include <string>
@@ -3605,7 +3605,7 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
          next_R = 0;
       }
 
-
+/*
 // FAKE FAKE:  For pmaze only, do NOT discount if next_R == -1:
 // Weds Dec 28 at 11:18 am
 
@@ -3614,10 +3614,10 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
       {
          curr_R = curr_r + gamma * next_R;
       }
-
+*/
 
 // Breakout:
-//      double curr_R = curr_r + gamma * next_R;
+      double curr_R = curr_r + gamma * next_R;
 
 //      cout << "d = " << d 
 //           << " curr_r = " << curr_r
@@ -3629,7 +3629,6 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
       discounted_eventual_rewards.push_back(curr_R);
       r_curr->put(d, curr_R);
       next_R = curr_R;
-
    } // loop over index d labeling replay memory entries
 
 // Renormalize discounted eventual rewards so that they have zero mean
