@@ -29,11 +29,11 @@ int main (int argc, char* argv[])
    std::set_new_handler(sysfunc::out_of_memory); 
 
    timefunc::initialize_timeofday_clock();
-   long seed = nrfunc::init_time_based_seed();
-//   long seed = -11;
+//   long seed = nrfunc::init_time_based_seed();
+   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> seed;
-//   nrfunc::init_default_seed(seed);
+   nrfunc::init_default_seed(seed);
 
    int n_grid_size = 2;
    cout << "Enter grid size:" << endl;
@@ -128,7 +128,7 @@ int main (int argc, char* argv[])
 
 //   int n_update = 100;
    int n_update = 1000;
-   int n_progress = 25000;
+   int n_progress = 100 * 1000;
    double Qmap_score = -1;
 
    string basename = "maze";

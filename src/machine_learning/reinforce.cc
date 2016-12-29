@@ -1472,6 +1472,9 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
 {
 //   if(log10_losses.size() < 3) return;
 
+   cout << "inside reinforce::plot_log10_loss_history()" << endl;
+   cout << "log10_losses.size() = " << log10_losses.size() << endl;
+   
    metafile curr_metafile;
    string meta_filename=output_subdir + "/log10_losses_history";
 
@@ -2045,15 +2048,20 @@ void reinforce::clear_delta_nablas()
 {
    if(include_bias_terms)
    {
-      for(int l = 0; l < n_layers; l++)
+      for(unsigned int l = 0; l < delta_nabla_biases.size(); l++)
       {
          delta_nabla_biases[l]->clear_values();
       }
    }
 
-   for(int l = 0; l < n_layers - 1; l++)
+   for(unsigned int l = 0; l < delta_nabla_weights.size(); l++)
    {
       delta_nabla_weights[l]->clear_values();
+   }
+
+   for(unsigned int l = 0; l < Delta_Prime.size(); l++)
+   {
+      Delta_Prime[l]->clear_values();
    }
 }
 
@@ -3282,7 +3290,10 @@ double reinforce::compute_curr_P_loss(int d, double action_prob)
 double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 {
 //   cout << "inside P_backward_propagate, d = " << d << endl;
-   
+
+   double curr_advantage = get_advantage(d);
+   if(nearly_equal(curr_advantage, 0)) return 0;
+
    clear_delta_nablas();
 
 // Calculate target for curr transition sample:
@@ -3290,7 +3301,6 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
    int stored_a;
    double curr_R, action_prob = -1;
    get_replay_memory_entry(d, *curr_s_sample, stored_a, curr_R);
-   double curr_advantage = get_advantage(d);
 
 // First need to perform forward propagation for *curr_s_sample in
 // order to repopulate linear z inputs and nonlinear a outputs for
@@ -3317,7 +3327,11 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
    {
 
 // Don't bother backpropagating if current layer has zero content:
-//      if(Delta_Prime[curr_layer]->magnitude() <= 0) break;
+//      if(Delta_Prime[curr_layer]->magnitude() <= 0) 
+//      {
+//         cout << "mag = 0" << endl;
+//         break;
+//      }
 
       int prev_layer = curr_layer - 1;
 
@@ -3366,6 +3380,7 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
          *delta_nabla_weights[prev_layer] += 
             2 * (lambda / n_weights) * (*weights[prev_layer]);
       }
+
    } // loop over curr_layer index
 
 // Accumulate biases' and weights' gradients for each network layer:
@@ -3590,19 +3605,19 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
          next_R = 0;
       }
 
+
 // FAKE FAKE:  For pmaze only, do NOT discount if next_R == -1:
 // Weds Dec 28 at 11:18 am
 
-/*
       double curr_R = curr_r;
       if(next_R > 0)
       {
          curr_R = curr_r + gamma * next_R;
       }
-*/
+
 
 // Breakout:
-      double curr_R = curr_r + gamma * next_R;
+//      double curr_R = curr_r + gamma * next_R;
 
 //      cout << "d = " << d 
 //           << " curr_r = " << curr_r
@@ -3643,18 +3658,40 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 double reinforce::get_advantage(int d) const
 {
    double curr_R = r_curr->get(d);
-   double curr_advantage = (curr_R - mu_R) / sigma_R;
-
+   double curr_advantage;
+//   double curr_advantage = (curr_R - mu_R) / sigma_R;
+   
+   
 // FAKE FAKE :  Weds Dec 28 at 7:17 am
 
+//   if (fabs(curr_R) < 1E-4)
+//   {
+//      curr_advantage = 0;
+//   }
    if(curr_R > 0)
    {
       curr_advantage = 1;
+//      curr_advantage = 1+curr_R;
    }
    else
    {
       curr_advantage = -1;
+//      curr_advantage = -1+curr_R;
    }
+
+/*
+   curr_advantage = curr_R;
+
+   if(nrfunc::ran1() < 0.001)
+   {
+      cout << "curr_R = " << curr_R 
+           << " mu_R = " << mu_R
+           << " sigma_R = " << sigma_R 
+           << " curr_advantage = " << curr_advantage 
+           << endl;
+   }
+*/
+
 
    return curr_advantage;   
 }

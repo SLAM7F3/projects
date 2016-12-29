@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/23/16; 12/24/16; 12/26/16; 12/28/16
+// Last updated on 12/24/16; 12/26/16; 12/28/16; 12/29/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -71,16 +71,16 @@ int main(int argc, char** argv)
 
 //   int H1 = 8;
 //   int H1 = 16;
-   int H1 = 32;
+//   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
-//   int H1 = 200;
+   int H1 = 200;
 
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-   int H2 = 64;
+//   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -106,7 +106,10 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
 
-   int n_rollouts = 2 * 1000;
+//   int n_rollouts = 1 * 1000;
+//   int n_rollouts = 2 * 1000;
+//   int n_rollouts = 20 * 1000;
+   int n_rollouts = 50 * 1000;
    int replay_memory_capacity = n_rollouts;
 //   int replay_memory_capacity = 4 * 1000;
 //   int replay_memory_capacity = 8 * 1000;
@@ -142,10 +145,10 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
-//   reinforce_agent_ptr->set_base_learning_rate(1E-2);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);  
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
@@ -368,7 +371,6 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->store_ar_into_replay_memory(
                d, curr_a, renorm_reward, game_world.get_game_over());
          } // d >= 0 conditional
-
 
 // Update P-network when replay memory becomes completely full:
 
