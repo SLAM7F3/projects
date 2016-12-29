@@ -59,15 +59,17 @@ int main (int argc, char* argv[])
    int Dout = n_actions;
 
 //   int H1 = 8;
-   int H1 = 10;
-//   int H1 = 12;
+//   int H1 = 10;
+//   int H1 = 20;
+   int H1 = 32;
 
 //   int H2 = 0;
 //   int H2 = 8;
-   int H2 = 10;
-//   int H2 = 12;
+//   int H2 = 10;
+   int H2 = 16;
 
    int H3 = 0;
+//   int H3 = 8;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -85,8 +87,8 @@ int main (int argc, char* argv[])
 // Construct reinforcement learning agent:
 
 //   int n_rollouts = 10;
-   int n_rollouts = 32;
-//   int n_rollouts = 100;
+//   int n_rollouts = 32;
+   int n_rollouts = 100;
 //   int n_rollouts = 1000;
    int replay_memory_capacity = n_rollouts;
    reinforce* reinforce_agent_ptr = new reinforce(
@@ -115,7 +117,8 @@ int main (int argc, char* argv[])
    filefunc::dircreate(output_subdir);
 
 //   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
-   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
+//   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
+   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
@@ -123,8 +126,8 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1 * 1000 * 1000;
    int n_lr_episodes_period = 1000 * 1000;
 
-   int n_update = 100;
-//   int n_update = 500;
+//   int n_update = 100;
+   int n_update = 1000;
    int n_progress = 25000;
    double Qmap_score = -1;
 
@@ -212,9 +215,9 @@ int main (int argc, char* argv[])
 
          if(!game_world.is_legal_action(curr_a))
          {
-//            reward = 0;
 
 // Penalize agent whenever it crashes into a wall:
+
             reward = -1;
             game_world.set_game_over(true);
          }

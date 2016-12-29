@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/21/16; 12/23/16; 12/24/16; 12/26/16
+// Last updated on 12/23/16; 12/24/16; 12/26/16; 12/28/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -70,8 +70,8 @@ int main(int argc, char** argv)
    int Dout = n_actions;
 
 //   int H1 = 8;
-   int H1 = 16;
-//   int H1 = 32;
+//   int H1 = 16;
+   int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
 //   int H1 = 200;
@@ -79,8 +79,8 @@ int main(int argc, char** argv)
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -106,9 +106,11 @@ int main(int argc, char** argv)
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
 
+   int n_rollouts = 2 * 1000;
+   int replay_memory_capacity = n_rollouts;
 //   int replay_memory_capacity = 4 * 1000;
 //   int replay_memory_capacity = 8 * 1000;
-   int replay_memory_capacity = 16 * 1000;
+//   int replay_memory_capacity = 16 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
@@ -141,9 +143,9 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
-   reinforce_agent_ptr->set_base_learning_rate(3E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
@@ -252,7 +254,6 @@ int main(int argc, char** argv)
       {
          int n_curr_lives = breakout_ptr->get_ale().lives();
          bool state_updated_flag = false;
-         bool zero_input_state = false;
 
          curr_episode_framenumber++;
          curr_life_framenumber++;
@@ -275,7 +276,6 @@ int main(int argc, char** argv)
 
             if(curr_s->magnitude() <= 0)
             {
-               zero_input_state = true;
 //               cout << " Zero input state detected" << endl;
             }
             else
@@ -307,13 +307,17 @@ int main(int argc, char** argv)
             curr_a = prev_a;
             if(state_updated_flag)
             {
-               double prob_a;
+               double ran_value = nrfunc::ran1();
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  nrfunc::ran1(), curr_s, prob_a);
-               prev_a = curr_a;
+                  ran_value, curr_s);
             }
-            a = minimal_actions[curr_a];
+            a = minimal_actions[curr_a]; 
          }
+
+//         cout << "cum_framenumber = " << cum_framenumber
+//              << " curr_a = " << curr_a
+//              << " a = " << a 
+//              << endl;
 
 // As of 12/18/16 we do not not allow the paddle to move beyond the
 // right or left walls:
@@ -345,14 +349,12 @@ int main(int argc, char** argv)
          if(n_curr_lives != n_prev_lives)
          {
 
-/*
 // Penalize agent whenever it misses the ball:
 
             if(n_prev_lives > 0)
             {
                renorm_reward = -1;
             }
-*/
 
             n_prev_lives = n_curr_lives;
             curr_life_framenumber = 0;
@@ -361,19 +363,12 @@ int main(int argc, char** argv)
 //                 << " renorm_reward = " << renorm_reward << endl;
          }
 
-         if(d >= 0 && game_world.get_game_over())
+         if(d >= 0)
          {
-            reinforce_agent_ptr->store_final_arsprime_into_replay_memory(
-               d, curr_a, renorm_reward);
-         }
-         else if (d >= 0 && state_updated_flag && n_state_updates > 2 && 
-                  curr_a >= 0 && !zero_input_state)
-         {
-            genvector* next_s = game_world.compute_next_state(a);
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, renorm_reward, *next_s, 
-               game_world.get_game_over());
-         }
+            reinforce_agent_ptr->store_ar_into_replay_memory(
+               d, curr_a, renorm_reward, game_world.get_game_over());
+         } // d >= 0 conditional
+
 
 // Update P-network when replay memory becomes completely full:
 

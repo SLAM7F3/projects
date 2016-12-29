@@ -3227,6 +3227,7 @@ int reinforce::get_P_action_for_curr_state(genvector* curr_s)
 
 int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
 {
+//   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
    P_forward_propagate(curr_s);
 
    double cum_p = 0;
@@ -3234,6 +3235,10 @@ int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
    {
       action_prob = A_Prime[n_layers-1]->get(a);
+//      cout << "a = " << a 
+//           << " action_prob = " << action_prob
+//           << " ran_val = " << ran_val 
+//           << endl;
       if(ran_val >= cum_p && ran_val <= cum_p + action_prob)
       {
          return a;
@@ -3588,11 +3593,17 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 // FAKE FAKE:  For pmaze only, do NOT discount if next_R == -1:
 // Weds Dec 28 at 11:18 am
 
+/*
       double curr_R = curr_r;
       if(next_R > 0)
       {
          curr_R = curr_r + gamma * next_R;
       }
+*/
+
+// Breakout:
+      double curr_R = curr_r + gamma * next_R;
+
 //      cout << "d = " << d 
 //           << " curr_r = " << curr_r
 //           << " curr_R = " << curr_R 
@@ -3609,18 +3620,23 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 // Renormalize discounted eventual rewards so that they have zero mean
 // and unit standard deviation:
 
-//   if(nrfunc::ran1() < 0.01)
+   double eventual_threshold = 1.0;
+   if(avg_discounted_eventual_rewards.size() > 10)
+   {
+      eventual_threshold = 10.0 / avg_discounted_eventual_rewards.size();
+   }
+   if(nrfunc::ran1() < eventual_threshold)
    {
       mathfunc::mean_and_std_dev(discounted_eventual_rewards, mu_R, sigma_R);
       avg_discounted_eventual_rewards.push_back(mu_R);
 //      cout << "mu_R = " << mu_R << endl;
    }
 
-// FAKE FAKE:  Weds Dec 28 at 7 am.
-// Hardwire sigma_R --> 1:
-
-   sigma_R = 1;
-//   outputfunc::enter_continue_char();
+// Make sure sigma_R doesn't equal 0!
+   if(sigma_R < 1E-6)
+   {
+      sigma_R = 1;
+   }
 }
 
 // ---------------------------------------------------------------------
