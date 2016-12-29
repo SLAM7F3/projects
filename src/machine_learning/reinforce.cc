@@ -3480,7 +3480,7 @@ void reinforce::numerically_check_P_derivs(int d, double ran_value)
 
 double reinforce::update_P_network(bool verbose_flag)
 {
-//   cout << "inside update_P_network()" << endl;
+   cout << "inside update_P_network()" << endl;
 
    compute_renormalized_discounted_eventual_rewards();
 
@@ -3489,6 +3489,8 @@ double reinforce::update_P_network(bool verbose_flag)
    double total_loss = 0;
    for(int d = 0; d < replay_memory_capacity; d++)
    {
+      outputfunc::update_progress_fraction(d, 2500, replay_memory_capacity);
+
       double curr_loss = P_backward_propagate(
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;

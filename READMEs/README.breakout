@@ -3658,8 +3658,7 @@ rising.  No sign of ball tracks in 0th layer weights.  Best pbreak results
 to date.
 
 209.  H1 = 200; H2 = 0; nrollouts = 50K; pbreak
-
-Thu Dec 29 06:53:43 2016
+Thu Dec 29 07:00:32 2016
 Neural net params:
    n_layers = 3
    layer = 0 n_nodes = 2050
@@ -3681,7 +3680,7 @@ Leaky ReLU small slope = 0.01
 Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
 n_max_epochs = 3000
-Random seed = -12416
+Random seed = -12826
 
 
 ===========================================================
