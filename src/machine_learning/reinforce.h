@@ -79,6 +79,8 @@ class reinforce
    void set_rmsprop_decay_rate(double rate);
    void set_ADAM_params(double beta1, double beta2);
    int get_n_backprops() const;
+   void push_back_prob_action_0(double p0);
+   void clear_prob_action_0();
 
    void initialize_episode();
    void snapshot_running_reward();
@@ -124,6 +126,8 @@ class reinforce
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_log10_lr_mean_abs_nabla_weight_ratios(
       std::string output_subdir, std::string extrainfo,bool epoch_indep_var);
+   void plot_prob_action_0(std::string output_subdir, std::string extrainfo);
+
    void plot_bias_distributions(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_weight_distributions(
@@ -216,7 +220,8 @@ class reinforce
 
    void P_forward_propagate(genvector* s_input);
    int get_P_action_for_curr_state(genvector* curr_s);
-   int get_P_action_for_curr_state(double ran_val, genvector* curr_s);
+   int get_P_action_for_curr_state(double ran_val, genvector* curr_s,
+                                   double& action_prob);
    double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);
@@ -290,8 +295,8 @@ class reinforce
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
    std::vector<double> log10_lr_mean_abs_nabla_weight_ratios;
+   std::vector<double> prob_action_0;
 
-//    std::vector<double> avg_max_eval_Qvalues;
    std::vector<double> max_eval_Qvalues_10;
    std::vector<double> max_eval_Qvalues_25;
    std::vector<double> max_eval_Qvalues_50;
@@ -515,6 +520,18 @@ inline int reinforce::get_n_backprops() const
 {
    return n_backprops;
 }
+
+inline void reinforce::push_back_prob_action_0(double p0)
+{
+   prob_action_0.push_back(p0);
+}
+
+inline void reinforce::clear_prob_action_0()
+{
+   prob_action_0.clear();
+}
+
+
 
 
 #endif  // reinforce.h

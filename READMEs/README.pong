@@ -5,8 +5,8 @@ Last updated on 12/30/16
 ==========================================================================
 
 
-Random play results for 10 epochs:
----------------------------------
+Random play results for O(250 episodes) = O(20) epochs:
+------------------------------------------------------
 
 Paddle X looks like uniform distribution except for 2 spikes around X = 8
 and X = 24

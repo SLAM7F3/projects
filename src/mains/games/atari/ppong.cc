@@ -18,6 +18,7 @@
 #include "games/pong.h"
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
+#include "image/imagefuncs.h"
 #include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
@@ -42,8 +43,8 @@ int main(int argc, char** argv)
 //   cin >> seed;
 //   nrfunc::init_default_seed(seed);
 
-   bool random_play_flag = true;
-//   bool random_play_flag = false;
+//   bool random_play_flag = true;
+   bool random_play_flag = false;
 
 // Instantiate Pong ALE game:
 
@@ -74,8 +75,8 @@ int main(int argc, char** argv)
 
 //   int H1 = 8;
 //   int H1 = 16;
-   int H1 = 32;
-//   int H1 = 64;
+//   int H1 = 32;
+   int H1 = 64;
 //   int H1 = 128;
 //   int H1 = 200;
 
@@ -108,7 +109,7 @@ int main(int argc, char** argv)
 
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
-   int replay_memory_capacity = 2 * 1000;
+   int replay_memory_capacity = 5 * 1000;
 //   int replay_memory_capacity = 20 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
@@ -148,7 +149,7 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 5;
+   int n_episode_update = 20;
 //   int n_episode_update = 25;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -228,6 +229,9 @@ int main(int argc, char** argv)
       Action a;
       double cum_reward = 0;
 
+      pong_ptr->set_paddle_x(
+         pong_ptr->get_default_starting_paddle_x());
+
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
 // contiguous increasing integers!  So we no longer use the following
@@ -236,6 +240,7 @@ int main(int argc, char** argv)
 //  int curr_frame_number = game_world.get_episode_framenumber();
 
       int curr_episode_framenumber = 0;  // since start of current episode
+      double action_prob = -1;
 
       while(!game_world.get_game_over())
       {
@@ -284,28 +289,33 @@ int main(int argc, char** argv)
             if(state_updated_flag && curr_s != NULL)
             {
                double ran_value = nrfunc::ran1();
+
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  ran_value, curr_s);
+                  ran_value, curr_s, action_prob);
+
+               if(curr_a == 0)
+               {
+                  reinforce_agent_ptr->push_back_prob_action_0(action_prob);
+               }
+               else
+               {
+                  reinforce_agent_ptr->push_back_prob_action_0(1-action_prob);
+               }
             }
          }
 
          a = minimal_actions[curr_a]; 
 
-//         cout << "cum_framenumber = " << cum_framenumber
-//              << " curr_a = " << curr_a
-//              << " a = " << a 
-//              << endl;
-
 // As of 12/30/16 we do not not allow the paddle to move beyond the
 // top or bottom walls:
-         if(a == PLAYER_A_RIGHT)
+         if(a == PLAYER_A_RIGHT) // move paddle vertically upwards
          {
-            if(!pong_ptr->increment_paddle_x())
+            if(!pong_ptr->increment_paddle_x())  
             {
                a = PLAYER_A_NOOP;
             }
          }
-         else if (a == PLAYER_A_LEFT)
+         else if (a == PLAYER_A_LEFT)  // move paddle vertically downwards
          {
             if(!pong_ptr->decrement_paddle_x())
             {
@@ -314,10 +324,27 @@ int main(int argc, char** argv)
          }
          pong_ptr->push_back_paddle_x();
 
+/*
+         cout << "cum_framenumber = " << cum_framenumber
+              << " curr_a = " << curr_a
+              << " a = " << a 
+              << " paddle_X = " << pong_ptr->get_paddle_x()
+              << endl;
+*/
+
          double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
 
          double renorm_reward = curr_reward;
+         if(renorm_reward < 0)
+         {
+
+// Experiment with amplifying penalty for missing ball:
+
+            renorm_reward *= -10;
+         }
+         
+
          if(d >= 0)
          {
             reinforce_agent_ptr->store_ar_into_replay_memory(
@@ -343,8 +370,18 @@ int main(int argc, char** argv)
 // Periodically save an episode's worth of screens to output
 // subdirectory:
 
+
+//         bool export_RGB_screens_flag = true;
          bool export_RGB_screens_flag = false;
-         if(curr_episode_number % 1000 == 0) export_RGB_screens_flag = true;
+         if(curr_episode_number > 0 && 
+            curr_episode_number % 1000 == 0) export_RGB_screens_flag = true;
+/*
+         if(curr_episode_framenumber < 100 ||
+            curr_episode_framenumber > 300)
+         {
+            export_RGB_screens_flag = false;
+         }
+*/
 
          if(export_RGB_screens_flag)
          {
@@ -352,8 +389,24 @@ int main(int argc, char** argv)
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_episode_framenumber,5)+
                ".png";
-            pong_ptr->save_screen(
+            string curr_screen_path = pong_ptr->save_screen(
                curr_episode_number, curr_screen_filename);
+            
+            string caption;
+            if(curr_a == 0)
+            {
+               caption = "prob up = "+stringfunc::number_to_string(
+                  action_prob,3);
+            }
+            else
+            {
+               caption = "prob down = "+stringfunc::number_to_string(
+                  action_prob,3);
+            }
+            
+            imagefunc::add_text_to_image(
+               "purple", caption, "west", "north",
+               curr_screen_path, curr_screen_path);
          }
       } // game_over while loop
 
@@ -417,6 +470,8 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->export_snapshot(output_subdir);
       }
 */
+
+      reinforce_agent_ptr->clear_prob_action_0();
 
    } // curr_epoch < n_max_epochs while loop
 

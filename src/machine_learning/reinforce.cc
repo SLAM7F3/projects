@@ -1588,7 +1588,7 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
 
 // Temporally smooth noisy log10_lr_mean_abs_nabla_weight
 
-   double sigma = 10;
+   double sigma = 5;
    if(n_frames_per_episode.size() > 100)
    {
       sigma += log10(n_frames_per_episode.size())/log10(2.0);
@@ -1596,6 +1596,11 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
+   cout << "sigma = " << sigma << " gaussian_size = " << gaussian_size
+        << " log10_lr_mean_abs_nabla_weight_ratios.size() = "
+        << log10_lr_mean_abs_nabla_weight_ratios.size()
+        << endl;
+   
    vector<double> smoothed_log10_nablas;
    if(gaussian_size < int(log10_lr_mean_abs_nabla_weight_ratios.size())) 
    {
@@ -1611,6 +1616,84 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
          0, xmax, smoothed_log10_nablas, colorfunc::blue);
    }
  
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of action0 probabilities
+// versus episode number.
+
+void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
+{
+   metafile curr_metafile;
+   string prob_subdir = output_subdir + "action_probs/";
+   filefunc::dircreate(prob_subdir);
+   string meta_filename=prob_subdir + "/prob_action0_"+
+      stringfunc::integer_to_string(episode_number, 4);
+
+   string title="Probability of action 0";
+   title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
+   title += "; nweights="+stringfunc::number_to_string(n_weights);
+
+   double median_prob_action0, qw_prob_action0;
+   mathfunc::median_value_and_quartile_width(
+      prob_action_0, median_prob_action0, qw_prob_action0);
+   string subtitle="Median prob action_0 = "+
+      stringfunc::number_to_string(median_prob_action0) + " +/- "+
+      stringfunc::number_to_string(qw_prob_action0);
+   string x_label = "Frame number for episode "+stringfunc::number_to_string(
+      episode_number);
+   double xmax = prob_action_0.size();
+   string y_label="probability of action 0";
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 0, 1);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.25);
+   curr_metafile.set_ysubtic(0.125);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, xmax, prob_action_0);
+   curr_metafile.set_thickness(3);
+
+/*
+// Temporally smooth noisy log10_lr_mean_abs_nabla_weight
+
+   double sigma = 5;
+   if(n_frames_per_episode.size() > 100)
+   {
+      sigma += log10(n_frames_per_episode.size())/log10(2.0);
+   }
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   cout << "sigma = " << sigma << " gaussian_size = " << gaussian_size
+        << " log10_lr_mean_abs_nabla_weight_ratios.size() = "
+        << log10_lr_mean_abs_nabla_weight_ratios.size()
+        << endl;
+   
+   vector<double> smoothed_log10_nablas;
+   if(gaussian_size < int(log10_lr_mean_abs_nabla_weight_ratios.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      filterfunc::brute_force_filter(
+         log10_lr_mean_abs_nabla_weight_ratios, h, 
+         smoothed_log10_nablas, wrap_around_input_values);
+      curr_metafile.write_curve(
+         0, xmax, smoothed_log10_nablas, colorfunc::blue);
+   }
+*/
+
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
@@ -1924,6 +2007,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_lr_mean_abs_nabla_weight_ratios(
       output_subdir, extrainfo, epoch_indep_var);
+   plot_prob_action_0(output_subdir, extrainfo);
 }
 
 // ---------------------------------------------------------------------
@@ -1945,11 +2029,12 @@ void reinforce::generate_view_metrics_script(
    {
       script_stream << "view Qmap_score_history.jpg" << endl;
    }
-   else // breakout
+   else // breakout, pong
    {
       script_stream << "view reward_history.jpg" << endl;
       script_stream << "view frames_history.jpg" << endl;
       script_stream << "view paddle_X.jpg" << endl;
+      script_stream << "view prob_action_0.jpg" << endl;
    }
 
    if(learning_type == QLEARNING)
@@ -2599,7 +2684,6 @@ void reinforce::compute_max_eval_Qvalues_distribution()
    vector<double> values;
    mathfunc::percentile_values(max_Qvalues, percentile_fracs, values);
 
-//   avg_max_eval_Qvalues.push_back(mathfunc::mean(max_Qvalues));
    max_eval_Qvalues_10.push_back(values[0]);
    max_eval_Qvalues_25.push_back(values[1]);
    max_eval_Qvalues_50.push_back(values[2]);
@@ -3311,16 +3395,17 @@ void reinforce::P_forward_propagate(genvector* s_input)
 int reinforce::get_P_action_for_curr_state(genvector* curr_s)
 {
    double ran_val = nrfunc::ran1();
-   return get_P_action_for_curr_state(ran_val, curr_s);
+   double action_prob;
+   return get_P_action_for_curr_state(ran_val, curr_s, action_prob);
 }
 
-int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
+int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s,
+                                           double& action_prob)
 {
 //   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
    P_forward_propagate(curr_s);
 
    double cum_p = 0;
-   double action_prob;
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
    {
       action_prob = A_Prime[n_layers-1]->get(a);
@@ -3328,6 +3413,7 @@ int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
 //           << " action_prob = " << action_prob
 //           << " ran_val = " << ran_val 
 //           << endl;
+
       if(ran_val >= cum_p && ran_val <= cum_p + action_prob)
       {
          return a;
