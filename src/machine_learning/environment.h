@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 12/2/16; 12/7/16; 12/8/16; 12/10/16
+// Last modified on 12/7/16; 12/8/16; 12/10/16; 12/30/16
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -13,6 +13,7 @@
 #include "games/breakout.h"
 #include "math/genvector.h"
 #include "games/maze.h"
+#include "games/pong.h"
 #include "games/spaceinv.h"
 #include "games/tictac3d.h"
 #include "image/TwoDarray.h"
@@ -26,7 +27,8 @@ class environment
       MAZE = 0,
       TTT = 1,
       SPACEINV = 2,
-      BREAKOUT = 3
+      BREAKOUT = 3,
+      PONG = 4
    } environment_t;
 
 // Initialization, constructor and destructor functions:
@@ -48,6 +50,10 @@ class environment
    void set_breakout(breakout* b_ptr);
    breakout* get_breakout();
    const breakout* get_breakout() const;
+   void set_pong(pong* p_ptr);
+   pong* get_pong();
+   const pong* get_pong() const;
+
    void set_tictac3d(tictac3d* t_ptr);
    tictac3d* get_tictac3d();
    const tictac3d* get_tictac3d() const;
@@ -83,6 +89,7 @@ class environment
 
    maze *maze_ptr;
    breakout *breakout_ptr;
+   pong *pong_ptr;
    spaceinv *spaceinv_ptr;
    tictac3d *tictac3d_ptr;
 
@@ -142,10 +149,9 @@ inline const spaceinv* environment::get_spaceinv() const
    return spaceinv_ptr;
 }
 
-
-inline void environment::set_breakout(breakout* s_ptr)
+inline void environment::set_breakout(breakout* b_ptr)
 {
-   breakout_ptr = s_ptr;
+   breakout_ptr = b_ptr;
 }
 
 inline breakout* environment::get_breakout()
@@ -156,6 +162,21 @@ inline breakout* environment::get_breakout()
 inline const breakout* environment::get_breakout() const
 {
    return breakout_ptr;
+}
+
+inline void environment::set_pong(pong* p_ptr)
+{
+   pong_ptr = p_ptr;
+}
+
+inline pong* environment::get_pong()
+{
+   return pong_ptr;
+}
+
+inline const pong* environment::get_pong() const
+{
+   return pong_ptr;
 }
 
 inline void environment::set_tictac3d(tictac3d* t_ptr)

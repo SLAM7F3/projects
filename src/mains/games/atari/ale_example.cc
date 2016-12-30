@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <SDL.h>
+#include <unistd.h>
 #include <ale_interface.hpp>
 #include "general/filefuncs.h"
 #include "numrec/nrfuncs.h"
@@ -56,6 +57,7 @@ enum Action {
 */
  
 // Breakout: 0, 1, 3, 4
+// Pong:  0, 1, 3, 4, 11, 12
 // Space invaders: 0, 1, 3, 4, 11, 12
 // Enduro: 0, 1, 3, 4, 5, 8, 9, 11, 12
 // Ms pacman: 0, 2, 3, 4, 5, 6, 7, 8, 9
@@ -77,6 +79,8 @@ enum Action {
 
    // Get the vector of legal actions
    ActionVect legal_actions = ale.getLegalActionSet();
+   cout << "legal_actions.size() = " << legal_actions.size() << endl;
+
    ActionVect minimal_actions = ale.getMinimalActionSet();
  
    for(unsigned int a = 0; a < minimal_actions.size(); a++)
@@ -95,8 +99,20 @@ enum Action {
    vector<unsigned char> grayscale_output_buffer;
    grayscale_output_buffer.reserve(n_pixels);
 
-   string output_subdir="./cropped_frames/";
+   string output_subdir="./ale_frames/";
    filefunc::dircreate(output_subdir);
+
+   int min_px = 0;
+   int max_px = 160;
+   int min_py = 0;
+   int max_py = 210;
+
+// Screen ROI for Pong:
+
+   min_px = 16;
+   max_px = 144;
+   min_py = 34;
+   max_py = 194;
 
 // Screen ROI for Breakout:
 
@@ -110,11 +126,14 @@ enum Action {
    int max_py = 240;
 */
 
+/*
+// good values for breakout:
 
    int min_px = 23;
    int max_px = 129;
    int min_py = 16;
    int max_py = 175;
+*/
 
 // Screen ROI for space invaders:
 
@@ -127,6 +146,10 @@ enum Action {
 // (133 - 27) * (190 - 12) = 
 // 106 * 178
 // --> 53 * 89
+
+   int action_counter = 0;
+   int n_ups = 0;
+   int n_downs = 0;
 
    // Play episodes
    int n_episodes = 10;
@@ -172,27 +195,57 @@ enum Action {
          } // curr_frame_number % 3 == 0 conditional
          
          int action_index = 0; // no operation
-         if(life_frame_counter < 20)
+         if(life_frame_counter < 60)
          {
-            action_index = 1;  // fire ball
+//            action_index = 1;  // fire ball
          }
          else
          {
-//            if(nrfunc::ran1() < 0.25)
-            if(life_frame_counter%2 == 0)
+/*
+            if(nrfunc::ran1() < 0.5)
             {
                action_index = 3;   // right move
+//               action_index = 2;   // up move
             }
             else
             {
                action_index = 4;   // right move
+//               action_index = 5;   // down move
             }
+*/
+
          }
+
+         if(n_ups < 14 && life_frame_counter > 10 
+            && life_frame_counter % 4 == 0)
+         {
+            action_index = 3;
+            n_ups++;
+         }
+
+/*
+         if(n_downs < 18 && life_frame_counter > 10 
+            && life_frame_counter % 4 == 0)
+         {
+            action_index = 4;
+            n_downs++;
+         }
+*/
+
+         action_counter++;
+         cout << "action_counter = " << action_counter 
+              << " n_ups = " << n_ups 
+              << " n_downs = " << n_downs
+              << endl;
+         usleep(200 * 1000);
 
 // As with many other Atari games, the player paddle also moves every
 // other frame, adding a degree of temporal aliasing to the domain
 
-//         Action a = legal_actions[rand() % legal_actions.size()];
+//         action_index = curr_frame_number / 10;
+
+//         action_index = rand() % legal_actions.size();
+
          Action a = legal_actions[action_index];
 
          // Apply the action and get the resulting reward

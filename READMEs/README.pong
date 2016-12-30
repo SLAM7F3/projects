@@ -1,0 +1,43 @@
+==========================================================================
+RL notes for Pong
+==========================================================================
+Last updated on 12/30/16
+==========================================================================
+
+
+Random play results
+-------------------
+
+Best play results to date:
+-------------------------
+
+-------------------------------------------------------------
+TERMINATED EXPERIMENTS
+-------------------------------------------------------------
+
+===========================================================
+TODO:
+
+A.  Implement weight normalization 
+
+B.  Implement data-dependent weight initialization
+
+C.  Experiment with trying to extract ball and paddle posn and velocity and
+forming much smaller input layer for a much smaller neural net
+
+
+DONE:
+
+A.  Fix memory leak!
+
+B.  Revert to working with difference state rather than 1 big state
+containing 2 screen states
+
+C.  Fix exporting of each individual screen rather than every 3rd or 4th
+one
+
+G.  Trace individual weights' evolutions
+
+F.  Perhaps experiment with 3 hidden layer neural network but only after
+implementing batch normalization 
+

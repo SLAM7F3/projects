@@ -6,7 +6,7 @@
 # Note added on 8/3/15:  Eliminated -lopencv_contrib, -lopencv_legacy   #
 # and -lopencv_nonfree which no longer exist under opencv3.0.0		#
 # ===================================================================== #
-# Last modified on 11/9/16; 11/30/16; 12/1/16; 12/10/16                 #
+# Last modified on 12/1/16; 12/10/16; 12/23/16; 12/30/16		#
 # ===================================================================== #
 #									#
 # NOTES:								#
@@ -626,7 +626,7 @@ $(LIBDIR)/libfilter.a: $(FILTER_OBJECTS)
 	ar rsuv $(FILTER_DIR)/libfilter.a $(FILTER_OBJECTS)
 
 # =====================================================================	#
-GAMES_SRC=maze.cc tictac2d.cc tictac3d.cc spaceinv.cc breakout.cc
+GAMES_SRC=maze.cc tictac2d.cc tictac3d.cc spaceinv.cc breakout.cc pong.cc
 GAMES_OBJS=$(GAMES_SRC:.cc=.o)
 GAMES_OBJECTS= ${GAMES_OBJS:%=$(GAMES_DIR)/%}
 $(LIBDIR)/libgames.a: $(GAMES_OBJECTS) 

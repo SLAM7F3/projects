@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 12/7/16; 12/8/16; 12/10/16; 12/19/16
+// Last modified on 12/8/16; 12/10/16; 12/19/16; 12/30/16
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -26,6 +26,7 @@ void environment::initialize_member_objects()
    tictac3d_ptr = NULL;
    spaceinv_ptr = NULL;
    breakout_ptr = NULL;
+   pong_ptr = NULL;
 
    use_big_states_flag = false;
 //   use_big_states_flag = true;
@@ -83,6 +84,10 @@ void environment::start_new_episode(bool random_start)
    {
       breakout_ptr->get_ale().reset_game();
    }
+   else if(world_type == PONG)
+   {
+      pong_ptr->get_ale().reset_game();
+   }
    else if(world_type == TTT)
    {
       tictac3d_ptr->reset_board_state();
@@ -118,6 +123,17 @@ genvector* environment::get_curr_state()
       else
       {
          curr_state_ptr = breakout_ptr->get_curr_state();
+      }
+   }
+   else if(world_type == PONG)
+   {
+      if(use_big_states_flag)
+      {
+         curr_state_ptr = pong_ptr->get_curr_big_state();
+      }
+      else
+      {
+         curr_state_ptr = pong_ptr->get_curr_state();
       }
    }
    else if(world_type == TTT)
@@ -200,6 +216,21 @@ genvector* environment::compute_next_state(int a, int player_value)
          next_state_ptr = breakout_ptr->get_next_state();
       }
    }
+   else if (world_type == PONG)
+   {
+      bool export_frames_flag = false;
+      if(use_big_states_flag)
+      {
+         pong_ptr->crop_pool_curr_frame(export_frames_flag);
+         pong_ptr->update_curr_big_state();
+         next_state_ptr = pong_ptr->get_curr_big_state();
+      }
+      else
+      {
+         pong_ptr->crop_pool_difference_curr_frame(export_frames_flag);
+         next_state_ptr = pong_ptr->get_next_state();
+      }
+   }
    else if (world_type == TTT)
    {
       tictac3d_ptr->set_player_move(a, player_value);
@@ -240,6 +271,11 @@ bool environment::get_game_over()
       return (breakout_ptr->get_ale().game_over() ||
               breakout_ptr->get_forced_game_over());
    }
+   else if(world_type == PONG)
+   {
+      return (pong_ptr->get_ale().game_over() ||
+              pong_ptr->get_forced_game_over());
+   }
    else if(world_type == TTT)
    {
       return tictac3d_ptr->get_game_over();
@@ -258,6 +294,10 @@ void environment::set_game_over(bool flag)
    {
       breakout_ptr->set_forced_game_over(flag);
    }
+   else if(world_type == PONG)
+   {
+      pong_ptr->set_forced_game_over(flag);
+   }
    else if(world_type == TTT)
    {
       tictac3d_ptr->set_game_over(flag);
@@ -275,6 +315,10 @@ int environment::get_episode_framenumber() const
    {
       return breakout_ptr->get_ale().getEpisodeFrameNumber();
    }
+   else if(world_type == PONG)
+   {
+      return pong_ptr->get_ale().getEpisodeFrameNumber();
+   }
    else
    {
       return -1;
@@ -291,6 +335,10 @@ int environment::get_min_episode_framenumber() const
    else if(world_type == BREAKOUT)
    {
       return breakout_ptr->get_min_episode_framenumber();
+   }
+   else if(world_type == PONG)
+   {
+      return pong_ptr->get_min_episode_framenumber();
    }
    else
    {
@@ -365,6 +413,10 @@ void environment::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
    else if(world_type == BREAKOUT)
    {
       breakout_ptr->append_wtwoDarray(wtwoDarray_ptr);
+   }
+   else if(world_type == PONG)
+   {
+      pong_ptr->append_wtwoDarray(wtwoDarray_ptr);
    }
    else
    {

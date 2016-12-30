@@ -3235,7 +3235,7 @@ int reinforce::get_P_action_for_curr_state(genvector* curr_s)
 
 int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
 {
-//   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
+   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
    P_forward_propagate(curr_s);
 
    double cum_p = 0;
@@ -3659,10 +3659,10 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 double reinforce::get_advantage(int d) const
 {
    double curr_R = r_curr->get(d);
-   double curr_advantage;
-//   double curr_advantage = (curr_R - mu_R) / sigma_R;
+//   double curr_advantage;
+   double curr_advantage = (curr_R - mu_R) / sigma_R;
    
-   
+   /* 
 // FAKE FAKE :  Weds Dec 28 at 7:17 am
 
 //   if (fabs(curr_R) < 1E-4)
@@ -3683,6 +3683,7 @@ double reinforce::get_advantage(int d) const
       curr_advantage = -1;
 //      curr_advantage = -1+curr_R;
    }
+   */
 
 /*
    curr_advantage = curr_R;

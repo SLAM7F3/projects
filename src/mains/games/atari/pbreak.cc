@@ -73,8 +73,8 @@ int main(int argc, char** argv)
 //   int H1 = 16;
 //   int H1 = 32;
 //   int H1 = 64;
-//   int H1 = 128;
-   int H1 = 200;
+   int H1 = 128;
+//   int H1 = 200;
 
    int H2 = 0;
 //   int H2 = 8;
@@ -109,7 +109,8 @@ int main(int argc, char** argv)
 //   int n_rollouts = 1 * 1000;
 //   int n_rollouts = 2 * 1000;
 //   int n_rollouts = 20 * 1000;
-   int n_rollouts = 50 * 1000;
+   int n_rollouts = 25 * 1000;
+//   int n_rollouts = 50 * 1000;
    int replay_memory_capacity = n_rollouts;
 //   int replay_memory_capacity = 4 * 1000;
 //   int replay_memory_capacity = 8 * 1000;
@@ -404,7 +405,7 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------------
 
-      cout << "Episode finished" << endl;
+      cout << "Episode finished for experiment " << expt_number << endl;
       cout << "  epoch = " << curr_epoch 
            << "  cum_frame = " << cum_framenumber << endl;
       cout << "  cum_reward = " << cum_reward 
