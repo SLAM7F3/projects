@@ -15,6 +15,42 @@ Best play results to date:
 TERMINATED EXPERIMENTS
 -------------------------------------------------------------
 
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+m6700
+-----
+
+4.  m6700:
+
+Fri Dec 30 09:48:33 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 2
+   n_weights = 65664 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9310
+
+5.  Repeat of expt 4
+
 ===========================================================
 TODO:
 

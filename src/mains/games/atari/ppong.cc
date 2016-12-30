@@ -1,7 +1,7 @@
 // ==========================================================================
-// Program PBREAK solves the BreakOut atari game via policy gradient learning
+// Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/24/16; 12/26/16; 12/28/16; 12/29/16
+// Last updated on 12/26/16; 12/28/16; 12/29/16; 12/30/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -15,7 +15,7 @@
 #include <vector>
 #include <SDL.h>
 #include <ale_interface.hpp>
-#include "games/breakout.h"
+#include "games/pong.h"
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
 #include "machine_learning/machinelearningfuncs.h"
@@ -42,23 +42,23 @@ int main(int argc, char** argv)
 //   cin >> seed;
 //   nrfunc::init_default_seed(seed);
 
-// Instantiate Breakout ALE game:
+// Instantiate Pong ALE game:
 
    int n_screen_states = 1;
-   breakout *breakout_ptr = new breakout(n_screen_states);
-   int n_actions = breakout_ptr->get_n_actions();
+   pong *pong_ptr = new pong(n_screen_states);
+   int n_actions = pong_ptr->get_n_actions();
 
-   breakout_ptr->set_compute_difference_flag(true);
+   pong_ptr->set_compute_difference_flag(true);
    
 // Disable ALE's random responsiveness to input actions:
 
-   breakout_ptr->get_ale().setFloat("repeat_action_probability",0);
+   pong_ptr->get_ale().setFloat("repeat_action_probability",0);
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
 
-   environment game_world(environment::BREAKOUT);
-   game_world.set_breakout(breakout_ptr);
+   environment game_world(environment::PONG);
+   game_world.set_pong(pong_ptr);
 
    bool use_big_states_flag = false;
    game_world.set_use_big_states_flag(use_big_states_flag);
@@ -72,8 +72,8 @@ int main(int argc, char** argv)
 //   int H1 = 8;
 //   int H1 = 16;
 //   int H1 = 32;
-//   int H1 = 64;
-   int H1 = 128;
+   int H1 = 64;
+//   int H1 = 128;
 //   int H1 = 200;
 
    int H2 = 0;
@@ -105,16 +105,7 @@ int main(int argc, char** argv)
 
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
-
-//   int n_rollouts = 1 * 1000;
-//   int n_rollouts = 2 * 1000;
-//   int n_rollouts = 20 * 1000;
-   int n_rollouts = 25 * 1000;
-//   int n_rollouts = 50 * 1000;
-   int replay_memory_capacity = n_rollouts;
-//   int replay_memory_capacity = 4 * 1000;
-//   int replay_memory_capacity = 8 * 1000;
-//   int replay_memory_capacity = 16 * 1000;
+   int replay_memory_capacity = 20 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
@@ -125,7 +116,7 @@ int main(int argc, char** argv)
 
 // Initialize output subdirectory within an experiments folder:
 
-   string experiments_subdir="./experiments/breakout/";
+   string experiments_subdir="./experiments/pong/";
    filefunc::dircreate(experiments_subdir);
 
    int expt_number;
@@ -139,7 +130,7 @@ int main(int argc, char** argv)
    filefunc::dircreate(weights_subdir);
    string screen_exports_subdir = output_subdir+"screen_exports/";
    filefunc::dircreate(screen_exports_subdir);
-   breakout_ptr->set_screen_exports_subdir(screen_exports_subdir);
+   pong_ptr->set_screen_exports_subdir(screen_exports_subdir);
 
    reinforce_agent_ptr->set_gamma(0.99); // discount reward factor
 //   reinforce_agent_ptr->set_gamma(0.95); // discount reward factor
@@ -153,7 +144,7 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 100;
+   int n_episode_update = 25;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -200,7 +191,6 @@ int main(int argc, char** argv)
 // ==========================================================================
 // Reinforcement training loop starts here
 
-   const int n_fire_ball_frames = 2;
    int cum_framenumber = 0;
 
    while(reinforce_agent_ptr->get_curr_epoch() < n_max_epochs)
@@ -231,41 +221,27 @@ int main(int argc, char** argv)
       int prev_a = 0;
       int curr_a = -1;
       Action a;
-
-      int n_prev_lives = -1;
       double cum_reward = 0;
-
-// As of 12/17/16, we reset paddle's starting position to be at the
-// gameboard's horizontal center:
-
-      breakout_ptr->set_paddle_x(
-         breakout_ptr->get_default_starting_paddle_x());
-      int n_recenter_paddle_frames = 
-         breakout_ptr->get_default_starting_paddle_x()  
-         - breakout_ptr->get_center_paddle_x();
 
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
 // contiguous increasing integers!  So we no longer use the following
-// line:
+// line:<
 
 //  int curr_frame_number = game_world.get_episode_framenumber();
 
       int curr_episode_framenumber = 0;  // since start of current episode
-      int curr_life_framenumber = 0;  // n_frames since start of current life
 
       while(!game_world.get_game_over())
       {
-         int n_curr_lives = breakout_ptr->get_ale().lives();
          bool state_updated_flag = false;
 
          curr_episode_framenumber++;
-         curr_life_framenumber++;
          cum_framenumber++;
          curr_epoch = double(cum_framenumber) / nframes_per_epoch;
          reinforce_agent_ptr->set_curr_epoch(curr_epoch);
 
-         if(breakout_ptr->crop_pool_difference_curr_frame(export_frames_flag))
+         if(pong_ptr->crop_pool_difference_curr_frame(export_frames_flag))
          {
             state_updated_flag = true;
             n_state_updates++;
@@ -280,7 +256,7 @@ int main(int argc, char** argv)
 
             if(curr_s->magnitude() <= 0)
             {
-//               cout << " Zero input state detected" << endl;
+               cout << " Zero input state detected" << endl;
             }
             else
             {
@@ -289,84 +265,51 @@ int main(int argc, char** argv)
             }
          } // state_updated_flag && n_state_updates > 2 conditional
 
-// First reposition paddle so that it starts at screen's horizontal center:
-
-         if(curr_life_framenumber < n_recenter_paddle_frames)
+         curr_a = prev_a;
+         if(state_updated_flag && curr_s != NULL)
          {
-            a = PLAYER_A_LEFT;  // move paddle towards center
+            double ran_value = nrfunc::ran1();
+            curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
+               ran_value, curr_s);
          }
 
-// Next fire ball:
-
-         else if(curr_life_framenumber < 
-                 n_recenter_paddle_frames + n_fire_ball_frames)
+/*
+         int curr_a = 0;
+         if(nrfunc::ran1() < 0.5)
          {
-            a = PLAYER_A_FIRE;  // fire ball
+            curr_a = 1;
          }
+*/
 
-// Now start playing game:
-
-         else
-         {
-            curr_a = prev_a;
-            if(state_updated_flag)
-            {
-               double ran_value = nrfunc::ran1();
-               curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  ran_value, curr_s);
-            }
-            a = minimal_actions[curr_a]; 
-         }
+         a = minimal_actions[curr_a]; 
 
 //         cout << "cum_framenumber = " << cum_framenumber
 //              << " curr_a = " << curr_a
 //              << " a = " << a 
 //              << endl;
 
-// As of 12/18/16 we do not not allow the paddle to move beyond the
-// right or left walls:
+// As of 12/30/16 we do not not allow the paddle to move beyond the
+// top or bottom walls:
          if(a == PLAYER_A_RIGHT)
          {
-            if(!breakout_ptr->increment_paddle_x())
+            if(!pong_ptr->increment_paddle_x())
             {
                a = PLAYER_A_NOOP;
             }
          }
          else if (a == PLAYER_A_LEFT)
          {
-            if(!breakout_ptr->decrement_paddle_x())
+            if(!pong_ptr->decrement_paddle_x())
             {
                a = PLAYER_A_NOOP;
             }
          }
-         breakout_ptr->push_back_paddle_x();
+         pong_ptr->push_back_paddle_x();
 
-         double curr_reward = breakout_ptr->get_ale().act(a);
+         double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
 
-         double renorm_reward = 0;
-         if(curr_reward > 0)
-         {
-            renorm_reward = 1;
-         }
-
-         if(n_curr_lives != n_prev_lives)
-         {
-
-// Penalize agent whenever it misses the ball:
-
-            if(n_prev_lives > 0)
-            {
-               renorm_reward = -1;
-            }
-
-            n_prev_lives = n_curr_lives;
-            curr_life_framenumber = 0;
-//            cout << "n_curr_lives = " << n_curr_lives
-//                 << " n_prev_lives = " << n_prev_lives
-//                 << " renorm_reward = " << renorm_reward << endl;
-         }
-
+         double renorm_reward = curr_reward;
          if(d >= 0)
          {
             reinforce_agent_ptr->store_ar_into_replay_memory(
@@ -398,7 +341,7 @@ int main(int argc, char** argv)
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
                stringfunc::integer_to_string(curr_episode_framenumber,5)+
                ".png";
-            breakout_ptr->save_screen(
+            pong_ptr->save_screen(
                curr_episode_number, curr_screen_filename);
          }
       } // game_over while loop
@@ -412,7 +355,7 @@ int main(int argc, char** argv)
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
 
-//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
+//       pong_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->append_n_frames_per_episode(
          curr_episode_framenumber);
@@ -443,13 +386,13 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
-         breakout_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
+         pong_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
 
-         int n_reduced_xdim = breakout_ptr->get_n_reduced_xdim();
-         int n_reduced_ydim = breakout_ptr->get_n_reduced_ydim();
+         int n_reduced_xdim = pong_ptr->get_n_reduced_xdim();
+         int n_reduced_ydim = pong_ptr->get_n_reduced_ydim();
          if(use_big_states_flag)
          {
             n_reduced_ydim *= n_screen_states;
@@ -472,6 +415,6 @@ int main(int argc, char** argv)
 // ==========================================================================
 
    delete reinforce_agent_ptr;
-   delete breakout_ptr;
+   delete pong_ptr;
 }
 

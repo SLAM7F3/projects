@@ -1,5 +1,6 @@
 /bin/rm ./ale_example
 /bin/rm ./pbreak
+/bin/rm ./ppong
 /bin/rm ./qbreak
 /bin/rm ./qspace
 /bin/rm ./ranbreak

@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/26/16; 12/27/16; 12/28/16; 12/29/16
+// Last modified on 12/27/16; 12/28/16; 12/29/16; 12/30/16
 // ==========================================================================
 
 #include <string>
@@ -1072,19 +1072,21 @@ void reinforce::plot_reward_history(
    string output_subdir, string extrainfo, bool epoch_indep_var,
    bool plot_cumulative_reward)
 {
-   double max_reward = mathfunc::maximal_value(running_reward_snapshots);
+   double min_reward, max_reward;
    if(plot_cumulative_reward)
    {
+      min_reward = mathfunc::minimal_value(cumulative_reward_snapshots);
       max_reward = mathfunc::maximal_value(cumulative_reward_snapshots);
-      if(max_reward < 1) max_reward = 1;
-      plot_reward_history(output_subdir, extrainfo, 0, max_reward,
+      plot_reward_history(output_subdir, extrainfo, 
+                          min_reward - 0.5, max_reward + 0.5,
                           cumulative_reward_snapshots, epoch_indep_var);
    }
    else
    {
+      min_reward = mathfunc::minimal_value(running_reward_snapshots);
       max_reward = mathfunc::maximal_value(running_reward_snapshots);
-      if(max_reward < 1) max_reward = 1;
-      plot_reward_history(output_subdir, extrainfo, 0, max_reward,
+      plot_reward_history(output_subdir, extrainfo,
+                          min_reward - 0.5, max_reward + 0.5,
                           running_reward_snapshots, epoch_indep_var);
    }
 }
@@ -3193,6 +3195,9 @@ double reinforce::get_prev_afterstate_curr_value()
 
 void reinforce::P_forward_propagate(genvector* s_input)
 {
+//   cout << "inside P_forward_propagate()" << endl;
+//   cout << "s_input = " << s_input << endl;
+   
    *A_Prime[0] = *s_input;
  
    for(int l = 0; l < n_layers-1; l++)
@@ -3235,7 +3240,7 @@ int reinforce::get_P_action_for_curr_state(genvector* curr_s)
 
 int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s)
 {
-   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
+//   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
    P_forward_propagate(curr_s);
 
    double cum_p = 0;
@@ -3495,6 +3500,7 @@ double reinforce::update_P_network(bool verbose_flag)
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
+   cout << endl;
 //   cout << "total_loss = " << total_loss << endl;
 
    if(solver_type == RMSPROP)

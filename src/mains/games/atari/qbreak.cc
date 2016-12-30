@@ -287,7 +287,7 @@ int main(int argc, char** argv)
 // Current episode starts here:
 
       cout << "************  Start of episode " << curr_episode_number
-           << " ***********" << endl;
+           << " for expt " << expt_number << " ***********" << endl;
 
       int d = -1, n_state_updates = 0;
       int prev_a = 0;
