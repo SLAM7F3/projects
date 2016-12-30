@@ -76,8 +76,8 @@ int main(int argc, char** argv)
 //   int H1 = 8;
 //   int H1 = 16;
 //   int H1 = 32;
-   int H1 = 64;
-//   int H1 = 128;
+//   int H1 = 64;
+   int H1 = 128;
 //   int H1 = 200;
 
    int H2 = 0;
@@ -324,13 +324,13 @@ int main(int argc, char** argv)
 
          double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
-
          double renorm_reward = curr_reward;
+
          if(d >= 0)
          {
             reinforce_agent_ptr->store_ar_into_replay_memory(
                d, curr_a, renorm_reward, game_world.get_game_over());
-         } // d >= 0 conditional
+         } 
 
 // Update P-network when replay memory becomes completely full:
 
@@ -388,7 +388,7 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------------
 
-      cout << "Episode finished for experiment " << expt_number << endl;
+      cout << "Episode finished" << endl;
       cout << "  epoch = " << curr_epoch 
            << "  cum_frame = " << cum_framenumber << endl;
       cout << "  cum_reward = " << cum_reward 

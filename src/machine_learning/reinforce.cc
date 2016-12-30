@@ -2748,12 +2748,12 @@ void reinforce::update_rmsprop_cache(double decay_rate)
 }
 
 // ---------------------------------------------------------------------
-// Member function update_neural_network() takes in Nd = number of
+// Member function update_Q_network() takes in Nd = number of
 // random samples to be drawn from replay memory.
 
-double reinforce::update_neural_network(bool verbose_flag)
+double reinforce::update_Q_network(bool verbose_flag)
 {
-//   cout << "inside update_neural_network()" << endl;
+//   cout << "inside update_Q_network()" << endl;
 
    vector<int> d_samples = mathfunc::random_sequence(
       replay_memory_capacity, Nd);

@@ -179,7 +179,7 @@ class reinforce
    void store_ar_into_replay_memory(int d, int curr_a, double curr_r,
       bool terminal_state_flag);
 
-   double update_neural_network(bool verbose_flag = false);
+   double update_Q_network(bool verbose_flag = false);
    bool get_replay_memory_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r,
       genvector& next_s);

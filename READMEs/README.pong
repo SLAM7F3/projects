@@ -119,14 +119,163 @@ Random seed = -39423
 
 1009.  TM:  repeat expt 1008
 
-10.  
+10.  TM:  H1 = 128; H2 = 0; replay memory = 20K; ppong
+
+Fri Dec 30 15:20:17 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 131328 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -40016
+
+11. TM:  repeat expt 10
+
+20.  TM:  H1 = 64; H2 = 0; replay memory = 20K; qpong
+
+
 
 
 Titan 1:
 -------
 
+16.  Titan 1:  H1 = 64; H2 = 64; replay memory = 20K; ppong
+
+Fri Dec 30 15:35:26 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 69760 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -40924
+
+17.  Titan 1:  repeat expt 16
+
+18.  Titan 1:  H1 = 64; H2 = 128; replay memory = 20K; ppong
+Fri Dec 30 15:38:09 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 73984 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -41088
+
+19.  Titan 1:  repeat expt 18
+
+
 Titan 3:
 -------
+
+12.  Titan 3:  H1 = 64; H2 = 32; replay memory = 20K; ppong
+
+Fri Dec 30 15:24:54 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 67648 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -40292
+
+13.  Titan 3:  repeat expt 12
+
+14.  Titan 3: H1 = 128; H2 = 32; replay memory = 20K; ppong
+
+Fri Dec 30 15:26:43 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 135232 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -40402
+
+15.  Titan 3:  repeat expt 14
+
+
+
 
 ===========================================================
 TODO:
