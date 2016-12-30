@@ -109,8 +109,8 @@ int main(int argc, char** argv)
 
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
-   int replay_memory_capacity = 5 * 1000;
-//   int replay_memory_capacity = 20 * 1000;
+//   int replay_memory_capacity = 10 * 1000;
+   int replay_memory_capacity = 20 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
@@ -261,18 +261,8 @@ int main(int argc, char** argv)
          if(state_updated_flag && n_state_updates > 2)
          {
             curr_s = game_world.get_curr_state();
-
-// If curr_s == 0, do NOT store it into the replay memory:
-
-            if(curr_s->magnitude() <= 0)
-            {
-               cout << " Zero input state detected" << endl;
-            }
-            else
-            {
-               d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-                  *curr_s);
-            }
+            d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+               *curr_s);
          } // state_updated_flag && n_state_updates > 2 conditional
 
          if(random_play_flag)
@@ -336,15 +326,6 @@ int main(int argc, char** argv)
          cum_reward += curr_reward;
 
          double renorm_reward = curr_reward;
-         if(renorm_reward < 0)
-         {
-
-// Experiment with amplifying penalty for missing ball:
-
-            renorm_reward *= -10;
-         }
-         
-
          if(d >= 0)
          {
             reinforce_agent_ptr->store_ar_into_replay_memory(
@@ -374,14 +355,7 @@ int main(int argc, char** argv)
 //         bool export_RGB_screens_flag = true;
          bool export_RGB_screens_flag = false;
          if(curr_episode_number > 0 && 
-            curr_episode_number % 1000 == 0) export_RGB_screens_flag = true;
-/*
-         if(curr_episode_framenumber < 100 ||
-            curr_episode_framenumber > 300)
-         {
-            export_RGB_screens_flag = false;
-         }
-*/
+            curr_episode_number % 250 == 0) export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
@@ -391,7 +365,8 @@ int main(int argc, char** argv)
                ".png";
             string curr_screen_path = pong_ptr->save_screen(
                curr_episode_number, curr_screen_filename);
-            
+
+/*            
             string caption;
             if(curr_a == 0)
             {
@@ -407,6 +382,7 @@ int main(int argc, char** argv)
             imagefunc::add_text_to_image(
                "purple", caption, "west", "north",
                curr_screen_path, curr_screen_path);
+*/
          }
       } // game_over while loop
 
