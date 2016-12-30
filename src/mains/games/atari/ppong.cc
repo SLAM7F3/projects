@@ -42,6 +42,9 @@ int main(int argc, char** argv)
 //   cin >> seed;
 //   nrfunc::init_default_seed(seed);
 
+   bool random_play_flag = true;
+//   bool random_play_flag = false;
+
 // Instantiate Pong ALE game:
 
    int n_screen_states = 1;
@@ -71,15 +74,15 @@ int main(int argc, char** argv)
 
 //   int H1 = 8;
 //   int H1 = 16;
-//   int H1 = 32;
-   int H1 = 64;
+   int H1 = 32;
+//   int H1 = 64;
 //   int H1 = 128;
 //   int H1 = 200;
 
-//   int H2 = 0;
+   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
-   int H2 = 32;
+//   int H2 = 32;
 //   int H2 = 64;
 //   int H2 = 128;
 
@@ -105,7 +108,8 @@ int main(int argc, char** argv)
 
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
-   int replay_memory_capacity = 20 * 1000;
+   int replay_memory_capacity = 2 * 1000;
+//   int replay_memory_capacity = 20 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
@@ -144,7 +148,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 25;
+   int n_episode_update = 5;
+//   int n_episode_update = 25;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -265,21 +270,24 @@ int main(int argc, char** argv)
             }
          } // state_updated_flag && n_state_updates > 2 conditional
 
-         curr_a = prev_a;
-         if(state_updated_flag && curr_s != NULL)
+         if(random_play_flag)
          {
-            double ran_value = nrfunc::ran1();
-            curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-               ran_value, curr_s);
+            curr_a = 0;
+            if(nrfunc::ran1() < 0.5)
+            {
+               curr_a = 1;
+            }
          }
-
-/*
-         int curr_a = 0;
-         if(nrfunc::ran1() < 0.5)
+         else
          {
-            curr_a = 1;
+            curr_a = prev_a;
+            if(state_updated_flag && curr_s != NULL)
+            {
+               double ran_value = nrfunc::ran1();
+               curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
+                  ran_value, curr_s);
+            }
          }
-*/
 
          a = minimal_actions[curr_a]; 
 
@@ -320,12 +328,15 @@ int main(int argc, char** argv)
 
          if(cum_framenumber % replay_memory_capacity == 0)
          {
-            bool verbose_flag = false;
-            if(curr_episode_number % 10 == 0)
+            if(!random_play_flag)
             {
-               verbose_flag = true;
+               bool verbose_flag = false;
+               if(curr_episode_number % 10 == 0)
+               {
+                  verbose_flag = true;
+               }
+               total_loss = reinforce_agent_ptr->update_P_network(verbose_flag);
             }
-            total_loss = reinforce_agent_ptr->update_P_network(verbose_flag);
             reinforce_agent_ptr->clear_replay_memory();
          }
 
@@ -354,8 +365,6 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward 
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
-
-//       pong_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->append_n_frames_per_episode(
          curr_episode_framenumber);

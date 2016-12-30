@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/24/16; 12/26/16; 12/27/16; 12/28/16
+// Last modified on 12/26/16; 12/27/16; 12/28/16; 12/30/16
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -122,6 +122,8 @@ class reinforce
                                 std::string subtitle, std::string extrainfo);
    void plot_log10_loss_history(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
+   void plot_log10_lr_mean_abs_nabla_weight_ratios(
+      std::string output_subdir, std::string extrainfo,bool epoch_indep_var);
    void plot_bias_distributions(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_weight_distributions(
@@ -287,6 +289,7 @@ class reinforce
    std::vector<double> epsilon_values;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
+   std::vector<double> log10_lr_mean_abs_nabla_weight_ratios;
 
 //    std::vector<double> avg_max_eval_Qvalues;
    std::vector<double> max_eval_Qvalues_10;

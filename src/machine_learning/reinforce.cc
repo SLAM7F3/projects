@@ -1547,6 +1547,79 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of log10(lr * mean_abs_nabla_weight_ratios)
+// versus episode number.
+
+void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
+   string output_subdir, string extrainfo,bool epoch_indep_var)
+{
+   cout << "inside reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios()" << endl;
+   
+   metafile curr_metafile;
+   string meta_filename=output_subdir + "/lr_nabla_weight_ratios";
+
+   string title="learning rate * <|nabla_weight_ratio|>";
+   title += ";lambda="+stringfunc::scinumber_to_string(lambda,2);
+   title += "; nweights="+stringfunc::number_to_string(n_weights);
+
+   string subtitle=init_subtitle();
+   subtitle += ";"+extrainfo;
+   string x_label = "Episode";
+   double xmax = episode_number;
+   if(epoch_indep_var)
+   {
+      x_label="Epoch";
+      xmax = curr_epoch;
+   }
+   string y_label="log10(learning rate * <|nabla_weight_ratio|>)";
+   double max_value = 
+      mathfunc::maximal_value(log10_lr_mean_abs_nabla_weight_ratios)+0.5;
+   double min_value = 
+      mathfunc::minimal_value(log10_lr_mean_abs_nabla_weight_ratios)-0.5;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, min_value, max_value);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, xmax, log10_lr_mean_abs_nabla_weight_ratios);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy log10_lr_mean_abs_nabla_weight
+
+   double sigma = 10;
+   if(n_frames_per_episode.size() > 100)
+   {
+      sigma += log10(n_frames_per_episode.size())/log10(2.0);
+   }
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   vector<double> smoothed_log10_nablas;
+   if(gaussian_size < int(log10_lr_mean_abs_nabla_weight_ratios.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      filterfunc::brute_force_filter(
+         log10_lr_mean_abs_nabla_weight_ratios, h, 
+         smoothed_log10_nablas, wrap_around_input_values);
+      curr_metafile.write_curve(
+         0, xmax, smoothed_log10_nablas, colorfunc::blue);
+   }
+ 
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
 void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
@@ -1849,6 +1922,8 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
+   plot_log10_lr_mean_abs_nabla_weight_ratios(
+      output_subdir, extrainfo, epoch_indep_var);
 }
 
 // ---------------------------------------------------------------------
@@ -1863,6 +1938,7 @@ void reinforce::generate_view_metrics_script(
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
    script_stream << "view log10_losses_history.jpg" << endl;
+   script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
    script_stream << "view lr_history.jpg" << endl;
 
    if(Qmap_score_flag)  // maze solving
@@ -3571,7 +3647,9 @@ double reinforce::update_P_network(bool verbose_flag)
          double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
          double mean_abs_nabla_weight_ratio = mathfunc::mean(
             curr_nabla_weight_ratios);
-            
+         log10_lr_mean_abs_nabla_weight_ratios.push_back(
+            log10(learning_rate.back() * mean_abs_nabla_weight_ratio));
+
          cout << "layer l = " << l
               << " mean |nabla weight| = " 
               << mean_abs_nabla_weight 
