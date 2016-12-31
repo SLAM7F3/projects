@@ -152,9 +152,9 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 5;
-//   int n_episode_update = 20;
-//   int n_episode_update = 25;
+//   int n_episode_update = 5;
+   int n_episode_update = 25;
+   int export_screens_period = 200;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -260,7 +260,6 @@ int main(int argc, char** argv)
          {
             state_updated_flag = true;
             n_state_updates++;
-
          }
 
          genvector* curr_s = NULL;
@@ -322,16 +321,15 @@ int main(int argc, char** argv)
             }
          }
          pong_ptr->push_back_paddle_y();
-
          pong_ptr->update_tracks();
 
-         cout << "cum_framenumber = " << cum_framenumber
+//         cout << "cum_framenumber = " << cum_framenumber
 //              << " curr_a = " << curr_a
 //              << " a = " << a 
-              << " px_ball = " << pong_ptr->get_ball_px_track().back()
-              << " py_ball = " << pong_ptr->get_ball_py_track().back()
-              << " renorm paddle_y = " << pong_ptr->get_paddle_track().back()
-              << endl;
+//              << " px_ball = " << pong_ptr->get_ball_px_track().back()
+//              << " py_ball = " << pong_ptr->get_ball_py_track().back()
+//              << " renorm paddle_y = " << pong_ptr->get_paddle_track().back()
+//              << endl;
 
          double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
@@ -362,11 +360,10 @@ int main(int argc, char** argv)
 // Periodically save an episode's worth of screens to output
 // subdirectory:
 
-
-//         bool export_RGB_screens_flag = true;
          bool export_RGB_screens_flag = false;
          if(curr_episode_number > 0 && 
-            curr_episode_number % 250 == 0) export_RGB_screens_flag = true;
+            curr_episode_number % export_screens_period == 0) 
+            export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
@@ -436,8 +433,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
          pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
-         pong_ptr->plot_tracks(output_subdir, curr_episode_number);
-
+         pong_ptr->plot_tracks(output_subdir, curr_episode_number, cum_reward);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir

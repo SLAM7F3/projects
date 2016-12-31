@@ -57,7 +57,8 @@ class pong
    bool decrement_paddle_y();
    void push_back_paddle_y();
    void plot_paddle_y_dist(std::string output_subdir, std::string extrainfo);
-   void plot_tracks(std::string output_subdir, int episode_number);
+   void plot_tracks(std::string output_subdir, int episode_number,
+                    double cum_reward);
    void get_ball_posn(int& ball_px, int& ball_py);
    void update_tracks();
    void clear_tracks();

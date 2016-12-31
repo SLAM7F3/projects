@@ -306,7 +306,8 @@ void pong::plot_paddle_y_dist(string output_subdir, string extrainfo)
 // Generate metafile plot of ball and paddle Y positions versus frame
 // for a particular episode.
 
-void pong::plot_tracks(string output_subdir, int episode_number)
+void pong::plot_tracks(string output_subdir, int episode_number, 
+                       double cum_reward)
 {
    metafile curr_metafile;
    string tracks_subdir = output_subdir + "tracks/";
@@ -315,6 +316,8 @@ void pong::plot_tracks(string output_subdir, int episode_number)
       stringfunc::integer_to_string(episode_number, 4);
 
    string title="Vertical tracks for ball and paddle";
+   string subtitle="Cumulative reward = "+stringfunc::number_to_string(
+      cum_reward);
 
    string x_label = "Frame number for episode "+stringfunc::number_to_string(
       episode_number);
@@ -324,6 +327,7 @@ void pong::plot_tracks(string output_subdir, int episode_number)
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, xmax, 
       get_min_paddle_y(), get_max_paddle_y());
+   curr_metafile.set_subtitle(subtitle);
    curr_metafile.openmetafile();
    curr_metafile.write_header();
    curr_metafile.set_thickness(2);
