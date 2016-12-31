@@ -78,8 +78,8 @@ int main(int argc, char** argv)
 
 //   int H1 = 8;
 //   int H1 = 16;
-//   int H1 = 32;
-   int H1 = 64;
+   int H1 = 32;
+//   int H1 = 64;
 //   int H1 = 128;
 //   int H1 = 200;
 
@@ -87,8 +87,8 @@ int main(int argc, char** argv)
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-//   int H2 = 64;
-   int H2 = 128;
+   int H2 = 64;
+//   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;

@@ -195,8 +195,8 @@ inline bool pong::get_compute_max_flag() const
 
 inline int pong::get_n_actions() const
 {
-   return 2;  // move right, move left
-//   return 3;  // no_op, move right, move left
+//   return 2;  // move right, move left
+   return 3;  // no_op, move right, move left
 }
 
 inline int pong::get_n_screen_states() const
