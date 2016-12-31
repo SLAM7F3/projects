@@ -1994,6 +1994,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    {
       plot_avg_discounted_eventual_reward(
          output_subdir, extrainfo, epoch_indep_var);
+      plot_prob_action_0(output_subdir, extrainfo);
    }
    
    plot_weight_distributions(output_subdir, extrainfo, epoch_indep_var);
@@ -2007,7 +2008,6 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_lr_mean_abs_nabla_weight_ratios(
       output_subdir, extrainfo, epoch_indep_var);
-   plot_prob_action_0(output_subdir, extrainfo);
 }
 
 // ---------------------------------------------------------------------
@@ -2034,17 +2034,18 @@ void reinforce::generate_view_metrics_script(
       script_stream << "view reward_history.jpg" << endl;
       script_stream << "view frames_history.jpg" << endl;
       script_stream << "view paddle_X.jpg" << endl;
-      script_stream << "view prob_action_0.jpg" << endl;
    }
 
    if(learning_type == QLEARNING)
    {
       script_stream << "view maxQ_history.jpg" << endl;
       script_stream << "view epsilon_history.jpg" << endl;
+
    }
    else if(learning_type == PLEARNING)
    {
       script_stream << "view eventual_rewards_history.jpg" << endl;
+      script_stream << "view prob_action_0.jpg" << endl;
    }
    
    filefunc::closefile(script_filename, script_stream);
