@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/26/16; 12/28/16; 12/29/16; 12/30/16
+// Last updated on 12/28/16; 12/29/16; 12/30/16; 12/31/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -12,9 +12,11 @@
 
 #include <iostream>
 #include <string>
+#include <unistd.h>
 #include <vector>
 #include <SDL.h>
 #include <ale_interface.hpp>
+
 #include "games/pong.h"
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
@@ -76,16 +78,16 @@ int main(int argc, char** argv)
 //   int H1 = 8;
 //   int H1 = 16;
 //   int H1 = 32;
-//   int H1 = 64;
-   int H1 = 128;
+   int H1 = 64;
+//   int H1 = 128;
 //   int H1 = 200;
 
-   int H2 = 0;
+//   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
 //   int H2 = 64;
-//   int H2 = 128;
+   int H2 = 128;
 
    int H3 = 0;
 //   int H3 = 16;
@@ -192,6 +194,7 @@ int main(int argc, char** argv)
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "Random seed = " << seed << endl;
+   params_stream << "Process ID = " << getpid() << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
@@ -298,18 +301,21 @@ int main(int argc, char** argv)
 
 // As of 12/30/16 we do not not allow the paddle to move beyond the
 // top or bottom walls:
+
+// As of 12/31/16, we try to relax the above hack constraint:
+
          if(a == PLAYER_A_RIGHT) // move paddle vertically upwards
          {
             if(!pong_ptr->increment_paddle_x())  
             {
-               a = PLAYER_A_NOOP;
+//               a = PLAYER_A_NOOP;
             }
          }
          else if (a == PLAYER_A_LEFT)  // move paddle vertically downwards
          {
             if(!pong_ptr->decrement_paddle_x())
             {
-               a = PLAYER_A_NOOP;
+//               a = PLAYER_A_NOOP;
             }
          }
          pong_ptr->push_back_paddle_x();

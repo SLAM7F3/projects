@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/24/16; 12/26/16; 12/28/16; 12/29/16
+// Last updated on 12/26/16; 12/28/16; 12/29/16; 12/31/16
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -13,8 +13,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unistd.h>
 #include <SDL.h>
 #include <ale_interface.hpp>
+
 #include "games/breakout.h"
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
@@ -195,6 +197,7 @@ int main(int argc, char** argv)
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "Random seed = " << seed << endl;
+   params_stream << "Process ID = " << getpid() << endl;
    filefunc::closefile(params_filename, params_stream);
 
 // ==========================================================================
