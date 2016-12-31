@@ -1625,8 +1625,8 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of action0 probabilities
-// versus episode number.
+// Generate metafile plot of action0 probabilities versus frame for a
+// particular episode.
 
 void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
 {
@@ -1661,39 +1661,6 @@ void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
    curr_metafile.set_thickness(2);
    curr_metafile.write_curve(0, xmax, prob_action_0);
    curr_metafile.set_thickness(3);
-
-/*
-// Temporally smooth noisy log10_lr_mean_abs_nabla_weight
-
-   double sigma = 5;
-   if(n_frames_per_episode.size() > 100)
-   {
-      sigma += log10(n_frames_per_episode.size())/log10(2.0);
-   }
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
-
-   cout << "sigma = " << sigma << " gaussian_size = " << gaussian_size
-        << " log10_lr_mean_abs_nabla_weight_ratios.size() = "
-        << log10_lr_mean_abs_nabla_weight_ratios.size()
-        << endl;
-   
-   vector<double> smoothed_log10_nablas;
-   if(gaussian_size < int(log10_lr_mean_abs_nabla_weight_ratios.size())) 
-   {
-      vector<double> h;
-      h.reserve(gaussian_size);
-      filterfunc::gaussian_filter(dx, sigma, h);
-
-      bool wrap_around_input_values = false;
-      filterfunc::brute_force_filter(
-         log10_lr_mean_abs_nabla_weight_ratios, h, 
-         smoothed_log10_nablas, wrap_around_input_values);
-      curr_metafile.write_curve(
-         0, xmax, smoothed_log10_nablas, colorfunc::blue);
-   }
-*/
-
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
@@ -3881,4 +3848,5 @@ void reinforce::clear_replay_memory()
    s_next->clear_values();
    terminal_state->clear_values();
 }
+
 

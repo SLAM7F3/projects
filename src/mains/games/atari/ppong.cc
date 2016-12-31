@@ -60,6 +60,7 @@ int main(int argc, char** argv)
 
    pong_ptr->get_ale().setFloat("repeat_action_probability",0);
 
+
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
 
@@ -151,7 +152,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 20;
+   int n_episode_update = 5;
+//   int n_episode_update = 20;
 //   int n_episode_update = 25;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -232,8 +234,8 @@ int main(int argc, char** argv)
       Action a;
       double cum_reward = 0;
 
-      pong_ptr->set_paddle_x(
-         pong_ptr->get_default_starting_paddle_x());
+      pong_ptr->set_paddle_y(
+         pong_ptr->get_default_starting_paddle_y());
 
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
@@ -258,6 +260,7 @@ int main(int argc, char** argv)
          {
             state_updated_flag = true;
             n_state_updates++;
+
          }
 
          genvector* curr_s = NULL;
@@ -306,27 +309,29 @@ int main(int argc, char** argv)
 
          if(a == PLAYER_A_RIGHT) // move paddle vertically upwards
          {
-            if(!pong_ptr->increment_paddle_x())  
+            if(!pong_ptr->increment_paddle_y())  
             {
 //               a = PLAYER_A_NOOP;
             }
          }
          else if (a == PLAYER_A_LEFT)  // move paddle vertically downwards
          {
-            if(!pong_ptr->decrement_paddle_x())
+            if(!pong_ptr->decrement_paddle_y())
             {
 //               a = PLAYER_A_NOOP;
             }
          }
-         pong_ptr->push_back_paddle_x();
+         pong_ptr->push_back_paddle_y();
 
-/*
+         pong_ptr->update_tracks();
+
          cout << "cum_framenumber = " << cum_framenumber
-              << " curr_a = " << curr_a
-              << " a = " << a 
-              << " paddle_X = " << pong_ptr->get_paddle_x()
+//              << " curr_a = " << curr_a
+//              << " a = " << a 
+              << " px_ball = " << pong_ptr->get_ball_px_track().back()
+              << " py_ball = " << pong_ptr->get_ball_py_track().back()
+              << " renorm paddle_y = " << pong_ptr->get_paddle_track().back()
               << endl;
-*/
 
          double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
@@ -430,7 +435,9 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
-         pong_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
+         pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
+         pong_ptr->plot_tracks(output_subdir, curr_episode_number);
+
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
@@ -454,6 +461,7 @@ int main(int argc, char** argv)
 */
 
       reinforce_agent_ptr->clear_prob_action_0();
+      pong_ptr->clear_tracks();
 
    } // curr_epoch < n_max_epochs while loop
 

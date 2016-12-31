@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for pong class 
 // ==========================================================================
-// Last modified on 12/18/16; 12/19/16; 12/26/16; 12/30/16
+// Last modified on 12/19/16; 12/26/16; 12/30/16; 12/31/16
 // ==========================================================================
 
 #ifndef PONG_H
@@ -47,16 +47,23 @@ class pong
    genvector* get_next_state();
    const genvector* get_next_state() const;
 
-   int get_min_paddle_x() const;
-   int get_max_paddle_x() const;
-   int get_default_starting_paddle_x() const;
-   int get_center_paddle_x() const;
-   void set_paddle_x(int x);
-   int get_paddle_x() const;
-   bool increment_paddle_x();
-   bool decrement_paddle_x();
-   void push_back_paddle_x();
-   void plot_paddle_x_dist(std::string output_subdir, std::string extrainfo);
+   int get_min_paddle_y() const;
+   int get_max_paddle_y() const;
+   int get_default_starting_paddle_y() const;
+   int get_center_paddle_y() const;
+   void set_paddle_y(int x);
+   int get_paddle_y() const;
+   bool increment_paddle_y();
+   bool decrement_paddle_y();
+   void push_back_paddle_y();
+   void plot_paddle_y_dist(std::string output_subdir, std::string extrainfo);
+   void plot_tracks(std::string output_subdir, int episode_number);
+   void get_ball_posn(int& ball_px, int& ball_py);
+   void update_tracks();
+   void clear_tracks();
+   std::vector<double>& get_ball_px_track();
+   std::vector<double>& get_ball_py_track();
+   std::vector<double>& get_paddle_track();
 
    bool crop_pool_difference_curr_frame(bool export_frames_flag);
    bool crop_pool_sum_curr_frame(bool export_frames_flag);
@@ -82,7 +89,7 @@ class pong
 
    bool forced_game_over;
    bool compute_difference_flag, compute_max_flag;
-   bool paddle_x_values_filled;
+   bool paddle_y_values_filled;
    int random_seed;
    int rskip, cskip;
    int prev_framenumber;
@@ -94,7 +101,8 @@ class pong
    int n_reduced_pixels;
    int min_episode_framenumber;
    int frame_skip;
-   int paddle_x;
+   int paddle_y;
+   int px_ball, py_ball;  // (0,0) corresponds to upper right corner
    double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
    std::string output_subdir, orig_subdir, pooled_subdir;
@@ -124,8 +132,10 @@ class pong
    std::vector<twoDarray*> wtwoDarray_ptrs;
 
    int d_paddle;
-   int max_paddle_x_size;
-   std::vector<int> paddle_x_values;
+   int max_paddle_y_size;
+   std::vector<int> paddle_y_values;
+   std::vector<double> ball_px_track, ball_py_track;
+   std::vector<double> paddle_track;
 
    ScreenExporter* screen_exporter_ptr;
 
@@ -281,6 +291,11 @@ inline void pong::set_screen_exports_subdir(std::string subdir)
    screen_exporter_ptr = ale.createScreenExporter(screen_exports_subdir);
 }
 
+inline void pong::get_ball_posn(int& ball_px, int& ball_py)
+{
+   ball_px = px_ball;
+   ball_py = py_ball;
+}
 
 //  enum Action {
 //  PLAYER_A_NOOP           = 0,

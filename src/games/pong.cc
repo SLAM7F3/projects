@@ -1,7 +1,7 @@
 // ==========================================================================
 // pong class member function definitions
 // ==========================================================================
-// Last modified on 12/17/16; 12/18/16; 12/26/16; 12/30/16
+// Last modified on 12/18/16; 12/26/16; 12/30/16; 12/31/16
 // ==========================================================================
 
 // Notes: 
@@ -22,8 +22,10 @@
 #include "games/pong.h"
 #include "general/filefuncs.h"
 #include "image/imagefuncs.h"
+#include "plot/metafile.h"
 #include "numrec/nrfuncs.h"
 #include "math/prob_distribution.h"
+#include "general/sysfuncs.h"
 #include "video/videofuncs.h"
 
 using std::cin;
@@ -109,17 +111,16 @@ void pong::initialize_member_objects()
 
    mu_zdiff = 0.10;     // Estimate from 50 random episodes
    sigma_zdiff = 3.7;   // Estimate from 50 random episodes
-//   median_zdiff = 0;  // Estimate from 50 random episodes
-//   qw_zdiff = 0;      // Estimate from 50 random episodes
 
    difference_counter = 0;
    d_paddle = 0;
-   max_paddle_x_size = 100 * 1000;
-   for(int d = 0; d < max_paddle_x_size; d++)
+   max_paddle_y_size = 100 * 1000;
+   for(int d = 0; d < max_paddle_y_size; d++)
    {
-      paddle_x_values.push_back(-999);
+      paddle_y_values.push_back(-999);
    }
-   paddle_x_values_filled = false;
+   paddle_y_values_filled = false;
+   px_ball = py_ball = -999;
 
    initialize_output_subdirs();
    initialize_grayscale_output_buffer();
@@ -204,101 +205,172 @@ pong::~pong()
 // = 18 .  X = 15 corresponds to the paddle's vertical center
 // position.
 
-int pong::get_min_paddle_x() const
+int pong::get_min_paddle_y() const
 {
    return 0; // bottom wall
 }
 
-int pong::get_max_paddle_x() const
+int pong::get_max_paddle_y() const
 {
-   return 31; // right wall
+   return 31; // top wall
 }
 
-int pong::get_default_starting_paddle_x() const
+int pong::get_default_starting_paddle_y() const
 {
    return 18;
 }
 
-int pong::get_center_paddle_x() const
+int pong::get_center_paddle_y() const
 {
    return 15;
 }
 
-void pong::set_paddle_x(int x)
+void pong::set_paddle_y(int x)
 {
-   paddle_x = x;
+   paddle_y = x;
 }
 
-int pong::get_paddle_x() const
+int pong::get_paddle_y() const
 {
-   return paddle_x;
+   return paddle_y;
 }
 
-bool pong::increment_paddle_x() 
+bool pong::increment_paddle_y() 
 {
-//   cout << "paddle_x = " << paddle_x << " max_paddle_x = "
-//        << get_max_paddle_x() << endl;
-   if(paddle_x >= get_max_paddle_x())
+//   cout << "paddle_y = " << paddle_y << " max_paddle_y = "
+//        << get_max_paddle_y() << endl;
+   if(paddle_y >= get_max_paddle_y())
    {
-      paddle_x = get_max_paddle_x();
+      paddle_y = get_max_paddle_y();
       return false;
    }
    else
    {
-      paddle_x++;
+      paddle_y++;
       return true;
    }
 }
 
-bool pong::decrement_paddle_x() 
+bool pong::decrement_paddle_y() 
 {
-//   cout << "paddle_x = " << paddle_x << " min_paddle_x = "
-//        << get_min_paddle_x() << endl;
-   if(paddle_x <= get_min_paddle_x())
+//   cout << "paddle_y = " << paddle_y << " min_paddle_y = "
+//        << get_min_paddle_y() << endl;
+   if(paddle_y <= get_min_paddle_y())
    {
-      paddle_x = get_min_paddle_x();
+      paddle_y = get_min_paddle_y();
       return false;
    }
    else
    {
-      paddle_x--;
+      paddle_y--;
       return true;
    }
 }
 
 // ---------------------------------------------------------------------
-// Member function push_back_paddle_x
+// Member function push_back_paddle_y
 
-void pong::push_back_paddle_x()
+void pong::push_back_paddle_y()
 {
-   paddle_x_values[d_paddle] = get_paddle_x();
+   paddle_y_values[d_paddle] = get_paddle_y();
    d_paddle++;
-   if(d_paddle >= max_paddle_x_size)
+   if(d_paddle >= max_paddle_y_size)
    {
       d_paddle = 0;
-      paddle_x_values_filled = true;
+      paddle_y_values_filled = true;
    }
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of paddle X density probability distribution.
+// Generate metafile plot of paddle Y density probability distribution.
 
-void pong::plot_paddle_x_dist(string output_subdir, string extrainfo)
+void pong::plot_paddle_y_dist(string output_subdir, string extrainfo)
 {
-   if(!paddle_x_values_filled) return;
+   if(!paddle_y_values_filled) return;
 
-   vector<double> X;
-   for(int d = 0; d < max_paddle_x_size; d++)
+   vector<double> Y;
+   for(int d = 0; d < max_paddle_y_size; d++)
    {
-      X.push_back(double(paddle_x_values[d]));
+      Y.push_back(double(paddle_y_values[d]));
    }
-   double min_X = mathfunc::minimal_value(X);
-   double max_X = mathfunc::maximal_value(X);
-   int n_bins = max_X - min_X + 1;
-   prob_distribution prob_X(X, n_bins);
+   double min_Y = mathfunc::minimal_value(Y);
+   double max_Y = mathfunc::maximal_value(Y);
+   int n_bins = max_Y - min_Y + 1;
+   prob_distribution prob_Y(Y, n_bins);
 
-   prob_X.set_densityfilenamestr(output_subdir+"paddle_X.meta");
-   prob_X.write_density_dist(false, true);
+   prob_Y.set_densityfilenamestr(output_subdir+"paddle_y.meta");
+   prob_Y.write_density_dist(false, true);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of ball and paddle Y positions versus frame
+// for a particular episode.
+
+void pong::plot_tracks(string output_subdir, int episode_number)
+{
+   metafile curr_metafile;
+   string tracks_subdir = output_subdir + "tracks/";
+   filefunc::dircreate(tracks_subdir);
+   string meta_filename=tracks_subdir + "/tracks_"+
+      stringfunc::integer_to_string(episode_number, 4);
+
+   string title="Vertical tracks for ball and paddle";
+
+   string x_label = "Frame number for episode "+stringfunc::number_to_string(
+      episode_number);
+   double xmax = get_paddle_track().size();
+   string y_label="Vertical position";
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      get_min_paddle_y(), get_max_paddle_y());
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, xmax, ball_py_track, colorfunc::red);
+   curr_metafile.write_curve(0, xmax, paddle_track, colorfunc::blue);
+   curr_metafile.set_thickness(3);
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Member function update_tracks() appends the current (px,py) ball
+// position and py paddle position into member vectors ball_px_track,
+// ball_py_track and paddle_track.  For both tracks, (0,0) corresponds
+// to upper right corner.
+
+void pong::update_tracks()
+{
+   ball_px_track.push_back(px_ball);
+   ball_py_track.push_back(py_ball);
+   paddle_track.push_back(get_max_paddle_y() - get_paddle_y());
+}
+
+void pong::clear_tracks()
+{
+   ball_px_track.clear();
+   ball_py_track.clear();
+   paddle_track.clear();
+}
+
+vector<double>& pong::get_ball_px_track()
+{
+   return ball_px_track;
+}
+
+vector<double>& pong::get_ball_py_track()
+{
+   return ball_py_track;
+}
+
+vector<double>& pong::get_paddle_track()
+{
+   return paddle_track;
 }
 
 // ---------------------------------------------------------------------
@@ -476,6 +548,12 @@ bool pong::crop_pool_difference_curr_frame(bool export_frames_flag)
             {
                ren_z_diff = 1;
 //               ren_z_diff = 255;
+
+               if(px > 0 && px < pooled_byte_array_ptr->at(0).size() - 1)
+               {
+                  px_ball = px;
+                  py_ball = py;
+               }
             }
 
             if(difference_counter == 0)
@@ -803,3 +881,4 @@ string pong::save_screen(int episode_number, string curr_screen_filename,
 
    return curr_screen_path;
 }
+

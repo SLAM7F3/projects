@@ -500,7 +500,7 @@ agent beats AI 20 to 10 in screen exports 2250
 13.  Titan 3:  repeat expt 12
 
 After 550 epochs, reward --> 7.09 and rising; nframes/episode --> 27037 and
-falling after having peaked around 31K; eventualr eard --> -0.0079; paddle
+falling after having peaked around 31K; eventual reward --> -0.0079; paddle
 X is gaussian around X = 11 with secondary peak at X = 24; screen exports
 illustrate definite intelligent pong play!
 
