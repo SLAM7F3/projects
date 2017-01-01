@@ -1,7 +1,7 @@
 // ==========================================================================
 // breakout class member function definitions
 // ==========================================================================
-// Last modified on 12/16/16; 12/17/16; 12/18/16; 12/26/16
+// Last modified on 12/17/16; 12/18/16; 12/26/16; 1/1/17
 // ==========================================================================
 
 // Notes: 
@@ -22,8 +22,10 @@
 #include "games/breakout.h"
 #include "general/filefuncs.h"
 #include "image/imagefuncs.h"
+#include "plot/metafile.h"
 #include "numrec/nrfuncs.h"
 #include "math/prob_distribution.h"
+#include "general/sysfuncs.h"
 #include "video/videofuncs.h"
 
 using std::cin;
@@ -313,6 +315,81 @@ void breakout::plot_paddle_x_dist(string output_subdir, string extrainfo)
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of ball and paddle X positions versus frame
+// for a particular episode.
+
+void breakout::plot_tracks(string output_subdir, int episode_number, 
+                           double cum_reward)
+{
+   metafile curr_metafile;
+   string tracks_subdir = output_subdir + "tracks/";
+   filefunc::dircreate(tracks_subdir);
+   string meta_filename=tracks_subdir + "/tracks_"+
+      stringfunc::integer_to_string(episode_number, 4);
+
+   string title="Horizontal tracks for ball and paddle";
+   string subtitle="Cumulative reward = "+stringfunc::number_to_string(
+      cum_reward);
+
+   string x_label = "Frame number for episode "+stringfunc::number_to_string(
+      episode_number);
+   double xmax = get_paddle_track().size();
+   string y_label="Horizontal position";
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      get_min_paddle_x(), get_max_paddle_x());
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(0, xmax, ball_px_track, colorfunc::red);
+   curr_metafile.write_curve(0, xmax, paddle_track, colorfunc::blue);
+   curr_metafile.set_thickness(3);
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Member function update_tracks() appends the current (px,py) ball
+// position and py paddle position into member vectors ball_px_track,
+// ball_py_track and paddle_track.  For both tracks, (0,0) corresponds
+// to upper right corner.
+
+void breakout::update_tracks()
+{
+   ball_px_track.push_back(px_ball);
+   ball_py_track.push_back(py_ball);
+   paddle_track.push_back(get_paddle_x());
+}
+
+void breakout::clear_tracks()
+{
+   ball_px_track.clear();
+   ball_py_track.clear();
+   paddle_track.clear();
+}
+
+vector<double>& breakout::get_ball_px_track()
+{
+   return ball_px_track;
+}
+
+vector<double>& breakout::get_ball_py_track()
+{
+   return ball_py_track;
+}
+
+vector<double>& breakout::get_paddle_track()
+{
+   return paddle_track;
+}
+
+// ---------------------------------------------------------------------
 void breakout::crop_center_ROI(vector<vector<unsigned char > >& byte_array)
 {
 
@@ -502,8 +579,13 @@ bool breakout::crop_pool_difference_curr_frame(bool export_frames_flag)
             {
                ren_z_diff = 1;
 //               ren_z_diff = 255;
+
+               if(py < pooled_byte_array_ptr->size() - 1)
+               {
+                  px_ball = px;
+                  py_ball = py;
+               }
             }
-//            double ren_z_diff = double(z_diff) / sigma_zdiff;
 
             if(difference_counter == 0)
             {

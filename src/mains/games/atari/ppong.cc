@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/28/16; 12/29/16; 12/30/16; 12/31/16
+// Last updated on 12/29/16; 12/30/16; 12/31/16; 1/1/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -59,7 +59,6 @@ int main(int argc, char** argv)
 // Disable ALE's random responsiveness to input actions:
 
    pong_ptr->get_ale().setFloat("repeat_action_probability",0);
-
 
 // Construct environment which acts as interface between reinforcement
 // agent and particular game:
@@ -284,7 +283,6 @@ int main(int argc, char** argv)
             if(state_updated_flag && curr_s != NULL)
             {
                double ran_value = nrfunc::ran1();
-
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
                   ran_value, curr_s, action_prob);
 
@@ -301,24 +299,16 @@ int main(int argc, char** argv)
 
          a = minimal_actions[curr_a]; 
 
-// As of 12/30/16 we do not not allow the paddle to move beyond the
-// top or bottom walls:
-
-// As of 12/31/16, we try to relax the above hack constraint:
+// As of 12/31/16, we permit the paddle to move beyond the top or
+// bottom walls:
 
          if(a == PLAYER_A_RIGHT) // move paddle vertically upwards
          {
-            if(!pong_ptr->increment_paddle_y())  
-            {
-//               a = PLAYER_A_NOOP;
-            }
+            pong_ptr->increment_paddle_y();
          }
          else if (a == PLAYER_A_LEFT)  // move paddle vertically downwards
          {
-            if(!pong_ptr->decrement_paddle_y())
-            {
-//               a = PLAYER_A_NOOP;
-            }
+            pong_ptr->decrement_paddle_y();
          }
          pong_ptr->push_back_paddle_y();
          pong_ptr->update_tracks();

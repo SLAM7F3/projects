@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for breakout class 
 // ==========================================================================
-// Last modified on 12/17/16; 12/18/16; 12/19/16; 12/26/16
+// Last modified on 12/18/16; 12/19/16; 12/26/16; 1/1/17
 // ==========================================================================
 
 #ifndef BREAKOUT_H
@@ -58,6 +58,17 @@ class breakout
    void push_back_paddle_x();
    void plot_paddle_x_dist(std::string output_subdir, std::string extrainfo);
 
+   void plot_tracks(std::string output_subdir, int episode_number,
+                    double cum_reward);
+   void get_ball_posn(int& ball_px, int& ball_py);
+   void update_tracks();
+   void clear_tracks();
+   std::vector<double>& get_ball_px_track();
+   std::vector<double>& get_ball_py_track();
+   std::vector<double>& get_paddle_track();
+
+
+
    bool crop_pool_difference_curr_frame(bool export_frames_flag);
    bool crop_pool_sum_curr_frame(bool export_frames_flag);
 
@@ -95,6 +106,7 @@ class breakout
    int min_episode_framenumber;
    int frame_skip;
    int paddle_x;
+   int px_ball, py_ball;  // (0,0) corresponds to upper right corner
    double mu_z, sigma_z;
    double mu_zdiff, sigma_zdiff;
    std::string output_subdir, orig_subdir, pooled_subdir;
@@ -126,6 +138,8 @@ class breakout
    int d_paddle;
    int max_paddle_x_size;
    std::vector<int> paddle_x_values;
+   std::vector<double> ball_px_track, ball_py_track;
+   std::vector<double> paddle_track;
 
    ScreenExporter* screen_exporter_ptr;
 
@@ -279,6 +293,12 @@ inline void breakout::set_screen_exports_subdir(std::string subdir)
 {
    screen_exports_subdir = subdir;
    screen_exporter_ptr = ale.createScreenExporter(screen_exports_subdir);
+}
+
+inline void breakout::get_ball_posn(int& ball_px, int& ball_py)
+{
+   ball_px = px_ball;
+   ball_py = py_ball;
 }
 
 

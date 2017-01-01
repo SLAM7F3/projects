@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/26/16; 12/28/16; 12/29/16; 12/31/16
+// Last updated on 12/28/16; 12/29/16; 12/31/16; 1/1/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -73,16 +73,15 @@ int main(int argc, char** argv)
 
 //   int H1 = 8;
 //   int H1 = 16;
-//   int H1 = 32;
+   int H1 = 32;
 //   int H1 = 64;
-   int H1 = 128;
-//   int H1 = 200;
+//   int H1 = 128;
 
-   int H2 = 0;
+//   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 16;
 //   int H2 = 32;
-//   int H2 = 64;
+   int H2 = 64;
 //   int H2 = 128;
 
    int H3 = 0;
@@ -107,16 +106,7 @@ int main(int argc, char** argv)
 
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 3000;
-
-//   int n_rollouts = 1 * 1000;
-//   int n_rollouts = 2 * 1000;
-//   int n_rollouts = 20 * 1000;
-   int n_rollouts = 25 * 1000;
-//   int n_rollouts = 50 * 1000;
-   int replay_memory_capacity = n_rollouts;
-//   int replay_memory_capacity = 4 * 1000;
-//   int replay_memory_capacity = 8 * 1000;
-//   int replay_memory_capacity = 16 * 1000;
+   int replay_memory_capacity = 20 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, replay_memory_capacity, reinforce::RMSPROP);
@@ -149,13 +139,14 @@ int main(int argc, char** argv)
 //   reinforce_agent_ptr->set_rmsprop_decay_rate(0.95);
 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-3);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
+   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);  
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 100;
+   int n_episode_update = 25;
+   int export_screens_period = 200;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -243,9 +234,10 @@ int main(int argc, char** argv)
 
       breakout_ptr->set_paddle_x(
          breakout_ptr->get_default_starting_paddle_x());
-      int n_recenter_paddle_frames = 
-         breakout_ptr->get_default_starting_paddle_x()  
-         - breakout_ptr->get_center_paddle_x();
+      int n_recenter_paddle_frames = 0;
+//      int n_recenter_paddle_frames = 
+//         breakout_ptr->get_default_starting_paddle_x()  
+//         - breakout_ptr->get_center_paddle_x();
 
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
@@ -256,6 +248,7 @@ int main(int argc, char** argv)
 
       int curr_episode_framenumber = 0;  // since start of current episode
       int curr_life_framenumber = 0;  // n_frames since start of current life
+      double action_prob = -1;
 
       while(!game_world.get_game_over())
       {
@@ -278,18 +271,8 @@ int main(int argc, char** argv)
          if(state_updated_flag && n_state_updates > 2)
          {
             curr_s = game_world.get_curr_state();
-
-// If curr_s == 0, do NOT store it into the replay memory:
-
-            if(curr_s->magnitude() <= 0)
-            {
-//               cout << " Zero input state detected" << endl;
-            }
-            else
-            {
-               d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-                  *curr_s);
-            }
+            d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+               *curr_s);
          } // state_updated_flag && n_state_updates > 2 conditional
 
 // First reposition paddle so that it starts at screen's horizontal center:
@@ -312,11 +295,20 @@ int main(int argc, char** argv)
          else
          {
             curr_a = prev_a;
-            if(state_updated_flag)
+            if(state_updated_flag && curr_s != NULL)
             {
                double ran_value = nrfunc::ran1();
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  ran_value, curr_s);
+                  ran_value, curr_s, action_prob);
+
+               if(curr_a == 0)
+               {
+                  reinforce_agent_ptr->push_back_prob_action_0(action_prob);
+               }
+               else
+               {
+                  reinforce_agent_ptr->push_back_prob_action_0(1-action_prob);
+               }
             }
             a = minimal_actions[curr_a]; 
          }
@@ -326,23 +318,19 @@ int main(int argc, char** argv)
 //              << " a = " << a 
 //              << endl;
 
-// As of 12/18/16 we do not not allow the paddle to move beyond the
-// right or left walls:
+// As of 1/1/17, we permit the paddle to move beyond the right or left
+// walls:
+
          if(a == PLAYER_A_RIGHT)
          {
-            if(!breakout_ptr->increment_paddle_x())
-            {
-               a = PLAYER_A_NOOP;
-            }
+            breakout_ptr->increment_paddle_x();
          }
          else if (a == PLAYER_A_LEFT)
          {
-            if(!breakout_ptr->decrement_paddle_x())
-            {
-               a = PLAYER_A_NOOP;
-            }
+            breakout_ptr->decrement_paddle_x();
          }
          breakout_ptr->push_back_paddle_x();
+         breakout_ptr->update_tracks();
 
          double curr_reward = breakout_ptr->get_ale().act(a);
          cum_reward += curr_reward;
@@ -393,7 +381,9 @@ int main(int argc, char** argv)
 // subdirectory:
 
          bool export_RGB_screens_flag = false;
-         if(curr_episode_number % 1000 == 0) export_RGB_screens_flag = true;
+         if(curr_episode_number > 0 && 
+            curr_episode_number % export_screens_period == 0) 
+            export_RGB_screens_flag = true;
 
          if(export_RGB_screens_flag)
          {
@@ -414,8 +404,6 @@ int main(int argc, char** argv)
       cout << "  cum_reward = " << cum_reward 
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
-
-//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
 
       reinforce_agent_ptr->append_n_frames_per_episode(
          curr_episode_framenumber);
@@ -447,6 +435,8 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
          breakout_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
+         breakout_ptr->plot_tracks(
+            output_subdir, curr_episode_number, cum_reward);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
@@ -468,6 +458,9 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->export_snapshot(output_subdir);
       }
 */
+
+      reinforce_agent_ptr->clear_prob_action_0();
+      breakout_ptr->clear_tracks();
 
    } // curr_epoch < n_max_epochs while loop
 
