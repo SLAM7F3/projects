@@ -168,8 +168,8 @@ int main(int argc, char** argv)
 
    double total_loss = -1;
 
-   bool export_frames_flag = false;
-//   bool export_frames_flag = true;
+//   bool export_frames_flag = false;
+   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
