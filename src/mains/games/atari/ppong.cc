@@ -10,6 +10,7 @@
 // visible part of the game board.  In these cases, the paddle appears
 // to be "pinned" to the side wall.  
 
+#include <deque>
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -32,6 +33,7 @@ int main(int argc, char** argv)
 {
    using std::cin;
    using std::cout;
+   using std::deque;
    using std::endl;
    using std::ofstream;
    using std::string;
@@ -80,7 +82,6 @@ int main(int argc, char** argv)
    int H1 = 32;
 //   int H1 = 64;
 //   int H1 = 128;
-//   int H1 = 200;
 
 //   int H2 = 0;
 //   int H2 = 8;
@@ -92,7 +93,6 @@ int main(int argc, char** argv)
    int H3 = 0;
 //   int H3 = 16;
 //   int H3 = 32;
-//   int H3 = 64;
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
@@ -167,8 +167,8 @@ int main(int argc, char** argv)
 
    double total_loss = -1;
 
-//   bool export_frames_flag = false;
-   bool export_frames_flag = true;
+   bool export_frames_flag = false;
+//   bool export_frames_flag = true;
 
    // Set vector of minimal legal actions:
 
@@ -233,13 +233,17 @@ int main(int argc, char** argv)
       Action a;
       double cum_reward = 0;
 
+      int raw_a;
+      unsigned int max_n_raw_actions = 5;
+      deque<int> raw_actions;
+
       pong_ptr->set_paddle_y(
          pong_ptr->get_default_starting_paddle_y());
 
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
 // contiguous increasing integers!  So we no longer use the following
-// line:<
+// line:
 
 //  int curr_frame_number = game_world.get_episode_framenumber();
 
@@ -285,6 +289,98 @@ int main(int argc, char** argv)
                double ran_value = nrfunc::ran1();
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
                   ran_value, curr_s, action_prob);
+
+               int orig_curr_a = curr_a;
+
+// Experiment with filtering curr_a before retrieving a =
+// minimal_actions[filtered_a]
+
+               if(n_actions == 3)
+               {
+                  if(curr_a == 0) // no_op
+                  {
+                     raw_a = 0;
+                  }
+                  else if (curr_a == 1) // move right
+                  {
+                     raw_a = 1;
+                  }
+                  else  // move_left
+                  {
+                     raw_a = -1;  
+                  }
+               }
+               else
+               {
+                  if(curr_a == 0)  // move right
+                  {
+                     raw_a = 1;
+                  }
+                  else   // move_left
+                  {
+                     raw_a = -1;
+                  }
+               }
+               if(raw_actions.size() == max_n_raw_actions)
+               {
+                  raw_actions.pop_front();
+               }
+               raw_actions.push_back(raw_a);
+
+               double numer = 0;
+               double denom = 0;
+               for(unsigned int j = 0; j < raw_actions.size(); j++)
+               {
+                  double coeff = 1 - 0.1 * j;
+                  denom += coeff;
+                  numer += coeff * raw_actions[raw_actions.size()-1-j];
+               }
+               int filtered_a = basic_math::round(numer/denom);
+
+               if(n_actions == 3)
+               {
+                  if(filtered_a == 0)  // no op
+                  {
+                     curr_a = 0;
+                  }
+                  else if (filtered_a == 1) // move right
+                  {
+                     curr_a = 1;
+                  }   // move_left
+                  else
+                  {
+                     curr_a = 2;
+                  }
+               }
+               else
+               {
+                  if(filtered_a == 1)   // move right
+                  {
+                     curr_a = 0; 
+                  }
+                  else if (filtered_a == -1)  // move left
+                  {
+                     curr_a = 1;
+                  }
+                  else   // no op
+                  {
+                     curr_a = 0;
+                     if(nrfunc::ran1() > 0.5) curr_a = 1;
+                  }
+               }
+/*
+               cout << "cum_framenumber = " << cum_framenumber
+                    << " raw_a = " << raw_a
+                    << " numer/denom = " << numer/denom
+                    << " filtered_a = " << filtered_a 
+                    << " orig_curr_a = " << orig_curr_a
+                    << " filtered curr_a = " << curr_a;
+               if(curr_a != orig_curr_a )
+               {
+                  cout << "   ****";
+               }
+               cout << endl;
+*/
 
                if(curr_a == 0)
                {

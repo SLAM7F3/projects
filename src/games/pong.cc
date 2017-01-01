@@ -77,8 +77,8 @@ void pong::initialize_member_objects()
    ale.setInt("random_seed", random_seed);
 
    ale.setFloat("repeat_action_probability", 0);
-//   ale.setBool("display_screen", false);
-   ale.setBool("display_screen", true);
+   ale.setBool("display_screen", false);
+//   ale.setBool("display_screen", true);
    ale.loadROM("/usr/local/ALE/roms/pong.bin");
 
 // No screen content influencing game play appears outside following
