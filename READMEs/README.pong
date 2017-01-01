@@ -1,7 +1,7 @@
 ==========================================================================
 RL notes for Pong
 ==========================================================================
-Last updated on 12/30/16; 12/31/16
+Last updated on 12/30/16; 12/31/16; 1/1/17
 ==========================================================================
 
 
@@ -18,15 +18,17 @@ reward = -20.6
 Best play results to date:
 -------------------------
 
-18.  Titan 1:  H1 = 64; H2 = 128; replay memory = 20K; ppong
-Fri Dec 30 15:38:09 2016
+
+39.  Titan 3:  repeat expt 38
+
+Sat Dec 31 10:27:11 2016
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
    layer = 3 n_nodes = 2
-   n_weights = 73984 (FC)
+   n_weights = 34944 (FC)
 base_learning_rate = 0.001; batch_size = -1
 P learning
 solver type = RMSPROP
@@ -42,16 +44,72 @@ Leaky ReLU small slope = 0.01
 Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
 n_max_epochs = 3000
-Random seed = -41088
+Random seed = -8828
+Process ID = 5324
 
-After 720 epochs, reward --> 10.58 and generally rising; nframes/episode =
-18333 and falling after having peaked around 30K; eventual reward = 0.0639
-and slowly rising; paddleX is gaussian around X = 13 with small step at X =
-24; very faint traces of ball tracks in 0th layer weights; gradual
-evolution of weight dists; movement in weight values;
+After 1653 epochs, reward = 18.5 and plateaued; nframes/episode = 10833 and
+plateaued; eventual reward = 0.18 and slowly rising; paddle Y is spiked
+gaussian about X = 9 with small bump at X = 23; OK weight dists and values;
+hard to see ball tracks in 0th layer weights
 
-agent beats AI 20 to 16 in screen exports 2000
-agent beats AI 20 to 5 in screen exports 2250; 
+Agent loses to AI 11 to 20 in screen exports 2000
+Agent loses to AI 19 to 20 in screen exports 2200  38.3K frames
+Agent beats AI 20 to 14 in screen exports 2400     26.6K frames  
+                                                     only wins from AI defect
+Agent beats AI 20 to 11 in screen exports 2600     21.3K frames
+                                                     more interesting play,
+                                                     but first 7 wins are
+						     due to defect
+Agent beats AI 20 to 9 in screen exports 2800      20.6K frames
+Agent beats AI 20 to 6 in screen exports 3000
+Agent beats AI 20 to 3 in screen exports 4000
+Agent beats AI 20 to 1 in screen exports 5000
+Agent beats AI 20 to 2 in screen exports 6000
+
+-------------------
+
+38.  Titan 3:  H1 = 32; H2 = 64; 20K replay memory; ppong with no constraints;
+2 actions
+
+Sat Dec 31 10:25:30 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 34944 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -8705
+Process ID = 4484
+
+After 1681 epochs, reward = 16.6 and probably plateauing; nframes/episode =
+15034 and falling; eventual reward = 0.110 and steadily rising; paddle Y is
+gaussian about X = 12 with tiny shoulder at X = 23; OK weight dists and
+values; hard to see ball tracks in 0th layer weights
+
+Agent loses to AI 4 to 20 in screen exports 2000
+Agent loses to AI 20 to 11 in screen exports 2600
+Agent beats AI 20 to 13 in screen exports 2800; several good volleys
+Agent beats AI 20 to 11 in screen exports 3000
+Agent beats AI 20 to 1 in screen exports 5200; exploits AI bug
+
+
+
 
 
 -------------------------------------------------------------
@@ -194,6 +252,62 @@ weight values;
 11. TM:  repeat expt 10
 After 470 epochs, results are qualitatively similar to those for expt 10
 
+
+12.  Titan 3:  H1 = 64; H2 = 32; replay memory = 20K; ppong
+
+Fri Dec 30 15:24:54 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 67648 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -40292
+
+After 530 epochs, reward --> 2.224 and increasing; frames/episode --> 31925
+and maybe increasing; eventual reward --> -0.0046 and very slowly rising;
+paddle_X is distorted gaussian around X = 11 with bump at X = 24; smooth
+evolution in weight dists; movement in weight values; weak signs of ball
+tracks in 0th layer weights;
+
+agent beats AI 20 to 17 in screen exports 2000
+agent beats AI 20 to 10 in screen exports 2250
+agent beats AI 20 to 7 in screen exports 2500
+
+After 780 epochs, reward --> 15.58 and rising; nframes/episode --> 16354
+and falling after peaking around 32K; paddle_X is distorted gaussian around
+X = 10 with small bump at X=24; eventual reward --> 0.059 and slowly rising
+
+13.  Titan 3:  repeat expt 12
+
+After 550 epochs, reward --> 7.09 and rising; nframes/episode --> 27037 and
+falling after having peaked around 31K; eventual reward --> -0.0079; paddle
+X is gaussian around X = 11 with secondary peak at X = 24; screen exports
+illustrate definite intelligent pong play!
+
+After 780 epochs, reward --> 10.45 and rising; nframes/episode --> 25325
+and falling after peaking around 32K; paddle X is distorted gaussian around
+X = 12 with small bump at X = 24; eventual reward = 0.037 and slowly rising
+
+agent beats AI 20 to 17 in screen exports 2250
+agent beats AI 20 to 8 in screen exports 2500
+
 14.  Titan 3: H1 = 128; H2 = 32; replay memory = 20K; ppong
 
 Fri Dec 30 15:26:43 2016
@@ -228,6 +342,242 @@ signs of ball tracks in 0th layer weights;
 
 15.  Titan 3:  repeat expt 14
 After 190 epochs, qualitatively similar results as those for expt 14;
+
+
+16.  Titan 1:  H1 = 64; H2 = 64; replay memory = 20K; ppong; paddle
+constrained at top and bottom walls
+
+Fri Dec 30 15:35:26 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 69760 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -40924
+
+After 730 epochs, paddleX is flattened gaussian around X = 12 with small
+bump at X = 24; eventual reward --> 0.0479 and very slowly rising; reward
+--> 15.57 and rising; nframes/episode = 15758 and falling after having
+peaked around 33K.  Very weak traces of ball tracks in 0th layer weights;
+smooth evolution of weight dists; movement in weight values;
+
+RL agent beats AI 20 to 9 in screen exports 02000 !!!
+Agent beats AI 20 to 1 in screen exports 2500
+Agent beats AI 20 to 4 in screen exports 2750
+
+After 940 epochs, reward --> 14.5 and maybe asymptoting; nframes/episode =
+18034; eventual reward --> 0.09 and slowly rising;
+
+17.  Titan 1:  repeat expt 16; paddle constrained 
+
+After 720 epochs, paddleX is gaussian aroujnd X = 12 with tiny bump at X =
+24; reward --> 6.67 and rising; eventual reward --> 0.023 and very slowly
+rising; nframes/episode --> 29181 and starting to level off
+
+agent beats AI 20 to 10 in screen exports 2500
+
+After 940 epochs, reward --> 0.05, eventual reward --> 0.046 and slowly
+rising; nframes/episode --> 22860
+
+18.  Titan 1:  H1 = 64; H2 = 128; replay memory = 20K; ppong; paddle
+constrained at top and bottom walls
+
+Fri Dec 30 15:38:09 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 73984 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -41088
+
+After 720 epochs, reward --> 10.58 and generally rising; nframes/episode =
+18333 and falling after having peaked around 30K; eventual reward = 0.0639
+and slowly rising; paddleX is gaussian around X = 13 with small step at X =
+24; very faint traces of ball tracks in 0th layer weights; gradual
+evolution of weight dists; movement in weight values;
+
+agent beats AI 20 to 16 in screen exports 2000
+agent beats AI 20 to 5 in screen exports 2250
+agent beats AI 20 to 7 in screen exports 3000
+
+After 908 epochs, reward --> 17.4; eventual reward --> 0.119;
+nframes/episode --> 12810
+
+19.  Titan 1:  repeat expt 18; paddle constrained at top and bottom walls
+
+After 700 epochs, reward --> 9.12 and rising; nframes/episode --> 22938 and
+falling after having peaked around 31K; eventual reward -> 0.0036 and
+slowly rising; paddleX is distorted gaussian around X = 10 with small bump
+at X = 24; OK weight dists and values;
+
+agent beats AI 20 to 16 in screen exports 2000
+agent beats AI 20 to 3 in screen exports 2250
+agent beats AI 20 to 2 in screen exports 2500 but loses in 2750 
+
+After 904 epochs, reward --> 10.05; nframes/episode --> 21583; eventual
+reward --> 0.102 and slowly rising
+
+30.  Titan 1:  H1 = 64, H2 = 64; replay mem = 20K ; ppong with 
+no constraint on paddle position
+
+Sat Dec 31 10:00:08 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 69760 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7207
+Process ID = 5741
+
+After 1200 epochs, results are no better than those for H1 = 32, H2 = 64
+with no paddle constraints
+
+31.  Titan 1:  repeat expt 30
+
+Sat Dec 31 10:01:12 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 69760 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7269
+Process ID = 5923
+
+After 1250 epochs, results are qualitatively similar to those for H1 = 32,
+H2 = 64 with no paddle constraints
+
+40.  Titan 1:  H1 = 32; H2 = 128; replay memory = 20K; ppong
+with no constraints; n_actions = 2
+
+Sat Dec 31 10:30:21 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 37120 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9020
+Process ID = 14209
+
+After 2000 epochs, results are qualitatively similar to those for H1 = 32,
+H2 = 64 with no paddle constraints
+
+41.  Titan 1:  repeat expt 40
+
+Sat Dec 31 10:31:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 37120 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9063
+Process ID = 14493
+
+After 2000 epochs, results are qualitatively similar to those for H1 = 32,
+H2 = 64 with no paddle constraints
+
+
 
 
 20.  Titan 3:  H1 = 64; H2 = 0; replay memory = 20K; qpong
@@ -357,581 +707,6 @@ weights; odd behavior for weight dists; odd behavior for weight values;
 25.  TM:  repeat expt 24
 
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-m6700
------
-
-Thinkmate
----------
-
-32.  TM:  H1 = 64, H2 = 128; replay mem = 20K ; ppong with 
-no constraint on paddle position; 3 actions including no op
-
-Sat Dec 31 10:05:04 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 3
-   n_weights = 74112 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7503
-Process ID = 23201
-
-33.  TM:  repeat expt 32
-
-Sat Dec 31 10:05:34 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 3
-   n_weights = 74112 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7532
-Process ID = 23220
-
-34.  TM:  H1 = 64, H2 = 64; replay mem = 20K ; ppong with 
-no constraint on paddle position; 3 actions including no op
-
-Sat Dec 31 10:06:36 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 69824 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7594
-Process ID = 24021
-
-35.  TM:  Repeat expt 34
-
-Sat Dec 31 10:06:41 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 69824 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7600
-Process ID = 24026
-
-36.  TM:  H1 = 64, H2 = 32; replay mem = 20K ; ppong with 
-no constraint on paddle position; 3 actions including no op
-
-Sat Dec 31 10:08:16 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 3
-   n_weights = 67680 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7693
-Process ID = 25019
-
-37.  TM:  H1 = 64, H2 = 32; replay mem = 20K ; ppong with 
-no constraint on paddle position; 3 actions including no op
-
-Sat Dec 31 10:08:20 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 3
-   n_weights = 67680 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7698
-Process ID = 25022
-
-42.  TM:  H1 = 32, H2 = 64; replay mem = 20K ; ppong with 
-no constraint on paddle position; 3 actions including no op
-
-Sat Dec 31 10:31:39 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -9097
-Process ID = 32182
-
-43.  TM:  H1 = 32, H2 = 64; replay mem = 20K ; ppong with 
-no constraint on paddle position; 3 actions including no op
-
-Sat Dec 31 10:32:11 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -9130
-Process ID = 32307
-
-
-Titan 1:
--------
-
-16.  Titan 1:  H1 = 64; H2 = 64; replay memory = 20K; ppong
-
-Fri Dec 30 15:35:26 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 2
-   n_weights = 69760 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -40924
-
-After 730 epochs, paddleX is flattened gaussian around X = 12 with small
-bump at X = 24; eventual reward --> 0.0479 and very slowly rising; reward
---> 15.57 and rising; nframes/episode = 15758 and falling after having
-peaked around 33K.  Very weak traces of ball tracks in 0th layer weights;
-smooth evolution of weight dists; movement in weight values;
-
-RL agent beats AI 20 to 9 in screen exports 02000 !!!
-Agent beats AI 20 to 1 in screen exports 2500
-Agent beats AI 20 to 4 in screen exports 2750
-
-After 940 epochs, reward --> 14.5 and maybe asymptoting; nframes/episode =
-18034; eventual reward --> 0.09 and slowly rising;
-
-17.  Titan 1:  repeat expt 16
-
-After 720 epochs, paddleX is gaussian aroujnd X = 12 with tiny bump at X =
-24; reward --> 6.67 and rising; eventual reward --> 0.023 and very slowly
-rising; nframes/episode --> 29181 and starting to level off
-
-agent beats AI 20 to 10 in screen exports 2500
-
-After 940 epochs, reward --> 0.05, eventual reward --> 0.046 and slowly
-rising; nframes/episode --> 22860
-
-18.  Titan 1:  H1 = 64; H2 = 128; replay memory = 20K; ppong
-Fri Dec 30 15:38:09 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 2
-   n_weights = 73984 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -41088
-
-After 720 epochs, reward --> 10.58 and generally rising; nframes/episode =
-18333 and falling after having peaked around 30K; eventual reward = 0.0639
-and slowly rising; paddleX is gaussian around X = 13 with small step at X =
-24; very faint traces of ball tracks in 0th layer weights; gradual
-evolution of weight dists; movement in weight values;
-
-agent beats AI 20 to 16 in screen exports 2000
-agent beats AI 20 to 5 in screen exports 2250
-agent beats AI 20 to 7 in screen exports 3000
-
-After 908 epochs, reward --> 17.4; eventual reward --> 0.119;
-nframes/episode --> 12810
-
-19.  Titan 1:  repeat expt 18
-After 700 epochs, reward --> 9.12 and rising; nframes/episode --> 22938 and
-falling after having peaked around 31K; eventual reward -> 0.0036 and
-slowly rising; paddleX is distorted gaussian around X = 10 with small bump
-at X = 24; OK weight dists and values;
-
-agent beats AI 20 to 16 in screen exports 2000
-agent beats AI 20 to 3 in screen exports 2250
-agent beats AI 20 to 2 in screen exports 2500 but loses in 2750 
-
-After 904 epochs, reward --> 10.05; nframes/episode --> 21583; eventual
-reward --> 0.102 and slowly rising
-
-30.  Titan 1:  H1 = 64, H2 = 64; replay mem = 20K ; ppong with 
-no constraint on paddle position
-
-Sat Dec 31 10:00:08 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 2
-   n_weights = 69760 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7207
-Process ID = 5741
-
-31.  Titan 1:  repeat expt 30
-
-Sat Dec 31 10:01:12 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 2
-   n_weights = 69760 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -7269
-Process ID = 5923
-
-40.  Titan 1:  H1 = 32; H2 = 128; replay memory = 20K; ppong
-with no constraints; n_actions = 2
-
-Sat Dec 31 10:30:21 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 2
-   n_weights = 37120 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -9020
-Process ID = 14209
-
-41.  Titan 1:  repeat expt 40
-
-Sat Dec 31 10:31:04 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 2
-   n_weights = 37120 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -9063
-Process ID = 14493
-
-Titan 3:
--------
-
-12.  Titan 3:  H1 = 64; H2 = 32; replay memory = 20K; ppong
-
-Fri Dec 30 15:24:54 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 2
-   n_weights = 67648 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -40292
-
-After 530 epochs, reward --> 2.224 and increasing; frames/episode --> 31925
-and maybe increasing; eventual reward --> -0.0046 and very slowly rising;
-paddle_X is distorted gaussian around X = 11 with bump at X = 24; smooth
-evolution in weight dists; movement in weight values; weak signs of ball
-tracks in 0th layer weights;
-
-agent beats AI 20 to 17 in screen exports 2000
-agent beats AI 20 to 10 in screen exports 2250
-agent beats AI 20 to 7 in screen exports 2500
-
-After 780 epochs, reward --> 15.58 and rising; nframes/episode --> 16354
-and falling after peaking around 32K; paddle_X is distorted gaussian around
-X = 10 with small bump at X=24; eventual reward --> 0.059 and slowly rising
-
-13.  Titan 3:  repeat expt 12
-
-After 550 epochs, reward --> 7.09 and rising; nframes/episode --> 27037 and
-falling after having peaked around 31K; eventual reward --> -0.0079; paddle
-X is gaussian around X = 11 with secondary peak at X = 24; screen exports
-illustrate definite intelligent pong play!
-
-After 780 epochs, reward --> 10.45 and rising; nframes/episode --> 25325
-and falling after peaking around 32K; paddle X is distorted gaussian around
-X = 12 with small bump at X = 24; eventual reward = 0.037 and slowly rising
-
-agent beats AI 20 to 17 in screen exports 2250
-agent beats AI 20 to 8 in screen exports 2500
-
-26.  Titan 3:  H1 = 64, H2 = 128; replay mem = 20K ; ppong with 
-no constraint on paddle position
-
-Sat Dec 31 09:48:22 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 2
-   n_weights = 73984 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -6501
-Process ID = 26135
-
-27.  Titan 3:  repeat expt 26
-
-Sat Dec 31 09:49:46 2016
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 2
-   n_weights = 73984 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 2
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -6584
-Process ID = 26458
 
 28.  Titan 3:  H1 = 64, H2 = 32; replay mem = 20K ; ppong with 
 no constraint on paddle position
@@ -962,6 +737,9 @@ n_max_epochs = 3000
 Random seed = -7046
 Process ID = 29281
 
+After 824 epochs, reward = 5.03 and rising; nframes/episode = 25121 and
+falling; eventual reward = 0.014 and slowly rising;
+
 29.  Titan 3:  repeat expt 28
 
 Sat Dec 31 09:58:20 2016
@@ -990,6 +768,115 @@ n_max_epochs = 3000
 Random seed = -7098
 Process ID = 29295
 
+After 851 epochs, reward = -8.85 and slowly rising; nframes/episode = 26149
+and maybe slowly rising; eventual reward = -0.038 and maybe very slowly
+rising;
+
+
+
+34.  TM:  H1 = 64, H2 = 64; replay mem = 20K ; ppong with 
+no constraint on paddle position; 3 actions including no op
+
+Sat Dec 31 10:06:36 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 69824 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7594
+Process ID = 24021
+
+Reward locked at -21 after less than 100 epochs!
+
+
+26.  Titan 3:  H1 = 64, H2 = 128; replay mem = 20K ; ppong with 
+no constraint on paddle position
+
+Sat Dec 31 09:48:22 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 73984 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6501
+Process ID = 26135
+
+After 758 epochs, reard = 13.55 nframes/episode = 20988 and falling; paddle
+Y dist is guassian about X = 11 with small bump at X = 24; eventual reward
+= 0.069 and steadily rising; OK weight dists and values; no strong ball
+tracks in 0th layer weights;
+
+Agent beats AI 20 to 17 in screen exports 2000; some good volleys!
+
+Agent beats AI 20 to 6 in screen exports 2400; agent wins because of AI
+bug;  but its play is not stupid
+
+
+27.  Titan 3:  repeat expt 26
+
+Sat Dec 31 09:49:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 73984 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6584
+Process ID = 26458
+
+After 769 epochs, reward = 13.4 and maybe increasing; nframes/episode =
+17679 and falling; eventual reward = 0.0669 and slowly rising; paddle Y
+dist is spiked gaussian at X = 10 with small bump at X = 24
 
 38.  Titan 3:  H1 = 32; H2 = 64; 20K replay memory; ppong with no constraints;
 2 actions
@@ -1020,6 +907,21 @@ n_max_epochs = 3000
 Random seed = -8705
 Process ID = 4484
 
+After 1681 epochs, reward = 16.6 and probably plateauing; nframes/episode =
+15034 and falling; eventual reward = 0.110 and steadily rising; paddle Y is
+gaussian about X = 12 with tiny shoulder at X = 23; OK weight dists and
+values; hard to see ball tracks in 0th layer weights
+
+Agent loses to AI 4 to 20 in screen exports 2000
+Agent loses to AI 20 to 11 in screen exports 2600
+
+Agent beats AI 20 to 13 in screen exports 2800; 25.7K frames
+                                                several good volleys
+						most interesting for movie!
+
+Agent beats AI 20 to 11 in screen exports 3000; 17.9K frames
+Agent beats AI 20 to 1 in screen exports 5200; exploits AI bug
+
 39.  Titan 3:  repeat expt 38
 
 Sat Dec 31 10:27:11 2016
@@ -1048,12 +950,358 @@ n_max_epochs = 3000
 Random seed = -8828
 Process ID = 5324
 
+After 1653 epochs, reward = 18.5 and plateaued; nframes/episode = 10833 and
+plateaued; eventual reward = 0.18 and slowly rising; paddle Y is spiked
+gaussian about X = 9 with small bump at X = 23; OK weight dists and values;
+hard to see ball tracks in 0th layer weights
+
+Agent loses to AI 11 to 20 in screen exports 2000
+Agent loses to AI 19 to 20 in screen exports 2200  38.3K frames
+Agent beats AI 20 to 14 in screen exports 2400     26.6K frames  
+                                                     only wins from AI defect
+Agent beats AI 20 to 11 in screen exports 2600     21.3K frames
+                                                     more interesting play,
+                                                     but first 7 wins are
+						     due to defect
+Agent beats AI 20 to 9 in screen exports 2800      20.6K frames
+Agent beats AI 20 to 6 in screen exports 3000
+Agent beats AI 20 to 3 in screen exports 4000
+Agent beats AI 20 to 1 in screen exports 5000
+Agent beats AI 20 to 2 in screen exports 6000
+
+
+32.  TM:  H1 = 64, H2 = 128; replay mem = 20K ; ppong with 
+no constraint on paddle position; 3 actions including no op
+
+Sat Dec 31 10:05:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 3
+   n_weights = 74112 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7503
+Process ID = 23201
+
+After 1014 epochs, reward = 6.05 and increasing; nframes/episode = 30457
+and perhaps decreasing; eventual reward = -0.013 and slowly rising; very
+faint traces of ball tracks in 0th layer weights; OK weight dists and values;
+
+Agent beats AI 20 to 13 in screen exports 3000; extensive jitter in agent
+paddle
+
+33.  TM:  repeat expt 32
+
+Sat Dec 31 10:05:34 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 3
+   n_weights = 74112 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7532
+Process ID = 23220
+
+After 992 epoehcs, reward = 9.26 and increasing; nframes/episode = 19643
+and falling; eventual reward = 0.0095 and slowly rising;
+
+35.  TM:  Repeat expt 34
+
+Sat Dec 31 10:06:41 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 69824 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7600
+Process ID = 24026
+
+After 1068 epochs, reward = -9.16 and slowly climbing; nframes/episode =
+31321 and slowly rising; eventual reward = -0.025 and slowly rising
+
+36.  TM:  H1 = 64, H2 = 32; replay mem = 20K ; ppong with 
+no constraint on paddle position; 3 actions including no op
+
+Sat Dec 31 10:08:16 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 3
+   n_weights = 67680 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7693
+Process ID = 25019
+
+After 1065 epochs, reward = 3.68 and rising; nframes/episode = 38973 and
+maybe has reached plateau; Both reward and nframes/episode were locked
+at their minimal values for first 600 epochs!  eventual reward = 0.0029 and
+slowly rising;
+
+37.  TM:  H1 = 64, H2 = 32; replay mem = 20K ; ppong with 
+no constraint on paddle position; 3 actions including no op
+
+Sat Dec 31 10:08:20 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 3
+   n_weights = 67680 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -7698
+Process ID = 25022
+
+After 1100 epochs, reward = 2.62 and generally rising; nframes/episode
+= 31480 and generally falling; eventaul reward = 0.0304 and slowly rising;
+
+
+42.  TM:  H1 = 32, H2 = 64; replay mem = 20K ; ppong with 
+no constraint on paddle position; 3 actions including no op
+
+Sat Dec 31 10:31:39 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9097
+Process ID = 32182
+
+After 1702 epochs, reward = 11.43 and generally rising; nframes/episode =
+18246 and falling; eventual reward = 0.101 and rising; OK weight dists and
+values; no meaningful signals in 0th layer weights; paddle_y dist is
+gaussian with spike at X = 10 plus small bump at X = 24;
+Jerky movements with no benefit from no-op action
+
+Agent beats AI 20 to 18 in screen exports 5000; agent plays rather stupidly
+Agent beats AI 20 to 9 in screen exports 6200; agent plays quite stupidly!
+
+
+43.  TM:  H1 = 32, H2 = 64; replay mem = 20K ; ppong with 
+no constraint on paddle position; 3 actions including no op
+
+Sat Dec 31 10:32:11 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9130
+Process ID = 32307
+
+After 1710 epochs, reward = 15.6 and has generally plateaued;
+nframes/episode = 15219 and has probably plateaued; eventual reward = 0.106
+and is perhaps barely rising; paddle Y is gaussian with spike at X = 10 and
+small bump at X = 24;
+
+Agent beats AI 20 to 9 in screen exports 06200; wins exclusively from AI bug
+
+
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+m6700
+-----
+
+Thinkmate
+---------
+
+Titan 1:
+-------
+44. Titan 1:  H1 = 32, H2 = 128; no paddle constraints; n_actions = 3
+
+Sat Dec 31 20:07:34 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 3
+   n_weights = 37248 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -43652
+Process ID = 16019
+
+After 1600 epochs, results are qualitatively similar to those for H1 = 32,
+H2 = 64 with no paddle constraints and n_actions = 2
+
+45. Titan 1:  H1 = 32, H2 = 128; no paddle constraints; n_actions = 3
+
+Sat Dec 31 20:08:39 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 3
+   n_weights = 37248 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -43717
+Process ID = 16481
+
+
+Titan 3:
+-------
+
 ===========================================================
 Conclusions from 18 expt runs on Fri Dec 30:
 
   *.  Ppong with H1 = 64; H2 = 128; replay memory = 20K crushes
       AI after 720 epochs.
 
+Conclusions from >20 expt runs on Sat, Dec 31:
+
+  *.  Ppong with H1 = 32, H2 = 64; replay memory = 20K, n_actions = 2 and NO
+      artificial top/bottom wall constraints on paddle movement yields
+      very good cumulative reward and nframes/episode results
+
+  *.  Ppong with n_actions = 3 exhibits no less jerkiness than n_actions =
+      2.  Almost certainly will need to modify loss function to penalize
+      accelerations before jerkiness will decrease.
 
 ===========================================================
 TODO:

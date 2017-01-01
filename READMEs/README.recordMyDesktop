@@ -1,8 +1,19 @@
 ============================================================================
 RecordMyDesktop notes
 ============================================================================
-Last updated on 9/25/12; 12/5/15; 11/18/16
+Last updated on 9/25/12; 12/5/15; 11/18/16; 1/1/17
 ============================================================================
+
+*.  On 1/1/17, we found and installed a MUCH better screen capture program
+onto Thinkmate called SimpleScreenRecorder.  See
+http://www.maartenbaert.be/simplescreenrecorder/.  This tool can generate
+MP4 output directly without having to go through an annoying intermediate
+OGV stage.  It also appears to capture movies much more smoothly than
+RecordMyDesktop.  
+
+So from now on, RecordMyDesktop is deprecated and SimpleScreenRecorder
+should be used instead!
+
 
 In Sep 2012, we used Ubuntu's RecordMyDesktop in order to generate several
 movies for the Image Search talk.  
@@ -59,3 +70,7 @@ avconv -i faces_fc5_graph.ogv \
 avconv -i maze_qlearning.ogv \
    -c:v libx264 -preset veryslow -qp 0 \
   maze_qlearning_1.mp4
+
+avconv -i out-4.ogv \
+   -c:v libx264 -preset veryslow -qp 0 \
+ test_1.mp4

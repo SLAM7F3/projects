@@ -2001,6 +2001,7 @@ void reinforce::generate_view_metrics_script(
       script_stream << "view reward_history.jpg" << endl;
       script_stream << "view frames_history.jpg" << endl;
       script_stream << "view paddle_X.jpg" << endl;
+      script_stream << "view paddle_Y.jpg" << endl;
    }
 
    if(learning_type == QLEARNING)

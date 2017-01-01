@@ -1,7 +1,7 @@
 // ==========================================================================
 // pong class member function definitions
 // ==========================================================================
-// Last modified on 12/18/16; 12/26/16; 12/30/16; 12/31/16
+// Last modified on 12/26/16; 12/30/16; 12/31/16; 1/1/17
 // ==========================================================================
 
 // Notes: 
@@ -298,7 +298,8 @@ void pong::plot_paddle_y_dist(string output_subdir, string extrainfo)
    int n_bins = max_Y - min_Y + 1;
    prob_distribution prob_Y(Y, n_bins);
 
-   prob_Y.set_densityfilenamestr(output_subdir+"paddle_y.meta");
+   prob_Y.set_xlabel("Paddle Y position");
+   prob_Y.set_densityfilenamestr(output_subdir+"paddle_Y.meta");
    prob_Y.write_density_dist(false, true);
 }
 

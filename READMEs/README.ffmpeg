@@ -137,3 +137,10 @@ which appears to run OK on our mac laptop:
 
 ./software/ffmpeg/ffmpeg/ffmpeg -i hwy280_5k_roadsigns.ogv -b 24000000 hwy280_5k_roadsigns_24.mov
 
+
+Can't get following command to work as of 1/1/17:
+
+
+ffmpeg -f image2 -framerate 25 -pattern_type sequence -start_number 1234 -r 3 -i img_%04d.jpg -s 720x480 test.avi
+
+ffmpeg -f image2 -r 25 -i ./screen_02800_%05d.png -s 320x210 test1.mp4
