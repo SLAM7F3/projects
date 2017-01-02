@@ -209,3 +209,8 @@ So we had to first convert the png file to jpeg and then perform the crop:
 convert composite_0171.png -quality 100 composite_0171.jpg
 convert composite_0171.jpg -crop 556x1084+344+0 cropped_composite_0171.jpg
 
+
+
+convert -size 1000x424 xc:white eventual_rewards_history.jpg -gravity center -composite padded_eventual_rewards.jpg
+
+convert -size 1000x421 xc:white frames_history.jpg -gravity center -composite padded_frames_history.jpg
