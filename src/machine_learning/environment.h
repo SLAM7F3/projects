@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 12/7/16; 12/8/16; 12/10/16; 12/30/16
+// Last modified on 12/8/16; 12/10/16; 12/30/16; 1/2/17
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -38,6 +38,7 @@ class environment
    friend std::ostream& operator<< 
       (std::ostream& outstream,const environment& E);
 
+   int get_world_type() const;
    void set_use_big_states_flag(bool flag);
    void set_frame_skip(int skip);
    int get_frame_skip() const;
@@ -102,6 +103,11 @@ class environment
 // ==========================================================================
 
 // Set and get member functions:
+
+inline int environment::get_world_type() const
+{
+   return world_type;
+}
 
 inline void environment::set_use_big_states_flag(bool flag)
 {

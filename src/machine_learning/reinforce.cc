@@ -3638,9 +3638,6 @@ double reinforce::update_P_network(bool verbose_flag)
 {
    cout << "inside update_P_network()" << endl;
 
-// FAKE FAKE:  Mon Jan 2 at 9:06 am
-   verbose_flag = true;
-
    compute_renormalized_discounted_eventual_rewards();
 
 // Compute total loss = -sum_i advantage_i * log(action prob_i)
@@ -3648,8 +3645,7 @@ double reinforce::update_P_network(bool verbose_flag)
    double total_loss = 0;
    for(int d = 0; d < replay_memory_capacity; d++)
    {
-//      outputfunc::update_progress_fraction(d, 2500, replay_memory_capacity);
-
+      outputfunc::update_progress_fraction(d, 2500, replay_memory_capacity);
       double curr_loss = P_backward_propagate(
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
@@ -3821,45 +3817,19 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 double reinforce::get_advantage(int d) const
 {
    double curr_R = r_curr->get(d);
-//   double curr_advantage;
    double curr_advantage = (curr_R - mu_R) / sigma_R;
    
-   /* 
-// FAKE FAKE :  Weds Dec 28 at 7:17 am
-
-//   if (fabs(curr_R) < 1E-4)
-//   {
-//      curr_advantage = 0;
-//   }
-   if(curr_R > 0)
+   if(environment_ptr->get_world_type() == 0) // maze
    {
-      curr_advantage = 1;
-//      curr_advantage = 1+curr_R;
+      if(curr_R > 0)
+      {
+         curr_advantage = 1;
+      }
+      else
+      {
+         curr_advantage = -1;
+      }
    }
-   else if (curr_R < -0.5) // breakout
-   {
-      curr_advantage = -2;
-   }
-   else
-   {
-      curr_advantage = -1;
-//      curr_advantage = -1+curr_R;
-   }
-   */
-
-/*
-   curr_advantage = curr_R;
-
-   if(nrfunc::ran1() < 0.001)
-   {
-      cout << "curr_R = " << curr_R 
-           << " mu_R = " << mu_R
-           << " sigma_R = " << sigma_R 
-           << " curr_advantage = " << curr_advantage 
-           << endl;
-   }
-*/
-
    return curr_advantage;   
 }
 
