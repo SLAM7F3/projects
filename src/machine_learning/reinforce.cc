@@ -1726,6 +1726,32 @@ void reinforce::plot_KL_divergence_history(
    curr_metafile.write_header();
    curr_metafile.write_curve(0, xmax, log10_mean_KL_divergences);
    curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy KL divergence values:
+
+   double sigma = 10;
+   if(log10_mean_KL_divergences.size() > 100)
+   {
+      sigma += log10(log10_mean_KL_divergences.size())/log10(2.0);
+   }
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   if(gaussian_size < int(log10_mean_KL_divergences.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_log10_mean_KL_divergences;
+      filterfunc::brute_force_filter(
+         log10_mean_KL_divergences, h, smoothed_log10_mean_KL_divergences, 
+         wrap_around_input_values);
+
+      curr_metafile.write_curve(
+         0, xmax, smoothed_log10_mean_KL_divergences, colorfunc::blue);
+   }
    
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
