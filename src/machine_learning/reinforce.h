@@ -151,6 +151,8 @@ class reinforce
 // General learning methods:
 
    void clear_delta_nablas();
+   void clear_nablas();
+   double update_weights_and_biases(double lr);
    void decrease_learning_rate();
 
 // Q learning methods
@@ -233,6 +235,8 @@ class reinforce
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);
    double update_P_network(bool verbose_flag);
+   int take_KL_divergence_constrained_step(double max_mean_KL_divergence);
+
    void clear_replay_memory();
    void compute_renormalized_discounted_eventual_rewards();
    double get_advantage(int d) const;

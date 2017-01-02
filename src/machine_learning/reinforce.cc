@@ -2291,6 +2291,42 @@ void reinforce::clear_delta_nablas()
 }
 
 // ---------------------------------------------------------------------
+void reinforce::clear_nablas()
+{
+   if(include_bias_terms)
+   {
+      for(unsigned int l = 0; l < nabla_biases.size(); l++)
+      {
+         nabla_biases[l]->clear_values();
+      }
+   }
+
+   for(unsigned int l = 0; l < nabla_weights.size(); l++)
+   {
+      nabla_weights[l]->clear_values();
+   }
+}
+
+// ---------------------------------------------------------------------
+// Member function update_weights_and_biases()
+
+double reinforce::update_weights_and_biases(double lr)
+{
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         *biases[l] -= lr * (*nabla_biases[l]);
+      } // loop over index l labeling network layers
+   } // include_bias_terms_flag
+   
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      *weights[l] -= lr * (*nabla_weights[l]);
+   }
+}
+
+// ---------------------------------------------------------------------
 // Member function decrease_learning_rate decreases the learning rate
 // down to some minimal floor value.
 
@@ -3503,19 +3539,16 @@ double reinforce::compute_mean_KL_divergence_between_curr_and_next_pi()
       return -1;
    }
    
-   double mean_KL = 0;
+   double mean_KL_divergence = 0;
    for(int d = 0; d < replay_memory_capacity; d++)
    {
       get_curr_pi_from_replay_memory(d);
       compute_next_pi_given_replay_index(d);
-      mean_KL += mathfunc::KL_divergence(curr_pi_sample, next_pi_sample);
+      mean_KL_divergence += 
+         mathfunc::KL_divergence(curr_pi_sample, next_pi_sample);
    }
-   mean_KL /= replay_memory_capacity;
-   if(mean_KL > 1E-20)
-   {
-      log10_mean_KL_divergences.push_back(log10(mean_KL));
-   }
-   return mean_KL;
+   mean_KL_divergence /= replay_memory_capacity;
+   return mean_KL_divergence;
 }
 
 // ---------------------------------------------------------------------
@@ -3682,8 +3715,6 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 
    n_backprops++;
 
-   double curr_loss = compute_curr_P_loss(d, action_prob);
-
 // On 12/27/16, we numerically spot-checked loss function
 // derivatives wrt random neural network weights.  We empirically
 // found that the ratio of numerically derived to backpropagated
@@ -3697,6 +3728,11 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 //      numerically_check_P_derivs(d, ran_value);
 //   }
 
+// Note added on 1/2/17: We need to move this curr_loss computation
+// OUT of this method.  The loss should be calculated only after any
+// potential weight/bias undoing steps have been performed.
+
+   double curr_loss = compute_curr_P_loss(d, action_prob);
    curr_loss *= inverse_Nd;
    return curr_loss;
 }
@@ -3787,23 +3823,18 @@ double reinforce::update_P_network(bool verbose_flag)
       update_rmsprop_cache(rmsprop_decay_rate);
    }
    
-// Update weights and biases for each network layer by their nabla
-// values averaged over the current mini-batch:
-
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
       {
          if (solver_type == SGD)
          {
-            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
          else if (solver_type == RMSPROP)
          {
             rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
             rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
             nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
-            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
       } // loop over index l labeling network layers
@@ -3813,14 +3844,12 @@ double reinforce::update_P_network(bool verbose_flag)
    {
       if (solver_type == SGD)
       {
-         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       else if(solver_type == RMSPROP)
       {
          rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
          rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
-         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       
       if(verbose_flag)
@@ -3861,12 +3890,55 @@ double reinforce::update_P_network(bool verbose_flag)
               << "  lr * <|nabla_weight/weight|> = " 
               << learning_rate.back() * mean_abs_nabla_weight_ratio << endl;
       } // verbose_flag conditional
-      
-      if(include_bias_terms) nabla_biases[l]->clear_values();
-      nabla_weights[l]->clear_values();
-   }
+   } // loop over index l labeling network layers
 
    return total_loss;
+}
+
+// ---------------------------------------------------------------------
+// Member function take_KL_divergence_constrained_step() updates the
+// P-network's weights and biases based upon the current learning
+// rate.  It then evaluates the mean KL divergence between the current
+// and next pi outputs.  If the mean KL divergence exceeds input
+// parameter max_mean_KL_divergence, we cut the learning rate by a
+// factor of two and compute a new, smaller set of delta weights and
+// biases.  We iteratively continue this stepping process until either
+// the mean KL divergence bound is respected or a maximum number of
+// undo steps has been performed.
+
+int reinforce::take_KL_divergence_constrained_step(
+   double max_mean_KL_divergence)
+{
+   double lr = get_learning_rate();
+   update_weights_and_biases(lr);
+
+   int n_undos = 0;
+   int max_n_undos = 6;
+   double mean_KL_divergence = 1;
+   do
+   {
+      mean_KL_divergence = 
+         compute_mean_KL_divergence_between_curr_and_next_pi(); 
+
+      if(mean_KL_divergence > max_mean_KL_divergence)
+      {
+         lr *= 0.5;
+         update_weights_and_biases(-lr);
+         n_undos++;
+         cout << "n_undos = " << n_undos << " *****************"
+              << endl;
+      }
+   }
+   while(mean_KL_divergence > max_mean_KL_divergence &&
+         n_undos < max_n_undos);
+
+   if(mean_KL_divergence > 1E-20)
+   {
+      log10_mean_KL_divergences.push_back(log10(mean_KL_divergence));
+   }
+
+   clear_nablas();
+   return n_undos;
 }
 
 // ---------------------------------------------------------------------

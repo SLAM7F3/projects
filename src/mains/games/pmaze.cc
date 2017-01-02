@@ -251,8 +251,9 @@ int main (int argc, char* argv[])
             }
             total_loss = reinforce_agent_ptr->update_P_network(verbose_flag);
 
-            reinforce_agent_ptr->
-               compute_mean_KL_divergence_between_curr_and_next_pi(); 
+            double max_mean_KL_divergence = 1E-4;
+            reinforce_agent_ptr->take_KL_divergence_constrained_step(
+               max_mean_KL_divergence);
             reinforce_agent_ptr->clear_replay_memory();
          }
 

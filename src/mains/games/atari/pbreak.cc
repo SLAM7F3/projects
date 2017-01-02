@@ -369,9 +369,7 @@ int main(int argc, char** argv)
             total_loss = fabs(
                reinforce_agent_ptr->update_P_network(verbose_flag));
 
-            reinforce_agent_ptr->
-               compute_mean_KL_divergence_between_curr_and_next_pi(); 
-            reinforce_agent_ptr->clear_replay_memory();
+
          }
 
 // Periodically save an episode's worth of screens to output

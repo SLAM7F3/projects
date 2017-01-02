@@ -1682,7 +1682,7 @@ double KL_divergence(const genvector* p, const genvector* q)
       double curr_p = p->get(n);
       double curr_q = q->get(n);
 
-      if(nearly_equal(curr_q, 0) && !nearly_equal(curr_p, 0))
+      if(nearly_equal(curr_q, 0, 1E-20) && !nearly_equal(curr_p, 0, 1E-20))
       {
          cout << "Trouble in mathfunc::KL_divergence()!" << endl;
          cout << "n = " << n << " curr_p = " << curr_p 
