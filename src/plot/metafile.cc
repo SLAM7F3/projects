@@ -1,12 +1,13 @@
 // ==========================================================================
 // Metafile class member function definitions
 // ==========================================================================
-// Last modified on 5/4/13; 9/25/14; 11/1/15; 10/19/16
+// Last modified on 9/25/14; 11/1/15; 10/19/16; 1/2/17
 // ==========================================================================
 
 #include "math/basic_math.h"
 #include "color/colorfuncs.h"
 #include "general/filefuncs.h"
+#include "math/mathfuncs.h"
 #include "plot/metafile.h"
 #include "templates/mytemplates.h"
 #include "general/outputfuncs.h"
@@ -420,6 +421,7 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
 
    for (unsigned int i=0; i<X.size(); i++)
    {
+      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
       metastream << X[i] << "\t" << Y[i] << endl;
    }
 }

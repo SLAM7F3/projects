@@ -4008,7 +4008,7 @@ void covar_matrix(unsigned int mdim, double *mean, double **second_moment,
 // ---------------------------------------------------------------------
 // In late June/early July 2007, we discovered that there is some
 // problem within libtdp which prevents us from calling under Mac OS X
-// the legitimate isnan() macro defined within math.h So as an ugly
+// the legitimate isnan() macro defined within math.h .  So as an ugly
 // workaround, we replace the isnan() call with __isnan() in order to
 // achieve portability from linux to Mac OS X...  We also wrap this
 // ugly call within this ugly special method so that it is at least

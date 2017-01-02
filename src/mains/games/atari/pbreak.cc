@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/28/16; 12/29/16; 12/31/16; 1/1/17
+// Last updated on 12/29/16; 12/31/16; 1/1/17; 1/2/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -234,10 +234,6 @@ int main(int argc, char** argv)
 
       breakout_ptr->set_paddle_x(
          breakout_ptr->get_default_starting_paddle_x());
-      int n_recenter_paddle_frames = 0;
-//      int n_recenter_paddle_frames = 
-//         breakout_ptr->get_default_starting_paddle_x()  
-//         - breakout_ptr->get_center_paddle_x();
 
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
@@ -275,17 +271,9 @@ int main(int argc, char** argv)
                *curr_s);
          } // state_updated_flag && n_state_updates > 2 conditional
 
-// First reposition paddle so that it starts at screen's horizontal center:
+// Fist fire ball:
 
-         if(curr_life_framenumber < n_recenter_paddle_frames)
-         {
-            a = PLAYER_A_LEFT;  // move paddle towards center
-         }
-
-// Next fire ball:
-
-         else if(curr_life_framenumber < 
-                 n_recenter_paddle_frames + n_fire_ball_frames)
+         if(curr_life_framenumber < n_fire_ball_frames)
          {
             a = PLAYER_A_FIRE;  // fire ball
          }
@@ -297,9 +285,14 @@ int main(int argc, char** argv)
             curr_a = prev_a;
             if(state_updated_flag && curr_s != NULL)
             {
+               genvector *curr_pi = reinforce_agent_ptr->get_curr_s_sample();
+               reinforce_agent_ptr->compute_pi_given_state(curr_s, curr_pi);
+               reinforce_agent_ptr->store_curr_pi_into_replay_memory(
+                  d, curr_pi);
+
                double ran_value = nrfunc::ran1();
-               curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  ran_value, curr_s, action_prob);
+               curr_a = reinforce_agent_ptr->get_P_action_given_pi(
+                  curr_pi, ran_value, action_prob);
 
                if(curr_a == 0)
                {
@@ -373,7 +366,11 @@ int main(int argc, char** argv)
             {
                verbose_flag = true;
             }
-            total_loss = reinforce_agent_ptr->update_P_network(verbose_flag);
+            total_loss = fabs(
+               reinforce_agent_ptr->update_P_network(verbose_flag));
+
+            reinforce_agent_ptr->
+               compute_mean_KL_divergence_between_curr_and_next_pi(); 
             reinforce_agent_ptr->clear_replay_memory();
          }
 
@@ -410,14 +407,13 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 
-      double log10_total_loss = 0;
       if(total_loss > 0)
       {
-         log10_total_loss = log10(total_loss);
+         double log10_total_loss = log10(total_loss);
+         cout << "  total_loss = " << total_loss
+              << " log10(total_loss) = " << log10_total_loss << endl;
+         reinforce_agent_ptr->push_back_log10_loss(log10_total_loss);
       }
-      cout << "  total_loss = " << total_loss
-           << " log10(total_loss) = " << log10_total_loss << endl;
-      reinforce_agent_ptr->push_back_log10_loss(log10_total_loss);
 
 // Periodically export status info:
 
@@ -441,14 +437,17 @@ int main(int argc, char** argv)
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
 
-         int n_reduced_xdim = breakout_ptr->get_n_reduced_xdim();
-         int n_reduced_ydim = breakout_ptr->get_n_reduced_ydim();
-         if(use_big_states_flag)
+         if(curr_episode_number % 5 * n_episode_update == 0)
          {
-            n_reduced_ydim *= n_screen_states;
+            int n_reduced_xdim = breakout_ptr->get_n_reduced_xdim();
+            int n_reduced_ydim = breakout_ptr->get_n_reduced_ydim();
+            if(use_big_states_flag)
+            {
+               n_reduced_ydim *= n_screen_states;
+            }
+            reinforce_agent_ptr->plot_zeroth_layer_weights(
+               n_reduced_xdim, n_reduced_ydim, weights_subdir);
          }
-         reinforce_agent_ptr->plot_zeroth_layer_weights(
-            n_reduced_xdim, n_reduced_ydim, weights_subdir);
       }
 
 /*

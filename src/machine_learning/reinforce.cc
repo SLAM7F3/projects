@@ -1693,6 +1693,8 @@ void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
 void reinforce::plot_KL_divergence_history(
    string output_subdir, string extrainfo, bool epoch_indep_var)
 {
+   if(log10_mean_KL_divergences.size() < 3) return;
+
    metafile curr_metafile;
    string meta_filename=output_subdir+"KL_history";
    string title="Mean KL divergence vs episode; bsize="+
