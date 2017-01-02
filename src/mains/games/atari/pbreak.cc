@@ -369,7 +369,10 @@ int main(int argc, char** argv)
             total_loss = fabs(
                reinforce_agent_ptr->update_P_network(verbose_flag));
 
-
+            double max_mean_KL_divergence = 1E-4;
+            reinforce_agent_ptr->take_KL_divergence_constrained_step(
+               max_mean_KL_divergence);
+            reinforce_agent_ptr->clear_replay_memory();
          }
 
 // Periodically save an episode's worth of screens to output
