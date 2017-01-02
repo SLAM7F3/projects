@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/26/16; 12/27/16; 12/28/16; 12/30/16
+// Last modified on 12/27/16; 12/28/16; 12/30/16; 1/2/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -219,9 +219,11 @@ class reinforce
 // Policy gradient learning methods
 
    void P_forward_propagate(genvector* s_input);
-   int get_P_action_for_curr_state(genvector* curr_s);
-   int get_P_action_for_curr_state(double ran_val, genvector* curr_s,
-                                   double& action_prob);
+   void get_pi_action_given_state(
+      genvector* curr_s, std::vector<double>& pi_a_given_s);
+   int get_P_action_for_curr_state(
+      double ran_val, const std::vector<double>& pi_a_given_s,
+      double& action_prob);
    double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);

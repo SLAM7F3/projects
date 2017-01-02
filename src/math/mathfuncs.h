@@ -9,7 +9,7 @@
 // ==========================================================================
 // Header file for stand-alone "primitive" math functions.
 // ==========================================================================
-// Last updated on 8/23/16; 10/18/16; 12/19/16; 12/23/16
+// Last updated on 10/18/16; 12/19/16; 12/23/16; 1/2/17
 // ==========================================================================
 
 #ifndef MATHFUNCS_H
@@ -172,6 +172,8 @@ namespace mathfunc
      const std::vector<double>& x, const std::vector<double>& pcum, 
      double cumprob);
    void contrast_normalize_histogram(unsigned int H,float* histogram);
+   double KL_divergence(const std::vector<double>& p, 
+                        const std::vector<double>& q);
 
 // Random integer sequence methods:
 

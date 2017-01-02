@@ -286,10 +286,16 @@ int main(int argc, char** argv)
             curr_a = prev_a;
             if(state_updated_flag && curr_s != NULL)
             {
+
+               vector<double> curr_pi_a_given_s;
+               reinforce_agent_ptr->get_pi_action_given_state(
+                  curr_s, curr_pi_a_given_s);
+
                double ran_value = nrfunc::ran1();
                curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-                  ran_value, curr_s, action_prob);
+                  ran_value, curr_pi_a_given_s, action_prob);
 
+/*
                int orig_curr_a = curr_a;
 
 // Experiment with filtering curr_a before retrieving a =
@@ -368,6 +374,9 @@ int main(int argc, char** argv)
                      if(nrfunc::ran1() > 0.5) curr_a = 1;
                   }
                }
+*/
+
+
 /*
                cout << "cum_framenumber = " << cum_framenumber
                     << " raw_a = " << raw_a

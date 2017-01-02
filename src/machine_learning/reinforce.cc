@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/27/16; 12/28/16; 12/29/16; 12/30/16
+// Last modified on 12/28/16; 12/29/16; 12/30/16; 1/2/17
 // ==========================================================================
 
 #include <string>
@@ -1630,6 +1630,8 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
 
 void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
 {
+   if(prob_action_0.size() <= 1) return;
+
    metafile curr_metafile;
    string prob_subdir = output_subdir + "action_probs/";
    filefunc::dircreate(prob_subdir);
@@ -3356,28 +3358,46 @@ void reinforce::P_forward_propagate(genvector* s_input)
 }
 
 // ---------------------------------------------------------------------
+// Member function get_pi_action_given_state() performs a forward pass
+// of the P-network for the input state.  It returns the ouput softmax
+// action probabilities within STL vector pi_a_given_s.
+
+void reinforce::get_pi_action_given_state(
+   genvector* curr_s, vector<double>& pi_a_given_s)
+{
+//   cout << "inside reinforce::get_pi_action_given_state()" << endl;
+   P_forward_propagate(curr_s);
+
+   for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
+   {
+      pi_a_given_s.push_back(A_Prime[n_layers-1]->get(a));
+   }
+}
+
+// ---------------------------------------------------------------------
 // Member function get_P_action_for_curr_state() returns integer index
 // a for the action which is stochastically sampled from the
 // probability distribution encoded in the P-network's final layer.
 // It also returns the probability associated with the sampled action.
 
+/*
 int reinforce::get_P_action_for_curr_state(genvector* curr_s)
 {
    double ran_val = nrfunc::ran1();
    double action_prob;
    return get_P_action_for_curr_state(ran_val, curr_s, action_prob);
 }
+*/
 
-int reinforce::get_P_action_for_curr_state(double ran_val, genvector* curr_s,
-                                           double& action_prob)
+int reinforce::get_P_action_for_curr_state(
+   double ran_val, const vector<double>& pi_a_given_s, double& action_prob)
 {
 //   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
-   P_forward_propagate(curr_s);
 
    double cum_p = 0;
-   for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
+   for(unsigned int a = 0; a < pi_a_given_s.size(); a++)
    {
-      action_prob = A_Prime[n_layers-1]->get(a);
+      action_prob = pi_a_given_s[a];
 //      cout << "a = " << a 
 //           << " action_prob = " << action_prob
 //           << " ran_val = " << ran_val 
@@ -3618,6 +3638,9 @@ double reinforce::update_P_network(bool verbose_flag)
 {
    cout << "inside update_P_network()" << endl;
 
+// FAKE FAKE:  Mon Jan 2 at 9:06 am
+   verbose_flag = true;
+
    compute_renormalized_discounted_eventual_rewards();
 
 // Compute total loss = -sum_i advantage_i * log(action prob_i)
@@ -3625,13 +3648,13 @@ double reinforce::update_P_network(bool verbose_flag)
    double total_loss = 0;
    for(int d = 0; d < replay_memory_capacity; d++)
    {
-      outputfunc::update_progress_fraction(d, 2500, replay_memory_capacity);
+//      outputfunc::update_progress_fraction(d, 2500, replay_memory_capacity);
 
       double curr_loss = P_backward_propagate(
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
    } // loop over index j labeling replay memory samples
-   cout << endl;
+//   cout << endl;
 //   cout << "total_loss = " << total_loss << endl;
 
    if(solver_type == RMSPROP)

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PMAZE solves a maze via policy gradient learning
 // ==========================================================================
-// Last updated on 12/15/16; 12/20/16; 12/24/16; 12/28/16
+// Last updated on 12/20/16; 12/24/16; 12/28/16; 1/2/17
 // ==========================================================================
 
 #include <iostream>
@@ -61,12 +61,12 @@ int main (int argc, char* argv[])
 //   int H1 = 8;
 //   int H1 = 10;
 //   int H1 = 20;
-   int H1 = 32;
+   int H1 = 32;     // 10x10 grids
 
 //   int H2 = 0;
 //   int H2 = 8;
 //   int H2 = 10;
-   int H2 = 16;
+   int H2 = 16;    // 10x10 grids
 
    int H3 = 0;
 //   int H3 = 8;
@@ -92,9 +92,7 @@ int main (int argc, char* argv[])
 //   int n_rollouts = 1000;
    int replay_memory_capacity = n_rollouts;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, replay_memory_capacity, 
-//      reinforce::SGD);
-      reinforce::RMSPROP);
+      layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
    reinforce_agent_ptr->set_environment(&game_world);
 //   reinforce_agent_ptr->set_lambda(0);
@@ -121,14 +119,15 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
-   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 
    int n_max_episodes = 1 * 1000 * 1000;
    int n_lr_episodes_period = 1000 * 1000;
 
-//   int n_update = 100;
-   int n_update = 1000;
-   int n_progress = 100 * 1000;
+   int n_update = 100;
+//   int n_update = 1000;
+   int n_progress = 5 * 1000;
    double Qmap_score = -1;
 
    string basename = "maze";
@@ -209,9 +208,14 @@ int main (int argc, char* argv[])
          d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
 
+         vector<double> curr_pi_a_given_s;
+         reinforce_agent_ptr->get_pi_action_given_state(
+            curr_s, curr_pi_a_given_s);
+
          double ran_value = nrfunc::ran1();
+         double action_prob;
          int curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-            ran_value, curr_s);
+            ran_value, curr_pi_a_given_s, action_prob);
 
          if(!game_world.is_legal_action(curr_a))
          {

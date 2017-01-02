@@ -1,7 +1,7 @@
 // ==========================================================================
 // "Primitive" math functions 
 // ==========================================================================
-// Last updated on 10/18/16; 10/29/16; 12/19/16; 12/23/16
+// Last updated on 10/29/16; 12/19/16; 12/23/16; 1/2/17
 // ==========================================================================
 
 #include <algorithm>
@@ -1656,6 +1656,46 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
       float numer=histogram[h]-mean;
       histogram[h] = numer/sigma;
    }
+}
+
+// ---------------------------------------------------------------------
+// Method function KL_divergence() computes the Kullback-Leibler
+// divergence between input probability densities p and q.  Recall the
+// KL divergence is NOT symmetric between p and q.  p typically
+// represents the "true" distribution of data, while q represents a
+// model approximation of p.  Note D_KL >= 0.
+
+double KL_divergence(const vector<double>& p, const vector<double>& q)
+{
+   if(p.size() != q.size())
+   {
+      cout << "Trouble in mathfunc::KL_divergence()" << endl;
+      cout << "p.size() = " << p.size() << " should equal q.size() = "
+           << q.size() << endl;
+      return -1;
+   }
+   
+   double D_KL = 0;
+   for(unsigned int n = 0; n < p.size(); n++)
+   {
+      double curr_p = p[n];
+      double curr_q = q[n];
+
+      if(nearly_equal(curr_q, 0) && !nearly_equal(curr_p, 0))
+      {
+         cout << "Trouble in mathfunc::KL_divergence()!" << endl;
+         cout << "n = " << n << " curr_p = " << curr_p 
+              << " curr_q = " << curr_q << endl;
+         return -1;
+      }
+      
+      if(curr_p > 0)
+      {
+         D_KL += curr_p * log(curr_p / curr_q);
+      }
+   }
+
+   return D_KL;
 }
 
 // ==========================================================================
