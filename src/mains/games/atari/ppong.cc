@@ -148,6 +148,7 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);  
+   reinforce_agent_ptr->set_max_mean_KL_divergence(1E-4);
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
@@ -451,9 +452,7 @@ int main(int argc, char** argv)
                                     verbose_flag));
             }
 
-            double max_mean_KL_divergence = 1E-4;
-            reinforce_agent_ptr->take_KL_divergence_constrained_step(
-               max_mean_KL_divergence);
+            reinforce_agent_ptr->take_KL_divergence_constrained_step();
             reinforce_agent_ptr->clear_replay_memory();
          }
 

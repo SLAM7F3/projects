@@ -268,6 +268,10 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
    beta1 = beta2 = 0;
    curr_beta1_pow = curr_beta2_pow = 1;
+
+// P learning variable initialization:
+
+   max_mean_KL_divergence = 1E-4;
 }
 
 // ---------------------------------------------------------------------
@@ -489,6 +493,8 @@ void reinforce::summarize_parameters(string params_filename)
    else if(learning_type == PLEARNING)
    {
       params_stream << "P learning" << endl;
+      params_stream << "max mean KL divergence between pi(curr) and pi(next) = " 
+                    << max_mean_KL_divergence << endl;
    }
    else if(learning_type == VLEARNING)
    {
@@ -3896,18 +3902,17 @@ double reinforce::update_P_network(bool verbose_flag)
 }
 
 // ---------------------------------------------------------------------
-// Member function take_KL_divergence_constrained_step() updates the
-// P-network's weights and biases based upon the current learning
-// rate.  It then evaluates the mean KL divergence between the current
-// and next pi outputs.  If the mean KL divergence exceeds input
-// parameter max_mean_KL_divergence, we cut the learning rate by a
-// factor of two and compute a new, smaller set of delta weights and
-// biases.  We iteratively continue this stepping process until either
-// the mean KL divergence bound is respected or a maximum number of
-// undo steps has been performed.
+//  Member function take_KL_divergence_constrained_step() updates the
+//  P-network's weights and biases based upon the current learning
+//  rate.  It then evaluates the mean KL divergence between the
+//  current and next pi outputs.  If the mean KL divergence exceeds
+//  member variable max_mean_KL_divergence, we cut the learning rate
+//  by a factor of two and compute a new, smaller set of delta weights
+//  and biases.  We iteratively continue this stepping process until
+//  either the mean KL divergence bound is respected or a maximum
+//  number of undo steps has been performed.
 
-int reinforce::take_KL_divergence_constrained_step(
-   double max_mean_KL_divergence)
+int reinforce::take_KL_divergence_constrained_step()
 {
    double lr = get_learning_rate();
    update_weights_and_biases(lr);

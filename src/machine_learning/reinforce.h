@@ -83,6 +83,7 @@ class reinforce
    void clear_prob_action_0();
    genvector* get_curr_s_sample();
    const genvector* get_curr_s_sample() const;
+   void set_max_mean_KL_divergence(double delta);
 
    void initialize_episode();
    void snapshot_running_reward();
@@ -235,7 +236,7 @@ class reinforce
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);
    double update_P_network(bool verbose_flag);
-   int take_KL_divergence_constrained_step(double max_mean_KL_divergence);
+   int take_KL_divergence_constrained_step();
 
    void clear_replay_memory();
    void compute_renormalized_discounted_eventual_rewards();
@@ -368,6 +369,7 @@ class reinforce
 
 // P learning variables:
 
+   double max_mean_KL_divergence;
    std::vector<double> prob_action_0;
    std::vector<double> log10_mean_KL_divergences;
    genvector *curr_pi_sample; // Dout x 1
@@ -559,6 +561,12 @@ inline const genvector* reinforce::get_curr_s_sample() const
 {
    return curr_s_sample;
 }
+
+inline void reinforce::set_max_mean_KL_divergence(double delta)
+{
+   max_mean_KL_divergence = delta;
+}
+
 
 #endif  // reinforce.h
 
