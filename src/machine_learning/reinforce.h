@@ -181,11 +181,9 @@ class reinforce
 
    double update_Q_network(bool verbose_flag = false);
    bool get_replay_memory_entry(
-      int d, genvector& curr_s, int& curr_a, double& curr_r,
-      genvector& next_s);
-   void get_replay_memory_entry(
       int d, genvector& curr_s, int& curr_a, double& curr_r);
-
+   bool get_replay_memory_entry(
+      int d, genvector& curr_s, int& curr_a, double& curr_r,genvector& next_s);
    bool store_curr_state_into_eval_memory(const genvector& curr_s);
    void compute_max_eval_Qvalues_distribution();
 
@@ -218,12 +216,10 @@ class reinforce
 
 // Policy gradient learning methods
 
+   void store_curr_pi_into_replay_memory(int d);
    void P_forward_propagate(genvector* s_input);
-   void get_pi_action_given_state(
-      genvector* curr_s, std::vector<double>& pi_a_given_s);
-   int get_P_action_for_curr_state(
-      double ran_val, const std::vector<double>& pi_a_given_s,
-      double& action_prob);
+   void get_pi_action_given_state(genvector* curr_s);
+   int get_P_action_for_curr_state(double ran_val, double& action_prob);
    double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);
@@ -356,6 +352,12 @@ class reinforce
 
    Q_MAP qmap;
    Q_MAP::iterator qmap_iter;
+
+// P learning variables:
+
+   genvector *curr_pi_sample; // Dout x 1
+   genmatrix *pi_curr; // replay_memory_capacity * Dout
+   genmatrix *pi_next; // replay_memory_capacity * Dout
 
 // V learning variables:
 

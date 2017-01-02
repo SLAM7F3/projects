@@ -207,14 +207,13 @@ int main (int argc, char* argv[])
          d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
 
-         vector<double> curr_pi_a_given_s;
-         reinforce_agent_ptr->get_pi_action_given_state(
-            curr_s, curr_pi_a_given_s);
-
+         reinforce_agent_ptr->get_pi_action_given_state(curr_s);
+         reinforce_agent_ptr->store_curr_pi_into_replay_memory(d);
+         
          double ran_value = nrfunc::ran1();
          double action_prob;
          int curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-            ran_value, curr_pi_a_given_s, action_prob);
+            ran_value, action_prob);
 
          if(!game_world.is_legal_action(curr_a))
          {

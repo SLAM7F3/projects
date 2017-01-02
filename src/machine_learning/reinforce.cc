@@ -279,19 +279,30 @@ void reinforce::allocate_member_objects()
    r_curr = new genvector(replay_memory_capacity);
    s_next = new genmatrix(replay_memory_capacity, layer_dims.front());
    terminal_state = new genvector(replay_memory_capacity);
+   curr_s_sample = new genvector(layer_dims.front());
+
+   s_eval = NULL;
+   next_s_sample = NULL;
+   pi_curr = NULL;
+   pi_next = NULL;
+   curr_pi_sample = NULL;
+   prev_afterstate_ptr = NULL;
 
    if (learning_type == QLEARNING)
    {
       s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
+      next_s_sample = new genvector(layer_dims.front());
    }
    else if(learning_type == PLEARNING)
    {
-      s_eval = NULL;
+      pi_curr = new genmatrix(replay_memory_capacity, layer_dims.back());
+      pi_next = new genmatrix(replay_memory_capacity, layer_dims.back());
+      curr_pi_sample = new genvector(layer_dims.back());
    }
-
-   curr_s_sample = new genvector(layer_dims.front());
-   next_s_sample = new genvector(layer_dims.front());
-   prev_afterstate_ptr = new genvector(layer_dims.front());
+   else if (learning_type == VLEARNING)
+   {
+      prev_afterstate_ptr = new genvector(layer_dims.front());
+   }
 }		       
 
 // ---------------------------------------------------------------------
@@ -394,8 +405,12 @@ reinforce::~reinforce()
    delete r_curr;
    delete s_next;
    delete terminal_state;
+   delete pi_curr;
+   delete pi_next;
+
    delete curr_s_sample;
    delete next_s_sample;
+   delete curr_pi_sample;
    delete prev_afterstate_ptr;
 }
 
@@ -2508,7 +2523,6 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
    else
    {
       replay_memory_full_flag = true;
-//      cout << "REPLAY MEMORY IS NOW FULL" << endl;
       replay_memory_index = 0;
       d = replay_memory_index;
    }
@@ -2520,6 +2534,14 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
    
    s_curr->put_row(d, curr_s);
    return d;
+}
+
+// ---------------------------------------------------------------------
+// Member function store_curr_pi_into_replay_memory()
+
+void reinforce::store_curr_pi_into_replay_memory(int d)
+{
+   pi_curr->put_row(d, *curr_pi_sample);
 }
 
 // ---------------------------------------------------------------------
@@ -2570,26 +2592,25 @@ void reinforce::store_ar_into_replay_memory(int d, int curr_a, double curr_r,
 // Member function get_replay_memory_entry()
 
 bool reinforce::get_replay_memory_entry(
-   int d, genvector& curr_s, int& curr_a, double& curr_r, genvector& next_s)
-{
-   s_curr->get_row(d, curr_s);
-   double a_val = a_curr->get(d);
-   curr_a = int(a_val);
-   curr_r = r_curr->get(d);
-   
-   s_next->get_row(d, next_s);
-   bool terminal_state_flag = (terminal_state->get(d) > 0);
-   return terminal_state_flag;
-}
-
-void reinforce::get_replay_memory_entry(
    int d, genvector& curr_s, int& curr_a, double& curr_r)
 {
    s_curr->get_row(d, curr_s);
    double a_val = a_curr->get(d);
    curr_a = int(a_val);
    curr_r = r_curr->get(d);
+
+   bool terminal_state_flag = (terminal_state->get(d) > 0);
+   return terminal_state_flag;
+
 }
+
+bool reinforce::get_replay_memory_entry(
+   int d, genvector& curr_s, int& curr_a, double& curr_r, genvector& next_s)
+{
+   s_next->get_row(d, next_s);
+   return get_replay_memory_entry(d, curr_s, curr_a, curr_r);
+}
+
 
 // ---------------------------------------------------------------------
 // Boolean member function store_curr_state_into_eval_memory() returns
@@ -3359,18 +3380,17 @@ void reinforce::P_forward_propagate(genvector* s_input)
 
 // ---------------------------------------------------------------------
 // Member function get_pi_action_given_state() performs a forward pass
-// of the P-network for the input state.  It returns the ouput softmax
-// action probabilities within STL vector pi_a_given_s.
+// of the P-network for the input state.  It stores the ouput softmax
+// action probabilities within member genvector *curr_pi_sample.
 
-void reinforce::get_pi_action_given_state(
-   genvector* curr_s, vector<double>& pi_a_given_s)
+void reinforce::get_pi_action_given_state(genvector* curr_s)
 {
 //   cout << "inside reinforce::get_pi_action_given_state()" << endl;
    P_forward_propagate(curr_s);
 
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
    {
-      pi_a_given_s.push_back(A_Prime[n_layers-1]->get(a));
+      curr_pi_sample->put(a, A_Prime[n_layers-1]->get(a));
    }
 }
 
@@ -3380,24 +3400,14 @@ void reinforce::get_pi_action_given_state(
 // probability distribution encoded in the P-network's final layer.
 // It also returns the probability associated with the sampled action.
 
-/*
-int reinforce::get_P_action_for_curr_state(genvector* curr_s)
-{
-   double ran_val = nrfunc::ran1();
-   double action_prob;
-   return get_P_action_for_curr_state(ran_val, curr_s, action_prob);
-}
-*/
-
-int reinforce::get_P_action_for_curr_state(
-   double ran_val, const vector<double>& pi_a_given_s, double& action_prob)
+int reinforce::get_P_action_for_curr_state(double ran_val, double& action_prob)
 {
 //   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
 
    double cum_p = 0;
-   for(unsigned int a = 0; a < pi_a_given_s.size(); a++)
+   for(unsigned int a = 0; a < curr_pi_sample->get_mdim(); a++)
    {
-      action_prob = pi_a_given_s[a];
+      action_prob = curr_pi_sample->get(a);
 //      cout << "a = " << a 
 //           << " action_prob = " << action_prob
 //           << " ran_val = " << ran_val 
@@ -3758,25 +3768,13 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
       int curr_a;
       double curr_r;
       bool terminal_state = get_replay_memory_entry(
-         d, *curr_s_sample, curr_a, curr_r, *next_s_sample);
+         d, *curr_s_sample, curr_a, curr_r);
 
       if(terminal_state)
       {
          next_R = 0;
       }
 
-/*
-// FAKE FAKE:  For pmaze only, do NOT discount if next_R == -1:
-// Weds Dec 28 at 11:18 am
-
-      double curr_R = curr_r;
-      if(next_R > 0)
-      {
-         curr_R = curr_r + gamma * next_R;
-      }
-*/
-
-// Breakout:
       double curr_R = curr_r + gamma * next_R;
 
 //      cout << "d = " << d 
