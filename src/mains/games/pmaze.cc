@@ -207,13 +207,14 @@ int main (int argc, char* argv[])
          d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
 
-         reinforce_agent_ptr->compute_curr_pi_given_state(curr_s);
-         reinforce_agent_ptr->store_curr_pi_into_replay_memory(d);
+         genvector *curr_pi = reinforce_agent_ptr->get_curr_s_sample();
+         reinforce_agent_ptr->compute_pi_given_state(curr_s, curr_pi);
+         reinforce_agent_ptr->store_curr_pi_into_replay_memory(d, curr_pi);
          
          double ran_value = nrfunc::ran1();
          double action_prob;
-         int curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
-            ran_value, action_prob);
+         int curr_a = reinforce_agent_ptr->get_P_action_given_pi(
+            curr_pi, ran_value, action_prob);
 
          if(!game_world.is_legal_action(curr_a))
          {
@@ -249,6 +250,9 @@ int main (int argc, char* argv[])
 //               verbose_flag = true;
             }
             total_loss = reinforce_agent_ptr->update_P_network(verbose_flag);
+
+            reinforce_agent_ptr->
+               compute_mean_KL_divergence_between_curr_and_next_pi(); 
             reinforce_agent_ptr->clear_replay_memory();
          }
 

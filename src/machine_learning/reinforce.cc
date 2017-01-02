@@ -277,27 +277,28 @@ void reinforce::allocate_member_objects()
    s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
    a_curr = new genvector(replay_memory_capacity);
    r_curr = new genvector(replay_memory_capacity);
-   s_next = new genmatrix(replay_memory_capacity, layer_dims.front());
    terminal_state = new genvector(replay_memory_capacity);
    curr_s_sample = new genvector(layer_dims.front());
 
+   s_next = NULL;
    s_eval = NULL;
    next_s_sample = NULL;
    pi_curr = NULL;
-   pi_next = NULL;
    curr_pi_sample = NULL;
+   next_pi_sample = NULL;
    prev_afterstate_ptr = NULL;
 
    if (learning_type == QLEARNING)
    {
       s_eval = new genmatrix(eval_memory_capacity, layer_dims.front());
       next_s_sample = new genvector(layer_dims.front());
+      s_next = new genmatrix(replay_memory_capacity, layer_dims.front());
    }
    else if(learning_type == PLEARNING)
    {
       pi_curr = new genmatrix(replay_memory_capacity, layer_dims.back());
-      pi_next = new genmatrix(replay_memory_capacity, layer_dims.back());
       curr_pi_sample = new genvector(layer_dims.back());
+      next_pi_sample = new genvector(layer_dims.back());
    }
    else if (learning_type == VLEARNING)
    {
@@ -406,11 +407,11 @@ reinforce::~reinforce()
    delete s_next;
    delete terminal_state;
    delete pi_curr;
-   delete pi_next;
 
    delete curr_s_sample;
    delete next_s_sample;
    delete curr_pi_sample;
+   delete next_pi_sample;
    delete prev_afterstate_ptr;
 }
 
@@ -1687,6 +1688,52 @@ void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of mean KL divergence vs episode number
+
+void reinforce::plot_KL_divergence_history(
+   string output_subdir, string extrainfo, bool epoch_indep_var)
+{
+   metafile curr_metafile;
+   string meta_filename=output_subdir+"KL_history";
+   string title="Mean KL divergence vs episode; bsize="+
+      stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
+   }
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label = "Episode";
+   double xmax = episode_number;
+   if(epoch_indep_var)
+   {
+      x_label="Epoch";
+      xmax = curr_epoch;
+   }
+   string y_label="log10(mean KL divergence between pi_next and pi_curr)";
+   double min_log10_KL = mathfunc::minimal_value(log10_mean_KL_divergences);
+   double max_log10_KL = mathfunc::maximal_value(log10_mean_KL_divergences);
+   
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      min_log10_KL, max_log10_KL);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, xmax, log10_mean_KL_divergences);
+   curr_metafile.set_thickness(3);
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
 void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
@@ -1979,6 +2026,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
       plot_avg_discounted_eventual_reward(
          output_subdir, extrainfo, epoch_indep_var);
       plot_prob_action_0(output_subdir, extrainfo);
+      plot_KL_divergence_history(output_subdir, extrainfo, epoch_indep_var);
    }
    
    plot_weight_distributions(output_subdir, extrainfo, epoch_indep_var);
@@ -2030,7 +2078,7 @@ void reinforce::generate_view_metrics_script(
    else if(learning_type == PLEARNING)
    {
       script_stream << "view eventual_rewards_history.jpg" << endl;
-      script_stream << "view prob_action_0.jpg" << endl;
+      script_stream << "view KL_history.jpg" << endl;
    }
    
    filefunc::closefile(script_filename, script_stream);
@@ -3376,49 +3424,71 @@ void reinforce::P_forward_propagate(genvector* s_input)
 // softmax action probabilities within member genvector
 // *curr_pi_sample.
 
-void reinforce::compute_curr_pi_given_state(genvector* curr_s)
+void reinforce::compute_pi_given_state(
+   genvector* s_input, genvector* pi_output)
 {
-//   cout << "inside reinforce::compute_pi_action_given_state()" << endl;
-   P_forward_propagate(curr_s);
+//   cout << "inside reinforce::compute_pi_given_state()" << endl;
+   P_forward_propagate(s_input);
 
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
    {
-      curr_pi_sample->put(a, A_Prime[n_layers-1]->get(a));
+      pi_output->put(a, A_Prime[n_layers-1]->get(a));
    }
 }
 
 // ---------------------------------------------------------------------
 // Member function store_curr_pi_into_replay_memory()
 
-void reinforce::store_curr_pi_into_replay_memory(int d)
+void reinforce::store_curr_pi_into_replay_memory(int d, genvector *curr_pi)
 {
-   pi_curr->put_row(d, *curr_pi_sample);
+   pi_curr->put_row(d, *curr_pi);
 }
 
-void reinforce::get_pi_from_replay_memory(int d, genvector& pi_a_given_s)
+void reinforce::get_curr_pi_from_replay_memory(int d)
 {
-   pi_curr->get_row(d, pi_a_given_s);
+   pi_curr->get_row(d, *curr_pi_sample);
 }
 
-
-/*
 // ---------------------------------------------------------------------
-// Member function get_pi_action_given_state() performs a forward pass
-// of the P-network for the input state.  It stores the ouput softmax
-// action probabilities within member genvector *curr_pi_sample.
-
-void reinforce::get_pi_action_for_replay_memory_state(int d)
+void reinforce::compute_next_pi_given_replay_index(int d)
 {
-//   cout << "inside reinforce::get_pi_action_for_replay_memory_state()" << endl;
-   s_curr->get_row(d, *curr_s_sample);
-   P_forward_propagate(curr_s_sample);
+//   cout << "inside reinforce::compute_curr_pi_given_replay_index()" << endl;
 
-   for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
-   {
-      curr_pi_sample->put(a, A_Prime[n_layers-1]->get(a));
-   }
+   s_curr->get_row(d, *curr_s_sample);
+   compute_pi_given_state(curr_s_sample, next_pi_sample);
 }
-*/
+
+// ---------------------------------------------------------------------
+// Member function
+// compute_mean_KL_divergence_between_curr_and_next_pi() loops over
+// every state within the replay memory.  For each state, it retrieves
+// curr_pi which we assume was calculated using the "current" set of
+// P-network weights.  This method subsequently computes next_pi using
+// the "next" set of P-network weights.  The KL divergence between
+// curr_pi and next_pi is calculated over all states in the replay
+// memory.  This method returns the average KL divergence.
+
+double reinforce::compute_mean_KL_divergence_between_curr_and_next_pi()
+{
+   if(!replay_memory_full_flag)
+   {
+      return -1;
+   }
+   
+   double mean_KL = 0;
+   for(int d = 0; d < replay_memory_capacity; d++)
+   {
+      get_curr_pi_from_replay_memory(d);
+      compute_next_pi_given_replay_index(d);
+      mean_KL += mathfunc::KL_divergence(curr_pi_sample, next_pi_sample);
+   }
+   mean_KL /= replay_memory_capacity;
+   if(mean_KL > 1E-20)
+   {
+      log10_mean_KL_divergences.push_back(log10(mean_KL));
+   }
+   return mean_KL;
+}
 
 // ---------------------------------------------------------------------
 // Member function get_P_action_for_curr_state() returns integer index
@@ -3426,14 +3496,15 @@ void reinforce::get_pi_action_for_replay_memory_state(int d)
 // probability distribution encoded in the P-network's final layer.
 // It also returns the probability associated with the sampled action.
 
-int reinforce::get_P_action_for_curr_state(double ran_val, double& action_prob)
+int reinforce::get_P_action_given_pi(
+   genvector *curr_pi, double ran_val, double& action_prob)
 {
-//   cout << "inside reinforce::get_P_action_for_curr_state()" << endl;
+//   cout << "inside reinforce::get_P_action_given_pi()" << endl;
 
    double cum_p = 0;
-   for(unsigned int a = 0; a < curr_pi_sample->get_mdim(); a++)
+   for(unsigned int a = 0; a < curr_pi->get_mdim(); a++)
    {
-      action_prob = curr_pi_sample->get(a);
+      action_prob = curr_pi->get(a);
 //      cout << "a = " << a 
 //           << " action_prob = " << action_prob
 //           << " ran_val = " << ran_val 
@@ -3449,7 +3520,7 @@ int reinforce::get_P_action_for_curr_state(double ran_val, double& action_prob)
       }
    }
 
-   cout << "Error in reinforce::get_P_action_for_curr_state()" << endl;
+   cout << "Error in reinforce::get_P_action_given_pi()" << endl;
    cout << "Should not have reached this point" << endl;
    exit(-1);
    return -1;
@@ -3460,19 +3531,9 @@ int reinforce::get_P_action_for_curr_state(double ran_val, double& action_prob)
 
 double reinforce::compute_curr_P_loss(int d, double action_prob)
 {
-//   cout << "inside reinforce::compute_curr_P_loss()" << endl;
-//   cout << "d=" << d 
-//        << " action_prob=" << action_prob 
-//        << endl;
-
    double curr_advantage = get_advantage(d);
-//   cout << " advantage=" << curr_advantage  << endl;
-      
    double curr_loss = curr_advantage * -log(action_prob);
    curr_loss += L2_loss_contribution();
-//   cout << " curr_loss=" << curr_loss
-//        << endl;
-
    return curr_loss;
 }
 
@@ -3863,8 +3924,18 @@ void reinforce::clear_replay_memory()
    s_curr->clear_values();
    a_curr->clear_values();
    r_curr->clear_values();
-   s_next->clear_values();
+
    terminal_state->clear_values();
+
+   if(s_next != NULL)
+   {
+      s_next->clear_values();
+   }
+
+   if(pi_curr != NULL)
+   {
+      pi_curr->clear_values();
+   }
 }
 
 

@@ -1665,21 +1665,22 @@ void contrast_normalize_histogram(unsigned int H,float* histogram)
 // represents the "true" distribution of data, while q represents a
 // model approximation of p.  Note D_KL >= 0.
 
-double KL_divergence(const vector<double>& p, const vector<double>& q)
+double KL_divergence(const genvector* p, const genvector* q)
 {
-   if(p.size() != q.size())
+   int mdim = p->get_mdim();
+   if(q->get_mdim() != mdim)
    {
       cout << "Trouble in mathfunc::KL_divergence()" << endl;
-      cout << "p.size() = " << p.size() << " should equal q.size() = "
-           << q.size() << endl;
+      cout << "p.mdim = " << mdim
+           << " should equal q.mdim = " << q->get_mdim() << endl;
       return -1;
    }
    
    double D_KL = 0;
-   for(unsigned int n = 0; n < p.size(); n++)
+   for(int n = 0; n < mdim; n++)
    {
-      double curr_p = p[n];
-      double curr_q = q[n];
+      double curr_p = p->get(n);
+      double curr_q = q->get(n);
 
       if(nearly_equal(curr_q, 0) && !nearly_equal(curr_p, 0))
       {

@@ -172,8 +172,7 @@ namespace mathfunc
      const std::vector<double>& x, const std::vector<double>& pcum, 
      double cumprob);
    void contrast_normalize_histogram(unsigned int H,float* histogram);
-   double KL_divergence(const std::vector<double>& p, 
-                        const std::vector<double>& q);
+   double KL_divergence(const genvector* p, const genvector* q);
 
 // Random integer sequence methods:
 

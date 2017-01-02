@@ -81,6 +81,8 @@ class reinforce
    int get_n_backprops() const;
    void push_back_prob_action_0(double p0);
    void clear_prob_action_0();
+   genvector* get_curr_s_sample();
+   const genvector* get_curr_s_sample() const;
 
    void initialize_episode();
    void snapshot_running_reward();
@@ -127,6 +129,8 @@ class reinforce
    void plot_log10_lr_mean_abs_nabla_weight_ratios(
       std::string output_subdir, std::string extrainfo,bool epoch_indep_var);
    void plot_prob_action_0(std::string output_subdir, std::string extrainfo);
+   void plot_KL_divergence_history(
+      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
 
    void plot_bias_distributions(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
@@ -216,17 +220,15 @@ class reinforce
 
 // Policy gradient learning methods
 
-
    void P_forward_propagate(genvector* s_input);
-   void compute_curr_pi_given_state(genvector* curr_s);
+   void compute_pi_given_state(genvector* s_input, genvector *pi_output);
+   void store_curr_pi_into_replay_memory(int d, genvector *curr_pi);
+   void get_curr_pi_from_replay_memory(int d);
+   void compute_next_pi_given_replay_index(int d);
+   double compute_mean_KL_divergence_between_curr_and_next_pi();
 
-   void store_curr_pi_into_replay_memory(int d);
-   void get_pi_from_replay_memory(int d, genvector& pi_a_given_s);
-
-
-
-   int get_P_action_for_curr_state(double ran_val, double& action_prob);
-
+   int get_P_action_given_pi(
+      genvector *curr_pi, double ran_val, double& action_prob);
    double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);
@@ -300,7 +302,7 @@ class reinforce
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
    std::vector<double> log10_lr_mean_abs_nabla_weight_ratios;
-   std::vector<double> prob_action_0;
+
 
    std::vector<double> max_eval_Qvalues_10;
    std::vector<double> max_eval_Qvalues_25;
@@ -362,9 +364,11 @@ class reinforce
 
 // P learning variables:
 
+   std::vector<double> prob_action_0;
+   std::vector<double> log10_mean_KL_divergences;
    genvector *curr_pi_sample; // Dout x 1
+   genvector *next_pi_sample; // Dout x 1
    genmatrix *pi_curr; // replay_memory_capacity * Dout
-   genmatrix *pi_next; // replay_memory_capacity * Dout
 
 // V learning variables:
 
@@ -542,8 +546,15 @@ inline void reinforce::clear_prob_action_0()
    prob_action_0.clear();
 }
 
+inline genvector* reinforce::get_curr_s_sample()
+{
+   return curr_s_sample;
+}
 
-
+inline const genvector* reinforce::get_curr_s_sample() const
+{
+   return curr_s_sample;
+}
 
 #endif  // reinforce.h
 
