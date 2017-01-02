@@ -216,10 +216,17 @@ class reinforce
 
 // Policy gradient learning methods
 
-   void store_curr_pi_into_replay_memory(int d);
+
    void P_forward_propagate(genvector* s_input);
-   void get_pi_action_given_state(genvector* curr_s);
+   void compute_curr_pi_given_state(genvector* curr_s);
+
+   void store_curr_pi_into_replay_memory(int d);
+   void get_pi_from_replay_memory(int d, genvector& pi_a_given_s);
+
+
+
    int get_P_action_for_curr_state(double ran_val, double& action_prob);
+
    double compute_curr_P_loss(int d, double action_prob);
    double P_backward_propagate(int d, int Nd, bool verbose_flag);
    void numerically_check_P_derivs(int d, double ran_value);

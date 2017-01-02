@@ -207,7 +207,7 @@ int main (int argc, char* argv[])
          d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
             *curr_s);
 
-         reinforce_agent_ptr->get_pi_action_given_state(curr_s);
+         reinforce_agent_ptr->compute_curr_pi_given_state(curr_s);
          reinforce_agent_ptr->store_curr_pi_into_replay_memory(d);
          
          double ran_value = nrfunc::ran1();

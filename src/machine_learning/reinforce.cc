@@ -2537,14 +2537,6 @@ int reinforce::store_curr_state_into_replay_memory(const genvector& curr_s)
 }
 
 // ---------------------------------------------------------------------
-// Member function store_curr_pi_into_replay_memory()
-
-void reinforce::store_curr_pi_into_replay_memory(int d)
-{
-   pi_curr->put_row(d, *curr_pi_sample);
-}
-
-// ---------------------------------------------------------------------
 // Member function store_arsprime_into_replay_memory()
 
 void reinforce::store_arsprime_into_replay_memory(
@@ -3379,13 +3371,14 @@ void reinforce::P_forward_propagate(genvector* s_input)
 }
 
 // ---------------------------------------------------------------------
-// Member function get_pi_action_given_state() performs a forward pass
-// of the P-network for the input state.  It stores the ouput softmax
-// action probabilities within member genvector *curr_pi_sample.
+// Member function compute_curr_pi_given_state() performs a forward
+// pass of the P-network for the input state.  It stores the ouput
+// softmax action probabilities within member genvector
+// *curr_pi_sample.
 
-void reinforce::get_pi_action_given_state(genvector* curr_s)
+void reinforce::compute_curr_pi_given_state(genvector* curr_s)
 {
-//   cout << "inside reinforce::get_pi_action_given_state()" << endl;
+//   cout << "inside reinforce::compute_pi_action_given_state()" << endl;
    P_forward_propagate(curr_s);
 
    for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
@@ -3393,6 +3386,39 @@ void reinforce::get_pi_action_given_state(genvector* curr_s)
       curr_pi_sample->put(a, A_Prime[n_layers-1]->get(a));
    }
 }
+
+// ---------------------------------------------------------------------
+// Member function store_curr_pi_into_replay_memory()
+
+void reinforce::store_curr_pi_into_replay_memory(int d)
+{
+   pi_curr->put_row(d, *curr_pi_sample);
+}
+
+void reinforce::get_pi_from_replay_memory(int d, genvector& pi_a_given_s)
+{
+   pi_curr->get_row(d, pi_a_given_s);
+}
+
+
+/*
+// ---------------------------------------------------------------------
+// Member function get_pi_action_given_state() performs a forward pass
+// of the P-network for the input state.  It stores the ouput softmax
+// action probabilities within member genvector *curr_pi_sample.
+
+void reinforce::get_pi_action_for_replay_memory_state(int d)
+{
+//   cout << "inside reinforce::get_pi_action_for_replay_memory_state()" << endl;
+   s_curr->get_row(d, *curr_s_sample);
+   P_forward_propagate(curr_s_sample);
+
+   for(unsigned int a = 0; a < A_Prime[n_layers-1]->get_mdim(); a++)
+   {
+      curr_pi_sample->put(a, A_Prime[n_layers-1]->get(a));
+   }
+}
+*/
 
 // ---------------------------------------------------------------------
 // Member function get_P_action_for_curr_state() returns integer index
