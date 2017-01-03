@@ -296,7 +296,7 @@ int main(int argc, char** argv)
                double ran_value = nrfunc::ran1();
                curr_a = reinforce_agent_ptr->get_P_action_given_pi(
                   curr_pi, ran_value, action_prob);
-
+/*
                int orig_curr_a = curr_a;
 
 // Experiment with filtering curr_a before retrieving a =
@@ -385,6 +385,7 @@ int main(int argc, char** argv)
                      if(nrfunc::ran1() > 0.5) curr_a = 1;
                   }
                }
+*/
 
 
 /*
