@@ -63,17 +63,19 @@ escape even if its step size is later diminished.  In contrast, an SL agent
 often settles into a reasonable local minimum as its step size is annealed.
 
 
+Games provide good test environments for reinforcement learning.  Following
+the release of the Arcade Learning Environment in 2013 [ref], Deep Mind
+published several impressive Atari game learning results based upon Deep Q
+networks [refs].  After this breakthrough, Atari games have become popular
+among RL practioners for developing new algorithms and evaluating their
+performance.  In this post, we explore a deep RL approach based upon policy
+gradient methods to playing the simple Atari game Pong.
 
-
-
-
-Atari Learning Environment
 
 
 
 II.  RL System Architecture
 
-*.  Loss function including L2 regularization
 
 Deep RL system hyperparameters:
 
