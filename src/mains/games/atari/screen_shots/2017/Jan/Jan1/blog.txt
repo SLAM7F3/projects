@@ -1,0 +1,197 @@
+
+
+Learning to play Atari Pong via Policy Gradients
+
+
+I.  Supervised learning vs reinforcement learning
+
+Reinforcement Learning (RL) is typically described in terms of an agent
+interacting with an a priori unknown environment.  The environment's
+starting state is first sampled from some underlying distribution.  The
+agent observes the state and performs some action.  The environment then
+issues a reward whose dependence upon the state and action is initially
+unknown and stochastic.  The basic goal in RL is to improve the agent's
+policy function mapping from environment state history to agent action so
+that the cumulative reward is maximized.
+
+Supervised Learning (SL) may be regarded as a special case of Reinforcement
+Learning.  The environment first samples pairs of input states and
+corresponding output labels from some distribution.  The agent observes an
+input state and makes a prediction for the output label.  The environment
+subsequently issues a negative reward which depends upon the disparity
+between the predicted and genuine output labels.  The basic goal in SL is
+to improve the agent's mapping function from input state to output label so
+that the cumulative negative reward is minimized.
+
+It's useful to draw a picture which highlights similarities and differences
+between supervised and reinforcement learning.  
+
+
+RL is fundamentally more complicated than SL.
+
+*.  Stateful world problem
+
+  An RL agent interacts with an environment whose later states depend upon
+earlier states as well as earlier agent actions.  In contrast, input states
+in supervised learning problems are independent of time and each other.
+
+*.  Action-Reward timing problem
+
+ An RL agent can experience a long delay between the instant when it
+ performs some relevant action and the time when the environment issues
+ an associated reward signal.  In the interim, the agent generally
+ performs many other actions.  In contrast, reward signals in supervised
+ learning settings are in one-to-one correspondence with agent predictions.
+
+*.  Exploration vs exploitation problem
+
+ An RL agent needs to be encouraged to search unfamiliar parts of state
+space to avoid getting trapped in locally maximal but globally suboptimal
+performance regions.  In contrast, an SL agent generally observes all input
+states within its training environment.
+
+*.  Step size problem
+
+ An RL agent which works with an initially large step size can be forced
+into some poor-performance region of state space from which it may never
+escape even if its step size is later diminished.  In contrast, an SL agent
+often settles into a reasonable local minimum as its step size is annealed.
+
+
+
+
+
+
+
+
+
+Atari Learning Environment
+
+
+
+II.  RL System Architecture
+
+*.  Loss function including L2 regularization
+
+Network parameters:
+
+Input layer: 1024 nodes
+Hidden layer 1: 64 nodes
+Hidden layer 2: 32 nodes
+Output layer: 2 nodes
+67,648 weights
+
+Learning rate = 0.001
+RMS solver:  decay rate = 0.9
+RMS denominator constant = 1E-5
+
+L2 regularization coefficient lambda = 0.01
+
+Discount factor gamma = 0.99
+
+Leaky ReLU small slope = 0.01
+1 epoch = 50,000 ALE frames
+
+III.  Pong Results
+
+*.  Probability density distribution for paddle position
+
+*.  Cumulative reward vs epoch
+
+*.  Average eventual reward vs epoch
+
+*.  Number of ALE frames per episode vs epoch
+
+*.  Probability of up action vs ALE frame number for various episodes
+
+*.  Tracks for ball vs paddle
+
+*.  Weight distributions for network layers 0, 1 and 2 versus epoch
+
+*.  Pong game between trained agent and computer AI 
+
+
+
+IV.  References
+
+*.  ALE reference
+
+*.  Kaparthy blog
+
+*.  RMS prop slide
+
+
+
+---------------------------------
+
+
+
+
+Reinforcement learning is a branch of machine learning which is concerned
+with taking sequences of actions.  It's usually described in terms of an
+agent interacting with a previously unknown environment.  The agent tries
+to maximize its cumulative reward by improving its policy function which
+maps from its observation history to its next action.
+
+
+
+
+
+
+Supervised learning:
+
+  .  Environment samples input-output pair (xt, yt) ~ rho
+  .  Agent predicts yhat_t = f(xt)
+  .  Agent receives loss l(yt, yhat_y)
+  .  Environment asks agent a question.  Then it tells agent the right
+answer.
+
+
+
+Reinforcement learning:
+
+  .  Given state, agent outputs some action
+  .  It subsequently receives some reward from the environment whose
+     dependence upon the state and action is a priori unknown and
+     stochastic
+  .  Agent performs a sequence of actions.  Later states depend upon
+     earlier states and previous agent actions.
+
+
+ Input xt depends on
+agent's previous actions.  State distribution is affected by policy.  
+
+
+
+
+   -  Often long delay between when agent performs some relevant action
+      and when it receives a reward signal from the environment
+
+
+
+  - Long-lived agent needs to balance exploration of state space against
+short-term exploitation in order to maximize long term rewards
+
+  -  Need to actively encourage agent to search unfamiliar parts of state
+space so that it avoids getting suticm in local maximum performance region
+
+
+
+
+  -  Hard to choose a reasonable step size that works for the whole
+optimization
+
+  -  Statistics of observations and rewards change during learning
+
+
+
+
+  The statistics of states and rewards evolve during reinforcement
+learning.  It is consequently difficult to choose a reasonable step size
+that works well for the whole optimization procedure.
+
+
+
+
+  2.  Agent doesn't have full access to loss function that it's trying to
+optimize.  Instead, agent must discover loss function via interaction.

@@ -1,0 +1,8 @@
+view log10_losses_history.jpg
+view lr_nabla_weight_ratios.jpg
+view lr_history.jpg
+view reward_history.jpg
+view frames_history.jpg
+view paddle_X.jpg
+view eventual_rewards_history.jpg
+view prob_action_0.jpg
