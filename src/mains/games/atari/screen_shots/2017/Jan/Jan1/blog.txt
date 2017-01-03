@@ -1,4 +1,6 @@
-
+=======================================================================
+Last updated on 1/3/17
+=======================================================================
 
 Learning to play Atari Pong via Policy Gradients
 
@@ -73,6 +75,28 @@ II.  RL System Architecture
 
 *.  Loss function including L2 regularization
 
+Deep RL system hyperparameters:
+
+
+Hyperparameter           Value             Description
+
+Batch size	         2E4              Number of training inputs for
+					   each gradient descent computation
+Learning rate            1E-3             Learning rate for RMSProp
+RMSprop decay rate       0.9              Decay rate for RMSprop weights cache
+RMS denominator constant 1E-5             Const added to squared gradient
+					   in denominator of RMSProp update
+lambda                   1E-2             L2 regularization coefficient
+Leaky ReLU slope         1E-2             Slope for negative inputs in 
+					   Leaky ReLU nonlinearity
+gamma                    0.99             RL discount factor 
+Epoch frames             5E4              Number of ALE frames per epoch
+
+
+
+
+
+
 Network parameters:
 
 Input layer: 1024 nodes
@@ -91,6 +115,12 @@ Discount factor gamma = 0.99
 
 Leaky ReLU small slope = 0.01
 1 epoch = 50,000 ALE frames
+
+
+
+
+
+
 
 III.  Pong Results
 
