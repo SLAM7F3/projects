@@ -236,7 +236,8 @@ int main(int argc, char** argv)
       double cum_reward = 0;
 
       int raw_a;
-      unsigned int max_n_raw_actions = 5;
+      unsigned int max_n_raw_actions = 3;
+//      unsigned int max_n_raw_actions = 5;
       deque<int> raw_actions;
 
       pong_ptr->set_paddle_y(
@@ -348,7 +349,11 @@ int main(int argc, char** argv)
                double denom = 0;
                for(unsigned int j = 0; j < raw_actions.size(); j++)
                {
-                  double coeff = 1 - 0.1 * j * epoch_frac;
+                  double coeff = 1 - 0.1 * j;
+                  const double alpha = 5.0;
+                  double f = exp(-alpha * (1 - epoch_frac) * j);
+                  coeff *= f;
+                  
                   denom += coeff;
                   numer += coeff * raw_actions[raw_actions.size()-1-j];
                }
