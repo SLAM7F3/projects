@@ -26,41 +26,41 @@ to improve the agent's mapping function from input state to output label so
 that the cumulative negative reward is minimized.
 
 It's useful to draw a picture which highlights similarities and differences
-between supervised and reinforcement learning.  
+between supervised and reinforcement learning.  Figure 1 presents a
+schematic diagram which is adapted from refs [] and [].  
 
 
-RL is fundamentally more complicated than SL.
+As the figure indicates, reinforcement learning is fundamentally more
+complex than supervised learning.  In particular, RL must content with
+several challenges that are absent in SL:
 
-*.  Stateful world problem
+1.  Stateful world problem
 
-  An RL agent interacts with an environment whose later states depend upon
-earlier states as well as earlier agent actions.  In contrast, input states
-in supervised learning problems are independent of time and each other.
+   An RL agent interacts with an environment whose later states depend upon
+   earlier states as well as earlier agent actions.  In contrast, input states
+   in supervised learning problems are independent of time and each other.
 
-*.  Action-Reward timing problem
+2.  Action-Reward timing problem
 
- An RL agent can experience a long delay between the instant when it
- performs some relevant action and the time when the environment issues
- an associated reward signal.  In the interim, the agent generally
- performs many other actions.  In contrast, reward signals in supervised
- learning settings are in one-to-one correspondence with agent predictions.
+   An RL agent can experience a long delay between the instant when it
+   performs some relevant action and the time when the environment issues an
+   associated reward signal.  In the interim, the agent generally performs
+many other actions.  In contrast, reward signals in supervised learning
+settings are in one-to-one correspondence with agent predictions.
 
-*.  Exploration vs exploitation problem
+3.  Exploration vs exploitation problem
 
- An RL agent needs to be encouraged to search unfamiliar parts of state
+   An RL agent needs to be encouraged to search unfamiliar parts of state
 space to avoid getting trapped in locally maximal but globally suboptimal
 performance regions.  In contrast, an SL agent generally observes all input
 states within its training environment.
 
-*.  Step size problem
+4.  Step size problem
 
- An RL agent which works with an initially large step size can be forced
+   An RL agent which works with an initially large step size can be forced
 into some poor-performance region of state space from which it may never
 escape even if its step size is later diminished.  In contrast, an SL agent
 often settles into a reasonable local minimum as its step size is annealed.
-
-
-
 
 
 
