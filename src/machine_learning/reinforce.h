@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/27/16; 12/28/16; 12/30/16; 1/2/17
+// Last modified on 12/28/16; 12/30/16; 1/2/17; 1/3/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -153,7 +153,7 @@ class reinforce
 
    void clear_delta_nablas();
    void clear_nablas();
-   double update_weights_and_biases(double lr);
+   void update_weights_and_biases(double lr);
    void decrease_learning_rate();
 
 // Q learning methods

@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/28/16; 12/29/16; 12/30/16; 1/2/17
+// Last modified on 12/29/16; 12/30/16; 1/2/17; 1/3/17
 // ==========================================================================
 
 #include <string>
@@ -2316,7 +2316,7 @@ void reinforce::clear_nablas()
 // ---------------------------------------------------------------------
 // Member function update_weights_and_biases()
 
-double reinforce::update_weights_and_biases(double lr)
+void reinforce::update_weights_and_biases(double lr)
 {
    if(include_bias_terms)
    {

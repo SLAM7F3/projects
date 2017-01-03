@@ -4292,14 +4292,6 @@ Process ID = 785
 
 Paddle becomes strongly biased towards LHS
 
-
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-THINKMATE
----------
-
 246.  max mean KL divergence = 1E-6
 
 Mon Jan  2 14:55:52 2017
@@ -4362,6 +4354,12 @@ Process ID = 8252
 
 Paddle distribution heavily biased towards LHS
 
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+THINKMATE
+---------
 
 TITAN 1:  
 --------

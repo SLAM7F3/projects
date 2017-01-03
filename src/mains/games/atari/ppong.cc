@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/30/16; 12/31/16; 1/1/17; 1/2/17
+// Last updated on 12/31/16; 1/1/17; 1/2/17; 1/3/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -148,7 +148,8 @@ int main(int argc, char** argv)
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);  
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);  
-   reinforce_agent_ptr->set_max_mean_KL_divergence(1E-4);
+//   reinforce_agent_ptr->set_max_mean_KL_divergence(1E-4);
+   reinforce_agent_ptr->set_max_mean_KL_divergence(POSITIVEINFINITY);
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
@@ -296,11 +297,20 @@ int main(int argc, char** argv)
                curr_a = reinforce_agent_ptr->get_P_action_given_pi(
                   curr_pi, ran_value, action_prob);
 
-/*
                int orig_curr_a = curr_a;
 
 // Experiment with filtering curr_a before retrieving a =
 // minimal_actions[filtered_a]
+
+               double epoch_frac = 0;
+               double epoch_frac_start = 400;
+               double epoch_frac_stop = 1000;
+               if(curr_epoch > epoch_frac_start)
+               {
+                  epoch_frac = (curr_epoch - epoch_frac_start) / 
+                     (epoch_frac_stop - epoch_frac_start);
+                  epoch_frac = basic_math::min(epoch_frac, 1.0);
+               }
 
                if(n_actions == 3)
                {
@@ -338,7 +348,7 @@ int main(int argc, char** argv)
                double denom = 0;
                for(unsigned int j = 0; j < raw_actions.size(); j++)
                {
-                  double coeff = 1 - 0.1 * j;
+                  double coeff = 1 - 0.1 * j * epoch_frac;
                   denom += coeff;
                   numer += coeff * raw_actions[raw_actions.size()-1-j];
                }
@@ -375,7 +385,6 @@ int main(int argc, char** argv)
                      if(nrfunc::ran1() > 0.5) curr_a = 1;
                   }
                }
-*/
 
 
 /*
