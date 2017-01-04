@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 12/29/16; 12/30/16; 1/2/17; 1/3/17
+// Last modified on 12/30/16; 1/2/17; 1/3/17; 1/4/17
 // ==========================================================================
 
 #include <string>
@@ -224,7 +224,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       {
          for(int j = 0; j < layer_dims[l]; j++)
          {
-            curr_weights->put(i, j, nrfunc::gasdev() / sqrt(layer_dims[l]) );
+            curr_weights->put(
+               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
             curr_old_weights->put(i, j, curr_weights->get(i, j));
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
@@ -452,6 +453,11 @@ void reinforce::snapshot_cumulative_reward(double cum_reward)
 void reinforce::append_n_frames_per_episode(int n_frames)
 {
    n_frames_per_episode.push_back(n_frames);
+}
+
+void reinforce::update_episode_number_history()
+{
+   episode_number_history.push_back(episode_number);
 }
 
 void reinforce::append_epsilon()
@@ -1328,6 +1334,80 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo,
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of total number of episodes vs epoch.
+
+void reinforce::plot_episode_number_history(
+   string output_subdir, string extrainfo, bool epoch_indep_var)
+{
+   if(episode_number_history.size() < 5) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir+"n_episodes";
+   string title="Number of episodes; bsize="+
+      stringfunc::number_to_string(batch_size);
+   if(lambda > 1E-5)
+   {
+      title += "; lambda="+stringfunc::number_to_string(lambda);
+      title += "; nweights="+stringfunc::number_to_string(n_weights);
+   }
+
+   string subtitle=init_subtitle();
+   subtitle += " "+extrainfo;
+   string x_label = "Episode";
+   double xmax = episode_number;
+   if(epoch_indep_var)
+   {
+      xmax = curr_epoch;
+      x_label="Epoch";
+   }
+   string y_label="Number of episodes";
+   double min_episodes = 0;
+   double max_episodes = mathfunc::maximal_value(episode_number_history);
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      min_episodes, max_episodes);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(0, xmax, episode_number_history);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy episode history values:
+
+   double sigma = 10;
+   if(episode_number_history.size() > 100)
+   {
+      sigma += log10(episode_number_history.size())/log10(2.0);
+   }
+   double dx = 1;
+   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+   if(gaussian_size < int(n_frames_per_episode.size())) 
+   {
+      vector<double> h;
+      h.reserve(gaussian_size);
+      filterfunc::gaussian_filter(dx, sigma, h);
+
+      bool wrap_around_input_values = false;
+      vector<double> smoothed_episode_number_history;
+      filterfunc::brute_force_filter(
+         episode_number_history, h, smoothed_episode_number_history, 
+         wrap_around_input_values);
+
+      curr_metafile.write_curve(
+         0, xmax, smoothed_episode_number_history, colorfunc::blue);
+   }
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of epsilon vs episode number
 
 void reinforce::plot_epsilon_history(string output_subdir, string extrainfo,
@@ -2071,13 +2151,14 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
 
    plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
+   plot_episode_number_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_lr_mean_abs_nabla_weight_ratios(
       output_subdir, extrainfo, epoch_indep_var);
 }
 
 // ---------------------------------------------------------------------
-// Member fucntion generate_view_metrics_script creates an executable
+// Member function generate_view_metrics_script creates an executable
 // script which displays reward, nframes/episode, max Q and epsilon
 // history metafile outputs.
 

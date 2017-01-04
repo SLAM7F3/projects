@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/31/16; 1/1/17; 1/2/17; 1/3/17
+// Last updated on 1/1/17; 1/2/17; 1/3/17; 1/4/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 // Construct reinforcement learning agent:
 
    int nframes_per_epoch = 50 * 1000;
-   int n_max_epochs = 3000;
+   int n_max_epochs = 2000;
 //   int replay_memory_capacity = 10 * 1000;
    int replay_memory_capacity = 20 * 1000;
 
@@ -236,8 +236,8 @@ int main(int argc, char** argv)
       double cum_reward = 0;
 
       int raw_a;
-      unsigned int max_n_raw_actions = 3;
-//      unsigned int max_n_raw_actions = 5;
+//      unsigned int max_n_raw_actions = 3;
+      unsigned int max_n_raw_actions = 5;
       deque<int> raw_actions;
 
       pong_ptr->set_paddle_y(
@@ -298,6 +298,7 @@ int main(int argc, char** argv)
                curr_a = reinforce_agent_ptr->get_P_action_given_pi(
                   curr_pi, ran_value, action_prob);
 
+/*
                int orig_curr_a = curr_a;
 
 // Experiment with filtering curr_a before retrieving a =
@@ -390,6 +391,7 @@ int main(int argc, char** argv)
                      if(nrfunc::ran1() > 0.5) curr_a = 1;
                   }
                }
+*/
 
 /*
                cout << "cum_framenumber = " << cum_framenumber
@@ -517,6 +519,7 @@ int main(int argc, char** argv)
 
       reinforce_agent_ptr->append_n_frames_per_episode(
          curr_episode_framenumber);
+      reinforce_agent_ptr->update_episode_number_history();
       reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 

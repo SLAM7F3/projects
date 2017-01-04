@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 10/19/16; 10/20/16; 12/27/16; 12/28/16
+// Last modified on 10/20/16; 12/27/16; 12/28/16; 1/4/17
 // ==========================================================================
 
 #include <iostream>
@@ -46,10 +46,6 @@ void neural_net::initialize_member_objects(
 
 void neural_net::allocate_member_objects()
 {
-   for(unsigned int l = 0; l < n_layers; l++)
-   {
-      
-   }
 }		       
 
 // Input STL vector sizes contains the number of neurons in the
@@ -113,7 +109,8 @@ neural_net::neural_net(const vector<int>& n_nodes_per_layer)
       {
          for(int j = 0; j < layer_dims[l]; j++)
          {
-            curr_weights->put(i, j, nrfunc::gasdev() / sqrt(layer_dims[l]) );
+            curr_weights->put(
+               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
