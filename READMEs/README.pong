@@ -1462,6 +1462,72 @@ Process ID = 10869
 
 Total failure!
 
+
+52.  Sanity check:  no KL constraint; no low pass filtering; n_actions = 3
+
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -67841
+Process ID = 21081
+
+Results after 580 epochs look reasonable.  After 2400 episodes, loss
+function magnitude decreases slowly.  All metrics look good
+including Y paddle distribution.
+
+53.  Sanity check:  no KL constraint; no low pass filtering
+
+Tue Jan  3 10:24:07 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -67846
+Process ID = 21212
+
+Results after 560 epochs look reasonable.  After 2400 episodes, metrics are
+OK but not as nice as those for expt 52.
+
+
 54.  Titan 3: Anneal low pass filtering coeffs, disable KL divergence
 constraint on learning; n_actions = 2
 
@@ -1571,7 +1637,67 @@ Thinkmate
 Titan 1:
 -------
 
-52.  Sanity check:  no KL constraint; no low pass filtering; n_actions = 3
+61.  max n_epochs = 4000; Xavier init includes sqrt(2); generate episodes
+vs epochs plot
+
+Wed Jan  4 14:59:29 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 4000
+Random seed = -70767
+Process ID = 19366
+
+62.  max n_epochs = 4000; Xavier init includes sqrt(2); generate episodes
+vs epochs plot
+Wed Jan  4 14:59:37 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 4000
+Random seed = -70774
+Process ID = 19374
+
+63.  max n_epochs = 4000; Xavier init includes sqrt(2); generate episodes
+vs epochs plot
 
 Neural net params:
    n_layers = 4
@@ -1595,17 +1721,14 @@ n_actions = 3
 Leaky ReLU small slope = 0.01
 Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -67841
-Process ID = 21081
+n_max_epochs = 4000
+Random seed = -70850
+Process ID = 19857
 
-Results after 580 epochs look reasonable.  After 2400 episodes, loss
-function magnitude decreases slowly.  All metrics look good
-including Y paddle distribution.
+64.  max n_epochs = 4000; Xavier init includes sqrt(2); generate episodes
+vs epochs plot
 
-53.  Sanity check:  no KL constraint; no low pass filtering
-
-Tue Jan  3 10:24:07 2017
+Wed Jan  4 15:01:10 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 1024
@@ -1628,12 +1751,9 @@ n_actions = 3
 Leaky ReLU small slope = 0.01
 Learning rate decrease period = 10000 episodes
 nframes / epoch = 50000
-n_max_epochs = 3000
-Random seed = -67846
-Process ID = 21212
-
-Results after 560 epochs look reasonable.  After 2400 episodes, metrics are
-OK but not as nice as those for expt 52.
+n_max_epochs = 4000
+Random seed = -70869
+Process ID = 20086
 
 Titan 3:
 -------
