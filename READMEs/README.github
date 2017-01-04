@@ -294,3 +294,4 @@ use_math: true
 5.  On local machine inside ~/programs/c++/git/, chant
 
         git clone git@github.com:PeterCho/eyeglass.git
+

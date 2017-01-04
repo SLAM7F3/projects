@@ -1637,6 +1637,124 @@ OK but not as nice as those for expt 52.
 
 Titan 3:
 -------
+
+57.  Xavier init includes sqrt(2); generate episodes vs epochs plot
+
+Wed Jan  4 07:54:09 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45246
+Process ID = 7575
+
+58.  Xavier init includes sqrt(2); generate episodes vs epochs plot
+
+Wed Jan  4 07:54:20 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45258
+Process ID = 7584
+
+59.  Xavier init includes sqrt(2); generate episodes vs epochs plot
+
+Wed Jan  4 07:54:24 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45263
+Process ID = 7592
+
+60.  Xavier init includes sqrt(2); generate episodes vs epochs plot
+
+Wed Jan  4 07:55:55 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45353
+Process ID = 8779
+
+
 ===========================================================
 Conclusions from 18 expt runs on Fri Dec 30:
 
