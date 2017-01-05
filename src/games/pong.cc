@@ -361,7 +361,6 @@ void pong::plot_paddle_accel(string output_subdir, int episode_number,
    string title="Paddle acceleration";
    string subtitle="Cumulative reward = "+stringfunc::number_to_string(
       cum_reward);
-
    string x_label = "Frame number for episode "+stringfunc::number_to_string(
       episode_number);
    double xmax = get_paddle_track().size();
@@ -369,9 +368,26 @@ void pong::plot_paddle_accel(string output_subdir, int episode_number,
 
    double min_accel = mathfunc::minimal_value(paddle_accel);
    double max_accel = mathfunc::maximal_value(paddle_accel);
+
+// Compute median and quartile width for instantaneous accel
+// magnitudes:
+
+   vector<double> accel_mags;
+   for(unsigned int i = 0; i < paddle_accel.size(); i++)
+   {
+      accel_mags.push_back(fabs(paddle_accel[i]));
+   }
+
+   double median_accel_mag, qw_accel_mag;
+   mathfunc::median_value_and_quartile_width(
+      accel_mags, median_accel_mag, qw_accel_mag);
+   subtitle += "; median accel mag = "+stringfunc::number_to_string(
+      median_accel_mag)+"; qw accel mag = "+stringfunc::number_to_string(
+         qw_accel_mag);
    
    vector<double> xsteps;
-   int tmax = 10 * 1000;
+   int tmax = basic_math::min(10 * 1000, int(xmax));
+   
    for(int t = 0; t < tmax; t++)
    {
       double frac = double(t) / tmax;
