@@ -1,7 +1,7 @@
 // ==========================================================================
 // Metafile class member function definitions
 // ==========================================================================
-// Last modified on 9/25/14; 11/1/15; 10/19/16; 1/2/17
+// Last modified on 11/1/15; 10/19/16; 1/2/17; 1/5/17
 // ==========================================================================
 
 #include "math/basic_math.h"
@@ -426,10 +426,18 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
    for (unsigned int i=0; i<X.size(); i++)
    {
       double i_frac = double(i) / (X.size() - 1);
-      int j = i_frac * (Y.size() - 1);
+      int j_max = Y.size() - 1;
+      double j = i_frac * j_max;
 
-      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[j])) continue;
-      metastream << X[i] << "\t" << Y[j] << endl;
+      int j_lo = basic_math::mytruncate(j);
+      int j_hi = basic_math::min(j_lo + 1, j_max);
+
+      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[j_lo])
+         || mathfunc::my_isnan(Y[j_hi])) continue;
+
+      double alpha = j - j_lo;
+      double Yinterp = alpha * Y[j_lo] + (1 - alpha) * Y[j_hi];
+      metastream << X[i] << "\t" << Yinterp << endl;
 
 //      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
 //      metastream << X[i] << "\t" << Y[i] << endl;

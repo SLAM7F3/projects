@@ -183,8 +183,8 @@ int main(int argc, char** argv)
    minimal_actions.push_back(PLAYER_A_LEFT);
 
 //   const double delayed_accel_penalty = 1E-3;
-   const double delayed_accel_penalty = 1E-4;
-//   const double delayed_accel_penalty = 0.0;
+//   const double delayed_accel_penalty = 1E-4;
+   const double delayed_accel_penalty = 0.0;
 
 // Generate text file summary of parameter values:
 
