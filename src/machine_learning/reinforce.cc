@@ -1276,7 +1276,7 @@ void reinforce::plot_frames_history(string output_subdir, string extrainfo,
    subtitle += " "+extrainfo;
    double xmax = curr_epoch;
    string x_label="Epoch";
-   string y_label="Number of ALE frames";
+   string y_label="Number of ALE frames per episode";
    double min_frames = 0;
    double max_frames = mathfunc::maximal_value(n_frames_per_episode);
 
@@ -1447,11 +1447,13 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo,
 void reinforce::plot_lr_history(string output_subdir, string extrainfo,
                                 bool epoch_indep_var)
 {
-   if(epsilon_values.size() < 5) return;
+   cout << "inside plot_lr_history()" << endl;
+   cout << "epoch_history.size = " << epoch_history.size() << endl;
+   cout << "learning_rate.size = " << learning_rate.size() << endl;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+"lr_history";
-   string title="Learning rate vs episode";
+   string title="Learning rate vs epoch";
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
@@ -1464,8 +1466,14 @@ void reinforce::plot_lr_history(string output_subdir, string extrainfo,
    double xmax = curr_epoch;
    string y_label="Learning rate";
 
-   double max_lr = mathfunc::maximal_value(learning_rate);
    double min_lr = mathfunc::minimal_value(learning_rate);
+   double max_lr = mathfunc::maximal_value(learning_rate);
+   if(nearly_equal(min_lr, max_lr))
+   {
+      double avg_lr = 0.5 * (min_lr + max_lr);
+      min_lr = 0.5 * avg_lr;
+      max_lr = 1.5 * avg_lr;
+   }
 
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, xmax, min_lr, max_lr);
@@ -1633,8 +1641,8 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
 void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
    string output_subdir, string extrainfo,bool epoch_indep_var)
 {
-   cout << "inside reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios()" << endl;
-   
+   if(log10_lr_mean_abs_nabla_weight_ratios.size() < 3) return;
+
    metafile curr_metafile;
    string meta_filename=output_subdir + "/lr_nabla_weight_ratios";
 
@@ -1672,11 +1680,6 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
    double dx = 1;
    int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
-   cout << "sigma = " << sigma << " gaussian_size = " << gaussian_size
-        << " log10_lr_mean_abs_nabla_weight_ratios.size() = "
-        << log10_lr_mean_abs_nabla_weight_ratios.size()
-        << endl;
-   
    vector<double> smoothed_log10_nablas;
    if(gaussian_size < int(log10_lr_mean_abs_nabla_weight_ratios.size())) 
    {
@@ -1688,11 +1691,6 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
       filterfunc::brute_force_filter(
          log10_lr_mean_abs_nabla_weight_ratios, h, 
          smoothed_log10_nablas, wrap_around_input_values);
-
-      cout << "epoch_history.size = " << epoch_history.size() << endl;
-      cout << "smoothed_log10_nablas.size = "
-           << smoothed_log10_nablas.size() << endl;
-      
       curr_metafile.write_curve(
          epoch_history, smoothed_log10_nablas, colorfunc::blue);
    }
@@ -2085,10 +2083,23 @@ void reinforce::plot_quasirandom_weight_values(
 void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
                                        bool epoch_indep_var)
 {
-/*
+   plot_episode_number_history(output_subdir, extrainfo, epoch_indep_var);
+
+   plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
+   bool plot_cumulative_reward = true;
+   plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
+                       epoch_indep_var);
+   plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
+
+   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
+   plot_log10_lr_mean_abs_nabla_weight_ratios(
+      output_subdir, extrainfo, epoch_indep_var);
+
    if(get_include_bias_terms()){
       plot_bias_distributions(output_subdir, extrainfo, epoch_indep_var);
    }
+   plot_weight_distributions(output_subdir, extrainfo, epoch_indep_var);
+   plot_quasirandom_weight_values(output_subdir, extrainfo, epoch_indep_var);
 
    if (learning_type == QLEARNING)
    {
@@ -2102,28 +2113,6 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
       plot_prob_action_0(output_subdir, extrainfo);
       plot_KL_divergence_history(output_subdir, extrainfo, epoch_indep_var);
    }
-   
-   plot_weight_distributions(output_subdir, extrainfo, epoch_indep_var);
-   plot_quasirandom_weight_values(output_subdir, extrainfo, epoch_indep_var);
-   bool plot_cumulative_reward = true;
-   plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
-                       epoch_indep_var);
-*/
-
-   plot_episode_number_history(output_subdir, extrainfo, epoch_indep_var);
-   plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
-
-
-/*
-   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
-   plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
-
-
-   plot_log10_lr_mean_abs_nabla_weight_ratios(
-      output_subdir, extrainfo, epoch_indep_var);
-
-*/
-
 }
 
 // ---------------------------------------------------------------------
@@ -2137,9 +2126,10 @@ void reinforce::generate_view_metrics_script(
    string script_filename=output_subdir + "view_metrics";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
+   script_stream << "view n_episodes.jpg" << endl;
    script_stream << "view log10_losses_history.jpg" << endl;
-   script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
    script_stream << "view lr_history.jpg" << endl;
+   script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
 
    if(Qmap_score_flag)  // maze solving
    {
@@ -2147,8 +2137,8 @@ void reinforce::generate_view_metrics_script(
    }
    else // breakout, pong
    {
-      script_stream << "view reward_history.jpg" << endl;
       script_stream << "view frames_history.jpg" << endl;
+      script_stream << "view reward_history.jpg" << endl;
       script_stream << "view paddle_X.jpg" << endl;
       script_stream << "view paddle_Y.jpg" << endl;
    }

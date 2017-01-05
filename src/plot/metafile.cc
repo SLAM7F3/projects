@@ -419,10 +419,21 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
       metastream << "label '" << legendlabel << "'" << endl;
    }
 
+// As of 1/5/17, we experiment with allowing X and Y to have different
+// sizes.  But we assume that they are both functions of some common
+// underlying parameter (e.g. time).  
+
    for (unsigned int i=0; i<X.size(); i++)
    {
-      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
-      metastream << X[i] << "\t" << Y[i] << endl;
+      double i_frac = double(i) / (X.size() - 1);
+      int j = i_frac * (Y.size() - 1);
+
+      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[j])) continue;
+      metastream << X[i] << "\t" << Y[j] << endl;
+
+//      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
+//      metastream << X[i] << "\t" << Y[i] << endl;
+
    }
 }
 

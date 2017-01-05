@@ -153,8 +153,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 5;
-//   int n_episode_update = 25;
+//   int n_episode_update = 5;
+   int n_episode_update = 25;
    int export_screens_period = 200;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -235,11 +235,6 @@ int main(int argc, char** argv)
       Action a;
       double cum_reward = 0;
 
-      int raw_a;
-//      unsigned int max_n_raw_actions = 3;
-      unsigned int max_n_raw_actions = 5;
-      deque<int> raw_actions;
-
       pong_ptr->set_paddle_y(
          pong_ptr->get_default_starting_paddle_y());
 
@@ -297,115 +292,6 @@ int main(int argc, char** argv)
                double ran_value = nrfunc::ran1();
                curr_a = reinforce_agent_ptr->get_P_action_given_pi(
                   curr_pi, ran_value, action_prob);
-
-/*
-               int orig_curr_a = curr_a;
-
-// Experiment with filtering curr_a before retrieving a =
-// minimal_actions[filtered_a]
-
-               double epoch_frac = 0;
-               double epoch_frac_start = 400;
-               double epoch_frac_stop = 1000;
-               if(curr_epoch > epoch_frac_start)
-               {
-                  epoch_frac = (curr_epoch - epoch_frac_start) / 
-                     (epoch_frac_stop - epoch_frac_start);
-                  epoch_frac = basic_math::min(epoch_frac, 1.0);
-               }
-
-               if(n_actions == 3)
-               {
-                  if(curr_a == 0) // no_op
-                  {
-                     raw_a = 0;
-                  }
-                  else if (curr_a == 1) // move right
-                  {
-                     raw_a = 1;
-                  }
-                  else  // move_left
-                  {
-                     raw_a = -1;  
-                  }
-               }
-               else
-               {
-                  if(curr_a == 0)  // move right
-                  {
-                     raw_a = 1;
-                  }
-                  else   // move_left
-                  {
-                     raw_a = -1;
-                  }
-               }
-               if(raw_actions.size() == max_n_raw_actions)
-               {
-                  raw_actions.pop_front();
-               }
-               raw_actions.push_back(raw_a);
-
-               double numer = 0;
-               double denom = 0;
-               for(unsigned int j = 0; j < raw_actions.size(); j++)
-               {
-                  double coeff = 1 - 0.1 * j;
-                  const double alpha = 5.0;
-                  double f = exp(-alpha * (1 - epoch_frac) * j);
-                  coeff *= f;
-                  
-                  denom += coeff;
-                  numer += coeff * raw_actions[raw_actions.size()-1-j];
-               }
-               int filtered_a = basic_math::round(numer/denom);
-
-               if(n_actions == 3)
-               {
-                  if(filtered_a == 0)  // no op
-                  {
-                     curr_a = 0;
-                  }
-                  else if (filtered_a == 1) // move right
-                  {
-                     curr_a = 1;
-                  }   // move_left
-                  else
-                  {
-                     curr_a = 2;
-                  }
-               }
-               else
-               {
-                  if(filtered_a == 1)   // move right
-                  {
-                     curr_a = 0; 
-                  }
-                  else if (filtered_a == -1)  // move left
-                  {
-                     curr_a = 1;
-                  }
-                  else   // no op
-                  {
-                     curr_a = 0;
-                     if(nrfunc::ran1() > 0.5) curr_a = 1;
-                  }
-               }
-*/
-
-/*
-               cout << "cum_framenumber = " << cum_framenumber
-                    << " raw_a = " << raw_a
-                    << " numer/denom = " << numer/denom
-                    << " filtered_a = " << filtered_a 
-                    << " orig_curr_a = " << orig_curr_a
-                    << " filtered curr_a = " << curr_a;
-               if(curr_a != orig_curr_a )
-               {
-                  cout << "   ****";
-               }
-               cout << endl;
-*/
 
                if(curr_a == 0)
                {
@@ -522,7 +408,6 @@ int main(int argc, char** argv)
       reinforce_agent_ptr->update_n_frames_per_episode(
          curr_episode_framenumber);
       reinforce_agent_ptr->update_cumulative_reward(cum_reward);
-      reinforce_agent_ptr->increment_episode_number();      
 
       double log10_total_loss = log10(total_loss);
       cout << "  total_loss = " << total_loss
@@ -531,8 +416,7 @@ int main(int argc, char** argv)
 
 // Periodically export status info:
 
-      if(curr_episode_number >= n_episode_update - 1 && 
-         curr_episode_number % n_episode_update == 0)
+      if(curr_episode_number % n_episode_update == 0)
       {
          outputfunc::print_elapsed_time();
          if(reinforce_agent_ptr->get_include_bias_terms()){
@@ -542,15 +426,22 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
-         reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
-         pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
-         pong_ptr->plot_tracks(output_subdir, curr_episode_number, cum_reward);
+
+         if(curr_episode_number > 1)
+         {
+            reinforce_agent_ptr->generate_summary_plots(
+               output_subdir, extrainfo);
+            reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
+            pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
+            pong_ptr->plot_tracks(output_subdir, curr_episode_number, 
+                                  cum_reward);
+         }
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
 
-         if(curr_episode_number % 5 * n_episode_update == 0)
+         if(curr_episode_number > 0 && 
+            curr_episode_number % 5 * n_episode_update == 0)
          {
             int n_reduced_xdim = pong_ptr->get_n_reduced_xdim();
             int n_reduced_ydim = pong_ptr->get_n_reduced_ydim();
@@ -573,6 +464,7 @@ int main(int argc, char** argv)
 
       reinforce_agent_ptr->clear_prob_action_0();
       pong_ptr->clear_tracks();
+      reinforce_agent_ptr->increment_episode_number(); 
 
    } // curr_epoch < n_max_epochs while loop
 
