@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 1/1/17; 1/2/17; 1/3/17; 1/4/17
+// Last updated on 1/2/17; 1/3/17; 1/4/17; 1/5/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -182,6 +182,9 @@ int main(int argc, char** argv)
    minimal_actions.push_back(PLAYER_A_RIGHT);
    minimal_actions.push_back(PLAYER_A_LEFT);
 
+//   const double delayed_accel_penalty = 0.0;
+   const double delayed_accel_penalty = 1E-4;
+
 // Generate text file summary of parameter values:
 
    string params_filename = output_subdir + "params.dat";
@@ -194,6 +197,8 @@ int main(int argc, char** argv)
                  << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
+   params_stream << "Delayed accel penalty = " << delayed_accel_penalty
+                 << endl;
    params_stream << "nframes / epoch = " << nframes_per_epoch << endl;
    params_stream << "n_max_epochs = " << n_max_epochs << endl;
    params_stream << "Random seed = " << seed << endl;
@@ -318,7 +323,7 @@ int main(int argc, char** argv)
             pong_ptr->decrement_paddle_y();
          }
          pong_ptr->push_back_paddle_y();
-         pong_ptr->update_tracks();
+         double delayed_accel = pong_ptr->update_tracks();
 
 //         cout << "cum_framenumber = " << cum_framenumber
 //              << " curr_a = " << curr_a
@@ -330,8 +335,9 @@ int main(int argc, char** argv)
 
          double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
-         double renorm_reward = curr_reward;
-
+         double renorm_reward = curr_reward - 
+            delayed_accel_penalty * fabs(delayed_accel);
+         
          if(d >= 0)
          {
             reinforce_agent_ptr->store_ar_into_replay_memory(
@@ -435,6 +441,8 @@ int main(int argc, char** argv)
             pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
             pong_ptr->plot_tracks(output_subdir, curr_episode_number, 
                                   cum_reward);
+            pong_ptr->plot_paddle_accel(output_subdir, curr_episode_number, 
+                                        cum_reward);
          }
 
 // Export trained weights in neural network's zeroth layer as

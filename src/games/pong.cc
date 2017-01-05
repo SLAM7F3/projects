@@ -1,7 +1,7 @@
 // ==========================================================================
 // pong class member function definitions
 // ==========================================================================
-// Last modified on 12/26/16; 12/30/16; 12/31/16; 1/1/17
+// Last modified on 12/30/16; 12/31/16; 1/1/17; 1/5/17
 // ==========================================================================
 
 // Notes: 
@@ -344,16 +344,71 @@ void pong::plot_tracks(string output_subdir, int episode_number,
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of paddle acceleration versus frame
+// for a particular episode.
+
+void pong::plot_paddle_accel(string output_subdir, int episode_number, 
+                             double cum_reward)
+{
+   metafile curr_metafile;
+   string tracks_subdir = output_subdir + "tracks/";
+   filefunc::dircreate(tracks_subdir);
+   string accel_subdir = tracks_subdir + "accels/";
+   filefunc::dircreate(accel_subdir);
+   string meta_filename=accel_subdir + "/accels_"+
+      stringfunc::integer_to_string(episode_number, 4);
+
+   string title="Paddle acceleration";
+   string subtitle="Cumulative reward = "+stringfunc::number_to_string(
+      cum_reward);
+
+   string x_label = "Frame number for episode "+stringfunc::number_to_string(
+      episode_number);
+   double xmax = get_paddle_track().size();
+   string y_label="Paddle acceleration";
+
+   double min_accel = mathfunc::minimal_value(paddle_accel);
+   double max_accel = mathfunc::maximal_value(paddle_accel);
+   
+   vector<double> xsteps;
+   int tmax = 10 * 1000;
+   for(int t = 0; t < tmax; t++)
+   {
+      double frac = double(t) / tmax;
+      double x = frac * xmax;
+      xsteps.push_back(x);
+   }
+   
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, min_accel, max_accel);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.set_thickness(2);
+   curr_metafile.write_curve(xsteps, paddle_accel, colorfunc::blue);
+   curr_metafile.set_thickness(3);
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
 // Member function update_tracks() appends the current (px,py) ball
 // position and py paddle position into member vectors ball_px_track,
 // ball_py_track and paddle_track.  For both tracks, (0,0) corresponds
 // to upper right corner.
 
-void pong::update_tracks()
+double pong::update_tracks()
 {
    ball_px_track.push_back(px_ball);
    ball_py_track.push_back(py_ball);
    paddle_track.push_back(get_max_paddle_y() - get_paddle_y());
+   double delayed_accel = delayed_paddle_accel();
+   paddle_accel.push_back(delayed_accel);
+   return delayed_accel;
 }
 
 void pong::clear_tracks()
@@ -376,6 +431,22 @@ vector<double>& pong::get_ball_py_track()
 vector<double>& pong::get_paddle_track()
 {
    return paddle_track;
+}
+
+// ---------------------------------------------------------------------
+// Member function delayed_paddle_accel() computes the paddle's
+// instantaneous acceleration at 2 timesteps before the latest paddle
+// track point:
+
+double pong::delayed_paddle_accel()
+{
+   int tmax = paddle_track.size() - 1;
+   if(tmax < 3) return 0;
+
+   double accel = 0.25 * (
+      paddle_track[tmax] - 2 * paddle_track[tmax - 2] + 
+      paddle_track[tmax - 4]);
+   return accel;
 }
 
 // ---------------------------------------------------------------------

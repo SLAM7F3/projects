@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for pong class 
 // ==========================================================================
-// Last modified on 12/19/16; 12/26/16; 12/30/16; 12/31/16
+// Last modified on 12/26/16; 12/30/16; 12/31/16; 1/5/17
 // ==========================================================================
 
 #ifndef PONG_H
@@ -59,12 +59,15 @@ class pong
    void plot_paddle_y_dist(std::string output_subdir, std::string extrainfo);
    void plot_tracks(std::string output_subdir, int episode_number,
                     double cum_reward);
+   void plot_paddle_accel(std::string output_subdir, int episode_number,
+                          double cum_reward);
    void get_ball_posn(int& ball_px, int& ball_py);
-   void update_tracks();
+   double update_tracks();
    void clear_tracks();
    std::vector<double>& get_ball_px_track();
    std::vector<double>& get_ball_py_track();
    std::vector<double>& get_paddle_track();
+   double delayed_paddle_accel();
 
    bool crop_pool_difference_curr_frame(bool export_frames_flag);
    bool crop_pool_sum_curr_frame(bool export_frames_flag);
@@ -137,6 +140,7 @@ class pong
    std::vector<int> paddle_y_values;
    std::vector<double> ball_px_track, ball_py_track;
    std::vector<double> paddle_track;
+   std::vector<double> paddle_accel;
 
    ScreenExporter* screen_exporter_ptr;
 
@@ -195,8 +199,8 @@ inline bool pong::get_compute_max_flag() const
 
 inline int pong::get_n_actions() const
 {
-   return 2;  // move right, move left
-//   return 3;  // no_op, move right, move left
+//   return 2;  // move right, move left
+   return 3;  // no_op, move right, move left
 }
 
 inline int pong::get_n_screen_states() const
