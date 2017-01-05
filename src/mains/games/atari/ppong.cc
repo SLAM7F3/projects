@@ -153,8 +153,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-//   int n_episode_update = 5;
-   int n_episode_update = 25;
+   int n_episode_update = 5;
+//   int n_episode_update = 25;
    int export_screens_period = 200;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
@@ -517,10 +517,11 @@ int main(int argc, char** argv)
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
 
-      reinforce_agent_ptr->append_n_frames_per_episode(
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_epoch_history();
+      reinforce_agent_ptr->update_n_frames_per_episode(
          curr_episode_framenumber);
-      reinforce_agent_ptr->update_episode_number_history();
-      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
       reinforce_agent_ptr->increment_episode_number();      
 
       double log10_total_loss = log10(total_loss);

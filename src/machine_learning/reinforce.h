@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 12/30/16; 1/2/17; 1/3/17; 1/4/17
+// Last modified on 1/2/17; 1/3/17; 1/4/17; 1/5/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -86,11 +86,11 @@ class reinforce
    void set_max_mean_KL_divergence(double delta);
 
    void initialize_episode();
-   void snapshot_running_reward();
-   void snapshot_cumulative_reward(double cum_reward);
-   void append_n_frames_per_episode(int n_frames);
-   void update_episode_number_history();
-   void append_epsilon();
+   void update_cumulative_reward(double cum_reward);
+   void update_n_frames_per_episode(int n_frames);
+   void update_episode_history();
+   void update_epoch_history();
+   void update_epsilon();
 
 // Monitoring network training methods:
 
@@ -306,7 +306,8 @@ class reinforce
    std::vector<double> loss_values;
    std::vector<double> n_episode_turns_frac;
    std::vector<double> n_frames_per_episode;
-   std::vector<double> episode_number_history;
+   std::vector<double> episode_history;
+   std::vector<double> epoch_history;
    std::vector<double> epsilon_values;
    std::vector<double> Qmap_scores;
    std::vector<double> log10_losses;
