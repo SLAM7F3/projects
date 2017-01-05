@@ -451,17 +451,16 @@ vector<double>& pong::get_paddle_track()
 
 // ---------------------------------------------------------------------
 // Member function delayed_paddle_accel() computes the paddle's
-// instantaneous acceleration at 2 timesteps before the latest paddle
+// instantaneous acceleration at 1 timestep before the latest paddle
 // track point:
 
 double pong::delayed_paddle_accel()
 {
    int tmax = paddle_track.size() - 1;
-   if(tmax < 3) return 0;
+   if(tmax < 2) return 0;
 
-   double accel = 0.25 * (
-      paddle_track[tmax] - 2 * paddle_track[tmax - 2] + 
-      paddle_track[tmax - 4]);
+   double accel = (paddle_track[tmax] - 2 * paddle_track[tmax - 1] + 
+                   paddle_track[tmax - 2]);
    return accel;
 }
 
