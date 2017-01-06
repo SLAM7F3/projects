@@ -18,7 +18,6 @@ reward = -20.6
 Best play results to date:
 -------------------------
 
-
 70.  T3: Corrected epoch plots; n_actions = 3; Xavier init includes sqrt(2)
 0 accel penalty
 
@@ -2730,6 +2729,77 @@ Process ID = 1049
 Metrics look OK after 160 epochs; metrics slowly improving after 1400
 epochs.  Lots of jitter in game play.
 
+91.  T1: 3E-4 accel penalty; corrected epoch plots; n_actions = 3; 
+Xavier init includes sqrt(2); interp corrected epoch plots
+
+Thu Jan  5 14:15:37 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.0003
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -54536
+Process ID = 19872
+
+Metrics look OK after 110 epochs; metrics look quite at end of 2K epochs.
+Less jitter than for 0 accel case.  But more jitter than for expts 75 and
+77.  Finished.
+
+
+92.  T1:  3E-4 accel penalty; corrected epoch plots; n_actions = 3; 
+Xavier init includes sqrt(2); interp corrected epoch plots
+
+Thu Jan  5 14:15:40 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.0003
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -54539
+Process ID = 19944
+
+Metrics look OK after 110 epochs; Very good metrics after 1400 epochs
+Accidentally deleted all track files :( Agent crushes opponent in screen
+exports 7800 with very little paddle movement!  Finished after 2K epochs.
+
 
 93.  TM:  0 accel penalty; n_actions = 2; corrected epoch plots; 
 mu/sigma for accel mag
@@ -2934,24 +3004,9 @@ Process ID = 17292
 
 Generally bad metrics.  
 
+104.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing 
 
--------------------------------------------------------------
-RUNNING EXPERIMENTS
--------------------------------------------------------------
-
-m6700
------
-
-Thinkmate
----------
-
-Titan 1:
--------
-
-91.  T1: 3E-4 accel penalty; corrected epoch plots; n_actions = 3; 
-Xavier init includes sqrt(2); interp corrected epoch plots
-
-Thu Jan  5 14:15:37 2017
+Fri Jan  6 12:13:14 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 1024
@@ -2976,106 +3031,11 @@ Learning rate decrease period = 10000 episodes
 Delayed accel penalty = 0.0003
 nframes / epoch = 50000
 n_max_epochs = 2000
-Random seed = -54536
-Process ID = 19872
+Random seed = -33592
+Process ID = 2812
 
-Metrics look OK after 110 epochs; metrics look quite good after 1400
-epochs.  Less jitter than 0 accel case.  But more jitter than for expts 75
-and 77.
-
-92.  T1:  3E-4 accel penalty; corrected epoch plots; n_actions = 3; 
-Xavier init includes sqrt(2); interp corrected epoch plots
-
-Thu Jan  5 14:15:40 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-max mean KL divergence between pi(curr) and pi(next) = 1e+08
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-Delayed accel penalty = 0.0003
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -54539
-Process ID = 19944
-
-Metrics look OK after 110 epochs; Very good metrics after 1400 epochs
-Accidentally deleted all track files :(  
-
-103.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing
-Fri Jan  6 07:55:43 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-max mean KL divergence between pi(curr) and pi(next) = 1e+08
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-Delayed accel penalty = 0.0003
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -18141
-Process ID = 6887
-
-
-104.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing
-Fri Jan  6 07:56:13 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-max mean KL divergence between pi(curr) and pi(next) = 1e+08
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-Delayed accel penalty = 0.0003
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -18172
-Process ID = 6902
-
+Good metrics after 400 epochs.  But accel penalty of 3E-4 didn't prevent
+jitter.
 
 105.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing
 Fri Jan  6 07:56:17 2017
@@ -3106,6 +3066,11 @@ n_max_epochs = 2000
 Random seed = -18175
 Process ID = 6983
 
+Good metrics after 400 epochs.  But accel penalty of 3E-4 didn't prevent
+jitter.
+
+
+
 106.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing
 Fri Jan  6 07:56:20 2017
 Neural net params:
@@ -3135,13 +3100,24 @@ n_max_epochs = 2000
 Random seed = -18178
 Process ID = 7041
 
+Good metrics after 400 epochs.  But accel penalty = 3E-4 didn't prevent
+jitter.
 
-Titan 3:
--------
 
-99. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
 
-Fri Jan  6 07:37:10 2017
+m6700
+-----
+
+Thinkmate
+---------
+
+109. TM:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Original job start at 8:45am killed due to lousy results after 200 epochs.
+
+Fri Jan  6 11:47:31 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 1024
@@ -3166,7 +3142,291 @@ Learning rate decrease period = 10000 episodes
 Delayed accel penalty = 0
 nframes / epoch = 50000
 n_max_epochs = 2000
-Random seed = -17028
+Random seed = -31985
+Process ID = 34088
+
+110. TM:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Fri Jan  6 08:45:45 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -21144
+Process ID = 21829
+
+Metrics look reasonable after 200 epochs
+
+117.  TM.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Fri Jan  6 15:26:10 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45167
+Process ID = 4731
+
+118.  TM.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Fri Jan  6 15:26:17 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45175
+Process ID = 4743
+
+Titan 1:
+-------
+
+103.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing
+Job 1 killed after 400 epochs due to lousy metrics.  
+
+Fri Jan  6 12:11:16 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.0003
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -33452
+Process ID = 2084
+
+113.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Job 1 killed after 100 epochs due to lousy metrics.
+Job 2 killed after 100 epochs due to lousy metrics.
+
+Fri Jan  6 15:22:38 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -44953
+Process ID = 30685
+
+
+114.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Job 1 killed after 200 epochs due to poor metrics
+Fri Jan  6 15:23:45 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45023
+Process ID = 31632
+
+
+115.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Job 1 killed after 280 epochs due to lousy metrics
+
+Fri Jan  6 15:24:58 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45097
+Process ID = 322
+
+116.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Fri Jan  6 12:21:37 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -34096
+Process ID = 10133
+
+Titan 3:
+-------
+
+99. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+
+(Job 1 killed and restarted when first attempt yielded poor results around
+epoch 100; job 2 killed and restearted when 2nd attempt yielded lousy results)
+
+Fri Jan  6 11:50:26 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -32224
+Process ID = 13901
 
 100. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
 
@@ -3198,8 +3458,12 @@ n_max_epochs = 2000
 Random seed = -17124
 Process ID = 19491
 
+Metrics after 400 epochs look reasonable.
+
 101. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
-Fri Jan  6 07:38:51 2017
+Job1 with mediocre metrics after 400 epochs killed and restarted.
+
+Fri Jan  6 11:52:49 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 1024
@@ -3224,8 +3488,8 @@ Learning rate decrease period = 10000 episodes
 Delayed accel penalty = 0
 nframes / epoch = 50000
 n_max_epochs = 2000
-Random seed = -17130
-Process ID = 19758
+Random seed = -32359
+Process ID = 14967
 
 102. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
 Fri Jan  6 07:41:23 2017
@@ -3255,6 +3519,130 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -17279
 Process ID = 21200
+
+Metrics look reasonable after 400 epochs
+
+107. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Fri Jan  6 08:07:45 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -18863
+Process ID = 13615
+
+Metrics look reasonable after 350 epochs
+
+108. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Fri Jan  6 08:07:48 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -18867
+Process ID = 13625
+
+Metrics look reasonable after 350 epochs
+
+111. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+
+
+Fri Jan  6 13:50:55 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -39438
+Process ID = 25715
+
+112. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Fri Jan  6 11:59:15 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -32753
+Process ID = 18416
 
 ===========================================================
 Conclusions from 18 expt runs on Fri Dec 30:
