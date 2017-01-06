@@ -1,7 +1,7 @@
 // ==========================================================================
 // pong class member function definitions
 // ==========================================================================
-// Last modified on 12/30/16; 12/31/16; 1/1/17; 1/5/17
+// Last modified on 12/31/16; 1/1/17; 1/5/17; 1/6/17
 // ==========================================================================
 
 // Notes: 
@@ -436,6 +436,7 @@ void pong::clear_tracks()
    ball_px_track.clear();
    ball_py_track.clear();
    paddle_track.clear();
+   paddle_accel.clear();
 }
 
 vector<double>& pong::get_ball_px_track()

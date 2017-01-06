@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 // Construct reinforcement learning agent:
 
    int nframes_per_epoch = 50 * 1000;
-   int n_max_epochs = 2000;
+   int n_max_epochs = 2000;  // updated 1/6/17
 //   int replay_memory_capacity = 10 * 1000;
    int replay_memory_capacity = 20 * 1000;
 
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-//   int n_episode_update = 5;
+//   int n_episode_update = 3;
    int n_episode_update = 25;
    int export_screens_period = 200;
 

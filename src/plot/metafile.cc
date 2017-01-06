@@ -1,7 +1,7 @@
 // ==========================================================================
 // Metafile class member function definitions
 // ==========================================================================
-// Last modified on 11/1/15; 10/19/16; 1/2/17; 1/5/17
+// Last modified on 10/19/16; 1/2/17; 1/5/17 1/6/17
 // ==========================================================================
 
 #include "math/basic_math.h"
@@ -13,6 +13,8 @@
 #include "general/outputfuncs.h"
 #include "general/stringfuncs.h"
 
+using std::cin;
+using std::cout;
 using std::endl;
 using std::ios;
 using std::ofstream;
@@ -421,27 +423,54 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
 
 // As of 1/5/17, we experiment with allowing X and Y to have different
 // sizes.  But we assume that they are both functions of some common
-// underlying parameter (e.g. time).  
+// underlying parameter (e.g. time) whose span is the same for both
+// arrays:
 
-   for (unsigned int i=0; i<X.size(); i++)
+   if(X.size() == Y.size())
    {
-      double i_frac = double(i) / (X.size() - 1);
-      int j_max = Y.size() - 1;
-      double j = i_frac * j_max;
+      for (unsigned int i=0; i<X.size(); i++)
+      {
+         if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
+         metastream << X[i] << "\t" << Y[i] << endl;
+      }
+   }
+   else if (X.size() > Y.size()) // Downsample X so that it has same size as Y
+   {
+      for (unsigned int i=0; i<Y.size(); i++)
+      {
+         double frac = double(i) / (Y.size() - 1);
+         int j_max = X.size() - 1;
+         double j = frac * j_max;
 
-      int j_lo = basic_math::mytruncate(j);
-      int j_hi = basic_math::min(j_lo + 1, j_max);
+         int j_lo = basic_math::mytruncate(j);
+         int j_hi = basic_math::min(j_lo + 1, j_max);
 
-      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[j_lo])
-         || mathfunc::my_isnan(Y[j_hi])) continue;
+         if(mathfunc::my_isnan(X[j_lo]) || mathfunc::my_isnan(X[j_hi])
+            || mathfunc::my_isnan(Y[i])) continue;
 
-      double alpha = j - j_lo;
-      double Yinterp = alpha * Y[j_lo] + (1 - alpha) * Y[j_hi];
-      metastream << X[i] << "\t" << Yinterp << endl;
+         double alpha = j - j_lo;
+         double Xinterp = alpha * X[j_lo] + (1 - alpha) * X[j_hi];
+         metastream << Xinterp << "\t" << Y[i] << endl;
+      } // loop over index i 
+   }
+   else if (X.size() < Y.size()) // Downsample Y so that it has same size as X
+   {
+      for (unsigned int i=0; i<Y.size(); i++)
+      {
+         double frac = double(i) / (X.size() - 1);
+         int j_max = Y.size() - 1;
+         double j = frac * j_max;
 
-//      if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
-//      metastream << X[i] << "\t" << Y[i] << endl;
+         int j_lo = basic_math::mytruncate(j);
+         int j_hi = basic_math::min(j_lo + 1, j_max);
 
+         if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[j_lo])
+            || mathfunc::my_isnan(Y[j_hi])) continue;
+
+         double alpha = j - j_lo;
+         double Yinterp = alpha * Y[j_lo] + (1 - alpha) * Y[j_hi];
+         metastream << X[i] << "\t" << Yinterp << endl;
+      } // loop over index i 
    }
 }
 
