@@ -369,7 +369,7 @@ void pong::plot_paddle_accel(string output_subdir, int episode_number,
    double min_accel = mathfunc::minimal_value(paddle_accel);
    double max_accel = mathfunc::maximal_value(paddle_accel);
 
-// Compute median and quartile width for instantaneous accel
+// Compute mu/sigma and median/quartile width for instantaneous accel
 // magnitudes:
 
    vector<double> accel_mags;
@@ -378,12 +378,16 @@ void pong::plot_paddle_accel(string output_subdir, int episode_number,
       accel_mags.push_back(fabs(paddle_accel[i]));
    }
 
+   double mu_accel_mag, sigma_accel_mag;
+   mathfunc::mean_and_std_dev(accel_mags, mu_accel_mag, sigma_accel_mag);
+   
    double median_accel_mag, qw_accel_mag;
    mathfunc::median_value_and_quartile_width(
       accel_mags, median_accel_mag, qw_accel_mag);
-   subtitle += "; median accel mag = "+stringfunc::number_to_string(
-      median_accel_mag)+"; qw accel mag = "+stringfunc::number_to_string(
-         qw_accel_mag);
+   subtitle += "; accel mag = "+stringfunc::number_to_string(mu_accel_mag)+
+      " +/- "+stringfunc::number_to_string(sigma_accel_mag)+
+      "; median = "+stringfunc::number_to_string(
+      median_accel_mag)+"; qw = "+stringfunc::number_to_string(qw_accel_mag);
    
    vector<double> xsteps;
    int tmax = basic_math::min(10 * 1000, int(xmax));
