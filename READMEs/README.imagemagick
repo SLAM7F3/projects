@@ -214,3 +214,33 @@ convert composite_0171.jpg -crop 556x1084+344+0 cropped_composite_0171.jpg
 convert -size 1000x424 xc:white eventual_rewards_history.jpg -gravity center -composite padded_eventual_rewards.jpg
 
 convert -size 1000x421 xc:white frames_history.jpg -gravity center -composite padded_frames_history.jpg
+
+
+
+
+convert log10_losses_history.jpg -crop 583x425+93+109 cropped_log10_losses_history.jpg
+
+montage -geometry 583x425 -tile 2x1 loss.jpg lazy_loss.jpg montage_loss.jpg
+
+
+convert eventual_rewards_history.jpg -crop 595x455+85+80 cropped_eventual_rewards.jpg
+
+montage -geometry 595x455 -tile 2x1 erewards.jpg lazy_erewards.jpg montage_erewads.jpg
+
+convert reward_history.jpg -crop 582x421+84+106 cropped_reward.jpg
+
+montage -geometry 582x421 -tile 2x1 reward.jpg lazy_reward.jpg montage_rewards.jpg
+
+convert frames_history.jpg -crop 597x423+70+110 cropped_frames.jpg
+
+montage -geometry 597x423 -tile 2x1 frames.jpg lazy_frames.jpg montage_frames.jpg
+
+
+convert weight_values_0.jpg -crop 576x444+86+84 w0.jpg
+convert weight_values_1.jpg -crop 576x444+86+84 w1.jpg
+convert weight_values_2.jpg -crop 576x444+86+84 w2.jpg
+
+
+montage -geometry 576x444 -tile 3x1 w0.jpg w1.jpg w2.jpg montage_weights.jpg
+
+

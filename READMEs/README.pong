@@ -1,7 +1,7 @@
 =========================================================================
 Deep RL notes for Pong
 ==========================================================================
-Last updated on 1/3/17; 1/4/17; 1/5/17; 1/6/17
+Last updated on 1/4/17; 1/5/17; 1/6/17; 1/7/17
 ==========================================================================
 
 
@@ -17,6 +17,39 @@ reward = -20.6
 
 Best play results to date:
 -------------------------
+
+
+112. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Fri Jan  6 11:59:15 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -32753
+Process ID = 18416
+
+Metrics look quite good after 1600 epochs.  
+
 
 70.  T3: Corrected epoch plots; n_actions = 3; Xavier init includes sqrt(2)
 0 accel penalty
@@ -2935,6 +2968,9 @@ Process ID = 15599
 
 metrics look good after 1000 epochs; lots of jitter in game play
 
+
+*********  Movie of RL agent beating AL with no paddle movement ********
+
 97.  TM:  1E-3 accel penalty; n_actions = 3; corrected epoch plots; 
 mu/sigma for accel mag
 
@@ -3003,6 +3039,40 @@ Random seed = -60936
 Process ID = 17292
 
 Generally bad metrics.  
+
+
+102. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
+Fri Jan  6 07:41:23 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -17279
+Process ID = 21200
+
+Metrics look reasonable after 400 epochs After 1750+ epochs, averaged
+reward is only around 0.  Mediocre play performance.  TERMINATED.
+
 
 104.  T1.  n_actions = 3; accel penalty = 3E-4; fixed X>Y curve writing 
 
@@ -3104,6 +3174,70 @@ Good metrics after 400 epochs.  But accel penalty = 3E-4 didn't prevent
 jitter.
 
 
+
+117.  TM.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Fri Jan  6 15:26:10 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45167
+Process ID = 4731
+
+Bad metrics after 1000 epochs.  TERMINATED.
+
+118.  TM.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Fri Jan  6 15:26:17 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 1024
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 35008 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e+08
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 3
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Delayed accel penalty = 0.001
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -45175
+Process ID = 4743
+
+Bad metrics after 1200 epochs.  TERMINATED.
+
+
 -------------------------------------------------------------
 RUNNING EXPERIMENTS
 -------------------------------------------------------------
@@ -3176,37 +3310,11 @@ Process ID = 21829
 
 Metrics look reasonable after 200 epochs
 
-117.  TM.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
-Fri Jan  6 15:26:10 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-max mean KL divergence between pi(curr) and pi(next) = 1e+08
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-Delayed accel penalty = 0.001
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -45167
-Process ID = 4731
+113.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
+Job 1 killed after 100 epochs due to lousy metrics.
+Job 2 killed after 100 epochs due to lousy metrics.
 
-118.  TM.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
-Fri Jan  6 15:26:17 2017
+Fri Jan  6 15:22:38 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 1024
@@ -3231,8 +3339,11 @@ Learning rate decrease period = 10000 episodes
 Delayed accel penalty = 0.001
 nframes / epoch = 50000
 n_max_epochs = 2000
-Random seed = -45175
-Process ID = 4743
+Random seed = -44953
+Process ID = 30685
+
+Lousy metrics.  TERMINATED
+
 
 Titan 1:
 -------
@@ -3268,39 +3379,6 @@ n_max_epochs = 2000
 Random seed = -33452
 Process ID = 2084
 
-113.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
-Job 1 killed after 100 epochs due to lousy metrics.
-Job 2 killed after 100 epochs due to lousy metrics.
-
-Fri Jan  6 15:22:38 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-max mean KL divergence between pi(curr) and pi(next) = 1e+08
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-Delayed accel penalty = 0.001
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -44953
-Process ID = 30685
-
-
 114.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
 Job 1 killed after 200 epochs due to poor metrics
 Fri Jan  6 15:23:45 2017
@@ -3331,6 +3409,10 @@ n_max_epochs = 2000
 Random seed = -45023
 Process ID = 31632
 
+After 2K epochs, agent learns to nearly remain stationary at golden
+location.
+
+*********  Movie of RL agent beating AL with minimal paddle movement ********
 
 115.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
 Job 1 killed after 280 epochs due to lousy metrics
@@ -3362,6 +3444,13 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -45097
 Process ID = 322
+
+Work with screen_05000
+Note: Episode 5000 = epoch 920.429
+
+Movie excerpt:  Start at frame 16168 when agent leads AI by 18 to 9
+
+
 
 116.  T1.  n_actions = 3; accel penalty = 1E-3; fixed X>Y curve writing
 Fri Jan  6 12:21:37 2017
@@ -3491,37 +3580,6 @@ n_max_epochs = 2000
 Random seed = -32359
 Process ID = 14967
 
-102. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
-Fri Jan  6 07:41:23 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 1024
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 3
-   n_weights = 35008 (FC)
-base_learning_rate = 0.001; batch_size = -1
-P learning
-max mean KL divergence between pi(curr) and pi(next) = 1e+08
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.9
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.01
-Replay memory capacity = 20000
-Number random samples drawn from replay memory Nd = -999
-Discount factor gamma = 0.99
-minimum epsilon = -nan
-n_actions = 3
-Leaky ReLU small slope = 0.01
-Learning rate decrease period = 10000 episodes
-Delayed accel penalty = 0
-nframes / epoch = 50000
-n_max_epochs = 2000
-Random seed = -17279
-Process ID = 21200
-
-Metrics look reasonable after 400 epochs
-
 107. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
 Fri Jan  6 08:07:45 2017
 Neural net params:
@@ -3615,6 +3673,8 @@ n_max_epochs = 2000
 Random seed = -39438
 Process ID = 25715
 
+*********  Movie of RL agent beating AL with jittery paddle movement ********
+
 112. T3:  n_actions = 3; accel penalty = 0; fixed X>Y curve writing
 Fri Jan  6 11:59:15 2017
 Neural net params:
@@ -3643,6 +3703,34 @@ nframes / epoch = 50000
 n_max_epochs = 2000
 Random seed = -32753
 Process ID = 18416
+
+Metrics look quite good after 1500 epochs.  
+
+Screen exports:
+
+  3000:  Agent loses to AI 9 to 20
+  3200:  Agent loses to AI 16 to 20
+  3400:  Agent loses to AI 18 to 20
+  3600   Agent beats AI 21 to 20
+  3800:  Agent beats AI 20 to 8
+  4000:  Agent beats AI 20 to 4
+  4400   Agent beats AI 20 to 5
+  4200   Agent beats AI 20 to 5
+  4600:  Agent beats AI 20 to 8
+
+Movie excerpt for screen exports 3600:  
+Note:  Episode 3600 = epoch 845.868
+
+Start around frame 25243 when agent trails AI 17 to 19.  Skip odd frames.
+Movie clip lasts approx 30 secs
+
+Start at frame 24021 when agent trails AI 17 to 18.  Skip = 1 frame.  .
+
+Increase skip to 2 frames around frame 25966 when agent trails AI 18 to 19.
+
+Pause movie at last frame for approx 10 secs before stopping recording.
+
+Movie clip then lasts for 1 minute.
 
 ===========================================================
 Conclusions from 18 expt runs on Fri Dec 30:

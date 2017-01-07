@@ -4021,8 +4021,8 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
       next_R = curr_R;
    } // loop over index d labeling replay memory entries
 
-// Renormalize discounted eventual rewards so that they have zero mean
-// and unit standard deviation:
+// Compute mean and standard deviation of discounted eventual rewards
+// over entire episode:
 
    double eventual_threshold = 1.0;
    if(avg_discounted_eventual_rewards.size() > 10)
@@ -4047,6 +4047,10 @@ void reinforce::compute_renormalized_discounted_eventual_rewards()
 double reinforce::get_advantage(int d) const
 {
    double curr_R = r_curr->get(d);
+
+// Renormalize advantage estimator values entering into RL loss
+// function so that they have zero mean and unit standard deviation:
+
    double curr_advantage = (curr_R - mu_R) / sigma_R;
    
    if(environment_ptr->get_world_type() == 0) // maze

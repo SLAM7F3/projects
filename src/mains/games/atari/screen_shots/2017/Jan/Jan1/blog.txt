@@ -94,11 +94,6 @@ Leaky ReLU slope         1E-2             Slope for negative inputs in
 gamma                    0.99             RL discount factor 
 Epoch frames             5E4              Number of ALE frames per epoch
 
-
-
-
-
-
 Network parameters:
 
 Input layer: 1024 nodes
@@ -119,12 +114,43 @@ Leaky ReLU small slope = 0.01
 1 epoch = 50,000 ALE frames
 
 
+III.  Jittery and lazy RL agent Pong play
+
+Loss function behavior provides another useful sanity check on network
+training.  Since the RL loss function can be either positive or negative,
+we plot the logarithm of its magnitude as a function of training epoch in
+figure 4.  While the loss at individual time steps is noisy, the
+temporally smoothed blue curve appearing in the figure reassuringly
+demonstrates a decreasing trend.  
+
+
+
+In deep reinforcement learning, we expect an agent to initially take many
+poor random actions which are penalized by the environment.  When playing
+pong, our RL agent almost always loses each match to the built-in AI
+opponent.  Consequently, the agent's discounted reward at each time step is
+$-\gamma^n$ where $n$ denotes the number of ALE frames until its misses the
+ball.  But as training progresses, the agent should learn to make good
+moves rather than bad ones.  So its discounted eventual reward averaged
+over all time steps of an episode should increase.  The temporally smoothed
+curve in figure XX illustrates such learning behavior.
+
+As the RL agent grows more skilled, its volleys against the AI become
+longer.  Pong game duration therefore goes up.  It is worth noting that the
+agent can also start winning games against the built-in AI even if its
+averaged discounted eventual reward is slightly negative.  In particular,
+long volleys which the agent ultimately loses depress its eventual reward
+score more than short volleys that the agent wins.  Of course, the agent's
+overall game score increases as its pong playing ability improves.  As the
+agent becomes more expert, the number of ALE frames per game actually goes
+down as the agent beats its opponent more quickly.  All of these behaviors
+are observable in figures XX and XX.
 
 
 
 
 
-III.  Pong Results
+
 
 *.  Probability density distribution for paddle position
 
