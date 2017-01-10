@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/2/17; 1/3/17; 1/4/17; 1/5/17
+// Last modified on 1/3/17; 1/4/17; 1/5/17; 1/10/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -98,6 +98,14 @@ class reinforce
    int count_weights();
    void print_biases();
    void print_weights();
+
+   void generate_metafile_plot(
+      const std::vector<double>& values,
+      std::string output_subdir, std::string metafile_basename, 
+      std::string title, std::string y_label, std::string extrainfo, 
+      bool epoch_indep_var, bool plot_smoothed_values_flag,
+      bool zero_min_value_flag);
+
    void plot_zeroth_layer_weights(std::string output_subdir);
    void plot_zeroth_layer_weights(int nx, int ny, std::string output_subdir);
    void compute_bias_distributions();
@@ -127,7 +135,7 @@ class reinforce
    void plot_lr_history(std::string output_subdir, std::string extrainfo,
                         bool epoch_indep_var);
    void plot_Qmap_score_history(std::string output_subdir, 
-                                std::string subtitle, std::string extrainfo);
+                                std::string extrainfo);
    void plot_log10_loss_history(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_log10_lr_mean_abs_nabla_weight_ratios(

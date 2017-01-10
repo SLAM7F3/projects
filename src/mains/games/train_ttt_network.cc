@@ -329,7 +329,7 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         total_loss = reinforce_agent_ptr->update_Q_network();
       }
       
 // Exponentially decay epsilon:

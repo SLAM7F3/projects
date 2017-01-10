@@ -268,7 +268,7 @@ int main(int argc, char** argv)
                      export_frames_flag);
                }
             } // curr_frame_number % frame_skip == 0 conditional
-         } // curr_frame_number > min_episode_framenumber
+         } // curr_episode_framenumber > min_episode_framenumber
 
          if(state_updated_flag && n_state_updates > 2)
          {
@@ -338,7 +338,7 @@ int main(int argc, char** argv)
 
          bool export_RGB_screens_flag = false;
          if(curr_episode_number% 75 == 0) export_RGB_screens_flag = true;
-         if(curr_frame_number < 110) export_RGB_screens_flag = false;
+         if(curr_episode_framenumber < 110) export_RGB_screens_flag = false;
          if(export_RGB_screens_flag)
          {
             string curr_screen_filename="screen_"+
@@ -403,10 +403,16 @@ int main(int argc, char** argv)
       if(curr_episode_number >= n_summarize - 1 && 
          curr_episode_number % n_summarize == 0)
       {
+         outputfunc::print_elapsed_time();
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+            reinforce_agent_ptr->compute_bias_distributions();
+         }
+         reinforce_agent_ptr->push_back_learning_rate(
+            reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+         reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)

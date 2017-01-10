@@ -284,12 +284,11 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
     
-      reinforce_agent_ptr->append_n_frames_per_episode(
-         game_world.get_episode_framenumber());
-      reinforce_agent_ptr->append_epsilon();
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_epoch_history();
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_epsilon();
 
-      reinforce_agent_ptr->increment_episode_number();
-      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
       if(curr_episode_number % 10 == 0)
       {
          reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
@@ -299,7 +298,6 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
       }
-
 
 // Periodically copy current weights into old weights:
 
@@ -317,7 +315,7 @@ int main (int argc, char* argv[])
          {
             verbose_flag = true;
          }
-         total_loss = reinforce_agent_ptr->update_neural_network(
+         total_loss = reinforce_agent_ptr->update_Q_network(
             verbose_flag);
       }
 

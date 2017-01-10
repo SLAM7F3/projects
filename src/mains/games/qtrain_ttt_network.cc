@@ -6,7 +6,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 11/30/16; 12/5/16; 12/7/16; 12/13/16
+// Last updated on 11/30/16; 12/5/16; 12/7/16; 12/13/16; 1/10/17
 // ==========================================================================
 
 #include <iostream>
@@ -216,7 +216,7 @@ int main (int argc, char* argv[])
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
-   int n_episodes_period = 100 * 1000;
+   int n_lr_episodes_period = 100 * 1000;
 
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
@@ -253,16 +253,12 @@ int main (int argc, char* argv[])
       ttt_ptr->reset_board_state();
       reinforce_agent_ptr->initialize_episode();
 
-// Decrease learning rate as training proceeds:
+// Periodically decrease learning rate:
 
-      if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
-         double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
-         if(curr_learning_rate > min_learning_rate)
-         {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_episodes_period *= 1.2;
-         }
+         reinforce_agent_ptr->decrease_learning_rate();
 
          if(periodically_switch_starting_player)
          {
@@ -386,7 +382,7 @@ int main (int argc, char* argv[])
       if(reinforce_agent_ptr->get_replay_memory_full() && 
          curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
       {
-         total_loss = reinforce_agent_ptr->update_neural_network();
+         total_loss = reinforce_agent_ptr->update_Q_network();
       }
 
 // Exponentially decay epsilon:

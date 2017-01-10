@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PMAZE solves a maze via policy gradient learning
 // ==========================================================================
-// Last updated on 12/20/16; 12/24/16; 12/28/16; 1/2/17
+// Last updated on 12/24/16; 12/28/16; 1/2/17; 1/10/17
 // ==========================================================================
 
 #include <iostream>
@@ -259,10 +259,8 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
     
-      reinforce_agent_ptr->append_n_frames_per_episode(
-         game_world.get_episode_framenumber());
-      reinforce_agent_ptr->increment_episode_number();
-      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
 
       if(total_loss > 0)
       {
