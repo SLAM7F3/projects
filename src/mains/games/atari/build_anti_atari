@@ -4,5 +4,3 @@
 /bin/rm ./qbreak
 /bin/rm ./qpong
 /bin/rm ./qspace
-/bin/rm ./ranbreak
-/bin/rm ./ranspace

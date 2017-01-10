@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QBREAK solves the BreakOut atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/26/16; 12/27/16; 12/30/16; 12/31/16
+// Last updated on 12/27/16; 12/30/16; 12/31/16; 1/10/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -593,19 +593,17 @@ int main(int argc, char** argv)
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
 
-//       breakout_ptr->mu_and_sigma_for_pooled_zvalues();
-
-      reinforce_agent_ptr->append_n_frames_per_episode(
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_epoch_history();
+      reinforce_agent_ptr->update_n_frames_per_episode(
          curr_episode_framenumber);
-      reinforce_agent_ptr->append_epsilon();
-      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_epsilon();
 
       if(cum_framenumber % 10 == 0)
       {
          reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
       }
-
-      reinforce_agent_ptr->increment_episode_number();      
 
       if(total_loss > 0)
       {

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 12/29/16; 12/31/16; 1/1/17; 1/2/17
+// Last updated on 12/31/16; 1/1/17; 1/2/17; 1/10/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -402,10 +402,11 @@ int main(int argc, char** argv)
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
 
-      reinforce_agent_ptr->append_n_frames_per_episode(
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_epoch_history();
+      reinforce_agent_ptr->update_n_frames_per_episode(
          curr_episode_framenumber);
-      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
-      reinforce_agent_ptr->increment_episode_number();      
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
 
       if(total_loss > 0)
       {

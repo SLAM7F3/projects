@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QPONG solves the Pong atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/26/16; 12/27/16; 12/30/16; 12/31/16
+// Last updated on 12/27/16; 12/30/16; 12/31/16; 1/10/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -280,8 +280,8 @@ int main(int argc, char** argv)
       Action a;
       double cum_reward = 0;
 
-      pong_ptr->set_paddle_x(
-         pong_ptr->get_default_starting_paddle_x());
+      pong_ptr->set_paddle_y(
+         pong_ptr->get_default_starting_paddle_y());
 
 // On 12/16/16, we discovered the hard way that the Arcade Learning
 // Environment's getEpisodeFrameNumber() method does NOT always return
@@ -387,19 +387,19 @@ int main(int argc, char** argv)
 // top or bottom walls:
          if(a == PLAYER_A_RIGHT) // move paddle vertically upwards
          {
-            if(!pong_ptr->increment_paddle_x())  
+            if(!pong_ptr->increment_paddle_y())  
             {
                a = PLAYER_A_NOOP;
             }
          }
          else if (a == PLAYER_A_LEFT)  // move paddle vertically downwards
          {
-            if(!pong_ptr->decrement_paddle_x())
+            if(!pong_ptr->decrement_paddle_y())
             {
                a = PLAYER_A_NOOP;
             }
          }
-         pong_ptr->push_back_paddle_x();
+         pong_ptr->push_back_paddle_y();
 
          double curr_reward = pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
@@ -480,17 +480,17 @@ int main(int argc, char** argv)
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
 
-      reinforce_agent_ptr->append_n_frames_per_episode(
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_epoch_history();
+      reinforce_agent_ptr->update_n_frames_per_episode(
          curr_episode_framenumber);
-      reinforce_agent_ptr->append_epsilon();
-      reinforce_agent_ptr->snapshot_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_epsilon();
 
       if(cum_framenumber % 10 == 0)
       {
          reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
       }
-
-      reinforce_agent_ptr->increment_episode_number();      
 
       if(total_loss > 0)
       {
@@ -527,7 +527,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
-         pong_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
+         pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir
