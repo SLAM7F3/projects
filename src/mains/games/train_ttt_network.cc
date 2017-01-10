@@ -1,14 +1,11 @@
-
-
 // As of 12/13/16, reward and timestep member vars in reinforce class
 // have been significantly altered.  So these quantities need to be
 // reworked inside this program...
 
-
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK trains a neural network via V-learning.
 // ==========================================================================
-// Last updated on 11/29/16; 12/5/16; 12/7/16; 12/13/16
+// Last updated on 12/5/16; 12/7/16; 12/13/16; 1/10/17
 // ==========================================================================
 
 #include <iostream>
@@ -172,7 +169,7 @@ int main (int argc, char* argv[])
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
-   int n_episodes_period = 100 * 1000;
+   int n_lr_episodes_period = 100 * 1000;
 
    int old_weights_period = 10; 
 //   int old_weights_period = 32;  
@@ -211,15 +208,10 @@ int main (int argc, char* argv[])
 
 // Decrease learning rate as training proceeds:
 
-      if(curr_episode_number > 0 && curr_episode_number%n_episodes_period == 0)
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
-         double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
-         if(curr_learning_rate > min_learning_rate)
-         {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_episodes_period *= 1.2;
-         }
-
+         reinforce_agent_ptr->decrease_learning_rate();
          if(periodically_switch_starting_player)
          {
             AI_moves_first = !AI_moves_first;

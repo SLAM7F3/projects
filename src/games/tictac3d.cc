@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/25/16; 11/26/16; 11/27/16; 11/28/16
+// Last modified on 11/26/16; 11/27/16; 11/28/16; 1/10/17
 // ==========================================================================
 
 #include <iostream>
@@ -1629,7 +1629,12 @@ double tictac3d::get_alphabeta_minimax_move_score(
 // ---------------------------------------------------------------------
 // Member function extremal_winnable_path_scores() counts the number
 // of player_value pieces within each winnable path.  If both players
-// have pieces in a path, the path is ignored.  
+// have pieces in a path, the path is ignored.  It also sums the
+// intrinsic prizes for each occupied cell in a winnable path.  The
+// winnable path is assigned a score which depends upon both the
+// number of pieces in the path and its cell's intrinisic prizes.  The
+// integral of winnable path scores for both the player and its
+// opponent is returned by this method.  
 
 void tictac3d::extremal_winnable_path_scores(
    int player_value, double& integrated_player_path_score, 
