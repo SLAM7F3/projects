@@ -168,12 +168,6 @@ int main(int argc, char** argv)
 //   int nn_update_frame_period = 10;
    int old_weights_period_in_epochs = 2;    
 
-// Fraction of zero-reward (S,A,R,S') states to NOT include within
-// replay memory:
-
-   const double discard_0_reward_frac = 0.0;  
-//   const double discard_0_reward_frac = 0.60;  
-
 //    int n_snapshot = 500;
    int n_episode_update = 100;
 
@@ -216,8 +210,6 @@ int main(int argc, char** argv)
                  << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period_in_epochs 
                  << " epochs" << endl;
-   params_stream << "Discard zero reward frac = " 
-                 << discard_0_reward_frac << endl;
    params_stream << "Use big states flag = " << use_big_states_flag << endl;
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    params_stream << "1 big state = n_screen_states = "

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/8/16; 12/9/16; 12/10/16; 12/13/16
+// Last updated on 12/9/16; 12/10/16; 12/13/16; 1/10/17
 // ==========================================================================
 
 #include <iostream>
@@ -11,6 +11,7 @@
 #include <ale_interface.hpp>
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
+#include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "machine_learning/reinforce.h"
 #include "games/spaceinv.h"
@@ -91,18 +92,22 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 5 * 2000;
-//   int replay_memory_capacity = 10 * 2000;
-   reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, 1, replay_memory_capacity,
-//      reinforce::SGD);
-//      reinforce::MOMENTUM);
-//      reinforce::NESTEROV);
-      reinforce::RMSPROP);
-//      reinforce::ADAM);
+   int nframes_per_epoch = 50 * 1000;
+   int n_max_epochs = 2000;
+   
+   int replay_memory_capacity = nframes_per_epoch * 4;
+//   int replay_memory_capacity = nframes_per_epoch * 8;
+   int eval_memory_capacity = basic_math::min(
+      int(0.1 * replay_memory_capacity), 20000);
 
-//   reinforce_agent_ptr->set_debug_flag(true);
+   reinforce* reinforce_agent_ptr = new reinforce(
+      layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
+      reinforce::RMSPROP);
    reinforce_agent_ptr->set_environment(&game_world);
+   reinforce_agent_ptr->set_lambda(1E-2);
+//   reinforce_agent_ptr->set_lambda(1E-3);
+//   machinelearning_func::set_leaky_ReLU_small_slope(0.00); 
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
 
@@ -155,11 +160,6 @@ int main(int argc, char** argv)
 //   int old_weights_period = 100;
 //   int old_weights_period = 320;
 
-// Fraction of zero-reward (S,A,R,S') states to NOT include within
-// replay memory:
-
-   const double discard_0_reward_frac = 0.95;  
-
    int n_update = 5;
    int n_summarize = 5;
    int n_snapshot = 50;
@@ -193,8 +193,7 @@ int main(int argc, char** argv)
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period << endl;
-   params_stream << "Discard zero reward frac = " 
-                 << discard_0_reward_frac << endl;
+
    params_stream << "Use big states flag = " << use_big_states_flag << endl;
    params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
    params_stream << "1 big state = n_screen_states = "
@@ -206,26 +205,23 @@ int main(int argc, char** argv)
 // ==========================================================================
 // Reinforcement training loop starts here
 
-   while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
+   int cum_framenumber = 0;
+   bool eval_memory_full_flag = false;
+
+   while(reinforce_agent_ptr->get_curr_epoch() < n_max_epochs)
    {
+      double curr_epoch = cum_framenumber / nframes_per_epoch;
+      reinforce_agent_ptr->set_curr_epoch(curr_epoch);
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      cout << "Starting episode " << curr_episode_number << endl;
-      outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, n_update, n_max_episodes);
 
       bool random_start = false;
       game_world.start_new_episode(random_start);
       reinforce_agent_ptr->initialize_episode();
 
-      if(curr_episode_number > 0 && curr_episode_number%n_lr_episodes_period 
-         == 0)
+      if(curr_episode_number > 0 && 
+         curr_episode_number%n_lr_episodes_period == 0)
       {
-         double curr_learning_rate = reinforce_agent_ptr->get_learning_rate();
-         if(curr_learning_rate > min_learning_rate)
-         {
-            reinforce_agent_ptr->set_learning_rate(0.8 * curr_learning_rate);
-            n_lr_episodes_period *= 1.2;
-         }
+         reinforce_agent_ptr->decrease_learning_rate();
       }
 
 // -----------------------------------------------------------------------
@@ -238,14 +234,26 @@ int main(int argc, char** argv)
       int prev_a = 0;
       double cum_reward = 0;
 
+// On 12/16/16, we discovered the hard way that the Arcade Learning
+// Environment's getEpisodeFrameNumber() method does NOT always return
+// contiguous increasing integers!  So we no longer use the following
+// line:
+
+      int curr_episode_framenumber = 0;  // since start of current episode
+
       while(!game_world.get_game_over())
       {
          bool state_updated_flag = false;
-         int curr_frame_number = game_world.get_episode_framenumber();
-         
-         if(curr_frame_number > game_world.get_min_episode_framenumber())
+
+         curr_episode_framenumber++;
+         cum_framenumber++;
+         curr_epoch = double(cum_framenumber) / nframes_per_epoch;
+         reinforce_agent_ptr->set_curr_epoch(curr_epoch);
+
+         if(curr_episode_framenumber > 
+            game_world.get_min_episode_framenumber())
          {
-            if(curr_frame_number % game_world.get_frame_skip() == 0)
+            if(cum_framenumber % game_world.get_frame_skip() == 0)
             {
                state_updated_flag = true;
                n_state_updates++;
@@ -289,20 +297,6 @@ int main(int argc, char** argv)
          double renorm_reward = curr_reward / 10.0;
          cum_reward += curr_reward;
 
-// Experiment with rewarding agent for living (bad results so far)
-
-         const double live_timestep_reward = 0.0;
-//         double live_timestep_reward = 50.0 / 2000.0;
-//         renorm_reward += live_timestep_reward;
-
-         if(renorm_reward > live_timestep_reward)
-         {
-            cout << "episode = " << curr_episode_number
-                 << " frame = " << curr_frame_number
-                 << " curr_reward = " << curr_reward
-                 << " renorm_reward = " << renorm_reward << endl;
-         }
-
          if(game_world.get_game_over())
          {
 
@@ -316,24 +310,13 @@ int main(int argc, char** argv)
                d, curr_a, renorm_reward);
 
             cout << "episode = " << curr_episode_number
-                 << " frame = " << curr_frame_number
+                 << " frame = " << curr_episode_framenumber
                  << " curr_reward = " << curr_reward
                  << " renorm_reward = " << renorm_reward << endl;
          }
          else if (n_state_updates > 2)
          {
             genvector* next_s = game_world.compute_next_state(a);
-
-// As of 6:45 am on Mon Dec 5, we experiment with discarding some
-// fraction of zero reward states in order to increase chances of
-// agent seeing non-zero reward states without having to perform a
-// huge number of expensive backpropagations:
-
-            if(nearly_equal(renorm_reward, live_timestep_reward))
-            {
-               if(nrfunc::ran1() > 1 - discard_0_reward_frac) continue;
-            }
-
             reinforce_agent_ptr->store_arsprime_into_replay_memory(
                d, curr_a, renorm_reward, *next_s, 
                game_world.get_game_over());
@@ -342,9 +325,12 @@ int main(int argc, char** argv)
       if(reinforce_agent_ptr->get_replay_memory_full() &&
          curr_episode_number % nn_update_frame_period == 0)
       {
-         bool verbose_flag = true;
-         total_loss = reinforce_agent_ptr->update_neural_network(
-            verbose_flag);
+         bool verbose_flag = false;
+         if(curr_episode_number % 100 == 0)
+         {
+            verbose_flag = true;
+         }
+         total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
       }
 
 // Periodically save an episode's worth of screens to output
@@ -357,7 +343,8 @@ int main(int argc, char** argv)
          {
             string curr_screen_filename="screen_"+
                stringfunc::integer_to_string(curr_episode_number,5)+"_"+
-               stringfunc::integer_to_string(curr_frame_number,5)+".png";
+               stringfunc::integer_to_string(curr_episode_framenumber,5)
+               +".png";
             spaceinv_ptr->save_screen(curr_screen_filename);
          }
 
@@ -366,15 +353,19 @@ int main(int argc, char** argv)
 // -----------------------------------------------------------------------
 
       cout << "Episode finished" << endl;
-      cout << "  cum_reward = " << cum_reward << endl;
-      cout << "  epsilon = " << reinforce_agent_ptr->get_epsilon() << endl;
+      cout << "  epoch = " << curr_epoch 
+           << "  cum_frame = " << cum_framenumber << endl;
+      cout << "  cum_reward = " << cum_reward 
+           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
+           << "  n_backprops = " 
+           << reinforce_agent_ptr->get_n_backprops() << endl;
 
-//       spaceinv_ptr->mu_and_sigma_for_pooled_zvalues();
-
-      reinforce_agent_ptr->append_n_episode_frames(
-         game_world.get_episode_framenumber());
-      reinforce_agent_ptr->append_epsilon();
-      reinforce_agent_ptr->increment_episode_number();      
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_epoch_history();
+      reinforce_agent_ptr->update_n_frames_per_episode(
+         curr_episode_framenumber);
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_epsilon();
 
 // Periodically copy current weights into old weights:
 
@@ -383,13 +374,6 @@ int main(int argc, char** argv)
       {
          reinforce_agent_ptr->copy_weights_onto_old_weights();
          update_old_weights_counter = 1;
-      }
-
-      if(reinforce_agent_ptr->get_replay_memory_full())
-      {
-         bool verbose_flag = true;
-         total_loss = reinforce_agent_ptr->update_neural_network(
-            verbose_flag);
       }
 
 // Expontentially decay epsilon:
