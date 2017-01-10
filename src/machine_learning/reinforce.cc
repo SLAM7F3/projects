@@ -892,79 +892,126 @@ string reinforce::init_subtitle()
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of loss values versus time step samples.
+// Generate metafile plot of input STL vector of values plotted
+// against either epoch or episode independent variables.  The total
+// number of independent and dependent variables do NOT need to be
+// equal.  
 
-void reinforce::plot_loss_history(string output_subdir, string extrainfo)
+void reinforce::generate_metafile_plot(
+   const vector<double>& values,
+   string output_subdir, string metafile_basename, string title,
+   string y_label, string extrainfo, bool epoch_indep_var,
+   bool plot_smoothed_values_flag, bool zero_min_value_flag)
 {
-//   if(loss_values.size() < 3) return;
+   if(values.size() < 3) return;
 
    metafile curr_metafile;
-   string meta_filename=output_subdir+"loss_history";
-   string title="Loss function; bsize="+
-      stringfunc::number_to_string(batch_size);
+   string meta_filename=output_subdir+metafile_basename;
    if(lambda > 1E-5)
    {
       title += "; lambda="+stringfunc::number_to_string(lambda);
-      title += "; nweights="+stringfunc::number_to_string(n_weights);
+   }
+   title += "; nweights="+stringfunc::number_to_string(n_weights);
+
+   string subtitle=init_subtitle() + " " + extrainfo;
+   string x_label="Episode";
+   double xmax = get_episode_number();
+   if(epoch_indep_var)
+   {
+      x_label="Epoch";
+      xmax = get_curr_epoch();
+   }
+   double min_value = mathfunc::minimal_value(values);
+   if(zero_min_value_flag)
+   {
+      min_value = 0;
+   }
+   double max_value = mathfunc::maximal_value(values);
+
+   if(nearly_equal(min_value, max_value))
+   {
+      double avg_value = 0.5 * (min_value + max_value);
+      min_value = 0.5 * avg_value;
+      max_value = 1.5 * avg_value;
    }
    
-   string subtitle=init_subtitle();
-   subtitle += ";"+extrainfo;
-   string x_label="Time step";
-   string y_label="Loss";
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      min_value, max_value);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
 
-   double extremal_min_loss = mathfunc::minimal_value(loss_values);
-   double extremal_max_loss = mathfunc::maximal_value(loss_values);
-   double min_loss, max_loss;
-
-   if(nearly_equal(extremal_min_loss, extremal_max_loss))
+   if(epoch_indep_var)
    {
-      max_loss = extremal_max_loss + 1;
+      curr_metafile.write_curve(epoch_history, values);
    }
    else
    {
-      mathfunc::lo_hi_values(loss_values, 0.025, 0.975, min_loss, max_loss);
+      curr_metafile.write_curve(episode_history, values);
    }
-   min_loss = 0;
+   curr_metafile.set_thickness(3);
 
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, time_samples.back(),
-      min_loss, max_loss);
-   curr_metafile.set_subtitle(subtitle);
-   curr_metafile.set_ytic(0.5);
-   curr_metafile.set_ysubtic(0.25);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-   curr_metafile.write_curve(time_samples, loss_values, colorfunc::red);
+// Temporally smooth noisy input values:
 
-// Temporally smooth noisy loss values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
-
-   if(gaussian_size < int(loss_values.size()))
+   if(plot_smoothed_values_flag)
    {
-      vector<double> h;
-      h.reserve(gaussian_size);
-      filterfunc::gaussian_filter(dx, sigma, h);
+      int n_values = values.size();
+      double sigma = 10;
+      if(n_values > 100)
+      {
+         sigma += log10(values.size())/log10(2.0);
+      }
+      double dx = 1;
+      int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
 
-      bool wrap_around_input_values = false;
-      vector<double> smoothed_loss_values;
-      filterfunc::brute_force_filter(
-         loss_values, h, smoothed_loss_values, wrap_around_input_values);
+      if(gaussian_size < n_values)
+      {
+         vector<double> h;
+         h.reserve(gaussian_size);
+         filterfunc::gaussian_filter(dx, sigma, h);
 
-      curr_metafile.set_thickness(3);
-      curr_metafile.write_curve(time_samples, smoothed_loss_values, 
-                                colorfunc::blue);
-   }
-
+         bool wrap_around_input_values = false;
+         vector<double> smoothed_values;
+         filterfunc::brute_force_filter(
+            values, h, smoothed_values, wrap_around_input_values);
+         if(epoch_indep_var)
+         {
+            curr_metafile.write_curve(
+               epoch_history, smoothed_values, colorfunc::blue);
+         }
+         else
+         {
+            curr_metafile.write_curve(
+               episode_history, smoothed_values, colorfunc::blue);
+         }
+      }
+   } // plot_smoothed_values_flag conditional
+   
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of loss values versus time step samples.
+
+void reinforce::plot_loss_history(string output_subdir, string extrainfo)
+{
+   string metafile_basename = "loss_history";
+   string title = "Loss function";
+   string y_label="Loss";
+   bool epoch_indep_var = false;
+   bool plot_smoothed_values_flag = true;
+   bool zero_min_value_flag = false;
+
+   generate_metafile_plot(
+      loss_values, output_subdir, metafile_basename, 
+      title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
+      zero_min_value_flag);
 }
 
 // ---------------------------------------------------------------------
@@ -1144,65 +1191,17 @@ void reinforce::plot_reward_history(
 
 void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 {
-   if(n_episode_turns_frac.size() < 5) return;
-
-   metafile curr_metafile;
-   string meta_filename=output_subdir+"turns_history";
-   string title="Number of AI and agent turns; bsize="+
-      stringfunc::number_to_string(batch_size);
-   if(lambda > 1E-5)
-   {
-      title += "; lambda="+stringfunc::number_to_string(lambda);
-      title += "; nweights="+stringfunc::number_to_string(n_weights);
-   }
-
-   string subtitle=init_subtitle();
-   subtitle += " "+extrainfo;
-   string x_label="Episode";
+   string metafile_basename = "turns_history";
+   string title = "Number of AI and agent turns";
    string y_label="Number of AI + agent turns";
-   double xmax = episode_number;
-   double min_turn_frac = 0;
-   double max_turn_frac = 1;
+   bool epoch_indep_var = false;
+   bool plot_smoothed_values_flag = true;
+   bool zero_min_value_flag = true;
 
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, xmax,
-      min_turn_frac, max_turn_frac);
-   curr_metafile.set_subtitle(subtitle);
-   curr_metafile.set_ytic(0.2);
-   curr_metafile.set_ysubtic(0.1);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-   curr_metafile.write_curve(0, xmax, n_episode_turns_frac);
-   curr_metafile.set_thickness(3);
-
-// Temporally smooth noisy turns fraction values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
-
-   if(gaussian_size < int(n_episode_turns_frac.size())) 
-   {
-      vector<double> h;
-      h.reserve(gaussian_size);
-      filterfunc::gaussian_filter(dx, sigma, h);
-
-      bool wrap_around_input_values = false;
-      vector<double> smoothed_n_episode_turns_frac;
-      filterfunc::brute_force_filter(
-         n_episode_turns_frac, h, smoothed_n_episode_turns_frac, 
-         wrap_around_input_values);
-
-      curr_metafile.write_curve(
-         0, xmax, smoothed_n_episode_turns_frac, colorfunc::blue);
-   }
-   
-   curr_metafile.closemetafile();
-   string banner="Exported metafile "+meta_filename+".meta";
-   outputfunc::write_banner(banner);
-
-   string unix_cmd="meta_to_jpeg "+meta_filename;
-   sysfunc::unix_command(unix_cmd);
+   generate_metafile_plot(
+      n_episode_turns_frac, output_subdir, metafile_basename, 
+      title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
+      zero_min_value_flag);
 }
 
 // ---------------------------------------------------------------------
@@ -3666,102 +3665,4 @@ void reinforce::clear_replay_memory()
 }
 
 
-
-
-
-// ---------------------------------------------------------------------
-// Generate metafile plot of mean KL divergence vs episode number
-
-void reinforce::generate_metafile_plot(
-   const vector<double>& values,
-   string output_subdir, string metafile_basename, string title,
-   string y_label, string extrainfo, bool epoch_indep_var,
-   bool plot_smoothed_values_flag, bool zero_min_value_flag)
-{
-   if(values.size() < 3) return;
-
-   metafile curr_metafile;
-   string meta_filename=output_subdir+metafile_basename;
-   if(lambda > 1E-5)
-   {
-      title += "; lambda="+stringfunc::number_to_string(lambda);
-   }
-   title += "; nweights="+stringfunc::number_to_string(n_weights);
-
-   string subtitle=init_subtitle() + " " + extrainfo;
-   string x_label="Episode";
-   double xmax = get_episode_number();
-   if(epoch_indep_var)
-   {
-      x_label="Epoch";
-      xmax = get_curr_epoch();
-   }
-   double min_value = mathfunc::minimal_value(values);
-   if(zero_min_value_flag)
-   {
-      min_value = 0;
-   }
-   double max_value = mathfunc::maximal_value(values);
-   
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, xmax, 
-      min_value, max_value);
-   curr_metafile.set_subtitle(subtitle);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-
-   if(epoch_indep_var)
-   {
-      curr_metafile.write_curve(epoch_history, values);
-   }
-   else
-   {
-      curr_metafile.write_curve(episode_history, values);
-   }
-   curr_metafile.set_thickness(3);
-
-// Temporally smooth noisy KL divergence values:
-
-   if(plot_smoothed_values_flag)
-   {
-      int n_values = values.size();
-      double sigma = 10;
-      if(n_values > 100)
-      {
-         sigma += log10(values.size())/log10(2.0);
-      }
-      double dx = 1;
-      int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
-
-      if(gaussian_size < n_values)
-      {
-         vector<double> h;
-         h.reserve(gaussian_size);
-         filterfunc::gaussian_filter(dx, sigma, h);
-
-         bool wrap_around_input_values = false;
-         vector<double> smoothed_values;
-         filterfunc::brute_force_filter(
-            values, h, smoothed_values, wrap_around_input_values);
-         if(epoch_indep_var)
-         {
-            curr_metafile.write_curve(
-               epoch_history, smoothed_values, colorfunc::blue);
-         }
-         else
-         {
-            curr_metafile.write_curve(
-               episode_history, smoothed_values, colorfunc::blue);
-         }
-      }
-
-   } // plot_smoothed_values_flag conditional
-   
-   curr_metafile.closemetafile();
-   string banner="Exported metafile "+meta_filename+".meta";
-   outputfunc::write_banner(banner);
-
-   string unix_cmd="meta_to_jpeg "+meta_filename;
-   sysfunc::unix_command(unix_cmd);
-}
 

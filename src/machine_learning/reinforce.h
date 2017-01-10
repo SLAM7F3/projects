@@ -99,13 +99,6 @@ class reinforce
    void print_biases();
    void print_weights();
 
-   void generate_metafile_plot(
-      const std::vector<double>& values,
-      std::string output_subdir, std::string metafile_basename, 
-      std::string title, std::string y_label, std::string extrainfo, 
-      bool epoch_indep_var, bool plot_smoothed_values_flag,
-      bool zero_min_value_flag);
-
    void plot_zeroth_layer_weights(std::string output_subdir);
    void plot_zeroth_layer_weights(int nx, int ny, std::string output_subdir);
    void compute_bias_distributions();
@@ -113,6 +106,12 @@ class reinforce
    void store_quasirandom_weight_values();
 
    std::string init_subtitle();
+   void generate_metafile_plot(
+      const std::vector<double>& values,
+      std::string output_subdir, std::string metafile_basename, 
+      std::string title, std::string y_label, std::string extrainfo, 
+      bool epoch_indep_var, bool plot_smoothed_values_flag,
+      bool zero_min_value_flag);
    void plot_loss_history(std::string output_subdir, std::string extrainfo);
    void plot_avg_discounted_eventual_reward(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
