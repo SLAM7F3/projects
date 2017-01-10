@@ -153,8 +153,8 @@ int main(int argc, char** argv)
 
    int n_lr_episodes_period = 10 * 1000;
 //    int n_snapshot = 500;
-   int n_episode_update = 3;
-//   int n_episode_update = 25;
+//   int n_episode_update = 3;
+   int n_episode_update = 25;
    int export_screens_period = 200;
 
    string extrainfo="H1="+stringfunc::number_to_string(H1);
