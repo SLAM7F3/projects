@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PMAZE solves a maze via policy gradient learning
 // ==========================================================================
-// Last updated on 12/24/16; 12/28/16; 1/2/17; 1/10/17
+// Last updated on 12/28/16; 1/2/17; 1/10/17; 1/11/17
 // ==========================================================================
 
 #include <iostream>
@@ -301,12 +301,12 @@ int main (int argc, char* argv[])
             reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_Qmap_score_history(
-            output_subdir, subtitle, extrainfo);
+            output_subdir, extrainfo);
          bool epoch_indep_var = false;
          reinforce_agent_ptr->generate_summary_plots(
             output_subdir, extrainfo, epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, true);
+            output_subdir, true, false);
       }
    } // n_episodes < n_max_episodes while loop
 
@@ -330,13 +330,12 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->push_back_learning_rate(
       reinforce_agent_ptr->get_learning_rate());
-   reinforce_agent_ptr->plot_Qmap_score_history(
-      output_subdir, subtitle, extrainfo);
+   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
    bool epoch_indep_var = false;
    reinforce_agent_ptr->generate_summary_plots(
       output_subdir, extrainfo, epoch_indep_var);
    reinforce_agent_ptr->generate_view_metrics_script(
-      output_subdir, true);
+      output_subdir, true, false);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir

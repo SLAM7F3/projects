@@ -1404,6 +1404,8 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
 {
    for(unsigned int l = 1; l < bias_50.size(); l++)
    {
+      if(bias_01[l].size() < 3) continue;
+
       metafile curr_metafile;
       string meta_filename=output_subdir + "/bias_dists_"+
          stringfunc::number_to_string(l);
@@ -1509,6 +1511,8 @@ void reinforce::plot_weight_distributions(
 
    for(unsigned int l = 0; l < weight_50.size(); l++)
    {
+      if(weight_01[l].size() < 3) continue;
+
       metafile curr_metafile;
       string basename="weight_dists_"+stringfunc::number_to_string(l);
       string meta_filename=output_subdir + basename;
@@ -1622,6 +1626,8 @@ void reinforce::plot_quasirandom_weight_values(
 
    for(unsigned int l = 0; l < weight_50.size(); l++)
    {
+      if(weight_1[l].size() < 3) continue;
+
       metafile curr_metafile;
       string basename="weight_values_"+stringfunc::number_to_string(l);
       string meta_filename=output_subdir + basename;
@@ -1756,7 +1762,6 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
                                        bool epoch_indep_var)
 {
    plot_episode_number_history(output_subdir, extrainfo, epoch_indep_var);
-
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
    bool plot_cumulative_reward = true;
    plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
@@ -1792,7 +1797,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
 // history metafile outputs.
 
 void reinforce::generate_view_metrics_script(
-   string output_subdir, bool Qmap_score_flag)
+   string output_subdir, bool maze_flag, bool atari_flag)
 {
    string script_filename=output_subdir + "view_metrics";
    ofstream script_stream;
@@ -1802,14 +1807,19 @@ void reinforce::generate_view_metrics_script(
    script_stream << "view lr_history.jpg" << endl;
    script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
 
-   if(Qmap_score_flag)  // maze solving
+   if(maze_flag)  
    {
       script_stream << "view Qmap_score_history.jpg" << endl;
    }
-   else // breakout, pong
+   
+   if(!maze_flag)
+   {
+      script_stream << "view reward_history.jpg" << endl;
+   }
+
+   if(atari_flag)// breakout, pong
    {
       script_stream << "view frames_history.jpg" << endl;
-      script_stream << "view reward_history.jpg" << endl;
       script_stream << "view paddle_X.jpg" << endl;
       script_stream << "view paddle_Y.jpg" << endl;
    }

@@ -123,7 +123,7 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 1000;
+   int replay_memory_capacity = 5 * 1000;
    int eval_memory_capacity = basic_math::min(
       int(0.1 * replay_memory_capacity), 20000);
 
@@ -157,7 +157,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 1000 * 1000;
 
    int n_update = 250;
-   int n_progress = 500;
+   int n_progress = 100;
 //    int n_snapshot = 20000;
 
    int n_illegal_moves = 0;
@@ -169,7 +169,6 @@ int main (int argc, char* argv[])
    int n_recent_stalemates = 0;
    int n_recent_wins = 0;
 
-   double curr_reward = -999;
    double win_reward = 1;
    double stalemate_reward = 0.25;
    double lose_reward = -1;
@@ -212,12 +211,11 @@ int main (int argc, char* argv[])
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
-//   bool AI_moves_first = true;
-   bool AI_moves_first = false;
+   bool AI_moves_first = true;
+//   bool AI_moves_first = false;
    bool periodically_switch_starting_player = false;
 //   bool periodically_switch_starting_player = true;
 
-   game_world.start_new_episode();
    int update_old_weights_counter = 0;
    double total_loss = -1;
 
@@ -229,6 +227,7 @@ int main (int argc, char* argv[])
 // ==========================================================================
 // Reinforcement training loop begins here
 
+   bool eval_memory_full_flag = false;
    while(reinforce_agent_ptr->get_episode_number() < n_max_episodes)
    {
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
@@ -268,22 +267,23 @@ int main (int argc, char* argv[])
       cout << "************  Start of episode " << curr_episode_number
            << " for expt " << expt_number << " ***********" << endl;
 
-      double reward;
+      int d = -1;
+      double curr_reward;
       genvector* next_s;
       double cum_reward = 0;
 
       while(!game_world.get_game_over())
       {
-         int curr_timestep = -1; // reinforce_agent_ptr->get_curr_timestep();
 
 // AI move:
 
-         if((AI_moves_first && curr_timestep == 0) || curr_timestep > 0)
+         if((AI_moves_first && ttt_ptr->get_n_completed_turns() == 0) || 
+            ttt_ptr->get_n_completed_turns() > 0)
          {
             ttt_ptr->get_random_legal_player_move(AI_value);
 //            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
-//             ttt_ptr->display_board_state();
+//            ttt_ptr->display_board_state();
 
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
@@ -305,11 +305,26 @@ int main (int argc, char* argv[])
 // Agent move:
 
          genvector *curr_s = game_world.get_curr_state();
-         int d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-            *curr_s);
+
+// Fill evaluation memory with randomly generated initial states:
+
+         if(nrfunc::ran1() < 0.2)
+         {
+            eval_memory_full_flag = 
+               reinforce_agent_ptr->store_curr_state_into_eval_memory(
+                  *curr_s);
+         }
+
+         if(eval_memory_full_flag)
+         {
+            d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
+               *curr_s);
+         }
+
          int curr_a = reinforce_agent_ptr->
             select_legal_action_for_curr_state();
 //         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+//         cout << "   d = " << d << " curr_a = " << curr_a << endl;
 
          curr_reward = 0;
          if(!game_world.is_legal_action(curr_a))
@@ -338,7 +353,7 @@ int main (int argc, char* argv[])
             game_world.set_game_over(true);
             curr_reward = stalemate_reward;
          }
-         cum_reward += reward;
+         cum_reward += curr_reward;
 
          if(d >= 0)
          {
@@ -353,15 +368,41 @@ int main (int argc, char* argv[])
                   d, curr_a, curr_reward, *next_s, game_world.get_game_over());
             }
          } // d >= 0 conditional
-         
+
       } // !game_over while loop
 // -----------------------------------------------------------------------
+
+      if(nearly_equal(curr_reward, illegal_reward))
+      {
+         n_illegal_moves++;
+         n_recent_illegal_moves++;
+      }
+      else if(nearly_equal(curr_reward, lose_reward))
+      {
+         n_losses++;
+         n_recent_losses++;
+      }
+
+      else if (nearly_equal(curr_reward, win_reward))
+      {
+         n_wins++;
+         n_recent_wins++;
+      }
+      else if(ttt_ptr->get_n_empty_cells() == 0)
+      {
+         n_stalemates++;
+         n_recent_stalemates++;
+      }
 
       cout << "Episode finished" << endl;
       cout << "  cum_reward = " << cum_reward 
            << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
            << "  n_backprops = " 
            << reinforce_agent_ptr->get_n_backprops() << endl;
+      cout << "  n_illegal_moves = " << n_illegal_moves
+           << "  n_losses = " << n_losses
+           << "  n_wins = " << n_wins 
+           << "  n_stalemates = " << n_stalemates << endl;
 
       reinforce_agent_ptr->update_episode_history();
       reinforce_agent_ptr->update_cumulative_reward(cum_reward);
@@ -393,36 +434,13 @@ int main (int argc, char* argv[])
          {
 //            verbose_flag = true;
          }
-         total_loss = reinforce_agent_ptr->update_Q_network(
-            verbose_flag);
+         total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
       }
 
 // Exponentially decay epsilon:
 
       reinforce_agent_ptr->exponentially_decay_epsilon(
          curr_episode_number, 0);
-      
-      if(nearly_equal(curr_reward, illegal_reward))
-      {
-         n_illegal_moves++;
-         n_recent_illegal_moves++;
-      }
-      else if(nearly_equal(curr_reward, lose_reward))
-      {
-         n_losses++;
-         n_recent_losses++;
-      }
-
-      else if (nearly_equal(curr_reward, win_reward))
-      {
-         n_wins++;
-         n_recent_wins++;
-      }
-      else if(ttt_ptr->get_n_empty_cells() == 0)
-      {
-         n_stalemates++;
-         n_recent_stalemates++;
-      }
 
 // Periodically write status info to text console:
 
@@ -506,7 +524,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->generate_summary_plots(
             output_subdir, extrainfo, epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, true);
+            output_subdir, false, false);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }

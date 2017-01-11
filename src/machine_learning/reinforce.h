@@ -153,7 +153,7 @@ class reinforce
       std::string output_subdir, std::string extrainfo,
       bool epoch_indep_var = true);
    void generate_view_metrics_script(
-      std::string output_subdir, bool Qmap_score_flag = false);
+      std::string output_subdir, bool maze_flag, bool atari_flag);
 
    void create_snapshots_subdir(std::string output_subdir);
    void export_snapshot(std::string output_subdir);

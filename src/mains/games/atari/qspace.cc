@@ -412,7 +412,8 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
-         reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
+         reinforce_agent_ptr->generate_view_metrics_script(
+            output_subdir, false, true);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)

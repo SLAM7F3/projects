@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QMAZE solves a maze via Q-learning.
 // ==========================================================================
-// Last updated on 12/20/16; 12/24/16; 12/28/16; 1/10/17
+// Last updated on 12/24/16; 12/28/16; 1/10/17; 1/11/17
 // ==========================================================================
 
 #include <iostream>
@@ -84,8 +84,6 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-//   int replay_memory_capacity = 10 * sqr(n_grid_size);
-//   int replay_memory_capacity = 25 * sqr(n_grid_size);
    int replay_memory_capacity = 1 * 1000;
 //   int replay_memory_capacity = 10 * 1000;
    int eval_memory_capacity = 0.1 * replay_memory_capacity;
@@ -365,7 +363,7 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->generate_summary_plots(
             output_subdir, extrainfo, epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, true);
+            output_subdir, true, false);
       }
       reinforce_agent_ptr->increment_episode_number();
    } // n_episodes < n_max_episodes while loop
@@ -395,7 +393,7 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->generate_summary_plots(
       output_subdir, extrainfo, epoch_indep_var);
    reinforce_agent_ptr->generate_view_metrics_script(
-      output_subdir, true);
+      output_subdir, true, false);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir

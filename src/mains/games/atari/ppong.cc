@@ -439,7 +439,8 @@ int main(int argc, char** argv)
          {
             reinforce_agent_ptr->generate_summary_plots(
                output_subdir, extrainfo);
-            reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
+            reinforce_agent_ptr->generate_view_metrics_script(
+               output_subdir, false, true);
             pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
             pong_ptr->plot_tracks(output_subdir, curr_episode_number, 
                                   cum_reward);

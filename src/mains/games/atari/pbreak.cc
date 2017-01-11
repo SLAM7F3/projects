@@ -430,7 +430,8 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
-         reinforce_agent_ptr->generate_view_metrics_script(output_subdir);
+         reinforce_agent_ptr->generate_view_metrics_script(
+            output_subdir, false, true);
          breakout_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
          breakout_ptr->plot_tracks(
             output_subdir, curr_episode_number, cum_reward);
