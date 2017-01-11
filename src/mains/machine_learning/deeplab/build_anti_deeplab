@@ -1,4 +1,5 @@
 /bin/rm ./bbox_prec_recall
+/bin/rm ./bbox_stats
 /bin/rm ./consolidate_components
 /bin/rm ./consolidate_pyramid_segmentations
 /bin/rm ./downsize_images

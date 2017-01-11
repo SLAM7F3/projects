@@ -10,6 +10,7 @@
 /bin/rm ./generate_bbox_tiles
 /bin/rm ./homogenize_images
 /bin/rm ./image_sizes
+/bin/rm ./imfdb_images
 /bin/rm ./nonface_chips
 /bin/rm ./partition_labeled_imgs
 /bin/rm ./prepare_deeplab_inputs

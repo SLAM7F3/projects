@@ -16,7 +16,7 @@ cd ../dime
 build_anti_dime
 cd ../exif
 build_anti_exif
-cd ../../faces
+cd ../faces
 build_anti_faces
 cd ../falconI
 build_anti_falconI
@@ -56,13 +56,15 @@ cd ../JAV
 build_anti_JAV
 cd ../korea
 build_anti_korea
+cd ../learning
+build_anti_learning
 cd ../machine_learning
 build_anti_machine_learning
 cd ./caffe
 build_anti_caffe
-cd ./deeplab
+cd ../deeplab
 build_anti_deeplab
-cd ./reinforcement_learning
+cd ../reinforcement_learning
 build_rl
 cd ../../mapping
 build_anti_mapping
