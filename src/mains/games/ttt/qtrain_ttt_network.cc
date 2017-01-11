@@ -182,7 +182,7 @@ int main (int argc, char* argv[])
 
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
-   double starting_episode_linear_eps_decay = 0.001 * n_max_episodes;
+   double starting_episode_linear_eps_decay = 1000;
    double stopping_episode_linear_eps_decay = 0.50 * n_max_episodes;
 
 // Generate text file summary of parameter values:
