@@ -85,12 +85,12 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 1 * 32;	// 
-   int H1 = 2 * 64;	//  
-//   int H1 = 3 * 64;	//  
+//   int H1 = 2 * 64;	//  
+   int H1 = 3 * 64;	//  
 //   int H1 = 5 * 64;	//  = 320
 
-   int H2 = 32;
-//   int H2 = 1 * 64;
+//   int H2 = 32;
+   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
 
    int H3 = 0;
@@ -150,14 +150,14 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-//   reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
-   int n_max_episodes = 1000 * 1000;
+   int n_max_episodes = 10000 * 1000;
 
    int n_update = 250;
-   int n_progress = 100;
+   int n_progress = 1000;
 //    int n_snapshot = 20000;
 
    int n_illegal_moves = 0;
@@ -180,11 +180,10 @@ int main (int argc, char* argv[])
    int n_lr_episodes_period = 100 * 1000;
    int old_weights_period = 100; 
 
-   reinforce_agent_ptr->set_epsilon_time_constant(1000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    double starting_episode_linear_eps_decay = 0.001 * n_max_episodes;
-   double stopping_episode_linear_eps_decay = 0.500 * n_max_episodes;
+   double stopping_episode_linear_eps_decay = 0.50 * n_max_episodes;
 
 // Generate text file summary of parameter values:
 
@@ -289,7 +288,6 @@ int main (int argc, char* argv[])
             {
                game_world.set_game_over(true);
                curr_reward = lose_reward; // Agent loses!
-//                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
          
@@ -297,7 +295,6 @@ int main (int argc, char* argv[])
             {
                game_world.set_game_over(true);
                curr_reward = stalemate_reward; // Entire board filled
-//                reinforce_agent_ptr->record_reward_for_action(curr_reward);
                break;
             }
          } // AI_moves_first || timestep > 0 conditional
@@ -322,8 +319,8 @@ int main (int argc, char* argv[])
          }
 
          int curr_a = reinforce_agent_ptr->
-            select_legal_action_for_curr_state();
-//         int curr_a = reinforce_agent_ptr->select_action_for_curr_state();
+            select_action_for_curr_state();
+//            select_legal_action_for_curr_state();
 //         cout << "   d = " << d << " curr_a = " << curr_a << endl;
 
          curr_reward = 0;
@@ -437,10 +434,11 @@ int main (int argc, char* argv[])
          total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
       }
 
-// Exponentially decay epsilon:
+// Linearly decay epsilon over time:
 
-      reinforce_agent_ptr->exponentially_decay_epsilon(
-         curr_episode_number, 0);
+      reinforce_agent_ptr->linearly_decay_epsilon(
+         curr_episode_number, starting_episode_linear_eps_decay,
+         stopping_episode_linear_eps_decay);
 
 // Periodically write status info to text console:
 

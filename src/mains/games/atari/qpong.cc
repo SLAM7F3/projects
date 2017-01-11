@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QPONG solves the Pong atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/27/16; 12/30/16; 12/31/16; 1/10/17
+// Last updated on 12/30/16; 12/31/16; 1/10/17; 1/11/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -498,7 +498,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->copy_weights_onto_old_weights();
       }
 
-// Slowly decay epsilon over time:
+// Linearly decay epsilon over time:
 
       reinforce_agent_ptr->linearly_decay_epsilon(
          curr_epoch, starting_epoch_linear_eps_decay,
