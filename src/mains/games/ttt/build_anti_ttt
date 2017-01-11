@@ -1,0 +1,4 @@
+/bin/rm ./qtrain_ttt_network
+/bin/rm ./test_ttt_network
+/bin/rm ./train_ttt_network
+
