@@ -1228,7 +1228,7 @@ void reinforce::plot_frames_history(
 void reinforce::plot_episode_number_history(
    string output_subdir, string extrainfo, bool epoch_indep_var)
 {
-   string metafile_basename = "n_episode";
+   string metafile_basename = "n_episodes";
    string title = "Number of episodes";
    string y_label="Number of episodes";
    bool plot_smoothed_values_flag = true;
@@ -1300,7 +1300,7 @@ void reinforce::plot_Qmap_score_history(string output_subdir, string extrainfo)
 void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
                                         bool epoch_indep_var)
 {
-   string metafile_basename = "log10_losses_score_history";
+   string metafile_basename = "log10_losses_history";
    string title = "Log10(total loss)";
    string y_label="Log10(total loss)";
    bool plot_smoothed_values_flag = true;
