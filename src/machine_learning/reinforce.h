@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/3/17; 1/4/17; 1/5/17; 1/10/17
+// Last modified on 1/4/17; 1/5/17; 1/10/17; 1/11/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -118,12 +118,7 @@ class reinforce
    void plot_maxQ_history(
       std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
    void plot_reward_history(std::string output_subdir, std::string extrainfo,
-                            bool epoch_indep_var,
-                            bool plot_cumulative_reward = false);
-   void plot_reward_history(
-      std::string output_subdir, std::string extrainfo, 
-      double min_reward, double max_reward,
-      const std::vector<double>& reward_snapshots, bool epoch_indep_var);
+                            bool epoch_indep_var, bool plot_cumulative_reward);
    void plot_turns_history(std::string output_subdir, std::string extrainfo);
    void plot_frames_history(std::string output_subdir, std::string extrainfo,
                             bool epoch_indep_var);

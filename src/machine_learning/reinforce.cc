@@ -1091,99 +1091,38 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo,
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of running reward sum versus time step samples.
+// Generate metafile plot of reward versus time.
 
 void reinforce::plot_reward_history(
    string output_subdir, string extrainfo, bool epoch_indep_var,
    bool plot_cumulative_reward)
 {
-   double min_reward, max_reward;
    if(plot_cumulative_reward)
    {
-      min_reward = mathfunc::minimal_value(cumulative_reward_snapshots);
-      max_reward = mathfunc::maximal_value(cumulative_reward_snapshots);
-      plot_reward_history(output_subdir, extrainfo, 
-                          min_reward - 0.5, max_reward + 0.5,
-                          cumulative_reward_snapshots, epoch_indep_var);
+      string metafile_basename = "reward_history";
+      string title = "Cumulative reward";
+      string ylabel = "Cumulative reward";
+      bool plot_smoothed_values_flag = true;
+      bool zero_min_value_flag = false;
+      
+      generate_metafile_plot(
+         cumulative_reward_snapshots, output_subdir, metafile_basename, 
+         title, ylabel, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
+         zero_min_value_flag);
    }
    else
    {
-      min_reward = mathfunc::minimal_value(running_reward_snapshots);
-      max_reward = mathfunc::maximal_value(running_reward_snapshots);
-      plot_reward_history(output_subdir, extrainfo,
-                          min_reward - 0.5, max_reward + 0.5,
-                          running_reward_snapshots, epoch_indep_var);
-   }
-}
-
-void reinforce::plot_reward_history(
-   string output_subdir, string extrainfo, 
-   double min_reward, double max_reward, 
-   const vector<double>& reward_snapshots,
-   bool epoch_indep_var)
-{
-   if(reward_snapshots.size() < 5) return;
-
-   metafile curr_metafile;
-   string meta_filename=output_subdir+"reward_history";
-   string title="Running reward sum; bsize="+
-      stringfunc::number_to_string(batch_size);
-   if(lambda > 1E-5)
-   {
-      title += "; lambda="+stringfunc::number_to_string(lambda);
-      title += "; nweights="+stringfunc::number_to_string(n_weights);
-   }
-
-   string subtitle=init_subtitle();
-   subtitle += " "+extrainfo;
-   string x_label="Epoch";
-   double xmax = curr_epoch;
-   string y_label="Running reward sum";
-
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, xmax, min_reward, max_reward);
-   curr_metafile.set_subtitle(subtitle);
-   double ytic = 0.1 * (max_reward - min_reward);
-   curr_metafile.set_ytic(ytic);
-   curr_metafile.set_ysubtic(0.5 * ytic);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-   curr_metafile.write_curve(epoch_history, reward_snapshots);
-
-// Temporally smooth noisy reward values:
-
-   double sigma = 10;
-   if(reward_snapshots.size() > 100)
-   {
-      sigma += log10(reward_snapshots.size())/log10(2.0);
-   }
-
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
-
-   vector<double> smoothed_reward_snapshots;
-   if(gaussian_size < int(reward_snapshots.size())) 
-   {
-      vector<double> h;
-      h.reserve(gaussian_size);
-      filterfunc::gaussian_filter(dx, sigma, h);
+      string metafile_basename = "reward_history";
+      string title = "Running reward";
+      string ylabel = "Running reward";
+      bool plot_smoothed_values_flag = true;
+      bool zero_min_value_flag = false;
       
-      bool wrap_around_input_values = false;
-      filterfunc::brute_force_filter(
-         reward_snapshots, h, smoothed_reward_snapshots, 
-         wrap_around_input_values);
-
-      curr_metafile.set_thickness(3);
-      curr_metafile.write_curve(
-         epoch_history, smoothed_reward_snapshots, colorfunc::blue);
+      generate_metafile_plot(
+         running_reward_snapshots, output_subdir, metafile_basename, 
+         title, ylabel, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
+         zero_min_value_flag);
    }
-
-   curr_metafile.closemetafile();
-   string banner="Exported metafile "+meta_filename+".meta";
-   outputfunc::write_banner(banner);
-
-   string unix_cmd="meta_to_jpeg "+meta_filename;
-   sysfunc::unix_command(unix_cmd);
 }
 
 // ---------------------------------------------------------------------
@@ -1764,8 +1703,8 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_episode_number_history(output_subdir, extrainfo, epoch_indep_var);
    plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
    bool plot_cumulative_reward = true;
-   plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
-                       epoch_indep_var);
+   plot_reward_history(output_subdir, extrainfo, epoch_indep_var,
+                       plot_cumulative_reward);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
    plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_lr_mean_abs_nabla_weight_ratios(
