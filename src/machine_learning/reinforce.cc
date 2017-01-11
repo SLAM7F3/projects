@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 1/3/17; 1/4/17; 1/5/17; 1/10/17
+// Last modified on 1/4/17; 1/5/17; 1/10/17; 1/11/17
 // ==========================================================================
 
 #include <string>
@@ -1414,8 +1414,13 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
-      string x_label="Epoch";
-      double xmax = curr_epoch;
+      string x_label="Episode";
+      double xmax = get_episode_number();
+      if(epoch_indep_var)
+      {
+         x_label="Epoch";
+         xmax = get_curr_epoch();
+      }
       string y_label="Bias distributions";
 
       double max_bias = NEGATIVEINFINITY;
@@ -1432,29 +1437,57 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
       curr_metafile.write_header();
       curr_metafile.set_thickness(2);
 
-      curr_metafile.write_curve(
-         epoch_history, bias_01[l], colorfunc::get_color(0));
-      curr_metafile.write_curve(
-         epoch_history, bias_05[l], colorfunc::get_color(1));
-      curr_metafile.write_curve(
-         epoch_history, bias_10[l], colorfunc::get_color(2));
-      curr_metafile.write_curve(
-         epoch_history, bias_25[l], colorfunc::get_color(3));
-      curr_metafile.write_curve(
-         epoch_history, bias_35[l], colorfunc::get_color(4));
-      curr_metafile.write_curve(
-         epoch_history, bias_50[l], colorfunc::get_color(5));
-      curr_metafile.write_curve(
-         epoch_history, bias_65[l], colorfunc::get_color(6));
-      curr_metafile.write_curve(
-         epoch_history, bias_75[l], colorfunc::get_color(7));
-      curr_metafile.write_curve(
-         epoch_history, bias_90[l], colorfunc::get_color(8));
-      curr_metafile.write_curve(
-         epoch_history, bias_95[l], colorfunc::get_color(9));
-      curr_metafile.write_curve(
-         epoch_history, bias_99[l], colorfunc::get_color(10));
-
+      if(epoch_indep_var)
+      {
+         curr_metafile.write_curve(
+            epoch_history, bias_01[l], colorfunc::get_color(0));
+         curr_metafile.write_curve(
+            epoch_history, bias_05[l], colorfunc::get_color(1));
+         curr_metafile.write_curve(
+            epoch_history, bias_10[l], colorfunc::get_color(2));
+         curr_metafile.write_curve(
+            epoch_history, bias_25[l], colorfunc::get_color(3));
+         curr_metafile.write_curve(
+            epoch_history, bias_35[l], colorfunc::get_color(4));
+         curr_metafile.write_curve(
+            epoch_history, bias_50[l], colorfunc::get_color(5));
+         curr_metafile.write_curve(
+            epoch_history, bias_65[l], colorfunc::get_color(6));
+         curr_metafile.write_curve(
+            epoch_history, bias_75[l], colorfunc::get_color(7));
+         curr_metafile.write_curve(
+            epoch_history, bias_90[l], colorfunc::get_color(8));
+         curr_metafile.write_curve(
+            epoch_history, bias_95[l], colorfunc::get_color(9));
+         curr_metafile.write_curve(
+            epoch_history, bias_99[l], colorfunc::get_color(10));
+      }
+      else
+      {
+         curr_metafile.write_curve(
+            episode_history, bias_01[l], colorfunc::get_color(0));
+         curr_metafile.write_curve(
+            episode_history, bias_05[l], colorfunc::get_color(1));
+         curr_metafile.write_curve(
+            episode_history, bias_10[l], colorfunc::get_color(2));
+         curr_metafile.write_curve(
+            episode_history, bias_25[l], colorfunc::get_color(3));
+         curr_metafile.write_curve(
+            episode_history, bias_35[l], colorfunc::get_color(4));
+         curr_metafile.write_curve(
+            episode_history, bias_50[l], colorfunc::get_color(5));
+         curr_metafile.write_curve(
+            episode_history, bias_65[l], colorfunc::get_color(6));
+         curr_metafile.write_curve(
+            episode_history, bias_75[l], colorfunc::get_color(7));
+         curr_metafile.write_curve(
+            episode_history, bias_90[l], colorfunc::get_color(8));
+         curr_metafile.write_curve(
+            episode_history, bias_95[l], colorfunc::get_color(9));
+         curr_metafile.write_curve(
+            episode_history, bias_99[l], colorfunc::get_color(10));
+      }
+      
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
       outputfunc::write_banner(banner);
@@ -1486,8 +1519,13 @@ void reinforce::plot_weight_distributions(
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
-      string x_label="Epoch";
-      double xmax = curr_epoch;
+      string x_label="Episode";
+      double xmax = get_episode_number();
+      if(epoch_indep_var)
+      {
+         x_label="Epoch";
+         xmax = get_curr_epoch();
+      }
       string y_label="Weight distributions";
 
       double max_weight = NEGATIVEINFINITY;
@@ -1505,29 +1543,57 @@ void reinforce::plot_weight_distributions(
       curr_metafile.write_header();
       curr_metafile.set_thickness(2);
 
-      curr_metafile.write_curve(
-         epoch_history, weight_01[l], colorfunc::get_color(0));
-      curr_metafile.write_curve(
-         epoch_history, weight_05[l], colorfunc::get_color(1));
-      curr_metafile.write_curve(
-         epoch_history, weight_10[l], colorfunc::get_color(2));
-      curr_metafile.write_curve(
-         epoch_history, weight_25[l], colorfunc::get_color(3));
-      curr_metafile.write_curve(
-         epoch_history, weight_35[l], colorfunc::get_color(4));
-      curr_metafile.write_curve(
-         epoch_history, weight_50[l], colorfunc::get_color(5));
-      curr_metafile.write_curve(
-         epoch_history, weight_65[l], colorfunc::get_color(6));
-      curr_metafile.write_curve(
-         epoch_history, weight_75[l], colorfunc::get_color(7));
-      curr_metafile.write_curve(
-         epoch_history, weight_90[l], colorfunc::get_color(8));
-      curr_metafile.write_curve(
-         epoch_history, weight_95[l], colorfunc::get_color(9));
-      curr_metafile.write_curve(
-         epoch_history, weight_99[l], colorfunc::get_color(10));
-
+      if(epoch_indep_var)
+      {
+         curr_metafile.write_curve(
+            epoch_history, weight_01[l], colorfunc::get_color(0));
+         curr_metafile.write_curve(
+            epoch_history, weight_05[l], colorfunc::get_color(1));
+         curr_metafile.write_curve(
+            epoch_history, weight_10[l], colorfunc::get_color(2));
+         curr_metafile.write_curve(
+            epoch_history, weight_25[l], colorfunc::get_color(3));
+         curr_metafile.write_curve(
+            epoch_history, weight_35[l], colorfunc::get_color(4));
+         curr_metafile.write_curve(
+            epoch_history, weight_50[l], colorfunc::get_color(5));
+         curr_metafile.write_curve(
+            epoch_history, weight_65[l], colorfunc::get_color(6));
+         curr_metafile.write_curve(
+            epoch_history, weight_75[l], colorfunc::get_color(7));
+         curr_metafile.write_curve(
+            epoch_history, weight_90[l], colorfunc::get_color(8));
+         curr_metafile.write_curve(
+            epoch_history, weight_95[l], colorfunc::get_color(9));
+         curr_metafile.write_curve(
+            epoch_history, weight_99[l], colorfunc::get_color(10));
+      }
+      else
+      {
+         curr_metafile.write_curve(
+            episode_history, weight_01[l], colorfunc::get_color(0));
+         curr_metafile.write_curve(
+            episode_history, weight_05[l], colorfunc::get_color(1));
+         curr_metafile.write_curve(
+            episode_history, weight_10[l], colorfunc::get_color(2));
+         curr_metafile.write_curve(
+            episode_history, weight_25[l], colorfunc::get_color(3));
+         curr_metafile.write_curve(
+            episode_history, weight_35[l], colorfunc::get_color(4));
+         curr_metafile.write_curve(
+            episode_history, weight_50[l], colorfunc::get_color(5));
+         curr_metafile.write_curve(
+            episode_history, weight_65[l], colorfunc::get_color(6));
+         curr_metafile.write_curve(
+            episode_history, weight_75[l], colorfunc::get_color(7));
+         curr_metafile.write_curve(
+            episode_history, weight_90[l], colorfunc::get_color(8));
+         curr_metafile.write_curve(
+            episode_history, weight_95[l], colorfunc::get_color(9));
+         curr_metafile.write_curve(
+            episode_history, weight_99[l], colorfunc::get_color(10));
+      }
+      
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
       outputfunc::write_banner(banner);
@@ -1566,8 +1632,13 @@ void reinforce::plot_quasirandom_weight_values(
 
       string subtitle=init_subtitle();
       subtitle += ";"+extrainfo;
-      string x_label="Epoch";
-      double xmax = curr_epoch;
+      string x_label="Episode";
+      double xmax = get_episode_number();
+      if(epoch_indep_var)
+      {
+         x_label="Epoch";
+         xmax = get_curr_epoch();
+      }
       string y_label="Weight values";
 
       double max_weight = NEGATIVEINFINITY;
@@ -1618,24 +1689,48 @@ void reinforce::plot_quasirandom_weight_values(
       curr_metafile.write_header();
       curr_metafile.set_thickness(2);
 
-      curr_metafile.write_curve(
-         epoch_history, weight_1[l], colorfunc::get_color(0));
-      curr_metafile.write_curve(
-         epoch_history, weight_2[l], colorfunc::get_color(1));
-      curr_metafile.write_curve(
-         epoch_history, weight_3[l], colorfunc::get_color(2));
-      curr_metafile.write_curve(
-         epoch_history, weight_4[l], colorfunc::get_color(3));
-      curr_metafile.write_curve(
-         epoch_history, weight_5[l], colorfunc::get_color(4));
-      curr_metafile.write_curve(
-         epoch_history, weight_6[l], colorfunc::get_color(5));
-      curr_metafile.write_curve(
-         epoch_history, weight_7[l], colorfunc::get_color(6));
-      curr_metafile.write_curve(
-         epoch_history, weight_8[l], colorfunc::get_color(7));
-      curr_metafile.write_curve(
-         epoch_history, weight_9[l], colorfunc::get_color(8));
+      if(epoch_indep_var)
+      {
+         curr_metafile.write_curve(
+            epoch_history, weight_1[l], colorfunc::get_color(0));
+         curr_metafile.write_curve(
+            epoch_history, weight_2[l], colorfunc::get_color(1));
+         curr_metafile.write_curve(
+            epoch_history, weight_3[l], colorfunc::get_color(2));
+         curr_metafile.write_curve(
+            epoch_history, weight_4[l], colorfunc::get_color(3));
+         curr_metafile.write_curve(
+            epoch_history, weight_5[l], colorfunc::get_color(4));
+         curr_metafile.write_curve(
+            epoch_history, weight_6[l], colorfunc::get_color(5));
+         curr_metafile.write_curve(
+            epoch_history, weight_7[l], colorfunc::get_color(6));
+         curr_metafile.write_curve(
+            epoch_history, weight_8[l], colorfunc::get_color(7));
+         curr_metafile.write_curve(
+            epoch_history, weight_9[l], colorfunc::get_color(8));
+      }
+      else
+      {
+         curr_metafile.write_curve(
+            episode_history, weight_1[l], colorfunc::get_color(0));
+         curr_metafile.write_curve(
+            episode_history, weight_2[l], colorfunc::get_color(1));
+         curr_metafile.write_curve(
+            episode_history, weight_3[l], colorfunc::get_color(2));
+         curr_metafile.write_curve(
+            episode_history, weight_4[l], colorfunc::get_color(3));
+         curr_metafile.write_curve(
+            episode_history, weight_5[l], colorfunc::get_color(4));
+         curr_metafile.write_curve(
+            episode_history, weight_6[l], colorfunc::get_color(5));
+         curr_metafile.write_curve(
+            episode_history, weight_7[l], colorfunc::get_color(6));
+         curr_metafile.write_curve(
+            episode_history, weight_8[l], colorfunc::get_color(7));
+         curr_metafile.write_curve(
+            episode_history, weight_9[l], colorfunc::get_color(8));
+      }
 
       curr_metafile.closemetafile();
       string banner="Exported metafile "+meta_filename+".meta";
@@ -1667,7 +1762,6 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
    plot_reward_history(output_subdir, extrainfo,plot_cumulative_reward,
                        epoch_indep_var);
    plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
-
    plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
    plot_log10_lr_mean_abs_nabla_weight_ratios(
       output_subdir, extrainfo, epoch_indep_var);
@@ -3663,6 +3757,7 @@ void reinforce::clear_replay_memory()
       pi_curr->clear_values();
    }
 }
+
 
 
 

@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include <string>
-#include <unistd.h>
+#include <unistd.h>		// needed for getpid()
 #include <vector>
 #include <SDL.h>
 #include <ale_interface.hpp>
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
    using std::ofstream;
    using std::string;
    using std::vector;
-   std::set_new_handler(sysfunc::out_of_memory);      
+   std::set_new_handler(sysfunc::out_of_memory);
 
    timefunc::initialize_timeofday_clock();
    long seed = nrfunc::init_time_based_seed();

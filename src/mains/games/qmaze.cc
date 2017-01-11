@@ -220,7 +220,7 @@ int main (int argc, char* argv[])
 // Current episode starts here:
 
 //      cout << "************  Start of episode " << curr_episode_number
-//           << " ***********" << endl;
+//           << " for expt " << expt_number << " ***********" << endl;
 //      curr_maze.print_occupancy_grid();
 //      curr_maze.print_occupancy_state();
 
@@ -342,7 +342,6 @@ int main (int argc, char* argv[])
          cout << "  Qmap_score = " << Qmap_score << endl;
          reinforce_agent_ptr->push_back_Qmap_score(Qmap_score);
 
-
          curr_maze.DrawMaze(output_counter++, output_subdir, basename,
                             display_qmap_flag);
       }
@@ -356,15 +355,19 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->push_back_learning_rate(
             reinforce_agent_ptr->get_learning_rate());
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+           reinforce_agent_ptr->compute_bias_distributions();
+         }
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->plot_Qmap_score_history(
-            output_subdir, subtitle, extrainfo);
+            output_subdir, extrainfo);
          bool epoch_indep_var = false;
          reinforce_agent_ptr->generate_summary_plots(
             output_subdir, extrainfo, epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(
             output_subdir, true);
       }
+      reinforce_agent_ptr->increment_episode_number();
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
@@ -387,8 +390,7 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->push_back_learning_rate(
       reinforce_agent_ptr->get_learning_rate());
-   reinforce_agent_ptr->plot_Qmap_score_history(
-      output_subdir, subtitle, extrainfo);
+   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
    bool epoch_indep_var = false;
    reinforce_agent_ptr->generate_summary_plots(
       output_subdir, extrainfo, epoch_indep_var);

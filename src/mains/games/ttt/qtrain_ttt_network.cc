@@ -1,29 +1,28 @@
-
-// As of 12/13/16, reward and timestep member vars in reinforce class
-// have been significantly altered.  So these quantities need to be
-// reworked inside this program...
-
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 11/30/16; 12/5/16; 12/7/16; 12/13/16; 1/10/17
+// Last updated on 12/7/16; 12/13/16; 1/10/17; 1/11/17
 // ==========================================================================
 
 #include <iostream>
 #include <string>
+#include <unistd.h>		// needed for getpid()
 #include <vector>
 #include "machine_learning/environment.h"
 #include "general/filefuncs.h"
+#include "machine_learning/machinelearningfuncs.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "machine_learning/reinforce.h"
 #include "general/stringfuncs.h"
+#include "general/sysfuncs.h"
 #include "games/tictac3d.h"
 #include "time/timefuncs.h"
 
 using std::cin;
 using std::cout;
 using std::endl;
+using std::ofstream;
 using std::string;
 using std::vector;
 
@@ -59,12 +58,13 @@ void compute_minimax_move(
 // ==========================================================================
 int main (int argc, char* argv[])
 {
+   std::set_new_handler(sysfunc::out_of_memory);
    timefunc::initialize_timeofday_clock();
-//   nrfunc::init_time_based_seed();
-   long s = -11;
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
-//   cin >> s;
-   nrfunc::init_default_seed(s);
+//   cin >> seed;
+//   nrfunc::init_default_seed(seed);
 
    int nsize = 4;
 //   int n_zlevels = 1;
@@ -79,6 +79,8 @@ int main (int argc, char* argv[])
    environment game_world(environment::TTT);
    game_world.set_tictac3d(ttt_ptr);
 
+// Set neural network architecture parameters:
+
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = n_actions;		// Output dimensionality
 
@@ -86,14 +88,10 @@ int main (int argc, char* argv[])
    int H1 = 2 * 64;	//  
 //   int H1 = 3 * 64;	//  
 //   int H1 = 5 * 64;	//  = 320
-//   int H1 = 7 * 64;	//  
 
-//   int H2 = 0;
-//   int H2 = 16;
    int H2 = 32;
 //   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
-//   int H2 = 5 * 64;
 
    int H3 = 0;
 //   int H3 = 32;
@@ -125,37 +123,20 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int batch_size = 1;
-//   int batch_size = 3;
-   int replay_memory_capacity = 10 * batch_size * n_max_turns;
+   int replay_memory_capacity = 1000;
+   int eval_memory_capacity = basic_math::min(
+      int(0.1 * replay_memory_capacity), 20000);
+
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, batch_size, replay_memory_capacity,
-//      reinforce::SGD);
-//      reinforce::MOMENTUM);
-//      reinforce::NESTEROV);
+      layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
       reinforce::RMSPROP);
-//      reinforce::ADAM);
-
-   const double beta1 = 0.0;
-//   const double beta1 = 1E-12;// OK
-//   const double beta1 = 1E-9;  // OK
-//   const double beta1 = 1E-8;  // OK
-//   const double beta1 = 1E-7;  // bad
-//   const double beta1 = 1E-6;   // bad
-//   double beta1 = 0.9;
-   
-//   const double beta2 = 0.01;
-//   const double beta2 = 0.1;
-//   const double beta2 = 0.90;  
-   double beta2 = 0.999;   
-   reinforce_agent_ptr->set_ADAM_params(beta1, beta2);
-
-//   reinforce_agent_ptr->set_debug_flag(true);
    reinforce_agent_ptr->set_environment(&game_world);
+   reinforce_agent_ptr->set_lambda(1E-2);
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
 
-   string experiments_subdir="./experiments/TTT/";
+   string experiments_subdir="./experiments/";
    filefunc::dircreate(experiments_subdir);
 
    int expt_number;
@@ -167,36 +148,17 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->set_Nd(32);
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
-
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(1E-6);   // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(1E-5);   // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(1E-4);   // bad
-
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.001);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.01);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.10);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.5);  // bad
-   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.99);  // bad
-//   reinforce_agent_ptr->set_rmsprop_decay_rate(0.999);  // bad
+   reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-3);
    reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-6);
-   double min_learning_rate = 
-      0.1 * reinforce_agent_ptr->get_base_learning_rate();
 
-   int n_max_episodes = 2 * 1000 * 1000;
-//   if(n_zlevels > 1)
-   {
-      n_max_episodes = 20 * 1000 * 1000;
-   }
+   int n_max_episodes = 1000 * 1000;
 
    int n_update = 250;
-   int n_summarize = 250;
-   int n_snapshot = 20000;
+   int n_progress = 500;
+//    int n_snapshot = 20000;
 
    int n_illegal_moves = 0;
    int n_losses = 0;
@@ -217,13 +179,36 @@ int main (int argc, char* argv[])
 // value:
 
    int n_lr_episodes_period = 100 * 1000;
-
-   int old_weights_period = 10; 
-//   int old_weights_period = 32;  
+   int old_weights_period = 100; 
 
    reinforce_agent_ptr->set_epsilon_time_constant(1000);
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
+   double starting_episode_linear_eps_decay = 0.001 * n_max_episodes;
+   double stopping_episode_linear_eps_decay = 0.500 * n_max_episodes;
+
+// Generate text file summary of parameter values:
+
+   string params_filename = output_subdir + "params.dat";
+   reinforce_agent_ptr->summarize_parameters(params_filename);
+   ofstream params_stream;
+   filefunc::appendfile(params_filename, params_stream);
+
+   params_stream << "n_actions = " << n_actions << endl;
+   params_stream << "Leaky ReLU small slope = "
+                 << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
+   params_stream << "Learning rate decrease period = " 
+                 << n_lr_episodes_period << " episodes" << endl;
+   params_stream << "Old weights period = " << old_weights_period
+                 << " episodes" << endl;
+   params_stream << "Frame skip = " << game_world.get_frame_skip() << endl;
+   params_stream << "Starting episode for linear epsilon decay = "
+                 << starting_episode_linear_eps_decay << endl;
+   params_stream << "Stopping episode for linear epsilon decay = "
+                 << stopping_episode_linear_eps_decay << endl;
+   params_stream << "Random seed = " << seed << endl;
+   params_stream << "Process ID = " << getpid() << endl;
+   filefunc::closefile(params_filename, params_stream);
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
@@ -248,9 +233,9 @@ int main (int argc, char* argv[])
    {
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
       outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, n_summarize, n_max_episodes);
+         curr_episode_number, n_progress, n_max_episodes);
 
-      ttt_ptr->reset_board_state();
+      game_world.start_new_episode();
       reinforce_agent_ptr->initialize_episode();
 
 // Periodically decrease learning rate:
@@ -280,10 +265,13 @@ int main (int argc, char* argv[])
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
-//      cout << "************  Start of Game " << curr_episode_number
-//           << " ***********" << endl;
+      cout << "************  Start of episode " << curr_episode_number
+           << " for expt " << expt_number << " ***********" << endl;
 
+      double reward;
       genvector* next_s;
+      double cum_reward = 0;
+
       while(!game_world.get_game_over())
       {
          int curr_timestep = -1; // reinforce_agent_ptr->get_curr_timestep();
@@ -350,25 +338,44 @@ int main (int argc, char* argv[])
             game_world.set_game_over(true);
             curr_reward = stalemate_reward;
          }
+         cum_reward += reward;
 
-//          reinforce_agent_ptr->record_reward_for_action(curr_reward);
-//          reinforce_agent_ptr->increment_time_counters();
-
-         if(game_world.get_game_over())
+         if(d >= 0)
          {
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, curr_reward, *curr_s, game_world.get_game_over());
-         }
-         else
-         {
-            reinforce_agent_ptr->store_arsprime_into_replay_memory(
-               d, curr_a, curr_reward, *next_s, game_world.get_game_over());
-         }
-
+            if(game_world.get_game_over())
+            {
+               reinforce_agent_ptr->store_arsprime_into_replay_memory(
+                  d, curr_a, curr_reward, *curr_s, game_world.get_game_over());
+            }
+            else
+            {
+               reinforce_agent_ptr->store_arsprime_into_replay_memory(
+                  d, curr_a, curr_reward, *next_s, game_world.get_game_over());
+            }
+         } // d >= 0 conditional
+         
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
-      reinforce_agent_ptr->increment_episode_number();
+      cout << "Episode finished" << endl;
+      cout << "  cum_reward = " << cum_reward 
+           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
+           << "  n_backprops = " 
+           << reinforce_agent_ptr->get_n_backprops() << endl;
+
+      reinforce_agent_ptr->update_episode_history();
+      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
+      reinforce_agent_ptr->update_epsilon();
+
+      if(curr_episode_number % 10 == 0)
+      {
+         reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
+      }
+
+      if(total_loss > 0)
+      {
+         reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
+      }
 
 // Periodically copy current weights into old weights:
 
@@ -379,10 +386,15 @@ int main (int argc, char* argv[])
          update_old_weights_counter = 1;
       }
 
-      if(reinforce_agent_ptr->get_replay_memory_full() && 
-         curr_episode_number % reinforce_agent_ptr->get_batch_size() == 0)
+      if(reinforce_agent_ptr->get_replay_memory_full())
       {
-         total_loss = reinforce_agent_ptr->update_Q_network();
+         bool verbose_flag = false;
+         if(curr_episode_number % 500000 == 0)
+         {
+//            verbose_flag = true;
+         }
+         total_loss = reinforce_agent_ptr->update_Q_network(
+            verbose_flag);
       }
 
 // Exponentially decay epsilon:
@@ -414,9 +426,12 @@ int main (int argc, char* argv[])
 
 // Periodically write status info to text console:
 
-      if(curr_episode_number >= n_update - 1 && 
-         curr_episode_number % n_update == 0)
+      if(curr_episode_number > 0 && curr_episode_number % n_update == 0)
       {
+         cout << "Episode number = " << curr_episode_number 
+              << " epsilon = " << reinforce_agent_ptr->get_epsilon()
+              << endl;
+
          ttt_ptr->display_board_state();
          cout << "Q-learning" << endl;
          if(AI_value == -1)
@@ -471,10 +486,6 @@ int main (int argc, char* argv[])
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
          reinforce_agent_ptr->append_n_episode_turns_frac(curr_n_turns_frac);
-//          reinforce_agent_ptr->snapshot_running_reward();
-         if(reinforce_agent_ptr->get_include_bias_terms()){
-           reinforce_agent_ptr->compute_bias_distributions();
-         }
 
          ttt_ptr->append_game_illegal_frac(illegal_frac);
          ttt_ptr->append_game_loss_frac(loss_frac);
@@ -482,20 +493,32 @@ int main (int argc, char* argv[])
          ttt_ptr->append_game_win_frac(win_frac);
       }
 
-      if(curr_episode_number > 0 && curr_episode_number % n_summarize == 0)
+      if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
       {
+         reinforce_agent_ptr->push_back_learning_rate(
+            reinforce_agent_ptr->get_learning_rate());
+         if(reinforce_agent_ptr->get_include_bias_terms()){
+           reinforce_agent_ptr->compute_bias_distributions();
+         }
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
+         bool epoch_indep_var = false;
+         reinforce_agent_ptr->generate_summary_plots(
+            output_subdir, extrainfo, epoch_indep_var);
+         reinforce_agent_ptr->generate_view_metrics_script(
+            output_subdir, true);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }
 
+/*
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
          reinforce_agent_ptr->export_snapshot(output_subdir);
       }
+*/
 
+      reinforce_agent_ptr->increment_episode_number();
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here
