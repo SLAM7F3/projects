@@ -1,0 +1,237 @@
+Name: Gautam Altekar
+e-mail: galtekar@cs.rochester.edu
+Project: 3-D Tic Tac Toe
+
+Is the project complete?
+-------------------------
+Yes. I've implemented and tested both minimax and alpha-beta algorithms.
+
+How is the code organized?
+--------------------------
+minimax.lsp	- Minimax algorithm
+alpha-beta.lsp - Alpha-beta algorithm
+utility.lsp - Evaluation and terminal test functions
+ttt.lsp - The main program that should be run
+
+To run 3d-TTT, do something like the following:
+(load "3dttt.lisp")
+(load "ttt.fasl")
+
+I've also provided a convenience function to help start some games.
+(3dttt:begin 'myname 'opponent-name max-ply)
+
+Note that i've provided precompiled version of the lisp code. My
+program automatically loads the compiled version of the modules listed
+above.
+
+-------------------------
+Game Design
+-------------------------
+
+STATES
+A state is represented as two column vectors each of length 64. The first
+vector belongs to MAX and the second to MIN. Whenever either player makes
+a move, a 1 is placed in the corresponsing location of the player's column
+vector. By placing 1's in different parts of either vector, we can generate
+any state in the search tree.
+
+WIN DETECTOR
+When searching the game tree, we must be able to tell when either player wins.
+There are 76 possible ways to win in 3d-TTT. I've basically enumerated all of
+them. There are two ways in which I enumerated them:
+1. Originally I used a 76x64 matrix of winning moves denoted by 4 1's in
+succession in all possible winning combinations. This win matrix is then
+matrix multiplied by the 64x2 state matrix to yield a 76x2 threat-win matrix.
+In this threat-win matrix, if any position on either side has a 4, then we
+know it is a win. In general, a value of n in any position indicates that
+there are n marks in a row for that player.
+
+This method is severely disadvantated by the fact that matrix multiplication
+is way too slow. It simply takes too long to detect wins and as such, this
+method is quite infeasible considering the 5-sec move time.
+2. Alternitively, I check every possible winning position using all
+combination of for loops. The end result in a threat-win matrix like the
+method above. A value of n in any position of this generated threat-win
+matrix indicates that there are n marks in a row for that player.
+
+Since checking for all possible positions involved mainly loading values
+from the games state, computation is not very expensive. It is much faster
+than matrix multiplication but accomplishes the same thing.
+
+EVALUATION FUNCTION 
+-------------------------
+My evaluation function is closely related to win detection. I've implemented
+two such methods for experimental purposes.
+1. The first method makes use of the threat-win matrix to asses the threat
+you (MAX or MIN) pose to the other player. The evaluation function
+sums the player's column vector of threat and wins and returns that scalar.
+Thus the more threats a player and wins a state has, the better the utility.
+
+For MAX, the greater the threat, the higher
+the utility of being in that state. For MIN, the greater the threat, the 
+smaller the utility of being in that state. This is because MIN likes really
+small values and MAX like really large values. 
+
+In general, this is useful for placing a well rounded assessment of threat
+space. It works well one player is highly strategic while the other plays
+randomly (like spot). When the players are of equal abilities, states are
+harder to differentiate because either player could have the same amount of
+threats. Simply summing, in this case, would not help us much in deciding
+where to go to next.
+
+2. The second method once again makes use of the threat-win matrix, but
+rather than simply summing all the threats, it assigns weights to degrees
+of threats. The better the threat, the greater the weight assigned to it.
+For example a thread of 4 (a win) will have a weight of 10 points while a 
+threat of 1 will have a weight of only 1 point. The end result is the 
+evaluation values more selective values that clearly weed out unwanted states.
+This is especially helpful in cases where threat values are fairly homogeneous 
+for both players. In such a case, if either moves to a position where the
+thread is even slightly better (say 4), then it evaluation value will shoot
+through the roof. In order words, it's good for extreme and highly selective
+circumstances.
+
+
+Algorithms
+-------------------------
+
+MINIMAX
+The minimax algorithm is designed to determine the optimal strategy for MAX.
+It is useful in deciding the best first move as well as any subsequent moves
+MAX may take. It works as follows:
+1. Generates the grame tree for moved 2 or 3 moves ahead. It doesn't
+generate the entire game tree down to the terminal states since the branching
+factor is large and there are too mode nodes to evaluate. Rather, it imposes
+a depth-limit as its cutoff test. 
+2. When it reaches a specified depth in the search, minimax pretends like it 
+has reached the last level. It then evaluates all leaves on that level and 
+returns the backed up value.
+3. The baked up values of some leaves eventually propogate up to the root
+based on if MAX or MIN went before. MAX will select the highest backed-up
+value while MIN will select the lowest. Since MAX will always be at the root,
+the backed up value that the root receives is the minimax decision.
+4. Thus, the idea is that MAX will maximize the utility under the assumption
+that the opponent will play perfectly to minimize it.
+
+ALPHA-BETA
+The alpha-beta algorithm is a simple modification of minimax. Rather than
+evaluating all nodes like minimax does, alpha-beta prunes away branches of
+the search tree that are worse than the best moves so far.
+
+Only two modifications to minimax are necessary:
+1. Keep track of the best scores for MAX and MIN along all path in the
+search tree. The best score for MAX is denoted by alpha and the best score
+for MIN is denoted by beta.
+2. For MAX, if the best score (alpha) is larger than the best score for MIN
+(beta), then any subsequent nodes in that path are not taken. That is, that
+part of the tree is pruned. Similarly, if the best score for MIN (beta) is
+smaller that the best score for MAX (alpha), then MIN doees not evaluate
+nodes in the path any further.
+
+In either case, the alpha-beta algorithm rules out states that do no affect
+the minimax decision. By doing this, much computation is saved from 
+having to evaluate the terminal (cutoff) state.
+
+
+SEARCH DEPTH
+My algorihm can search an arbitrary number of moves ahead. The best under
+5 seconds I have been able to implement is 2-ply. It is possible to do
+3-ply but it takes an average of 8 seconds. With some optimizations, that
+can possibly be reduced to 5 seconds. 
+
+IMPLEMENTATION
+For the game state and threat-win-matrix, arrays were used becasue you can
+index into any element quickly. The algorithms mentioed above were implemented
+in recursive style. The code in the book separeted MAX and MIN decision values
+into two function. I left it in one function but it uses a conditional on
+a turn value to decide whose turn (MAX or MIN's) it is.
+
+Some notes about the code:
+1. It is seperated into seperate modules. The main module, "ttt.lsp", loads
+compiled versions of other modules (*.fasl). Compiling is necessary to
+acheive a move time of 5 seconds. It helps performance considerably.
+
+Statistics
+----------------------
+
+TESTING
+I've pitted my program against spot (the stupid dog), my self, and itself
+using alpha-beta and minimax with ply-2. Against spot, my program wins 
+all the time (4 out of 4), 
+which is a good sign. In games against itself, my program always ties.
+Against humans (me), it usually loses, mainly because of its limited ply.
+However, it effectively blocks high threat moves, making winning against
+it a little challenging (1 out of 4). With 3-ply this slighly increases to
+(2 out of 4).
+
+The program behaves similarly with minimax, but moves takes slighly longer
+with 2-ply and several times longer with 3-ply. Infact, minimax is infeasibe
+with 3-ply.
+
+MINIMAX PERFORMANCE
+Minimax is feasible only with 2 ply. 3-ply simply takes much too long.
+In a 2-ply game, the total number of evaluated nodes in 43680, which is quite
+large. But this makes sense since minimax is evaluating all states and not
+pruning any. The number of states evaulated per move depends on how far
+the game has progressed. As the game progresses, less move have to be evaluated.
+For example, initially some 10,000 states are evaluated. Towards the final
+few moves, this decreases to about 10 evaluations. Therefore the time per
+move also decreases as the game progresses. Initially a move takes about 4-5
+seconds, but towards the end, this reduces to less that 1 second per move.
+
+ALPHA BETA PERFORMANCE
+For 3-ply, the maximum depth reached is 3. This is because after MAX makes
+a move in depth 2, a value must be assigned to that state. This is done
+by looking at the state in depth 3 and evaulting it and returning the backed-up
+value to MAX.
+
+In a 3-ply game, the total number of nodes evaluated is about 97281 on average.
+Ofcourse, this doesn't tell us anything since the game can be very short, in
+which case, not a whole lot of states are evalauated. A more robust measure
+is the per move number of states evaulted, which is on average 22,600.
+This ofcourse varies depending on the number of branches that are pruned, which
+is roughly 3,138 per move. Considering that a 2-ply game has 4033 states, this
+is a good amount of pruning. Thus, only about 900-1000 nodes are actually 
+evaluated per move with alpha-beta. Moreover, the average branching factor
+is roughly 47, although this decreses as the game progresses. Which is a big 
+improvement from minimax. Still moves take an average of 8 secs in 3-ply, 
+making 3-ply invalid for the game.
+
+In a 2-ply game, roughly 82% (on average) of the branches are pruned per move. 
+The
+number of evaluated states is initially 443. Once again this number decreases
+as the game progresse since there are less states to select from and because
+branches are pruned. The total number of evaluated states is about 10,000. 
+The average branching factor is initially 62 
+(because of pruning) but goes down to 0 as the game progresses. For the
+entire game, the average branching factor is about 42 which is a significant
+improvement over minimax.
+One interesting
+aspect of the 2-ply game is its 95 msec move time. which is considerably lower
+than the alloted time of 5 secs. The problem here is that if I increase it to
+3-ply it goes over time about 3 secs. 
+
+EVALUATION FUNCTION PERFORMACE
+1. The first evaluation function sums the column-vector in the threat-win
+matrix to get the evaluation scalar. But it is not sensitive to close
+games where opponents are equally capable. Moreover, some side effect
+of this evalution function seem to be a long win time. That is MAX first
+counter any moves made by the opposition. Only then will it seek to win. This
+ofcourse means that MAX is playing not to lose. It should be be playing
+to win also. Consequently, it is hard to beat MAX outfitted with this eval
+function quickly through trivial moves. If however, the opponent things
+several moves ahead (where MAX cannot) it is easy to beat.
+2. The playing to win dillema is somewhat solved by the second evaluation
+function. The weights it assigns to better states helps it differentiate
+more desirable states, which includes wins, more keenly. The down side of
+this is that it loses the scope that the first evaluation function had. That
+is, it is now somewhat unaware of losing. This is apparent when playing
+against a human opponent. The second eval function goes for wins but fails
+at times to realize the imminent theat of a loss. Consequently, this method
+loses much more that the first evaluation function.
+
+PROBLEMS
+2-ply MINIMAX is just as effective as 2-ply alpha beta. Both are within the
+time limit of 5 seconds. But increasing alpha beta to 3-ply makes it go over
+time just a little. Thus, to see any noticeably better game play, increasing
+to 3-ply might be necessary.
