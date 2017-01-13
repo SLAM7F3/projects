@@ -150,14 +150,16 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+   reinforce_agent_ptr->set_base_learning_rate(1E-6);
 
-   int n_max_episodes = 10000 * 1000;
+   int n_max_episodes = 100 * 1000;
+//   int n_max_episodes = 10000 * 1000;
 
-   int n_update = 250;
-   int n_progress = 1000;
+   int n_update = 2000;
+   int n_progress = 4000;
 //    int n_snapshot = 20000;
 
    int n_illegal_moves = 0;
@@ -177,8 +179,8 @@ int main (int argc, char* argv[])
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
-   int n_lr_episodes_period = 100 * 1000;
-   int old_weights_period = 100; 
+   int n_lr_episodes_period = 200 * 1000;
+   int old_weights_period = 5000; 
 
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
@@ -263,8 +265,8 @@ int main (int argc, char* argv[])
 // -----------------------------------------------------------------------
 // Current episode starts here:
 
-      cout << "************  Start of episode " << curr_episode_number
-           << " for expt " << expt_number << " ***********" << endl;
+//      cout << "************  Start of episode " << curr_episode_number
+//           << " for expt " << expt_number << " ***********" << endl;
 
       int d = -1;
       double curr_reward;
@@ -320,36 +322,46 @@ int main (int argc, char* argv[])
 
 // Loop over all possible actions for agent.  Ignore any agent actions
 // which are illegal:
- 
+
+         int max_a = -1;
+         int min_o = -1;
+         double max_min_Qstar = NEGATIVEINFINITY;
+
          vector<genvector*>* afterstate_ptrs = 
             game_world.get_all_afterstates(agent_value);
-
-         for(int curr_a = 0; curr_a < n_actions; curr_a++)
+         
+         if(nrfunc::ran1() < reinforce_agent_ptr->get_epsilon())
          {
-            if(!game_world.is_legal_action(curr_a)) continue;
+            max_a = reinforce_agent_ptr->get_random_legal_action();
+         }
+         else
+         {
+            for(int curr_a = 0; curr_a < n_actions; curr_a++)
+            {
+               if(!game_world.is_legal_action(curr_a)) continue;
 
 // Retrieve candidate afterstate given agent's current action:
 
-            genvector* curr_afterstate_ptr = afterstate_ptrs->at(curr_a);
+               genvector* curr_afterstate_ptr = afterstate_ptrs->at(curr_a);
 
-            bool use_old_weights_flag = true;
-            reinforce_agent_ptr->Q_forward_propagate(
-               curr_afterstate_ptr, use_old_weights_flag);
-            
+               bool use_old_weights_flag = true;
+               reinforce_agent_ptr->Q_forward_propagate(
+                  curr_afterstate_ptr, use_old_weights_flag);
 
-
-         } // loop over curr_a
+               double min_Qstar;
+               int curr_o = reinforce_agent_ptr->compute_legal_argmin_Q(
+                  min_Qstar);
+               if(min_Qstar > max_min_Qstar)
+               {
+                  max_min_Qstar = min_Qstar;
+                  min_o = curr_o;
+                  max_a = curr_a;
+               }
+            } // loop over curr_a
+         } // ran1 < epislon conditional
          
-
-
-
-         int curr_a = reinforce_agent_ptr->
-            select_action_for_curr_state();
-//            select_legal_action_for_curr_state();
-//         cout << "   d = " << d << " curr_a = " << curr_a << endl;
-
          curr_reward = 0;
-         if(!game_world.is_legal_action(curr_a))
+         if(!game_world.is_legal_action(max_a))
          {
             next_s = NULL;
             curr_reward = illegal_reward;
@@ -357,8 +369,8 @@ int main (int argc, char* argv[])
          }
          else
          {
-            next_s = game_world.compute_next_state(curr_a, agent_value);
-         } // curr_a is legal action conditional
+            next_s = game_world.compute_next_state(max_a, agent_value);
+         } // max_a is legal action conditional
 
          ttt_ptr->increment_n_agent_turns();
 //          ttt_ptr->display_board_state();
@@ -382,50 +394,63 @@ int main (int argc, char* argv[])
             if(game_world.get_game_over())
             {
                reinforce_agent_ptr->store_arsprime_into_replay_memory(
-                  d, curr_a, curr_reward, *curr_s, game_world.get_game_over());
+                  d, max_a, curr_reward, *curr_s, game_world.get_game_over());
             }
             else
             {
                reinforce_agent_ptr->store_arsprime_into_replay_memory(
-                  d, curr_a, curr_reward, *next_s, game_world.get_game_over());
+                  d, max_a, curr_reward, *next_s, game_world.get_game_over());
             }
          } // d >= 0 conditional
 
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
+      int n_episodes = 1 + curr_episode_number;
+      double illegal_frac, loss_frac, win_frac, stalemate_frac;
       if(nearly_equal(curr_reward, illegal_reward))
       {
          n_illegal_moves++;
          n_recent_illegal_moves++;
+         illegal_frac = double(n_illegal_moves) / n_episodes;
       }
       else if(nearly_equal(curr_reward, lose_reward))
       {
          n_losses++;
          n_recent_losses++;
+         loss_frac = double(n_losses) / n_episodes;
       }
 
       else if (nearly_equal(curr_reward, win_reward))
       {
          n_wins++;
          n_recent_wins++;
+         win_frac = double(n_wins) / n_episodes;
       }
       else if(ttt_ptr->get_n_empty_cells() == 0)
       {
          n_stalemates++;
          n_recent_stalemates++;
+         stalemate_frac = double(n_stalemates) / n_episodes;
       }
 
-      cout << "Episode finished" << endl;
-      cout << "  cum_reward = " << cum_reward 
-           << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
-           << "  n_backprops = " 
-           << reinforce_agent_ptr->get_n_backprops() << endl;
-      cout << "  n_illegal_moves = " << n_illegal_moves
-           << "  n_losses = " << n_losses
-           << "  n_wins = " << n_wins 
-           << "  n_stalemates = " << n_stalemates << endl;
-
+      if(curr_episode_number % 100 == 0)
+      {
+         cout << "*** Episode " << curr_episode_number 
+              << " of expt " << expt_number << " finished ***" << endl;
+         cout << "  cum_reward = " << cum_reward 
+              << "  epsilon = " << reinforce_agent_ptr->get_epsilon() 
+              << "  n_backprops = " 
+              << reinforce_agent_ptr->get_n_backprops() << endl;
+         cout << "  n_illegal_moves = " << n_illegal_moves
+              << "  n_losses = " << n_losses
+              << "  n_wins = " << n_wins 
+              << "  n_stalemates = " << n_stalemates << endl;
+         cout << "  Fractions: win = " << win_frac 
+              << " loss = " << loss_frac
+              << " stalemate = " << stalemate_frac << endl;
+      }
+      
       reinforce_agent_ptr->update_episode_history();
       reinforce_agent_ptr->update_cumulative_reward(cum_reward);
       reinforce_agent_ptr->update_epsilon();
