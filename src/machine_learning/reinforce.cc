@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 1/4/17; 1/5/17; 1/10/17; 1/11/17
+// Last modified on 1/5/17; 1/10/17; 1/11/17; 1/13/17
 // ==========================================================================
 
 #include <string>
@@ -2137,7 +2137,8 @@ int reinforce::select_legal_action_for_curr_state()
    {
       genvector* curr_s = environment_ptr->get_curr_state();
       Q_forward_propagate(curr_s);
-      return compute_legal_argmax_Q();
+      double Qmax;
+      return compute_legal_argmax_Q(Qmax);
    }
 }
 
@@ -2256,9 +2257,21 @@ int reinforce::compute_argmax_Q()
    return curr_a;
 }
 
-int reinforce::compute_legal_argmax_Q()
+// ---------------------------------------------------------------------
+int reinforce::compute_legal_argmax_Q(double& Qstar)
 {
-   double Qstar = NEGATIVEINFINITY;
+   Qstar = NEGATIVEINFINITY;
+   return compute_legal_argextremum_Q(true, Qstar);
+}
+
+int reinforce::compute_legal_argmin_Q(double& Qstar)
+{
+   Qstar = POSITIVEINFINITY;
+   return compute_legal_argextremum_Q(false, Qstar);
+}
+
+int reinforce::compute_legal_argextremum_Q(bool max_flag, double& Qstar)
+{
    int curr_a = -1;
    for(unsigned int i = 0; i < A_Prime[n_layers-1]->get_mdim(); i++)
    {
@@ -2276,11 +2289,23 @@ int reinforce::compute_legal_argmax_Q()
             Qstar = curr_activation;
             curr_a = i;
          }
+         continue;
       }
-      else if(curr_activation > Qstar)
+      if(max_flag)
       {
-         Qstar = curr_activation;
-         curr_a = i;
+         if(curr_activation > Qstar)
+         {
+            Qstar = curr_activation;
+            curr_a = i;
+         }
+      }
+      else
+      {
+         if(curr_activation < Qstar)
+         {
+            Qstar = curr_activation;
+            curr_a = i;
+         }
       }
    }
    return curr_a;

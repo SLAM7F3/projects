@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/4/17; 1/5/17; 1/10/17; 1/11/17
+// Last modified on 1/5/17; 1/10/17; 1/11/17; 1/13/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -181,7 +181,10 @@ class reinforce
    void Q_forward_propagate(
       genvector* s_input, bool use_old_weights_flag = false);
    int compute_argmax_Q();
-   int compute_legal_argmax_Q();
+   int compute_legal_argmax_Q(double& Qstar);
+   int compute_legal_argmin_Q(double& Qstar);
+   int compute_legal_argextremum_Q(bool max_flag, double& Qstar);
+
    int store_curr_state_into_replay_memory(const genvector& curr_s);
    void store_arsprime_into_replay_memory(
       int d, int curr_a, double curr_r,

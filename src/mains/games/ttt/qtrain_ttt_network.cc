@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 12/7/16; 12/13/16; 1/10/17; 1/11/17
+// Last updated on 12/13/16; 1/10/17; 1/11/17; 1/13/17
 // ==========================================================================
 
 #include <iostream>
@@ -84,13 +84,13 @@ int main (int argc, char* argv[])
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = n_actions;		// Output dimensionality
 
-//   int H1 = 1 * 32;	// 
+   int H1 = 1 * 32;	// 
 //   int H1 = 2 * 64;	//  
-   int H1 = 3 * 64;	//  
+//   int H1 = 3 * 64;	//  
 //   int H1 = 5 * 64;	//  = 320
 
-//   int H2 = 32;
-   int H2 = 1 * 64;
+   int H2 = 32;
+//   int H2 = 1 * 64;
 //   int H2 = 3 * 64;
 
    int H3 = 0;
@@ -150,9 +150,9 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-   reinforce_agent_ptr->set_base_learning_rate(3E-5);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
 
    int n_max_episodes = 10000 * 1000;
 
@@ -317,6 +317,31 @@ int main (int argc, char* argv[])
             d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
                *curr_s);
          }
+
+// Loop over all possible actions for agent.  Ignore any agent actions
+// which are illegal:
+ 
+         vector<genvector*>* afterstate_ptrs = 
+            game_world.get_all_afterstates(agent_value);
+
+         for(int curr_a = 0; curr_a < n_actions; curr_a++)
+         {
+            if(!game_world.is_legal_action(curr_a)) continue;
+
+// Retrieve candidate afterstate given agent's current action:
+
+            genvector* curr_afterstate_ptr = afterstate_ptrs->at(curr_a);
+
+            bool use_old_weights_flag = true;
+            reinforce_agent_ptr->Q_forward_propagate(
+               curr_afterstate_ptr, use_old_weights_flag);
+            
+
+
+         } // loop over curr_a
+         
+
+
 
          int curr_a = reinforce_agent_ptr->
             select_action_for_curr_state();
