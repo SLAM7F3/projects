@@ -1,7 +1,7 @@
 // ==========================================================================
 // Metafile class member function definitions
 // ==========================================================================
-// Last modified on 10/19/16; 1/2/17; 1/5/17 1/6/17
+// Last modified on 1/2/17; 1/5/17 1/6/17; 1/13/17
 // ==========================================================================
 
 #include "math/basic_math.h"
@@ -421,6 +421,16 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
       metastream << "label '" << legendlabel << "'" << endl;
    }
 
+// As of 1/13/17, we restrict the total number of (X,Y) pairs exported 
+// to output metafiles to be less than max_n_exported_points:
+
+   const int max_n_exported_points = 100 * 1000;
+   int iskip = 1;
+   if(Y.size() > max_n_exported_points)
+   {
+      iskip = Y.size() / max_n_exported_points + 1;
+   }
+
 // As of 1/5/17, we experiment with allowing X and Y to have different
 // sizes.  But we assume that they are both functions of some common
 // underlying parameter (e.g. time) whose span is the same for both
@@ -428,7 +438,7 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
 
    if(X.size() == Y.size())
    {
-      for (unsigned int i=0; i<X.size(); i++)
+      for (unsigned int i=0; i<Y.size(); i += iskip)
       {
          if(mathfunc::my_isnan(X[i]) || mathfunc::my_isnan(Y[i])) continue;
          metastream << X[i] << "\t" << Y[i] << endl;
@@ -436,7 +446,7 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
    }
    else if (X.size() > Y.size()) // Downsample X so that it has same size as Y
    {
-      for (unsigned int i=0; i<Y.size(); i++)
+      for (unsigned int i=0; i<Y.size(); i += iskip)
       {
          double frac = double(i) / (Y.size() - 1);
          int j_max = X.size() - 1;
@@ -455,7 +465,7 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
    }
    else if (X.size() < Y.size()) // Downsample Y so that it has same size as X
    {
-      for (unsigned int i=0; i<Y.size(); i++)
+      for (unsigned int i=0; i<Y.size(); i += iskip)
       {
          double frac = double(i) / (X.size() - 1);
          int j_max = Y.size() - 1;

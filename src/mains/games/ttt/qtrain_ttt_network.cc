@@ -447,19 +447,19 @@ int main (int argc, char* argv[])
               << " loss = " << loss_frac
               << " stalemate = " << stalemate_frac << endl;
       }
-      
+
       reinforce_agent_ptr->update_episode_history();
       reinforce_agent_ptr->update_cumulative_reward(cum_reward);
       reinforce_agent_ptr->update_epsilon();
-
-      if(curr_episode_number % 10 == 0)
-      {
-         reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
-      }
-
       if(total_loss > 0)
       {
          reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
+      }
+      
+      if(curr_episode_number % 10 == 0)
+      {
+         reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
+
       }
 
 // Periodically copy current weights into old weights:

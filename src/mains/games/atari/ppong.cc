@@ -335,7 +335,7 @@ int main(int argc, char** argv)
 //              << " renorm paddle_y = " << pong_ptr->get_paddle_track().back()
 //              << endl;
 
-         double curr_reward = pong_ptr->get_ale().act(a);
+         double curr_reward= pong_ptr->get_ale().act(a);
          cum_reward += curr_reward;
          double renorm_reward = curr_reward - 
             delayed_accel_penalty * fabs(delayed_accel);
