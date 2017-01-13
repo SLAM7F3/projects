@@ -1,0 +1,4398 @@
+==========================================================================
+Deep RL notes for Breakout
+==========================================================================
+Last updated on 12/30/16; 1/1/17; 1/2/17; 1/3/17
+==========================================================================
+
+Working with breakout ROM obtained from
+http://www.atarimania.com/rom_collection_archive_atari_2600_roms.html which
+returns n_lives information.
+
+Random play results (updated on 12/18/16)
+-----------------------------------------
+
+Log10(loss) averages around -3
+After 7K episodes, reward stays around 1.1
+nframes/episode stays around 685
+
+Best play results to date:
+-------------------------
+
+222.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 8:02 am on Thurs Dec 29
+
+Thu Dec 29 08:03:24 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -27402
+
+      After 400 epochs, avg eventual reward = 0.269 and slowly rising;
+      nframes/episode = 1690; reward = 7.42; paddle_X is distorted
+      gaussian centered around X = 11; weight dists are slowly evolving;
+      can barely see some ball tracks in 0th layer weights
+
+-------------------------------------------------------------
+TERMINATED EXPERIMENTS
+-------------------------------------------------------------
+
+1.  TM:  H1 = 128, H2 = 32
+
+Sun Dec 11 17:14:16 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 644224 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+2.  TM:  Repeat expt 1
+
+3.  TM:  Repeat expt 1
+
+Expts 1 - 3 ran for approx 12 hours on Sunday night for approx 1200
+episodes.  In all 3 cases, nframes/episode slowly but steadily rose from
+1000 to roughly 1500.  Epsilon asymptoted to 0.1 around episode 1000.  All
+weight distributions move fairly slowly.  So we should probably experiment
+with even larger base learning rate than 0.003.  
+
+4.  Titan 1:  H1 = 256, H2 = 0
+
+Sun Dec 11 17:01:22 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 4
+   n_weights = 1281024 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+5.  Titan 1: Repeat expt 4
+ 
+6.  Titan 1: Repeat expt 4
+
+Expts 4 - 6 ran for approx 12 hours on Sunday night for approx 700 episodes
+before they almost certainly ran out of memory due to some memory leak.  In
+all 3 cases, nframes/episode very slowly rose from 1000 to roughly 1200.
+Epsilon asymptoted to 0.1 around episode 1000.  All weight distributions
+move slowly.  Conclusion: Working with 2 hidden layers is probably
+better than 1
+
+7.  Titan3:  H1 = 128, H2 = 64
+
+Sun Dec 11 17:12:25 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 4
+   n_weights = 648448 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+8.  Titan3:  Repeat expt 7
+
+9.  Titan3:  Repeat expt 7
+
+Expts 4 - 6 ran for approx 7 hours on Sunday night for approx 700
+episodes.  In all 3 cases, nframes/episode very slowly rose from 1000 to
+roughly 1200.  Epsilon asymptoted to 0.1 around episode 1000.  All weight
+distributions move very slowly.  Conclusion: Working with 2 hidden layers
+is probably better than 1
+
+10.  m6700:  H1 = 64, H2 = 16
+
+Sat Dec 10 23:19:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 4
+   n_weights = 321088 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 6000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 100
+
+TERMINATED
+
+11.  m6700:  repeat expt 10
+
+12.  m6700
+
+Sun Dec 11 14:37:08 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 4
+   n_weights = 321088 (FC)
+base_learning_rate = 0.0003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+13. m6700:  repeat of expt 12
+
+14.  Titan1:
+
+Mon Dec 12 07:46:57 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 5000
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 644224 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 200; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 3
+1 big state = n_screen_states = 2
+nn_update_frame_period = 500
+
+15.  Titan1: n_screen_states = 1; tau = 300; 
+
+Mon Dec 12 08:16:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 324224 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 300; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 500
+
+16.  Titan1:  Repeat expt 15
+
+17.  Titan 3:
+
+Mon Dec 12 08:20:19 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 8
+   layer = 4 n_nodes = 4
+   n_weights = 324384 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 300; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 500
+
+18.  Titan 3: Repeat of expt 17
+	Terminated because metafiles stopped being written after 9:30 am
+
+19.  Titan 3: Repeat of expt 17
+	Terminated because metafiles stopped being written after 9:30 am
+
+20.  Titan 3
+Mon Dec 12 12:00:16 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 8
+   layer = 4 n_nodes = 4
+   n_weights = 324384 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 300; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 500
+
+21.  Titan 3: repeat expt 20
+
+22.  Titan 1:  Try to write out quasi-random weight values; 3 hidden layers
+
+Mon Dec 12 12:35:01 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 16
+   layer = 4 n_nodes = 4
+   n_weights = 324672 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 500
+
+23.  Titan 1:  Repeat of expt 22 
+
+24.  Titan 1:  Repeat of expt 22 
+
+25.  Titan 3:  
+
+Mon Dec 12 15:19:25 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 16
+   layer = 4 n_nodes = 4
+   n_weights = 324672 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+After O(1K) episodes, reward shows no sign of increasing.  Frames/episode
+perhaps increases slightly from 1K --> 1.2K.  H3 weights contnue to evolve
+while other layers have stopped evolving.  Very small losses.
+
+26.  Titan 3:  Repeat expt 25
+
+After O(1K) episodes, reward has decreased and nframes/episode shows no
+signs of increasing.
+
+27.  Titan 3:  Repeat expt 25
+
+After O(1K) episodes, reward has increased slightly from 1 to 1.8.
+nframes/episodes increased from 1K to 1.2K.  But weight coeffs have all
+frozen.
+
+28.  Titan 1:
+
+Mon Dec 12 15:21:29 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 324224 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+After O(1K) episodes, reward has decreased and nepisodes/frame has remained
+around 1K.  
+
+29.  Titan 1:  Repeat expt 28
+
+After O(1K) episdes, reward has remained basically around 1.
+nepisodes/frame has remained around 1K.
+
+30.  Titan 1:  Repeat expt 28
+
+After O(1K) episdes, reward has remained basically around 1.
+nepisodes/frame has remained around 1K.
+
+
+31.  TM: H1 = 128, H2 = 64, H3 = 32
+
+Mon Dec 12 15:38:04 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 4
+   n_weights = 330368 (FC)
+base_learning_rate = 0.003; batch_size = 1; n_max_episodes = 3000
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 400; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 250
+
+After O(700) episodes, reward has decreased from 1 to 0.5 and
+nframes/episode has stayed fixed at 1K.  H3 layer coeffs still somewhat
+evolving, but other hidden layer coeffs have frozen.
+
+32.  TM:  repeat of expt 31
+
+After 700 episodes, no significant change in reward or nframes/episode.
+
+33.  TM:  repeat of expt 31
+
+After 700 episodes, reward and nframes/episode have decreased.
+
+34.  m6700:  H1 = 64, H2 = 128
+
+35.  m6700 repeat of expt 34
+
+36.  m6700 repeat of expt 34
+
+As of 4 am on Tues Dec 30, O(400) episodes have been played for expts 34 -
+36 on m6700.  Reward is no better than for random play.  But eps is roughly
+0.5.  Weights continue to evolve.
+
+37:  Titan 3:  
+
+Tue Dec 13 08:39:19 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 4
+   n_weights = 641024 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 800; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 100
+n_max_episodes = 30000
+
+38:  Titan 3:  Repeat expt 34
+
+39:  Titan 3:  Repeat expt 34
+
+40:  Titan 1:  
+
+Tue Dec 13 08:43:18 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 4
+   n_weights = 648320 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 800; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 100
+n_max_episodes = 30000
+
+41:  Titan 1:  Repeat expt 40
+
+42:  Titan 1:  Repeat expt 40
+
+43:  TM:  
+
+Tue Dec 13 15:30:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 4
+   n_weights = 656640 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 800; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.95
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 100
+n_max_episodes = 30000
+
+44:  TM:  Repeat expt 43
+
+45:  TM:  Repeat expt 43
+
+
+46.  Titan 3: Fixed serious logic bugs in qbreak.cc: H1 = 128; H2 = 64
+
+Wed Dec 14 07:00:54 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 328384 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+n_max_episodes = 50000
+
+47.  Titan 3: Repeat expt 46
+
+48.  Titan 3: Repeat expt 46
+
+49.  Titan 1: Fixed serious logic bugs in qbreak.cc: H1 = 256; H2 = 64
+
+Wed Dec 14 07:11:41 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 656576 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 15000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+n_max_episodes = 50000
+
+50.  Titan 1: Repeat expt 49
+
+51.  Titan 1: Repeat expt 49
+
+52.  Titan 3:  0.01 L2 regularization + leaky ReLU + bug fixes
+
+Thu Dec 15 07:29:51 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 656576 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+53.  Titan 3:  Expt 52 with lambda = 1E-3
+
+54.  Titan 3:  Expt 52 with lambda = 1E-4
+
+59.  Titan 3:  Expt 52 with lambda = 1E-1
+
+61.  Titan 3:  Expt 52 with lambda = 1
+
+
+55.  Titan 1:  0.01 L2 regularization + leaky ReLU + bug fixes
+
+Thu Dec 15 07:34:56 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 3
+   n_weights = 328384 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+56.  Titan 1:  Expt 55 with lambda = 1E-3
+
+57.  Titan 1:  Expt 55 with lambda = 1E-4
+
+58.  Titan 1:  Expt 55 with lambda = 1E-1
+
+60.  Titan 1:  Expt 55 with lambda = 1
+
+65.  Titan 3:  H1 = 128, H2 = 128, lambda = 1E-3, leaky slope = 0.01
+
+n_actions = 2
+Thu Dec 15 12:36:15 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 336640 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+66.  Titan 1:  Repeat expt 65
+
+67.  Titan 1:  Repeat expt 65
+
+62.  Titan 1:  H1 = 128, H2 = 64, lambda = 1E-3, leaky slope = 0.01
+n_actions = 2
+
+Thu Dec 15 12:33:27 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 328320 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.75
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+Processed O(34K) episodes by 5 am on Fri Dec 16.  No increase in reward or
+nframes/episode.   Trained weights remain bounded within interval [-1,1].
+log10(loss) remains around -2.  Ball tracks clearly visible within several
+of 0th-layer trained weights.
+
+63.  Titan 1:  Repeat expt 62
+
+64.  Titan 1:  Repeat expt 62
+
+68.  Titan 3: H1 = 200, H2 = 0; n_actions = 2; discard 0 reward frac = 0.85
+
+Thu Dec 15 15:56:05 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 500400 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+Processed O(12K) episodes by 5 am on Fri, Dec 16.  No increase in reward or
+nframes/episode. Log10(loss) rises to 1.5 and then gradually declines
+towards 0.  Weight coeffs increase up to +5.
+
+69.  Titan 3: Repeat 68
+
+70.  Titan 3: Repeat 68
+
+Conclusion:  Working with just one large hidden layer as Kaparthy did for
+pong doesn't look promising.
+
+71.  TM: H1 = H2 = H3 = 64; n_actions = 2; discard 0 reward frac = 0.85
+
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   layer = 4 n_nodes = 2
+   n_weights = 168320 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+After 18K episodes: |Weight values| roughly stay bounded inside [-2,2].
+Log10(loss) = -1.5.  0th layer weights exhibit faint tracks for ball.  But
+reward and nframes/episode do not grow at all.
+
+72.  TM:  Repeat of expt 71
+
+73.  TM:  Repeat of expt 71
+
+74.  m6700:  H1 = H2 = 32
+Fri Dec 16 04:11:18 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 81088 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 3
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+75.  m6700: Repeat of expt 74
+
+82.  TM:  H1 = 64, H2 = 32
+
+Fri Dec 16 15:49:23 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 162112 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+After 35K episodes, reward --> 1.0 and nframes/episode --> 900.
+0th layer weights exhibit stronger signs of ball tracks than H1 = 128, H2 =
+34 expt results did.  Log10(loss) is around 0 and RISING!  Weight dist for
+layer 1 lies in range [-60, 80] and diverging!!!
+
+83.  TM:  Repeat expt 82
+
+After 36K episodes, Log10(loss) --> -0.5 and increasing!  Reward --> 1.5
+and nframes/episode --> 1000.  Weight dist for layer 1 lies in range
+[-60,80] and diverging !!!  0th layer weights exhibit strong signs of ball
+tracks.
+
+Paddle gets pinned to right side of game board.
+
+
+88.  TM:  H1 = 128, H2 = 32
+
+Fri Dec 16 16:05:40 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 324160 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+After 20K episodes, reward --> 1.35 and nframes/episode --> 950
+log10(loss) --> -2.3
+0th-layer weights exhibit weak evidence of ball tracks
+Paddle still stays pinned to right wall a lot.
+
+89.  TM:  Repeat expt 88
+After 20K episodes, reward --> 1 and nframes/episode --> 900
+log10(loss) --> -1.8.  Layer 1 weight dist diverging past [-10,10] !!!
+
+Conclusions: Ball is still being pinned way too often on right or left
+walls.  
+
+90.  m6700:  Random play
+After 20K episodes, reward stays around 0.8
+nframes/episode stays around 800
+Log10(loss) averages around -4
+
+92.  m6700 Random play
+Similar results as for expt 90
+
+76.  Titan 1: H1 = H2 = 32; Removed ALE randomness; Input state vector
+mostly contains 0.
+
+Fri Dec 16 12:21:25 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 81088 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+After 50K episodes, reward gyrates between 0.9 and 2.  nframes/episode
+gyrates between 800 and 1100.  Layer 1 weights in range [-1,3].
+log10(loss) around -3.  Fairly strong signs of ball tracks in 0th layer
+weights.  Paddle gets pinned to right side wall.
+
+77.  Titan 1:  Repeat expt 76
+
+Qualitatively similar results to expt 76.  Except 0th layer weights exhibit
+more randomness than those for expt 76.  
+
+78.  Titan 1:  Repeat expt 76
+
+Qualitatively similar results to expt 76.  Except 0th layer weights exhibit
+weak signs of ball tracks.  
+
+79.  Titan 3:  H1 = H2 = H3 = 32; No ALE randomness; sparse input state vec
+
+Fri Dec 16 12:50:51 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 2
+   n_weights = 82112 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 1000
+n_max_episodes = 50000
+
+After 50K episodes, reward --> 3.4 and nframes/episode --> 1350.  But both
+have large gaps where they equaled 0.  Weight coeff dists are reasonable
+for all 3 hidden layers.  Ball tracks in 0th layer weights are much less
+distinct.  Log10(loss) --> -3 after large gyrations between [-2,-5].  
+
+80.  Titan 3:  Repeat expt 79
+
+Qualitatively similar results to expt 79.
+
+81.  Titan 3:  Repeat expt 79
+
+Qualitatively similar results to expt 79.
+
+84.  Titan1:  H1 = 64, H2 = 64
+
+Fri Dec 16 15:56:29 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 164224 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+
+After 50K episodes, reward --> 1.4  and nframes/episode --> 1000.
+Some 0th layer weights show strong signs of ball traces while others do
+not. log10(loss) --> 0.8 and rising!  Weight dist for layer 1 outside range
+[-70,70] and diverging!  Definitely need more L2 regularization!  
+
+Paddle gets pinned to right wall.
+
+85.  Titan1:  Repeat expt 84
+
+Qualitatively very similar results to expt 84.
+
+86.  Titan3:  H1 = 64, H2 = 128
+
+Fri Dec 16 16:02:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2500
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 168448 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 1500; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+nn_update_frame_period = 50
+nframes / epoch = 50000
+n_max_epochs = 3000
+n_max_episodes = 150000
+
+After 30K episodes, reward --> 1.3 and nframes/episode --> 980.
+Log10(loss) --> -1.2.  Layer 1 weights in range [-5,20] and weakly diverging.
+Weak evidence of ball tracks in 0th layer weights.
+
+87.  Titan3:  Repeat expt 86. 
+After 35K episodes, reward --> 2.0 and nframes/episode --> 1050.
+Log10(loss) --> -3.  Layer 1 weight dist lies in range [-3,2].  Some 0th
+layer weights exhibit strong signs of ball tracks while others do not.  
+
+
+93.  Titan 3: H1 = 64;  H2 = 32; n_screens = 2; center & limit paddle_x
+
+Sat Dec 17 18:06:05 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 264512 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -26763
+
+TERMINATED
+
+94.  Titan 3: repeat expt 93
+
+TERMINATED
+
+95.  Titan 3: H1 = H2 = 64; n_screens = 2; center & limit paddle_x
+
+Sat Dec 17 18:07:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 266624 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -26822
+
+After 5K episodes, reward --> 2.5 and is slowly rising.  nframes/episode
+--> 1225 and is slowly rising. log10(loss) --> -2.8.  Acceptable weight dists.
+Interesting ball track patterns in 0th layer weights.
+
+Conclusion:  H1 = 64, H2 = 64 is definitely better than H1 = 64, H2 = 32
+for nscreens = 2.  
+
+Paddle stays pinned to left wall.
+
+TERMINATED
+
+96.  Titan 3: repeat expt 95
+
+After 5K episodes, reward --> 2.2 and is very slowly rising,
+nframes/episode --> 1144 and is very slowly rising.  Reasonable weight
+dists.  Interesting ball track patterns in 0th layer weights.
+
+97.  Titan 3:  H1 = 128, H2 = 32
+
+Sat Dec 17 18:17:25 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 528960 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -27442
+
+Only 2.8K episodes have been processed as of 8:30 am on Sat, Dec 18.
+
+TERMINATED
+
+98.  Titan 1:  Repeat of expt 97
+
+TERMINATED
+
+99.  Titan 1: H1 = H2 = 32; n_screens = 2; center & limit paddle_x
+
+Sat Dec 17 18:09:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 132288 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -26984
+
+After O(20K) episodes, no sign of ball tracks in 0th layer weights.
+
+Conclusion:  H1 = 32 is too low for nscreens = 2 .
+
+TERMINATED
+
+100.  Titan 1:  Repeat expt 99
+
+TERMINATED
+
+101.  Titan 1: H1 = 32; H2 = 64; n_screens = 2; center & limit paddle_x
+
+Sat Dec 17 18:10:51 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 133376 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -27046
+
+TERMINATED
+
+102.  Titan 1:  Repeat expt 101
+
+TERMINATED
+
+103.  TM:  H1 = 32; H2 = 128; n_screens = 2; center & limit paddle_x
+
+Sat Dec 17 18:10:32 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 135552 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -27031
+
+After 25K episodes, reward --> 2.5, nframes/episode --> 860.
+Reasonable weight dists. log10(loss) --> -2.4.  Weak signs of ball tracks
+in 0th layer weights.  Paddle oscillates between left and right walls and
+tends to stay pinned.
+TERMINATED
+
+104.  TM:  Repeat expt 103
+
+After 25K episodes, reward --> 2.2, nframes/episode --> 790.
+Reasonable weight dists.  log10(loss) --> -2.1.  Weak signs of ball tracks
+in 0th layer weights.  Paddle stays pinned on walls.
+TERMINATED
+
+After 4.5K episodes, reward --> 1.1 and is not rising. nframes/episode -->
+903 and is not rising.  Ball tracks visible in 0th layer weights.
+log10(loss) = -2.4.  Weight dists OK.
+
+
+107.  TM:  Repeat expt 103
+
+Sat Dec 17 18:13:50 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 135552 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -27224
+
+After 25K episodes, reward --> 2.6.  nframes/episode --> 874.  log10(loss)
+--> -2.3.  Weight dists acceptable.  0th layer weights like almost
+identical.  
+
+TERMINATED
+
+105.  TM:  H1 = 128; H2 = 32; n_screens = 2; center & limit paddle_x
+
+Sat Dec 17 18:11:49 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 528960 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -27107
+
+After 7.8K episodes, reward --> 2.2;  nframes/episode --> 825.  log10(loss)
+--> -2.1.  Acceptable weight dists.   Stronger ball track signals in 0th
+layer weights.  Some glimmers of intelligent play in exported screen shots.
+TERMINATED.
+
+
+106.  TM:  Repeat expt 105
+
+After 7.8K episodes, reward --> 2.1; nframes/episode --> 800.  log10(loss)
+--> -2.3.  Weight dists OK.  Weak ball track signals in 0th layer weights.  
+Paddle stays pinned to left/right walls.
+TERMINATED
+
+
+108.  Titan 3:  H1 = H2 = 64, H3 = 32
+
+Sun Dec 18 08:51:24 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 2
+   n_weights = 268608 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+
+After 10K episodes, reward --> 2.1 and not rising.  nframes/episode --> 785
+and not rising.  log10(loss) around -2.  Weight dists acceptable.  0th
+layer weights OK.  Paddle stays largely pinned to walls.
+TERMINATED.
+
+109.  Titan 3: Repeat expt 108
+
+Qualitatively similar results as expt 108.  TERMINATED.
+
+
+122.  m6700: random play
+After 6.8K episodes, reward = 1.2 and nframes/episode = 697.
+
+123.  m6700: random play
+After 6.9K episodes, reward = 1.09 and nframes/episode = 676
+
+
+95.  Titan 3:  Repeat of expt 116 on Titan 1
+
+After 8.5K episodes, reward --> 1.8 very slowly rising.  nframes/episode
+--> 790 and very slowly rising.  Layer 1 weight dist beyond [-10,10] and
+diverging.  log10(loss) around -1.  0th layer weights exhibit some ball
+tracks and starting ball positions.  Most interesting game play seen so far
+(5:41 am on Mon Dec 19).  
+
+
+110.  Titan 3:  H1 = 64, H2 = H3 = 128
+
+Sun Dec 18 08:53:45 2016
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 4100
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 128
+   layer = 4 n_nodes = 2
+   n_weights = 287232 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 2000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 1
+Frame skip = 1
+1 big state = n_screen_states = 2
+nn_update_frame_period = 25
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -80019
+
+111.  Titan 3:  Repeat expt 110
+
+
+
+112.  Titan1: H1 = H2 = 32; nscreenstates = 1; work with differences between
+genuine pairs of incremented screen states
+
+Sun Dec 18 13:30:10 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 4000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -96609
+
+113.  Titan 1:  Repeat of expt 112
+
+114.  Titan1: H1 = 32; H2 = 64; nscreenstates = 1; work with differences
+between genuine pairs of incremented screen states
+
+Sun Dec 18 13:30:52 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 4000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -96650
+
+115.  Titan 1: Repeat expt 114
+
+116.  Titan1: H1 = 64; H2 = 64; nscreenstates = 1; work with differences
+between genuine pairs of incremented screen states
+
+Sun Dec 18 13:32:21 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 4000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -96739
+
+
+
+After 17K episodes, reward --> 1.5 and very slowly increasing.
+nframes/episode --> 745 and very slowly increasing.  log10(loss) around
+-1.  Weight dists for layer 1 in [-10,20] and diverging.  0th layer weights
+exhibit some ball tracks and starting locations.  Looks like there's
+redundancy in 0th layer weights.  Paddle gravitates toward side walls but
+doesn't always remain locked there.
+
+
+
+
+117.  TM: H1 = 32; H2 = 32; nscreenstates = 1; work with max sums
+between genuine pairs of incremented screen states
+
+Sun Dec 18 13:35:16 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 4000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 0
+  Compute max flag = 1
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -96914
+
+After 30K episodes, reward --> 1.77 and is not rising.  nframes/episodes
+--> 773 and is not rising.  But at least paddle does not seem to get pinned
+to side walls.  log10(loss) around -2.5.  Reasonable/nontrivial weight
+dists.  0th layer weights weakly exhibit gameboard structure and some very
+modest ball tracks.
+
+118.  TM:  Repeat of expt 117
+
+Qualitatively similar results as for expt 117.
+
+119.  TM: H1 = 32; H2 = 64; nscreenstates = 1; work with max sums
+between genuine pairs of incremented screen states
+Sun Dec 18 13:36:34 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 4000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 0
+  Compute max flag = 1
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+
+After 30K episodes, reward --> 1.4 and is very slowly rising.
+nframes/episode --> 720 and very slowly rising.  log10(loss) around
+-2.5. Weight dists OK and interesting.    Very weak signal of game board
+and ball track in 0th layer weights.  Paddle still drawn towards side walls.
+
+120.  TM:  Repeat of expt 119
+
+Qualitatively similar results as for expt 119.
+
+121.  TM: H1 = 64; H2 = 64; nscreenstates = 1; work with max sums
+between genuine pairs of incremented screen states
+
+Sun Dec 18 13:38:12 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 4000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 0
+  Compute max flag = 1
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -97088
+
+After 17.9K episodes, reward --> 700 and not rising.  nframes/episode -->
+700 and not rising.  log10(loss) around -2.5.  OK weight dists.  0th layer
+weights reflect gameboard.  Paddle not always pinned to side walls.
+
+
+127.  Titan 3:  H1 = 16, H2 = 64; Significantly more randomness; plot eval Q
+
+Mon Dec 19 08:00:41 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -63239
+
+128.  Titan 3:  repeat expt 127
+
+129.  Titan 3:  H1 = 16, H2 = 128; Significantly more randomness; plot eval Q
+Mon Dec 19 08:02:27 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 35104 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -63345
+
+130.  Titan 3:  Repeat expt 129
+
+131.  Titan 1:  H1 = 32; H2 = 64
+Mon Dec 19 08:05:51 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -63549
+
+132.  Titan 1:  repeat expt 131
+
+133.  Titan 1:  H1 = 32; H2 = 128
+Mon Dec 19 08:07:12 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 69952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -63630
+
+134.  Titan 1:  repeat expt 133
+
+124.  m6700: H1 = 64; H2 = 32; nscreenstates = 1; work with max sums
+between genuine pairs of incremented screen states; eps tau = 8000
+
+Sun Dec 18 17:47:14 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 16
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 0
+  Compute max flag = 1
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -1232
+
+After 9K episodes, 
+
+reward --> 1.5 and is very slowly rising. nframes/episode --> 730 and is
+very slowly rising.  log10(loss) is around -2.5.  Reasonable weight dists.
+0th layer weights have learned gross game structure but no obvious ball
+tracks.  Paddle doesn't seem to (yet) get pinned at side walls (though it
+still tends towards them).
+
+125. m6700 : repeat expt 124
+After 9.4K episodes, reward --> 1.7 and is very slowly rising.
+nframes/episode --> 780 and is very slowly rising.  log10(loss) is around
+-2.5.  Reasonable weight dists.  Gross gameboard structure in 0th layer
+weights.
+
+126.  m6700: H1 = 64; H2 = 32; nscreenstates = 1; work with max sums
+between genuine pairs of incremented screen states; eps tau = 8000; discard
+0 reward states frac --> 0.1
+
+After 12K episodes, reward --> 1.7 and is very slowly rising.
+nframes/episode = 760 and is very slowly rising. log10(loss) = -3.5.  OK
+weight dists.  Game board and ball tracks visible in 0th layer weights.
+ 
+
+GENERAL CONCLUSIONS FROM RUNS ON SUN DEC 18: 
+
+i.  Reward and nframes/episode seems to slowly increase so long as epsilon
+is significantly above 0.1.  But once eps --> 0.1, improvement basically
+stops.
+
+ii.  Working with difference frames seems to be as good as working with
+maxed frames.  
+
+iii.  H1 = 32 is probably as good as H1 = 64 (at least for differenced
+frames).  More important factor seems to be duration of random exploration
+period.
+
+iv.  Consider following Deep Mind Atari paper and linearly rather than
+exponentially decay epsilon in order to encourage more random exploration.  
+
+135.  Titan 3:  H1 = 16, H2 = 64, no penalty 
+
+Mon Dec 19 12:19:19 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -78757
+
+After 50K episodes, extremely slow rise in reward--> 2.6 and
+nframes/episode --> 899.  Can't view maxQ since text file is probably too
+large.  Blurred signs of ball tracks in 0th layer weights.  Paddle stays
+almost always around left wall.  OK weight dists.   log10(loss) --> -3.5
+TERMINATED
+
+136.  Titan 3: repeat expt 135
+
+Qualitatively similar results to expt 135.
+TERMINATED
+
+137.  H1 = 16, H2 = 128, no penalty 
+
+Mon Dec 19 12:23:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 35104 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -78981
+
+After 53K episodes, reward --> 2.1 and very slowly rises; nframes/episode
+--> 808 and very slowly rises; log10(loss) --> -3.5; OK weight dists;
+blurred ball tracks in 0th layer weights.  Few glimmers of intelligent play
+in a few screen exports.  TERMINATED
+
+138.  Titan 3:  repeat expt 137
+
+Qualitatively similar results as for expt 137.  TERMINATED
+
+139.  Titan 1:  H1 = 32; H2 = 64; no penalty
+
+Mon Dec 19 12:24:46 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -79084
+
+After 10K episodes, maxQ dists all die to zero.  TERMINATED.
+
+140.  Titan 1:  repeat expt 139
+
+After 30K epipsodes, maxQ dists all die to zero.  Paddle doesnt remain
+locked to side walls.  Stronger signs of ball tracks in 0th layer weights.
+TERMINATED.
+
+141.  Titan 1:  H1 = 32; H2 = 128; no penalty
+Mon Dec 19 12:26:01 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 69952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -79159
+
+After 10K episodes, maxQ dists all are extremey small but nonzero.  Reward
+slowly grows --> 2.15.  nframes/episode --> 844 and slowly grows.  Blurry
+signs of ball tracks in 0th layer weights.  TERMINATED.
+
+
+142.  Titan 1:  repeat expt 141
+
+After 30K episodes, max Q dists stay around 1.0.  Reward very slowly rises
+to 1.6; nframes/episode --> 783 and very slowly rises. log10(loss) = -1.
+Stronger signs of ball tracks in 0th layer weights.  Paddle doesn't remain
+locked to side walls.  TERMINATED.
+
+
+
+143.  TM:  Expt with ReLU again; Trying to understand why Qmax can decrease
+as n_episodes increases.
+
+Mon Dec 19 14:31:45 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+Old weights period = 32
+Discard zero reward frac = 0.1
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -86703
+
+After 8K episodes, Qmax --> 0 for all percentiles.
+TERMINATED.
+
+144.  TM:  H1 = 16, H2 = 64, old weights period = 1000; Discard 0 reward
+frac = 0.85; leaky ReLU slope = 1E-3
+
+Mon Dec 19 15:16:50 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 100000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+Epsilon time constant = 8000; minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.001
+Learning rate decrease period = 1000 episodes
+Old weights period = 1000
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting episode for learing epsilon decay = 1000
+Stopping episode for learing epsilon decay = 25000
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+n_max_episodes = 100000
+Random seed = -89408
+
+Over 25K episodes, Qmax scores grow extremely slowly.  Reward and
+nframes/episode also grow extremely slowly.  log10(loss) --> -2.  Weight
+dists for layer 2 in interval [0,-7]. Very weak ball tracks in 0th layer
+weights.  Paddle basically hovers around left wall.
+
+TERMINATED.
+
+145.  TM:  Repeat expt 144
+
+Max Q percentiles all extremely close to 0 for 25K episodes.
+TERMINATED.
+
+
+Conclusions from overnight experiments run on Monday, Dec 19:
+
+H1 = 32 might be better than H1 = 16.  But as of 12/20/16, we suspect that
+increasing replay memory size is far more important.
+
+146.  m6700: H1 = 16, H2 = 64, independent time var = epoch rather than
+episode
+
+Mon Dec 19 19:47:34 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 100000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 700
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -94849
+
+After 106 epochs, log10(loss) = -0.6; reward --> 1.05; nframes/episode -->
+666; epsilon = 0.865; median max Q --> 0.6 and slowly rising; weight dists
+and values look OK; 0th layer weights exhibit game board + some ball
+tracks; screen exports exhibit some of the most interesting game play we've
+seen to date.
+
+147.  m6700: Repeat of expt 146
+
+After 108 epochs, log10(loss) = -0.95; reard --> 1.12; nframes/episode -->
+689; median max Q --> 0.2 and slowly rising; weight dists and values look
+OK; 0th layer weights show signs of ball tracks; screen exports show paddle
+missing ball but at least not staying pinned to side walls.
+
+148.  Titan 3:  Repeat expt 146
+
+Tue Dec 20 06:01:56 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 100000
+Number random samples drawn from replay memory Nd = 24
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 700
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -42514
+
+After 500 epochs, log10(loss) = -1, epsilon = 0.3; reasonable weight dists
+and coeffs; reward --> 2.0 and very slowly rising; nframes/episode --> 824
+and very slowly rising; some signs of ball tracks in 0th layer weights;
+screen exports show paddle occasionally following ball away from side
+walls. maxQ very slowly rising.
+
+
+149. Titan 3:  Repeat expt 146
+
+Qualitatively similar results to expt 148
+
+150.  Titan 3:  Increase Nd --> 32 and replay memory size --> 200K
+Tue Dec 20 06:06:01 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 700
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -42759
+
+After 480 epochs, maxQ slowly rising; eps = 0.4; log10(loss) = -1; reward =
+1.9 and very slowly rising; nframes/episode = 804 and very slowly rising; 
+reasonable weight dists and values; Almost no signs of game board or tracks
+in 0th layer weights;  usually misses ball, but paddle doesn't always
+remain pinned to side walls
+
+151.  Titan 3:  Repeat expt 150
+
+Qualitatively similar results to expt 150.  But at least game board and
+ball tracks are more visible than in expt 150.  Glimmers of non-stupid play
+in screen exports.
+
+152.  Titan 1:  Nd = 32, replay mem cap = 400K
+
+Tue Dec 20 06:11:50 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 400000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 700
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -43107
+
+After 480 epochs, maxQ is slowly rising.  eps = 0.4, reward and
+nframes/episode went up and then are starting to fall after 250 epochs;
+log10(loss) had big discontinuity around 200 epochs;  Visible tracks in 0th
+layer weights; glimmers of non-stupid play in screen exports;
+
+153.  Titan 1:  Repeat expt 152.
+
+Not great results after 480 epochs.
+
+Conclusions after overnight runs from Tues Dec 20:  Replay memory should be
+at least 200K in size.  We should next try to increase backprop calls by a
+factor of 10 so that they are performed after every action.  
+
+154.  Titan 3:  H1 = 16, H2 = 64; perform backprop after every action;
+replay mem size = 200K
+
+Wed Dec 21 05:24:08 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0.85
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 700
+nn_update_frame_period = 10
+nframes / epoch = 50000
+n_max_epochs = 2000
+Random seed = -26640
+
+After 500 epochs, nframes/episode very slowly rises to 800.  eps --> 0.35;
+maxQ very slowly rises; reward slowly rises to 2ish; log10(loss) = -1; 
+weight dists look reasonable
+
+After 700 epochs, eps = 0.1; nframes/episode continues to rise very slowly
+to 900.  log10(loss) = -1; reward continues to rise very slowly to 2.2ish;
+maxQ continues to rise very slowly; 
+TERMINATED
+
+155.  Titan 3:  repeat expt 154
+
+After 500 epochs, eps --> 0.35; reward very slowly rises to 1.5; 
+nframes/episode --> 800 and very slowly rising; maxQ very slowly rising;
+log10(loss) - -1;
+
+
+After O(700) epochs, reward continues to rise very slowly to 2.2ish; eps =
+0.1; maxQ may be asymptoting; log10(loss) - -1; nframes/episode continues
+to rise very slowly to 900ish; 
+TERMINATED
+
+156.  Titan 1:  Run pbreak with H1 = 64, H2 = 0
+
+Wed Dec 21 08:42:19 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 2
+   n_weights = 131328 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -38538
+
+Weights stop evolving around epoch 80.  No signs of learning.
+TERMINATED.
+
+157.  Titan 1:  Repeat expt 156
+
+Weights stop evolving.  No learning.
+TERMINATED.
+
+158.  Titan 1:  Run pbreak with H1 = 32, H2 = 32
+
+Wed Dec 21 08:43:43 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -38621
+
+Weights stop evolving.  Very small rise in reward and nframes/episode.
+TERMINATED.
+
+159.  Titan 1:  Repeat expt 158
+
+160.  Titan 3: H1 = 64; H2 = 0; leaky relu slope = 0.01
+
+Wed Dec 21 08:53:06 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 2
+   n_weights = 131328 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -39184
+
+Initial rise in reward & nframes/episode stops after weights cease to
+evolve.  TERMINATED.
+
+161.  TM:  H1 = H2 = 32; leaky relu slope = 0.01
+
+Wed Dec 21 08:54:03 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -39239
+
+No significant weight evolution.  TERMINATED.
+
+162.  TM:  H1 = H2 = 32; leaky relu slope = 0
+
+Wed Dec 21 09:44:57 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 66688 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -42294
+
+Small rise in reward and nframes/episode.  But no intelligent game play.
+Weights also don't evolve much.  TERMINATED.  
+
+163.  TM:  H1 = 32; H2 = 64; leaky relu slope = 0.01
+
+Wed Dec 21 10:31:01 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -45059
+
+No siginficant weight evolution.  TERMINATED.
+
+164.  TM:  repeat expt 163
+
+TERMINATED.
+
+165.  Titan 3:  H1 = H2 = 64; replay mem size = 4K; blr = 3E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:22:30 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -51747
+
+After 100 epochs, no increase in reward or nframes/episode.  TERMINATED.
+
+166. Titan 3:  repeat expt 165
+
+After 100 epochs, no increase in reward or nframes/episode.  TERMINATED.
+
+167.  Titan 1:  H1 = H2 = 64; replay mem size = 4K; blr = 1E-2; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:26:04 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.01; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -51963
+
+After 80 epochs, no meaningful improvement in reward or nframes/episode.
+0th layer weights do show ball traces.  Weight dists/coeffs evolve (and
+perhaps slowly diverge).  Ball basically stays pinned to side walls.
+TERMINATED.
+
+168.  Titan 1:  repeat expt 167
+Mediocre results like expt 167.  TERMINATED.
+
+
+169.  Titan 1:  H1 = 64; H2 = 128; replay mem size = 4K; blr = 3E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:27:54 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 139648 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -52072
+
+After 100 epochs, no meaningful change in reward or nframes/episode.
+TERMINATED.
+
+170.  Titan 1:  Repeat expt 169
+
+Lousy results.  TERMINATED.
+
+171.  TM:  H1 = 64; H2 = 128; replay mem size = 4K; blr = 1E-2; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 12:31:13 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 139648 (FC)
+base_learning_rate = 0.01; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -52269
+
+reward and nframes/episode fluctuated upwards around 30 epochs.  But they
+both settled back to beginning levels around  65th epoch.  TERMINATED.
+
+172  TM.  Repeat expt 171
+
+reward stays locked around 3 by 50th epoch.  Weight dists continue to
+evolve though perhaps diverge.  TERMINATED
+
+
+173.  TM:  H1 = 128; H2 = 0; replay mem size = 4K; blr = 3E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 14:24:38 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 4000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -59076
+
+After O(300) epochs, nframes/episode close to minimal 500; log10(loss)
+=-2.5; reward close to 0.
+
+174.  TM:  Repeat expt 173
+
+After O(300) epochs, reward close to 0; nframes/episode close to minimal
+500; log10(loss) = -2.2
+
+
+175.  TM:  H1 = 64, H2 = 128;  replay mem size = 8K; blr = 1E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 15:01:05 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 2
+   n_weights = 139648 (FC)
+base_learning_rate = 0.001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 8000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+
+After 400 epochs, nframes/episode oscillates around 950 +/- 50.
+log10(loss) =-3; reward oscillates around 2 +/- 1; 
+
+176. TM:  repeat expt 175
+
+After 500 epochs, reward remains stuck around 2.1 ; nframes/episode gets
+stuck around 900.  log10(loss) = -2.4; weight dists seem OK.
+
+
+173.  Titan 1:  H1 = 200; H2 = 0; replay mem size = 8K; blr = 1E-3; No lr
+tapering; leaky relu slope = 0.01; no penalty for missing ball
+
+Wed Dec 21 15:12:43 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 8000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -61959
+
+After O(200) epochs, reward has gone no higher than 3 and often falls to
+zero.  nframes/episode goes no higher than 1.1K and often falls to minimum
+500.  log10(loss) = -3;
+
+After O(320) epochs, reward seems to have asymptoted to 2.5ish;
+nframes/episode seems to have asymptoted to 800ish; log10(loss) = -2.7ish; 
+Significant movement in weight dists for both layers.
+
+TERMINATED
+
+174.  Titan 1:  repeat expt 173
+
+After O(200) epochs, reward approaches 4.  log10(loss) = -2.5;
+nframes/episode around 1.2K; weight dists reasonable and continuing to
+gradually evolve.  weight dists gradually evolve.  
+
+After O(320) epochs, reward continues to jump around and is around 2ish.
+nframes/episode jumps around is currently near 900ish.  log10(loss) around
+-3ish.  Significant movement in weight dists; 
+TERMINATED
+
+177.  Titan 1:  H1 = 200; H2 = 0; blr = 1E-4; replay mem cap = 8K
+
+Wed Dec 21 16:16:25 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 8000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -65783
+
+After O(150K) epochs, reward hovers around 1.1 with no obvious growth;
+nframes/episode hovers around 700 with no obvious growth; log10(loss) =
+-2.2;
+
+After O(320) epochs, reward rises extremely slowly to 1.3ish;
+nframes/episode rises extremely slwoly to 650ish; log10(loss) = -2.25;
+Small evolution of layer 1 weights; almost no movment in layer 0 weights.
+TERMINATED.
+
+178.  Titan 1:  repeat expt 177
+
+After O(150K) epochs, nframes/episode hovers around 800; reward hovers
+around 1.5 with no obvious signs of growth;  Very little movement in weight
+dists.  
+
+After O(340) epochs, nframes/episode rises very slowly to 800ish; reward
+rises very slowly to 1.8ish; log10(loss) = -2.5;  TERMINATED.
+
+Conclusion from expts 177 and 178;  blr = 1E-4 is too low!
+
+
+179.  Titan 3: H1 = 200; H2 = 0; replay mem size = 16K; blr = 1E-4
+
+Wed Dec 21 16:21:42 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -66100
+
+After 140 epochs, nframes/episode is around 700 with no signs of rising ;
+reward is around 1.3 with no signs of rising; 
+
+After 300 epochs, nframes/episode --> 800ish with slight signs of rising;
+reward --> 2ish with slight signs of rising; log10(loss) = -2.5; very
+slight movement in layer1 weight dists; almost no movement in layer0 weight
+dists; 
+
+After 900 epochs, bframes/episode --> 600 and is heading downwards; reward
+--> 0.5 and is heading downwards; log10(loss) = -2.5; 
+
+180.  Titan 3:  repeat expt 179
+
+After 140 epochs, nframes/episode --> 800 with very slowly rise; reward -->
+2.0 with very slowly rise; log10(loss) = -2.25; Almost no movement in
+weight dists.  
+
+After 300 epochs, nframes/episode --> 1000 with some rise; log(loss) =
+-2.5; reward --> 3ish with some downward turn; Almost no movement in 0th
+layer weight dists; But some slight movement in layer1 weight dists.
+
+After 900 epochs, nframes/episode --> 900 with no obvious upward movement;
+reward --> 3ish with no obvious upward movement; log10(loss) = -2.25; 
+
+181.  Titan 3:  qbreak; discard frames frac --> 0
+
+Fri Dec 23 07:16:18 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+After 100 epochs, reward --> 1.2 with no obvious upward movement; eps -->
+0.9; maxQ is completely flat; log10(loss) = -1; nframes/episode = 650 with
+no upward movememnt; 
+
+182.  Titan 3:  qbreak; repeat expt 181
+
+After 100 epochs, reward --> 1.1 nframes/episode --> 650; eps --> 0.9; flat
+max Q; log10(loss) = -1.1; 
+
+183.  Titan 1:  pbreak with blr = 3E-3; replay mem size = 16K
+
+Fri Dec 23 08:05:20 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9094
+
+After 680 epochs, nframes/episode --> 1K and reward -->2.8 oscillate and
+slowly rise.  log10(loss) = -2.3;  Slow evolution of weight dists; 
+
+184.  Titan 1: pbreak; repeat expt 183
+
+After 680 epochs, nframes/episode --> 800 and reward --> 2.5.  No sign of
+growth.  log10(loss) = -3.
+
+185.  Titan 1:  pbreak with blr = 1E-2; replay mem size = 16K
+Fri Dec 23 08:05:20 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.01; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9385
+
+After 680 epochs, nframes/episode --> 1.3K, reward --> 3.9, log10(loss) =
+-2.5;  slow growth in weight dists; 
+
+186.  Titan 1: pbreak; repeat expt 185
+After 680 epochs, nframes/episode --> 600, reward --> 1 with no sign of
+growth; log10(loss) = -3; 
+
+
+187.  blr = 1E-3; binary valued screen; keep bottom row which includes
+entire paddle plot paddle X density dist; qbreak
+
+Mon Dec 26 12:56:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+188.  TM: Repeat expt 187; qbreak
+
+189.  blr = 3E-4; binary valued screen; keep bottom row which includes
+entire paddle plot paddle X density dist; qbreak
+
+Mon Dec 26 12:59:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 33952 (FC)
+base_learning_rate = 0.01; batch_size = 1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 1000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -6174
+
+190.  TM:  Repeat expt 189; qbreak
+
+191.  Titan 3: blr = 3E-3; binary valued screen; keep bottom row which
+includes entire paddle plot paddle X density dist; pbreak
+
+Mon Dec 26 13:34:00 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9385
+
+192.  Titan 3:  repeat expt 191; pbreak
+
+193.  Titan 3: blr = 1E-3; binary valued screen; keep bottom row which
+includes entire paddle plot paddle X density dist; pbreak
+
+Mon Dec 26 13:42:00 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9385
+
+194.  Titan 3:  repeat expt 193; pbreak
+
+
+195.  Titan 1: blr = 1E-3; binary valued screen; keep bottom row which
+includes entire paddle plot paddle X density dist
+
+Mon Dec 26 13:42:00 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 2
+   n_weights = 35936 (FC)
+base_learning_rate = 0.001; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9385
+
+196.  Titan 1:  repeat expt 195
+
+197.  Titan 1: blr = 3E-3; binary valued screen; keep bottom row which
+includes entire paddle plot paddle X density dist
+
+Mon Dec 26 13:51:00 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 2
+   n_weights = 35936 (FC)
+base_learning_rate = 0.003; batch_size = -1
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 16000
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 2
+Leaky ReLU small slope = 0.01
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -9385
+
+198.  Titan 1:  Repeat of expt 197
+
+199.  Titan 3:  H1 = 32; H2 = 64; pbreak; n_rollout = 2 * 1000
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+200.  Titan 3:  repeat expt 199
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+201.  Titan 3:  H1 = 64; H2 = 64; pbreak; n_rollout = 2 * 1000
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+202.  Titan 3:  repeat expt 201
+      Started around 8:15 pm Weds Dec 28
+      Paddle pinned to RHS 
+
+203.  Titan 1:  H1 = 128; H2 = 0; pbreak; n_rollout = 2 * 1000
+      Started around 8:20 pm Weds Dec 28
+      Paddle is pinned to RHS
+
+
+204.  Titan 1:  H1 = 128; H2 = 0; pbreak; n_rollout = 2 * 1000
+      Started around 8:20 pm Weds Dec 28
+      After 150 epochs, paddle dist is distorted gaussian about X=9; 
+      nframes/episode --> 1665, reward --> 8.3;
+      log10(loss) = -0.55;  avg eventual reward --> 0.2ish and slowly
+      oscillating; Best pbreak results to date
+
+      After 460 epochs, paddle dist is distorted gaussian about X = 14;
+      avg eventual reward = 0.315 and very slowly rising; nframes/episode
+      --> 1400; reward --> 5.4; log10(loss) = -0.55; some faint traces of
+      ball tracks in 0th layer weights;
+
+     Wed Dec 28 20:23:39 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 2000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -85418
+
+205.  Titan 1:  H1 = 128; H2 = 32; pbreak; n_rollout = 2 * 1000
+      Started around 8:25 pm Weds Dec 28
+      Paddle is pinned to RHS
+
+206.  Titan 1;  repeat expt 205
+      Paddle is pinned to RHS
+
+207.  m6700:  H1 = H2 = 64; nrollouts = 20K;
+
+Wed Dec 28 20:58:15 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 135424 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -76692
+
+After 80 epochs, paddle X got pinned to RHS.  
+
+208.  m6700: H1 = 32; H2 = 64, nrollouts = 60K; pbreak
+
+Wed Dec 28 21:10:52 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 60000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -77444
+
+After 200 epochs, paddle gets pinned to RHS.
+
+207.  TM: H1 = 32; H2 = 64; pbreak; n_rollout = 1 * 1000
+      Started around 8:40 pm Weds Dec 28
+      Paddle is pinned to RHS
+
+208.  TM:  repeat expt 207
+      Paddle is pinned to RHS
+
+209.  TM:  H1 = 32; H2 = 64; pbreak; n_rollout = 4 * 1000
+      Paddle is pinned to RHS
+
+210  TM:  repeat expt 209
+      Paddle is pinned to RHS
+
+
+209.  m6700; H1 = 200; H2 = 0; nrollouts = 50K; pbreak
+Thu Dec 29 07:00:32 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -12826
+
+After 12 epochs, paddle X dist became heavily skewed towards LHS.
+
+206.  m6700: H1 = 200; H2 = 0; pbreak; nrollouts = 20K
+Wed Dec 28 21:00:32 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 200
+   layer = 2 n_nodes = 2
+   n_weights = 410400 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -76828
+
+After 98 epochs, reward --> 4.2, nframes/episode --> 1139, paddle_X is
+gaussian centered around X=10, avg eventual rewards --> 0.08 and slowly
+rising.  No sign of ball tracks in 0th layer weights.  Best pbreak results
+to date.
+
+
+
+211.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:27 am Thurs Dec 29
+      After 180 epochs, paddle X strongly biased towards RHS
+
+
+212.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:29 am Thurs Dec 29
+
+      After 180 epochs, paddle X dist is gaussian about X = 11;
+      eventual reward = 0.058 and slowly rising; reward --> 4.79 and 
+      maybe rising; nframes/episode = 1198 and maybe rising; no signs
+      of ball tracks in 0th layer weightsl;
+
+213.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 7:39 am Thurs Dec 29
+
+      After 180 epochs, paddle X dist is strongly biased towards RHS
+
+214.  Titan 1:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 7:40 am Thurs Dec 29
+      After 180 epochs, paddle X dist is strongly biased towards LHS
+
+
+
+215.  Titan 3:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 7:45 am on Thurs Dec 29
+
+      Paddle pinned to RHS after 100 epochs
+
+216.  Titan 3:  H1 = 200; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 7:46 am on Thurs Dec 29
+
+      Paddle pinned to RHS after 100 epochs
+
+217.  Titan 3:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:51 am on Thurs Dec 29
+
+      Paddle strongly biased towards RHS after 160 epochs
+
+218.  Titan 3:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 7:52 am on Thurs Dec 29
+
+      Paddle strongly biased towards LHS after 160 epochs
+
+219.  Titan 3:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 7:53 am on Thurs Dec 29
+
+      Paddle biased towards RHS after 160 epochs
+
+220.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-4
+      Started around 8:00 am on Thurs Dec 29
+
+      After 400 epochs, paddle is strongly biased towards RHS.
+
+
+221.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 8:01 am on Thurs Dec 29
+
+      After 400 epochs, paddle is pinned to RHS.
+
+222.  TM:  H1 = 128; H2 = 0; pbreak; n_rollout = 50K; BLR = 1E-3
+      Started around 8:02 am on Thurs Dec 29
+
+Thu Dec 29 08:03:24 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -27402
+
+      After 400 epochs, avg eventual reward = 0.269 and slowly rising;
+      nframes/episode = 1690; reward = 7.42; paddle_X is distorted
+      gaussian centered around X = 11; weight dists are slowly evolving;
+      can barely see some ball tracks in 0th layer weights
+
+223.  TM:  H1 = 128; H2 = 32; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 8:03 am
+
+      After 400 epochs, paddle_X is distorted gaussian centered around X=8
+      and no support beyond X = 14; reward --> 5.3 and not rising; 
+      nframes/episode = 1281 and not rising; eventual reward = 0.123 and
+      no longer rising; no sign of ball tracks in 0th layer weights
+
+224.  TM:  H1 = 128; H2 = 32; pbreak; n_rollout = 50K; BLR = 3E-4
+      Started around 8:04 am
+
+      After 400 epochs, paddls is pinned on RHS.
+
+
+226.  m6700: H1 = 128; H2 = 0; pbreak; nrollouts = 50K; curr_advantage = +1
+for good grads, -2 for bad grads.
+
+Thu Dec 29 08:25:27 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -17925
+
+227.  m6700:  H1 = 128; H2 = 0; pbreak; nrollouts = 50K; advantage = (R -
+mu) / sigma
+
+Thu Dec 29 21:23:13 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 50000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -64590
+
+228.  m6700:  H1 = 128; H2 = 0; pbreak; nrollouts = 25K; advantage = (R -
+mu) / sigma
+Thu Dec 29 21:24:41 2016
+Neural net params:
+   n_layers = 3
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 2
+   n_weights = 262656 (FC)
+base_learning_rate = 0.0003; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 25000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -64679
+
+229:  m6700:  repeat expt 228
+
+230.  m6700: H1 = 128; H2 = 32; qbreak
+
+Fri Dec 30 20:27:00 2016
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 2
+   n_weights = 266560 (FC)
+base_learning_rate = 0.001; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 200000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.99
+minimum epsilon = 0.1
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+Old weights period = 2 epochs
+Discard zero reward frac = 0
+Use big states flag = 0
+Frame skip = 1
+1 big state = n_screen_states = 1
+  Compute difference flag = 1
+  Compute max flag = 0
+Starting epoch for linear epsilon decay = 4
+Stopping epoch for linear epsilon decay = 1050
+nn_update_frame_period = 1
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -47560
+
+231.  m6700: H1 = 128; H2 = 32; qbreak; repeat expt 230
+
+
+234.  TM: H1 = 32; H2 = 64; pbreak; no paddle constraints or initial centering
+
+Sun Jan  1 11:46:38 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -99997
+Process ID = 39451
+
+235.  TM: H1 = 32, H2 = 64; pbreak; no paddle constraints or initial
+centering
+
+Sun Jan  1 11:46:42 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -1
+Process ID = 39454
+
+236.  TM: H1 = 32, H2 = 64; pbreak; no paddle constraints or initial
+centering
+
+Sun Jan  1 12:00:26 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -822
+Process ID = 44171
+
+237.  TM: H1 = 32, H2 = 64; pbreak; no paddle constraints or initial
+centering
+
+Sun Jan  1 12:00:30 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -808
+Process ID = 44110
+
+
+238. max mean KL divergence = 1E-4
+
+Mon Jan  2 14:37:55 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 0.0001
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -96658
+Process ID = 48530
+
+Paddle becomes pinned on LHS
+
+
+239. max mean KL divergence = 1E-4
+
+Mon Jan  2 14:38:03 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 0.0001
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -96681
+Process ID = 48562
+
+Paddle becomes pinned on LHS
+
+
+240.  max mean KL divergence = 3E-5
+
+Mon Jan  2 14:33:01 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 3e-05
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -96380
+Process ID = 14202
+
+Paddle distribution heavily biased towards LHS
+
+241.  max mean KL divergence = 3E-5
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 3e-05
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -96400
+Process ID = 14457
+
+Paddle distribution heavily biased towards LHS
+
+242.  max mean KL divergence = 1E-5
+Mon Jan  2 14:36:56 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e-05
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -96615
+Process ID = 15278
+
+
+
+243.  max mean KL divergence = 1E-5
+Mon Jan  2 14:53:33 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e-05
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -97610
+Process ID = 31192
+
+
+244.  max mean KL divergence = 3E-6
+Mon Jan  2 14:55:29 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 3e-06
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -97728
+Process ID = 1499
+
+Paddle becomes strongly biased towards LHS
+
+245.  max mean KL divergence = 3E-6
+
+Mon Jan  2 14:54:58 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 3e-06
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -97695
+Process ID = 785
+
+Paddle becomes strongly biased towards LHS
+
+246.  max mean KL divergence = 1E-6
+
+Mon Jan  2 14:55:52 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e-06
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -97749
+Process ID = 7957
+
+Paddle distribution heavily biased towards LHS
+
+247.  max mean KL divergence = 1E-6
+
+Mon Jan  2 14:56:15 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 2050
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 2
+   n_weights = 67776 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+max mean KL divergence between pi(curr) and pi(next) = 1e-06
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 20000
+Number random samples drawn from replay memory Nd = -999
+Discount factor gamma = 0.99
+minimum epsilon = -nan
+n_actions = 2
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 10000 episodes
+nframes / epoch = 50000
+n_max_epochs = 3000
+Random seed = -97773
+Process ID = 8252
+
+Paddle distribution heavily biased towards LHS
+
+-------------------------------------------------------------
+RUNNING EXPERIMENTS
+-------------------------------------------------------------
+
+THINKMATE
+---------
+
+TITAN 1:  
+--------
+
+TITAN 3:  
+--------
+
+m6700
+-----
+
+===========================================================
+TODO:
+
+A.  Implement weight normalization 
+
+B.  Implement data-dependent weight initialization
+
+C.  Experiment with trying to extract ball and paddle posn and velocity and
+forming much smaller input layer for a much smaller neural net
+
+
+DONE:
+
+A.  Fix memory leak!
+
+B.  Revert to working with difference state rather than 1 big state
+containing 2 screen states
+
+C.  Fix exporting of each individual screen rather than every 3rd or 4th
+one
+
+G.  Trace individual weights' evolutions
+
+F.  Perhaps experiment with 3 hidden layer neural network but only after
+implementing batch normalization 
+

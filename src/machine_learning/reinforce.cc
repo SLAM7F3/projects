@@ -42,6 +42,7 @@ using std::vector;
 
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
+   expt_number = -1;
    include_bias_terms = false;
    debug_flag = false;
 
@@ -482,6 +483,7 @@ void reinforce::summarize_parameters(string params_filename)
    ofstream params_stream;
    filefunc::openfile(params_filename, params_stream);
 
+   params_stream << "Experiment " << expt_number << endl;
    params_stream << timefunc::getcurrdate() << endl;
    params_stream << "Neural net params:" << endl;
    params_stream << "   n_layers = " << n_layers << endl;

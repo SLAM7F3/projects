@@ -56,6 +56,8 @@ class reinforce
 
 // Set & get member functions:
 
+   void set_expt_number(int n);
+   int get_expt_number() const;
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
    void set_environment(environment* e_ptr);
@@ -254,6 +256,7 @@ class reinforce
 
    bool include_bias_terms;
    bool debug_flag;
+   int expt_number;
    int learning_type;
    int solver_type;
    int n_layers, n_actions, n_weights;
@@ -408,6 +411,16 @@ class reinforce
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void reinforce::set_expt_number(int n)
+{
+   expt_number = n;
+}
+
+inline int reinforce::get_expt_number() const
+{
+   return expt_number;
+}
 
 inline void reinforce::set_include_bias_terms(bool flag)
 {

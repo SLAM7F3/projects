@@ -146,6 +146,7 @@ int main (int argc, char* argv[])
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
 
+   reinforce_agent_ptr->set_expt_number(expt_number);
    reinforce_agent_ptr->set_Nd(32);
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
@@ -155,7 +156,7 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);
    reinforce_agent_ptr->set_base_learning_rate(1E-6);
 
-   int n_max_episodes = 100 * 1000;
+   int n_max_episodes = 200 * 1000;
 //   int n_max_episodes = 10000 * 1000;
 
    int n_update = 2000;
@@ -185,7 +186,7 @@ int main (int argc, char* argv[])
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    double starting_episode_linear_eps_decay = 1000;
-   double stopping_episode_linear_eps_decay = 0.50 * n_max_episodes;
+   double stopping_episode_linear_eps_decay = 0.66 * n_max_episodes;
 
 // Generate text file summary of parameter values:
 
