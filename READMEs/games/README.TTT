@@ -26,7 +26,313 @@ Titan 1:
 ---------------------
 
 
+*.  Opponent plays randomly: H1 = H2 = 32; blr = 1E-6
+
+Experiment 10
+Fri Jan 13 06:49:53 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 5120 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -18991
+Process ID = 20517
+
+*.  Repeat expt 10
+
+Experiment 11
+Fri Jan 13 06:50:41 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 5120 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19038
+Process ID = 21086
+
+*.  Opponent plays randomly: H1 = 16; H2 = 32; blr = 1E-6
+
+Experiment 12
+Fri Jan 13 06:52:19 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 3584 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19137
+Process ID = 23821
+
+*.  Repeat expt 12
+
+Experiment 13
+Fri Jan 13 06:53:09 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 3584 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19187
+Process ID = 25111
+
+*.  Opponent plays randomly: H1 = 16; H2 = 16; blr = 1E-6
+
+Experiment 14
+Fri Jan 13 06:54:35 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 64
+   n_weights = 2304 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19272
+Process ID = 28729
+
+*.  Repeat expt 14
+
+Experiment 15
+Fri Jan 13 06:54:47 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 64
+   n_weights = 2304 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19286
+Process ID = 29236
 
 ---------------------
 Titan 3:
 ---------------------
+
+*.  Opponent plays randomly: H1 = H2 = 32; blr = 3E-5
+Experiment 16
+Fri Jan 13 07:02:32 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 5120 (FC)
+base_learning_rate = 3e-05; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19749
+Process ID = 2551
+
+*.  Repeat expt 16
+Experiment 17
+Fri Jan 13 07:02:43 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 5120 (FC)
+base_learning_rate = 3e-05; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -19760
+Process ID = 2636
+
+*.  Opponent plays randomly: H1 = H2 = 16; blr = 3E-5
+Experiment 18
+Fri Jan 13 07:10:56 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 64
+   n_weights = 2304 (FC)
+base_learning_rate = 3e-05; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -20254
+Process ID = 10431
+
+*.  Repeat expt 18
+
+Experiment 19
+Fri Jan 13 07:10:59 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 16
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 64
+   n_weights = 2304 (FC)
+base_learning_rate = 3e-05; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 200000 episodes
+Old weights period = 5000 episodes
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 132000
+Random seed = -20258
+Process ID = 10440

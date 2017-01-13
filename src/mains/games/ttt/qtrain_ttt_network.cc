@@ -84,17 +84,13 @@ int main (int argc, char* argv[])
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = n_actions;		// Output dimensionality
 
-   int H1 = 1 * 32;	// 
-//   int H1 = 2 * 64;	//  
-//   int H1 = 3 * 64;	//  
-//   int H1 = 5 * 64;	//  = 320
+   int H1 = 16;	// 
+//   int H1 = 32;
 
-   int H2 = 32;
-//   int H2 = 1 * 64;
-//   int H2 = 3 * 64;
+   int H2 = 16;
+//   int H2 = 32;
 
    int H3 = 0;
-//   int H3 = 32;
    
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -151,10 +147,10 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);
-   reinforce_agent_ptr->set_base_learning_rate(1E-6);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-5);  // too large
+   reinforce_agent_ptr->set_base_learning_rate(1E-5);
+//   reinforce_agent_ptr->set_base_learning_rate(3E-6);
+//   reinforce_agent_ptr->set_base_learning_rate(1E-6);  // prob too small
 
    int n_max_episodes = 200 * 1000;
 //   int n_max_episodes = 10000 * 1000;
@@ -213,8 +209,8 @@ int main (int argc, char* argv[])
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
-   bool AI_moves_first = true;
-//   bool AI_moves_first = false;
+//   bool AI_moves_first = true;
+   bool AI_moves_first = false;
    bool periodically_switch_starting_player = false;
 //   bool periodically_switch_starting_player = true;
 
@@ -254,13 +250,13 @@ int main (int argc, char* argv[])
 
       if(AI_moves_first)
       {
-         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
-//         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
+//         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
+         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
       }
       else
       {
-         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
-//         ttt_ptr->set_recursive_depth(1);   // AI plays defensively
+//         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
+         ttt_ptr->set_recursive_depth(1);   // AI plays defensively
       }
 
 // -----------------------------------------------------------------------
@@ -282,8 +278,8 @@ int main (int argc, char* argv[])
          if((AI_moves_first && ttt_ptr->get_n_completed_turns() == 0) || 
             ttt_ptr->get_n_completed_turns() > 0)
          {
-            ttt_ptr->get_random_legal_player_move(AI_value);
-//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+//            ttt_ptr->get_random_legal_player_move(AI_value);
+            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 //            ttt_ptr->display_board_state();
 
