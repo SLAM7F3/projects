@@ -149,16 +149,14 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-//   reinforce_agent_ptr->set_base_learning_rate(3E-5);  // too large
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // too large
-//   reinforce_agent_ptr->set_base_learning_rate(5E-6);   //  too large
-//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // may be OK
+//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // too large
 //   reinforce_agent_ptr->set_base_learning_rate(2E-6);  //  ?
-   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  too small
+   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  OK
 
-   int n_max_episodes = 200 * 1000;
+//   int n_max_episodes = 200 * 1000;
+   int n_max_episodes = 300 * 1000;
 //   int n_max_episodes = 400 * 1000;
-//   int n_max_episodes = 10000 * 1000;
 
    int n_update = 2000;
    int n_progress = 4000;
