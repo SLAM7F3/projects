@@ -1267,7 +1267,7 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      log10_losses, output_subdir, metafile_basename, 
+      log10_lr_mean_abs_nabla_weight_ratios, output_subdir, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
