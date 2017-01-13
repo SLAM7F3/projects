@@ -119,7 +119,7 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 5 * 1000;
+   int replay_memory_capacity = 10 * 1000;
    int eval_memory_capacity = basic_math::min(
       int(0.1 * replay_memory_capacity), 20000);
 
@@ -149,11 +149,12 @@ int main (int argc, char* argv[])
 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);  // too large
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // too large
-   reinforce_agent_ptr->set_base_learning_rate(5E-6);   // ?
-//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // OK
+//   reinforce_agent_ptr->set_base_learning_rate(5E-6);   //  too large
+//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // may be OK
+   reinforce_agent_ptr->set_base_learning_rate(2E-6);  //  ?
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  too small
 
-   int n_max_episodes = 200 * 1000;
+   int n_max_episodes = 400 * 1000;
 //   int n_max_episodes = 10000 * 1000;
 
    int n_update = 2000;
