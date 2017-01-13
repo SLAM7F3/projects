@@ -2660,37 +2660,39 @@ double reinforce::update_Q_network(bool verbose_flag)
          *weights[l] -= learning_rate.back() * (*adam_m[l]);
       }
       
-      if(verbose_flag)
-      {
-         int mdim = nabla_weights[l]->get_mdim();
-         int ndim = nabla_weights[l]->get_ndim();
+      int mdim = nabla_weights[l]->get_mdim();
+      int ndim = nabla_weights[l]->get_ndim();
          
-         vector<double> curr_nabla_weights;
-         vector<double> curr_nabla_weight_ratios;
+      vector<double> curr_nabla_weights;
+      vector<double> curr_nabla_weight_ratios;
 //         vector<double> curr_adam_ms;
 
-         for(int r = 0; r < mdim; r++)
+      for(int r = 0; r < mdim; r++)
+      {
+         for(int c = 0; c < ndim; c++)
          {
-            for(int c = 0; c < ndim; c++)
-            {
-               curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(r,c)));
+            curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(r,c)));
 //               curr_adam_ms.push_back(fabs(adam_m[l]->get(r,c)));
 //               cout << "r = " << r << " c = " << c
 //                    << " curr_nabla_weight = " 
 //                    << curr_nabla_weights.back() << endl;
-               double denom = weights[l]->get(r,c);
-               if(fabs(denom) > 1E-10)
-               {
-                  curr_nabla_weight_ratios.push_back(
-                     fabs(nabla_weights[l]->get(r,c) / denom ));
-               }
+            double denom = weights[l]->get(r,c);
+            if(fabs(denom) > 1E-10)
+            {
+               curr_nabla_weight_ratios.push_back(
+                  fabs(nabla_weights[l]->get(r,c) / denom ));
             }
          }
-         double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
-         double mean_abs_nabla_weight_ratio = mathfunc::mean(
-            curr_nabla_weight_ratios);
+      }
+      double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+      double mean_abs_nabla_weight_ratio = mathfunc::mean(
+         curr_nabla_weight_ratios);
 //         double mean_abs_adam_m = mathfunc::mean(curr_adam_ms);
-            
+      log10_lr_mean_abs_nabla_weight_ratios.push_back(
+         log10(learning_rate.back() * mean_abs_nabla_weight_ratio));
+
+      if(verbose_flag)
+      {
          cout << "layer l = " << l
               << " mean |nabla weight| = " 
               << mean_abs_nabla_weight 
@@ -2707,7 +2709,6 @@ double reinforce::update_Q_network(bool verbose_flag)
 //              << " lr * mean_abs_adam_m = " 
 //              << learning_rate.back() * mean_abs_adam_m
 //              << endl;
-
       } // verbose_flag conditional
       
       if(include_bias_terms) nabla_biases[l]->clear_values();
@@ -3545,32 +3546,32 @@ double reinforce::update_P_network(bool verbose_flag)
          nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
       }
       
-      if(verbose_flag)
-      {
-         int mdim = nabla_weights[l]->get_mdim();
-         int ndim = nabla_weights[l]->get_ndim();
+      int mdim = nabla_weights[l]->get_mdim();
+      int ndim = nabla_weights[l]->get_ndim();
          
-         vector<double> curr_nabla_weights;
-         vector<double> curr_nabla_weight_ratios;
-         for(int r = 0; r < mdim; r++)
+      vector<double> curr_nabla_weights;
+      vector<double> curr_nabla_weight_ratios;
+      for(int r = 0; r < mdim; r++)
+      {
+         for(int c = 0; c < ndim; c++)
          {
-            for(int c = 0; c < ndim; c++)
+            curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(r,c)));
+            double denom = weights[l]->get(r,c);
+            if(fabs(denom) > 1E-10)
             {
-               curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(r,c)));
-               double denom = weights[l]->get(r,c);
-               if(fabs(denom) > 1E-10)
-               {
-                  curr_nabla_weight_ratios.push_back(
-                     fabs(nabla_weights[l]->get(r,c) / denom ));
-               }
+               curr_nabla_weight_ratios.push_back(
+                  fabs(nabla_weights[l]->get(r,c) / denom ));
             }
          }
-         double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
-         double mean_abs_nabla_weight_ratio = mathfunc::mean(
-            curr_nabla_weight_ratios);
-         log10_lr_mean_abs_nabla_weight_ratios.push_back(
-            log10(learning_rate.back() * mean_abs_nabla_weight_ratio));
+      }
+      double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+      double mean_abs_nabla_weight_ratio = mathfunc::mean(
+         curr_nabla_weight_ratios);
+      log10_lr_mean_abs_nabla_weight_ratios.push_back(
+         log10(learning_rate.back() * mean_abs_nabla_weight_ratio));
 
+      if(verbose_flag)
+      {
          cout << "layer l = " << l
               << " mean |nabla weight| = " 
               << mean_abs_nabla_weight 
