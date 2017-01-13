@@ -84,13 +84,12 @@ int main (int argc, char* argv[])
    int Din = nsize * nsize * n_zlevels;	// Input dimensionality
    int Dout = n_actions;		// Output dimensionality
 
-//   int H1 = 16;	//   too small
 //   int H1 = 32;
-   int H1 = 64;
+//   int H1 = 64;
+   int H1 = 128;
 
-//   int H2 = 16;      // too small
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 
    int H3 = 0;
    
@@ -155,8 +154,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  OK
 
 //   int n_max_episodes = 200 * 1000;
-   int n_max_episodes = 300 * 1000;
-//   int n_max_episodes = 400 * 1000;
+//   int n_max_episodes = 300 * 1000;
+   int n_max_episodes = 400 * 1000;
 
    int n_update = 2000;
    int n_progress = 4000;
@@ -180,8 +179,7 @@ int main (int argc, char* argv[])
 // value:
 
    int n_lr_episodes_period = 150 * 1000;
-//   int old_weights_period = 5 * 1000; 
-   int old_weights_period = 10 * 1000; 
+   int old_weights_period = 8 * replay_memory_capacity;
 
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
@@ -476,12 +474,14 @@ int main (int argc, char* argv[])
          update_old_weights_counter = 1;
       }
 
+// Update Q-network:
+
       if(reinforce_agent_ptr->get_replay_memory_full())
       {
          bool verbose_flag = false;
          if(curr_episode_number % 500000 == 0)
          {
-//            verbose_flag = true;
+            verbose_flag = true;
          }
          total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
       }
