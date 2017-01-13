@@ -426,9 +426,13 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
 
    const int max_n_exported_points = 100 * 1000;
    int iskip = 1;
-   if(Y.size() > max_n_exported_points)
+   if(Y.size() >= X.size() && Y.size() >  max_n_exported_points)
    {
       iskip = Y.size() / max_n_exported_points + 1;
+   }
+   else if(X.size() > Y.size() && X.size() >  max_n_exported_points)
+   {
+      iskip = X.size() / max_n_exported_points + 1;
    }
 
 // As of 1/5/17, we experiment with allowing X and Y to have different
@@ -465,7 +469,7 @@ void metafile::write_curve(const vector<double>& X,const vector<double>& Y,
    }
    else if (X.size() < Y.size()) // Downsample Y so that it has same size as X
    {
-      for (unsigned int i=0; i<Y.size(); i += iskip)
+      for (unsigned int i=0; i<X.size(); i += iskip)
       {
          double frac = double(i) / (X.size() - 1);
          int j_max = Y.size() - 1;

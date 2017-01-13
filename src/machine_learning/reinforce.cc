@@ -2703,8 +2703,11 @@ double reinforce::update_Q_network(bool verbose_flag)
               << " lr * <|nabla_weight|> = " 
               << learning_rate.back() * mean_abs_nabla_weight 
               << "  lr * <|nabla_weight/weight|> = " 
-              << learning_rate.back() * mean_abs_nabla_weight_ratio << endl;
-         
+              << learning_rate.back() * mean_abs_nabla_weight_ratio 
+              << " log10(lr * <|nabla_weight/weight/>) = "
+              << log10_lr_mean_abs_nabla_weight_ratios.back()
+              << endl;
+
 //         cout << " mean_abs_adam_m = " << mean_abs_adam_m
 //              << " lr * mean_abs_adam_m = " 
 //              << learning_rate.back() * mean_abs_adam_m

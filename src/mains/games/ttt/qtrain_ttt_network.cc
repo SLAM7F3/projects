@@ -85,12 +85,12 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 16;	//   too small
-//   int H1 = 32;
-   int H1 = 64;
+   int H1 = 32;
+//   int H1 = 64;
 
 //   int H2 = 16;      // too small
-//   int H2 = 32;
-   int H2 = 64;
+   int H2 = 32;
+//   int H2 = 64;
 
    int H3 = 0;
    
