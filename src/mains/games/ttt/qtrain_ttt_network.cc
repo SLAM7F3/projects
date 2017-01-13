@@ -148,9 +148,10 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-5);  // too large
-   reinforce_agent_ptr->set_base_learning_rate(1E-5);
-//   reinforce_agent_ptr->set_base_learning_rate(3E-6);
-//   reinforce_agent_ptr->set_base_learning_rate(1E-6);  // prob too small
+//   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // too large
+   reinforce_agent_ptr->set_base_learning_rate(5E-6);   // ?
+//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // OK
+//   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  too small
 
    int n_max_episodes = 200 * 1000;
 //   int n_max_episodes = 10000 * 1000;
@@ -278,8 +279,8 @@ int main (int argc, char* argv[])
          if((AI_moves_first && ttt_ptr->get_n_completed_turns() == 0) || 
             ttt_ptr->get_n_completed_turns() > 0)
          {
-//            ttt_ptr->get_random_legal_player_move(AI_value);
-            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+            ttt_ptr->get_random_legal_player_move(AI_value);
+//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
             ttt_ptr->increment_n_AI_turns();
 //            ttt_ptr->display_board_state();
 
