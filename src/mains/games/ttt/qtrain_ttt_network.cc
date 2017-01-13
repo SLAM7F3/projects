@@ -85,8 +85,8 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 16;	//   too small
-   int H1 = 32;
-//   int H1 = 64;
+//   int H1 = 32;
+   int H1 = 64;
 
 //   int H2 = 16;      // too small
    int H2 = 32;
@@ -179,8 +179,9 @@ int main (int argc, char* argv[])
 // Periodically decrease learning rate down to some minimal floor
 // value:
 
-   int n_lr_episodes_period = 200 * 1000;
-   int old_weights_period = 5000; 
+   int n_lr_episodes_period = 150 * 1000;
+//   int old_weights_period = 5 * 1000; 
+   int old_weights_period = 10 * 1000; 
 
    double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);

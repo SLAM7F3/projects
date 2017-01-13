@@ -1,8 +1,24 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 8/1/16; 8/14/16; 8/16/16; 8/17/16; 8/31/16
+Last updated on 8/16/16; 8/17/16; 8/31/16; 1/13/17
 =============================================================================
+
+*.  On 1/13/17, we git cloned the latest version of the publically
+available caffe onto Thinkmate.  We copied the Makefile.config from our Aug
+31 build of caffe_public.  We found that we needed to keep the following
+lines regarding CUDA architecture.
+
+CUDA_ARCH := -gencode arch=compute_20,code=sm_20 \
+		-gencode arch=compute_20,code=sm_21 \
+		-gencode arch=compute_30,code=sm_30 \
+		-gencode arch=compute_35,code=sm_35 \
+		-gencode arch=compute_50,code=sm_50 \
+		-gencode arch=compute_50,code=compute_50
+
+But otherwise, caffe public seemed to build fine on Thinkmate (modulo some
+warning messages) when we changted make -j all, make test and make runtest.
+
 
 *.  On 8/31/16, we git cloned the latest version of the publically
 available caffe onto Titan3 and Titan1.  We copied the Makefile.config from

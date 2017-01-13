@@ -1743,11 +1743,20 @@ void reinforce::generate_view_metrics_script(
    string script_filename=output_subdir + "view_metrics";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
-   script_stream << "view n_episodes.jpg" << endl;
+
    script_stream << "view log10_losses_history.jpg" << endl;
    script_stream << "view lr_history.jpg" << endl;
    script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
 
+   if(environment_ptr->get_world_type() != environment::TTT)
+   {
+      script_stream << "view n_episodes.jpg" << endl;
+   }
+   else
+   {
+      script_stream << "view game_performance.jpg" << endl;
+   }
+   
    if(maze_flag)  
    {
       script_stream << "view Qmap_score_history.jpg" << endl;
