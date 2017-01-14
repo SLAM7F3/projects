@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 12/13/16; 1/10/17; 1/11/17; 1/13/17
+// Last updated on 1/10/17; 1/11/17; 1/13/17; 1/14/17
 // ==========================================================================
 
 #include <iostream>
@@ -85,11 +85,11 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 32;
-//   int H1 = 64;
-   int H1 = 128;
+   int H1 = 64;
+//   int H1 = 128;
 
-//   int H2 = 32;
-   int H2 = 64;
+   int H2 = 32;
+//   int H2 = 64;
 
    int H3 = 0;
    
@@ -181,10 +181,21 @@ int main (int argc, char* argv[])
    int n_lr_episodes_period = 150 * 1000;
    int old_weights_period = 8 * replay_memory_capacity;
 
-   double min_epsilon = 0.10;
+   double min_epsilon = 0.025;
+//   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    double starting_episode_linear_eps_decay = 1000;
-   double stopping_episode_linear_eps_decay = 0.66 * n_max_episodes;
+   double stopping_episode_linear_eps_decay = 0.75 * n_max_episodes;
+
+   int AI_value = -1;     // "X" pieces
+   int agent_value = 1;   // "O" pieces
+//   bool AI_moves_first = true;
+   bool AI_moves_first = false;
+//   bool periodically_switch_starting_player = false;
+   bool periodically_switch_starting_player = true;
+
+   int update_old_weights_counter = 0;
+   double total_loss = -1;
 
 // Generate text file summary of parameter values:
 
@@ -206,19 +217,11 @@ int main (int argc, char* argv[])
                  << starting_episode_linear_eps_decay << endl;
    params_stream << "Stopping episode for linear epsilon decay = "
                  << stopping_episode_linear_eps_decay << endl;
+   params_stream << "Periodically switch starting player = "
+                 << periodically_switch_starting_player << endl;
    params_stream << "Random seed = " << seed << endl;
    params_stream << "Process ID = " << getpid() << endl;
    filefunc::closefile(params_filename, params_stream);
-
-   int AI_value = -1;     // "X" pieces
-   int agent_value = 1;   // "O" pieces
-//   bool AI_moves_first = true;
-   bool AI_moves_first = false;
-   bool periodically_switch_starting_player = false;
-//   bool periodically_switch_starting_player = true;
-
-   int update_old_weights_counter = 0;
-   double total_loss = -1;
 
 // Import previously trained TTT network to guide AI play:
 
@@ -244,11 +247,13 @@ int main (int argc, char* argv[])
          curr_episode_number%n_lr_episodes_period == 0)
       {
          reinforce_agent_ptr->decrease_learning_rate();
+      }
 
-         if(periodically_switch_starting_player)
-         {
-            AI_moves_first = !AI_moves_first;
-         }
+// Periodically switch starting player:
+
+      if(periodically_switch_starting_player)
+      {
+         AI_moves_first = !AI_moves_first;
       }
 
       if(AI_moves_first)

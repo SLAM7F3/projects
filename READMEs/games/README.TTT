@@ -1,10 +1,45 @@
 ==========================================================================
 Deep Q learning notes for TTT
 ==========================================================================
-Last updated on 1/13/17
+Last updated on 1/13/17; 1/14/17
 ==========================================================================
 
 Best results so far:
+
+61.  T1: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-6;
+old weights period = 10K
+
+Experiment 61
+Fri Jan 13 15:51:20 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8192 (FC)
+base_learning_rate = 1e-06; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.1
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 10000 episodes
+n_max_episodes = 300000
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 198000
+Random seed = -51479
+Process ID = 20018
+
+win_frac = 0.835
 
 32.  T1: Opponent plays randomly: H1 = H2 = 32; blr = 1E-6
 Experiment 32
@@ -1657,13 +1692,6 @@ Process ID = 10975
 Bad loss behavior
 
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
----------------------
-Titan 1:
----------------------
-
 60.  T1: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-6;
 old weights period = 10K
 
@@ -1697,6 +1725,8 @@ Stopping episode for linear epsilon decay = 198000
 Random seed = -51475
 Process ID = 20010
 
+win_frac = 0.835
+
 61.  T1: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-6;
 old weights period = 10K
 
@@ -1729,6 +1759,8 @@ Starting episode for linear epsilon decay = 1000
 Stopping episode for linear epsilon decay = 198000
 Random seed = -51479
 Process ID = 20018
+
+win_frac = 0.835
 
 62.  T1: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 1E-6;
 old weights period = 10K
@@ -1764,6 +1796,8 @@ Stopping episode for linear epsilon decay = 198000
 Random seed = -51596
 Process ID = 24058
 
+win_frac = 0.831
+
 63.  T1: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 1E-6;
 old weights period = 10K
 
@@ -1798,9 +1832,7 @@ Stopping episode for linear epsilon decay = 198000
 Random seed = -51599
 Process ID = 24096
 
----------------------
-Titan 3:
----------------------
+win_frac = 0.844
 
 56.  T3: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-6;
 old weights period = 5K
@@ -1904,6 +1936,8 @@ Stopping episode for linear epsilon decay = 198000
 Random seed = -51734
 Process ID = 1445
 
+win_frac = 0.739
+
 65.  T3: Opponent plays randomly: H1 = 64; H2 = 32; blr = 2E-6;
 old weights period = 10K
 
@@ -1937,6 +1971,8 @@ Stopping episode for linear epsilon decay = 198000
 Random seed = -51737
 Process ID = 1453
 
+win_frac = 0.720
+
 66.  T3: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 2E-6;
 old weights period = 10K
 Experiment 66
@@ -1969,6 +2005,8 @@ Starting episode for linear epsilon decay = 1000
 Stopping episode for linear epsilon decay = 198000
 Random seed = -51814
 Process ID = 3705
+
+win_frac = 0.728
 
 67.  T3: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 2E-6;
 old weights period = 10K
@@ -2004,6 +2042,43 @@ Stopping episode for linear epsilon decay = 198000
 Random seed = -51817
 Process ID = 3737
 
+win_frac = 0.728
+
+
+70.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 2E-6;
+old weights period = 8 * replay mem capacity
+
+win_frac --> 0.650
+
+71.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 2E-6;
+old weights period = 8 * replay mem capacity
+
+win_frac --> 0.662
+
+
+68.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 1E-6;
+old weights period = 8 * replay mem capacity
+
+win_frac --> 0.678
+
+69.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 1E-6;
+old weights period = 8 * replay mem capacity
+
+win_frac --> 0.690
+
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+
+---------------------
+Titan 3:
+---------------------
+
 ---------------------
 Thinkmate
 ---------------------
@@ -2028,3 +2103,4 @@ loss behavior
 
 Conclusion:  Use old weights period = 10K rather than 5K
 
+Conclusion: H1 = 128; H2 = 64; blr = 1 or 2 E-6 yields POOR results
