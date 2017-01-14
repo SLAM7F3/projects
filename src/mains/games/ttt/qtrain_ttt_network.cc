@@ -92,6 +92,7 @@ int main (int argc, char* argv[])
 //   int H2 = 64;
 
    int H3 = 0;
+//   int H3 = 32;
    
    string extrainfo="H1="+stringfunc::number_to_string(H1);
    if(H2 > 0)
@@ -120,9 +121,9 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 10 * 1000;
+   int replay_memory_capacity = 5 * 1000;
    int eval_memory_capacity = basic_math::min(
-      int(0.1 * replay_memory_capacity), 20000);
+      int(0.25 * replay_memory_capacity), 20000);
 
    reinforce* reinforce_agent_ptr = new reinforce(
       layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
@@ -159,7 +160,7 @@ int main (int argc, char* argv[])
    int n_max_episodes = 400 * 1000;
 
    int n_update = 2000;
-   int n_progress = 4000;
+   int n_progress = 2000;
 //    int n_snapshot = 20000;
 
    int n_illegal_moves = 0;
@@ -180,7 +181,7 @@ int main (int argc, char* argv[])
 // value:
 
    int n_lr_episodes_period = 150 * 1000;
-   int old_weights_period = 4 * replay_memory_capacity;
+   int old_weights_period = 1 * replay_memory_capacity;
 
    double min_epsilon = 0.025;
 //   double min_epsilon = 0.10;
@@ -415,19 +416,6 @@ int main (int argc, char* argv[])
                   d, max_a, curr_reward, *next_s, game_world.get_game_over());
             }
          } // d >= 0 conditional
-
-// Update Q-network:
-
-         if(reinforce_agent_ptr->get_replay_memory_full())
-         {
-            bool verbose_flag = false;
-            if(curr_episode_number % 500000 == 0)
-            {
-               verbose_flag = true;
-            }
-            total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
-         }
-
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
@@ -445,7 +433,6 @@ int main (int argc, char* argv[])
          n_recent_losses++;
          loss_frac = double(n_losses) / n_episodes;
       }
-
       else if (nearly_equal(curr_reward, win_reward))
       {
          n_wins++;
@@ -496,6 +483,18 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->copy_weights_onto_old_weights();
          update_old_weights_counter = 1;
+      }
+
+// Update Q-network:
+
+      if(reinforce_agent_ptr->get_replay_memory_full())
+      {
+         bool verbose_flag = false;
+         if(curr_episode_number % 500000 == 0)
+         {
+            verbose_flag = true;
+         }
+         total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
       }
 
 // Linearly decay epsilon over time:
