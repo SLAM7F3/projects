@@ -1,5 +1,5 @@
 // ==========================================================================
-// Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
+// Program RANDOM_TTT scores random play of TTT.
 // ==========================================================================
 // Last updated on 1/10/17; 1/11/17; 1/13/17; 1/14/17
 // ==========================================================================
@@ -25,35 +25,6 @@ using std::endl;
 using std::ofstream;
 using std::string;
 using std::vector;
-
-// ==========================================================================
-void compute_minimax_move(
-   bool AI_moves_first, tictac3d* ttt_ptr, int AI_value)
-{
-   int best_move = ttt_ptr->imminent_win_or_loss(AI_value);
-   if(best_move < 0)
-   {
-      best_move = ttt_ptr->get_recursive_minimax_move(AI_value);
-   }
-   ttt_ptr->set_player_move(best_move, AI_value);
-
-// Periodically diminish relative differences between intrinsic cell
-// prizes as game progresses:
-
-   int n_completed_turns = ttt_ptr->get_n_completed_turns();
-   if(n_completed_turns == 1)
-   {
-      ttt_ptr->adjust_intrinsic_cell_prizes();
-   }
-   else if (n_completed_turns == 2)
-   {
-      ttt_ptr->adjust_intrinsic_cell_prizes();
-   }
-   else if (n_completed_turns == 3)
-   {
-      ttt_ptr->adjust_intrinsic_cell_prizes();
-   }
-}
 
 // ==========================================================================
 int main (int argc, char* argv[])
@@ -191,8 +162,8 @@ int main (int argc, char* argv[])
    int agent_value = 1;   // "O" pieces
 //   bool AI_moves_first = true;
    bool AI_moves_first = false;
-//   bool randomly_switch_starting_player = false;
-   bool randomly_switch_starting_player = true;
+//   bool periodically_switch_starting_player = false;
+   bool periodically_switch_starting_player = true;
 
    int update_old_weights_counter = 0;
    double total_loss = -1;
@@ -217,8 +188,8 @@ int main (int argc, char* argv[])
                  << starting_episode_linear_eps_decay << endl;
    params_stream << "Stopping episode for linear epsilon decay = "
                  << stopping_episode_linear_eps_decay << endl;
-   params_stream << "Randomly switch starting player = "
-                 << randomly_switch_starting_player << endl;
+   params_stream << "Periodically switch starting player = "
+                 << periodically_switch_starting_player << endl;
    params_stream << "Random seed = " << seed << endl;
    params_stream << "Process ID = " << getpid() << endl;
    filefunc::closefile(params_filename, params_stream);
@@ -241,15 +212,7 @@ int main (int argc, char* argv[])
       game_world.start_new_episode();
       reinforce_agent_ptr->initialize_episode();
 
-// Periodically decrease learning rate:
-
-      if(curr_episode_number > 0 && 
-         curr_episode_number%n_lr_episodes_period == 0)
-      {
-         reinforce_agent_ptr->decrease_learning_rate();
-      }
-
-// Periodically switch starting player:
+// Randomly switch starting player:
 
       if(nrfunc::ran1() < 0.5)
       {
@@ -258,17 +221,6 @@ int main (int argc, char* argv[])
       else
       {
          AI_moves_first = false;
-      }
-
-      if(AI_moves_first)
-      {
-//         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
-         ttt_ptr->set_recursive_depth(2);   // AI plays offensively
-      }
-      else
-      {
-//         ttt_ptr->set_recursive_depth(0);   // AI plays stupidly
-         ttt_ptr->set_recursive_depth(1);   // AI plays defensively
       }
 
 // -----------------------------------------------------------------------
@@ -291,14 +243,16 @@ int main (int argc, char* argv[])
             ttt_ptr->get_n_agent_turns() > 0)
          {
             ttt_ptr->get_random_legal_player_move(AI_value);
-//            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);
+
             ttt_ptr->increment_n_AI_turns();
 //            ttt_ptr->display_board_state();
+//            outputfunc::enter_continue_char();
 
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
                game_world.set_game_over(true);
                curr_reward = lose_reward; // Agent loses!
+//               cout << "AI wins" << endl;
                break;
             }
          
@@ -312,108 +266,31 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         genvector *curr_s = game_world.get_curr_state();
-
-// Fill evaluation memory with randomly generated initial states:
-
-         if(nrfunc::ran1() < 0.2)
-         {
-            eval_memory_full_flag = 
-               reinforce_agent_ptr->store_curr_state_into_eval_memory(
-                  *curr_s);
-         }
-
-         if(eval_memory_full_flag)
-         {
-            d = reinforce_agent_ptr->store_curr_state_into_replay_memory(
-               *curr_s);
-         }
-
-// Loop over all possible actions for agent.  Ignore any agent actions
-// which are illegal:
-
-         int max_a = -1;
-         int min_o = -1;
-         double max_min_Qstar = NEGATIVEINFINITY;
-
-         vector<genvector*>* afterstate_ptrs = 
-            game_world.get_all_afterstates(agent_value);
-         
-         if(nrfunc::ran1() < reinforce_agent_ptr->get_epsilon())
-         {
-            max_a = reinforce_agent_ptr->get_random_legal_action();
-         }
-         else
-         {
-            for(int curr_a = 0; curr_a < n_actions; curr_a++)
-            {
-               if(!game_world.is_legal_action(curr_a)) continue;
-
-// Retrieve candidate afterstate given agent's current action:
-
-               genvector* curr_afterstate_ptr = afterstate_ptrs->at(curr_a);
-
-               bool use_old_weights_flag = true;
-               reinforce_agent_ptr->Q_forward_propagate(
-                  curr_afterstate_ptr, use_old_weights_flag);
-
-               double min_Qstar;
-               int curr_o = reinforce_agent_ptr->compute_legal_argmin_Q(
-                  min_Qstar);
-               if(min_Qstar > max_min_Qstar)
-               {
-                  max_min_Qstar = min_Qstar;
-                  min_o = curr_o;
-                  max_a = curr_a;
-               }
-            } // loop over curr_a
-         } // ran1 < epislon conditional
-         
-         curr_reward = 0;
-         if(!game_world.is_legal_action(max_a))
-         {
-            next_s = NULL;
-            curr_reward = illegal_reward;
-            game_world.set_game_over(true);
-         }
-         else
-         {
-            next_s = game_world.compute_next_state(max_a, agent_value);
-         } // max_a is legal action conditional
+         ttt_ptr->get_random_legal_player_move(agent_value);
 
          ttt_ptr->increment_n_agent_turns();
-//          ttt_ptr->display_board_state();
-
-// Step the environment and then retrieve new reward measurements:
+//         ttt_ptr->display_board_state();
+//         outputfunc::enter_continue_char();
 
          if(ttt_ptr->check_player_win(agent_value) > 0)
          {
             game_world.set_game_over(true);
-            curr_reward = win_reward;	 // Agent wins!
+            curr_reward = win_reward; // Agent wins!
+//            cout << "Agent wins" << endl;
+            break;
          }
-         else if (ttt_ptr->check_filled_board())
+         
+         if(ttt_ptr->check_filled_board())
          {
             game_world.set_game_over(true);
-            curr_reward = stalemate_reward;
+            curr_reward = stalemate_reward; // Entire board filled
+            break;
          }
-         cum_reward += curr_reward;
-
-         if(d >= 0)
-         {
-            if(game_world.get_game_over())
-            {
-               reinforce_agent_ptr->store_arsprime_into_replay_memory(
-                  d, max_a, curr_reward, *curr_s, game_world.get_game_over());
-            }
-            else
-            {
-               reinforce_agent_ptr->store_arsprime_into_replay_memory(
-                  d, max_a, curr_reward, *next_s, game_world.get_game_over());
-            }
-         } // d >= 0 conditional
-
       } // !game_over while loop
 // -----------------------------------------------------------------------
+
+//      ttt_ptr->display_board_state();
+//      outputfunc::enter_continue_char();
 
       int n_episodes = 1 + curr_episode_number;
       double illegal_frac, loss_frac, win_frac, stalemate_frac;
@@ -429,7 +306,6 @@ int main (int argc, char* argv[])
          n_recent_losses++;
          loss_frac = double(n_losses) / n_episodes;
       }
-
       else if (nearly_equal(curr_reward, win_reward))
       {
          n_wins++;
@@ -460,47 +336,6 @@ int main (int argc, char* argv[])
               << " stalemate = " << stalemate_frac << endl;
       }
 
-      reinforce_agent_ptr->update_episode_history();
-      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
-      reinforce_agent_ptr->update_epsilon();
-      if(total_loss > 0)
-      {
-         reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
-      }
-      
-      if(curr_episode_number % 10 == 0)
-      {
-         reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
-
-      }
-
-// Periodically copy current weights into old weights:
-
-      update_old_weights_counter++;
-      if(update_old_weights_counter%old_weights_period == 0)
-      {
-         reinforce_agent_ptr->copy_weights_onto_old_weights();
-         update_old_weights_counter = 1;
-      }
-
-// Update Q-network:
-
-      if(reinforce_agent_ptr->get_replay_memory_full())
-      {
-         bool verbose_flag = false;
-         if(curr_episode_number % 500000 == 0)
-         {
-            verbose_flag = true;
-         }
-         total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
-      }
-
-// Linearly decay epsilon over time:
-
-      reinforce_agent_ptr->linearly_decay_epsilon(
-         curr_episode_number, starting_episode_linear_eps_decay,
-         stopping_episode_linear_eps_decay);
-
 // Periodically write status info to text console:
 
       if(curr_episode_number > 0 && curr_episode_number % n_update == 0)
@@ -510,7 +345,6 @@ int main (int argc, char* argv[])
               << endl;
 
          ttt_ptr->display_board_state();
-         cout << "Q-learning" << endl;
          if(AI_value == -1)
          {
             cout << "AI = X    agent = O" << endl;
@@ -552,13 +386,6 @@ int main (int argc, char* argv[])
          n_recent_illegal_moves = n_recent_losses = n_recent_stalemates 
             = n_recent_wins = 0;
 
-         cout << "  Total loss = " << total_loss << endl;
-         if(total_loss > 0)
-         {
-            cout << " log10(total_loss) = " << log10(total_loss) << endl;
-            reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
-         }
-
          double curr_n_turns_frac = double(
             ttt_ptr->get_n_AI_turns() + ttt_ptr->get_n_agent_turns()) / 
             n_max_turns;
@@ -572,28 +399,9 @@ int main (int argc, char* argv[])
 
       if(curr_episode_number > 0 && curr_episode_number % n_progress == 0)
       {
-         reinforce_agent_ptr->push_back_learning_rate(
-            reinforce_agent_ptr->get_learning_rate());
-         if(reinforce_agent_ptr->get_include_bias_terms()){
-           reinforce_agent_ptr->compute_bias_distributions();
-         }
-         reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->store_quasirandom_weight_values();
-         bool epoch_indep_var = false;
-         reinforce_agent_ptr->generate_summary_plots(
-            output_subdir, extrainfo, epoch_indep_var);
-         reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, false, false);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }
-
-/*
-      if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
-      {
-         reinforce_agent_ptr->export_snapshot(output_subdir);
-      }
-*/
 
       reinforce_agent_ptr->increment_episode_number();
    } // n_episodes < n_max_episodes while loop
@@ -604,15 +412,6 @@ int main (int argc, char* argv[])
    outputfunc::print_elapsed_time();
    cout << "Final episode number = "
         << reinforce_agent_ptr->get_episode_number() << endl;
-   cout << "N_weights = " << reinforce_agent_ptr->count_weights()
-        << endl;
-
-// Export trained weights in neural network's zeroth layer as
-// greyscale images to output_subdir
-
-   string weights_subdir = output_subdir+"zeroth_layer_weights/";
-   filefunc::dircreate(weights_subdir);
-   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
 
    delete ttt_ptr;
    delete reinforce_agent_ptr;
