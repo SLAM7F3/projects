@@ -148,12 +148,13 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // too large
-//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // too large
-//   reinforce_agent_ptr->set_base_learning_rate(2E-6);  //  ?
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(2E-6);  // 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  OK
 
-//   int n_max_episodes = 200 * 1000;
 //   int n_max_episodes = 300 * 1000;
    int n_max_episodes = 400 * 1000;
 
@@ -179,20 +180,20 @@ int main (int argc, char* argv[])
 // value:
 
    int n_lr_episodes_period = 150 * 1000;
-   int old_weights_period = 8 * replay_memory_capacity;
+   int old_weights_period = 4 * replay_memory_capacity;
 
    double min_epsilon = 0.025;
 //   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
-   double starting_episode_linear_eps_decay = 1000;
-   double stopping_episode_linear_eps_decay = 0.75 * n_max_episodes;
+   double starting_episode_linear_eps_decay = 100;
+   double stopping_episode_linear_eps_decay = 0.7 * n_max_episodes;
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
 //   bool AI_moves_first = true;
    bool AI_moves_first = false;
-//   bool randomly_switch_starting_player = false;
-   bool randomly_switch_starting_player = true;
+   bool randomly_switch_starting_player = false;
+//   bool randomly_switch_starting_player = true;
 
    int update_old_weights_counter = 0;
    double total_loss = -1;
@@ -249,15 +250,18 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->decrease_learning_rate();
       }
 
-// Periodically switch starting player:
+// Randomly switch starting player:
 
-      if(nrfunc::ran1() < 0.5)
+      if(randomly_switch_starting_player)
       {
-         AI_moves_first = true;
-      }
-      else
-      {
-         AI_moves_first = false;
+         if (nrfunc::ran1() < 0.5)
+         {
+            AI_moves_first = true;
+         }
+         else
+         {
+            AI_moves_first = false;
+         }
       }
 
       if(AI_moves_first)
@@ -412,6 +416,18 @@ int main (int argc, char* argv[])
             }
          } // d >= 0 conditional
 
+// Update Q-network:
+
+         if(reinforce_agent_ptr->get_replay_memory_full())
+         {
+            bool verbose_flag = false;
+            if(curr_episode_number % 500000 == 0)
+            {
+               verbose_flag = true;
+            }
+            total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
+         }
+
       } // !game_over while loop
 // -----------------------------------------------------------------------
 
@@ -471,7 +487,6 @@ int main (int argc, char* argv[])
       if(curr_episode_number % 10 == 0)
       {
          reinforce_agent_ptr->compute_max_eval_Qvalues_distribution();
-
       }
 
 // Periodically copy current weights into old weights:
@@ -481,18 +496,6 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->copy_weights_onto_old_weights();
          update_old_weights_counter = 1;
-      }
-
-// Update Q-network:
-
-      if(reinforce_agent_ptr->get_replay_memory_full())
-      {
-         bool verbose_flag = false;
-         if(curr_episode_number % 500000 == 0)
-         {
-            verbose_flag = true;
-         }
-         total_loss = reinforce_agent_ptr->update_Q_network(verbose_flag);
       }
 
 // Linearly decay epsilon over time:
