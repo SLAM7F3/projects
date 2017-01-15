@@ -1,7 +1,8 @@
 // ==========================================================================
-// Program MINIMAX allows a minimax AI to play again a minimax agent.
-// It exports afterstate-action pairs for both players to an output
-// text file for later supervised learning policy training purposes.
+// Program MINIMAX2 allows a minimax AI to play again a minimax agent.
+// It periodically exports afterstate-action pairs for both players to
+// output text files for later supervised learning policy training
+// purposes.
 // ==========================================================================
 // Last updated on 11/2/16; 11/3/16; 11/4/16; 1/15/17
 // ==========================================================================
@@ -9,10 +10,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "games/tictac3d.h"
+#include "general/filefuncs.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
 #include "general/sysfuncs.h"
+#include "games/tictac3d.h"
 #include "time/timefuncs.h"
 
 int main (int argc, char* argv[])
@@ -38,6 +40,10 @@ int main (int argc, char* argv[])
    ttt_ptr->set_recursive_depth(2);  // machine plays offensively
 //   ttt_ptr->set_recursive_depth(3);  // machine plays defensively (very slowly)
 
+   string output_subdir = "./afterstate_action_pairs/";
+   filefunc::dircreate(output_subdir);
+
+//   int n_games = 50;
    int n_games = 5 * 1000;
    for(int g = 0; g < n_games; g++)
    {
@@ -45,6 +51,15 @@ int main (int argc, char* argv[])
            << endl;
       cout << "Starting game " << g << endl;
       outputfunc::update_progress_and_remaining_time(g, 10, n_games);
+
+      if(nrfunc::ran1() < 0.5)
+      {
+         AI_move_first = false;
+      }
+      else
+      {
+         AI_move_first = true;
+      }
 
       ttt_ptr->reset_board_state();
       while(!ttt_ptr->get_game_over())
@@ -126,17 +141,18 @@ int main (int argc, char* argv[])
       cout << "Number of recorded afterstate-action pairs = "
            << ttt_ptr->get_n_afterstate_action_pairs() << endl;
 
-      if(g%100 == 0)
+      if(g % 500 == 0)
       {
-         string output_filename="afterstate_action_pairs.txt";
+         string output_filename=output_subdir + 
+            "afterstate_action_pairs_"+stringfunc::integer_to_string(g,5)+
+            ".txt";
          ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
       }
    } // loop over index g labeling games
 
-   string output_filename="afterstate_action_pairs.txt";
+   string output_filename=output_subdir+"afterstate_action_pairs.txt";
    ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
    
-
    delete ttt_ptr;
 }
 
