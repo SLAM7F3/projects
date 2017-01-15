@@ -38,7 +38,7 @@ int main (int argc, char* argv[])
    ttt_ptr->set_recursive_depth(2);  // machine plays offensively
 //   ttt_ptr->set_recursive_depth(3);  // machine plays defensively (very slowly)
 
-   int n_games = 40;
+   int n_games = 5 * 1000;
    for(int g = 0; g < n_games; g++)
    {
       cout << "************************************************************" 
