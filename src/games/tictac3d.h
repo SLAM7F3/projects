@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/25/16; 11/26/16; 11/27/16; 12/8/16
+// Last modified on 11/26/16; 11/27/16; 12/8/16; 1/15/17
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -36,6 +36,10 @@ class tictac3d
 // independent int: 1 or -1 player value
 // dependent int: cell index
 
+   typedef std::map<std::string, int> AFTERSTATE_ACTION_MAP;
+// independent string: string representation for board afterstate
+// dependent int: legal action for player indicated by sign of integer
+
 // Initialization, constructor and destructor functions:
 
    tictac3d(int n_size, int n_zlevels);
@@ -51,8 +55,8 @@ class tictac3d
    int get_cell(int px, int py, int pz);
    void set_game_over(bool flag);
    bool get_game_over() const;
-   genvector* get_board_state_ptr();
-   genvector* get_inverse_board_state_ptr();
+   genvector* update_board_state_ptr();
+   genvector* update_inverse_board_state_ptr();
    std::string board_state_to_string();
 
    void push_genuine_board_state();
@@ -87,6 +91,10 @@ class tictac3d
    bool set_player_move(int p, int player_value);
    void get_random_legal_player_move(int player_value);
    void record_latest_move(int player_value, int p);
+
+   int get_n_afterstate_action_pairs() const;
+   void record_afterstate_action(int player_value, int a);
+   void export_recorded_afterstate_action_pairs(std::string output_filename);
 
    void append_game_loss_frac(double frac);
    void append_game_illegal_frac(double frac);
@@ -160,6 +168,9 @@ class tictac3d
 
    LATEST_MOVE_MAP latest_move_map;
    LATEST_MOVE_MAP::iterator latest_move_iter;
+
+   AFTERSTATE_ACTION_MAP afterstate_action_map;
+   AFTERSTATE_ACTION_MAP::iterator afterstate_action_iter;
 
    int latest_O_move, latest_X_move;
 
@@ -307,6 +318,11 @@ inline int tictac3d::get_cell_value(int p) const
 inline void tictac3d::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
 {
    wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
+}
+
+inline int tictac3d::get_n_afterstate_action_pairs() const
+{
+   return afterstate_action_map.size();
 }
 
 

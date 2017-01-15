@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/26/16; 11/27/16; 11/28/16; 1/10/17
+// Last modified on 11/27/16; 11/28/16; 1/10/17; 1/15/17
 // ==========================================================================
 
 #include <iostream>
@@ -134,7 +134,7 @@ void tictac3d::set_recursive_depth(int d)
    }
 }
 
-genvector* tictac3d::get_board_state_ptr()
+genvector* tictac3d::update_board_state_ptr()
 {
    for(int p = 0; p < n_cells; p++)
    {
@@ -147,7 +147,7 @@ genvector* tictac3d::get_board_state_ptr()
 // Member function get_inverse_board_state_ptr() returns the board
 // state vector after swapping all "X" and "O" pieces.
 
-genvector* tictac3d::get_inverse_board_state_ptr()
+genvector* tictac3d::update_inverse_board_state_ptr()
 {
    for(int p = 0; p < n_cells; p++)
    {
@@ -164,6 +164,9 @@ genvector* tictac3d::get_inverse_board_state_ptr()
 
 string tictac3d::board_state_to_string()
 {
+//   cout << "inside tictac3d::board_state_to_string()" << endl;
+
+   update_board_state_ptr();
    string board_state_str="";
    for(int p = 0; p < n_cells; p++)
    {
@@ -233,6 +236,51 @@ void tictac3d::record_latest_move(int player_value, int p)
    {
       latest_move_iter->second = p;
    }
+}
+
+// ---------------------------------------------------------------------
+// Member function record_afterstate_action() enters the pair [board
+// afterstate string, player_value * (a+1)] into member STL map
+// afterstate_action_map.  We can later use this map's contents as
+// training data for supervised learning of a policy network based
+// upon minimax game play.
+
+void tictac3d::record_afterstate_action(int player_value, int a)
+{
+   string curr_board_afterstate_str = board_state_to_string();
+   afterstate_action_iter = afterstate_action_map.find(
+      curr_board_afterstate_str);
+   if(afterstate_action_iter == afterstate_action_map.end())
+   {
+      afterstate_action_map[curr_board_afterstate_str] = player_value * (a+1);
+   }
+   else
+   {
+      afterstate_action_iter->second = player_value * (a+1);
+   }
+//   cout << "Number of afterstate-action pairs recorded = "
+//        << afterstate_action_map.size() << endl;
+}
+
+// ---------------------------------------------------------------------
+void tictac3d::export_recorded_afterstate_action_pairs(string output_filename)
+{
+   ofstream outstream;
+   filefunc::openfile(output_filename, outstream);
+   outstream << "# Board afterstate                player_value * (action+1)"
+             << endl << endl;
+
+   for(afterstate_action_iter = afterstate_action_map.begin();
+       afterstate_action_iter != afterstate_action_map.end(); 
+       afterstate_action_iter++)
+   {
+      outstream << afterstate_action_iter->first << " "
+                << afterstate_action_iter->second << endl;
+   }
+   filefunc::closefile(output_filename, outstream);
+   cout << "Exported " << afterstate_action_map.size() 
+        << " recorded afterstate-action pairs to " << output_filename
+        << endl;
 }
 
 // ---------------------------------------------------------------------
