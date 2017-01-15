@@ -126,10 +126,16 @@ int main (int argc, char* argv[])
       cout << "Number of recorded afterstate-action pairs = "
            << ttt_ptr->get_n_afterstate_action_pairs() << endl;
 
+      if(g%100 == 0)
+      {
+         string output_filename="afterstate_action_pairs.txt";
+         ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
+      }
    } // loop over index g labeling games
-   
+
    string output_filename="afterstate_action_pairs.txt";
    ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
+   
 
    delete ttt_ptr;
 }
