@@ -292,8 +292,7 @@ int main (int argc, char* argv[])
 
 // AI move:
 
-         if((AI_moves_first && ttt_ptr->get_n_AI_turns() == 0) || 
-            ttt_ptr->get_n_agent_turns() > 0)
+         if(AI_moves_first || ttt_ptr->get_n_agent_turns() > 0)
          {
             ttt_ptr->get_random_legal_player_move(AI_value);
 //            compute_minimax_move(AI_moves_first, ttt_ptr, AI_value);

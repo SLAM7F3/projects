@@ -281,14 +281,6 @@ void tictac3d::enter_player_move(int player_value)
          }
       }
 
-      cout << "Enter column: " << endl;
-      cin >> px;
-      if(px < 0 || px >= n_size)
-      {
-         cout << "Illegal column value.  Please try again" << endl;
-         continue;
-      }
-      
       cout << "Enter row: " << endl;
       cin >> py;
       if(py < 0 || py >= n_size)
@@ -297,6 +289,14 @@ void tictac3d::enter_player_move(int player_value)
          continue;
       }
 
+      cout << "Enter column: " << endl;
+      cin >> px;
+      if(px < 0 || px >= n_size)
+      {
+         cout << "Illegal column value.  Please try again" << endl;
+         continue;
+      }
+      
       p = get_cell(px,py,pz);
       legal_move = legal_player_move(p);
       if(!legal_move)
