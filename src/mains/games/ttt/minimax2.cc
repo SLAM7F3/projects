@@ -44,7 +44,7 @@ int main (int argc, char* argv[])
    filefunc::dircreate(output_subdir);
 
 //   int n_games = 50;
-   int n_games = 5 * 1000;
+   int n_games = 50 * 1000;
    for(int g = 0; g < n_games; g++)
    {
       cout << "************************************************************" 
@@ -141,7 +141,7 @@ int main (int argc, char* argv[])
       cout << "Number of recorded afterstate-action pairs = "
            << ttt_ptr->get_n_afterstate_action_pairs() << endl;
 
-      if(g % 500 == 0)
+      if(g % 501 == 0)
       {
          string output_filename=output_subdir + 
             "afterstate_action_pairs_"+stringfunc::integer_to_string(g,5)+
