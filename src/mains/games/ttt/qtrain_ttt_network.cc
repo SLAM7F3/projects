@@ -121,7 +121,7 @@ int main (int argc, char* argv[])
 
 // Construct reinforcement learning agent:
 
-   int replay_memory_capacity = 5 * 1000;
+   int replay_memory_capacity = 10 * 1000;
    int eval_memory_capacity = basic_math::min(
       int(0.25 * replay_memory_capacity), 20000);
 
@@ -149,9 +149,9 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-   reinforce_agent_ptr->set_base_learning_rate(3E-4);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(3E-4);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-4);   // 
-//   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // 
+   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(2E-6);  // 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  OK

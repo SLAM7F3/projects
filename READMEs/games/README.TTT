@@ -79,6 +79,116 @@ Finished;  win frac = 0.839
 TERMINATED EXPERIMENTS
 ------------------------------------------------------
 
+
+17.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-5; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+
+Experiment 17
+Sat Jan 14 08:34:21 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8192 (FC)
+base_learning_rate = 1e-05; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 80000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 300000
+Randomly switch starting player = 1
+Random seed = -858
+Process ID = 9282
+
+18.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-4; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+Experiment 18
+Sat Jan 14 08:44:59 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8192 (FC)
+base_learning_rate = 0.0001; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 80000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 300000
+Randomly switch starting player = 1
+Random seed = -1496
+Process ID = 12128
+
+19.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 13-4; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+Experiment 19
+Sat Jan 14 09:21:49 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8192 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 80000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 1000
+Stopping episode for linear epsilon decay = 300000
+Randomly switch starting player = 1
+Random seed = -3706
+Process ID = 21137
+
+
+
+
 10.  T1: Opponent plays randomly: H1 = H2 = 32; blr = 1E-6
 
 Experiment 10
@@ -2044,18 +2154,6 @@ Process ID = 3737
 
 win_frac = 0.728
 
-
-70.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 2E-6;
-old weights period = 8 * replay mem capacity
-
-win_frac --> 0.650
-
-71.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 2E-6;
-old weights period = 8 * replay mem capacity
-
-win_frac --> 0.662
-
-
 68.  TM: Opponent plays randomly: H1 = 128; H2 = 64; blr = 1E-6;
 old weights period = 8 * replay mem capacity
 
@@ -2066,6 +2164,57 @@ old weights period = 8 * replay mem capacity
 
 win_frac --> 0.690
 
+70.  T1: Opponent plays randomly: H1 = 128; H2 = 64; blr = 2E-6;
+old weights period = 8 * replay mem capacity
+
+win_frac --> 0.650
+
+71.  T1: Opponent plays randomly: H1 = 128; H2 = 64; blr = 2E-6;
+old weights period = 8 * replay mem capacity
+
+win_frac --> 0.662
+
+74.  TM: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-5; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+75.  TM: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-5; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+76.  T3: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-4; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+77.  T3: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-4; old weights
+period = 8 * replay mem capacity; min_eps = 0.025; randomly switch first
+mover every turn; fixed AI move bug
+
+80.  T3: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+81.  T3: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+
+82.  T1: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+83.  T1: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+84.  TM: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
+old weights period = 4 * replay mem capacity; min_eps = 0.025; do not
+switch first player; update Q network every turn
+
+85.  TM: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
+old weights period = 4 * replay mem capacity; min_eps = 0.025; do not
+switch first player; update Q network every turn
+
 
 ------------------------------------------------------
 RUNNING EXPERIMENTS
@@ -2075,13 +2224,295 @@ RUNNING EXPERIMENTS
 Titan 1:
 ---------------------
 
+88.  T1: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old weights
+period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not switch first
+player; update Q network every episode
+
+89.  T1: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old weights
+period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not switch first
+player; update Q network every episode
+
 ---------------------
 Titan 3:
 ---------------------
 
+90.  T3: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
+old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+
+91.  T3: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
+old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+
 ---------------------
 Thinkmate
 ---------------------
+
+86.  TM: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4;
+old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+
+87.  TM: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4;
+old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+
+
+
+---------------------
+m6700
+---------------------
+
+20.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+Experiment 20
+Sat Jan 14 11:28:27 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8192 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 40000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 280000
+Randomly switch starting player = 0
+Random seed = -11306
+Process ID = 17081
+
+21.  m6700: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+Experiment 21
+Sat Jan 14 11:44:51 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   n_weights = 12288 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 40000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 280000
+Randomly switch starting player = 0
+Random seed = -12287
+Process ID = 19688
+
+
+22.  m6700: Opponent plays randomly: H1 = 64; H2 = H3 = 32; 
+blr = 3E-4; old weights
+period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
+player; update Q network every turn
+
+Experiment 22
+Sat Jan 14 11:46:56 2017
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 64
+   n_weights = 9216 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 40000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 280000
+Randomly switch starting player = 0
+Random seed = -12410
+Process ID = 20761
+
+
+23.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4; old
+weights period = replay mem capacity = 5K; min_eps = 0.025; do not switch
+first player; update Q network every episode
+
+Experiment 23
+Sat Jan 14 13:27:16 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8192 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 5000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 280000
+Randomly switch starting player = 0
+Random seed = -18435
+Process ID = 3858
+
+Bad loss behavior
+
+24.  m6700: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old
+weights period = replay mem capacity = 5K; min_eps = 0.025; do not switch
+first player; update Q network every episode
+
+Experiment 24
+Sat Jan 14 13:29:44 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   n_weights = 12288 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 5000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 280000
+Randomly switch starting player = 0
+Random seed = -18583
+Process ID = 5286
+
+Bad loss behavior
+
+25.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
+old weights period = replay mem capacity = 5K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+Sat Jan 14 13:31:14 2017
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 64
+   n_weights = 9216 (FC)
+base_learning_rate = 0.0003; batch_size = 1
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 5000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+minimum epsilon = 0.025
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 5000 episodes
+n_max_episodes = 400000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 280000
+Randomly switch starting player = 0
+Random seed = -18672
+Process ID = 6591
+
+Bad loss behavior
+
+27.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-4;
+old weights period = 20K; replay mem capacity = 10K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+
+28.  m6700: Opponent plays randomly: H1 = 64; H2 = 64; blr = 1E-4;
+old weights period = 20K; replay mem capacity = 10K; min_eps = 0.025; do not
+switch first player; update Q network every episode
+
+29.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 1E-4;
+old weights period = 20K; replay mem capacity = 10K; min_eps = 0.025; do
+not switch first player; update Q network every episode
+
+30.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-6;
+old weights period = 10K; replay mem capacity = 10K; min_eps = 0.025; do
+not switch first player; update Q network every episode
+
+31.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-6;
+old weights period = 10K; replay mem capacity = 10K; min_eps = 0.025; do
+not switch first player; update Q network every episode
+
+32.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 1E-5;
+old weights period = 10K; replay mem capacity = 10K; min_eps = 0.025; do
+not switch first player; update Q network every episode
+
+
+
+
+==========================================================================
+Conclusion: As of Sun Jan 15, 2017 we have found NO set of hyperparams for
+which minimax Q learning of an agent against a randomly playing opponent
+works even remotely decently.  So we give up on minimax Q learning for now.
+==========================================================================
 
 
 ==========================================================================
