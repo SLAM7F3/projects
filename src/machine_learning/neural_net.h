@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 10/17/16; 10/18/16; 12/27/16; 12/28/16
+// Last modified on 12/27/16; 12/28/16; 1/15/17; 1/16/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -55,11 +55,15 @@ class neural_net
    genvector* get_softmax_class_probs() const;
    double get_sample_loss(const DATA_PAIR& curr_data);
    double L2_loss_contribution();
-   void sgd(int n_epochs, int mini_batch_size, double learning_rate,
-            double lambda, double rmsprop_decay_rate);
+   void train_network(int n_epochs, int mini_batch_size, double learning_rate,
+                      double lambda, double rmsprop_decay_rate);
 
    void plot_loss_history();
    void plot_accuracies_history();
+
+   double evaluate_model_on_data_set(
+      const std::vector<DATA_PAIR>& sample_data);
+   double evaluate_model_on_training_set();
    double evaluate_model_on_test_set();
    std::vector<int>& get_incorrect_classifications();
 
@@ -95,6 +99,7 @@ class neural_net
    double rmsprop_decay_rate;
 
    std::vector<double> e_effective, avg_minibatch_loss;
+   std::vector<double> training_accuracy_history;
    std::vector<double> test_accuracy_history;
 
 // Store indices for test samples whose class if incorrectly labeled

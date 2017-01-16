@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 10/20/16; 12/27/16; 12/28/16; 1/4/17
+// Last modified on 12/28/16; 1/4/17; 1/15/17; 1/16/17
 // ==========================================================================
 
 #include <iostream>
@@ -187,7 +187,6 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
       cout << *curr_weights << endl;
 
    } // loop over index l labeling neural net layer
-
    cout << "Correct test prediction frac = " 
         << NN.evaluate_model_on_test_set()
         << endl;
@@ -280,13 +279,15 @@ double neural_net::L2_loss_contribution()
 }
 
 // ---------------------------------------------------------------------
-double neural_net::evaluate_model_on_test_set() 
+double neural_net::evaluate_model_on_data_set(
+   const vector<DATA_PAIR>& sample_data)
 {
+   int n_data_samples = sample_data.size();
    int n_correct_predictions = 0;
    incorrect_classifications.clear();
-   for(unsigned int t = 0; t < n_test_samples; t++)
+   for(int t = 0; t < n_data_samples; t++)
    {
-      feedforward( test_data[t].first );
+      feedforward( sample_data[t].first );
       genvector* class_probs = get_softmax_class_probs();
 
       double max_prob = NEGATIVEINFINITY;
@@ -300,7 +301,7 @@ double neural_net::evaluate_model_on_test_set()
          }
       }
 
-      if(predicted_class == test_data[t].second)
+      if(predicted_class == sample_data[t].second)
       {
          n_correct_predictions++;
       }
@@ -311,10 +312,19 @@ double neural_net::evaluate_model_on_test_set()
       
    } // loop over index t labeling test samples
 
-//   cout << "n_correct_predictions = " << n_correct_predictions
-//        << " n_test_samples = " << n_test_samples << endl;
-   double frac_correct = double(n_correct_predictions) / n_test_samples;
+   double frac_correct = double(n_correct_predictions) / n_data_samples;
    return frac_correct;
+}
+
+// ---------------------------------------------------------------------
+double neural_net::evaluate_model_on_training_set() 
+{
+   return evaluate_model_on_data_set(training_data);
+}
+
+double neural_net::evaluate_model_on_test_set() 
+{
+   return evaluate_model_on_data_set(test_data);
 }
 
 // ---------------------------------------------------------------------
@@ -399,18 +409,19 @@ neural_net::generate_training_mini_batches(
 }
 
 // ---------------------------------------------------------------------
-// Member function sgd() trains the neural network using mini-batch
-// stochastic gradient descent.  The "training_data" is a list of
-// tuples "(x, y)" representing the training inputs and the desired
-// outputs.  The other non-optional parameters are self-explanatory.
-// If "test_data" is provided then the network will be evaluated
-// against the test data after each epoch, and partial progress
-// printed out.  This is useful for tracking progress, but slows
-// things down substantially.  Input parameter lambda governs L2
+// Member function train_network() trains the neural network using
+// mini-batch stochastic gradient descent.  The training data is a
+// list of "(x, y)" tuples representing the training inputs and the
+// desired outputs.  The other non-optional parameters are
+// self-explanatory.  If "test_data" is provided then the network will
+// be evaluated against the test data after each epoch, and partial
+// progress printed out.  This is useful for tracking progress, but
+// slows things down substantially.  Input parameter lambda governs L2
 // regularization.
 
-void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
-                     double lambda, double rmsprop_decay_rate)
+void neural_net::train_network(
+   int n_epochs, int mini_batch_size, double learning_rate,
+   double lambda, double rmsprop_decay_rate)
 {
    this->mini_batch_size = mini_batch_size;
    this->learning_rate = learning_rate;
@@ -419,14 +430,9 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
 
    for(int e = 0; e < n_epochs; e++)
    {
-      if(e%10 == 0)
-      {
-         cout << "Epoch e = " << e << " of " << n_epochs << endl;
-         cout << "   learning_rate = " << learning_rate 
-              << "  regularization lambda = " << lambda << endl;
-         cout << "   *this = " << *this << endl;
-//         outputfunc::enter_continue_char();
-      }
+      cout << "Starting epoch e = " << e << " of " << n_epochs << endl;      
+//      cout << "   learning_rate = " << learning_rate 
+//           << "  regularization lambda = " << lambda << endl;
       
       vector<DATA_PAIR> shuffled_training_data = 
          randomly_shuffle_training_data();
@@ -436,10 +442,25 @@ void neural_net::sgd(int n_epochs, int mini_batch_size, double learning_rate,
       for(unsigned int b = 0; b < mini_batches.size(); b++)
       {
          e_effective.push_back(e + double(b) / mini_batches.size());
-         avg_minibatch_loss.push_back(update_nn_params(mini_batches[b]));
-      } // loop over index b labeling mini batches
+//         cout << "b = " << b << " of " << mini_batches.size() 
+//              << " effective epoch = " << e_effective.back()
+//              << endl;
+         double curr_minibatch_loss = update_nn_params(mini_batches[b]);
+         avg_minibatch_loss.push_back(curr_minibatch_loss);
 
-      test_accuracy_history.push_back(evaluate_model_on_test_set());
+         if(b%1000 == 0)
+         {
+            training_accuracy_history.push_back(
+               evaluate_model_on_training_set());
+            test_accuracy_history.push_back(evaluate_model_on_test_set());
+            cout << "Epoch e = " << e_effective.back() 
+                 << " of " << n_epochs << endl;
+            cout << "   Correct prediction fracs: " << endl;
+            cout << "   test samples = " << test_accuracy_history.back() 
+                 << " training samples = " << training_accuracy_history.back()
+                 << endl;
+         }
+      } // loop over index b labeling mini batches
 
    } // loop over index e labeling training epochs
 }

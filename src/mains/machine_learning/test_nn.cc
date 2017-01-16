@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TEST_NN
 // ==========================================================================
-// Last updated on 10/15/16; 10/16/16; 10/17/16; 12/27/16
+// Last updated on 10/16/16; 10/17/16; 12/27/16; 1/15/17
 // ==========================================================================
 
 #include <stdint.h>
@@ -44,7 +44,7 @@ int main (int argc, char* argv[])
    int Din = 2;   	// Number of input layer nodes
    int H1 = 10;		// Number of first hidden layer nodes
    int H2 = 10;
-   int H3 = 4;
+   int H3 = 4;<
    int Dout = 2;   	// Number of output layer nodes
 
    vector<int> layer_dims;
@@ -81,10 +81,10 @@ int main (int argc, char* argv[])
    int n_epochs = 100;
    double learning_rate = 0.01;
 
-   double lambda = 0.001;
+   double lambda = 0.001;  // L2 regularization coefficient
    double rmsprop_decay_rate = 0.95;
-   NN.sgd(n_epochs, mini_batch_size, learning_rate, lambda, 
-          rmsprop_decay_rate);
+   NN.train_network(
+      n_epochs, mini_batch_size, learning_rate, lambda, rmsprop_decay_rate);
    NN.plot_loss_history();
    NN.plot_accuracies_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
