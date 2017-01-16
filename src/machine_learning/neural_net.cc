@@ -5,6 +5,7 @@
 // ==========================================================================
 
 #include <iostream>
+#include "general/filefuncs.h"
 #include "filter/filterfuncs.h"
 #include "math/genvector.h"
 #include "machine_learning/machinelearningfuncs.h"
@@ -42,6 +43,9 @@ void neural_net::initialize_member_objects(
       delta.push_back(curr_delta);
    }
    n_classes = layer_dims.back();
+
+   output_subdir = "./nn_outputs/";
+   filefunc::dircreate(output_subdir);
 }		       
 
 void neural_net::allocate_member_objects()
@@ -462,15 +466,36 @@ void neural_net::train_network(
          }
       } // loop over index b labeling mini batches
 
+      plot_loss_history();
+      plot_accuracies_history();
+
    } // loop over index e labeling training epochs
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of averaged minibatch loss versus epoch.
+// Generate metafile plot of averaged minibatch loss versus training epoch.
 
 void neural_net::plot_loss_history()
 {
+   metafile curr_metafile;
+   string meta_filename=output_subdir + "avg_minibatch_loss";
+   string title="Loss vs RMSprop model training";
+   string subtitle=
+      "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
+      "; Weight decay="+stringfunc::number_to_string(lambda,3)+
+      "; batch size="+stringfunc::number_to_string(mini_batch_size);
+   string x_label="Epoch";
+   string y_label="Averaged minibatch loss";
+   double min_loss = mathfunc::minimal_value(avg_minibatch_loss);
+   double max_loss = mathfunc::maximal_value(avg_minibatch_loss);
    int n_epochs = e_effective.back();
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, n_epochs, min_loss, max_loss);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+   curr_metafile.write_curve(e_effective, avg_minibatch_loss, colorfunc::red);
 
 // Temporally smooth noisy loss values:
 
@@ -487,27 +512,6 @@ void neural_net::plot_loss_history()
       avg_minibatch_loss, h, smoothed_minibatch_loss, 
       wrap_around_input_values);
 
-   metafile curr_metafile;
-   string meta_filename="avg_minibatch_loss";
-   string title="Loss vs RMSprop model training";
-   string subtitle=
-      "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
-      "; Weight decay="+stringfunc::number_to_string(lambda,3)+
-      "; batch size="+stringfunc::number_to_string(mini_batch_size);
-   string x_label="Epoch";
-   string y_label="Averaged minibatch loss";
-   double min_loss = 0;
-   double max_loss = 1;
-
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, n_epochs, min_loss, max_loss);
-   curr_metafile.set_subtitle(subtitle);
-   curr_metafile.set_ytic(0.2);
-   curr_metafile.set_ysubtic(0.1);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-   curr_metafile.write_curve(e_effective, avg_minibatch_loss, colorfunc::red);
-   
    curr_metafile.set_thickness(3);
    curr_metafile.write_curve(e_effective, smoothed_minibatch_loss,
                              colorfunc::blue);
@@ -534,8 +538,8 @@ void neural_net::plot_accuracies_history()
    }
 
    metafile curr_metafile;
-   string meta_filename="accuracies";
-   string title="Model accuracy vs RMSprop model training";
+   string meta_filename=output_subdir + "accuracies";
+   string title="Training and testing samples accuracy vs training epoch";
    string subtitle=
       "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
       "; Weight decay="+stringfunc::number_to_string(lambda,3)+
@@ -554,6 +558,8 @@ void neural_net::plot_accuracies_history()
    curr_metafile.write_header();
 
    curr_metafile.write_curve(epochs, test_accuracy_history, colorfunc::red);
+   curr_metafile.write_curve(epochs, training_accuracy_history, 
+                             colorfunc::blue);
 
    curr_metafile.closemetafile();
    string banner="Exported metafile "+meta_filename+".meta";

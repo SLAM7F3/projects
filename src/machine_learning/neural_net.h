@@ -42,6 +42,7 @@ class neural_net
    int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
+   void set_output_subdir(std::string subdir);
 
    void import_training_data(const std::vector<DATA_PAIR>& data);
    void import_test_data(const std::vector<DATA_PAIR>& data);
@@ -101,6 +102,7 @@ class neural_net
    std::vector<double> e_effective, avg_minibatch_loss;
    std::vector<double> training_accuracy_history;
    std::vector<double> test_accuracy_history;
+   std::string output_subdir;
 
 // Store indices for test samples whose class if incorrectly labeled
 // by the trained model:
@@ -141,6 +143,11 @@ inline genmatrix* neural_net::get_weights(int l) const
 inline std::vector<int>& neural_net::get_incorrect_classifications() 
 {
    return incorrect_classifications;
+}
+
+inline void neural_net::set_output_subdir(std::string subdir)
+{
+   output_subdir = subdir;
 }
 
 
