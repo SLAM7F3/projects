@@ -92,14 +92,6 @@ base_learning_rate = 1E-4
 Bad loss behavior
 
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
-
----------------------
-Titan 1:
----------------------
-
 18.  T1
 H1 = 64, H2 = 32, H3 = 0
 lambda = 1E-3
@@ -119,12 +111,6 @@ base_learning_rate = 1E-6
 H1 = 64, H2 = 32, H3 = 0
 lambda = 0
 base_learning_rate = 3E-5
-
-
-
----------------------
-Titan 3:
----------------------
 
 21.  T3
 H1 = 32, H2 = 32, H3 = 0
@@ -146,10 +132,6 @@ H1 = 64, H2 = 64, H3 = 0
 lambda = 0
 base_learning_rate = 3E-5
 
----------------------
-Thinkmate
----------------------
-
 24.  TM
 H1 = 32, H2 = 32, H3 = 0
 lambda = 0
@@ -164,6 +146,58 @@ base_learning_rate = 1E-4
 H1 = 32, H2 = 32, H3 = 0
 lambda = 0
 base_learning_rate = 1E-5
+
+30.  T1
+max move rel to end = 1
+H1 = H2 = 32
+lambda = 0.01
+base_learning_rate = 1E-
+
+31.  T1
+max move rel to end = 1
+H1 = H2 = 32
+lambda = 0.001
+base_learning_rate = 3E-5
+
+32.  T1
+max move rel to end = 1
+H1 = H2 = 32
+lambda = 0.003
+base_learning_rate = 3E-5
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+
+33.  T1
+max move rel to end = 1
+H1 = H2 = 32
+lambda = 0.005
+base_learning_rate = 1E-6
+
+34.  T1
+max move rel to end = 1
+H1 = 64; H2 = 32
+lambda = 0.005
+base_learning_rate = 1E-6
+
+35.  T1
+max move rel to end = 1
+H1 = 32; H2 = 32; H3 = 32
+lambda = 0.005
+base_learning_rate = 1E-6
+
+---------------------
+Titan 3:
+---------------------
+
+---------------------
+Thinkmate
+---------------------
 
 ---------------------
 m6700
