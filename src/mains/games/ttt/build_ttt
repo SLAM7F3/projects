@@ -1,5 +1,6 @@
 ~/bin/MAKE program=human_minimax
 ~/bin/MAKE program=qtrain_ttt_network
 ~/bin/MAKE program=test_ttt_network
+~/bin/MAKE program=train_pi_sigma
 ~/bin/MAKE program=train_ttt_network
 

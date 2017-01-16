@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TEST_NN
 // ==========================================================================
-// Last updated on 10/16/16; 10/17/16; 12/27/16; 1/15/17
+// Last updated on 10/17/16; 12/27/16; 1/15/17; 1/16/17
 // ==========================================================================
 
 #include <stdint.h>
@@ -44,7 +44,7 @@ int main (int argc, char* argv[])
    int Din = 2;   	// Number of input layer nodes
    int H1 = 10;		// Number of first hidden layer nodes
    int H2 = 10;
-   int H3 = 4;<
+   int H3 = 4;
    int Dout = 2;   	// Number of output layer nodes
 
    vector<int> layer_dims;
@@ -53,12 +53,18 @@ int main (int argc, char* argv[])
    layer_dims.push_back(H2);
    layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
-   neural_net NN(layer_dims);
-   
+
+   int mini_batch_size = 20;
+   double lambda = 1E-3;  // L2 regularization coefficient
+   double rmsprop_decay_rate = 0.95;
+
+   neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
+   NN.set_base_learning_rate(1E-2);
+
    int n_training_samples = 2000;
 //   int n_training_samples = 200;
    int n_testing_samples = 0.1 * n_training_samples;
-   int mini_batch_size = 20;
+
 
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> testing_samples;
@@ -79,12 +85,7 @@ int main (int argc, char* argv[])
    NN.import_test_data(testing_samples);
 
    int n_epochs = 100;
-   double learning_rate = 0.01;
-
-   double lambda = 0.001;  // L2 regularization coefficient
-   double rmsprop_decay_rate = 0.95;
-   NN.train_network(
-      n_epochs, mini_batch_size, learning_rate, lambda, rmsprop_decay_rate);
+   NN.train_network(n_epochs);
    NN.plot_loss_history();
    NN.plot_accuracies_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
@@ -133,7 +134,7 @@ int main (int argc, char* argv[])
    double max_val = 2;
 */
 
-   string meta_filename="spiral";
+   string meta_filename = NN.get_output_subdir() + "spiral";
    string title="Toy spiral data classification";
    string x_label="X";
    string y_label="Y";
@@ -151,6 +152,8 @@ int main (int argc, char* argv[])
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
    string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+   unix_cmd="/bin/rm *.ps";
    sysfunc::unix_command(unix_cmd);
 
    cout << "training_samples.size = " << training_samples.size() << endl;

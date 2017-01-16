@@ -565,7 +565,6 @@ int reinforce::count_weights()
    {
       for(int l = 0; l < n_layers - 1; l++)
       {
-//         n_weights += weights[l]->get_mdim() * weights[l]->get_ndim();
          n_weights += layer_dims[l] * layer_dims[l+1];
       }
    }
@@ -573,6 +572,7 @@ int reinforce::count_weights()
    return n_weights;
 }
 
+// ---------------------------------------------------------------------
 void reinforce::print_biases()
 {
    if(!include_bias_terms) return;

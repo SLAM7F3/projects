@@ -1,7 +1,7 @@
 // ==========================================================================
 // environment class member function definitions
 // ==========================================================================
-// Last modified on 12/8/16; 12/10/16; 12/19/16; 12/30/16
+// Last modified on 12/10/16; 12/19/16; 12/30/16; 1/16/17
 // ==========================================================================
 
 #include "machine_learning/environment.h"
@@ -138,7 +138,7 @@ genvector* environment::get_curr_state()
    }
    else if(world_type == TTT)
    {
-      curr_state_ptr = tictac3d_ptr->get_board_state_ptr();
+      curr_state_ptr = tictac3d_ptr->update_board_state_ptr();
    }
    return curr_state_ptr;
 }
@@ -234,7 +234,7 @@ genvector* environment::compute_next_state(int a, int player_value)
    else if (world_type == TTT)
    {
       tictac3d_ptr->set_player_move(a, player_value);
-      next_state_ptr = tictac3d_ptr->get_board_state_ptr();
+      next_state_ptr = tictac3d_ptr->update_board_state_ptr();
    }
    return next_state_ptr;
 }

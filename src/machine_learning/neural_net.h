@@ -19,6 +19,14 @@ class neural_net
    
   public:
 
+   typedef enum{
+      SGD = 0,
+      RMSPROP = 1,
+      MOMENTUM = 2,
+      NESTEROV = 3,
+      ADAM = 4
+   } solver_t;
+
    typedef std::pair<genvector*, int> DATA_PAIR;
 
 // First genvector holds input training/testing data vector
@@ -30,7 +38,10 @@ class neural_net
 
 // Initialization, constructor and destructor functions:
 
-   neural_net(const std::vector<int>& n_nodes_per_layer);
+   neural_net(
+      int mini_batch_size, double lambda, double rmsprop_decay_rate, 
+      const std::vector<int>& n_nodes_per_layer);
+
    neural_net(const neural_net& NN);
    ~neural_net();
 //   neural_net operator= (const neural_net& NN);
@@ -39,10 +50,17 @@ class neural_net
 
 // Set and get member functions
 
+   void set_expt_number(int n);
+   int get_expt_number() const;
    int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
    void set_output_subdir(std::string subdir);
+   std::string get_output_subdir() const;
+   void set_base_learning_rate(double rate);
+   double get_base_learning_rate() const;
+   void push_back_learning_rate(double rate);
+   double get_learning_rate() const;
 
    void import_training_data(const std::vector<DATA_PAIR>& data);
    void import_test_data(const std::vector<DATA_PAIR>& data);
@@ -52,15 +70,16 @@ class neural_net
          const std::vector<DATA_PAIR>& shuffled_training_data);
    void print_data_pair(int t, const DATA_PAIR& curr_data);
 
+// Network training methods:
+
    void feedforward(genvector* a_input);
    genvector* get_softmax_class_probs() const;
    double get_sample_loss(const DATA_PAIR& curr_data);
    double L2_loss_contribution();
-   void train_network(int n_epochs, int mini_batch_size, double learning_rate,
-                      double lambda, double rmsprop_decay_rate);
+   void decrease_learning_rate();
+   void train_network(int n_epochs);
 
-   void plot_loss_history();
-   void plot_accuracies_history();
+// Network evaluation methods:
 
    double evaluate_model_on_data_set(
       const std::vector<DATA_PAIR>& sample_data);
@@ -68,10 +87,34 @@ class neural_net
    double evaluate_model_on_test_set();
    std::vector<int>& get_incorrect_classifications();
 
+// Monitoring network training methods:
+
+   void summarize_parameters(std::string params_filename);
+   void compute_bias_distributions();
+   void compute_weight_distributions();
+   void store_quasirandom_weight_values();
+
+   std::string init_subtitle();
+   void generate_metafile_plot(
+      const std::vector<double>& values,
+      std::string metafile_basename, 
+      std::string title, std::string y_label, std::string extrainfo, 
+      bool plot_smoothed_values_flag, bool zero_min_value_flag);
+
+   void plot_loss_history();
+   void plot_accuracies_history();
+   void plot_bias_distributions(std::string extrainfo);
+   void plot_weight_distributions(std::string extrainfo);
+   void plot_quasirandom_weight_values(std::string extrainfo);
+   void generate_summary_plots(std::string extrainfo);
+
   private: 
 
-   unsigned int n_layers, n_training_samples, n_test_samples;
-   unsigned int n_classes;
+   int n_layers, n_training_samples, n_test_samples;
+   int n_classes;
+   int expt_number;
+   int solver_type;
+   int n_weights;
    std::vector<int> layer_dims;
 
    std::vector<genvector*> biases, nabla_biases, delta_nabla_biases;
@@ -95,11 +138,13 @@ class neural_net
    std::vector<genvector*> delta;
 
    int mini_batch_size;
-   double learning_rate;
-   double lambda; // L2-regularization parameter
+   double base_learning_rate;
+   std::vector<double> learning_rate;
+   double lambda; // L2-regularization coefficient
    double rmsprop_decay_rate;
+   double rmsprop_denom_const;
 
-   std::vector<double> e_effective, avg_minibatch_loss;
+   std::vector<double> epoch_history, avg_minibatch_loss;
    std::vector<double> training_accuracy_history;
    std::vector<double> test_accuracy_history;
    std::string output_subdir;
@@ -109,6 +154,22 @@ class neural_net
 
    std::vector<int> incorrect_classifications;
 
+   std::vector<std::vector<double> > weight_01, weight_05, weight_10;
+   std::vector<std::vector<double> > weight_25, weight_35, weight_50;
+   std::vector<std::vector<double> > weight_65, weight_75, weight_90;
+   std::vector<std::vector<double> > weight_95, weight_99;
+   std::vector<std::vector<double> > bias_01, bias_05, bias_10, bias_25;
+   std::vector<std::vector<double>  >bias_35, bias_50, bias_65, bias_75;
+   std::vector<std::vector<double> > bias_90, bias_95, bias_99;
+
+// Store histories for 9 "quasi-random" weights for each layer within
+// following vectors of vectors:
+
+   std::vector<std::vector<double> > weight_1, weight_2, weight_3;
+   std::vector<std::vector<double> > weight_4, weight_5, weight_6;
+   std::vector<std::vector<double> > weight_7, weight_8, weight_9;
+
+   int count_weights();
    double update_nn_params(std::vector<DATA_PAIR>& mini_batch);
    void clear_delta_nablas();
    void backpropagate(const DATA_PAIR& curr_data_pair);
@@ -124,6 +185,16 @@ class neural_net
 // ==========================================================================
 
 // Set and get member functions:
+
+inline void neural_net::set_expt_number(int n)
+{
+   expt_number = n;
+}
+
+inline int neural_net::get_expt_number() const
+{
+   return expt_number;
+}
 
 inline int neural_net::get_layer_dim(int l) const
 {
@@ -148,6 +219,32 @@ inline std::vector<int>& neural_net::get_incorrect_classifications()
 inline void neural_net::set_output_subdir(std::string subdir)
 {
    output_subdir = subdir;
+}
+
+inline std::string neural_net::get_output_subdir() const
+{
+   return output_subdir;
+}
+
+inline void neural_net::set_base_learning_rate(double rate)
+{
+   base_learning_rate = rate;
+   learning_rate.push_back(base_learning_rate);
+}
+
+inline double neural_net::get_base_learning_rate() const
+{
+   return base_learning_rate;
+}
+
+inline void neural_net::push_back_learning_rate(double rate)
+{
+   learning_rate.push_back(rate);
+}
+
+inline double neural_net::get_learning_rate() const
+{
+   return learning_rate.back();
 }
 
 

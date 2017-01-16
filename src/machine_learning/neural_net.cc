@@ -12,15 +12,18 @@
 #include "plot/metafile.h"
 #include "machine_learning/neural_net.h"
 #include "numrec/nrfuncs.h"
+#include "math/prob_distribution.h"
 #include "general/stringfuncs.h"
 #include "general/sysfuncs.h"
+#include "time/timefuncs.h"
 
 using std::cin;
 using std::cout;
 using std::endl;
 using std::map;
-using std::pair;
+using std::ofstream;
 using std::ostream;
+using std::pair;
 using std::string;
 using std::vector;
 
@@ -31,8 +34,9 @@ using std::vector;
 void neural_net::initialize_member_objects(
    const vector<int>& n_nodes_per_layer)
 {
+   n_weights = 0;
    n_layers = n_nodes_per_layer.size();
-   for(unsigned int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
       genvector *curr_z = new genvector(layer_dims.back());
@@ -41,9 +45,34 @@ void neural_net::initialize_member_objects(
       z.push_back(curr_z);
       a.push_back(curr_a);
       delta.push_back(curr_delta);
-   }
+
+      vector<double> dummy_dist;
+      weight_01.push_back(dummy_dist);
+      weight_05.push_back(dummy_dist);
+      weight_10.push_back(dummy_dist);
+      weight_25.push_back(dummy_dist);
+      weight_35.push_back(dummy_dist);
+      weight_50.push_back(dummy_dist);
+      weight_65.push_back(dummy_dist);
+      weight_75.push_back(dummy_dist);
+      weight_90.push_back(dummy_dist);
+      weight_95.push_back(dummy_dist);
+      weight_99.push_back(dummy_dist);
+
+      weight_1.push_back(dummy_dist);
+      weight_2.push_back(dummy_dist);
+      weight_3.push_back(dummy_dist);
+      weight_4.push_back(dummy_dist);
+      weight_5.push_back(dummy_dist);
+      weight_6.push_back(dummy_dist);
+      weight_7.push_back(dummy_dist);
+      weight_8.push_back(dummy_dist);
+      weight_9.push_back(dummy_dist);
+   } // loop over index l labeling neural network layers
    n_classes = layer_dims.back();
 
+   rmsprop_denom_const = 1E-5;
+   solver_type = RMSPROP;
    output_subdir = "./nn_outputs/";
    filefunc::dircreate(output_subdir);
 }		       
@@ -52,18 +81,25 @@ void neural_net::allocate_member_objects()
 {
 }		       
 
+// ---------------------------------------------------------------------
 // Input STL vector sizes contains the number of neurons in the
 // respective layers of the network.  For example, if sizes == [2, 3,
 // 1] then the network will have 3 layers with the first layer
 // containing 2 neurons, the second layer 3 neurons, and the third
 // layer 1 neuron.
 
-neural_net::neural_net(const vector<int>& n_nodes_per_layer)
+neural_net::neural_net(
+   int mini_batch_size, double lambda, double rmsprop_decay_rate, 
+   const vector<int>& n_nodes_per_layer)
 {
+   this->mini_batch_size = mini_batch_size;
+   this->lambda = lambda;
+   this->rmsprop_decay_rate = rmsprop_decay_rate;
+
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 
-   for(unsigned int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_layers; l++)
    {
       genvector *curr_biases = new genvector(layer_dims[l]);
       biases.push_back(curr_biases);
@@ -131,7 +167,7 @@ neural_net::neural_net(const neural_net& NN)
 // ---------------------------------------------------------------------
 neural_net::~neural_net()
 {
-   for(unsigned int l = 0; l < z.size(); l++)
+   for(int l = 0; l < n_layers; l++)
    {
       delete z[l];
       delete a[l];
@@ -161,7 +197,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
 {
    outstream << endl;
    outstream << "n_layers = " << NN.n_layers << endl << endl;
-   for(unsigned int l = 0; l < NN.n_layers; l++)
+   for(int l = 0; l < NN.n_layers; l++)
    {
       cout << "---------------------------" << endl;
       if(l == 0)
@@ -199,6 +235,9 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
 }
 
 // ==========================================================================
+// Network training methods
+// ==========================================================================
+
 // Member function feedforward returns the output of the network given
 // an input set of values.  
 
@@ -207,7 +246,7 @@ void neural_net::feedforward(genvector* a_input)
    a[0] = a_input;
 //    cout << "inside feedforward, a_input = " << *a_input << endl;
 
-   for(unsigned int l = 0; l < n_layers-1; l++)
+   for(int l = 0; l < n_layers-1; l++)
    {
       genmatrix* curr_weights = weights[l];
       genvector* curr_biases = biases[l+1];
@@ -267,7 +306,7 @@ double neural_net::L2_loss_contribution()
    if(lambda > TINY)
    {
       double sqrd_weight_sum = 0;
-      for(unsigned int l = 0; l < n_layers - 1; l++)
+      for(int l = 0; l < n_layers - 1; l++)
       {
          for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
          {
@@ -296,7 +335,7 @@ double neural_net::evaluate_model_on_data_set(
 
       double max_prob = NEGATIVEINFINITY;
       int predicted_class = -1;
-      for(unsigned int i = 0; i < n_classes; i++)
+      for(int i = 0; i < n_classes; i++)
       {
          if(class_probs->get(i) > max_prob)
          {
@@ -335,7 +374,7 @@ double neural_net::evaluate_model_on_test_set()
 void neural_net::import_training_data(const vector<DATA_PAIR>& data)
 {
    n_training_samples = data.size();
-   for(unsigned int t = 0; t < n_training_samples; t++)
+   for(int t = 0; t < n_training_samples; t++)
    {
       DATA_PAIR curr_data;
       curr_data.first = data[t].first;
@@ -350,7 +389,7 @@ void neural_net::import_training_data(const vector<DATA_PAIR>& data)
 void neural_net::import_test_data(const vector<DATA_PAIR>& data)
 {
    n_test_samples = data.size();
-   for(unsigned int t = 0; t < n_test_samples; t++)
+   for(int t = 0; t < n_test_samples; t++)
    {
       DATA_PAIR curr_data;
       curr_data.first = data[t].first;
@@ -372,7 +411,7 @@ vector<neural_net::DATA_PAIR> neural_net::randomly_shuffle_training_data()
 {
    vector<DATA_PAIR> shuffled_training_data;
    vector<int> ran_seq = mathfunc::random_sequence(n_training_samples);
-   for(unsigned int i = 0; i < n_training_samples; i++)
+   for(int i = 0; i < n_training_samples; i++)
    {
       shuffled_training_data.push_back(training_data[ran_seq[i]]);
 //      print_data_pair(i, shuffled_training_data.back());
@@ -385,7 +424,7 @@ vector< vector<neural_net::DATA_PAIR> >
 neural_net::generate_training_mini_batches(
    const vector<DATA_PAIR>& shuffled_training_data)
 {
-   unsigned int counter = 0;
+   int counter = 0;
    int n_mini_batches = n_training_samples / mini_batch_size;
    vector< vector<DATA_PAIR> > mini_batches;
    
@@ -413,6 +452,21 @@ neural_net::generate_training_mini_batches(
 }
 
 // ---------------------------------------------------------------------
+// Member function decrease_learning_rate decreases the learning rate
+// down to some minimal floor value.
+
+void neural_net::decrease_learning_rate()
+{
+   double curr_learning_rate = get_learning_rate();
+   double min_learning_rate = 0.1 * get_base_learning_rate();
+
+   if(curr_learning_rate > min_learning_rate)
+   {
+      push_back_learning_rate(0.8 * curr_learning_rate);
+   }
+}
+
+// ---------------------------------------------------------------------
 // Member function train_network() trains the neural network using
 // mini-batch stochastic gradient descent.  The training data is a
 // list of "(x, y)" tuples representing the training inputs and the
@@ -423,20 +477,11 @@ neural_net::generate_training_mini_batches(
 // slows things down substantially.  Input parameter lambda governs L2
 // regularization.
 
-void neural_net::train_network(
-   int n_epochs, int mini_batch_size, double learning_rate,
-   double lambda, double rmsprop_decay_rate)
+void neural_net::train_network(int n_epochs)
 {
-   this->mini_batch_size = mini_batch_size;
-   this->learning_rate = learning_rate;
-   this->lambda = lambda;
-   this->rmsprop_decay_rate = rmsprop_decay_rate;
-
    for(int e = 0; e < n_epochs; e++)
    {
       cout << "Starting epoch e = " << e << " of " << n_epochs << endl;      
-//      cout << "   learning_rate = " << learning_rate 
-//           << "  regularization lambda = " << lambda << endl;
       
       vector<DATA_PAIR> shuffled_training_data = 
          randomly_shuffle_training_data();
@@ -445,9 +490,9 @@ void neural_net::train_network(
 
       for(unsigned int b = 0; b < mini_batches.size(); b++)
       {
-         e_effective.push_back(e + double(b) / mini_batches.size());
+         epoch_history.push_back(e + double(b) / mini_batches.size());
 //         cout << "b = " << b << " of " << mini_batches.size() 
-//              << " effective epoch = " << e_effective.back()
+//              << " effective epoch = " << epoch_history.back()
 //              << endl;
          double curr_minibatch_loss = update_nn_params(mini_batches[b]);
          avg_minibatch_loss.push_back(curr_minibatch_loss);
@@ -457,7 +502,7 @@ void neural_net::train_network(
             training_accuracy_history.push_back(
                evaluate_model_on_training_set());
             test_accuracy_history.push_back(evaluate_model_on_test_set());
-            cout << "Epoch e = " << e_effective.back() 
+            cout << "Epoch e = " << epoch_history.back() 
                  << " of " << n_epochs << endl;
             cout << "   Correct prediction fracs: " << endl;
             cout << "   test samples = " << test_accuracy_history.back() 
@@ -466,107 +511,8 @@ void neural_net::train_network(
          }
       } // loop over index b labeling mini batches
 
-      plot_loss_history();
-      plot_accuracies_history();
 
    } // loop over index e labeling training epochs
-}
-
-// ---------------------------------------------------------------------
-// Generate metafile plot of averaged minibatch loss versus training epoch.
-
-void neural_net::plot_loss_history()
-{
-   metafile curr_metafile;
-   string meta_filename=output_subdir + "avg_minibatch_loss";
-   string title="Loss vs RMSprop model training";
-   string subtitle=
-      "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
-      "; Weight decay="+stringfunc::number_to_string(lambda,3)+
-      "; batch size="+stringfunc::number_to_string(mini_batch_size);
-   string x_label="Epoch";
-   string y_label="Averaged minibatch loss";
-   double min_loss = mathfunc::minimal_value(avg_minibatch_loss);
-   double max_loss = mathfunc::maximal_value(avg_minibatch_loss);
-   int n_epochs = e_effective.back();
-
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, n_epochs, min_loss, max_loss);
-   curr_metafile.set_subtitle(subtitle);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-   curr_metafile.write_curve(e_effective, avg_minibatch_loss, colorfunc::red);
-
-// Temporally smooth noisy loss values:
-
-   double sigma = 10;
-   double dx = 1;
-   int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx);
-   vector<double> h;
-   h.reserve(gaussian_size);
-   filterfunc::gaussian_filter(dx, sigma, h);
-
-   bool wrap_around_input_values = false;
-   vector<double> smoothed_minibatch_loss;
-   filterfunc::brute_force_filter(
-      avg_minibatch_loss, h, smoothed_minibatch_loss, 
-      wrap_around_input_values);
-
-   curr_metafile.set_thickness(3);
-   curr_metafile.write_curve(e_effective, smoothed_minibatch_loss,
-                             colorfunc::blue);
-
-   curr_metafile.closemetafile();
-   string banner="Exported metafile "+meta_filename+".meta";
-   outputfunc::write_banner(banner);
-
-   string unix_cmd="meta_to_jpeg "+meta_filename;
-   sysfunc::unix_command(unix_cmd);
-}
-
-// ---------------------------------------------------------------------
-// Generate metafile plot of training and testing set accuracies vs
-// epoch.
-
-void neural_net::plot_accuracies_history()
-{
-   int n_epochs = test_accuracy_history.size();
-   vector<double> epochs;
-   for(int e = 0; e < n_epochs; e++)
-   {
-      epochs.push_back(e);
-   }
-
-   metafile curr_metafile;
-   string meta_filename=output_subdir + "accuracies";
-   string title="Training and testing samples accuracy vs training epoch";
-   string subtitle=
-      "Base learning rate="+stringfunc::number_to_string(learning_rate,3)+
-      "; Weight decay="+stringfunc::number_to_string(lambda,3)+
-      "; batch size="+stringfunc::number_to_string(mini_batch_size);
-   string x_label="Epoch";
-   string y_label="Model accuracy";
-   double min_loss = 0;
-   double max_loss = 1;
-
-   curr_metafile.set_parameters(
-      meta_filename, title, x_label, y_label, 0, n_epochs, min_loss, max_loss);
-   curr_metafile.set_subtitle(subtitle);
-   curr_metafile.set_ytic(0.2);
-   curr_metafile.set_ysubtic(0.1);
-   curr_metafile.openmetafile();
-   curr_metafile.write_header();
-
-   curr_metafile.write_curve(epochs, test_accuracy_history, colorfunc::red);
-   curr_metafile.write_curve(epochs, training_accuracy_history, 
-                             colorfunc::blue);
-
-   curr_metafile.closemetafile();
-   string banner="Exported metafile "+meta_filename+".meta";
-   outputfunc::write_banner(banner);
-
-   string unix_cmd="meta_to_jpeg "+meta_filename;
-   sysfunc::unix_command(unix_cmd);
 }
 
 // ---------------------------------------------------------------------
@@ -582,11 +528,11 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 // Initialize cumulative (over mini batch) weight and bias gradients
 // to zero:
 
-   for(unsigned int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_layers; l++)
    {
       nabla_biases[l]->clear_values();
    }
-   for(unsigned int l = 0; l < n_layers - 1; l++)
+   for(int l = 0; l < n_layers - 1; l++)
    {
       nabla_weights[l]->clear_values();
    }
@@ -601,11 +547,11 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
 // Accumulate weights and bias gradients for each network layer:
 
-      for(unsigned int l = 0; l < n_layers; l++)
+      for(int l = 0; l < n_layers; l++)
       {
          *nabla_biases[l] += *delta_nabla_biases[l] / mini_batch_size;
       }
-      for(unsigned int l = 0; l < n_layers - 1; l++)
+      for(int l = 0; l < n_layers - 1; l++)
       {
          *nabla_weights[l] += *delta_nabla_weights[l] / mini_batch_size;
          *rmsprop_weights_cache[l] = 
@@ -618,25 +564,28 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 // Update weights and biases for eacy network layer by their nabla
 // values averaged over the current mini-batch:
 
-   for(unsigned int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_layers; l++)
    {
-      *biases[l] -= learning_rate * (*nabla_biases[l]);
+      *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
 
-   const double epsilon = 1E-5;
-   for(unsigned int l = 0; l < n_layers - 1; l++)
+
+   for(int l = 0; l < n_layers - 1; l++)
    {
       genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
-      denom.hadamard_sum(epsilon);
+      denom.hadamard_sum(rmsprop_denom_const);
       
-// RMSprop
-      nabla_weights[l]->hadamard_division(denom);
-      *weights[l] -= learning_rate * (*nabla_weights[l]);
-
-// Vanilla SGD
-//      *weights[l] -= learning_rate * (*nabla_weights[l]);
-
+      if(solver_type == RMSPROP)
+      {
+         nabla_weights[l]->hadamard_division(denom);
+         *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
+      }
+      else if (solver_type == SGD)
+      {
+         *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
+      }
+      
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
    }
 
@@ -653,11 +602,11 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
 void neural_net::clear_delta_nablas()
 {
-   for(unsigned int l = 0; l < n_layers; l++)
+   for(int l = 0; l < n_layers; l++)
    {
       delta_nabla_biases[l]->clear_values();
    }
-   for(unsigned int l = 0; l < n_layers - 1; l++)
+   for(int l = 0; l < n_layers - 1; l++)
    {
       delta_nabla_weights[l]->clear_values();
    }
@@ -810,4 +759,651 @@ void neural_net::numerically_check_derivs(const DATA_PAIR& curr_data_pair)
       }
          
    } // loop over index l labeling network layers
+}
+
+
+// ==========================================================================
+// Monitoring network training methods
+// ==========================================================================
+
+// Member function count_weights() sums up the total number of weights
+// among all network layers assuming the network is fully connected.
+
+int neural_net::count_weights()
+{
+   if(n_weights == 0)
+   {
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         n_weights += layer_dims[l] * layer_dims[l+1];
+      }
+   }
+   return n_weights;
+}
+
+// ---------------------------------------------------------------------
+// Member function summarize_parameters() exports most parameters and
+// hyperparameters to a specified text file for book-keeping purposes.
+
+void neural_net::summarize_parameters(string params_filename)
+{
+   ofstream params_stream;
+   filefunc::openfile(params_filename, params_stream);
+
+   params_stream << "Experiment " << expt_number << endl;
+   params_stream << timefunc::getcurrdate() << endl;
+   params_stream << "Neural net params:" << endl;
+   params_stream << "   n_layers = " << n_layers << endl;
+   for(int l = 0; l < n_layers; l++)
+   {
+      params_stream << "   layer = " << l << " n_nodes = " 
+                    << layer_dims[l] << endl;
+   }
+   params_stream << "   n_weights = " << count_weights() << " (FC)" 
+                 << endl;
+ 
+   params_stream << "base_learning_rate = " << base_learning_rate 
+                 << "; batch_size = " << mini_batch_size
+                 << endl;
+
+   params_stream << "solver type = RMSPROP" << endl;
+   params_stream << "   rmsprop_decay_rate = " << rmsprop_decay_rate
+                 << endl;
+   params_stream << "   rmsprop_denom_const = " << rmsprop_denom_const
+                 << endl;
+   params_stream << "L2 regularization lambda coeff = " << lambda << endl;
+   params_stream << "n_training_samples = " << n_training_samples << endl;
+   params_stream << "n_test_samples = " << n_test_samples << endl;
+   
+   filefunc::closefile(params_filename, params_stream);
+}
+
+// ---------------------------------------------------------------------
+void neural_net::compute_bias_distributions()
+{
+   for(int l = 0; l < n_layers; l++)
+   {
+      vector<double> bias_values;
+      for(unsigned int r = 0; r < biases[l]->get_mdim(); r++)
+      {
+         bias_values.push_back(biases[l]->get(r));
+      }
+
+      double blo = mathfunc::minimal_value(bias_values);
+      double bhi = mathfunc::maximal_value(bias_values);
+      if(nearly_equal(blo,bhi))
+      {
+         bias_01[l].push_back(blo);
+         bias_05[l].push_back(blo);
+         bias_10[l].push_back(blo);
+         bias_25[l].push_back(blo);
+         bias_35[l].push_back(blo);
+         bias_50[l].push_back(blo);
+         bias_65[l].push_back(blo);
+         bias_75[l].push_back(blo);
+         bias_90[l].push_back(blo);
+         bias_95[l].push_back(blo);
+         bias_99[l].push_back(blo);
+      }
+      else
+      {
+         int nbins = 500;
+         prob_distribution prob_biases(nbins, blo, bhi, bias_values);
+         bias_01[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.01));
+         bias_05[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.05));
+         bias_10[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.10));
+         bias_25[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.25));
+         bias_35[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.35));
+         bias_50[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.50));
+         bias_65[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.65));
+         bias_75[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.75));
+         bias_90[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.90));
+         bias_95[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.95));
+         bias_99[l].push_back(prob_biases.find_x_corresponding_to_pcum(0.99));
+      }
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
+void neural_net::compute_weight_distributions()
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      vector<double> weight_values;
+      for(unsigned int r = 0; r < weights[l]->get_mdim(); r++)
+      {
+         for(unsigned int c = 0; c < weights[l]->get_ndim(); c++)
+         {
+            weight_values.push_back(weights[l]->get(r,c));
+         }
+      }
+      int nbins = 500;
+      double wlo = mathfunc::minimal_value(weight_values);
+      double whi = mathfunc::maximal_value(weight_values);
+      prob_distribution prob_weights(nbins, wlo, whi, weight_values);
+
+      weight_01[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.01));
+      weight_05[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.05));
+      weight_10[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.10));
+      weight_25[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.25));
+      weight_35[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.35));
+      weight_50[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.50));
+      weight_65[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.65));
+      weight_75[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.75));
+      weight_90[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.90));
+      weight_95[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.95));
+      weight_99[l].push_back(prob_weights.find_x_corresponding_to_pcum(0.99));
+      
+//      cout << "layer = " << l
+//           << " wlo = " << wlo
+//           << " w_05 = " << weight_05[l].back()
+//           << " w_25 = " << weight_25[l].back();
+//      cout << "   w_50 = " << weight_50[l].back()
+//           << " w_75 = " << weight_75[l].back()
+//           << " w_95 = " << weight_95[l].back()
+//           << " whi = " << whi
+//           << endl;
+   } // loop over index l labeling network layers
+}
+
+
+// ---------------------------------------------------------------------
+void neural_net::store_quasirandom_weight_values()
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      vector<double> weight_values;
+      int n_weights_for_layer = weights[l]->get_mdim() * 
+         weights[l]->get_ndim();
+      int weight_skip = n_weights_for_layer / 9;
+      for(unsigned int i = 1; i <= 9; i++)
+      {
+         int weight_index = i * weight_skip;
+         int r = weight_index / weights[l]->get_ndim();
+         int c = weight_index % weights[l]->get_ndim();
+         double curr_w = weights[l]->get(r,c);
+
+         if(i == 1)
+         {
+            weight_1[l].push_back(curr_w);
+         }
+         else if (i == 2)
+         {
+            weight_2[l].push_back(curr_w);
+         }
+         else if (i == 3)
+         {
+            weight_3[l].push_back(curr_w);
+         }
+         else if (i == 4)
+         {
+            weight_4[l].push_back(curr_w);
+         }
+         else if (i == 5)
+         {
+            weight_5[l].push_back(curr_w);
+         }
+         else if (i == 6)
+         {
+            weight_6[l].push_back(curr_w);
+         }
+         else if (i == 7)
+         {
+            weight_7[l].push_back(curr_w);
+         }
+         else if (i == 8)
+         {
+            weight_8[l].push_back(curr_w);
+         }
+         else if (i == 9)
+         {
+            weight_9[l].push_back(curr_w);
+         }
+      }
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
+string neural_net::init_subtitle()
+{
+   string subtitle=
+      "blr="+stringfunc::scinumber_to_string(base_learning_rate,2)+
+      "; lambda="+stringfunc::scinumber_to_string(lambda,2)+
+      "; batch size="+stringfunc::number_to_string(mini_batch_size)+
+      "; ";
+   if(solver_type == SGD)
+   {
+      subtitle += "SGD";
+   }
+   else if(solver_type == RMSPROP)
+   {
+      subtitle += "RMSPROP;";
+      subtitle += " decay="+stringfunc::scinumber_to_string(
+         rmsprop_decay_rate,2);
+   }
+   else if(solver_type == MOMENTUM)
+   {
+      subtitle += "MOMENTUM";
+   }
+   else if(solver_type == NESTEROV)
+   {
+      subtitle += "NESTEROV";
+   }
+   else if(solver_type == ADAM)
+   {
+      subtitle += "ADAM";
+//      subtitle += " b1="+stringfunc::scinumber_to_string(beta1,2);
+//      subtitle += " b2="+stringfunc::scinumber_to_string(beta2,2);
+   }
+   return subtitle;
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of input STL vector of values plotted
+// against either epoch or episode independent variables.  The total
+// number of independent and dependent variables do NOT need to be
+// equal.  
+
+void neural_net::generate_metafile_plot(
+   const vector<double>& values, string metafile_basename, string title,
+   string y_label, string extrainfo, 
+   bool plot_smoothed_values_flag, bool zero_min_value_flag)
+{
+   if(values.size() < 3) return;
+
+   metafile curr_metafile;
+   string meta_filename=output_subdir+metafile_basename;
+   title += "; nweights="+stringfunc::number_to_string(count_weights());
+   string subtitle=init_subtitle() + " " + extrainfo;
+   string x_label="Epoch";
+   double xmax = epoch_history.back();
+
+   double min_value = mathfunc::minimal_value(values);
+   if(zero_min_value_flag)
+   {
+      min_value = 0;
+   }
+   double max_value = mathfunc::maximal_value(values);
+
+   if(nearly_equal(min_value, max_value))
+   {
+      double avg_value = 0.5 * (min_value + max_value);
+      min_value = 0.5 * avg_value;
+      max_value = 1.5 * avg_value;
+   }
+   
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      min_value, max_value);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+
+   curr_metafile.write_curve(epoch_history, values);
+   curr_metafile.set_thickness(3);
+
+// Temporally smooth noisy input values:
+
+   if(plot_smoothed_values_flag)
+   {
+      int n_values = values.size();
+      double sigma = 10;
+      if(n_values > 100)
+      {
+         sigma += log10(values.size())/log10(2.0);
+      }
+      double dx = 1;
+      int gaussian_size = filterfunc::gaussian_filter_size(sigma, dx, 3.0);
+
+      if(gaussian_size < n_values)
+      {
+         vector<double> h;
+         h.reserve(gaussian_size);
+         filterfunc::gaussian_filter(dx, sigma, h);
+
+         bool wrap_around_input_values = false;
+         vector<double> smoothed_values;
+         filterfunc::brute_force_filter(
+            values, h, smoothed_values, wrap_around_input_values);
+         curr_metafile.write_curve(
+            epoch_history, smoothed_values, colorfunc::blue);
+      }
+   } // plot_smoothed_values_flag conditional
+   
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+   unix_cmd="/bin/rm *.ps";
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of averaged minibatch loss versus training epoch.
+
+void neural_net::plot_loss_history()
+{
+   string metafile_basename="loss";
+   string title="Loss vs model training";
+   string extrainfo = "";
+   string y_label="Averaged minibatch loss";
+   bool plot_smoothed_values_flag = true;
+   bool zero_min_value_flag = false;
+
+   generate_metafile_plot(
+      avg_minibatch_loss, metafile_basename, 
+      title, y_label, extrainfo, 
+      plot_smoothed_values_flag, zero_min_value_flag);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of training and testing set accuracies vs
+// epoch.
+
+void neural_net::plot_accuracies_history()
+{
+   metafile curr_metafile;
+   string meta_filename=output_subdir + "accuracies";
+   string title="Training and testing samples accuracy vs training epoch";
+   string subtitle=init_subtitle();
+   string x_label="Epoch";
+   string y_label="Model accuracy";
+   double xmax = epoch_history.back();
+   double min_accuracy = 0;
+   double max_accuracy = 1;
+
+   curr_metafile.set_parameters(
+      meta_filename, title, x_label, y_label, 0, xmax, 
+      min_accuracy, max_accuracy);
+   curr_metafile.set_subtitle(subtitle);
+   curr_metafile.set_ytic(0.2);
+   curr_metafile.set_ysubtic(0.1);
+   curr_metafile.openmetafile();
+   curr_metafile.write_header();
+
+   curr_metafile.write_curve(
+      epoch_history, test_accuracy_history, colorfunc::red);
+   curr_metafile.write_curve(
+      epoch_history, training_accuracy_history, colorfunc::blue);
+
+   curr_metafile.closemetafile();
+   string banner="Exported metafile "+meta_filename+".meta";
+   outputfunc::write_banner(banner);
+
+   string unix_cmd="meta_to_jpeg "+meta_filename;
+   sysfunc::unix_command(unix_cmd);
+   unix_cmd="/bin/rm *.ps";
+   sysfunc::unix_command(unix_cmd);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of bias distributions versus episode number.
+
+void neural_net::plot_bias_distributions(string extrainfo)
+{
+   for(unsigned int l = 1; l < bias_50.size(); l++)
+   {
+      if(bias_01[l].size() < 3) continue;
+
+      metafile curr_metafile;
+      string meta_filename=output_subdir + "/bias_dists_"+
+         stringfunc::number_to_string(l);
+
+      string title="Bias dists for layer "+stringfunc::number_to_string(l);
+      string subtitle=init_subtitle();
+      subtitle += ";"+extrainfo;
+      string x_label="Epoch";
+      double xmax = epoch_history.back();
+      string y_label="Bias distributions";
+
+      double max_bias = NEGATIVEINFINITY;
+      double min_bias = POSITIVEINFINITY; 
+      max_bias = basic_math::max(
+         max_bias, mathfunc::maximal_value(bias_99[l]));
+      min_bias = basic_math::min(
+         min_bias, mathfunc::minimal_value(bias_01[l]));
+
+      curr_metafile.set_parameters(
+         meta_filename, title, x_label, y_label, 0, xmax, min_bias, max_bias);
+      curr_metafile.set_subtitle(subtitle);
+      curr_metafile.openmetafile();
+      curr_metafile.write_header();
+      curr_metafile.set_thickness(2);
+
+      curr_metafile.write_curve(
+         epoch_history, bias_01[l], colorfunc::get_color(0));
+      curr_metafile.write_curve(
+         epoch_history, bias_05[l], colorfunc::get_color(1));
+      curr_metafile.write_curve(
+         epoch_history, bias_10[l], colorfunc::get_color(2));
+      curr_metafile.write_curve(
+         epoch_history, bias_25[l], colorfunc::get_color(3));
+      curr_metafile.write_curve(
+         epoch_history, bias_35[l], colorfunc::get_color(4));
+      curr_metafile.write_curve(
+         epoch_history, bias_50[l], colorfunc::get_color(5));
+      curr_metafile.write_curve(
+         epoch_history, bias_65[l], colorfunc::get_color(6));
+      curr_metafile.write_curve(
+         epoch_history, bias_75[l], colorfunc::get_color(7));
+      curr_metafile.write_curve(
+         epoch_history, bias_90[l], colorfunc::get_color(8));
+      curr_metafile.write_curve(
+         epoch_history, bias_95[l], colorfunc::get_color(9));
+      curr_metafile.write_curve(
+         epoch_history, bias_99[l], colorfunc::get_color(10));
+      
+      curr_metafile.closemetafile();
+      string banner="Exported metafile "+meta_filename+".meta";
+      outputfunc::write_banner(banner);
+
+      string unix_cmd="meta_to_jpeg "+meta_filename;
+      sysfunc::unix_command(unix_cmd);
+   } // loop over index l labeling network layers
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of weight distributions versus episode number.
+
+void neural_net::plot_weight_distributions(string extrainfo)
+{
+   string script_filename=output_subdir + "view_weight_dists";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
+   for(unsigned int l = 0; l < weight_50.size(); l++)
+   {
+      if(weight_01[l].size() < 3) continue;
+
+      metafile curr_metafile;
+      string basename="weight_dists_"+stringfunc::number_to_string(l);
+      string meta_filename=output_subdir + basename;
+
+      string title="Weight dists for layer "+stringfunc::number_to_string(l);
+      string subtitle=init_subtitle();
+      subtitle += ";"+extrainfo;
+      string x_label="Epoch";
+      double xmax = epoch_history.back();
+      string y_label="Weight distributions";
+
+      double max_weight = NEGATIVEINFINITY;
+      double min_weight = POSITIVEINFINITY; 
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_99[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_01[l]));
+
+      curr_metafile.set_parameters(
+         meta_filename, title, x_label, y_label, 0, xmax, 
+         min_weight, max_weight);
+      curr_metafile.set_subtitle(subtitle);
+      curr_metafile.openmetafile();
+      curr_metafile.write_header();
+      curr_metafile.set_thickness(2);
+
+      curr_metafile.write_curve(
+         epoch_history, weight_01[l], colorfunc::get_color(0));
+      curr_metafile.write_curve(
+         epoch_history, weight_05[l], colorfunc::get_color(1));
+      curr_metafile.write_curve(
+         epoch_history, weight_10[l], colorfunc::get_color(2));
+      curr_metafile.write_curve(
+         epoch_history, weight_25[l], colorfunc::get_color(3));
+      curr_metafile.write_curve(
+         epoch_history, weight_35[l], colorfunc::get_color(4));
+      curr_metafile.write_curve(
+         epoch_history, weight_50[l], colorfunc::get_color(5));
+      curr_metafile.write_curve(
+         epoch_history, weight_65[l], colorfunc::get_color(6));
+      curr_metafile.write_curve(
+         epoch_history, weight_75[l], colorfunc::get_color(7));
+      curr_metafile.write_curve(
+         epoch_history, weight_90[l], colorfunc::get_color(8));
+      curr_metafile.write_curve(
+         epoch_history, weight_95[l], colorfunc::get_color(9));
+      curr_metafile.write_curve(
+         epoch_history, weight_99[l], colorfunc::get_color(10));
+      
+      curr_metafile.closemetafile();
+      string banner="Exported metafile "+meta_filename+".meta";
+      outputfunc::write_banner(banner);
+
+      string unix_cmd="meta_to_jpeg "+meta_filename;
+      sysfunc::unix_command(unix_cmd);
+
+      string jpg_filename=basename+".jpg";
+      script_stream << "view "+jpg_filename << endl;
+
+   } // loop over index l labeling network layers
+
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
+}
+
+// ---------------------------------------------------------------------
+// Generate metafile plot of quasi-random weight values versus episode number.
+
+void neural_net::plot_quasirandom_weight_values(string extrainfo)
+{
+   string script_filename=output_subdir + "view_weight_values";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
+   for(unsigned int l = 0; l < weight_50.size(); l++)
+   {
+      if(weight_1[l].size() < 3) continue;
+
+      metafile curr_metafile;
+      string basename="weight_values_"+stringfunc::number_to_string(l);
+      string meta_filename=output_subdir + basename;
+      string title="Quasi random weight values for layer "
+         +stringfunc::number_to_string(l);
+
+      string subtitle=init_subtitle();
+      subtitle += ";"+extrainfo;
+      string x_label="Epoch";
+      double xmax = epoch_history.back();
+      string y_label="Weight values";
+
+      double max_weight = NEGATIVEINFINITY;
+      double min_weight = POSITIVEINFINITY; 
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_1[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_2[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_3[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_4[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_5[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_6[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_7[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_8[l]));
+      max_weight = basic_math::max(
+         max_weight, mathfunc::maximal_value(weight_9[l]));
+
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_1[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_2[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_3[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_4[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_5[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_6[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_7[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_8[l]));
+      min_weight = basic_math::min(
+         min_weight, mathfunc::minimal_value(weight_9[l]));
+
+      curr_metafile.set_parameters(
+         meta_filename, title, x_label, y_label, 0, xmax,
+         min_weight, max_weight);
+      curr_metafile.set_subtitle(subtitle);
+      curr_metafile.openmetafile();
+      curr_metafile.write_header();
+      curr_metafile.set_thickness(2);
+
+      curr_metafile.write_curve(
+         epoch_history, weight_1[l], colorfunc::get_color(0));
+      curr_metafile.write_curve(
+         epoch_history, weight_2[l], colorfunc::get_color(1));
+      curr_metafile.write_curve(
+         epoch_history, weight_3[l], colorfunc::get_color(2));
+      curr_metafile.write_curve(
+         epoch_history, weight_4[l], colorfunc::get_color(3));
+      curr_metafile.write_curve(
+         epoch_history, weight_5[l], colorfunc::get_color(4));
+      curr_metafile.write_curve(
+         epoch_history, weight_6[l], colorfunc::get_color(5));
+      curr_metafile.write_curve(
+         epoch_history, weight_7[l], colorfunc::get_color(6));
+      curr_metafile.write_curve(
+         epoch_history, weight_8[l], colorfunc::get_color(7));
+      curr_metafile.write_curve(
+         epoch_history, weight_9[l], colorfunc::get_color(8));
+
+      curr_metafile.closemetafile();
+      string banner="Exported metafile "+meta_filename+".meta";
+      outputfunc::write_banner(banner);
+
+      string unix_cmd="meta_to_jpeg "+meta_filename;
+      sysfunc::unix_command(unix_cmd);
+
+      string jpg_filename=basename+".jpg";
+      script_stream << "view "+jpg_filename << endl;
+   } // loop over index l labeling network layers
+
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
+}
+
+// ---------------------------------------------------------------------
+// Member function generate_summary_plots() outputs metafile plots of
+// loss, training/testing accuracies, bias and weight distribution,
+// and random weight value histories.
+
+void neural_net::generate_summary_plots(string extrainfo)
+{
+//   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
+//   plot_log10_lr_mean_abs_nabla_weight_ratios(
+//      output_subdir, extrainfo, epoch_indep_var);
+
+   plot_loss_history();
+   plot_accuracies_history();
+   plot_bias_distributions(extrainfo);
+   plot_weight_distributions(extrainfo);
+   plot_quasirandom_weight_values(extrainfo);
+
 }
