@@ -95,7 +95,7 @@ class neural_net
    void store_quasirandom_weight_values();
 
    std::string init_subtitle();
-   void generate_metafile_plot(
+   bool generate_metafile_plot(
       const std::vector<double>& values,
       std::string metafile_basename, 
       std::string title, std::string y_label, std::string extrainfo, 
@@ -104,9 +104,9 @@ class neural_net
    void plot_loss_history();
    void plot_log10_lr_mean_abs_nabla_weight_ratios(std::string extrainfo);   
    void plot_accuracies_history();
-   void plot_bias_distributions(std::string extrainfo);
-   void plot_weight_distributions(std::string extrainfo);
-   void plot_quasirandom_weight_values(std::string extrainfo);
+   bool plot_bias_distributions(std::string extrainfo);
+   bool plot_weight_distributions(std::string extrainfo);
+   bool plot_quasirandom_weight_values(std::string extrainfo);
    void generate_summary_plots(std::string extrainfo);
    void generate_view_metrics_script();
 

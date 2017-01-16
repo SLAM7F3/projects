@@ -1046,12 +1046,12 @@ string neural_net::init_subtitle()
 // number of independent and dependent variables do NOT need to be
 // equal.  
 
-void neural_net::generate_metafile_plot(
+bool neural_net::generate_metafile_plot(
    const vector<double>& values, string metafile_basename, string title,
    string y_label, string extrainfo, 
    bool plot_smoothed_values_flag, bool zero_min_value_flag)
 {
-   if(epoch_history.size() < 3 || values.size() < 3) return;
+   if(epoch_history.size() < 3 || values.size() < 3) return false;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+metafile_basename;
@@ -1118,6 +1118,7 @@ void neural_net::generate_metafile_plot(
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
+   return true;
 }
 
 // ---------------------------------------------------------------------
@@ -1196,14 +1197,12 @@ void neural_net::plot_accuracies_history()
    sysfunc::unix_command(unix_cmd);
 }
 
-
-
 // ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
-void neural_net::plot_bias_distributions(string extrainfo)
+bool neural_net::plot_bias_distributions(string extrainfo)
 {
-   if(bias_50.size() < 5) return;
+   if(bias_50[0].size() < 5) return false;
    
    string script_filename=output_subdir + "view_bias_dists";
    ofstream script_stream;
@@ -1272,14 +1271,15 @@ void neural_net::plot_bias_distributions(string extrainfo)
 
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
+   return true;
 }
 
 // ---------------------------------------------------------------------
 // Generate metafile plot of weight distributions versus episode number.
 
-void neural_net::plot_weight_distributions(string extrainfo)
+bool neural_net::plot_weight_distributions(string extrainfo)
 {
-   if(weight_50.size() < 5) return;
+   if(weight_50[0].size() < 5) return false;
 
    string script_filename=output_subdir + "view_weight_dists";
    ofstream script_stream;
@@ -1350,14 +1350,15 @@ void neural_net::plot_weight_distributions(string extrainfo)
 
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
+   return true;
 }
 
 // ---------------------------------------------------------------------
 // Generate metafile plot of quasi-random weight values versus episode number.
 
-void neural_net::plot_quasirandom_weight_values(string extrainfo)
+bool neural_net::plot_quasirandom_weight_values(string extrainfo)
 {
-   if(weight_1[0].size() < 5) return;
+   if(weight_1[0].size() < 5) return false;
 
    string script_filename=output_subdir + "view_weight_values";
    ofstream script_stream;
@@ -1457,6 +1458,7 @@ void neural_net::plot_quasirandom_weight_values(string extrainfo)
 
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
+   return true;
 }
 
 // ---------------------------------------------------------------------

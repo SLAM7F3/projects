@@ -33,14 +33,23 @@ int main (int argc, char* argv[])
    int Din = n_cells + 1;   	// Number of input layer nodes
    int H1 = 64;			// Number of first hidden layer nodes
    int H2 = 32;			// Number of 2nd hidden layer nodes
-//   int H3 = 16;			// Number of 3rd hidden layer nodes
+   int H3 = 0;			// Number of 3rd hidden layer nodes
+   cout << "Enter H1:" << endl;
+   cin >> H1;
+   cout << "Enter H2:" << endl;
+   cin >> H2;
+   cout << "Enter H3:" << endl;
+   cin >> H3;
    int Dout = n_cells;   	// Number of output layer nodes
 
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
    layer_dims.push_back(H2);
-//   layer_dims.push_back(H3);
+   if(H3 > 0)
+   {
+      layer_dims.push_back(H3);
+   }
    layer_dims.push_back(Dout);
 
 // Set up neural network:
@@ -48,13 +57,20 @@ int main (int argc, char* argv[])
    int mini_batch_size = 32;
    double lambda = 0;  // L2 regularization coefficient
 //   double lambda = 1E-3;  // L2 regularization coefficient
+   cout << "Enter L2 regularization coefficient lambda:" << endl;
+   cin >> lambda;
    double rmsprop_decay_rate = 0.95;
 
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01);    
 
+   double blr;
+   cout << "Enter base learning rate:" << endl;
+   cin >> blr;
+   NN.set_base_learning_rate(blr);
+
 //   NN.set_base_learning_rate(3E-4);
-   NN.set_base_learning_rate(1E-4);
+//   NN.set_base_learning_rate(1E-4);
 //   NN.set_base_learning_rate(3E-5);
 
 // Initialize output subdirectory within an experiments folder:
