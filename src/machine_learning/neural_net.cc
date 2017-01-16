@@ -45,29 +45,6 @@ void neural_net::initialize_member_objects(
       z.push_back(curr_z);
       a.push_back(curr_a);
       delta.push_back(curr_delta);
-
-      vector<double> dummy_dist;
-      weight_01.push_back(dummy_dist);
-      weight_05.push_back(dummy_dist);
-      weight_10.push_back(dummy_dist);
-      weight_25.push_back(dummy_dist);
-      weight_35.push_back(dummy_dist);
-      weight_50.push_back(dummy_dist);
-      weight_65.push_back(dummy_dist);
-      weight_75.push_back(dummy_dist);
-      weight_90.push_back(dummy_dist);
-      weight_95.push_back(dummy_dist);
-      weight_99.push_back(dummy_dist);
-
-      weight_1.push_back(dummy_dist);
-      weight_2.push_back(dummy_dist);
-      weight_3.push_back(dummy_dist);
-      weight_4.push_back(dummy_dist);
-      weight_5.push_back(dummy_dist);
-      weight_6.push_back(dummy_dist);
-      weight_7.push_back(dummy_dist);
-      weight_8.push_back(dummy_dist);
-      weight_9.push_back(dummy_dist);
    } // loop over index l labeling neural network layers
    n_classes = layer_dims.back();
 
@@ -99,6 +76,7 @@ neural_net::neural_net(
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 
+   vector<double> dummy_dist;
    for(int l = 0; l < n_layers; l++)
    {
       genvector *curr_biases = new genvector(layer_dims[l]);
@@ -124,10 +102,24 @@ neural_net::neural_net(
          }
       } // loop over index i labeling node in current layer
 
+
+
+      bias_01.push_back(dummy_dist);
+      bias_05.push_back(dummy_dist);
+      bias_10.push_back(dummy_dist);
+      bias_25.push_back(dummy_dist);
+      bias_35.push_back(dummy_dist);
+      bias_50.push_back(dummy_dist);
+      bias_65.push_back(dummy_dist);
+      bias_75.push_back(dummy_dist);
+      bias_90.push_back(dummy_dist);
+      bias_95.push_back(dummy_dist);
+      bias_99.push_back(dummy_dist);
+
 // Weights link layer l with layer l+1:
     
       if(l == n_layers-1) continue;
-      
+
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
@@ -154,6 +146,27 @@ neural_net::neural_net(
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
+      weight_01.push_back(dummy_dist);
+      weight_05.push_back(dummy_dist);
+      weight_10.push_back(dummy_dist);
+      weight_25.push_back(dummy_dist);
+      weight_35.push_back(dummy_dist);
+      weight_50.push_back(dummy_dist);
+      weight_65.push_back(dummy_dist);
+      weight_75.push_back(dummy_dist);
+      weight_90.push_back(dummy_dist);
+      weight_95.push_back(dummy_dist);
+      weight_99.push_back(dummy_dist);
+
+      weight_1.push_back(dummy_dist);
+      weight_2.push_back(dummy_dist);
+      weight_3.push_back(dummy_dist);
+      weight_4.push_back(dummy_dist);
+      weight_5.push_back(dummy_dist);
+      weight_6.push_back(dummy_dist);
+      weight_7.push_back(dummy_dist);
+      weight_8.push_back(dummy_dist);
+      weight_9.push_back(dummy_dist);
    } // loop over index l labeling neural net layers
 }
 
@@ -508,10 +521,14 @@ void neural_net::train_network(int n_epochs)
             cout << "   test samples = " << test_accuracy_history.back() 
                  << " training samples = " << training_accuracy_history.back()
                  << endl;
+            string extrainfo = "";
+
+            compute_bias_distributions();
+            compute_weight_distributions();
+            store_quasirandom_weight_values();
+            generate_summary_plots(extrainfo);
          }
       } // loop over index b labeling mini batches
-
-
    } // loop over index e labeling training epochs
 }
 
@@ -570,7 +587,6 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
    }
 
-
    for(int l = 0; l < n_layers - 1; l++)
    {
       genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
@@ -585,14 +601,40 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
       {
          *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
       }
-      
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
-   }
 
-//   cout << "Correct test prediction frac = " << evaluate_model_on_test_set()
-//        << endl;
+      
+// Record average |nabla_weight / weight| to monitor network learning:
 
-//   outputfunc::enter_continue_char();
+      int mdim = nabla_weights[l]->get_mdim();
+      int ndim = nabla_weights[l]->get_ndim();
+      vector<double> curr_nabla_weights;
+      vector<double> curr_nabla_weight_ratios;
+
+      for(int r = 0; r < mdim; r++)
+      {
+         for(int c = 0; c < ndim; c++)
+         {
+            curr_nabla_weights.push_back(fabs(nabla_weights[l]->get(r,c)));
+            double denom = weights[l]->get(r,c);
+            if(fabs(denom) > 1E-10)
+            {
+               curr_nabla_weight_ratios.push_back(
+                  fabs(nabla_weights[l]->get(r,c) / denom ));
+            }
+         }
+      }
+//      double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
+      double mean_abs_nabla_weight_ratio = mathfunc::mean(
+         curr_nabla_weight_ratios);
+      if(mean_abs_nabla_weight_ratio > 0)
+      {
+         log10_lr_mean_abs_nabla_weight_ratios.push_back(
+            log10(learning_rate.back() * mean_abs_nabla_weight_ratio));
+      }
+
+   } // loop over index l labeling network layers
+
    return avg_minibatch_loss;
 }
 
@@ -906,7 +948,6 @@ void neural_net::compute_weight_distributions()
    } // loop over index l labeling network layers
 }
 
-
 // ---------------------------------------------------------------------
 void neural_net::store_quasirandom_weight_values()
 {
@@ -1009,7 +1050,7 @@ void neural_net::generate_metafile_plot(
    string y_label, string extrainfo, 
    bool plot_smoothed_values_flag, bool zero_min_value_flag)
 {
-   if(values.size() < 3) return;
+   if(epoch_history.size() < 3 || values.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+metafile_basename;
@@ -1076,8 +1117,6 @@ void neural_net::generate_metafile_plot(
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
-   unix_cmd="/bin/rm *.ps";
-   sysfunc::unix_command(unix_cmd);
 }
 
 // ---------------------------------------------------------------------
@@ -1099,11 +1138,31 @@ void neural_net::plot_loss_history()
 }
 
 // ---------------------------------------------------------------------
+// Generate metafile plot of log10(lr * mean_abs_nabla_weight_ratios)
+// versus epoch.
+
+void neural_net::plot_log10_lr_mean_abs_nabla_weight_ratios(string extrainfo)
+{
+   string metafile_basename = "lr_nabla_weight_ratios";
+   string title="learning rate * <|nabla_weight_ratio|>";
+   string y_label="log10(learning rate * <|nabla_weight_ratio|>)";
+   bool plot_smoothed_values_flag = true;
+   bool zero_min_value_flag = false;
+
+   generate_metafile_plot(
+      log10_lr_mean_abs_nabla_weight_ratios, metafile_basename, 
+      title, y_label, extrainfo, 
+      plot_smoothed_values_flag, zero_min_value_flag);
+}
+
+// ---------------------------------------------------------------------
 // Generate metafile plot of training and testing set accuracies vs
 // epoch.
 
 void neural_net::plot_accuracies_history()
 {
+   if(test_accuracy_history.size() < 3) return;
+
    metafile curr_metafile;
    string meta_filename=output_subdir + "accuracies";
    string title="Training and testing samples accuracy vs training epoch";
@@ -1134,22 +1193,26 @@ void neural_net::plot_accuracies_history()
 
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
-   unix_cmd="/bin/rm *.ps";
-   sysfunc::unix_command(unix_cmd);
 }
+
+
 
 // ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
 void neural_net::plot_bias_distributions(string extrainfo)
 {
+   if(bias_50.size() < 5) return;
+   
+   string script_filename=output_subdir + "view_bias_dists";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
    for(unsigned int l = 1; l < bias_50.size(); l++)
    {
-      if(bias_01[l].size() < 3) continue;
-
-      metafile curr_metafile;
-      string meta_filename=output_subdir + "/bias_dists_"+
-         stringfunc::number_to_string(l);
+      string basename="bias_dists_"+stringfunc::number_to_string(l);
+      string meta_filename=output_subdir + basename;
+      string jpg_filename=basename+".jpg";
 
       string title="Bias dists for layer "+stringfunc::number_to_string(l);
       string subtitle=init_subtitle();
@@ -1165,6 +1228,7 @@ void neural_net::plot_bias_distributions(string extrainfo)
       min_bias = basic_math::min(
          min_bias, mathfunc::minimal_value(bias_01[l]));
 
+      metafile curr_metafile;
       curr_metafile.set_parameters(
          meta_filename, title, x_label, y_label, 0, xmax, min_bias, max_bias);
       curr_metafile.set_subtitle(subtitle);
@@ -1201,7 +1265,12 @@ void neural_net::plot_bias_distributions(string extrainfo)
 
       string unix_cmd="meta_to_jpeg "+meta_filename;
       sysfunc::unix_command(unix_cmd);
+      script_stream << "view "+jpg_filename << endl;
+
    } // loop over index l labeling network layers
+
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
 }
 
 // ---------------------------------------------------------------------
@@ -1209,14 +1278,14 @@ void neural_net::plot_bias_distributions(string extrainfo)
 
 void neural_net::plot_weight_distributions(string extrainfo)
 {
+   if(weight_50.size() < 5) return;
+
    string script_filename=output_subdir + "view_weight_dists";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
 
    for(unsigned int l = 0; l < weight_50.size(); l++)
    {
-      if(weight_01[l].size() < 3) continue;
-
       metafile curr_metafile;
       string basename="weight_dists_"+stringfunc::number_to_string(l);
       string meta_filename=output_subdir + basename;
@@ -1287,14 +1356,14 @@ void neural_net::plot_weight_distributions(string extrainfo)
 
 void neural_net::plot_quasirandom_weight_values(string extrainfo)
 {
+   if(weight_1[0].size() < 5) return;
+
    string script_filename=output_subdir + "view_weight_values";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
 
    for(unsigned int l = 0; l < weight_50.size(); l++)
    {
-      if(weight_1[l].size() < 3) continue;
-
       metafile curr_metafile;
       string basename="weight_values_"+stringfunc::number_to_string(l);
       string meta_filename=output_subdir + basename;
@@ -1397,13 +1466,31 @@ void neural_net::plot_quasirandom_weight_values(string extrainfo)
 void neural_net::generate_summary_plots(string extrainfo)
 {
 //   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
-//   plot_log10_lr_mean_abs_nabla_weight_ratios(
-//      output_subdir, extrainfo, epoch_indep_var);
 
    plot_loss_history();
+   plot_log10_lr_mean_abs_nabla_weight_ratios(extrainfo);
    plot_accuracies_history();
    plot_bias_distributions(extrainfo);
    plot_weight_distributions(extrainfo);
    plot_quasirandom_weight_values(extrainfo);
+   filefunc::purge_files_with_suffix_in_subdir(output_subdir, "ps");
+   generate_view_metrics_script();
+}
 
+// ---------------------------------------------------------------------
+// Member function generate_view_metrics_script creates an executable
+// script which displays reward, nframes/episode, max Q and epsilon
+// history metafile outputs.
+
+void neural_net::generate_view_metrics_script()
+{
+   string script_filename=output_subdir + "view_metrics";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
+   script_stream << "view loss.jpg" << endl;
+   script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
+   script_stream << "view accuracies.jpg" << endl;
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
 }

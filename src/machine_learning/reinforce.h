@@ -321,7 +321,6 @@ class reinforce
    std::vector<double> log10_losses;
    std::vector<double> log10_lr_mean_abs_nabla_weight_ratios;
 
-
    std::vector<double> max_eval_Qvalues_10;
    std::vector<double> max_eval_Qvalues_25;
    std::vector<double> max_eval_Qvalues_50;

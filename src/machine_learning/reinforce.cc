@@ -2669,6 +2669,8 @@ double reinforce::update_Q_network(bool verbose_flag)
          *weights[l] -= learning_rate.back() * (*adam_m[l]);
       }
       
+// Record average |nabla_weight / weight| to monitor network learning:
+
       int mdim = nabla_weights[l]->get_mdim();
       int ndim = nabla_weights[l]->get_ndim();
          
@@ -2725,11 +2727,8 @@ double reinforce::update_Q_network(bool verbose_flag)
       
       if(include_bias_terms) nabla_biases[l]->clear_values();
       nabla_weights[l]->clear_values();
-   }
-//   cout << endl;
-//   print_weights();
-//   outputfunc::enter_continue_char();
-
+   } // loop over index l labeling network layers
+   
    return total_loss;
 }
 

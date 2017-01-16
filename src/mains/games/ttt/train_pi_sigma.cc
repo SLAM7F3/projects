@@ -146,7 +146,7 @@ int main (int argc, char* argv[])
 
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
-   int n_epochs = 100;
+   int n_epochs = 1 * 1000;
 
 // Generate text file summary of parameter values:
 
@@ -155,6 +155,7 @@ int main (int argc, char* argv[])
    ofstream params_stream;
    filefunc::appendfile(params_filename, params_stream);
 
+   params_stream << "Max n_training_epochs = " << n_epochs << endl;
    params_stream << "Leaky ReLU small slope = "
                  << machinelearning_func::get_leaky_ReLU_small_slope() << endl;
 //   params_stream << "Learning rate decrease period = " 
@@ -164,8 +165,6 @@ int main (int argc, char* argv[])
 
    NN.train_network(n_epochs);
 
-   NN.plot_loss_history();
-   NN.plot_accuracies_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
    double incorrect_testing_frac = incorrect_classifications.size() / 
       n_testing_samples;
