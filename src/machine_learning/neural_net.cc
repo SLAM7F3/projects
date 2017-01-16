@@ -492,6 +492,7 @@ void neural_net::decrease_learning_rate()
 
 void neural_net::train_network(int n_epochs)
 {
+   int n_update = 2.5 * 1000;
    for(int e = 0; e < n_epochs; e++)
    {
       cout << "Starting epoch e = " << e << " of " << n_epochs << endl;      
@@ -510,7 +511,7 @@ void neural_net::train_network(int n_epochs)
          double curr_minibatch_loss = update_nn_params(mini_batches[b]);
          avg_minibatch_loss.push_back(curr_minibatch_loss);
 
-         if(b%1000 == 0)
+         if(b % n_update == 0)
          {
             training_accuracy_history.push_back(
                evaluate_model_on_training_set());

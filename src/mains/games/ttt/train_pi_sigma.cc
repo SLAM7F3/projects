@@ -52,8 +52,10 @@ int main (int argc, char* argv[])
 
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01);    
-//   NN.set_base_learning_rate(1E-4);
-   NN.set_base_learning_rate(3E-5);
+
+//   NN.set_base_learning_rate(3E-4);
+   NN.set_base_learning_rate(1E-4);
+//   NN.set_base_learning_rate(3E-5);
 
 // Initialize output subdirectory within an experiments folder:
 
