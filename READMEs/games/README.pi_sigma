@@ -34,6 +34,64 @@ Process ID = 5253
 
 Bad loss behavior
 
+10.  T1
+H1 = 64, H2 = 32, H3 = 0
+lambda = 1E-3
+base_learning_rate = 3E-4
+
+Bad loss behavior
+
+11.  T1
+H1 = 64, H2 = 32, H3 = 0
+lambda = 1E-3
+base_learning_rate = 1E-4
+
+Bad loss behavior
+
+12.  T1
+H1 = 64, H2 = 32, H3 = 0
+lambda = 1E-3
+base_learning_rate = 3E-5
+
+Bad loss behavior
+
+13.  T3
+H1 = 32, H2 = 32, H3 = 0
+lambda = 1E-3
+base_learning_rate = 3E-4
+
+Bad loss behavior
+
+14.  T3
+H1 = 32, H2 = 32, H3 = 0
+lambda = 1E-3
+base_learning_rate = 1E-4
+
+Bad loss behavior
+
+15.  T3
+H1 = 32, H2 = 32, H3 = 0
+lambda = 1E-3
+base_learning_rate = 3E-5
+
+Bad loss behavior
+
+
+16.  TM
+H1 = 32, H2 = 32, H3 = 32
+lambda = 1E-3
+base_learning_rate = 3E-4
+
+Bad loss behavior
+
+17.  TM
+H1 = 32, H2 = 32, H3 = 32
+lambda = 1E-3
+base_learning_rate = 1E-4
+
+Bad loss behavior
+
+
 ------------------------------------------------------
 RUNNING EXPERIMENTS
 ------------------------------------------------------
@@ -42,54 +100,70 @@ RUNNING EXPERIMENTS
 Titan 1:
 ---------------------
 
-10.  T1
+18.  T1
 H1 = 64, H2 = 32, H3 = 0
 lambda = 1E-3
-base_learning_rate = 3E-4
+base_learning_rate = 1E-6
 
-11.  T1
+19.  T1
 H1 = 64, H2 = 32, H3 = 0
 lambda = 1E-3
-base_learning_rate = 1E-4
+base_learning_rate = 3E-7
 
-12.  T1
-H1 = 64, H2 = 32, H3 = 0
+20.  T1
+H1 = 32, H2 = 32, H3 = 0
 lambda = 1E-3
+base_learning_rate = 1E-6
+
+27.  T1
+H1 = 64, H2 = 32, H3 = 0
+lambda = 0
 base_learning_rate = 3E-5
+
+
 
 ---------------------
 Titan 3:
 ---------------------
 
-13.  T3
+21.  T3
 H1 = 32, H2 = 32, H3 = 0
 lambda = 1E-3
-base_learning_rate = 3E-4
+base_learning_rate = 3E-7
 
-14.  T3
-H1 = 32, H2 = 32, H3 = 0
+22.  T3
+H1 = 32, H2 = 32, H3 = 32
 lambda = 1E-3
-base_learning_rate = 1E-4
+base_learning_rate = 1E-6
 
-15.  T3
-H1 = 32, H2 = 32, H3 = 0
+23.  T3
+H1 = 32, H2 = 32, H3 = 32
 lambda = 1E-3
+base_learning_rate = 3E-7
+
+28.  T1
+H1 = 64, H2 = 64, H3 = 0
+lambda = 0
 base_learning_rate = 3E-5
 
 ---------------------
 Thinkmate
 ---------------------
 
-16.  TM
-H1 = 32, H2 = 32, H3 = 32
-lambda = 1E-3
-base_learning_rate = 3E-4
+24.  TM
+H1 = 32, H2 = 32, H3 = 0
+lambda = 0
+base_learning_rate = 3E-5
 
-17.  TM
-H1 = 32, H2 = 32, H3 = 32
-lambda = 1E-3
+25.  TM
+H1 = 32, H2 = 32, H3 = 0
+lambda = 0
 base_learning_rate = 1E-4
 
+26.  TM
+H1 = 32, H2 = 32, H3 = 0
+lambda = 0
+base_learning_rate = 1E-5
 
 ---------------------
 m6700
@@ -118,4 +192,9 @@ Process ID = 7786
 
 
 ==========================================================================
-Conclusion:
+Conclusions:
+
+As of 1 pm on Mon Jan 16, 2017, it looks like base learning rate must be no
+larger than 1E6 to avoid horrible loss divergence behavior, at least when
+lambda = 1E-3.
+

@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/27/16; 11/28/16; 1/10/17; 1/15/17
+// Last modified on 11/28/16; 1/10/17; 1/15/17; 1/16/17
 // ==========================================================================
 
 #include <iostream>
@@ -248,15 +248,32 @@ void tictac3d::record_latest_move(int player_value, int p)
 void tictac3d::record_afterstate_action(int player_value, int a)
 {
    string curr_board_afterstate_str = board_state_to_string();
-   afterstate_action_iter = afterstate_action_map.find(
-      curr_board_afterstate_str);
-   if(afterstate_action_iter == afterstate_action_map.end())
+   currgame_afterstate_strings.push_back(curr_board_afterstate_str);
+   currgame_actions.push_back(player_value * (a+1) );
+}
+
+void tictac3d::save_currgame_afterstates_and_actions()
+{
+   int n_game_moves = currgame_actions.size();
+   for(int i = 0; i < n_game_moves; i++)
    {
-      afterstate_action_map[curr_board_afterstate_str] = player_value * (a+1);
-   }
-   else
-   {
-      afterstate_action_iter->second = player_value * (a+1);
+      string curr_board_afterstate_str = currgame_afterstate_strings[i];
+      afterstate_action_iter = afterstate_action_map.find(
+         curr_board_afterstate_str);
+      pair<int,int> P;
+      P.first = n_game_moves - 1 - i;
+      P.second = currgame_actions[i];
+      
+      if(afterstate_action_iter == afterstate_action_map.end())
+      {
+         vector<pair<int,int> >* action_pairs_ptr = new vector<pair<int,int>>;
+         action_pairs_ptr->push_back(P);
+         afterstate_action_map[curr_board_afterstate_str] = action_pairs_ptr;
+      }
+      else
+      {
+         afterstate_action_iter->second->push_back(P);
+      }
    }
 //   cout << "Number of afterstate-action pairs recorded = "
 //        << afterstate_action_map.size() << endl;
@@ -267,15 +284,21 @@ void tictac3d::export_recorded_afterstate_action_pairs(string output_filename)
 {
    ofstream outstream;
    filefunc::openfile(output_filename, outstream);
-   outstream << "# Board afterstate                player_value * (action+1)"
+   outstream << "# Board afterstate         move rel to end-of-game   player_value * (action+1)"
              << endl << endl;
 
    for(afterstate_action_iter = afterstate_action_map.begin();
        afterstate_action_iter != afterstate_action_map.end(); 
        afterstate_action_iter++)
    {
-      outstream << afterstate_action_iter->first << " "
-                << afterstate_action_iter->second << endl;
+      int n_action_pairs = afterstate_action_iter->second->size();
+      for(int a = 0; a < n_action_pairs; a++)
+      {
+         
+         outstream << afterstate_action_iter->first << " "
+                   << afterstate_action_iter->second->at(a).first << " "
+                   << afterstate_action_iter->second->at(a).second << endl;
+      }
    }
    filefunc::closefile(output_filename, outstream);
    cout << "Exported " << afterstate_action_map.size() 
@@ -416,6 +439,8 @@ void tictac3d::reset_board_state()
       curr_board_state[p] = 0;
    } 
    game_over = false;
+   currgame_afterstate_strings.clear();
+   currgame_actions.clear();
 }		       
 
 // ---------------------------------------------------------------------
@@ -1442,51 +1467,25 @@ int tictac3d::get_recursive_minimax_move(int player_value)
       best_value = POSITIVEINFINITY;
    }
 
-   int curr_prime = 3;
-   if(n_size > 3)
-   {
-      int random = 10 * nrfunc::ran1();
-      if(random == 1)
-      {
-         curr_prime = 11;
-      }
-      else if (random == 2)
-      {
-         curr_prime = 13;
-      }
-      else if (random == 3)
-      {
-         curr_prime = 17;
-      }
-      else if (random == 4)
-      {
-         curr_prime = 19;
-      }
-      else if (random == 5)
-      {
-         curr_prime = 19;
-      }
-      else if (random == 6)
-      {
-         curr_prime = 23;
-      }
-      else if (random == 7)
-      {
-         curr_prime = 29;
-      }
-      else if (random == 8)
-      {
-         curr_prime = 31;
-      }
-      else if (random == 9)
-      {
-         curr_prime = 37;
-      }
-      else if (random == 9)
-      {
-         curr_prime = 41;
-      }
-   }
+   vector<int> primes;
+   primes.push_back(3);
+   primes.push_back(5);
+   primes.push_back(7);
+   primes.push_back(11);
+   primes.push_back(13);
+   primes.push_back(17);
+   primes.push_back(19);
+   primes.push_back(23);
+   primes.push_back(29);
+   primes.push_back(31);
+   primes.push_back(37);
+   primes.push_back(41);
+   primes.push_back(43);
+   primes.push_back(47);
+   primes.push_back(53);
+   primes.push_back(59);
+   int random = primes.size() * nrfunc::ran1();
+   int curr_prime = primes[random];
    
    for(int p = 0; p < n_cells; p++)
    {

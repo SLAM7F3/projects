@@ -4,7 +4,7 @@
 // output text files for later supervised learning policy training
 // purposes.
 // ==========================================================================
-// Last updated on 11/2/16; 11/3/16; 11/4/16; 1/15/17
+// Last updated on 11/3/16; 11/4/16; 1/15/17; 1/16/17
 // ==========================================================================
 
 #include <iostream>
@@ -81,7 +81,7 @@ int main (int argc, char* argv[])
             ttt_ptr->record_latest_move(AI_value, best_move);
             ttt_ptr->record_afterstate_action(AI_value, best_move);
 
-//            ttt_ptr->display_board_state();
+//             ttt_ptr->display_board_state();
             ttt_ptr->increment_n_AI_turns();
             if(ttt_ptr->check_player_win(AI_value) > 0)
             {
@@ -133,15 +133,19 @@ int main (int argc, char* argv[])
          }
       } // !game_over while loop
 
+      ttt_ptr->save_currgame_afterstates_and_actions();
+
 //      ttt_ptr->print_winning_pattern();
       cout << "n_AI_turns = " << ttt_ptr->get_n_AI_turns() << endl;
       cout << "n_agent_turns = " << ttt_ptr->get_n_agent_turns() << endl;
       cout << "n_completed_turns = " << ttt_ptr->get_n_completed_turns() 
            << endl;
-      cout << "Number of recorded afterstate-action pairs = "
-           << ttt_ptr->get_n_afterstate_action_pairs() << endl;
+      cout << "Number of recorded afterstate board strings = "
+           << ttt_ptr->get_n_afterstate_board_strings() << endl;
 
-      if(g % 501 == 0)
+//      if(g % 5 == 0)
+//      if(g % 200 == 0)
+      if(g % 500 == 0)
       {
          string output_filename=output_subdir + 
             "afterstate_action_pairs_"+stringfunc::integer_to_string(g,5)+

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/26/16; 11/27/16; 12/8/16; 1/15/17
+// Last modified on 11/27/16; 12/8/16; 1/15/17; 1/16/17
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -36,9 +36,12 @@ class tictac3d
 // independent int: 1 or -1 player value
 // dependent int: cell index
 
-   typedef std::map<std::string, int> AFTERSTATE_ACTION_MAP;
+   typedef std::map<std::string, std::vector<std::pair<int, int> >* > 
+	AFTERSTATE_ACTION_MAP;
 // independent string: string representation for board afterstate
-// dependent int: legal action for player indicated by sign of integer
+// dependent vector<pair<int,int>>
+   // pair.first = ply counter till end of game
+   // pair.second = legal action for player indicated by sign of integer
 
 // Initialization, constructor and destructor functions:
 
@@ -92,8 +95,9 @@ class tictac3d
    void get_random_legal_player_move(int player_value);
    void record_latest_move(int player_value, int p);
 
-   int get_n_afterstate_action_pairs() const;
+   int get_n_afterstate_board_strings() const;
    void record_afterstate_action(int player_value, int a);
+   void save_currgame_afterstates_and_actions();
    void export_recorded_afterstate_action_pairs(std::string output_filename);
 
    void append_game_loss_frac(double frac);
@@ -168,6 +172,9 @@ class tictac3d
 
    LATEST_MOVE_MAP latest_move_map;
    LATEST_MOVE_MAP::iterator latest_move_iter;
+
+   std::vector<std::string> currgame_afterstate_strings;
+   std::vector<int> currgame_actions;
 
    AFTERSTATE_ACTION_MAP afterstate_action_map;
    AFTERSTATE_ACTION_MAP::iterator afterstate_action_iter;
@@ -320,7 +327,7 @@ inline void tictac3d::append_wtwoDarray(twoDarray* wtwoDarray_ptr)
    wtwoDarray_ptrs.push_back(wtwoDarray_ptr);
 }
 
-inline int tictac3d::get_n_afterstate_action_pairs() const
+inline int tictac3d::get_n_afterstate_board_strings() const
 {
    return afterstate_action_map.size();
 }
