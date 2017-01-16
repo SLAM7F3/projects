@@ -146,6 +146,7 @@ class neural_net
    double rmsprop_decay_rate;
    double rmsprop_denom_const;
 
+   int update_counter;
    std::vector<double> epoch_history;
    std::vector<double> avg_minibatch_loss;
    std::vector<double> training_accuracy_history;

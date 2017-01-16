@@ -52,6 +52,7 @@ void neural_net::initialize_member_objects(
    solver_type = RMSPROP;
    output_subdir = "./nn_outputs/";
    filefunc::dircreate(output_subdir);
+   update_counter = 0;
 }		       
 
 void neural_net::allocate_member_objects()
@@ -511,8 +512,9 @@ void neural_net::train_network(int n_epochs)
 //              << endl;
          double curr_minibatch_loss = update_nn_params(mini_batches[b]);
          avg_minibatch_loss.push_back(curr_minibatch_loss);
+         update_counter++;
 
-         if(b % n_update == 0)
+         if(update_counter % n_update == 0)
          {
             training_accuracy_history.push_back(
                evaluate_model_on_training_set());
@@ -526,13 +528,14 @@ void neural_net::train_network(int n_epochs)
                  << endl;
 
          }
-         if(b % n_export_metafiles)
+         if(update_counter % n_export_metafiles == 0)
          {
             string extrainfo = "";
             compute_bias_distributions();
             compute_weight_distributions();
             store_quasirandom_weight_values();
             generate_summary_plots(extrainfo);
+            update_counter = 0;
          }
       } // loop over index b labeling mini batches
    } // loop over index e labeling training epochs
