@@ -45,7 +45,10 @@ int main (int argc, char* argv[])
    vector<int> layer_dims;
    layer_dims.push_back(Din);
    layer_dims.push_back(H1);
-   layer_dims.push_back(H2);
+   if(H2 > 0)
+   {
+      layer_dims.push_back(H2);
+   }
    if(H3 > 0)
    {
       layer_dims.push_back(H3);
@@ -154,6 +157,10 @@ int main (int argc, char* argv[])
       
       n_training_samples = training_samples.size();
       n_testing_samples = testing_samples.size();
+
+// FAKE FAKE:  Mon Jan 16 at 10:57 am
+//      if (n_training_samples >= 10) break;
+
    } // loop over index i labeling input text lines
 
    int n_data_samples = n_training_samples + n_testing_samples;
@@ -164,7 +171,8 @@ int main (int argc, char* argv[])
 
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
-   int n_epochs = 1 * 1000;
+//   int n_epochs = 1 * 1000;
+   int n_epochs = 10 * 1000;
 
 // Generate text file summary of parameter values:
 

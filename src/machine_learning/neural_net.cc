@@ -147,6 +147,8 @@ neural_net::neural_net(
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
+      log10_lr_mean_abs_nabla_weight_ratios.push_back(dummy_dist);
+
       weight_01.push_back(dummy_dist);
       weight_05.push_back(dummy_dist);
       weight_10.push_back(dummy_dist);
@@ -292,6 +294,9 @@ genvector* neural_net::get_softmax_class_probs() const
 }
 
 // ---------------------------------------------------------------------
+// Member function get_sample_loss() computes the input data sample's
+// contribution to the cross-entropy loss function.  
+
 double neural_net::get_sample_loss(const DATA_PAIR& curr_data)
 {
    genvector* class_probs = get_softmax_class_probs();
@@ -495,6 +500,7 @@ void neural_net::train_network(int n_epochs)
 {
    int n_update = 1 * 1000;
    int n_export_metafiles = 10 * 1000;
+
    for(int e = 0; e < n_epochs; e++)
    {
       cout << "Starting epoch e = " << e << " of " << n_epochs << endl;      
@@ -526,7 +532,9 @@ void neural_net::train_network(int n_epochs)
             cout << "   test samples = " << test_accuracy_history.back() 
                  << " training samples = " << training_accuracy_history.back()
                  << endl;
-
+            cout << "   n_training_samples = " << training_data.size() 
+                 << "  n_test_samples = " << test_data.size()
+                 << endl;
          }
          if(update_counter % n_export_metafiles == 0)
          {
@@ -612,7 +620,6 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
       }
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
 
-      
 // Record average |nabla_weight / weight| to monitor network learning:
 
       int mdim = nabla_weights[l]->get_mdim();
@@ -633,12 +640,11 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
             }
          }
       }
-//      double mean_abs_nabla_weight = mathfunc::mean(curr_nabla_weights);
       double mean_abs_nabla_weight_ratio = mathfunc::mean(
          curr_nabla_weight_ratios);
       if(mean_abs_nabla_weight_ratio > 0)
       {
-         log10_lr_mean_abs_nabla_weight_ratios.push_back(
+         log10_lr_mean_abs_nabla_weight_ratios[l].push_back(
             log10(learning_rate.back() * mean_abs_nabla_weight_ratio));
       }
 
@@ -1139,7 +1145,7 @@ void neural_net::plot_loss_history()
    string extrainfo = "";
    string y_label="Averaged minibatch loss";
    bool plot_smoothed_values_flag = true;
-   bool zero_min_value_flag = false;
+   bool zero_min_value_flag = true;
 
    generate_metafile_plot(
       avg_minibatch_loss, metafile_basename, 
@@ -1149,20 +1155,26 @@ void neural_net::plot_loss_history()
 
 // ---------------------------------------------------------------------
 // Generate metafile plot of log10(lr * mean_abs_nabla_weight_ratios)
-// versus epoch.
+// versus epoch for each individual network layer.
 
-void neural_net::plot_log10_lr_mean_abs_nabla_weight_ratios(string extrainfo)
+void neural_net::plot_log10_lr_mean_abs_nabla_weight_ratios()
 {
-   string metafile_basename = "lr_nabla_weight_ratios";
    string title="learning rate * <|nabla_weight_ratio|>";
    string y_label="log10(learning rate * <|nabla_weight_ratio|>)";
    bool plot_smoothed_values_flag = true;
    bool zero_min_value_flag = false;
 
-   generate_metafile_plot(
-      log10_lr_mean_abs_nabla_weight_ratios, metafile_basename, 
-      title, y_label, extrainfo, 
-      plot_smoothed_values_flag, zero_min_value_flag);
+   for(unsigned int l = 0; l < log10_lr_mean_abs_nabla_weight_ratios.size();
+       l++)
+   {
+      string metafile_basename = "lr_nabla_weight_ratios_"+
+         stringfunc::number_to_string(l);
+      string extrainfo = "Layer "+stringfunc::number_to_string(l);
+      generate_metafile_plot(
+         log10_lr_mean_abs_nabla_weight_ratios[l], metafile_basename, 
+         title, y_label, extrainfo, 
+         plot_smoothed_values_flag, zero_min_value_flag);
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -1479,7 +1491,7 @@ void neural_net::generate_summary_plots(string extrainfo)
 //   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
 
    plot_loss_history();
-   plot_log10_lr_mean_abs_nabla_weight_ratios(extrainfo);
+   plot_log10_lr_mean_abs_nabla_weight_ratios();
    plot_accuracies_history();
    plot_bias_distributions(extrainfo);
    plot_weight_distributions(extrainfo);
@@ -1500,8 +1512,14 @@ void neural_net::generate_view_metrics_script()
    filefunc::openfile(script_filename, script_stream);
 
    script_stream << "view loss.jpg" << endl;
-   script_stream << "view lr_nabla_weight_ratios.jpg" << endl;
    script_stream << "view accuracies.jpg" << endl;
+   for(unsigned int l = 0; l < log10_lr_mean_abs_nabla_weight_ratios.size(); 
+       l++)
+   {
+      script_stream << "view lr_nabla_weight_ratios_"+
+         stringfunc::number_to_string(l)+".jpg" << endl;
+   }
+
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
 }

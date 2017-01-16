@@ -102,7 +102,7 @@ class neural_net
       bool plot_smoothed_values_flag, bool zero_min_value_flag);
 
    void plot_loss_history();
-   void plot_log10_lr_mean_abs_nabla_weight_ratios(std::string extrainfo);   
+   void plot_log10_lr_mean_abs_nabla_weight_ratios();
    void plot_accuracies_history();
    bool plot_bias_distributions(std::string extrainfo);
    bool plot_weight_distributions(std::string extrainfo);
@@ -151,7 +151,7 @@ class neural_net
    std::vector<double> avg_minibatch_loss;
    std::vector<double> training_accuracy_history;
    std::vector<double> test_accuracy_history;
-   std::vector<double> log10_lr_mean_abs_nabla_weight_ratios;
+   std::vector<std::vector<double> > log10_lr_mean_abs_nabla_weight_ratios;
    std::string output_subdir;
 
 // Store indices for test samples whose class if incorrectly labeled

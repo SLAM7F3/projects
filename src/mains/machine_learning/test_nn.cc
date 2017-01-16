@@ -54,15 +54,18 @@ int main (int argc, char* argv[])
    layer_dims.push_back(H3);
    layer_dims.push_back(Dout);
 
-   int mini_batch_size = 20;
-   double lambda = 1E-3;  // L2 regularization coefficient
+   int mini_batch_size = 32;
+   double lambda = 0;  // L2 regularization coefficient
+//   double lambda = 1E-3;  // L2 regularization coefficient
    double rmsprop_decay_rate = 0.95;
 
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
    NN.set_base_learning_rate(1E-2);
 
-   int n_training_samples = 2000;
+//   int n_training_samples = 20; // Loss-->0 when lambda-->0 
+				// for small training set
 //   int n_training_samples = 200;
+   int n_training_samples = 2000;
    int n_testing_samples = 0.1 * n_training_samples;
 
 
@@ -84,7 +87,8 @@ int main (int argc, char* argv[])
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
 
-   int n_epochs = 100;
+   int n_epochs = 400;
+   
    NN.train_network(n_epochs);
    NN.plot_loss_history();
    NN.plot_accuracies_history();
