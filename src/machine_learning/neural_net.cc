@@ -492,7 +492,8 @@ void neural_net::decrease_learning_rate()
 
 void neural_net::train_network(int n_epochs)
 {
-   int n_update = 2.5 * 1000;
+   int n_update = 1 * 1000;
+   int n_export_metafiles = 10 * 1000;
    for(int e = 0; e < n_epochs; e++)
    {
       cout << "Starting epoch e = " << e << " of " << n_epochs << endl;      
@@ -515,15 +516,19 @@ void neural_net::train_network(int n_epochs)
          {
             training_accuracy_history.push_back(
                evaluate_model_on_training_set());
-            test_accuracy_history.push_back(evaluate_model_on_test_set());
+            test_accuracy_history.push_back(
+               evaluate_model_on_test_set());
             cout << "Epoch e = " << epoch_history.back() 
                  << " of " << n_epochs << endl;
             cout << "   Correct prediction fracs: " << endl;
             cout << "   test samples = " << test_accuracy_history.back() 
                  << " training samples = " << training_accuracy_history.back()
                  << endl;
-            string extrainfo = "";
 
+         }
+         if(b % n_export_metafiles)
+         {
+            string extrainfo = "";
             compute_bias_distributions();
             compute_weight_distributions();
             store_quasirandom_weight_values();
