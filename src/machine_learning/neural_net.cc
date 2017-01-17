@@ -129,6 +129,10 @@ neural_net::neural_net(
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
+      genmatrix *curr_weights_transpose = new genmatrix(
+         layer_dims[l], layer_dims[l+1]);
+      weights_transpose.push_back(curr_weights_transpose);
+
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       nabla_weights.push_back(curr_nabla_weights);
@@ -208,6 +212,7 @@ neural_net::~neural_net()
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       delete weights[l];
+      delete weights_transpose[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
@@ -277,11 +282,11 @@ void neural_net::feedforward(genvector* a_input)
    {
       if(include_bias_terms)
       {
-         *z[l+1] = (*weights[l]) * (*a[l]) + *biases[l+1];
+         z[l+1]->matrix_vector_mult_sum(*weights[l], *a[l], *biases[l+1]);
       }
       else
       {
-         *z[l+1] = (*weights[l]) * (*a[l]);
+         z[l+1]->matrix_vector_mult(*weights[l], *a[l]);
       }
 
 //      cout << "l = " << l << endl;
@@ -735,8 +740,12 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
 
-      *delta[prev_layer] = weights[prev_layer]->transpose() * 
-         (*delta[curr_layer]);
+//      *delta[prev_layer] = weights[prev_layer]->transpose() * 
+//         (*delta[curr_layer]);
+
+      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
+      delta[prev_layer]->matrix_vector_mult(
+         *weights_transpose[prev_layer], *delta[curr_layer]);
 
       for(int j = 0; j < layer_dims[prev_layer]; j++)
       {
@@ -752,6 +761,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 
 // Eqn BP3:   
+
       if(include_bias_terms)
       {
          *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
@@ -759,15 +769,14 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       
 // Eqn BP4:
 
-      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
-         *a[prev_layer]);
+      delta_nabla_weights[prev_layer]->accumulate_outerprod(
+         *delta[curr_layer], *a[prev_layer]);
 
 // Add L2 regularization contribution to delta_nabla_weights.  No such
 // regularization contribution is conventionally added to
 // delta_nabla_biases:
 
-      *delta_nabla_weights[prev_layer] += 
-         2 * lambda * (*weights[prev_layer]);
+      *delta_nabla_weights[prev_layer] += 2 * lambda * (*weights[prev_layer]);
 
    } // loop over curr_layer
 

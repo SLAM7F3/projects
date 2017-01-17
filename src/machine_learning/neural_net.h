@@ -124,9 +124,11 @@ class neural_net
 
    std::vector<genvector*> biases, nabla_biases, delta_nabla_biases;
 //	Bias STL vectors are nonzero for layers 1 thru n_layers-1
-   std::vector<genmatrix*> weights, nabla_weights, delta_nabla_weights;
+
+   std::vector<genmatrix*> weights, weights_transpose;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
+   std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 
    std::vector<genmatrix*> rmsprop_weights_cache;
 

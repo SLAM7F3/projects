@@ -3338,7 +3338,6 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
          action_prob = curr_activation;
          curr_activation -= 1.0;
       }
-
       Delta_Prime[curr_layer]->put(j, curr_advantage * curr_activation);
    }
 
