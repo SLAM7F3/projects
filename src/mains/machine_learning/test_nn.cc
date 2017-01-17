@@ -61,6 +61,8 @@ int main (int argc, char* argv[])
 
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
    NN.set_base_learning_rate(1E-2);
+//   NN.set_include_bias_terms(false);
+   NN.set_include_bias_terms(true);
 
 //   int n_training_samples = 20; // Loss-->0 when lambda-->0 
 				// for small training set

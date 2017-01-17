@@ -137,6 +137,7 @@ class neural_net
 
 // Node weighted inputs:
    std::vector<genvector*> z;
+   std::vector<genvector*> gammas, betas;  // Batch normalization parameters
 
 // Node activation outputs:
    std::vector<genvector*> a;
