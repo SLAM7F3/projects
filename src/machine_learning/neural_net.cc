@@ -741,8 +741,11 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       
 // Eqn BP4:
 
-      delta_nabla_weights[prev_layer]->accumulate_outerprod(
-         *delta[curr_layer], *a[prev_layer]);
+//      delta_nabla_weights[prev_layer]->accumulate_outerprod(
+//         *delta[curr_layer], *a[prev_layer]);
+
+      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
+         *a[prev_layer]);
 
 // Add L2 regularization contribution to delta_nabla_weights.  No such
 // regularization contribution is conventionally added to

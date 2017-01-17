@@ -465,6 +465,19 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
 Process ID = 19850
 
+58.  Repeat expt 54 from T3 with streamlined code
+H1 = 128; H2 = 64; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+59.  Repeat expt 55 from T3 with streamline code
+H1 = 128; H2 = 128; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
 ---------------------
 Thinkmate
 ---------------------

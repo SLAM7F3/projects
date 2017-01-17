@@ -1,7 +1,7 @@
 =============================================================================
 CMAKE notes
 =============================================================================
-Last updated on 11/18/16; 12/5/16
+Last updated on 11/18/16; 12/5/16; 1/17/17
 =============================================================================
 
 *.  Each subfolder of ~/sputnik/pwin/ now contains a CMakeLists.txt file
@@ -74,3 +74,25 @@ This is a side-effect of the feature that allows "cmake ." to be used to
 regenerate a build tree. The behavior will not be changed because mixing
 in-source and out-of-source builds is not safe anyway (configured headers
 may be found in the wrong place).
+
+*. On 11/13/16, Gustav Hanning suggested that we add the following two
+lines to top-level CMake file.  
+
+file(GLOB SOURCES app/*/*.h app/*/*.c lib/*/*.h lib/*/*.c)
+add_custom_target(tags etags ${SOURCES})
+
+We added these two lines at the end of 
+
+  /home/pcho/sputnik/pwin/CMakeLists.txt
+
+
+Then in /home/pcho/sputnik/pwin/build/release/ , chant "make tags".  A new
+version of /home/pcho/sputnik/pwin/build/release/TAGS is then created.
+We also changed our .emacs_flyover so that it includes the following lines
+
+
+;; ====================================================================
+;; TAGS
+;; ====================================================================
+
+(setq tags-file-name "/home/pcho/sputnik/pwin/build/release/TAGS")

@@ -93,21 +93,65 @@ namespace machinelearning_func
 // Reducing Internal Covariate Shift" by Ioffe and Szegedy.
 
    void batch_normalization_transform(
-      vector<double>& x, double gamma, double beta)
+      const vector<double>& x, double gamma, double beta,
+      double& mu, double& sqr_sigma, vector<double>& y)
    {
-      double mu, sigma;
+      double sigma;
       mathfunc::mean_and_std_dev(x, mu, sigma);
+      sqr_sigma = sigma * sigma;
 
       const double eps = 1E-6;
-      double denom = sqrt(sigma * sigma + eps);
+      double denom = sqrt(sqr_sigma + eps);
       
       for(unsigned int i = 0; i < x.size(); i++)
       {
          double xhat = (x[i] - mu) / denom;
-         double y = gamma * xhat + beta;
-         x[i] = y;
+         y.push_back(gamma * xhat + beta);
       }
    }
+
+// --------------------------------------------------------------------------
+// Method BN_backprop()
+
+/*
+   void BN_backprop(double dL_dyi, double gamma, double beta,
+                    const vector<double>& x, double mu, double sigma)
+   {
+      double sqr_sigma = sigma * sigma;
+      const double eps = 1E-6;
+      double denom = sqrt(sqr_sigma + eps);
+
+      double dL_dxhati = dL_dyi * gamma;
+
+      double dL_dsqrsigma = 0;
+      for(unsigned int j = 0; j < x.size(); j++)
+      {
+         dL_dsqrsigma += dL_dxhati * (x[j] - mu);
+      }
+      dL_dsqrsigma *= -0.5;
+      dL_dsqrsigma /= (denom * denom * denom);
+
+      double term1 = 0;
+      for(unsigned int i = 0; i < x.size(); i++)
+      {
+         term1 += dL_dxhat;
+      }
+      term1 *= -1;
+      term1 /= denom;
+
+      double term2 = 0;
+      for(unsigned int i = 0; i < x.size(); i++)
+      {
+         term2 += x[i] - mu;
+      }
+      term2 *= -2 * dL_dsqrsigma;
+      term2 /= x.size();
+      double dL_dmu = term1 + term2;
+
+//      double dL_dxi = dL_dxhat / denom + 
+
+   }
+*/
 
 // ==========================================================================
 // ReLU methods

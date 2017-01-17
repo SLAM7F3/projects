@@ -24,6 +24,9 @@ namespace machinelearning_func
 
    void batch_normalization(
       genvector& Z, const genvector& gamma, const genvector& beta);
+   void batch_normalization_transform(
+      const std::vector<double>& x, double gamma, double beta,
+      double& mu, double& sqr_sigma, std::vector<double>& y);
 
 // ReLU methods:
 

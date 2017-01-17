@@ -1,7 +1,7 @@
 =============================================================================
 Caffe notes
 =============================================================================
-Last updated on 8/16/16; 8/17/16; 8/31/16; 1/13/17
+Last updated on 8/17/16; 8/31/16; 1/13/17; 1/17/17
 =============================================================================
 
 *.  On 1/13/17, we git cloned the latest version of the publically
@@ -540,3 +540,25 @@ accessible via
 from input images as well as rescaling all color values down to [-1,1]
 rather than [-255,255].  After doing so, batch normalization apparently
 works much better.
+
+*.  On 1/17/17, Tho taught us that $(Q) in Makefile lines such as 
+
+$(DYNAMIC_NAME): $(OBJS) | $(LIB_BUILD_DIR)
+	@ echo LD -o $@
+	$(Q)$(CXX) -shared -o $@ $(OBJS) $(VERSIONFLAGS) $(LINKFLAGS) $(LDFLAGS)
+	@ cd $(BUILD_DIR)/lib; rm -f $(DYNAMIC_NAME_SHORT);   ln -s $(DYNAMIC_VERSIONED_NAME_SHORT) $(DYNAMIC_NAME_SHORT)
+
+informs the compiler to be "quiet".  Remove the $(Q) in order to see more
+verbose output when trying to debug caffe compilation.  
+
+Note:  Comment in last line at bottom bottom of Makefile.config in order to
+see verbose compiler output:
+
+# enable pretty build (comment to see full commands)
+# Q ?= @
+
+*.  As of Jan 2017, we need to have cuda 8 installed in order to run caffe_custom.
+We also need version 5 of CUDNN.  So we signed up for Nvidia's developer
+program and then downloaded cuDNN v5.1 Runtime Library for Ubuntu 14.04
+(Deb).  When we doubleclicked on its icon, libcudnn5 was automatically
+installed onto Thinkmate.
