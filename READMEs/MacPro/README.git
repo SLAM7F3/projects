@@ -1,7 +1,7 @@
 =============================================================================
 GIT notes
 =============================================================================
-Last updated on 9/10/16; 11/16/16; 11/18/16; 1/4/17
+Last updated on 11/16/16; 11/18/16; 1/4/17; 1/17/17
 =============================================================================
 
 *.  Procedure to follow in order to sync our local copy of pwin and the
@@ -712,6 +712,11 @@ make -C /home/pcho/sputnik/pwin/build/linux64 clean
 make -C /home/pcho/sputnik/pwin/build/linux64 clean_caffe
 /home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -pr -pwin -par LAPACK=1
 
+*.  As of 1/17/17, we apparently can chant 
+
+	/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -latest 
+
+in order to build production master binaries.
 
 *.  On 3/29/16, Tiago told us about git bisect which can be used to
 efficiently search for bug(s) in commits made between known good and known

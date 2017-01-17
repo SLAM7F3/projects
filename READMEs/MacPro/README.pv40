@@ -49,7 +49,7 @@ PV40's launchpad.  John Wood then showed us that from PV40's launchpad, we
 can login to one of the O(60) GPU nodes on the PV40 cluster (which also
 contains CPU nodes) via a command like
 
-   ssh pv40m01ls-gpu0002.geo.apple.com
+   ssh -Y pv40m01ls-gpu0002.geo.apple.com
 
 On a gpu node, cd to /gpfs/mercury12/dl/ which contains 
 
@@ -110,3 +110,8 @@ our local machine's mountpoint:
 
 prj = kitty_hawk_boston
 resource = kitty_hawk_boston
+
+
+
+
+/gpfs/mercury11/supersize/bin/pwin/pwin_master/latest -vv -nogpfs -cfg /home/pcho/hn_pano/peter_flyover-eufori.dcfg -da hn_pano_gui -prjdb /gpfs/mercury11/distrib_batch_prj/prjdb_khara-desktop_t300_sf_collect_2016_161209_161116.xml -prj t300_sf_collect_2016 -runid pr_house_numbers_t300_sf_collect_2016_2016-12-09__16:12:32 -shp /gpfs/mercury11/distrib_batch_shape/shape_khara_t300_sf_collect_2016_161209_161117.shape -bucket_id maps001_debug -build_id 58547c943ee4438cce17be08 -output_folder /home/pcho/hn_pano/

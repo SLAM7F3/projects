@@ -287,11 +287,13 @@ void neural_net::feedforward(genvector* a_input)
    {
       if(include_bias_terms)
       {
-         *z[l+1] = (*weights[l]) * (*a[l]) + *biases[l+1];
+         z_[l+1]->matrix_vector_mult_sum(*weights[l], *a[l], *biases[l+1]);
+//         *z[l+1] = (*weights[l]) * (*a[l]) + *biases[l+1];
       }
       else
       {
-         *z[l+1] = (*weights[l]) * (*a[l]);
+         z[l+1]->matrix_vector_mult(*weights[l], *a[l]);
+//         *z[l+1] = (*weights[l]) * (*a[l]);
       }
 
 //      cout << "l = " << l << endl;
@@ -744,9 +746,6 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
-
-//      *delta[prev_layer] = weights[prev_layer]->transpose() * 
-//         (*delta[curr_layer]);
 
       weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
       delta[prev_layer]->matrix_vector_mult(

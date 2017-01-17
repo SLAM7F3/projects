@@ -677,6 +677,12 @@ processing enabled:
 
 	~/sputnik/scripts/deploy.sh ~/sputnik/ -pwin -gpu -par RDN=1
 
+*.  As of 1/17/17, we apparently can chant 
+
+	/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -latest 
+
+in order to build production master binaries.
+
 *.  On 11/4/15, Ibahim Musba told us that nightly "regression" projects are
 not visible within the database which the c3-viewer accesses by default.
 In order to see such regression projects, we must start the viewer by

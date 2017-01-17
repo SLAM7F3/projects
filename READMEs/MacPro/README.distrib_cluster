@@ -1,10 +1,16 @@
 =============================================================================
 Running/monitoring jobs on distrib server cluster notes
 =============================================================================
-Last updated on 1/12/16; 3/28/16; 4/12/16; 6/9/16
+Last updated on 3/28/16; 4/12/16; 6/9/16; 1/17/17
 =============================================================================
 
-*.  Instructions from Sam Friedman on how to generate pwin binary on
+*.  As of 1/17/17, we apparently can chant 
+
+	/home/pcho/sputnik/scripts/deploy.sh ~/sputnik/ -latest 
+
+in order to build production master binaries.
+
+*.  Obsolete instructions from Sam Friedman on how to generate pwin binary on
 startown cluster (see also Rahul's lab)
 
 Chant "build_distrib_binary" to run script which performs following command:

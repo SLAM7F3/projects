@@ -479,6 +479,23 @@ base_learning_rate = 3E-4
 max move rel to end = 1
 
 
+60.  Repeat expt 54 from T3 with code with transposed weights matrix
+H1 = 128; H2 = 64; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+Working
+
+61.  Repeat expt 55 from T3 with code with transposed weights matrix
+H1 = 128; H2 = 128; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
+Working.
+
 ---------------------
 Thinkmate
 ---------------------
