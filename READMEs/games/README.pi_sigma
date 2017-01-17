@@ -384,19 +384,13 @@ lambda = 0.005
 base_learning_rate = 3E-4
 max move rel to end = 1
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
-
----------------------
-Titan 1:
----------------------
-
 52.  T1
 H1 = 64; H2 = 64; H3 = 0
 lambda = 0.0003
 base_learning_rate = 1E-3
 max move rel to end = 1
+
+After 1.6K epochs, test accuracy = 0.372
 
 53.  T1
 H1 = 64; H2 = 128; H3 = 0
@@ -404,18 +398,16 @@ lambda = 0.0003
 base_learning_rate = 1E-3
 max move rel to end = 1
 
+After 1073 epochs, test accuracy = 0.352
 
-56.  Repeat expt 54 from T3 with streamlined code
-H1 = 128; H2 = 64; H3 = 0
-lambda = 0.0003
-base_learning_rate = 3E-4
-max move rel to end = 1
 
-57.  Repeat expt 55 from T3 with streamline code
-H1 = 128; H2 = 128; H3 = 0
-lambda = 0.0003
-base_learning_rate = 3E-4
-max move rel to end = 1
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
 
 ---------------------
 Titan 3:
@@ -427,17 +419,24 @@ lambda = 0.001
 base_learning_rate = 1E-4
 max move rel to end = 1
 
+After 1018 epochs, test accuracy = 0.395 & train accuracy = 0.442
+
+
 49.  T3
 H1 = 128; H2 = 32; H3 = 0
 lambda = 0.001
 base_learning_rate = 3E-4
 max move rel to end = 1
 
+After 1288 epochs, test accuracy = 0.444 and train accuracy = 0.516
+
 54.  T3
 H1 = 128; H2 = 64; H3 = 0
 lambda = 0.0003
 base_learning_rate = 3E-4
 max move rel to end = 1
+
+After 853 epochs, test accuracy = 0.400 and train accuracy = 0.512
 
 55.  T3
 H1 = 128; H2 = 128; H3 = 0
@@ -464,6 +463,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
 Process ID = 19850
+
+After 536 epochs, test accuracy = 0.398 and train accuracy = 0.542
 
 58.  Repeat expt 54 from T3 with streamlined code
 H1 = 128; H2 = 64; H3 = 0

@@ -4,6 +4,15 @@ Caffe notes
 Last updated on 8/17/16; 8/31/16; 1/13/17; 1/17/17
 =============================================================================
 
+*.  On 1/17/17, we git cloned the latest version of caffe custom.  After
+much help from Tho and John Wood, we realized that this Jan 2017 version of
+caffe custom was somehow trying to include public caffe header files from
+/usr/local/caffe_Aug2016.  This caused huge numbers of compilation errors.
+Once we manually removed the soft link /usr/local/caffe -->
+/usr/local/caffe_Aug2016, we were able to build caffe custom after making
+appropriate changes to Makefile.config.  We also upgraded cuda to version 8
+and libcudnn to version 5.  
+
 *.  On 1/13/17, we git cloned the latest version of the publically
 available caffe onto Thinkmate.  We copied the Makefile.config from our Aug
 31 build of caffe_public.  We found that we needed to keep the following
@@ -562,3 +571,9 @@ We also need version 5 of CUDNN.  So we signed up for Nvidia's developer
 program and then downloaded cuDNN v5.1 Runtime Library for Ubuntu 14.04
 (Deb).  When we doubleclicked on its icon, libcudnn5 was automatically
 installed onto Thinkmate.
+
+*.  On 1/17/17, we had LOTS of trouble with getting caffe_custom to compile
+Thinkmate.  It turned out that caffe_custom must NOT get confused by header
+files sitting in /usr/local/include/caffe !!!  So while building
+caffe_custom, we temporarily eliminated soft link /usr/local/include/caffe
+which points to /usr/local/include/caffe_Aug2016.

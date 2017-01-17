@@ -42,9 +42,13 @@ void neural_net::initialize_member_objects(
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
       genvector *curr_z = new genvector(layer_dims.back());
+      genvector *curr_gamma = new genvector(layer_dims.back());
+      genvector *curr_beta = new genvector(layer_dims.back());
       genvector *curr_a = new genvector(layer_dims.back());
       genvector *curr_delta = new genvector(layer_dims.back());
       z.push_back(curr_z);
+      gammas.push_back(curr_gamma);
+      betas.push_back(curr_beta);
       a.push_back(curr_a);
       delta.push_back(curr_delta);
    } // loop over index l labeling neural network layers
@@ -191,6 +195,8 @@ neural_net::~neural_net()
    for(int l = 0; l < n_layers; l++)
    {
       delete z[l];
+      delete gammas[l];
+      delete betas[l];
       delete a[l];
       delete delta[l];
    }

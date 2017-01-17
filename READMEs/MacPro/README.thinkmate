@@ -1,7 +1,7 @@
 ==================================================================================
 Apple ThinkMate installation notes
 ==================================================================================
-Last updated on 10/4/15; 10/5/15; 10/8/15
+Last updated on 10/4/15; 10/5/15; 10/8/15; 1/17/17
 ==================================================================================
 
 1.  Chant "sudo bsh phnol4k" instead of 
@@ -10,7 +10,7 @@ Last updated on 10/4/15; 10/5/15; 10/8/15
 2.  After CUDA was installed, we need to make sure that 
 PATH includes /usr/local/cuda-7.5/bin
 
-LD_LIBRARY_PATH includes /usr/local/cuda-7.5/lib64
+LD_LIBRARY_PATH includes /usr/local/cuda/lib64
 or add /usr/local/cuda-7.5/lib64 to /etc/ld.so.conf and run ldconfig as
 root
 
@@ -266,7 +266,7 @@ ubuntu:READMEs% sudo pvs
 
 *.  GPU information
 
-cd /usr/local/cuda-7.5/samples/1_Utilities/deviceQuery
+cd /usr/local/cuda/samples/1_Utilities/deviceQuery
 and run ./deviceQuery :
 
 ./deviceQuery Starting...
@@ -276,9 +276,9 @@ and run ./deviceQuery :
 Detected 1 CUDA Capable device(s)
 
 Device 0: "GeForce GTX TITAN X"
-  CUDA Driver Version / Runtime Version          7.5 / 7.5
+  CUDA Driver Version / Runtime Version          8.0 / 8.0
   CUDA Capability Major/Minor version number:    5.2
-  Total amount of global memory:                 12287 MBytes (12883345408 bytes)
+  Total amount of global memory:                 12205 MBytes (12798197760 bytes)
   (24) Multiprocessors, (128) CUDA Cores/MP:     3072 CUDA Cores
   GPU Max Clock rate:                            1076 MHz (1.08 GHz)
   Memory Clock rate:                             3505 Mhz
@@ -308,7 +308,6 @@ Device 0: "GeForce GTX TITAN X"
   Compute Mode:
      < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
 
-deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 7.5, CUDA Runtime Version = 7.5, NumDevs = 1, Device0 = GeForce GTX TITAN X
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 8.0, CUDA Runtime Version = 8.0, NumDevs = 1, Device0 = GeForce GTX TITAN X
 Result = PASS
 
-*.  
