@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_PI_SIGMA
 // ==========================================================================
-// Last updated on 1/15/17; 1/16/17
+// Last updated on 1/15/17; 1/16/17; 1/17/17
 // ==========================================================================
 
 #include <iostream>
@@ -57,7 +57,8 @@ int main (int argc, char* argv[])
 
 // Set up neural network:
 
-   int mini_batch_size = 32;
+//   int mini_batch_size = 32;
+   int mini_batch_size = 100;
    double lambda = 0;  // L2 regularization coefficient
 //   double lambda = 1E-3;  // L2 regularization coefficient
    cout << "Enter L2 regularization coefficient lambda:" << endl;

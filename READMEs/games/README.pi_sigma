@@ -1,10 +1,40 @@
 ==========================================================================
 Training pi_sigma for TTT
 ==========================================================================
-Last updated on 1/16/17
+Last updated on 1/16/17; 1/17/17
 ==========================================================================
 
 Best results so far:
+
+42.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 1E-4
+max move rel to end = 1
+
+Experiment 42
+Tue Jan 17 05:46:33 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8256 (FC)
+base_learning_rate = 0.0001; batch_size = 32
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+n_training_samples = 31524
+n_test_samples = 3477
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 2235
+
+After 160 epochs, test accuracy = 0.252 and train accuracy = 0.291
+Loss diverging.
 
 ------------------------------------------------------
 TERMINATED EXPERIMENTS
@@ -165,6 +195,77 @@ H1 = H2 = 32
 lambda = 0.003
 base_learning_rate = 3E-5
 
+33.  T1
+max move rel to end = 1
+H1 = H2 = 32
+lambda = 0.005
+base_learning_rate = 1E-6
+
+Loss basically stayed under control.  
+testing accuracy = 0.0395; training accuracy = 0.075
+
+
+34.  T1
+max move rel to end = 1
+H1 = 64; H2 = 32
+lambda = 0.005
+base_learning_rate = 1E-6
+
+Experiment 34
+Mon Jan 16 18:43:58 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8256 (FC)
+base_learning_rate = 1e-06; batch_size = 32
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.005
+n_training_samples = 4509
+n_test_samples = 492
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 6954
+
+Loss basically stayed under control.  
+testing accuracy = 0.0569; training accuracy = 0.105
+
+35.  T1
+max move rel to end = 1
+H1 = 32; H2 = 32; H3 = 32
+lambda = 0.005
+base_learning_rate = 1E-6
+
+Loss basically stayed under control.  
+testing accuracy = 0.0535; training accuracy = 0.0701
+
+
+36.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-6
+max move rel to end = 1
+
+
+37.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 1E-5
+max move rel to end = 1
+
+38.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-5
+max move rel to end = 1
+
+After 340+ epochs, test accuracy and training accuracy around 0.1
+
 ------------------------------------------------------
 RUNNING EXPERIMENTS
 ------------------------------------------------------
@@ -173,27 +274,87 @@ RUNNING EXPERIMENTS
 Titan 1:
 ---------------------
 
-33.  T1
+42.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 1E-4
 max move rel to end = 1
-H1 = H2 = 32
-lambda = 0.005
-base_learning_rate = 1E-6
 
-34.  T1
-max move rel to end = 1
-H1 = 64; H2 = 32
-lambda = 0.005
-base_learning_rate = 1E-6
+Experiment 42
+Tue Jan 17 05:46:33 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8256 (FC)
+base_learning_rate = 0.0001; batch_size = 32
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+n_training_samples = 31524
+n_test_samples = 3477
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 2235
 
-35.  T1
-max move rel to end = 1
-H1 = 32; H2 = 32; H3 = 32
+After 160 epochs, test accuracy = 0.252 and train accuracy = 0.291
+
+
+44.  T1
+H1 = 64; H2 = 64; H3 = 0
 lambda = 0.005
-base_learning_rate = 1E-6
+base_learning_rate = 1E-5
+max move rel to end = 1
+
+46.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
+
 
 ---------------------
 Titan 3:
 ---------------------
+
+39.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-6
+max move rel to end = 1
+
+40.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 1E-5
+max move rel to end = 1
+
+41.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-5
+max move rel to end = 1
+
+43.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 1E-4
+max move rel to end = 1
+
+45.  T3
+H1 = 128; H2 = 64; H3 = 0
+lambda = 0.005
+base_learning_rate = 1E-5
+max move rel to end = 1
+
+After 101 epochs, test accuracy = 0.287 and training accuracy = 0.319
+Loss diverging
 
 ---------------------
 Thinkmate
@@ -202,28 +363,6 @@ Thinkmate
 ---------------------
 m6700
 ---------------------
-
-6.  m6700
-Experiment 6
-Mon Jan 16 10:47:51 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 65
-   layer = 1 n_nodes = 32
-   layer = 2 n_nodes = 32
-   layer = 3 n_nodes = 64
-   n_weights = 5152 (FC)
-base_learning_rate = 3e-05; batch_size = 32
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.95
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.001
-n_training_samples = 85135
-n_test_samples = 9438
-Max n_training_epochs = 1000
-Leaky ReLU small slope = 0.01
-Process ID = 7786
-
 
 ==========================================================================
 Conclusions:
