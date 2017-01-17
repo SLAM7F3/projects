@@ -133,6 +133,10 @@ neural_net::neural_net(
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
+      genmatrix *curr_weights_transpose = new genmatrix(
+         layer_dims[l], layer_dims[l+1]);
+      weights_transpose.push_back(curr_weights_transpose);
+
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       nabla_weights.push_back(curr_nabla_weights);
@@ -741,8 +745,12 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
 
-      *delta[prev_layer] = weights[prev_layer]->transpose() * 
-         (*delta[curr_layer]);
+//      *delta[prev_layer] = weights[prev_layer]->transpose() * 
+//         (*delta[curr_layer]);
+
+      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
+      delta[prev_layer]->matrix_vector_mult(
+         *weights_transpose[prev_layer], *delta[curr_layer]);
 
       for(int j = 0; j < layer_dims[prev_layer]; j++)
       {
@@ -777,15 +785,13 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
    } // loop over curr_layer
 
-/*
 // Numerically spot-check loss derivatives wrt a few random
 // weights:
 
-   if(nrfunc::ran1() < 1E-2)
-   {
-      numerically_check_derivs(curr_data_pair);
-   }
-*/
+//   if(nrfunc::ran1() < 1E-2)
+//   {
+//      numerically_check_derivs(curr_data_pair);
+//   }
 
 }
 
