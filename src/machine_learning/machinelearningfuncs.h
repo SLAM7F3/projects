@@ -20,13 +20,17 @@ namespace machinelearning_func
    double deriv_sigmoid(double z);
    genvector deriv_sigmoid(genvector& z);
 
-// Batch normalization methods
+// Batch normalization methods:
 
    void batch_normalization(
       genvector& Z, const genvector& gamma, const genvector& beta);
    void batch_normalization_transform(
       const std::vector<double>& x, double gamma, double beta,
       double& mu, double& sqr_sigma, std::vector<double>& y);
+   void BN_backprop(
+      const std::vector<double>& dL_dy, double gamma, double beta,
+      const std::vector<double>& x, double mu, double sigma,
+      std::vector<double>& dL_dx, double& dL_dgamma, double& dL_dbeta);
 
 // ReLU methods:
 

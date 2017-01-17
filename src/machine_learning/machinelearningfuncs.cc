@@ -113,33 +113,41 @@ namespace machinelearning_func
 // --------------------------------------------------------------------------
 // Method BN_backprop()
 
-/*
-   void BN_backprop(double dL_dyi, double gamma, double beta,
-                    const vector<double>& x, double mu, double sigma)
+   void BN_backprop(const vector<double>& dL_dy, double gamma, double beta,
+                    const vector<double>& x, double mu, double sigma,
+                    vector<double>& dL_dx,
+                    double& dL_dgamma, double& dL_dbeta)
    {
       double sqr_sigma = sigma * sigma;
       const double eps = 1E-6;
       double denom = sqrt(sqr_sigma + eps);
 
-      double dL_dxhati = dL_dyi * gamma;
-
+      vector<double> dL_dxhat;
+      for(unsigned int j = 0; j < dL_dy.size(); j++)
+      {
+         dL_dxhat.push_back(gamma * dL_dy[j]);
+      }
+      
       double dL_dsqrsigma = 0;
       for(unsigned int j = 0; j < x.size(); j++)
       {
-         dL_dsqrsigma += dL_dxhati * (x[j] - mu);
+         dL_dsqrsigma += dL_dxhat[j] * (x[j] - mu);
       }
       dL_dsqrsigma *= -0.5;
       dL_dsqrsigma /= (denom * denom * denom);
 
       double term1 = 0;
-      for(unsigned int i = 0; i < x.size(); i++)
+      double term2 = 0;
+      double term3 = 0;
+      
+      for(unsigned int j = 0; j < x.size(); j++)
       {
-         term1 += dL_dxhat;
+         term1 += dL_dxhat[j];
       }
       term1 *= -1;
       term1 /= denom;
 
-      double term2 = 0;
+      term2 = 0;
       for(unsigned int i = 0; i < x.size(); i++)
       {
          term2 += x[i] - mu;
@@ -148,10 +156,28 @@ namespace machinelearning_func
       term2 /= x.size();
       double dL_dmu = term1 + term2;
 
-//      double dL_dxi = dL_dxhat / denom + 
+      dL_dx.clear();
+      for(unsigned int j = 0; j < x.size(); j++)
+      {
+         term1 = dL_dxhat[j] / denom;
+         term2 = dL_dsqrsigma * 2 * (x[j] - mu) / x.size();
+         term3 = dL_dmu / x.size();
+         dL_dx.push_back(term1 + term2 + term3);
+      }
+      
+      dL_dgamma = 0;
+      for(unsigned int j = 0; j < x.size(); j++)
+      {
+         double xhat = (x[j] - mu) / denom;
+         dL_dgamma += dL_dy[j] * xhat;
+      }
 
+      dL_dbeta = 0;
+      for(unsigned int j = 0; j < x.size(); j++)
+      {
+         dL_dbeta += dL_dy[j];
+      }
    }
-*/
 
 // ==========================================================================
 // ReLU methods
