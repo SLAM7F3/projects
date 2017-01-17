@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 1/5/17; 1/10/17; 1/11/17; 1/13/17
+// Last modified on 1/10/17; 1/11/17; 1/13/17; 1/17/17
 // ==========================================================================
 
 #include <string>
@@ -494,7 +494,9 @@ void reinforce::summarize_parameters(string params_filename)
    }
    params_stream << "   n_weights = " << count_weights() << " (FC)" 
                  << endl;
- 
+   params_stream << "   include_bias_terms = " << include_bias_terms 
+                 << endl;
+
    params_stream << "base_learning_rate = " << base_learning_rate 
                  << "; batch_size = " << batch_size
                  << endl;

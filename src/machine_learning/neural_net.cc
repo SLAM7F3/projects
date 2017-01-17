@@ -865,6 +865,8 @@ void neural_net::summarize_parameters(string params_filename)
    }
    params_stream << "   n_weights = " << count_weights() << " (FC)" 
                  << endl;
+   params_stream << "   include_bias_terms = " << include_bias_terms 
+                 << endl;
  
    params_stream << "base_learning_rate = " << base_learning_rate 
                  << "; batch_size = " << mini_batch_size

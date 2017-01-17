@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 11/8/16; 11/17/16; 12/13/16; 12/14/16
+// Last updated on 11/17/16; 12/13/16; 12/14/16; 1/17/17
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -25,7 +25,7 @@ namespace machinelearning_func
    using std::vector;
 
 // ==========================================================================
-// Inlined methods:
+// Sigmoid methods
 // ==========================================================================
    
    double sigmoid(double z)
@@ -71,8 +71,10 @@ namespace machinelearning_func
       return output;
    }
 
-   
-// --------------------------------------------------------------------------
+// ==========================================================================
+// Batch normalization methods
+// ==========================================================================
+
 // Method batch_normalization() performs a linear transformation upon
 // each coordinate within input genvector Z.
 
@@ -86,6 +88,31 @@ namespace machinelearning_func
    }
 
 // --------------------------------------------------------------------------
+// Method batch_normalization_transform() implements Algorithm 1 from
+// "Batch Normalization: Accelerating Deep Network Training by
+// Reducing Internal Covariate Shift" by Ioffe and Szegedy.
+
+   void batch_normalization_transform(
+      vector<double>& x, double gamma, double beta)
+   {
+      double mu, sigma;
+      mathfunc::mean_and_std_dev(x, mu, sigma);
+
+      const double eps = 1E-6;
+      double denom = sqrt(sigma * sigma + eps);
+      
+      for(unsigned int i = 0; i < x.size(); i++)
+      {
+         double xhat = (x[i] - mu) / denom;
+         double y = gamma * xhat + beta;
+         x[i] = y;
+      }
+   }
+
+// ==========================================================================
+// ReLU methods
+// ==========================================================================
+
    void ReLU(genvector& X)
    {
       for(unsigned int i = 0; i < X.get_mdim(); i++)
