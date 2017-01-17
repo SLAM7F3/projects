@@ -266,13 +266,25 @@ max move rel to end = 1
 
 After 340+ epochs, test accuracy and training accuracy around 0.1
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
 
----------------------
-Titan 1:
----------------------
+39.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-6
+max move rel to end = 1
+
+40.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 1E-5
+max move rel to end = 1
+
+41.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-5
+max move rel to end = 1
+
 
 42.  T1
 H1 = 64; H2 = 32; H3 = 0
@@ -303,48 +315,10 @@ Process ID = 2235
 
 After 160 epochs, test accuracy = 0.252 and train accuracy = 0.291
 
-
 44.  T1
 H1 = 64; H2 = 64; H3 = 0
 lambda = 0.005
 base_learning_rate = 1E-5
-max move rel to end = 1
-
-46.  T1
-H1 = 64; H2 = 32; H3 = 0
-lambda = 0.001
-base_learning_rate = 3E-4
-max move rel to end = 1
-
-
-
-
----------------------
-Titan 3:
----------------------
-
-39.  T3
-H1 = 128; H2 = 32; H3 = 0
-lambda = 0.005
-base_learning_rate = 3E-6
-max move rel to end = 1
-
-40.  T3
-H1 = 128; H2 = 32; H3 = 0
-lambda = 0.005
-base_learning_rate = 1E-5
-max move rel to end = 1
-
-41.  T3
-H1 = 128; H2 = 32; H3 = 0
-lambda = 0.005
-base_learning_rate = 3E-5
-max move rel to end = 1
-
-43.  T3
-H1 = 128; H2 = 32; H3 = 0
-lambda = 0.001
-base_learning_rate = 1E-4
 max move rel to end = 1
 
 45.  T3
@@ -355,6 +329,116 @@ max move rel to end = 1
 
 After 101 epochs, test accuracy = 0.287 and training accuracy = 0.319
 Loss diverging
+
+
+51.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+
+46.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+Experiment 46
+Tue Jan 17 06:22:52 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 32
+   layer = 3 n_nodes = 64
+   n_weights = 8256 (FC)
+base_learning_rate = 0.0003; batch_size = 100
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.001
+n_training_samples = 31524
+n_test_samples = 3477
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 18761
+
+After 190 epochs, test accuracy = 0.309 and train accuracy = 0.343
+
+47.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+48.  T1
+H1 = 64; H2 = 32; H3 = 0
+lambda = 0.005
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
+52.  T1
+H1 = 64; H2 = 64; H3 = 0
+lambda = 0.0003
+base_learning_rate = 1E-3
+max move rel to end = 1
+
+53.  T1
+H1 = 64; H2 = 128; H3 = 0
+lambda = 0.0003
+base_learning_rate = 1E-3
+max move rel to end = 1
+
+
+
+---------------------
+Titan 3:
+---------------------
+
+43.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 1E-4
+max move rel to end = 1
+
+
+49.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+50.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
+54.  T3
+H1 = 128; H2 = 64; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+55.  T3
+H1 = 128; H2 = 128; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+
 
 ---------------------
 Thinkmate

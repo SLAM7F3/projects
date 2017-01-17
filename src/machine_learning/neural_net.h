@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 12/27/16; 12/28/16; 1/15/17; 1/16/17
+// Last modified on 12/28/16; 1/15/17; 1/16/17; 1/17/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -52,6 +52,8 @@ class neural_net
 
    void set_expt_number(int n);
    int get_expt_number() const;
+   void set_include_bias_terms(bool flag);
+   bool get_include_bias_terms() const;
    int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
@@ -112,6 +114,7 @@ class neural_net
 
   private: 
 
+   bool include_bias_terms;
    int n_layers, n_training_samples, n_test_samples;
    int n_classes;
    int expt_number;
@@ -199,6 +202,16 @@ inline void neural_net::set_expt_number(int n)
 inline int neural_net::get_expt_number() const
 {
    return expt_number;
+}
+
+inline void neural_net::set_include_bias_terms(bool flag)
+{
+   include_bias_terms = flag;
+}
+
+inline bool neural_net::get_include_bias_terms() const
+{
+   return include_bias_terms;
 }
 
 inline int neural_net::get_layer_dim(int l) const

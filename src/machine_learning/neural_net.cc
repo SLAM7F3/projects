@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 12/28/16; 1/4/17; 1/15/17; 1/16/17
+// Last modified on 1/4/17; 1/15/17; 1/16/17; 1/17/17
 // ==========================================================================
 
 #include <iostream>
@@ -34,6 +34,8 @@ using std::vector;
 void neural_net::initialize_member_objects(
    const vector<int>& n_nodes_per_layer)
 {
+   expt_number = -1;
+   include_bias_terms = true;
    n_weights = 0;
    n_layers = n_nodes_per_layer.size();
    for(int l = 0; l < n_layers; l++)
@@ -78,49 +80,52 @@ neural_net::neural_net(
    allocate_member_objects();
 
    vector<double> dummy_dist;
-   for(int l = 0; l < n_layers; l++)
+
+   if(include_bias_terms)
    {
-      genvector *curr_biases = new genvector(layer_dims[l]);
-      biases.push_back(curr_biases);
-      genvector *curr_nabla_biases = new genvector(layer_dims[l]);
-      nabla_biases.push_back(curr_nabla_biases);
-      genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
-      delta_nabla_biases.push_back(curr_delta_nabla_biases);
+      for(int l = 0; l < n_layers; l++)
+      {
+         genvector *curr_biases = new genvector(layer_dims[l]);
+         biases.push_back(curr_biases);
+         genvector *curr_nabla_biases = new genvector(layer_dims[l]);
+         nabla_biases.push_back(curr_nabla_biases);
+         genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
+         delta_nabla_biases.push_back(curr_delta_nabla_biases);
 
 // Initialize bias for each network node in layers 1, 2, ... to be
 // gaussian random var distributed according to N(0,1).  Recall input
 // layer has no biases:
 
-      for(int i = 0; i < layer_dims[l]; i++)
-      {
-         if(l == 0)
+         for(int i = 0; i < layer_dims[l]; i++)
          {
-            curr_biases->put(i, 0);
-         }
-         else
-         {
-            curr_biases->put(i, nrfunc::gasdev());
-         }
-      } // loop over index i labeling node in current layer
+            if(l == 0)
+            {
+               curr_biases->put(i, 0);
+            }
+            else
+            {
+               curr_biases->put(i, nrfunc::gasdev());
+            }
+         } // loop over index i labeling node in current layer
 
-
-
-      bias_01.push_back(dummy_dist);
-      bias_05.push_back(dummy_dist);
-      bias_10.push_back(dummy_dist);
-      bias_25.push_back(dummy_dist);
-      bias_35.push_back(dummy_dist);
-      bias_50.push_back(dummy_dist);
-      bias_65.push_back(dummy_dist);
-      bias_75.push_back(dummy_dist);
-      bias_90.push_back(dummy_dist);
-      bias_95.push_back(dummy_dist);
-      bias_99.push_back(dummy_dist);
+         bias_01.push_back(dummy_dist);
+         bias_05.push_back(dummy_dist);
+         bias_10.push_back(dummy_dist);
+         bias_25.push_back(dummy_dist);
+         bias_35.push_back(dummy_dist);
+         bias_50.push_back(dummy_dist);
+         bias_65.push_back(dummy_dist);
+         bias_75.push_back(dummy_dist);
+         bias_90.push_back(dummy_dist);
+         bias_95.push_back(dummy_dist);
+         bias_99.push_back(dummy_dist);
+      } // loop over index l labeling layers
+   } // include_bias_terms conditional
 
 // Weights link layer l with layer l+1:
-    
-      if(l == n_layers-1) continue;
-
+   
+   for(int l = 0; l < n_layers - 1; l++)
+   {
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
@@ -190,12 +195,15 @@ neural_net::~neural_net()
       delete delta[l];
    }
    
-   for(unsigned int l = 0; l < biases.size(); l++)
+   if(include_bias_terms)
    {
-      delete biases[l];
-      delete nabla_biases[l];
-      delete delta_nabla_biases[l];
-   }
+      for(unsigned int l = 0; l < biases.size(); l++)
+      {
+         delete biases[l];
+         delete nabla_biases[l];
+         delete delta_nabla_biases[l];
+      }
+   } // include_bias_terms conditional
    
    for(unsigned int l = 0; l < weights.size(); l++)
    {
@@ -231,10 +239,13 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
          outstream << "Layer: l = " << l << endl;
       }
       cout << "  N_nodes = " << NN.layer_dims[l] << endl;
-      genvector* curr_biases = NN.get_biases(l);
-      cout << "biases = " << *curr_biases << endl;
-      cout << "---------------------------" << endl;      
-
+      if(NN.get_include_bias_terms())
+      {
+         genvector* curr_biases = NN.get_biases(l);
+         cout << "biases = " << *curr_biases << endl;
+         cout << "---------------------------" << endl;      
+      }
+      
       if(l == NN.n_layers-1) continue;
       genmatrix* curr_weights = NN.get_weights(l);
       cout << curr_weights->get_mdim() << " x " << curr_weights->get_ndim()
@@ -264,9 +275,14 @@ void neural_net::feedforward(genvector* a_input)
 
    for(int l = 0; l < n_layers-1; l++)
    {
-      genmatrix* curr_weights = weights[l];
-      genvector* curr_biases = biases[l+1];
-      *z[l+1] = (*curr_weights) * (*a[l]) + *curr_biases;
+      if(include_bias_terms)
+      {
+         *z[l+1] = (*weights[l]) * (*a[l]) + *biases[l+1];
+      }
+      else
+      {
+         *z[l+1] = (*weights[l]) * (*a[l]);
+      }
 
 //      cout << "l = " << l << endl;
 //      cout << "z[l+1] = " << *z[l+1] << endl;
@@ -539,7 +555,10 @@ void neural_net::train_network(int n_epochs)
          if(update_counter % n_export_metafiles == 0)
          {
             string extrainfo = "";
-            compute_bias_distributions();
+            if(include_bias_terms)
+            {
+               compute_bias_distributions();
+            }
             compute_weight_distributions();
             store_quasirandom_weight_values();
             generate_summary_plots(extrainfo);
@@ -659,10 +678,14 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
 void neural_net::clear_delta_nablas()
 {
-   for(int l = 0; l < n_layers; l++)
+   if(include_bias_terms)
    {
-      delta_nabla_biases[l]->clear_values();
+      for(int l = 0; l < n_layers; l++)
+      {
+         delta_nabla_biases[l]->clear_values();
+      }
    }
+   
    for(int l = 0; l < n_layers - 1; l++)
    {
       delta_nabla_weights[l]->clear_values();
@@ -729,8 +752,11 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 
 // Eqn BP3:   
-      *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
-
+      if(include_bias_terms)
+      {
+         *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
+      }
+      
 // Eqn BP4:
 
       *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
@@ -1493,7 +1519,10 @@ void neural_net::generate_summary_plots(string extrainfo)
    plot_loss_history();
    plot_log10_lr_mean_abs_nabla_weight_ratios();
    plot_accuracies_history();
-   plot_bias_distributions(extrainfo);
+   if(include_bias_terms)
+   {
+      plot_bias_distributions(extrainfo);
+   }
    plot_weight_distributions(extrainfo);
    plot_quasirandom_weight_values(extrainfo);
    filefunc::purge_files_with_suffix_in_subdir(output_subdir, "ps");
