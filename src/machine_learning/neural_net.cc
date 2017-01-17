@@ -712,6 +712,89 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 // Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
 // to curr layer nodes:
 
+      *delta[prev_layer] = weights[prev_layer]->transpose() * 
+         (*delta[curr_layer]);
+
+      for(int j = 0; j < layer_dims[prev_layer]; j++)
+      {
+         if(z[prev_layer]->get(j) < 0)
+         {
+            delta[prev_layer]->put(
+               j, machinelearning_func::get_leaky_ReLU_small_slope() * 
+               delta[prev_layer]->get(j));
+         }
+      }
+//      cout << "delta[curr_layer] = " << *delta[curr_layer] << endl;
+//      cout << "delta[prev_layer] = " << *delta[prev_layer] << endl;
+
+
+// Eqn BP3:   
+      if(include_bias_terms)
+      {
+         *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
+      }
+      
+// Eqn BP4:
+
+      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
+         *a[prev_layer]);
+
+// Add L2 regularization contribution to delta_nabla_weights.  No such
+// regularization contribution is conventionally added to
+// delta_nabla_biases:
+
+      *delta_nabla_weights[prev_layer] += 
+         2 * lambda * (*weights[prev_layer]);
+
+   } // loop over curr_layer
+
+// Numerically spot-check loss derivatives wrt a few random
+// weights:
+
+//   if(nrfunc::ran1() < 1E-2)
+//   {
+//      numerically_check_derivs(curr_data_pair);
+//   }
+}
+
+
+/*
+void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
+{
+//    cout << "inside neural_net::backpropagate()" << endl;
+
+   int y = basic_math::round(curr_data_pair.second);
+   clear_delta_nablas();
+
+   // Recall for layer l, delta_j = dC_x / dz_j
+
+// Eqn BP1:
+
+   int curr_layer = n_layers - 1;
+//   cout << "curr_layer = num-layers - 1 = " << n_layers - 1 << endl;
+
+//   double curr_cost = -log(a[curr_layer]->get(y));
+//    cout << "  Current training sample cost = " << curr_cost << endl;
+
+
+   for(int j = 0; j < layer_dims[curr_layer]; j++)
+   {
+      double curr_activation = a[curr_layer]->get(j);
+      if(j == y) curr_activation -= 1.0;
+      delta[curr_layer]->put(j, curr_activation);
+   }
+   
+   for(int curr_layer = n_layers - 1; curr_layer >= 1; curr_layer--)
+   {
+      int prev_layer = curr_layer - 1;
+//      cout << "curr_layer = " << curr_layer
+//           << " prev_layer = " << prev_layer << endl;
+
+// Eqn BP2 (Leaky ReLU):
+
+// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
+// to curr layer nodes:
+
 //      *delta[prev_layer] = weights[prev_layer]->transpose() * 
 //         (*delta[curr_layer]);
 
@@ -755,17 +838,16 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
    } // loop over curr_layer
 
-/*
 // Numerically spot-check loss derivatives wrt a few random
 // weights:
 
-   if(nrfunc::ran1() < 1E-2)
-   {
-      numerically_check_derivs(curr_data_pair);
-   }
-*/
+//   if(nrfunc::ran1() < 1E-2)
+//   {
+//      numerically_check_derivs(curr_data_pair);
+//   }
 
 }
+*/
 
 // ---------------------------------------------------------------------
 // On 12/27/16, we numerically spot-checked soft-max loss function
