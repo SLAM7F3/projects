@@ -10,24 +10,30 @@ ifeq ($(CPU_ONLY), 1)
   USE_CUDNN := 0
 endif
 
+# We only build 1 flavor of 'caffe_fp16' binary per host architecture:
+# NATIVE_FP16 == 1 for ARM (and later Pascal)
+# Intel otherwise (pseudo mode)
+
+#NATIVE_FP16 := 1
+
 # To customize your choice of compiler, uncomment and set the following.
 # N.B. the default for Linux is g++ and the default for OSX is clang++
 # CUSTOM_CXX := g++
 
 # CUDA directory contains bin/ and lib/ directories that we need.
-CUDA_DIR := /opt/geo/ext/cuda
+CUDA_DIR := /usr/local/cuda
 # On Ubuntu 14.04, if cuda tools are installed via
 # "sudo apt-get install nvidia-cuda-toolkit" then use this instead:
 # CUDA_DIR := /usr
 
 # CUDA architecture setting: going with all of them.
 # For CUDA < 6.0, comment the *_50 lines for compatibility.
-CUDA_ARCH := -gencode arch=compute_20,code=sm_20 \
-		-gencode arch=compute_20,code=sm_21 \
-		-gencode arch=compute_30,code=sm_30 \
+CUDA_ARCH := -gencode arch=compute_30,code=sm_30 \
 		-gencode arch=compute_35,code=sm_35 \
 		-gencode arch=compute_50,code=sm_50 \
-		-gencode arch=compute_50,code=compute_50
+		-gencode arch=compute_50,code=compute_50 \
+		-gencode arch=compute_60,code=sm_60 \
+		-gencode arch=compute_60,code=compute_60
 
 # BLAS choice:
 # atlas for ATLAS (default)
@@ -51,8 +57,12 @@ BLAS := atlas
 
 # NOTE: this is required only if you will compile the python interface.
 # We need to be able to find Python.h and numpy/arrayobject.h.
-# PYTHON_INCLUDE := /opt/geo/ext/python-2.7.2/include/python2.7 \
-# 	      /opt/ext/python-2.7.2/lib/python2.7/site-packages/numpy/core/include
+
+#PYTHON_INCLUDE := /opt/geo/ext/python-2.7.2/include/python2.7
+PYTHON_INCLUDE := /usr/include/python2.7 \
+		/usr/lib/python2.7/dist-packages/numpy/core/include \
+		/usr/local/lib/python2.7/dist-packages/numpy/core/include
+
 # Anaconda Python distribution is quite popular. Include path:
 # Verify anaconda location, sometimes it's in root.
 ANACONDA_HOME := /usr/local/anaconda
@@ -61,7 +71,7 @@ PYTHON_INCLUDE := $(ANACONDA_HOME)/include \
 		$(ANACONDA_HOME)/lib/python2.7/site-packages/numpy/core/include \
 
 # We need to be able to find libpythonX.X.so or .dylib.
-# PYTHON_LIB := /usr/lib
+# PYTHON_LIB := /usr/lib64
 PYTHON_LIB := $(ANACONDA_HOME)/lib
 
 # Homebrew installs numpy in a non standard path (keg only)
@@ -72,12 +82,18 @@ PYTHON_LIB := $(ANACONDA_HOME)/lib
 WITH_PYTHON_LAYER := 1
 
 # Whatever else you find you need goes here.
-INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /opt/boost/include \
-  			/opt/geo/ext/protobuf-2.6.1/include /opt/geo/ext/glog-0.3.3/include \
-                        /opt/geo/ext/opencv-2.4.10/include /usr/include
-LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /opt/boost/lib \
-  			/opt/geo/ext/protobuf-2.6.1/lib /opt/geo/ext/glog-0.3.3/lib \
-                        /opt/geo/ext/opencv-2.4.10/lib /usr/lib64/atlas
+
+#INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /opt/geo/ext/boost-1.48.0/include \
+#  			/opt/geo/ext/protobuf-2.6.1/include /opt/geo/ext/glog-0.3.3/include \
+#                        /opt/geo/ext/opencv-2.4.10/include /usr/include
+# LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /opt/geo/ext/boost-1.48.0/lib \
+#   			/opt/geo/ext/protobuf-2.6.1/lib /opt/geo/ext/glog-0.3.3/lib \
+#                         /opt/geo/ext/opencv-2.4.10/lib /usr/lib64/atlas
+
+INCLUDE_DIRS := $(PYTHON_INCLUDE) /usr/local/include /usr/local/OpenCV/include \
+                /usr/local/cuda/include
+LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /usr/local/OpenCV/lib \
+                /usr/local/cuda/lib64/
 
 # If Homebrew is installed at a non standard location (for example your home directory) and you use it for general dependencies
 # INCLUDE_DIRS += $(shell brew --prefix)/include
@@ -85,7 +101,7 @@ LIBRARY_DIRS := $(PYTHON_LIB) /usr/local/lib /usr/lib /opt/boost/lib \
 
 # Uncomment to use `pkg-config` to specify OpenCV library paths.
 # (Usually not necessary -- OpenCV libraries are normally installed in one of the above $LIBRARY_DIRS.)
-# USE_PKG_CONFIG := 1
+USE_PKG_CONFIG := 1
 
 BUILD_DIR := build
 DISTRIBUTE_DIR := distribute
@@ -97,4 +113,4 @@ DISTRIBUTE_DIR := distribute
 TEST_GPUID := 0
 
 # enable pretty build (comment to see full commands)
-Q ?= @
+# Q ?= @

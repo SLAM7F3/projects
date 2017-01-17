@@ -42,13 +42,9 @@ void neural_net::initialize_member_objects(
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
       genvector *curr_z = new genvector(layer_dims.back());
-      genvector *curr_gamma = new genvector(layer_dims.back());
-      genvector *curr_beta = new genvector(layer_dims.back());
       genvector *curr_a = new genvector(layer_dims.back());
       genvector *curr_delta = new genvector(layer_dims.back());
       z.push_back(curr_z);
-      gammas.push_back(curr_gamma);
-      betas.push_back(curr_beta);
       a.push_back(curr_a);
       delta.push_back(curr_delta);
    } // loop over index l labeling neural network layers
@@ -133,10 +129,6 @@ neural_net::neural_net(
       genmatrix *curr_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
-      genmatrix *curr_weights_transpose = new genmatrix(
-         layer_dims[l], layer_dims[l+1]);
-      weights_transpose.push_back(curr_weights_transpose);
-
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       nabla_weights.push_back(curr_nabla_weights);
@@ -199,8 +191,6 @@ neural_net::~neural_net()
    for(int l = 0; l < n_layers; l++)
    {
       delete z[l];
-      delete gammas[l];
-      delete betas[l];
       delete a[l];
       delete delta[l];
    }
@@ -214,7 +204,7 @@ neural_net::~neural_net()
          delete delta_nabla_biases[l];
       }
    } // include_bias_terms conditional
-
+   
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       delete weights[l];
@@ -222,6 +212,53 @@ neural_net::~neural_net()
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
    }
+}
+
+// ---------------------------------------------------------------------
+// Overload << operator:
+
+ostream& operator<< (ostream& outstream, neural_net& NN)
+{
+   outstream << endl;
+   outstream << "n_layers = " << NN.n_layers << endl << endl;
+   for(int l = 0; l < NN.n_layers; l++)
+   {
+      cout << "---------------------------" << endl;
+      if(l == 0)
+      {
+         outstream << "INPUT Layer: l = 0" << endl;
+      
+      }
+      else if (l == NN.n_layers - 1)
+      {
+         outstream << "OUTPUT Layer l = " << l << endl;
+
+      }
+      else
+      {
+         outstream << "Layer: l = " << l << endl;
+      }
+      cout << "  N_nodes = " << NN.layer_dims[l] << endl;
+      if(NN.get_include_bias_terms())
+      {
+         genvector* curr_biases = NN.get_biases(l);
+         cout << "biases = " << *curr_biases << endl;
+         cout << "---------------------------" << endl;      
+      }
+      
+      if(l == NN.n_layers-1) continue;
+      genmatrix* curr_weights = NN.get_weights(l);
+      cout << curr_weights->get_mdim() << " x " << curr_weights->get_ndim()
+           << " weights matrix connecting layers " 
+           << l << " to " << l+1 << " :" << endl;
+      cout << *curr_weights << endl;
+
+   } // loop over index l labeling neural net layer
+   cout << "Correct test prediction frac = " 
+        << NN.evaluate_model_on_test_set()
+        << endl;
+
+   return outstream;
 }
 
 // ==========================================================================
@@ -240,15 +277,12 @@ void neural_net::feedforward(genvector* a_input)
    {
       if(include_bias_terms)
       {
-         z[l+1]->matrix_vector_mult_sum(*weights[l], *a[l], *biases[l+1]);
+         *z[l+1] = (*weights[l]) * (*a[l]) + *biases[l+1];
       }
       else
       {
-         z[l+1]->matrix_vector_mult(*weights[l], *a[l]);
+         *z[l+1] = (*weights[l]) * (*a[l]);
       }
-
-//      machinelearning_func::batch_normalization(
-//         *z[l+1], *gammas[l+1], *betas[l+1]);
 
 //      cout << "l = " << l << endl;
 //      cout << "z[l+1] = " << *z[l+1] << endl;
@@ -547,14 +581,10 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 // Initialize cumulative (over mini batch) weight and bias gradients
 // to zero:
 
-   if(include_bias_terms)
+   for(int l = 0; l < n_layers; l++)
    {
-      for(int l = 0; l < n_layers; l++)
-      {
-         nabla_biases[l]->clear_values();
-      }
+      nabla_biases[l]->clear_values();
    }
-   
    for(int l = 0; l < n_layers - 1; l++)
    {
       nabla_weights[l]->clear_values();
@@ -570,14 +600,10 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
 // Accumulate weights and bias gradients for each network layer:
 
-      if(include_bias_terms)
+      for(int l = 0; l < n_layers; l++)
       {
-         for(int l = 0; l < n_layers; l++)
-         {
-            *nabla_biases[l] += *delta_nabla_biases[l] / mini_batch_size;
-         }
+         *nabla_biases[l] += *delta_nabla_biases[l] / mini_batch_size;
       }
-      
       for(int l = 0; l < n_layers - 1; l++)
       {
          *nabla_weights[l] += *delta_nabla_weights[l] / mini_batch_size;
@@ -591,15 +617,12 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 // Update weights and biases for eacy network layer by their nabla
 // values averaged over the current mini-batch:
 
-   if(include_bias_terms)
+   for(int l = 0; l < n_layers; l++)
    {
-      for(int l = 0; l < n_layers; l++)
-      {
-         *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
+      *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
-      }
    }
-   
+
    for(int l = 0; l < n_layers - 1; l++)
    {
       genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
@@ -748,106 +771,17 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
    } // loop over curr_layer
 
-// Numerically spot-check loss derivatives wrt a few random
-// weights:
-
-//   if(nrfunc::ran1() < 1E-2)
-//   {
-//      numerically_check_derivs(curr_data_pair);
-//   }
-}
-
-
 /*
-void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
-{
-//    cout << "inside neural_net::backpropagate()" << endl;
-
-   int y = basic_math::round(curr_data_pair.second);
-   clear_delta_nablas();
-
-   // Recall for layer l, delta_j = dC_x / dz_j
-
-// Eqn BP1:
-
-   int curr_layer = n_layers - 1;
-//   cout << "curr_layer = num-layers - 1 = " << n_layers - 1 << endl;
-
-//   double curr_cost = -log(a[curr_layer]->get(y));
-//    cout << "  Current training sample cost = " << curr_cost << endl;
-
-
-   for(int j = 0; j < layer_dims[curr_layer]; j++)
-   {
-      double curr_activation = a[curr_layer]->get(j);
-      if(j == y) curr_activation -= 1.0;
-      delta[curr_layer]->put(j, curr_activation);
-   }
-   
-   for(int curr_layer = n_layers - 1; curr_layer >= 1; curr_layer--)
-   {
-      int prev_layer = curr_layer - 1;
-//      cout << "curr_layer = " << curr_layer
-//           << " prev_layer = " << prev_layer << endl;
-
-// Eqn BP2 (Leaky ReLU):
-
-// Recall weights[prev_layer] = Weight matrix mapping prev layer nodes
-// to curr layer nodes:
-
-//      *delta[prev_layer] = weights[prev_layer]->transpose() * 
-//         (*delta[curr_layer]);
-
-      weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
-      delta[prev_layer]->matrix_vector_mult(
-         *weights_transpose[prev_layer], *delta[curr_layer]);
-
-      for(int j = 0; j < layer_dims[prev_layer]; j++)
-      {
-         if(z[prev_layer]->get(j) < 0)
-         {
-            delta[prev_layer]->put(
-               j, machinelearning_func::get_leaky_ReLU_small_slope() * 
-               delta[prev_layer]->get(j));
-         }
-      }
-//      cout << "delta[curr_layer] = " << *delta[curr_layer] << endl;
-//      cout << "delta[prev_layer] = " << *delta[prev_layer] << endl;
-
-
-// Eqn BP3:   
-
-      if(include_bias_terms)
-      {
-         *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
-      }
-      
-// Eqn BP4:
-
-//      delta_nabla_weights[prev_layer]->accumulate_outerprod(
-//         *delta[curr_layer], *a[prev_layer]);
-
-      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
-         *a[prev_layer]);
-
-// Add L2 regularization contribution to delta_nabla_weights.  No such
-// regularization contribution is conventionally added to
-// delta_nabla_biases:
-
-      *delta_nabla_weights[prev_layer] += 2 * lambda * (*weights[prev_layer]);
-
-   } // loop over curr_layer
-
 // Numerically spot-check loss derivatives wrt a few random
 // weights:
 
-//   if(nrfunc::ran1() < 1E-2)
-//   {
-//      numerically_check_derivs(curr_data_pair);
-//   }
+   if(nrfunc::ran1() < 1E-2)
+   {
+      numerically_check_derivs(curr_data_pair);
+   }
+*/
 
 }
-*/
 
 // ---------------------------------------------------------------------
 // On 12/27/16, we numerically spot-checked soft-max loss function
@@ -949,8 +883,6 @@ void neural_net::summarize_parameters(string params_filename)
                     << layer_dims[l] << endl;
    }
    params_stream << "   n_weights = " << count_weights() << " (FC)" 
-                 << endl;
-   params_stream << "   include_bias_terms = " << include_bias_terms 
                  << endl;
  
    params_stream << "base_learning_rate = " << base_learning_rate 
@@ -1593,7 +1525,7 @@ void neural_net::generate_summary_plots(string extrainfo)
    }
    plot_weight_distributions(extrainfo);
    plot_quasirandom_weight_values(extrainfo);
-   //   filefunc::purge_files_with_suffix_in_subdir(output_subdir, "ps");
+   filefunc::purge_files_with_suffix_in_subdir(output_subdir, "ps");
    generate_view_metrics_script();
 }
 
