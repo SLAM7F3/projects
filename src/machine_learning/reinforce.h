@@ -135,7 +135,7 @@ class reinforce
    void plot_KL_divergence_history(
       std::string extrainfo, bool epoch_indep_var);
 
-   void plot_bias_distributions(std::string extrainfo, bool epoch_indep_var);
+   bool plot_bias_distributions(std::string extrainfo, bool epoch_indep_var);
    void plot_weight_distributions(std::string extrainfo, bool epoch_indep_var);
    void plot_quasirandom_weight_values(
       std::string extrainfo, bool epoch_indep_var);

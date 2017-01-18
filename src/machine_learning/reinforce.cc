@@ -1342,12 +1342,16 @@ void reinforce::plot_prob_action_0(string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
-void reinforce::plot_bias_distributions(string extrainfo, bool epoch_indep_var)
+bool reinforce::plot_bias_distributions(string extrainfo, bool epoch_indep_var)
 {
+   if(bias_01[0].size() < 3) return false;
+
+   string script_filename=output_subdir + "view_bias_dists";
+   ofstream script_stream;
+   filefunc::openfile(script_filename, script_stream);
+
    for(unsigned int l = 1; l < bias_50.size(); l++)
    {
-      if(bias_01[l].size() < 3) continue;
-
       metafile curr_metafile;
       string meta_filename=output_subdir + "/bias_dists_"+
          stringfunc::number_to_string(l);
@@ -1439,6 +1443,10 @@ void reinforce::plot_bias_distributions(string extrainfo, bool epoch_indep_var)
       string unix_cmd="meta_to_jpeg "+meta_filename;
       sysfunc::unix_command(unix_cmd);
    } // loop over index l labeling network layers
+
+   filefunc::closefile(script_filename, script_stream);
+   filefunc::make_executable(script_filename);
+   return true;
 }
 
 // ---------------------------------------------------------------------
