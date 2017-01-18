@@ -57,7 +57,6 @@ int main (int argc, char* argv[])
 
 // Set up neural network:
 
-//   int mini_batch_size = 32;
    int mini_batch_size = 100;
    double lambda = 0;  // L2 regularization coefficient
 //   double lambda = 1E-3;  // L2 regularization coefficient
@@ -121,11 +120,10 @@ int main (int argc, char* argv[])
       int move_rel_to_game_end = stringfunc::string_to_integer(
          line_substrings[i].at(1));
 
-
       if(move_rel_to_game_end >= max_move_rel_to_game_end) continue;
 
       int aplus1 = stringfunc::string_to_integer(line_substrings[i].at(2));
-      int player_value = 1;
+      double player_value = 1;
       if(aplus1 < 0) player_value = -1;
       int a = abs(aplus1) - 1;
       curr_data_pair.second = a;
@@ -137,7 +135,13 @@ int main (int argc, char* argv[])
 // Store player_value = +1 or -1 within last entry in
 // *player_board_state_ptr:
 
-      genvector *player_board_state_ptr = new genvector(n_cells + 1);
+// FAKE FAKE:  Weds Jan 18 at 8:06 am
+
+// Experiment with forming 64-dim player_board states in which action ALWAYS
+// corresponds to agent_value = +1:
+
+      genvector *player_board_state_ptr = new genvector(n_cells);
+//      genvector *player_board_state_ptr = new genvector(n_cells + 1);
       curr_data_pair.first = player_board_state_ptr;
       player_board_state_ptr->clear_values();
       
@@ -155,6 +159,8 @@ int main (int argc, char* argv[])
             }
          }
       }
+
+      *player_board_state_ptr *= player_value;
       player_board_state_ptr->put(n_cells, player_value);
 
       if(nrfunc::ran1() < testing_sample_frac)
@@ -168,10 +174,6 @@ int main (int argc, char* argv[])
       
       n_training_samples = training_samples.size();
       n_testing_samples = testing_samples.size();
-
-// FAKE FAKE:  Mon Jan 16 at 10:57 am
-//      if (n_training_samples >= 10) break;
-
    } // loop over index i labeling input text lines
 
    int n_data_samples = n_training_samples + n_testing_samples;
