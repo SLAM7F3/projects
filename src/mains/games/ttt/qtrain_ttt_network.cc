@@ -579,7 +579,7 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->push_back_learning_rate(
             reinforce_agent_ptr->get_learning_rate());
-         if(reinforce_agent_ptr->get_include_bias_terms()){
+         if(reinforce_agent_ptr->get_include_biases()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();
