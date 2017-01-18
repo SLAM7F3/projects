@@ -30,7 +30,8 @@ int main (int argc, char* argv[])
    timefunc::initialize_timeofday_clock();
 
    int n_cells = 64;
-   int Din = n_cells + 1;   	// Number of input layer nodes
+   int Din = n_cells;   	// Number of input layer nodes
+//   int Din = n_cells + 1;   	// Number of input layer nodes
    int H1 = 64;			// Number of first hidden layer nodes
    int H2 = 32;			// Number of 2nd hidden layer nodes
    int H3 = 0;			// Number of 3rd hidden layer nodes
