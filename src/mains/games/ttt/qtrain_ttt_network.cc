@@ -85,11 +85,11 @@ int main (int argc, char* argv[])
    int Dout = n_actions;		// Output dimensionality
 
 //   int H1 = 32;
-   int H1 = 64;
-//   int H1 = 128;
+//   int H1 = 64;
+   int H1 = 128;
 
-   int H2 = 32;
-//   int H2 = 64;
+//   int H2 = 32;
+   int H2 = 64;
 
    int H3 = 0;
 //   int H3 = 32;
@@ -130,7 +130,8 @@ int main (int argc, char* argv[])
       include_biases, layer_dims, 1, replay_memory_capacity, 
       eval_memory_capacity, reinforce::RMSPROP);
    reinforce_agent_ptr->set_environment(&game_world);
-   reinforce_agent_ptr->set_lambda(1E-4);
+   reinforce_agent_ptr->set_lambda(0);
+//   reinforce_agent_ptr->set_lambda(1E-4);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
@@ -153,8 +154,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
-//   reinforce_agent_ptr->set_base_learning_rate(3E-4);   // 
-   reinforce_agent_ptr->set_base_learning_rate(1E-4);   // 
+   reinforce_agent_ptr->set_base_learning_rate(3E-4);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(1E-4);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(2E-6);  // 
@@ -162,7 +163,8 @@ int main (int argc, char* argv[])
 
 //   int n_max_episodes = 300 * 1000;
 //   int n_max_episodes = 400 * 1000;
-   int n_max_episodes = 500 * 1000;
+//   int n_max_episodes = 500 * 1000;
+   int n_max_episodes = 1000 * 1000;
 
    int n_update = 2000;
    int n_progress = 2000;
