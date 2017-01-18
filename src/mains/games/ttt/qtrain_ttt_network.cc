@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 1/10/17; 1/11/17; 1/13/17; 1/14/17
+// Last updated on 1/11/17; 1/13/17; 1/14/17; 1/18/17
 // ==========================================================================
 
 #include <iostream>
@@ -130,6 +130,7 @@ int main (int argc, char* argv[])
       reinforce::RMSPROP);
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->set_lambda(1E-2);
+   reinforce_agent_ptr->set_include_bias_terms(true);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
