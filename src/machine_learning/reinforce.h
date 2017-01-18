@@ -43,10 +43,10 @@ class reinforce
 
 // Initialization, constructor and destructor functions:
 
-   reinforce(const std::vector<int>& n_nodes_per_layer);
-   reinforce(const std::vector<int>& n_nodes_per_layer,
+   reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer);
+   reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer,
              int replay_memory_capacity, int solver_type = SGD);
-   reinforce(const std::vector<int>& n_nodes_per_layer,
+   reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer,
              int batch_size, int replay_memory_capacity, 
              int eval_memory_capacity, int solver_type = SGD);
    reinforce();
@@ -59,8 +59,7 @@ class reinforce
    void set_expt_number(int n);
    int get_expt_number() const;
    void set_output_subdir(std::string subdir);   
-   void set_include_bias_terms(bool flag);
-   bool get_include_bias_terms() const;
+   bool get_include_biases() const;
    void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
    bool get_debug_flag() const;
@@ -247,7 +246,7 @@ class reinforce
 
   private:
 
-   bool include_bias_terms;
+   bool include_biases;
    bool debug_flag;
    int expt_number;
    int learning_type;
@@ -420,14 +419,9 @@ inline void reinforce::set_output_subdir(std::string subdir)
    output_subdir = subdir;
 }
 
-inline void reinforce::set_include_bias_terms(bool flag)
+inline bool reinforce::get_include_biases() const
 {
-   include_bias_terms = flag;
-}
-
-inline bool reinforce::get_include_bias_terms() const
-{
-   return include_bias_terms;
+   return include_biases;
 }
 
 inline void reinforce::set_environment(environment* e_ptr)

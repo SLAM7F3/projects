@@ -43,7 +43,6 @@ using std::vector;
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
    expt_number = -1;
-   include_bias_terms = false;
    debug_flag = false;
 
 // This particular set of hyperparameters yields perfect reinforcement
@@ -83,7 +82,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 
 // Biases for all network layers:
 
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -130,7 +129,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          curr_rms_biases_denom->clear_values();
          rms_biases_denom.push_back(curr_rms_biases_denom);
       }
-   } // include_bias_terms conditional
+   } // include_biases conditional
 
 // Weights link layer l with layer l+1:
 
@@ -313,17 +312,20 @@ void reinforce::allocate_member_objects()
 }		       
 
 // ---------------------------------------------------------------------
-reinforce::reinforce(const vector<int>& n_nodes_per_layer)
+reinforce::reinforce(bool include_biases, const vector<int>& n_nodes_per_layer)
 {
+   this->include_biases = include_biases;
    this->replay_memory_capacity = 1;
    this->eval_memory_capacity = 1;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
 }
 
-reinforce::reinforce(const vector<int>& n_nodes_per_layer, 
-                     int replay_memory_capacity, int solver_type)
+reinforce::reinforce(
+   bool include_biases, const vector<int>& n_nodes_per_layer, 
+   int replay_memory_capacity, int solver_type)
 {
+   this->include_biases = include_biases;
    this->replay_memory_capacity = replay_memory_capacity;
    this->eval_memory_capacity = -1;
    this->solver_type = solver_type;
@@ -334,10 +336,12 @@ reinforce::reinforce(const vector<int>& n_nodes_per_layer,
    this->batch_size = -1;
 }
 
-reinforce::reinforce(const vector<int>& n_nodes_per_layer, 
-                     int batch_size, int replay_memory_capacity,
-                     int eval_memory_capacity, int solver_type)
+reinforce::reinforce(
+   bool include_biases, const vector<int>& n_nodes_per_layer, 
+   int batch_size, int replay_memory_capacity,
+   int eval_memory_capacity, int solver_type)
 {
+   this->include_biases = include_biases;
    this->replay_memory_capacity = replay_memory_capacity;
    this->eval_memory_capacity = eval_memory_capacity;
    this->solver_type = solver_type;
@@ -367,7 +371,7 @@ reinforce::~reinforce()
       delete Delta_Prime[l];
    }
 
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -377,7 +381,7 @@ reinforce::~reinforce()
          delete delta_nabla_biases[l];
          delete rms_biases_denom[l];
       }
-   } // include_bias_terms flag
+   } // include_biases flag
 
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -494,7 +498,7 @@ void reinforce::summarize_parameters(string params_filename)
    }
    params_stream << "   n_weights = " << count_weights() << " (FC)" 
                  << endl;
-   params_stream << "   include_bias_terms = " << include_bias_terms 
+   params_stream << "   include_biases = " << include_biases 
                  << endl;
 
    params_stream << "base_learning_rate = " << base_learning_rate 
@@ -577,7 +581,7 @@ int reinforce::count_weights()
 // ---------------------------------------------------------------------
 void reinforce::print_biases()
 {
-   if(!include_bias_terms) return;
+   if(!include_biases) return;
    
    for(int l = 0; l < n_layers; l++)
    {
@@ -1706,7 +1710,7 @@ void reinforce::generate_summary_plots(string extrainfo, bool epoch_indep_var)
    plot_lr_history(extrainfo, epoch_indep_var);
    plot_log10_lr_mean_abs_nabla_weight_ratios(extrainfo, epoch_indep_var);
 
-   if(get_include_bias_terms()){
+   if(get_include_biases()){
       plot_bias_distributions(extrainfo, epoch_indep_var);
    }
    plot_weight_distributions(extrainfo, epoch_indep_var);
@@ -1940,7 +1944,7 @@ void reinforce::import_snapshot()
 
 void reinforce::clear_delta_nablas()
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(unsigned int l = 0; l < delta_nabla_biases.size(); l++)
       {
@@ -1962,7 +1966,7 @@ void reinforce::clear_delta_nablas()
 // ---------------------------------------------------------------------
 void reinforce::clear_nablas()
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(unsigned int l = 0; l < nabla_biases.size(); l++)
       {
@@ -1981,13 +1985,13 @@ void reinforce::clear_nablas()
 
 void reinforce::update_weights_and_biases(double lr)
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
          *biases[l] -= lr * (*nabla_biases[l]);
       } // loop over index l labeling network layers
-   } // include_bias_terms_flag
+   } // include_biases_flag
    
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -2024,7 +2028,7 @@ void reinforce::decrease_learning_rate()
 
 void reinforce::copy_weights_onto_old_weights() 
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(unsigned int l = 0; l < biases.size(); l++)
       {
@@ -2184,12 +2188,13 @@ void reinforce::Q_forward_propagate(
    genvector* s_input, bool use_old_weights_flag)
 {
    *A_Prime[0] = *s_input;
- 
+//   cout << "inside reinforce::Q_forward_propagate()" << endl;
+
    for(int l = 0; l < n_layers-1; l++)
    {
       if(use_old_weights_flag)
       {
-         if(include_bias_terms)
+         if(include_biases)
          {
             Z_Prime[l+1]->matrix_vector_mult_sum(
                *old_weights[l], *A_Prime[l], *old_biases[l+1]);
@@ -2201,7 +2206,7 @@ void reinforce::Q_forward_propagate(
       }
       else
       {
-         if(include_bias_terms)
+         if(include_biases)
          {
             Z_Prime[l+1]->matrix_vector_mult_sum(
                *weights[l], *A_Prime[l], *biases[l+1]);
@@ -2558,7 +2563,7 @@ double reinforce::update_Q_network(bool verbose_flag)
 
    if(solver_type == RMSPROP)
    {
-      if(include_bias_terms)
+      if(include_biases)
       {
          update_biases_cache(rmsprop_decay_rate);
       }
@@ -2566,7 +2571,7 @@ double reinforce::update_Q_network(bool verbose_flag)
    }
    else if (solver_type == ADAM)
    {
-      if(include_bias_terms)
+      if(include_biases)
       {
          update_biases_cache(beta2);
       }
@@ -2576,7 +2581,7 @@ double reinforce::update_Q_network(bool verbose_flag)
 // Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -2616,7 +2621,7 @@ double reinforce::update_Q_network(bool verbose_flag)
          }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
       } // loop over index l labeling network layers
-   } // include_bias_terms_flag
+   } // include_biases_flag
    
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -2717,7 +2722,7 @@ double reinforce::update_Q_network(bool verbose_flag)
 //              << endl;
       } // verbose_flag conditional
       
-      if(include_bias_terms) nabla_biases[l]->clear_values();
+      if(include_biases) nabla_biases[l]->clear_values();
       nabla_weights[l]->clear_values();
    } // loop over index l labeling network layers
    
@@ -2875,7 +2880,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
 // Eqn BP3:
 
-      if(include_bias_terms)
+      if(include_biases)
       {
          *delta_nabla_biases[curr_layer] = *Delta_Prime[curr_layer];
       }
@@ -2901,7 +2906,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
 // Accumulate biases' and weights' gradients for each network layer:
 
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -3156,7 +3161,7 @@ void reinforce::P_forward_propagate(genvector* s_input)
  
    for(int l = 0; l < n_layers-1; l++)
    {
-      if(include_bias_terms)
+      if(include_biases)
       {
          Z_Prime[l+1]->matrix_vector_mult_sum(
             *weights[l], *A_Prime[l], *biases[l+1]);
@@ -3370,7 +3375,7 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 
 // Eqn BP3:
 
-      if(include_bias_terms)
+      if(include_biases)
       {
          *delta_nabla_biases[curr_layer] = *Delta_Prime[curr_layer];
       }
@@ -3397,7 +3402,7 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 // Accumulate biases' and weights' gradients for each network layer:
 
    double inverse_Nd = 1.0 / Nd;
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -3513,14 +3518,14 @@ double reinforce::update_P_network(bool verbose_flag)
 
    if(solver_type == RMSPROP)
    {
-      if(include_bias_terms)
+      if(include_biases)
       {
          update_biases_cache(rmsprop_decay_rate);
       }
       update_rmsprop_cache(rmsprop_decay_rate);
    }
    
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -3535,7 +3540,7 @@ double reinforce::update_P_network(bool verbose_flag)
          }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
       } // loop over index l labeling network layers
-   } // include_bias_terms_flag
+   } // include_biases_flag
    
    for(int l = 0; l < n_layers - 1; l++)
    {

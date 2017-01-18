@@ -109,13 +109,14 @@ int main(int argc, char** argv)
 
 // Construct reinforcement learning agent:
 
+   bool include_biases = false;
    int nframes_per_epoch = 50 * 1000;
    int n_max_epochs = 2000;  // updated 1/6/17
 //   int replay_memory_capacity = 10 * 1000;
    int replay_memory_capacity = 20 * 1000;
 
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, replay_memory_capacity, reinforce::RMSPROP);
+      include_biases, layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
    reinforce_agent_ptr->set_environment(&game_world);
    reinforce_agent_ptr->set_lambda(1E-2);
@@ -428,7 +429,7 @@ int main(int argc, char** argv)
       if(curr_episode_number % n_episode_update == 0)
       {
          outputfunc::print_elapsed_time();
-         if(reinforce_agent_ptr->get_include_bias_terms()){
+         if(reinforce_agent_ptr->get_include_biases()){
             reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->push_back_learning_rate(

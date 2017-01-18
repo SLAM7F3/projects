@@ -90,9 +90,10 @@ int main (int argc, char* argv[])
 //   int n_rollouts = 32;
    int n_rollouts = 100;
 //   int n_rollouts = 1000;
+   bool include_biases = true;
    int replay_memory_capacity = n_rollouts;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, replay_memory_capacity, reinforce::RMSPROP);
+      include_biases, layer_dims, replay_memory_capacity, reinforce::RMSPROP);
 
    reinforce_agent_ptr->set_environment(&game_world);
 //   reinforce_agent_ptr->set_lambda(0);
@@ -273,7 +274,7 @@ int main (int argc, char* argv[])
          cout << "Episode number = " << curr_episode_number 
               << endl;
 
-         if(reinforce_agent_ptr->get_include_bias_terms()){
+         if(reinforce_agent_ptr->get_include_biases()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();

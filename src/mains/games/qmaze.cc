@@ -87,13 +87,10 @@ int main (int argc, char* argv[])
    int replay_memory_capacity = 1 * 1000;
 //   int replay_memory_capacity = 10 * 1000;
    int eval_memory_capacity = 0.1 * replay_memory_capacity;
+   bool include_biases = true;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
-//      reinforce::SGD);
-//      reinforce::MOMENTUM);
-//      reinforce::NESTEROV);
-      reinforce::RMSPROP);
-//      reinforce::ADAM);
+      include_biases, layer_dims, 1, replay_memory_capacity, 
+      eval_memory_capacity, reinforce::RMSPROP);
 
 //   const double beta1 = 0.0;
 //   const double beta1 = 1E-12;// OK
@@ -329,7 +326,7 @@ int main (int argc, char* argv[])
               << " epsilon = " << reinforce_agent_ptr->get_epsilon()
               << endl;
 
-         if(reinforce_agent_ptr->get_include_bias_terms()){
+         if(reinforce_agent_ptr->get_include_biases()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();
@@ -354,7 +351,7 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->push_back_learning_rate(
             reinforce_agent_ptr->get_learning_rate());
-         if(reinforce_agent_ptr->get_include_bias_terms()){
+         if(reinforce_agent_ptr->get_include_biases()){
            reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();

@@ -125,12 +125,12 @@ int main (int argc, char* argv[])
    int eval_memory_capacity = basic_math::min(
       int(0.25 * replay_memory_capacity), 20000);
 
+   bool include_biases = true;
    reinforce* reinforce_agent_ptr = new reinforce(
-      layer_dims, 1, replay_memory_capacity, eval_memory_capacity,
-      reinforce::RMSPROP);
+      include_biases, layer_dims, 1, replay_memory_capacity, 
+      eval_memory_capacity, reinforce::RMSPROP);
    reinforce_agent_ptr->set_environment(&game_world);
-   reinforce_agent_ptr->set_lambda(1E-2);
-   reinforce_agent_ptr->set_include_bias_terms(true);
+   reinforce_agent_ptr->set_lambda(1E-4);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01); 
 
 // Initialize output subdirectory within an experiments folder:
@@ -154,8 +154,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);  
 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-4);   // 
-//   reinforce_agent_ptr->set_base_learning_rate(1E-4);   // 
-   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // 
+   reinforce_agent_ptr->set_base_learning_rate(1E-4);   // 
+//   reinforce_agent_ptr->set_base_learning_rate(1E-5);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(3E-6);   // 
 //   reinforce_agent_ptr->set_base_learning_rate(2E-6);  // 
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  OK

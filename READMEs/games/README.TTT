@@ -2216,14 +2216,6 @@ old weights period = 4 * replay mem capacity; min_eps = 0.025; do not
 switch first player; update Q network every turn
 
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
-
----------------------
-Titan 1:
----------------------
-
 88.  T1: Opponent plays randomly: H1 = 64; H2 = 64; blr = 3E-4; old weights
 period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not switch first
 player; update Q network every episode
@@ -2232,10 +2224,6 @@ player; update Q network every episode
 period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not switch first
 player; update Q network every episode
 
----------------------
-Titan 3:
----------------------
-
 90.  T3: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
 old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
 switch first player; update Q network every episode
@@ -2243,10 +2231,6 @@ switch first player; update Q network every episode
 91.  T3: Opponent plays randomly: H1 = 64; H2 = 32; H3 = 32; blr = 3E-4;
 old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
 switch first player; update Q network every episode
-
----------------------
-Thinkmate
----------------------
 
 86.  TM: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4;
 old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
@@ -2257,10 +2241,6 @@ old weights period = 1 * replay mem capacity = 5K; min_eps = 0.025; do not
 switch first player; update Q network every episode
 
 
-
----------------------
-m6700
----------------------
 
 20.  m6700: Opponent plays randomly: H1 = 64; H2 = 32; blr = 3E-4; old weights
 period = 4 * replay mem capacity; min_eps = 0.025; do not switch first
@@ -2505,6 +2485,28 @@ not switch first player; update Q network every episode
 old weights period = 10K; replay mem capacity = 10K; min_eps = 0.025; do
 not switch first player; update Q network every episode
 
+
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+
+
+---------------------
+Titan 3:
+---------------------
+
+---------------------
+Thinkmate
+---------------------
+
+---------------------
+m6700
+---------------------
 
 
 
