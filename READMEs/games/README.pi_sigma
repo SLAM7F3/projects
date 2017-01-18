@@ -1,40 +1,42 @@
 ==========================================================================
 Training pi_sigma for TTT
 ==========================================================================
-Last updated on 1/16/17; 1/17/17
+Last updated on 1/16/17; 1/17/17; 1/18/17
 ==========================================================================
 
 Best results so far:
 
-42.  T1
-H1 = 64; H2 = 32; H3 = 0
-lambda = 0.001
-base_learning_rate = 1E-4
+60.  Repeat expt 54 on Titan 1 from T3 with code with transposed weights matrix
+H1 = 128; H2 = 64; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
 max move rel to end = 1
 
-Experiment 42
-Tue Jan 17 05:46:33 2017
+Experiment 60
+Tue Jan 17 15:49:40 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 65
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 32
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
    layer = 3 n_nodes = 64
-   n_weights = 8256 (FC)
-base_learning_rate = 0.0001; batch_size = 32
+   n_weights = 20608 (FC)
+base_learning_rate = 0.0003; batch_size = 100
 solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.001
-n_training_samples = 31524
-n_test_samples = 3477
+L2 regularization lambda coeff = 0.0003
+n_training_samples = 44915
+n_test_samples = 5085
 Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
-Process ID = 2235
+Process ID = 5356
 
-After 160 epochs, test accuracy = 0.252 and train accuracy = 0.291
-Loss diverging.
+After 2202 epochs, test accuracy = 0.569322 and training accuracy = 0.636
+
+
+
 
 ------------------------------------------------------
 TERMINATED EXPERIMENTS
@@ -315,6 +317,15 @@ Process ID = 2235
 
 After 160 epochs, test accuracy = 0.252 and train accuracy = 0.291
 
+
+43.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 1E-4
+max move rel to end = 1
+
+After 1018 epochs, test accuracy = 0.395 & train accuracy = 0.442
+
 44.  T1
 H1 = 64; H2 = 64; H3 = 0
 lambda = 0.005
@@ -372,6 +383,14 @@ lambda = 0.005
 base_learning_rate = 3E-4
 max move rel to end = 1
 
+49.  T3
+H1 = 128; H2 = 32; H3 = 0
+lambda = 0.001
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+After 1288 epochs, test accuracy = 0.444 and train accuracy = 0.516
+
 50.  T3
 H1 = 128; H2 = 32; H3 = 0
 lambda = 0.003
@@ -400,36 +419,6 @@ max move rel to end = 1
 
 After 1073 epochs, test accuracy = 0.352
 
-
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
-
----------------------
-Titan 1:
----------------------
-
----------------------
-Titan 3:
----------------------
-
-43.  T3
-H1 = 128; H2 = 32; H3 = 0
-lambda = 0.001
-base_learning_rate = 1E-4
-max move rel to end = 1
-
-After 1018 epochs, test accuracy = 0.395 & train accuracy = 0.442
-
-
-49.  T3
-H1 = 128; H2 = 32; H3 = 0
-lambda = 0.001
-base_learning_rate = 3E-4
-max move rel to end = 1
-
-After 1288 epochs, test accuracy = 0.444 and train accuracy = 0.516
-
 54.  T3
 H1 = 128; H2 = 64; H3 = 0
 lambda = 0.0003
@@ -437,6 +426,8 @@ base_learning_rate = 3E-4
 max move rel to end = 1
 
 After 853 epochs, test accuracy = 0.400 and train accuracy = 0.512
+After 3557 epochs, test accuracy = 0.519 and train accuracy = 0.613
+
 
 55.  T3
 H1 = 128; H2 = 128; H3 = 0
@@ -466,11 +457,6 @@ Process ID = 19850
 
 After 536 epochs, test accuracy = 0.398 and train accuracy = 0.542
 
-58.  Repeat expt 54 from T3 with streamlined code
-H1 = 128; H2 = 64; H3 = 0
-lambda = 0.0003
-base_learning_rate = 3E-4
-max move rel to end = 1
 
 59.  Repeat expt 55 from T3 with streamline code
 H1 = 128; H2 = 128; H3 = 0
@@ -479,19 +465,110 @@ base_learning_rate = 3E-4
 max move rel to end = 1
 
 
+61.  Repeat expt 55 from T3 with code with transposed weights matrix
+H1 = 128; H2 = 128; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+Results not as good as H1 = 64, H2 = 128!
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+
+Experiment 60 on Titan 1:
+Tue Jan 17 15:49:40 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   n_weights = 20608 (FC)
+base_learning_rate = 0.0003; batch_size = 100
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0003
+n_training_samples = 44915
+n_test_samples = 5085
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 5356
+
+After 2202 epochs, test accuracy = 0.569322 and training accuracy = 0.636
+
+
+
+---------------------
+Titan 3:
+---------------------
+
+58.  Repeat expt 54 from T3 with streamlined code
+H1 = 128; H2 = 64; H3 = 0
+lambda = 0.0003
+base_learning_rate = 3E-4
+max move rel to end = 1
+
+Tue Jan 17 13:20:04 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   n_weights = 20608 (FC)
+base_learning_rate = 0.0003; batch_size = 100
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0003
+n_training_samples = 44915
+n_test_samples = 5085
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 17352
+
+After 1673 epochs, testing accuracy = 0.522 and training accuracy = 0.587
+
+
 60.  Repeat expt 54 from T3 with code with transposed weights matrix
 H1 = 128; H2 = 64; H3 = 0
 lambda = 0.0003
 base_learning_rate = 3E-4
 max move rel to end = 1
 
-Working
 
-61.  Repeat expt 55 from T3 with code with transposed weights matrix
-H1 = 128; H2 = 128; H3 = 0
-lambda = 0.0003
-base_learning_rate = 3E-4
-max move rel to end = 1
+Experiment 60 on Titan 3:
+Tue Jan 17 14:36:54 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 65
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   n_weights = 20608 (FC)
+base_learning_rate = 0.0003; batch_size = 100
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0003
+n_training_samples = 44915
+n_test_samples = 5085
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 29550
+
+
+After 1566 epochs, testing accuracy = 0.515 and training accuracy = 0.582
 
 
 Working.
