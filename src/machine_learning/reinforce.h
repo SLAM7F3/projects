@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/5/17; 1/10/17; 1/11/17; 1/13/17
+// Last modified on 1/10/17; 1/11/17; 1/13/17; 1/18/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -58,6 +58,7 @@ class reinforce
 
    void set_expt_number(int n);
    int get_expt_number() const;
+   void set_output_subdir(std::string subdir);   
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
    void set_environment(environment* e_ptr);
@@ -101,8 +102,8 @@ class reinforce
    void print_biases();
    void print_weights();
 
-   void plot_zeroth_layer_weights(std::string output_subdir);
-   void plot_zeroth_layer_weights(int nx, int ny, std::string output_subdir);
+   void plot_zeroth_layer_weights();
+   void plot_zeroth_layer_weights(int nx, int ny);
    void compute_bias_distributions();
    void compute_weight_distributions();
    void store_quasirandom_weight_values();
@@ -110,50 +111,42 @@ class reinforce
    std::string init_subtitle();
    void generate_metafile_plot(
       const std::vector<double>& values,
-      std::string output_subdir, std::string metafile_basename, 
+      std::string metafile_basename, 
       std::string title, std::string y_label, std::string extrainfo, 
       bool epoch_indep_var, bool plot_smoothed_values_flag,
       bool zero_min_value_flag);
-   void plot_loss_history(std::string output_subdir, std::string extrainfo);
+   void plot_loss_history(std::string extrainfo);
    void plot_avg_discounted_eventual_reward(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
+      std::string extrainfo, bool epoch_indep_var);
    void plot_maxQ_history(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
-   void plot_reward_history(std::string output_subdir, std::string extrainfo,
+      std::string extrainfo, bool epoch_indep_var);
+   void plot_reward_history(std::string extrainfo,
                             bool epoch_indep_var, bool plot_cumulative_reward);
-   void plot_turns_history(std::string output_subdir, std::string extrainfo);
-   void plot_frames_history(std::string output_subdir, std::string extrainfo,
-                            bool epoch_indep_var);
+   void plot_turns_history(std::string extrainfo);
+   void plot_frames_history(std::string extrainfo, bool epoch_indep_var);
    void plot_episode_number_history(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
-   void plot_epsilon_history(std::string output_subdir, std::string extrainfo,
-                             bool epoch_indep_var);
-   void plot_lr_history(std::string output_subdir, std::string extrainfo,
-                        bool epoch_indep_var);
-   void plot_Qmap_score_history(std::string output_subdir, 
-                                std::string extrainfo);
-   void plot_log10_loss_history(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
+      std::string extrainfo, bool epoch_indep_var);
+   void plot_epsilon_history(std::string extrainfo, bool epoch_indep_var);
+   void plot_lr_history(std::string extrainfo, bool epoch_indep_var);
+   void plot_Qmap_score_history(std::string extrainfo);
+   void plot_log10_loss_history(std::string extrainfo, bool epoch_indep_var);
    void plot_log10_lr_mean_abs_nabla_weight_ratios(
-      std::string output_subdir, std::string extrainfo,bool epoch_indep_var);
-   void plot_prob_action_0(std::string output_subdir, std::string extrainfo);
+      std::string extrainfo,bool epoch_indep_var);
+   void plot_prob_action_0(std::string extrainfo);
    void plot_KL_divergence_history(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
+      std::string extrainfo, bool epoch_indep_var);
 
-   void plot_bias_distributions(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
-   void plot_weight_distributions(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
+   void plot_bias_distributions(std::string extrainfo, bool epoch_indep_var);
+   void plot_weight_distributions(std::string extrainfo, bool epoch_indep_var);
    void plot_quasirandom_weight_values(
-      std::string output_subdir, std::string extrainfo, bool epoch_indep_var);
+      std::string extrainfo, bool epoch_indep_var);
    void generate_summary_plots(
-      std::string output_subdir, std::string extrainfo,
-      bool epoch_indep_var = true);
+      std::string extrainfo, bool epoch_indep_var = true);
    void generate_view_metrics_script(
-      std::string output_subdir, bool maze_flag, bool atari_flag);
+      bool maze_flag, bool atari_flag);
 
-   void create_snapshots_subdir(std::string output_subdir);
-   void export_snapshot(std::string output_subdir);
+   void create_snapshots_subdir();
+   void export_snapshot();
    void import_snapshot();
 
 // General learning methods:
@@ -261,6 +254,7 @@ class reinforce
    int solver_type;
    int n_layers, n_actions, n_weights;
    int n_backprops;
+   std::string output_subdir;
    std::vector<int> layer_dims;
    environment* environment_ptr;
    
@@ -419,6 +413,11 @@ inline void reinforce::set_expt_number(int n)
 inline int reinforce::get_expt_number() const
 {
    return expt_number;
+}
+
+inline void reinforce::set_output_subdir(std::string subdir)
+{
+   output_subdir = subdir;
 }
 
 inline void reinforce::set_include_bias_terms(bool flag)

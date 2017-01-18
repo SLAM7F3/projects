@@ -52,12 +52,12 @@ class neural_net
 
    void set_expt_number(int n);
    int get_expt_number() const;
+   void set_output_subdir(std::string subdir);
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
    int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
-   void set_output_subdir(std::string subdir);
    std::string get_output_subdir() const;
    void set_base_learning_rate(double rate);
    double get_base_learning_rate() const;
@@ -207,6 +207,11 @@ inline int neural_net::get_expt_number() const
    return expt_number;
 }
 
+inline void neural_net::set_output_subdir(std::string subdir)
+{
+   output_subdir = subdir;
+}
+
 inline void neural_net::set_include_bias_terms(bool flag)
 {
    include_bias_terms = flag;
@@ -235,11 +240,6 @@ inline genmatrix* neural_net::get_weights(int l) const
 inline std::vector<int>& neural_net::get_incorrect_classifications() 
 {
    return incorrect_classifications;
-}
-
-inline void neural_net::set_output_subdir(std::string subdir)
-{
-   output_subdir = subdir;
 }
 
 inline std::string neural_net::get_output_subdir() const

@@ -82,7 +82,7 @@ int main (int argc, char* argv[])
    string experiments_subdir="./experiments/";
    filefunc::dircreate(experiments_subdir);
    string pi_sigma_subdir = experiments_subdir + "pi_sigma/";
-   filefunc::dircreate(experiments_subdir);
+   filefunc::dircreate(pi_sigma_subdir);
 
    int expt_number;
    cout << "Enter experiment number:" << endl;

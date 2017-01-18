@@ -606,19 +606,21 @@ void reinforce::print_weights()
 // then exports the renormalized weight values as PNG images to the
 // specified output subdirectory.
 
-void reinforce::plot_zeroth_layer_weights(string output_subdir)
+void reinforce::plot_zeroth_layer_weights()
 {
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
    int ncols = sqrt(double(n_zeroth_layer_pixels));
    int nrows = ncols;
-   plot_zeroth_layer_weights(ncols, nrows, output_subdir);
+   plot_zeroth_layer_weights(ncols, nrows);
 }
 
-void reinforce::plot_zeroth_layer_weights(
-   int ncols, int nrows, string output_subdir)
+void reinforce::plot_zeroth_layer_weights(int ncols, int nrows)
 {
 //   cout << "inside reinforce::plot_zeroth_layer_weights()" << endl;
 //   cout << "n_rows = " << nrows << " n_cols = " << ncols << endl;
+
+   string weights_subdir = output_subdir+"zeroth_layer_weights/";
+   filefunc::dircreate(weights_subdir);
 
    int n_zeroth_layer_weights = weights[0]->get_mdim();
    int n_zeroth_layer_pixels = weights[0]->get_ndim();
@@ -688,7 +690,7 @@ void reinforce::plot_zeroth_layer_weights(
       double hue_min =270;
       tr_ptr->convert_grey_values_to_hues(hue_min);
 
-      string output_filename=output_subdir + 
+      string output_filename=weights_subdir + 
          "weights_"+stringfunc::integer_to_string(n,3)+".png";
       tr_ptr->write_curr_frame(output_filename);
       string banner="Exported "+output_filename;
@@ -700,7 +702,7 @@ void reinforce::plot_zeroth_layer_weights(
 
    } // loop over index n labeling weight images
 
-   string script_filename=output_subdir + "view_zeroth_layer_weights";
+   string script_filename=weights_subdir + "view_zeroth_layer_weights";
    ofstream script_stream;
    filefunc::openfile(script_filename, script_stream);
    script_stream << "view weights_000.png" << endl;
@@ -903,7 +905,7 @@ string reinforce::init_subtitle()
 
 void reinforce::generate_metafile_plot(
    const vector<double>& values,
-   string output_subdir, string metafile_basename, string title,
+   string metafile_basename, string title,
    string y_label, string extrainfo, bool epoch_indep_var,
    bool plot_smoothed_values_flag, bool zero_min_value_flag)
 {
@@ -1003,7 +1005,7 @@ void reinforce::generate_metafile_plot(
 // ---------------------------------------------------------------------
 // Generate metafile plot of loss values versus time step samples.
 
-void reinforce::plot_loss_history(string output_subdir, string extrainfo)
+void reinforce::plot_loss_history(string extrainfo)
 {
    string metafile_basename = "loss_history";
    string title = "Loss function";
@@ -1013,7 +1015,7 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      loss_values, output_subdir, metafile_basename, 
+      loss_values, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1023,7 +1025,7 @@ void reinforce::plot_loss_history(string output_subdir, string extrainfo)
 // P-learning versus epoch.
 
 void reinforce::plot_avg_discounted_eventual_reward(
-   string output_subdir, string extrainfo, bool epoch_indep_var)
+   string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "eventual_rewards_history";
    string title = "Average eventual reward";
@@ -1032,7 +1034,7 @@ void reinforce::plot_avg_discounted_eventual_reward(
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      avg_discounted_eventual_rewards, output_subdir, metafile_basename, 
+      avg_discounted_eventual_rewards, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1041,8 +1043,7 @@ void reinforce::plot_avg_discounted_eventual_reward(
 // Generate metafile plot of max Q distribution for evaluation states
 // versus epoch.
 
-void reinforce::plot_maxQ_history(string output_subdir, string extrainfo,
-                                  bool epoch_indep_var)
+void reinforce::plot_maxQ_history(string extrainfo, bool epoch_indep_var)
 {
    if(max_eval_Qvalues_50.size() < 3) return;
 
@@ -1098,8 +1099,7 @@ void reinforce::plot_maxQ_history(string output_subdir, string extrainfo,
 // Generate metafile plot of reward versus time.
 
 void reinforce::plot_reward_history(
-   string output_subdir, string extrainfo, bool epoch_indep_var,
-   bool plot_cumulative_reward)
+   string extrainfo, bool epoch_indep_var, bool plot_cumulative_reward)
 {
    if(plot_cumulative_reward)
    {
@@ -1110,7 +1110,7 @@ void reinforce::plot_reward_history(
       bool zero_min_value_flag = false;
       
       generate_metafile_plot(
-         cumulative_reward_snapshots, output_subdir, metafile_basename, 
+         cumulative_reward_snapshots, metafile_basename, 
          title, ylabel, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
          zero_min_value_flag);
    }
@@ -1123,7 +1123,7 @@ void reinforce::plot_reward_history(
       bool zero_min_value_flag = false;
       
       generate_metafile_plot(
-         running_reward_snapshots, output_subdir, metafile_basename, 
+         running_reward_snapshots, metafile_basename, 
          title, ylabel, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
          zero_min_value_flag);
    }
@@ -1132,7 +1132,7 @@ void reinforce::plot_reward_history(
 // ---------------------------------------------------------------------
 // Generate metafile plot of total number of turns versus episode number.
 
-void reinforce::plot_turns_history(string output_subdir, string extrainfo)
+void reinforce::plot_turns_history(string extrainfo)
 {
    string metafile_basename = "turns_history";
    string title = "Number of AI and agent turns";
@@ -1142,7 +1142,7 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
    bool zero_min_value_flag = true;
 
    generate_metafile_plot(
-      n_episode_turns_frac, output_subdir, metafile_basename, 
+      n_episode_turns_frac, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1150,8 +1150,7 @@ void reinforce::plot_turns_history(string output_subdir, string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of total number of ALE frames per episode number.
 
-void reinforce::plot_frames_history(
-   string output_subdir, string extrainfo, bool epoch_indep_var)
+void reinforce::plot_frames_history(string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "frames_history";
    string title = "Number of ALE frames per episode";
@@ -1160,7 +1159,7 @@ void reinforce::plot_frames_history(
    bool zero_min_value_flag = true;
 
    generate_metafile_plot(
-      n_frames_per_episode, output_subdir, metafile_basename, 
+      n_frames_per_episode, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1169,7 +1168,7 @@ void reinforce::plot_frames_history(
 // Generate metafile plot of total number of episodes vs epoch.
 
 void reinforce::plot_episode_number_history(
-   string output_subdir, string extrainfo, bool epoch_indep_var)
+   string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "n_episodes";
    string title = "Number of episodes";
@@ -1178,7 +1177,7 @@ void reinforce::plot_episode_number_history(
    bool zero_min_value_flag = true;
 
    generate_metafile_plot(
-      episode_history, output_subdir, metafile_basename, 
+      episode_history, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1186,8 +1185,7 @@ void reinforce::plot_episode_number_history(
 // ---------------------------------------------------------------------
 // Generate metafile plot of epsilon vs episode number
 
-void reinforce::plot_epsilon_history(string output_subdir, string extrainfo,
-                                     bool epoch_indep_var)
+void reinforce::plot_epsilon_history(string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "epsilon_history";
    string title = "Epsilon";
@@ -1196,7 +1194,7 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo,
    bool zero_min_value_flag = true;
 
    generate_metafile_plot(
-      epsilon_values, output_subdir, metafile_basename, 
+      epsilon_values, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1204,8 +1202,7 @@ void reinforce::plot_epsilon_history(string output_subdir, string extrainfo,
 // ---------------------------------------------------------------------
 // Generate metafile plot of learning rate vs episode number
 
-void reinforce::plot_lr_history(string output_subdir, string extrainfo,
-                                bool epoch_indep_var)
+void reinforce::plot_lr_history(string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "lr_history";
    string title = "Learning rate";
@@ -1214,7 +1211,7 @@ void reinforce::plot_lr_history(string output_subdir, string extrainfo,
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      learning_rate, output_subdir, metafile_basename, 
+      learning_rate, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1222,7 +1219,7 @@ void reinforce::plot_lr_history(string output_subdir, string extrainfo,
 // ---------------------------------------------------------------------
 // Generate metafile plot of Qmap score versus episode number.
 
-void reinforce::plot_Qmap_score_history(string output_subdir, string extrainfo)
+void reinforce::plot_Qmap_score_history(string extrainfo)
 {
    string metafile_basename = "Qmap_score_history";
    string title = "Qmap_score";
@@ -1232,7 +1229,7 @@ void reinforce::plot_Qmap_score_history(string output_subdir, string extrainfo)
    bool zero_min_value_flag = true;
 
    generate_metafile_plot(
-      Qmap_scores, output_subdir, metafile_basename, 
+      Qmap_scores, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1240,8 +1237,7 @@ void reinforce::plot_Qmap_score_history(string output_subdir, string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of log10(total loss) versus episode number.
 
-void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
-                                        bool epoch_indep_var)
+void reinforce::plot_log10_loss_history(string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "log10_losses_history";
    string title = "Log10(total loss)";
@@ -1250,7 +1246,7 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      log10_losses, output_subdir, metafile_basename, 
+      log10_losses, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1260,7 +1256,7 @@ void reinforce::plot_log10_loss_history(string output_subdir, string extrainfo,
 // versus episode number.
 
 void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
-   string output_subdir, string extrainfo,bool epoch_indep_var)
+   string extrainfo,bool epoch_indep_var)
 {
    string metafile_basename = "lr_nabla_weight_ratios";
    string title="learning rate * <|nabla_weight_ratio|>";
@@ -1269,7 +1265,7 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      log10_lr_mean_abs_nabla_weight_ratios, output_subdir, metafile_basename, 
+      log10_lr_mean_abs_nabla_weight_ratios, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1278,7 +1274,7 @@ void reinforce::plot_log10_lr_mean_abs_nabla_weight_ratios(
 // Generate metafile plot of mean KL divergence vs episode number
 
 void reinforce::plot_KL_divergence_history(
-   string output_subdir, string extrainfo, bool epoch_indep_var)
+   string extrainfo, bool epoch_indep_var)
 {
    string metafile_basename = "KL_history";
    string title = "Mean KL divergence";
@@ -1287,7 +1283,7 @@ void reinforce::plot_KL_divergence_history(
    bool zero_min_value_flag = false;
 
    generate_metafile_plot(
-      log10_mean_KL_divergences, output_subdir, metafile_basename, 
+      log10_mean_KL_divergences, metafile_basename, 
       title, y_label, extrainfo, epoch_indep_var, plot_smoothed_values_flag,
       zero_min_value_flag);
 }
@@ -1296,7 +1292,7 @@ void reinforce::plot_KL_divergence_history(
 // Generate metafile plot of action0 probabilities versus frame for a
 // particular episode.
 
-void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
+void reinforce::plot_prob_action_0(string extrainfo)
 {
    if(prob_action_0.size() <= 1) return;
 
@@ -1342,8 +1338,7 @@ void reinforce::plot_prob_action_0(string output_subdir, string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
-void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
-                                        bool epoch_indep_var)
+void reinforce::plot_bias_distributions(string extrainfo, bool epoch_indep_var)
 {
    for(unsigned int l = 1; l < bias_50.size(); l++)
    {
@@ -1446,7 +1441,7 @@ void reinforce::plot_bias_distributions(string output_subdir, string extrainfo,
 // Generate metafile plot of weight distributions versus episode number.
 
 void reinforce::plot_weight_distributions(
-   string output_subdir, string extrainfo, bool epoch_indep_var)
+   string extrainfo, bool epoch_indep_var)
 {
    string script_filename=output_subdir + "view_weight_dists";
    ofstream script_stream;
@@ -1561,7 +1556,7 @@ void reinforce::plot_weight_distributions(
 // Generate metafile plot of quasi-random weight values versus episode number.
 
 void reinforce::plot_quasirandom_weight_values(
-   string output_subdir, string extrainfo, bool epoch_indep_var)
+   string extrainfo, bool epoch_indep_var)
 {
    string script_filename=output_subdir + "view_weight_values";
    ofstream script_stream;
@@ -1701,36 +1696,32 @@ void reinforce::plot_quasirandom_weight_values(
 // weight distributions, rewards, epsilon, nframes/episode and loss
 // histories.
 
-void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
-                                       bool epoch_indep_var)
+void reinforce::generate_summary_plots(string extrainfo, bool epoch_indep_var)
 {
-   plot_episode_number_history(output_subdir, extrainfo, epoch_indep_var);
-   plot_frames_history(output_subdir, extrainfo, epoch_indep_var);
+   plot_episode_number_history(extrainfo, epoch_indep_var);
+   plot_frames_history(extrainfo, epoch_indep_var);
    bool plot_cumulative_reward = true;
-   plot_reward_history(output_subdir, extrainfo, epoch_indep_var,
-                       plot_cumulative_reward);
-   plot_log10_loss_history(output_subdir, extrainfo, epoch_indep_var);
-   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
-   plot_log10_lr_mean_abs_nabla_weight_ratios(
-      output_subdir, extrainfo, epoch_indep_var);
+   plot_reward_history(extrainfo, epoch_indep_var, plot_cumulative_reward);
+   plot_log10_loss_history(extrainfo, epoch_indep_var);
+   plot_lr_history(extrainfo, epoch_indep_var);
+   plot_log10_lr_mean_abs_nabla_weight_ratios(extrainfo, epoch_indep_var);
 
    if(get_include_bias_terms()){
-      plot_bias_distributions(output_subdir, extrainfo, epoch_indep_var);
+      plot_bias_distributions(extrainfo, epoch_indep_var);
    }
-   plot_weight_distributions(output_subdir, extrainfo, epoch_indep_var);
-   plot_quasirandom_weight_values(output_subdir, extrainfo, epoch_indep_var);
+   plot_weight_distributions(extrainfo, epoch_indep_var);
+   plot_quasirandom_weight_values(extrainfo, epoch_indep_var);
 
    if (learning_type == QLEARNING)
    {
-      plot_maxQ_history(output_subdir, extrainfo, epoch_indep_var);
-      plot_epsilon_history(output_subdir, extrainfo, epoch_indep_var);
+      plot_maxQ_history(extrainfo, epoch_indep_var);
+      plot_epsilon_history(extrainfo, epoch_indep_var);
    }
    else if (learning_type == PLEARNING)
    {
-      plot_avg_discounted_eventual_reward(
-         output_subdir, extrainfo, epoch_indep_var);
-      plot_prob_action_0(output_subdir, extrainfo);
-      plot_KL_divergence_history(output_subdir, extrainfo, epoch_indep_var);
+      plot_avg_discounted_eventual_reward(extrainfo, epoch_indep_var);
+      plot_prob_action_0(extrainfo);
+      plot_KL_divergence_history(extrainfo, epoch_indep_var);
    }
 }
 
@@ -1739,8 +1730,7 @@ void reinforce::generate_summary_plots(string output_subdir, string extrainfo,
 // script which displays reward, nframes/episode, max Q and epsilon
 // history metafile outputs.
 
-void reinforce::generate_view_metrics_script(
-   string output_subdir, bool maze_flag, bool atari_flag)
+void reinforce::generate_view_metrics_script(bool maze_flag, bool atari_flag)
 {
    string script_filename=output_subdir + "view_metrics";
    ofstream script_stream;
@@ -1797,7 +1787,7 @@ void reinforce::generate_view_metrics_script(
 // ---------------------------------------------------------------------
 // Member function create_snapshots_subdir()
 
-void reinforce::create_snapshots_subdir(string output_subdir)
+void reinforce::create_snapshots_subdir()
 {
    Clock clock;
    clock.set_time_based_on_local_computer_clock();
@@ -1811,9 +1801,9 @@ void reinforce::create_snapshots_subdir(string output_subdir)
 // ---------------------------------------------------------------------
 // Member function export_snapshot()
 
-void reinforce::export_snapshot(string output_subdir)
+void reinforce::export_snapshot()
 {
-   if(snapshots_subdir.size() == 0) create_snapshots_subdir(output_subdir);
+   if(snapshots_subdir.size() == 0) create_snapshots_subdir();
    
    string snapshot_filename=snapshots_subdir+"snapshot_"+
       stringfunc::integer_to_string(episode_number, 5)+".binary";

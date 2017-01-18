@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 1/2/17; 1/3/17; 1/4/17; 1/5/17
+// Last updated on 1/3/17; 1/4/17; 1/5/17; 1/18/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -132,6 +132,7 @@ int main(int argc, char** argv)
    string output_subdir=experiments_subdir+
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
+   reinforce_agent_ptr->set_output_subdir(output_subdir);
 
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
@@ -437,10 +438,8 @@ int main(int argc, char** argv)
 
          if(curr_episode_number > 1)
          {
-            reinforce_agent_ptr->generate_summary_plots(
-               output_subdir, extrainfo);
-            reinforce_agent_ptr->generate_view_metrics_script(
-               output_subdir, false, true);
+            reinforce_agent_ptr->generate_summary_plots(extrainfo);
+            reinforce_agent_ptr->generate_view_metrics_script(false, true);
             pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
             pong_ptr->plot_tracks(output_subdir, curr_episode_number, 
                                   cum_reward);
@@ -461,7 +460,7 @@ int main(int argc, char** argv)
                n_reduced_ydim *= n_screen_states;
             }
             reinforce_agent_ptr->plot_zeroth_layer_weights(
-               n_reduced_xdim, n_reduced_ydim, weights_subdir);
+               n_reduced_xdim, n_reduced_ydim);
          }
       }
 
@@ -469,7 +468,7 @@ int main(int argc, char** argv)
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
          n_snapshot *= 2;
-         reinforce_agent_ptr->export_snapshot(output_subdir);
+         reinforce_agent_ptr->export_snapshot();
       }
 */
 

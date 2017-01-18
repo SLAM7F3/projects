@@ -137,13 +137,16 @@ int main (int argc, char* argv[])
 
    string experiments_subdir="./experiments/";
    filefunc::dircreate(experiments_subdir);
+   string qtrain_subdir = experiments_subdir + "qtrain/";
+   filefunc::dircreate(qtrain_subdir);
 
    int expt_number;
    cout << "Enter experiment number:" << endl;
    cin >> expt_number;
-   string output_subdir=experiments_subdir+
+   string output_subdir=qtrain_subdir+
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
+   reinforce_agent_ptr->set_output_subdir(output_subdir);
 
    reinforce_agent_ptr->set_expt_number(expt_number);
    reinforce_agent_ptr->set_Nd(32);
@@ -583,9 +586,9 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->store_quasirandom_weight_values();
          bool epoch_indep_var = false;
          reinforce_agent_ptr->generate_summary_plots(
-            output_subdir, extrainfo, epoch_indep_var);
+            extrainfo, epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, false, false);
+            false, false);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }
@@ -612,9 +615,7 @@ int main (int argc, char* argv[])
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
-   string weights_subdir = output_subdir+"zeroth_layer_weights/";
-   filefunc::dircreate(weights_subdir);
-   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
+   reinforce_agent_ptr->plot_zeroth_layer_weights();
 
    delete ttt_ptr;
    delete reinforce_agent_ptr;

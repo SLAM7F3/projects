@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PMAZE solves a maze via policy gradient learning
 // ==========================================================================
-// Last updated on 12/28/16; 1/2/17; 1/10/17; 1/11/17
+// Last updated on 1/2/17; 1/10/17; 1/11/17; 1/18/17
 // ==========================================================================
 
 #include <iostream>
@@ -29,8 +29,8 @@ int main (int argc, char* argv[])
    std::set_new_handler(sysfunc::out_of_memory); 
 
    timefunc::initialize_timeofday_clock();
-//   long seed = nrfunc::init_time_based_seed();
-   long seed = -11;
+   long seed = nrfunc::init_time_based_seed();
+//   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> seed;
    nrfunc::init_default_seed(seed);
@@ -113,6 +113,7 @@ int main (int argc, char* argv[])
    string output_subdir=experiments_subdir+
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
+   reinforce_agent_ptr->set_output_subdir(output_subdir);
 
 //   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
 //   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
@@ -300,13 +301,11 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->push_back_learning_rate(
             reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_Qmap_score_history(
-            output_subdir, extrainfo);
+         reinforce_agent_ptr->plot_Qmap_score_history(extrainfo);
          bool epoch_indep_var = false;
          reinforce_agent_ptr->generate_summary_plots(
-            output_subdir, extrainfo, epoch_indep_var);
-         reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, true, false);
+            extrainfo, epoch_indep_var);
+         reinforce_agent_ptr->generate_view_metrics_script(true, false);
       }
    } // n_episodes < n_max_episodes while loop
 
@@ -330,19 +329,16 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->push_back_learning_rate(
       reinforce_agent_ptr->get_learning_rate());
-   reinforce_agent_ptr->plot_Qmap_score_history(output_subdir, extrainfo);
+   reinforce_agent_ptr->plot_Qmap_score_history(extrainfo);
    bool epoch_indep_var = false;
    reinforce_agent_ptr->generate_summary_plots(
-      output_subdir, extrainfo, epoch_indep_var);
-   reinforce_agent_ptr->generate_view_metrics_script(
-      output_subdir, true, false);
+      extrainfo, epoch_indep_var);
+   reinforce_agent_ptr->generate_view_metrics_script(true, false);
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
 
-   string weights_subdir = output_subdir+"zeroth_layer_weights/";
-   filefunc::dircreate(weights_subdir);
-   reinforce_agent_ptr->plot_zeroth_layer_weights(weights_subdir);
+   reinforce_agent_ptr->plot_zeroth_layer_weights();
 
 //   curr_maze.DisplayTrainedZerothLayerWeights(weights_subdir);
 

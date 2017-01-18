@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QSPACE solves the Space Invaders atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/9/16; 12/10/16; 12/13/16; 1/10/17
+// Last updated on 12/10/16; 12/13/16; 1/10/17; 1/18/17
 // ==========================================================================
 
 #include <iostream>
@@ -120,6 +120,7 @@ int main(int argc, char** argv)
    string output_subdir=experiments_subdir+
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
    filefunc::dircreate(output_subdir);
+   reinforce_agent_ptr->set_output_subdir(output_subdir);
 
    string weights_subdir = output_subdir+"zeroth_layer_weights/";
    filefunc::dircreate(weights_subdir);
@@ -411,14 +412,13 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->generate_summary_plots(output_subdir, extrainfo);
-         reinforce_agent_ptr->generate_view_metrics_script(
-            output_subdir, false, true);
+         reinforce_agent_ptr->generate_summary_plots(extrainfo);
+         reinforce_agent_ptr->generate_view_metrics_script(false, true);
       }
 
       if(curr_episode_number > 0 && curr_episode_number % n_snapshot == 0)
       {
-         reinforce_agent_ptr->export_snapshot(output_subdir);
+         reinforce_agent_ptr->export_snapshot();
 
 // Export trained weights in neural network's zeroth layer as
 // greyscale images to output_subdir
@@ -430,7 +430,7 @@ int main(int argc, char** argv)
             n_reduced_ydim *= n_screen_states;
          }
          reinforce_agent_ptr->plot_zeroth_layer_weights(
-            n_reduced_xdim, n_reduced_ydim, weights_subdir);
+            n_reduced_xdim, n_reduced_ydim);
       }
 
    } // n_episodes < n_max_episodes while loop
