@@ -89,7 +89,7 @@ int main (int argc, char* argv[])
    NN.import_training_data(training_samples);
    NN.import_test_data(testing_samples);
 
-   int n_epochs = 400;
+   int n_epochs = 200;
    
    NN.train_network(n_epochs);
    NN.plot_loss_history();

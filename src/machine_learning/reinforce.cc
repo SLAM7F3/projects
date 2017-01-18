@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 1/10/17; 1/11/17; 1/13/17; 1/17/17
+// Last modified on 1/11/17; 1/13/17; 1/17/17; 1/18/17
 // ==========================================================================
 
 #include <string>
@@ -2867,7 +2867,6 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 // to curr layer nodes:
 
       weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
-
       Delta_Prime[prev_layer]->matrix_vector_mult(
          *weights_transpose[prev_layer], *Delta_Prime[curr_layer]);
 
@@ -2893,7 +2892,7 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
 
 // Eqn BP4:
 
-      delta_nabla_weights[prev_layer]->accumulate_outerprod(
+      delta_nabla_weights[prev_layer]->compute_outerprod(
          *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
 
 // Add L2 regularization contribution to delta_nabla_weights.  No such
@@ -2903,8 +2902,10 @@ double reinforce::Q_backward_propagate(int d, int Nd, bool verbose_flag)
       const double TINY = 1E-8;
       if(lambda > TINY)
       {
-         *delta_nabla_weights[prev_layer] += 
-            2 * (lambda / n_weights) * (*weights[prev_layer]);
+//         *delta_nabla_weights[prev_layer] += 
+//            2 * (lambda / n_weights) * (*weights[prev_layer]);
+         delta_nabla_weights[prev_layer]->matrix_increment(
+            2 * lambda / n_weights, *weights[prev_layer]);
       }
    } // loop over curr_layer index
 
@@ -3361,7 +3362,6 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 // to curr layer nodes:
 
       weights_transpose[prev_layer]->matrix_transpose(*weights[prev_layer]);
-
       Delta_Prime[prev_layer]->matrix_vector_mult(
          *weights_transpose[prev_layer], *Delta_Prime[curr_layer]);
 
@@ -3387,7 +3387,7 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
 
 // Eqn BP4:
 
-      delta_nabla_weights[prev_layer]->accumulate_outerprod(
+      delta_nabla_weights[prev_layer]->compute_outerprod(
          *Delta_Prime[curr_layer], *A_Prime[prev_layer]);
 
 // Add L2 regularization contribution to delta_nabla_weights.  No such
@@ -3397,10 +3397,11 @@ double reinforce::P_backward_propagate(int d, int Nd, bool verbose_flag)
       const double TINY = 1E-8;
       if(lambda > TINY)
       {
-         *delta_nabla_weights[prev_layer] += 
-            2 * (lambda / n_weights) * (*weights[prev_layer]);
+//         *delta_nabla_weights[prev_layer] += 
+//            2 * (lambda / n_weights) * (*weights[prev_layer]);
+         delta_nabla_weights[prev_layer]->matrix_increment(
+            2 * lambda / n_weights, *weights[prev_layer]);
       }
-
    } // loop over curr_layer index
 
 // Accumulate biases' and weights' gradients for each network layer:

@@ -772,15 +772,20 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       
 // Eqn BP4:
 
-      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
-         *a[prev_layer]);
+//      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
+//         *a[prev_layer]);
+      delta_nabla_weights[prev_layer]->compute_outerprod(
+         *delta[curr_layer], *a[prev_layer]);
 
 // Add L2 regularization contribution to delta_nabla_weights.  No such
 // regularization contribution is conventionally added to
 // delta_nabla_biases:
 
-      *delta_nabla_weights[prev_layer] += 
-         2 * lambda * (*weights[prev_layer]);
+//      *delta_nabla_weights[prev_layer] += 
+//         2 * lambda * (*weights[prev_layer]);
+
+      delta_nabla_weights[prev_layer]->matrix_increment(
+         2 * lambda / n_weights, *weights[prev_layer]);
 
    } // loop over curr_layer
 
