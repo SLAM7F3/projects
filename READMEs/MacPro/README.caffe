@@ -26,7 +26,7 @@ CUDA_ARCH := -gencode arch=compute_20,code=sm_20 \
 		-gencode arch=compute_50,code=compute_50
 
 But otherwise, caffe public seemed to build fine on Thinkmate (modulo some
-warning messages) when we changted make -j all, make test and make runtest.
+warning messages) when we chanted make -j all, make test and make runtest.
 
 
 *.  On 8/31/16, we git cloned the latest version of the publically

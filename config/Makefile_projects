@@ -6,7 +6,7 @@
 # Note added on 8/3/15:  Eliminated -lopencv_contrib, -lopencv_legacy   #
 # and -lopencv_nonfree which no longer exist under opencv3.0.0		#
 # ===================================================================== #
-# Last modified on 12/1/16; 12/10/16; 12/23/16; 12/30/16		#
+# Last modified on 12/10/16; 12/23/16; 12/30/16; 1/18/17		#
 # ===================================================================== #
 #									#
 # NOTES:								#
@@ -197,7 +197,7 @@ LIBS =  -L/usr/local/lib \
 	-L/usr/local/pgsql/lib \
         -L/usr/local/apr/lib/ \
         -L/usr/lib/atlas \
-	-L/usr/local/lib/caffe \
+	-L/usr/local/lib/caffe_public \
         -L/usr/local/lib/bundler \
         -L/opt/gdal/lib \
         -L/opt/geos/lib \

@@ -823,5 +823,5 @@ write privileges to this repository.  Login to Apple github and click on
 geo-flyover link near upper left part of webpage.  We should then see a
 list of all repositories including sputnik, installation-scripts,
 caffe_custom, etc.  Click on installation-scripts and view latest commits.
-Then press button on right labeled somethign like "84a5b1d" to see actual
+Then press button on right labeled something like "84a5b1d" to see actual
 changes made during that particular commit.  

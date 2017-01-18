@@ -161,7 +161,8 @@ int main (int argc, char* argv[])
 //   reinforce_agent_ptr->set_base_learning_rate(1E-6);  //  OK
 
 //   int n_max_episodes = 300 * 1000;
-   int n_max_episodes = 400 * 1000;
+//   int n_max_episodes = 400 * 1000;
+   int n_max_episodes = 500 * 1000;
 
    int n_update = 2000;
    int n_progress = 2000;
@@ -191,7 +192,7 @@ int main (int argc, char* argv[])
 //   double min_epsilon = 0.10;
    reinforce_agent_ptr->set_min_epsilon(min_epsilon);
    double starting_episode_linear_eps_decay = 100;
-   double stopping_episode_linear_eps_decay = 0.7 * n_max_episodes;
+   double stopping_episode_linear_eps_decay = 0.5 * n_max_episodes;
 
    int AI_value = -1;     // "X" pieces
    int agent_value = 1;   // "O" pieces
