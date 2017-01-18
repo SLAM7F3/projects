@@ -900,22 +900,21 @@ void neural_net::summarize_parameters(string params_filename)
    }
    params_stream << "   n_weights = " << count_weights() << " (FC)" 
                  << endl;
-   params_stream << "   include_bias_terms = " << include_bias_terms 
+   params_stream << "include_bias_terms = " << include_bias_terms 
                  << endl;
-
-   params_stream << "base_learning_rate = " << base_learning_rate 
-                 << "; batch_size = " << mini_batch_size
-                 << endl;
-
+   params_stream << "base_learning_rate = " << base_learning_rate << endl;
    params_stream << "solver type = RMSPROP" << endl;
    params_stream << "   rmsprop_decay_rate = " << rmsprop_decay_rate
                  << endl;
    params_stream << "   rmsprop_denom_const = " << rmsprop_denom_const
                  << endl;
    params_stream << "L2 regularization lambda coeff = " << lambda << endl;
+
    params_stream << "n_training_samples = " << n_training_samples << endl;
    params_stream << "n_test_samples = " << n_test_samples << endl;
-   
+   params_stream << "mini_batch_size = " << mini_batch_size << endl;
+   params_stream << "n_mini_batches per epoch = " 
+                 << n_training_samples / mini_batch_size + 1 << endl;
    filefunc::closefile(params_filename, params_stream);
 }
 
