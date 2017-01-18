@@ -1,7 +1,7 @@
 j============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 10/31/16; 11/2/16; 11/9/16; 11/14/16
+Last updated on 11/2/16; 11/9/16; 11/14/16; 1/18/17
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -134,3 +134,20 @@ tg_annotation_api.h
 *.  As of Mon Nov 14, we need to comment out #define TAGGER_EXT in
 tg_annotation_api.h and in tagger2.h in order to run "stopwatch" tests on
 "peter_debug6" PR ADMIN job.
+
+*.  On 1/18/2017, Weiyu showed us sigma_tagger() at the very end of
+/sputnik/pwin/app/sigma/sigma_tagger.c . This is the method which connects
+his SIGMA pwin gui with tagger2.  It takes in char* argument which contains
+basic input parameters.  It exports results from user events and actions in
+a json file json_out.
+
+For example, sigma_tagger_refine() calls Weiyu's
+im_cluster_gui_refine_file() which is his actually pwin gui app.
+
+
+pwin command to run sigma_tagger:
+
+p -vv -do "c3 lab_weiyu mfile verify /gpfs/ssdws11/data/sigma/a7_expanded/pr_road_signs_a7_expanded_2016-11-28__09:25:09/verification_v1/chunks/000_000003/data"
+
+
+
