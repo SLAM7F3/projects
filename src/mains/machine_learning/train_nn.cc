@@ -43,9 +43,9 @@ int main (int argc, char* argv[])
 //   nrfunc::init_default_seed(seed);
 
    int Din = 2;   	// Number of input layer nodes
-   int H1 = 5;		// Number of first hidden layer nodes
+   int H1 = 3;		// Number of first hidden layer nodes
 //   int H1 = 10;		// Number of first hidden layer nodes
-   int H2 = 5;
+   int H2 = 0;
 //   int H2 = 10;
    int H3 = 0;
 //   int H3 = 4;
@@ -62,8 +62,6 @@ int main (int argc, char* argv[])
    {
       layer_dims.push_back(H3);
    }
-   
-
    layer_dims.push_back(Dout);
 
    int mini_batch_size = 32;
@@ -83,29 +81,24 @@ int main (int argc, char* argv[])
 //   int n_training_samples = 200;
    int n_training_samples = 2000;
    int n_validation_samples = 0.1 * n_training_samples;
-   int n_testing_samples = 0.1 * n_training_samples;
 
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> validation_samples;
-   vector<neural_net::DATA_PAIR> testing_samples;
 
 /*
    machinelearning_func::generate_2d_circular_data_samples(
       n_training_samples, training_samples);
    machinelearning_func::generate_2d_circular_data_samples(
-      n_testing_samples, testing_samples);
+      n_validation_samples, validation_samples);
 */
 
    machinelearning_func::generate_2d_spiral_data_samples(
       n_training_samples, training_samples);
    machinelearning_func::generate_2d_spiral_data_samples(
       n_validation_samples, validation_samples);
-   machinelearning_func::generate_2d_spiral_data_samples(
-      n_testing_samples, testing_samples);
 
    NN.import_training_data(training_samples);
    NN.import_validation_data(validation_samples);
-   NN.import_test_data(testing_samples);
 
    int n_epochs = 200;
    
@@ -116,6 +109,24 @@ int main (int argc, char* argv[])
    NN.create_snapshots_subdir();
    string snapshot_filename = NN.export_snapshot();
 
+   double training_accuracy = NN.evaluate_model_on_training_set();
+   vector<int> incorrect_training_classifications = 
+      NN.get_incorrect_classifications();
+
+   double validation_accuracy = NN.evaluate_model_on_validation_set();
+   vector<int> incorrect_validation_classifications = 
+      NN.get_incorrect_classifications();
+
+   cout << "training_samples.size = " << training_samples.size() << endl;
+   cout << "validation_samples.size = " << validation_samples.size() << endl;
+   cout << "Number of training samples incorrectly classified = "
+        << incorrect_training_classifications.size() << endl;
+   cout << "Number of validation samples incorrectly classified = "
+        << incorrect_validation_classifications.size() << endl;
+   cout << "Training accuracy = " << training_accuracy << endl;
+   cout << "Validation accuracy = " << validation_accuracy << endl;
+
+/*
    NN.import_snapshot(snapshot_filename);
 
 // Generate metafile plot of training samples, testing samples and
@@ -123,11 +134,6 @@ int main (int argc, char* argv[])
 
    vector<int> labels;
    vector<double> X, Y;
-
-   double training_accuracy = NN.evaluate_model_on_test_set();
-   cout << "Training accuracy = " << training_accuracy << endl;
-   vector<int> incorrect_training_classifications = 
-      NN.get_incorrect_classifications();
 
 
    for(unsigned int i = 0; i < training_samples.size(); i++)
@@ -201,13 +207,6 @@ int main (int argc, char* argv[])
    outputfunc::write_banner(banner);
    string unix_cmd="meta_to_jpeg "+meta_filename;
    sysfunc::unix_command(unix_cmd);
-
-   cout << "training_samples.size = " << training_samples.size() << endl;
-   cout << "testing_samples.size = " << testing_samples.size() << endl;
-   cout << "Number of training samples incorrectly classified = "
-        << incorrect_training_classifications.size() << endl;
-   cout << "Number of testing samples incorrectly classified = "
-        << incorrect_test_classifications.size() << endl;
-
+*/
 }
 

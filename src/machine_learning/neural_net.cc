@@ -588,11 +588,7 @@ void neural_net::decrease_learning_rate()
 void neural_net::train_network(int n_epochs)
 {
    int n_update = 1 * 1000;
-
-// FAKE FAKE:  Thurs Jan 19 at 6:34 am
-
-//   int n_export_metafiles = 10 * 1000;
-   int n_export_metafiles = 20 * 1000;
+   int n_export_metafiles = 10 * 1000;
 
    for(int e = 0; e < n_epochs; e++)
    {
