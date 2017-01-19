@@ -68,9 +68,6 @@ void neural_net::allocate_member_objects()
 // ---------------------------------------------------------------------
 void neural_net::instantiate_weights_and_biases()
 {
-   cout << "inside neural_net::instantiate_weights_and_biases()" << endl;
-   cout << "n_layers = " << n_layers << endl;
-
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
