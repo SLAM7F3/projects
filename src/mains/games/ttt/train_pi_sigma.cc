@@ -190,10 +190,9 @@ int main (int argc, char* argv[])
 
 // Generate text file summary of parameter values:
 
-   string params_filename = output_subdir + "params.dat";
-   NN.summarize_parameters(params_filename);
+   NN.summarize_parameters();
    ofstream params_stream;
-   filefunc::appendfile(params_filename, params_stream);
+   filefunc::appendfile(NN.get_params_filename(), params_stream);
 
    params_stream << "Max n_training_epochs = " << n_epochs << endl;
    params_stream << "Leaky ReLU small slope = "
@@ -203,7 +202,7 @@ int main (int argc, char* argv[])
 //   params_stream << "Learning rate decrease period = " 
 //                 << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Process ID = " << getpid() << endl;
-   filefunc::closefile(params_filename, params_stream);
+   filefunc::closefile(NN.get_params_filename(), params_stream);
 
    NN.train_network(n_epochs);
 

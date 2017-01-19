@@ -482,8 +482,9 @@ void reinforce::update_epsilon()
 // hyperparameters used for Deep Reinforcement Learning to a specified
 // text file for book-keeping purposes.
 
-void reinforce::summarize_parameters(string params_filename)
+void reinforce::summarize_parameters()
 {
+   params_filename = output_subdir + "params.dat";
    ofstream params_stream;
    filefunc::openfile(params_filename, params_stream);
 

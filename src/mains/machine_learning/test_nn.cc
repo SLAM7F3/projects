@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TEST_NN
 // ==========================================================================
-// Last updated on 10/17/16; 12/27/16; 1/15/17; 1/16/17
+// Last updated on 12/27/16; 1/15/17; 1/16/17; 1/18/17
 // ==========================================================================
 
 #include <stdint.h>
@@ -63,13 +63,14 @@ int main (int argc, char* argv[])
    NN.set_base_learning_rate(1E-2);
 //   NN.set_include_bias_terms(false);
    NN.set_include_bias_terms(true);
+   NN.set_output_subdir("./nn_output/");
+   NN.summarize_parameters();
 
 //   int n_training_samples = 20; // Loss-->0 when lambda-->0 
 				// for small training set
 //   int n_training_samples = 200;
    int n_training_samples = 2000;
    int n_testing_samples = 0.1 * n_training_samples;
-
 
    vector<neural_net::DATA_PAIR> training_samples;
    vector<neural_net::DATA_PAIR> testing_samples;

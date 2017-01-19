@@ -176,10 +176,10 @@ int main (int argc, char* argv[])
 
 // Generate text file summary of parameter values:
 
-   string params_filename = output_subdir + "params.dat";
-   reinforce_agent_ptr->summarize_parameters(params_filename);
+   reinforce_agent_ptr->summarize_parameters();
    ofstream params_stream;
-   filefunc::appendfile(params_filename, params_stream);
+   filefunc::appendfile(
+      reinforce_agent_ptr->get_params_filename(), params_stream);
 
    params_stream << "n_actions = " << n_actions << endl;
    params_stream << "Leaky ReLU small slope = "
@@ -187,7 +187,8 @@ int main (int argc, char* argv[])
    params_stream << "Old weights period = " << old_weights_period
                  << " episodes" << endl;
    params_stream << "Random seed = " << seed << endl;
-   filefunc::closefile(params_filename, params_stream);
+   filefunc::closefile(
+      reinforce_agent_ptr->get_params_filename(), params_stream);
 
 // ==========================================================================
 // Reinforcement training loop starts here

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 12/28/16; 1/15/17; 1/16/17; 1/17/17
+// Last modified on 1/15/17; 1/16/17; 1/17/17; 1/18/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "general/filefuncs.h"
 
 class genmatrix;
 class genvector;
@@ -53,6 +54,7 @@ class neural_net
    void set_expt_number(int n);
    int get_expt_number() const;
    void set_output_subdir(std::string subdir);
+   std::string get_params_filename() const;
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
    int get_layer_dim(int l) const;
@@ -91,7 +93,7 @@ class neural_net
 
 // Monitoring network training methods:
 
-   void summarize_parameters(std::string params_filename);
+   void summarize_parameters();
    void compute_bias_distributions();
    void compute_weight_distributions();
    void store_quasirandom_weight_values();
@@ -111,6 +113,10 @@ class neural_net
    bool plot_quasirandom_weight_values(std::string extrainfo);
    void generate_summary_plots(std::string extrainfo);
    void generate_view_metrics_script();
+
+   void create_snapshots_subdir();
+   void export_snapshot();
+   void import_snapshot(std::string snapshot_filename);
 
   private: 
 
@@ -159,6 +165,8 @@ class neural_net
    std::vector<double> test_accuracy_history;
    std::vector<std::vector<double> > log10_lr_mean_abs_nabla_weight_ratios;
    std::string output_subdir;
+   std::string params_filename;
+   std::string snapshots_subdir;
 
 // Store indices for test samples whose class if incorrectly labeled
 // by the trained model:
@@ -210,6 +218,12 @@ inline int neural_net::get_expt_number() const
 inline void neural_net::set_output_subdir(std::string subdir)
 {
    output_subdir = subdir;
+   filefunc::dircreate(output_subdir);
+}
+
+inline std::string neural_net::get_params_filename() const
+{
+   return params_filename;
 }
 
 inline void neural_net::set_include_bias_terms(bool flag)

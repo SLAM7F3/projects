@@ -188,10 +188,10 @@ int main(int argc, char** argv)
    // Get the vector of minimal legal actions
    ActionVect minimal_actions = spaceinv_ptr->get_ale().getMinimalActionSet();
 
-   string params_filename = output_subdir + "params.dat";
-   reinforce_agent_ptr->summarize_parameters(params_filename);
+   reinforce_agent_ptr->summarize_parameters();
    ofstream params_stream;
-   filefunc::appendfile(params_filename, params_stream);
+   filefunc::appendfile(
+      reinforce_agent_ptr->get_params_filename(), params_stream);
    params_stream << "Learning rate decrease period = " 
                  << n_lr_episodes_period << " episodes" << endl;
    params_stream << "Old weights period = " << old_weights_period << endl;
@@ -202,7 +202,8 @@ int main(int argc, char** argv)
                  << spaceinv_ptr->get_n_screen_states() << endl;
    params_stream << "nn_update_frame_period = "
                  << nn_update_frame_period << endl;
-   filefunc::closefile(params_filename, params_stream);
+   filefunc::closefile(
+      reinforce_agent_ptr->get_params_filename(), params_stream);
 
 // ==========================================================================
 // Reinforcement training loop starts here

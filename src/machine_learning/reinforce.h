@@ -59,6 +59,7 @@ class reinforce
    void set_expt_number(int n);
    int get_expt_number() const;
    void set_output_subdir(std::string subdir);   
+   std::string get_params_filename() const;
    bool get_include_biases() const;
    void set_environment(environment* e_ptr);
    void set_debug_flag(bool flag);
@@ -96,7 +97,7 @@ class reinforce
 
 // Monitoring network training methods:
 
-   void summarize_parameters(std::string params_filename);
+   void summarize_parameters();
    int count_weights();
    void print_biases();
    void print_weights();
@@ -254,6 +255,7 @@ class reinforce
    int n_layers, n_actions, n_weights;
    int n_backprops;
    std::string output_subdir;
+   std::string params_filename;
    std::vector<int> layer_dims;
    environment* environment_ptr;
    
@@ -417,6 +419,11 @@ inline int reinforce::get_expt_number() const
 inline void reinforce::set_output_subdir(std::string subdir)
 {
    output_subdir = subdir;
+}
+
+inline std::string reinforce::get_params_filename() const
+{
+   return params_filename;
 }
 
 inline bool reinforce::get_include_biases() const

@@ -5,6 +5,7 @@
 // ==========================================================================
 
 #include <iostream>
+#include "astro_geo/Clock.h"
 #include "general/filefuncs.h"
 #include "filter/filterfuncs.h"
 #include "math/genvector.h"
@@ -20,6 +21,7 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using std::ifstream;
 using std::map;
 using std::ofstream;
 using std::ostream;
@@ -56,8 +58,6 @@ void neural_net::initialize_member_objects(
 
    rmsprop_denom_const = 1E-5;
    solver_type = RMSPROP;
-   output_subdir = "./nn_outputs/";
-   filefunc::dircreate(output_subdir);
    update_counter = 0;
 }		       
 
@@ -772,17 +772,12 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
       
 // Eqn BP4:
 
-//      *(delta_nabla_weights[prev_layer]) = delta[curr_layer]->outerproduct(
-//         *a[prev_layer]);
       delta_nabla_weights[prev_layer]->compute_outerprod(
          *delta[curr_layer], *a[prev_layer]);
 
 // Add L2 regularization contribution to delta_nabla_weights.  No such
 // regularization contribution is conventionally added to
 // delta_nabla_biases:
-
-//      *delta_nabla_weights[prev_layer] += 
-//         2 * lambda * (*weights[prev_layer]);
 
       delta_nabla_weights[prev_layer]->matrix_increment(
          2 * lambda / n_weights, *weights[prev_layer]);
@@ -884,8 +879,9 @@ int neural_net::count_weights()
 // Member function summarize_parameters() exports most parameters and
 // hyperparameters to a specified text file for book-keeping purposes.
 
-void neural_net::summarize_parameters(string params_filename)
+void neural_net::summarize_parameters()
 {
+   params_filename = output_subdir + "params.dat";
    ofstream params_stream;
    filefunc::openfile(params_filename, params_stream);
 
@@ -1238,6 +1234,7 @@ void neural_net::plot_accuracies_history()
    double min_accuracy = 0;
    double max_accuracy = 1;
 
+   curr_metafile.set_legend_flag(true);
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, xmax, 
       min_accuracy, max_accuracy);
@@ -1247,8 +1244,10 @@ void neural_net::plot_accuracies_history()
    curr_metafile.openmetafile();
    curr_metafile.write_header();
 
+   curr_metafile.set_legendlabel("Training accuracy");
    curr_metafile.write_curve(
       epoch_history, test_accuracy_history, colorfunc::red);
+   curr_metafile.set_legendlabel("Testing accuracy");
    curr_metafile.write_curve(
       epoch_history, training_accuracy_history, colorfunc::blue);
 
@@ -1542,7 +1541,6 @@ void neural_net::generate_summary_plots(string extrainfo)
    }
    plot_weight_distributions(extrainfo);
    plot_quasirandom_weight_values(extrainfo);
-   filefunc::purge_files_with_suffix_in_subdir(output_subdir, "ps");
    generate_view_metrics_script();
 }
 
@@ -1568,4 +1566,113 @@ void neural_net::generate_view_metrics_script()
 
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
+}
+
+// ---------------------------------------------------------------------
+// Member function create_snapshots_subdir() generates a date-stamped
+// folder into which a network snapshots can be exported.
+
+void neural_net::create_snapshots_subdir()
+{
+   Clock clock;
+   clock.set_time_based_on_local_computer_clock();
+   string timestamp_str = clock.YYYY_MM_DD_H_M_S("_","_",false,0);
+   string timestamp_substr = timestamp_str.substr(0,16);
+
+   snapshots_subdir = output_subdir+"snapshots/"+timestamp_substr+"/";
+   filefunc::dircreate(snapshots_subdir);
+}
+
+// ---------------------------------------------------------------------
+// Member function export_snapshot()
+
+void neural_net::export_snapshot()
+{
+   if(snapshots_subdir.size() == 0) create_snapshots_subdir();
+   
+   string snapshot_filename=snapshots_subdir+"snapshot_"+
+      stringfunc::number_to_string(epoch_history.back(), 3)+".binary";
+   ofstream outstream;
+   
+   filefunc::open_binaryfile(snapshot_filename,outstream);
+   outstream << n_layers << endl;
+   for(unsigned int i = 0; i < layer_dims.size(); i++)
+   {
+      outstream << layer_dims[i] << endl;
+//      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
+   }
+   
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      genmatrix* curr_weights_ptr = weights[l];
+      outstream << curr_weights_ptr->get_mdim() << endl;
+      outstream << curr_weights_ptr->get_ndim() << endl;
+//      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
+//           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
+//      cout << "*curr_weights_ptr = " << *curr_weights_ptr << endl;
+
+      for(unsigned int row = 0; row < curr_weights_ptr->get_mdim(); row++)
+      {
+         for(unsigned int col = 0; col < curr_weights_ptr->get_ndim(); col++)
+         {
+            outstream << curr_weights_ptr->get(row,col) << endl;
+//            cout << "row = " << row << " col = " << col
+//                 << " weights[l] = " << curr_weights_ptr->get(row,col) << endl;
+         }
+      }
+   } // loop over index l labeling weight matrices
+   filefunc::closefile(snapshot_filename,outstream);
+   cout << "Exported " << snapshot_filename << endl;
+}
+
+// ---------------------------------------------------------------------
+// Member function import_snapshot()
+
+void neural_net::import_snapshot(string snapshot_filename)
+{
+   ifstream instream;
+   filefunc::open_binaryfile(snapshot_filename,instream);
+   instream >> n_layers;
+
+   vector<int> n_nodes_per_layer;
+   for(int i = 0; i < n_layers; i++)
+   {
+      int curr_layer_dim;
+      instream >> curr_layer_dim;
+      n_nodes_per_layer.push_back(curr_layer_dim);
+      cout << "i = " << i << " n_nodes_per_layer = " << n_nodes_per_layer[i] 
+           << endl;
+   }
+
+   initialize_member_objects(n_nodes_per_layer);
+
+   for(int l = 0; l < n_layers-1; l++)
+   {
+      int mdim, ndim;
+      instream >> mdim;
+      instream >> ndim;
+
+//      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
+//           << endl;
+
+      for(int row = 0; row < mdim; row++)
+      {
+         for(int col = 0; col < ndim; col++)
+         {
+            double curr_weight;
+            instream >> curr_weight;
+//            cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
+//                 << " col = " << col << " row = " << row << endl;
+//            cout << "  curr_weight = " << curr_weight << endl;
+//            cout << "  weights[l].mdim = " << weights[l]->get_mdim()
+//                 << " weights[l].ndim = " << weights[l]->get_ndim()
+//                 << endl;
+            weights[l]->put(row, col, curr_weight);
+         }
+      }
+//      cout << "weights[l] = " << *weights[l] << endl;
+   } // loop over index l labeling weight matrices
+   
+   filefunc::closefile(snapshot_filename,instream);
+   cout << "Imported " << snapshot_filename << endl;
 }
