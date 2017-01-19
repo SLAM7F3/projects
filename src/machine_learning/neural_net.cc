@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 1/15/17; 1/16/17; 1/17/17; 1/18/17
+// Last modified on 1/16/17; 1/17/17; 1/18/17; 1/19/17
 // ==========================================================================
 
 #include <iostream>
@@ -1066,15 +1066,25 @@ string neural_net::init_subtitle()
       "; lambda="+stringfunc::scinumber_to_string(lambda,2)+
       "; batch size="+stringfunc::number_to_string(mini_batch_size)+
       "; ";
+
+   subtitle += "H1="+stringfunc::number_to_string(layer_dims[1]);
+   if(layer_dims.size() >= 4)
+   {
+      subtitle += " H2="+stringfunc::number_to_string(layer_dims[2]);
+   }
+   if(layer_dims.size() >= 5)
+   {
+      subtitle += " H3="+stringfunc::number_to_string(layer_dims[3]);
+   }
+   subtitle += "; ";
+
    if(solver_type == SGD)
    {
       subtitle += "SGD";
    }
    else if(solver_type == RMSPROP)
    {
-      subtitle += "RMSPROP;";
-      subtitle += " decay="+stringfunc::scinumber_to_string(
-         rmsprop_decay_rate,2);
+      subtitle += "RMSPROP";
    }
    else if(solver_type == MOMENTUM)
    {
@@ -1087,8 +1097,6 @@ string neural_net::init_subtitle()
    else if(solver_type == ADAM)
    {
       subtitle += "ADAM";
-//      subtitle += " b1="+stringfunc::scinumber_to_string(beta1,2);
-//      subtitle += " b2="+stringfunc::scinumber_to_string(beta2,2);
    }
    return subtitle;
 }
@@ -1109,7 +1117,7 @@ bool neural_net::generate_metafile_plot(
    metafile curr_metafile;
    string meta_filename=output_subdir+metafile_basename;
    title += "; nweights="+stringfunc::number_to_string(count_weights());
-   string subtitle=init_subtitle() + " " + extrainfo;
+   string subtitle=init_subtitle() + extrainfo;
    string x_label="Epoch";
    double xmax = epoch_history.back();
 
@@ -1208,7 +1216,7 @@ void neural_net::plot_log10_lr_mean_abs_nabla_weight_ratios()
    {
       string metafile_basename = "lr_nabla_weight_ratios_"+
          stringfunc::number_to_string(l);
-      string extrainfo = "Layer "+stringfunc::number_to_string(l);
+      string extrainfo = "; Layer "+stringfunc::number_to_string(l);
       generate_metafile_plot(
          log10_lr_mean_abs_nabla_weight_ratios[l], metafile_basename, 
          title, y_label, extrainfo, 
