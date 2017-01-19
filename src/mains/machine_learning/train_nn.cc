@@ -1,5 +1,5 @@
 // ==========================================================================
-// Program TEST_NN is a playground for testing our neural_net class
+// Program TRAIN_NN is a playground for training our neural_nets
 // using simulated 2D spiral training data.
 // ==========================================================================
 // Last updated on 1/15/17; 1/16/17; 1/18/17; 1/19/17
@@ -115,6 +115,7 @@ int main (int argc, char* argv[])
 
    NN.create_snapshots_subdir();
    string snapshot_filename = NN.export_snapshot();
+
    NN.import_snapshot(snapshot_filename);
 
 // Generate metafile plot of training samples, testing samples and

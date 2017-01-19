@@ -1674,28 +1674,36 @@ string neural_net::export_snapshot()
    for(unsigned int i = 0; i < layer_dims.size(); i++)
    {
       outstream << layer_dims[i] << endl;
-//      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
    }
    
+   if(include_bias_terms)
+   {
+      for(unsigned int l = 0; l < biases.size(); l++)
+      {
+         genvector *curr_bias_ptr = biases[l];
+         outstream << curr_bias_ptr->get_mdim() << endl;
+         for(unsigned int row = 0; row < curr_bias_ptr->get_mdim(); row++)
+         {
+            outstream << curr_bias_ptr->get(row) << endl;
+         }
+      }
+   }
+
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       genmatrix* curr_weights_ptr = weights[l];
       outstream << curr_weights_ptr->get_mdim() << endl;
       outstream << curr_weights_ptr->get_ndim() << endl;
-//      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
-//           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
-//      cout << "*curr_weights_ptr = " << *curr_weights_ptr << endl;
 
       for(unsigned int row = 0; row < curr_weights_ptr->get_mdim(); row++)
       {
          for(unsigned int col = 0; col < curr_weights_ptr->get_ndim(); col++)
          {
             outstream << curr_weights_ptr->get(row,col) << endl;
-//            cout << "row = " << row << " col = " << col
-//                 << " weights[l] = " << curr_weights_ptr->get(row,col) << endl;
          }
       }
    } // loop over index l labeling weight matrices
+
    filefunc::closefile(snapshot_filename,outstream);
    cout << "Exported " << snapshot_filename << endl;
    return snapshot_filename;
@@ -1706,9 +1714,6 @@ string neural_net::export_snapshot()
 
 void neural_net::import_snapshot(string snapshot_filename)
 {
-   cout << "inside neural_net::import_snapshot(), snapshot_filename = "
-        << snapshot_filename << endl;
-   
    ifstream instream;
    filefunc::open_binaryfile(snapshot_filename,instream);
    instream >> n_layers;
@@ -1719,12 +1724,26 @@ void neural_net::import_snapshot(string snapshot_filename)
       int curr_layer_dim;
       instream >> curr_layer_dim;
       n_nodes_per_layer.push_back(curr_layer_dim);
-      cout << "i = " << i << " n_nodes_per_layer = " << n_nodes_per_layer[i] 
-           << endl;
    }
 
    delete_weights_and_biases();
    instantiate_weights_and_biases();
+
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         int mdim;
+         instream >> mdim;
+
+         for(int row = 0; row < mdim; row++)
+         {
+            double curr_bias;
+            instream >> curr_bias;
+            biases[l]->put(row, curr_bias);
+         }
+      }
+   } // include_bias_terms conditional
 
    for(int l = 0; l < n_layers-1; l++)
    {
@@ -1732,21 +1751,12 @@ void neural_net::import_snapshot(string snapshot_filename)
       instream >> mdim;
       instream >> ndim;
 
-//      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
-//           << endl;
-
       for(int row = 0; row < mdim; row++)
       {
          for(int col = 0; col < ndim; col++)
          {
             double curr_weight;
             instream >> curr_weight;
-//            cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
-//                 << " col = " << col << " row = " << row << endl;
-//            cout << "  curr_weight = " << curr_weight << endl;
-//            cout << "  weights[l].mdim = " << weights[l]->get_mdim()
-//                 << " weights[l].ndim = " << weights[l]->get_ndim()
-//                 << endl;
             weights[l]->put(row, col, curr_weight);
          }
       }

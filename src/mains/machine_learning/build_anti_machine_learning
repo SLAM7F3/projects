@@ -3,6 +3,7 @@
 /bin/rm ./generate_tsne_input
 /bin/rm ./generate_tsne_output
 /bin/rm ./parse_mnist
+/bin/rm ./train_nn
 /bin/rm ./test_nn
 /bin/rm ./tsne_2_output
 

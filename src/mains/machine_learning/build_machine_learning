@@ -3,6 +3,7 @@
 ~/bin/MAKE program=generate_tsne_input
 ~/bin/MAKE program=generate_tsne_output
 ~/bin/MAKE program=parse_mnist
+~/bin/MAKE program=train_nn
 ~/bin/MAKE program=test_nn
 ~/bin/MAKE program=tsne_2_output
 
