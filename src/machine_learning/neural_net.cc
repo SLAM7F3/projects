@@ -66,6 +66,60 @@ void neural_net::allocate_member_objects()
 }		       
 
 // ---------------------------------------------------------------------
+void neural_net::instantiate_weights_and_biases()
+{
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         genvector *curr_biases = new genvector(layer_dims[l]);
+         biases.push_back(curr_biases);
+
+// Initialize bias for each network node in layers 1, 2, ... to be
+// gaussian random var distributed according to N(0,1).  Recall input
+// layer has no biases:
+
+         for(int i = 0; i < layer_dims[l]; i++)
+         {
+            if(l == 0)
+            {
+               curr_biases->put(i, 0);
+            }
+            else
+            {
+               curr_biases->put(i, nrfunc::gasdev());
+            }
+         } // loop over index i labeling node in current layer
+
+      }  // loop over index l labeling layers
+   } // include_bias_terms conditional
+
+// Weights link layer l with layer l+1:
+   
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      genmatrix *curr_weights = new genmatrix(layer_dims[l+1], layer_dims[l]);
+      weights.push_back(curr_weights);
+      genmatrix *curr_weights_transpose = new genmatrix(
+         layer_dims[l], layer_dims[l+1]);
+      weights_transpose.push_back(curr_weights_transpose);
+
+// Xavier initialize weights connecting network layers l and l+1 to be
+// gaussian random vars distributed according to N(0,1/sqrt(n_in)):
+
+      for(int i = 0; i < layer_dims[l+1]; i++)
+      {
+         for(int j = 0; j < layer_dims[l]; j++)
+         {
+            curr_weights->put(
+               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
+         } // loop over index j labeling node in next layer
+      } // loop over index i labeling node in current layer
+
+   } // loop over index l labeling neural net layers
+}
+
+// ---------------------------------------------------------------------
 // Input STL vector sizes contains the number of neurons in the
 // respective layers of the network.  For example, if sizes == [2, 3,
 // 1] then the network will have 3 layers with the first layer
@@ -85,32 +139,17 @@ neural_net::neural_net(
 
    vector<double> dummy_dist;
 
+
+   instantiate_weights_and_biases();
+
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
       {
-         genvector *curr_biases = new genvector(layer_dims[l]);
-         biases.push_back(curr_biases);
          genvector *curr_nabla_biases = new genvector(layer_dims[l]);
          nabla_biases.push_back(curr_nabla_biases);
          genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
          delta_nabla_biases.push_back(curr_delta_nabla_biases);
-
-// Initialize bias for each network node in layers 1, 2, ... to be
-// gaussian random var distributed according to N(0,1).  Recall input
-// layer has no biases:
-
-         for(int i = 0; i < layer_dims[l]; i++)
-         {
-            if(l == 0)
-            {
-               curr_biases->put(i, 0);
-            }
-            else
-            {
-               curr_biases->put(i, nrfunc::gasdev());
-            }
-         } // loop over index i labeling node in current layer
 
          bias_01.push_back(dummy_dist);
          bias_05.push_back(dummy_dist);
@@ -130,13 +169,6 @@ neural_net::neural_net(
    
    for(int l = 0; l < n_layers - 1; l++)
    {
-      genmatrix *curr_weights = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);
-      weights.push_back(curr_weights);
-      genmatrix *curr_weights_transpose = new genmatrix(
-         layer_dims[l], layer_dims[l+1]);
-      weights_transpose.push_back(curr_weights_transpose);
-
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       nabla_weights.push_back(curr_nabla_weights);
@@ -147,18 +179,6 @@ neural_net::neural_net(
          layer_dims[l+1], layer_dims[l]);
       curr_rmsprop_weights->clear_values();
       rmsprop_weights_cache.push_back(curr_rmsprop_weights);
-
-// Xavier initialize weights connecting network layers l and l+1 to be
-// gaussian random vars distributed according to N(0,1/sqrt(n_in)):
-
-      for(int i = 0; i < layer_dims[l+1]; i++)
-      {
-         for(int j = 0; j < layer_dims[l]; j++)
-         {
-            curr_weights->put(
-               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
-         } // loop over index j labeling node in next layer
-      } // loop over index i labeling node in current layer
 
       log10_lr_mean_abs_nabla_weight_ratios.push_back(dummy_dist);
 
@@ -1594,12 +1614,12 @@ void neural_net::create_snapshots_subdir()
 // ---------------------------------------------------------------------
 // Member function export_snapshot()
 
-void neural_net::export_snapshot()
+string neural_net::export_snapshot()
 {
    if(snapshots_subdir.size() == 0) create_snapshots_subdir();
    
    string snapshot_filename=snapshots_subdir+"snapshot_"+
-      stringfunc::number_to_string(epoch_history.back(), 3)+".binary";
+      stringfunc::number_to_string(epoch_history.back(), 3)+".txt";
    ofstream outstream;
    
    filefunc::open_binaryfile(snapshot_filename,outstream);
@@ -1631,6 +1651,7 @@ void neural_net::export_snapshot()
    } // loop over index l labeling weight matrices
    filefunc::closefile(snapshot_filename,outstream);
    cout << "Exported " << snapshot_filename << endl;
+   return snapshot_filename;
 }
 
 // ---------------------------------------------------------------------
@@ -1682,5 +1703,6 @@ void neural_net::import_snapshot(string snapshot_filename)
    } // loop over index l labeling weight matrices
    
    filefunc::closefile(snapshot_filename,instream);
-   cout << "Imported " << snapshot_filename << endl;
+   cout << "Imported trained neural network from " << snapshot_filename 
+        << endl;
 }

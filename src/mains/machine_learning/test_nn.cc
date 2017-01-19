@@ -1,7 +1,8 @@
 // ==========================================================================
-// Program TEST_NN
+// Program TEST_NN is a playground for testing our neural_net class
+// using simulated 2D spiral training data.
 // ==========================================================================
-// Last updated on 12/27/16; 1/15/17; 1/16/17; 1/18/17
+// Last updated on 1/15/17; 1/16/17; 1/18/17; 1/19/17
 // ==========================================================================
 
 #include <stdint.h>
@@ -125,7 +126,9 @@ int main (int argc, char* argv[])
       }
       labels.push_back(testing_samples[i].second + color_offset);
    } // loop over index i labeling data samples
-   
+
+   NN.create_snapshots_subdir();
+   NN.export_snapshot();
    
 // Generate metafile output whose markers are colored according to
 // class labels:
@@ -159,8 +162,6 @@ int main (int argc, char* argv[])
    string banner="Exported metafile "+meta_filename+".meta";
    outputfunc::write_banner(banner);
    string unix_cmd="meta_to_jpeg "+meta_filename;
-   sysfunc::unix_command(unix_cmd);
-   unix_cmd="/bin/rm *.ps";
    sysfunc::unix_command(unix_cmd);
 
    cout << "training_samples.size = " << training_samples.size() << endl;

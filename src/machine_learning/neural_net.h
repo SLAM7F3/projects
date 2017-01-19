@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 1/15/17; 1/16/17; 1/17/17; 1/18/17
+// Last modified on 1/16/17; 1/17/17; 1/18/17; 1/19/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -115,7 +115,7 @@ class neural_net
    void generate_view_metrics_script();
 
    void create_snapshots_subdir();
-   void export_snapshot();
+   std::string export_snapshot();
    void import_snapshot(std::string snapshot_filename);
 
   private: 
@@ -197,6 +197,7 @@ class neural_net
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
    void docopy(const neural_net& N);
+   void instantiate_weights_and_biases();
 };
 
 // ==========================================================================
