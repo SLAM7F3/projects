@@ -67,6 +67,7 @@ class neural_net
    double get_learning_rate() const;
 
    void import_training_data(const std::vector<DATA_PAIR>& data);
+   void import_validation_data(const std::vector<DATA_PAIR>& data);
    void import_test_data(const std::vector<DATA_PAIR>& data);
    std::vector<DATA_PAIR> randomly_shuffle_training_data();
    std::vector< std::vector<neural_net::DATA_PAIR> > 
@@ -88,6 +89,7 @@ class neural_net
    double evaluate_model_on_data_set(
       const std::vector<DATA_PAIR>& sample_data);
    double evaluate_model_on_training_set();
+   double evaluate_model_on_validation_set();
    double evaluate_model_on_test_set();
    std::vector<int>& get_incorrect_classifications();
 
@@ -121,7 +123,7 @@ class neural_net
   private: 
 
    bool include_bias_terms;
-   int n_layers, n_training_samples, n_test_samples;
+   int n_layers, n_training_samples, n_validation_samples, n_test_samples;
    int n_classes;
    int expt_number;
    int solver_type;
@@ -139,6 +141,7 @@ class neural_net
    std::vector<genmatrix*> rmsprop_weights_cache;
 
    std::vector<DATA_PAIR> training_data;
+   std::vector<DATA_PAIR> validation_data;
    std::vector<DATA_PAIR> test_data;
 
 // Node weighted inputs:
@@ -162,6 +165,7 @@ class neural_net
    std::vector<double> epoch_history;
    std::vector<double> avg_minibatch_loss;
    std::vector<double> training_accuracy_history;
+   std::vector<double> validation_accuracy_history;
    std::vector<double> test_accuracy_history;
    std::vector<std::vector<double> > log10_lr_mean_abs_nabla_weight_ratios;
    std::string output_subdir;
@@ -198,6 +202,8 @@ class neural_net
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
    void docopy(const neural_net& N);
    void instantiate_weights_and_biases();
+   void instantiate_training_variables();
+   void delete_weights_and_biases();
 };
 
 // ==========================================================================

@@ -71,9 +71,11 @@ int main (int argc, char* argv[])
 				// for small training set
 //   int n_training_samples = 200;
    int n_training_samples = 2000;
+   int n_validation_samples = 0.1 * n_training_samples;
    int n_testing_samples = 0.1 * n_training_samples;
 
    vector<neural_net::DATA_PAIR> training_samples;
+   vector<neural_net::DATA_PAIR> validation_samples;
    vector<neural_net::DATA_PAIR> testing_samples;
 
 /*
@@ -86,9 +88,12 @@ int main (int argc, char* argv[])
    machinelearning_func::generate_2d_spiral_data_samples(
       n_training_samples, training_samples);
    machinelearning_func::generate_2d_spiral_data_samples(
+      n_validation_samples, validation_samples);
+   machinelearning_func::generate_2d_spiral_data_samples(
       n_testing_samples, testing_samples);
 
    NN.import_training_data(training_samples);
+   NN.import_validation_data(validation_samples);
    NN.import_test_data(testing_samples);
 
    int n_epochs = 200;
@@ -98,6 +103,13 @@ int main (int argc, char* argv[])
    NN.plot_accuracies_history();
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
 
+   NN.create_snapshots_subdir();
+   string snapshot_filename = NN.export_snapshot();
+   NN.import_snapshot(snapshot_filename);
+
+
+
+/*
 // Generate metafile plot of training samples, testing samples and
 // classification predictions:
 
@@ -127,22 +139,17 @@ int main (int argc, char* argv[])
       labels.push_back(testing_samples[i].second + color_offset);
    } // loop over index i labeling data samples
 
-   NN.create_snapshots_subdir();
-   NN.export_snapshot();
-   
 // Generate metafile output whose markers are colored according to
 // class labels:
 
    metafile curr_metafile;
 
-/*
-   string meta_filename="circle";
-   string title="Toy circle data classification";
-   string x_label="X";
-   string y_label="Y";
-   double min_val = -2;
-   double max_val = 2;
-*/
+//   string meta_filename="circle";
+//   string title="Toy circle data classification";
+//   string x_label="X";
+//   string y_label="Y";
+//   double min_val = -2;
+//   double max_val = 2;
 
    string meta_filename = NN.get_output_subdir() + "spiral";
    string title="Toy spiral data classification";
@@ -168,5 +175,8 @@ int main (int argc, char* argv[])
    cout << "testing_samples.size = " << testing_samples.size() << endl;
    cout << "Number of testing samples incorrectly classified = "
         << incorrect_classifications.size() << endl;
+
+*/
+
 }
 

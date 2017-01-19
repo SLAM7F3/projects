@@ -68,6 +68,9 @@ void neural_net::allocate_member_objects()
 // ---------------------------------------------------------------------
 void neural_net::instantiate_weights_and_biases()
 {
+   cout << "inside neural_net::instantiate_weights_and_biases()" << endl;
+   cout << "n_layers = " << n_layers << endl;
+
    if(include_bias_terms)
    {
       for(int l = 0; l < n_layers; l++)
@@ -100,9 +103,6 @@ void neural_net::instantiate_weights_and_biases()
    {
       genmatrix *curr_weights = new genmatrix(layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
-      genmatrix *curr_weights_transpose = new genmatrix(
-         layer_dims[l], layer_dims[l+1]);
-      weights_transpose.push_back(curr_weights_transpose);
 
 // Xavier initialize weights connecting network layers l and l+1 to be
 // gaussian random vars distributed according to N(0,1/sqrt(n_in)):
@@ -120,27 +120,9 @@ void neural_net::instantiate_weights_and_biases()
 }
 
 // ---------------------------------------------------------------------
-// Input STL vector sizes contains the number of neurons in the
-// respective layers of the network.  For example, if sizes == [2, 3,
-// 1] then the network will have 3 layers with the first layer
-// containing 2 neurons, the second layer 3 neurons, and the third
-// layer 1 neuron.
-
-neural_net::neural_net(
-   int mini_batch_size, double lambda, double rmsprop_decay_rate, 
-   const vector<int>& n_nodes_per_layer)
+void neural_net::instantiate_training_variables()
 {
-   this->mini_batch_size = mini_batch_size;
-   this->lambda = lambda;
-   this->rmsprop_decay_rate = rmsprop_decay_rate;
-
-   initialize_member_objects(n_nodes_per_layer);
-   allocate_member_objects();
-
    vector<double> dummy_dist;
-
-
-   instantiate_weights_and_biases();
 
    if(include_bias_terms)
    {
@@ -169,6 +151,10 @@ neural_net::neural_net(
    
    for(int l = 0; l < n_layers - 1; l++)
    {
+      genmatrix *curr_weights_transpose = new genmatrix(
+         layer_dims[l], layer_dims[l+1]);
+      weights_transpose.push_back(curr_weights_transpose);
+
       genmatrix *curr_nabla_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       nabla_weights.push_back(curr_nabla_weights);
@@ -206,11 +192,48 @@ neural_net::neural_net(
    } // loop over index l labeling neural net layers
 }
 
+// ---------------------------------------------------------------------
+// Neural network class constructor
+
+neural_net::neural_net(
+   int mini_batch_size, double lambda, double rmsprop_decay_rate, 
+   const vector<int>& n_nodes_per_layer)
+{
+   this->mini_batch_size = mini_batch_size;
+   this->lambda = lambda;
+   this->rmsprop_decay_rate = rmsprop_decay_rate;
+
+   initialize_member_objects(n_nodes_per_layer);
+   allocate_member_objects();
+
+   instantiate_weights_and_biases();
+   instantiate_training_variables();
+}
+
 // Copy constructor:
 
 neural_net::neural_net(const neural_net& NN)
 {
 //   docopy(dtree);
+}
+
+// ---------------------------------------------------------------------
+void neural_net::delete_weights_and_biases()
+{
+   if(include_bias_terms)
+   {
+      for(unsigned int l = 0; l < biases.size(); l++)
+      {
+         delete biases[l];
+      }
+   } 
+   biases.clear();
+
+   for(unsigned int l = 0; l < weights.size(); l++)
+   {
+      delete weights[l];
+   }
+   weights.clear();
 }
 
 // ---------------------------------------------------------------------
@@ -224,12 +247,13 @@ neural_net::~neural_net()
       delete a[l];
       delete delta[l];
    }
+
+   delete_weights_and_biases();
    
    if(include_bias_terms)
    {
       for(unsigned int l = 0; l < biases.size(); l++)
       {
-         delete biases[l];
          delete nabla_biases[l];
          delete delta_nabla_biases[l];
       }
@@ -237,7 +261,7 @@ neural_net::~neural_net()
    
    for(unsigned int l = 0; l < weights.size(); l++)
    {
-      delete weights[l];
+      delete weights_transpose[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
@@ -284,8 +308,8 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
       cout << *curr_weights << endl;
 
    } // loop over index l labeling neural net layer
-   cout << "Correct test prediction frac = " 
-        << NN.evaluate_model_on_test_set()
+   cout << "Correct validation prediction frac = " 
+        << NN.evaluate_model_on_validation_set()
         << endl;
 
    return outstream;
@@ -419,8 +443,7 @@ double neural_net::evaluate_model_on_data_set(
       {
          incorrect_classifications.push_back(t);
       }
-      
-   } // loop over index t labeling test samples
+   } // loop over index t labeling data samples
 
    double frac_correct = double(n_correct_predictions) / n_data_samples;
    return frac_correct;
@@ -430,6 +453,11 @@ double neural_net::evaluate_model_on_data_set(
 double neural_net::evaluate_model_on_training_set() 
 {
    return evaluate_model_on_data_set(training_data);
+}
+
+double neural_net::evaluate_model_on_validation_set() 
+{
+   return evaluate_model_on_data_set(validation_data);
 }
 
 double neural_net::evaluate_model_on_test_set() 
@@ -449,6 +477,19 @@ void neural_net::import_training_data(const vector<DATA_PAIR>& data)
       training_data.push_back(curr_data);
 
 //      print_data_pair(t, training_data.back());
+   }
+}
+
+// ---------------------------------------------------------------------
+void neural_net::import_validation_data(const vector<DATA_PAIR>& data)
+{
+   n_validation_samples = data.size();
+   for(int t = 0; t < n_validation_samples; t++)
+   {
+      DATA_PAIR curr_data;
+      curr_data.first = data[t].first;
+      curr_data.second = data[t].second;
+      validation_data.push_back(curr_data);
    }
 }
 
@@ -538,16 +579,20 @@ void neural_net::decrease_learning_rate()
 // mini-batch stochastic gradient descent.  The training data is a
 // list of "(x, y)" tuples representing the training inputs and the
 // desired outputs.  The other non-optional parameters are
-// self-explanatory.  If "test_data" is provided then the network will
-// be evaluated against the test data after each epoch, and partial
-// progress printed out.  This is useful for tracking progress, but
-// slows things down substantially.  Input parameter lambda governs L2
-// regularization.
+// self-explanatory.  If "validation_data" is provided then the
+// network will be evaluated against the validation data after each
+// epoch, and partial progress printed out.  This is useful for
+// tracking progress, but slows things down substantially.  Input
+// parameter lambda governs L2 regularization.
 
 void neural_net::train_network(int n_epochs)
 {
    int n_update = 1 * 1000;
-   int n_export_metafiles = 10 * 1000;
+
+// FAKE FAKE:  Thurs Jan 19 at 6:34 am
+
+//   int n_export_metafiles = 10 * 1000;
+   int n_export_metafiles = 20 * 1000;
 
    for(int e = 0; e < n_epochs; e++)
    {
@@ -572,16 +617,17 @@ void neural_net::train_network(int n_epochs)
          {
             training_accuracy_history.push_back(
                evaluate_model_on_training_set());
-            test_accuracy_history.push_back(
-               evaluate_model_on_test_set());
+            validation_accuracy_history.push_back(
+               evaluate_model_on_validation_set());
             cout << "Epoch e = " << epoch_history.back() 
                  << " of " << n_epochs << endl;
             cout << "   Correct prediction fracs: " << endl;
-            cout << "   test samples = " << test_accuracy_history.back() 
+            cout << "   validation samples = " 
+                 << validation_accuracy_history.back() 
                  << " training samples = " << training_accuracy_history.back()
                  << endl;
             cout << "   n_training_samples = " << training_data.size() 
-                 << "  n_test_samples = " << test_data.size()
+                 << "  n_validation_samples = " << validation_data.size()
                  << endl;
          }
          if(update_counter % n_export_metafiles == 0)
@@ -927,7 +973,7 @@ void neural_net::summarize_parameters()
    params_stream << "L2 regularization lambda coeff = " << lambda << endl;
 
    params_stream << "n_training_samples = " << n_training_samples << endl;
-   params_stream << "n_test_samples = " << n_test_samples << endl;
+   params_stream << "n_validation_samples = " << n_validation_samples << endl;
    params_stream << "mini_batch_size = " << mini_batch_size << endl;
    params_stream << "n_mini_batches per epoch = " 
                  << n_training_samples / mini_batch_size + 1 << endl;
@@ -1245,16 +1291,16 @@ void neural_net::plot_log10_lr_mean_abs_nabla_weight_ratios()
 }
 
 // ---------------------------------------------------------------------
-// Generate metafile plot of training and testing set accuracies vs
+// Generate metafile plot of training and validation set accuracies vs
 // epoch.
 
 void neural_net::plot_accuracies_history()
 {
-   if(test_accuracy_history.size() < 3) return;
+   if(training_accuracy_history.size() < 3) return;
 
    metafile curr_metafile;
    string meta_filename=output_subdir + "accuracies";
-   string title="Training and testing samples accuracy vs training epoch";
+   string title="Training and validation samples accuracy vs training epoch";
    string subtitle=init_subtitle();
    string x_label="Epoch";
    string y_label="Model accuracy";
@@ -1272,10 +1318,11 @@ void neural_net::plot_accuracies_history()
    curr_metafile.openmetafile();
    curr_metafile.write_header();
 
-   curr_metafile.set_legendlabel("Training accuracy");
+   curr_metafile.set_legendlabel("Validation accuracy");
    curr_metafile.write_curve(
-      epoch_history, test_accuracy_history, colorfunc::red);
-   curr_metafile.set_legendlabel("Testing accuracy");
+      epoch_history, validation_accuracy_history, colorfunc::red);
+
+   curr_metafile.set_legendlabel("Training accuracy");
    curr_metafile.write_curve(
       epoch_history, training_accuracy_history, colorfunc::blue);
 
@@ -1553,7 +1600,7 @@ bool neural_net::plot_quasirandom_weight_values(string extrainfo)
 
 // ---------------------------------------------------------------------
 // Member function generate_summary_plots() outputs metafile plots of
-// loss, training/testing accuracies, bias and weight distribution,
+// loss, training/validation accuracies, bias and weight distribution,
 // and random weight value histories.
 
 void neural_net::generate_summary_plots(string extrainfo)
@@ -1659,6 +1706,9 @@ string neural_net::export_snapshot()
 
 void neural_net::import_snapshot(string snapshot_filename)
 {
+   cout << "inside neural_net::import_snapshot(), snapshot_filename = "
+        << snapshot_filename << endl;
+   
    ifstream instream;
    filefunc::open_binaryfile(snapshot_filename,instream);
    instream >> n_layers;
@@ -1673,7 +1723,8 @@ void neural_net::import_snapshot(string snapshot_filename)
            << endl;
    }
 
-   initialize_member_objects(n_nodes_per_layer);
+   delete_weights_and_biases();
+   instantiate_weights_and_biases();
 
    for(int l = 0; l < n_layers-1; l++)
    {
