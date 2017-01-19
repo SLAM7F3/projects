@@ -1078,6 +1078,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 29152
 
+After 67 epochs, val accuracy = 0.367 and train accuracy = 0.416
+
 86.  T1 Experiment 86
 Thu Jan 19 12:07:56 2017
 Neural net params:
@@ -1101,6 +1103,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 4
 Process ID = 29168
+
+After 50 epochs, val accuracy = 0.317 and train accuracy = 0.347
 
 87.  T1 Experiment 87
 Thu Jan 19 12:10:03 2017
@@ -1126,6 +1130,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 2
 Process ID = 29190
 
+After 56 epochs, val accuracy = 0.467 and train accuracy = 0.557
+
 88.  T1 Experiment 88
 Thu Jan 19 12:10:30 2017
 Neural net params:
@@ -1149,6 +1155,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 29204
+
+After 30 epochs, val accuracy = 0.337 and train accuracy = 0.396
 
 ---------------------
 Titan 3:
@@ -1179,6 +1187,8 @@ Maximum move relative to game end = 2
 Process ID = 30663
 
 After 378 epochs, val accuracy = 0.535 and train accuracy = 0.571
+After 567 epochs, val accuracy = 0.533 and train accuracy = 0.568
+TERMINATED
 
 82.  T3:  Experiment 82
 Thu Jan 19 12:03:05 2017
@@ -1204,6 +1214,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 4
 Process ID = 4916
 
+After 83 epochs, val accuracy = 0.311 and train accuracy = 0.329
+
 83.  T3:  Experiment 83
 Thu Jan 19 12:04:23 2017
 Neural net params:
@@ -1228,6 +1240,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
 Process ID = 4946
 
+After 179 epochs, val accuracy = 0.586 and train accuracy = 0.739
+
 84.  T3:  Experiment 84
 Thu Jan 19 12:05:09 2017
 Neural net params:
@@ -1251,6 +1265,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 2
 Process ID = 4958
+
+After 90 epochs, val accuracy = 0.462 and train accuracy = 0.527
 
 
 ---------------------
@@ -1282,6 +1298,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 367
 
+After 81 epochs, val accuracy = 0.315 and train accuracy = 0.347
+
 81.  TM  Experiment 81
 Thu Jan 19 11:59:52 2017
 Neural net params:
@@ -1305,6 +1323,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
 Process ID = 428
+
+After 244 epochs, val accuracy = 0.614 and train accuracy = 0.694
 
 ---------------------
 m6700
