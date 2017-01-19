@@ -106,8 +106,7 @@ int main (int argc, char* argv[])
    NN.plot_loss_history();
    NN.plot_accuracies_history();
 
-   NN.create_snapshots_subdir();
-   string snapshot_filename = NN.export_snapshot();
+//   string snapshot_filename = NN.export_snapshot();
 
    double training_accuracy = NN.evaluate_model_on_training_set();
    vector<int> incorrect_training_classifications = 

@@ -226,6 +226,7 @@ inline void neural_net::set_output_subdir(std::string subdir)
 {
    output_subdir = subdir;
    filefunc::dircreate(output_subdir);
+   create_snapshots_subdir();
 }
 
 inline std::string neural_net::get_params_filename() const

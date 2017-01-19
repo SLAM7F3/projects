@@ -583,12 +583,16 @@ void neural_net::decrease_learning_rate()
 // network will be evaluated against the validation data after each
 // epoch, and partial progress printed out.  This is useful for
 // tracking progress, but slows things down substantially.  Input
-// parameter lambda governs L2 regularization.
+// parameter lambda governs L2 regularization.  This method also
+// periodically exports snapshots of trained network weight and bias
+// values to output text files.
 
 void neural_net::train_network(int n_epochs)
 {
    int n_update = 1 * 1000;
    int n_export_metafiles = 10 * 1000;
+   int n_export_snapshot = 100 * 1000;
+   int n_max = basic_math::max(n_update,n_export_metafiles,n_export_snapshot);
 
    for(int e = 0; e < n_epochs; e++)
    {
@@ -636,10 +640,22 @@ void neural_net::train_network(int n_epochs)
             compute_weight_distributions();
             store_quasirandom_weight_values();
             generate_summary_plots(extrainfo);
+         }
+
+         if(update_counter % n_export_snapshot == 0)
+         {
+            export_snapshot();
+         }
+
+         if(update_counter > n_max)
+         {
             update_counter = 0;
          }
+         
       } // loop over index b labeling mini batches
    } // loop over index e labeling training epochs
+
+   export_snapshot();
 }
 
 // ---------------------------------------------------------------------
@@ -1701,7 +1717,9 @@ string neural_net::export_snapshot()
    } // loop over index l labeling weight matrices
 
    filefunc::closefile(snapshot_filename,outstream);
+   cout << "======================================================" << endl;
    cout << "Exported " << snapshot_filename << endl;
+   cout << "======================================================" << endl;
    return snapshot_filename;
 }
 

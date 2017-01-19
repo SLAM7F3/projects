@@ -80,7 +80,7 @@ int main (int argc, char* argv[])
       n_testing_samples, testing_samples);
    NN.import_test_data(testing_samples);
 
-   string nn_subdir = "./nn_output/snapshots/2017-01-19_07_35/";
+   string nn_subdir = "./nn_output/snapshots/2017-01-19_07_44/";
    string snapshot_filename = nn_subdir + "snapshot_199.984.txt";
    NN.import_snapshot(snapshot_filename);
 
