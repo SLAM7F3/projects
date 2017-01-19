@@ -1,7 +1,7 @@
 // ==========================================================================
 // pong class member function definitions
 // ==========================================================================
-// Last modified on 12/31/16; 1/1/17; 1/5/17; 1/6/17
+// Last modified on 1/1/17; 1/5/17; 1/6/17; 1/19/17
 // ==========================================================================
 
 // Notes: 
@@ -284,7 +284,7 @@ void pong::push_back_paddle_y()
 // ---------------------------------------------------------------------
 // Generate metafile plot of paddle Y density probability distribution.
 
-void pong::plot_paddle_y_dist(string output_subdir, string extrainfo)
+void pong::plot_paddle_y_dist(string output_subdir)
 {
    if(!paddle_y_values_filled) return;
 

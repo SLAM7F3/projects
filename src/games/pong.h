@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for pong class 
 // ==========================================================================
-// Last modified on 12/26/16; 12/30/16; 12/31/16; 1/5/17
+// Last modified on 12/30/16; 12/31/16; 1/5/17; 1/19/17
 // ==========================================================================
 
 #ifndef PONG_H
@@ -56,7 +56,7 @@ class pong
    bool increment_paddle_y();
    bool decrement_paddle_y();
    void push_back_paddle_y();
-   void plot_paddle_y_dist(std::string output_subdir, std::string extrainfo);
+   void plot_paddle_y_dist(std::string output_subdir);
    void plot_tracks(std::string output_subdir, int episode_number,
                     double cum_reward);
    void plot_paddle_accel(std::string output_subdir, int episode_number,

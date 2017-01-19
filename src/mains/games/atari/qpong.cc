@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QPONG solves the Pong atari game via deep Q-learning.
 // ==========================================================================
-// Last updated on 12/31/16; 1/10/17; 1/11/17; 1/18/17
+// Last updated on 1/10/17; 1/11/17; 1/18/17; 1/19/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -522,7 +522,7 @@ int main(int argc, char** argv)
          reinforce_agent_ptr->store_quasirandom_weight_values();
          reinforce_agent_ptr->generate_summary_plots(extrainfo);
          reinforce_agent_ptr->generate_view_metrics_script(false, true);
-         pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
+         pong_ptr->plot_paddle_y_dist(output_subdir);
 
 // Export trained weights in neural network's zeroth layer as
 // colored images to output_subdir

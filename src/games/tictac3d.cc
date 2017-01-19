@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 11/28/16; 1/10/17; 1/15/17; 1/16/17
+// Last modified on 1/10/17; 1/15/17; 1/16/17; 1/19/17
 // ==========================================================================
 
 #include <iostream>
@@ -236,6 +236,28 @@ void tictac3d::record_latest_move(int player_value, int p)
    {
       latest_move_iter->second = p;
    }
+}
+
+// ---------------------------------------------------------------------
+// Member function record_n_total_game_turns()
+
+void tictac3d::record_n_total_game_turns()
+{
+   n_total_game_turns.push_back(n_AI_turns + n_human_turns + n_agent_turns);
+}
+// ---------------------------------------------------------------------
+// Generate metafile plot of paddle Y density probability distribution.
+
+void tictac3d::plot_total_game_turns_dist(string output_subdir)
+{
+   double max_turns = mathfunc::maximal_value(n_total_game_turns);
+   int n_bins = max_turns + 1;
+   prob_distribution prob_turns(n_total_game_turns, n_bins, 0);
+
+   prob_turns.set_freq_histogram(true);
+   prob_turns.set_xlabel("Total number of game turns");
+   prob_turns.set_densityfilenamestr(output_subdir+"total_turns_dist.meta");
+   prob_turns.write_density_dist(false, true);
 }
 
 // ---------------------------------------------------------------------

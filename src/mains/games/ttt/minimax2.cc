@@ -2,9 +2,10 @@
 // Program MINIMAX2 allows a minimax AI to play again a minimax agent.
 // It periodically exports afterstate-action pairs for both players to
 // output text files for later supervised learning policy training
-// purposes.
+// purposes.  It also can export a frequency histogram for the total
+// number of turns (AI + agent) played per game.
 // ==========================================================================
-// Last updated on 11/3/16; 11/4/16; 1/15/17; 1/16/17
+// Last updated on 11/4/16; 1/15/17; 1/16/17; 1/19/17
 // ==========================================================================
 
 #include <iostream>
@@ -132,30 +133,33 @@ int main (int argc, char* argv[])
             ttt_ptr->adjust_intrinsic_cell_prizes();
          }
       } // !game_over while loop
+      ttt_ptr->record_n_total_game_turns();
 
-      ttt_ptr->save_currgame_afterstates_and_actions();
+//      ttt_ptr->save_currgame_afterstates_and_actions();
 
 //      ttt_ptr->print_winning_pattern();
       cout << "n_AI_turns = " << ttt_ptr->get_n_AI_turns() << endl;
       cout << "n_agent_turns = " << ttt_ptr->get_n_agent_turns() << endl;
-      cout << "n_completed_turns = " << ttt_ptr->get_n_completed_turns() 
+      cout << "n_total_game_turns = " << ttt_ptr->get_n_total_game_turns() 
            << endl;
-      cout << "Number of recorded afterstate board strings = "
-           << ttt_ptr->get_n_afterstate_board_strings() << endl;
+//      cout << "Number of recorded afterstate board strings = "
+//           << ttt_ptr->get_n_afterstate_board_strings() << endl;
 
-//      if(g % 5 == 0)
+      if(g % 100 == 0)
 //      if(g % 200 == 0)
-      if(g % 500 == 0)
+//      if(g % 500 == 0)
       {
-         string output_filename=output_subdir + 
-            "afterstate_action_pairs_"+stringfunc::integer_to_string(g,5)+
-            ".txt";
-         ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
+//         string output_filename=output_subdir + 
+//            "afterstate_action_pairs_"+stringfunc::integer_to_string(g,5)+
+//            ".txt";
+//         ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
+
+         ttt_ptr->plot_total_game_turns_dist(output_subdir);
       }
    } // loop over index g labeling games
 
-   string output_filename=output_subdir+"afterstate_action_pairs.txt";
-   ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
+//   string output_filename=output_subdir+"afterstate_action_pairs.txt";
+//   ttt_ptr->export_recorded_afterstate_action_pairs(output_filename);
    
    delete ttt_ptr;
 }

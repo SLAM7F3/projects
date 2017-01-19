@@ -1,39 +1,41 @@
 ==========================================================================
 Training pi_sigma for TTT
 ==========================================================================
-Last updated on 1/16/17; 1/17/17; 1/18/17
+Last updated on 1/16/17; 1/17/17; 1/18/17; 1/19/17
 ==========================================================================
 
 Best results so far:
 
-60.  Repeat expt 54 on Titan 1 from T3 with code with transposed weights matrix
-H1 = 128; H2 = 64; H3 = 0
-lambda = 0.0003
-base_learning_rate = 3E-4
-max move rel to end = 1
+66. T1:  Experiment with forcing player board state to always correspond to
+agent value = +1
 
-Experiment 60
-Tue Jan 17 15:49:40 2017
+Experiment 66
+Wed Jan 18 08:17:24 2017
 Neural net params:
    n_layers = 4
-   layer = 0 n_nodes = 65
+   layer = 0 n_nodes = 64
    layer = 1 n_nodes = 128
    layer = 2 n_nodes = 64
    layer = 3 n_nodes = 64
-   n_weights = 20608 (FC)
-base_learning_rate = 0.0003; batch_size = 100
+   n_weights = 20480 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
 solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.0003
-n_training_samples = 44915
-n_test_samples = 5085
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 44458
+n_test_samples = 5043
+mini_batch_size = 100
+n_mini_batches per epoch = 445
 Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
-Process ID = 5356
+Process ID = 28193
 
-After 2202 epochs, test accuracy = 0.569322 and training accuracy = 0.636
+After 712 epochs, test accuracy = 0.683 and training accuracy = 0.734
+After 1370 epochs, test accuracy = 0.756 and training accuracy = 0.812
+After 4058 epochs, test accuracy = 0.850 and training accuracy = 0.909
 
 ------------------------------------------------------
 TERMINATED EXPERIMENTS
@@ -656,15 +658,7 @@ Maximum move relative to game end = 1
 Process ID = 19380
 
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
-
----------------------
-Titan 1:
----------------------
-
-66. Experiment with forcing player board state to always correspond to
+66. T1:  Experiment with forcing player board state to always correspond to
 agent value = +1
 
 Experiment 66
@@ -693,64 +687,11 @@ Process ID = 28193
 
 After 712 epochs, test accuracy = 0.683 and training accuracy = 0.734
 After 1370 epochs, test accuracy = 0.756 and training accuracy = 0.812
+After 4058 epochs, test accuracy = 0.850 and training accuracy = 0.909
+TERMINATED
 
-68.  Wed Jan 18 12:16:07 2017
-Neural net params:
-   n_layers = 5
-   layer = 0 n_nodes = 64
-   layer = 1 n_nodes = 64
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 64
-   layer = 4 n_nodes = 64
-   n_weights = 16384 (FC)
-include_bias_terms = 1
-base_learning_rate = 0.0003
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.95
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.0001
-n_training_samples = 44442
-n_test_samples = 5059
-mini_batch_size = 100
-n_mini_batches per epoch = 445
-Max n_training_epochs = 10000
-Leaky ReLU small slope = 0.01
-Maximum move relative to game end = 1
-Process ID = 32443
 
-After 739 epochs, test accuracy = 0.654 and training accuracy = 0.678
-
-70.  
-Experiment 70
-Wed Jan 18 15:25:59 2017
-Neural net params:
-   n_layers = 5
-   layer = 0 n_nodes = 64
-   layer = 1 n_nodes = 128
-   layer = 2 n_nodes = 64
-   layer = 3 n_nodes = 32
-   layer = 4 n_nodes = 64
-   n_weights = 20480 (FC)
-include_bias_terms = 1
-base_learning_rate = 0.0003
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.95
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.0001
-n_training_samples = 89029
-n_test_samples = 9973
-mini_batch_size = 100
-n_mini_batches per epoch = 891
-Max n_training_epochs = 10000
-Leaky ReLU small slope = 0.01
-Maximum move relative to game end = 2
-Process ID = 22110
-
----------------------
-Titan 3:
----------------------
-
-67. Experiment with forcing player board state to always correspond to
+67. T3: Experiment with forcing player board state to always correspond to
 agent value = +1
 
 Experiment 67
@@ -778,8 +719,133 @@ Maximum move relative to game end = 1
 Process ID = 19548
 
 After 1229 epochs, testing accuracy = 0.720 and training accuracy = 0.783
+After 3885 epochs, testing accuracy = 0.837 and training accuracy = 0.895
 
-69.  Experiment 69
+TERMINATED.
+
+68.  T1: Wed Jan 18 12:16:07 2017
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 64
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 64
+   layer = 4 n_nodes = 64
+   n_weights = 16384 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 44442
+n_test_samples = 5059
+mini_batch_size = 100
+n_mini_batches per epoch = 445
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 32443
+
+After 739 epochs, test accuracy = 0.654 and training accuracy = 0.678
+After 3885 epochs, test accuracy = 0.637 and training accuracy = 0.683
+TERMINATED.
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+70.  T1
+Experiment 70
+Wed Jan 18 15:25:59 2017
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 64
+   n_weights = 20480 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 89029
+n_test_samples = 9973
+mini_batch_size = 100
+n_mini_batches per epoch = 891
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 2
+Process ID = 22110
+
+After 1294 epochs, test accuracy = 0.605 and training accuracy = 0.638
+  Both curves are slowly heading upwards
+
+74.  T1 
+
+Experiment 74
+Thu Jan 19 05:25:47 2017
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 64
+   n_weights = 20480 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 44460
+n_test_samples = 5041
+mini_batch_size = 100
+n_mini_batches per epoch = 445
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 14185
+
+75.  T1
+
+Experiment 75
+Thu Jan 19 05:27:00 2017
+Neural net params:
+   n_layers = 5
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 64
+   layer = 3 n_nodes = 32
+   layer = 4 n_nodes = 64
+   n_weights = 20480 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 178001
+n_test_samples = 20003
+mini_batch_size = 100
+n_mini_batches per epoch = 1781
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 4
+Process ID = 14199
+
+---------------------
+Titan 3:
+---------------------
+
+69.  T3: Experiment 69
 Wed Jan 18 12:17:14 2017
 Neural net params:
    n_layers = 4
@@ -804,8 +870,10 @@ Maximum move relative to game end = 2
 Process ID = 5365
 
 After 290 epochs, test accuracy = 0.487 and train accuracy = 0.510
+After 1566 epochs, test accuracy = 0.577 and train accuracy = 0.609
+  Both curves have almost leveled out.
 
-71. Experiment 71
+71. T3: Experiment 71
 Wed Jan 18 15:27:15 2017
 Neural net params:
    n_layers = 4
@@ -829,12 +897,39 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 24825
 
+After 854 epochs, test accuracy = 0.377 and training accuracy = 0.405
+  Both curves have peaked are are heading slightly downwards
+
+76. T3
+Experiment 76
+Thu Jan 19 05:28:31 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 128
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 64
+   n_weights = 32768 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 88962
+n_test_samples = 10040
+mini_batch_size = 100
+n_mini_batches per epoch = 890
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 2
+Process ID = 30663
 
 ---------------------
 Thinkmate
 ---------------------
 
-72.  
+72.  TM
 Experiment 72
 Wed Jan 18 15:28:04 2017
 Neural net params:
@@ -860,7 +955,10 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 35017
 
-73.  Experiment 73
+After 713 epochs, test accuracy = 0.328 and train accuracy = 0.365
+  Both curves are continuing to head upwards
+
+73.  TM Experiment 73
 Wed Jan 18 15:29:08 2017
 Neural net params:
    n_layers = 4
@@ -884,6 +982,9 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 35163
 
+After 460 epochs, test accuracy = 0.381 and train accuracy = 0.419
+  Both curves are slowly heading upwards
+
 
 
 ---------------------
@@ -893,7 +994,12 @@ m6700
 ==========================================================================
 Conclusions:
 
-As of 1 pm on Mon Jan 16, 2017, it looks like base learning rate must be no
-larger than 1E6 to avoid horrible loss divergence behavior, at least when
-lambda = 1E-3.
+*.  As of 1 pm on Mon Jan 16, 2017, it looks like base learning rate must
+be no larger than 1E6 to avoid horrible loss divergence behavior, at least
+when lambda = 1E-3.
 
+*.  H1 = 128, H2 = 64, lambda = 1E-4, BLR = 3E-4, switch colors yields 0.85
+test accuracy for max move rel to game end = 1.
+
+*. But H1 = 128, H2 = 64, H3 = 32, lambda = 1E-4, BLR = 3E-4, switch colors
+may be better for max move rel to game end = 2 and 3.  

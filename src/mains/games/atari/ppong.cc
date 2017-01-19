@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PPONG solves the Pong atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 1/3/17; 1/4/17; 1/5/17; 1/18/17
+// Last updated on 1/4/17; 1/5/17; 1/18/17; 1/19/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -443,7 +443,7 @@ int main(int argc, char** argv)
          {
             reinforce_agent_ptr->generate_summary_plots(extrainfo);
             reinforce_agent_ptr->generate_view_metrics_script(false, true);
-            pong_ptr->plot_paddle_y_dist(output_subdir, extrainfo);
+            pong_ptr->plot_paddle_y_dist(output_subdir);
             pong_ptr->plot_tracks(output_subdir, curr_episode_number, 
                                   cum_reward);
             pong_ptr->plot_paddle_accel(output_subdir, curr_episode_number, 

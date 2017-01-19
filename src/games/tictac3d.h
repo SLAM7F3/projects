@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 11/27/16; 12/8/16; 1/15/17; 1/16/17
+// Last modified on 12/8/16; 1/15/17; 1/16/17; 1/19/17
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -73,6 +73,7 @@ class tictac3d
    void increment_n_agent_turns();
    int get_n_agent_turns() const;
    int get_n_completed_turns() const;
+   int get_n_total_game_turns() const;
 
    void reset_board_state();
    void randomize_board_state();
@@ -94,6 +95,8 @@ class tictac3d
    bool set_player_move(int p, int player_value);
    void get_random_legal_player_move(int player_value);
    void record_latest_move(int player_value, int p);
+   void record_n_total_game_turns();
+   void plot_total_game_turns_dist(std::string output_subdir);
 
    int get_n_afterstate_board_strings() const;
    void record_afterstate_action(int player_value, int a);
@@ -133,6 +136,7 @@ class tictac3d
    int n_size, n_size_sqr, n_zlevels, n_cells;
    int recursive_depth;
    int n_human_turns, n_AI_turns, n_agent_turns;
+   std::vector<double> n_total_game_turns;
    int* curr_board_state;
    std::vector<int*> Genuine_Board_states;
    int** genuine_board_state_ptrs;
@@ -281,7 +285,10 @@ inline int tictac3d::get_n_completed_turns() const
    return (n_human_turns + n_AI_turns + n_agent_turns)/2;
 }
 
-
+inline int tictac3d::get_n_total_game_turns() const
+{
+   return int(n_total_game_turns.back());
+}
 
 inline void tictac3d::append_game_loss_frac(double frac)
 {
