@@ -1,7 +1,7 @@
 =============================================================================
 PWIN notes
 =============================================================================
-Last updated on 7/28/16; 8/9/16; 11/30/16; 12/7/16
+Last updated on 8/9/16; 11/30/16; 12/7/16; 1/19/17
 =============================================================================
 
 *.  In order to avoid having to chant "c3 lab_pcho" at a pwin command
@@ -899,3 +899,14 @@ cameras looking upwards
 
 Vinay pointed out that map_resource_t has a map_sensor_system_type_t
 sensor_type field member.  
+
+*.  On 1/19/17, we chanted on Thinkmate
+
+   sudo apt-get install libjpeg62
+
+in order to install /usr/lib/libjpeg.so.62 needed to run pwin production
+binaries locally on Thinkmate.  libjpeg.so.62 was then installed into 
+/usr/lib/x86_64-linux-gnu
+
+We also followed the C3 Wiki instructions under the Common issues/questions
+ section on the "Ubuntu installation and common issues" page.

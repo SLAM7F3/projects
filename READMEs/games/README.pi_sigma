@@ -874,6 +874,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
 Process ID = 14185
 
+After 1256 epochs, val accuracy = 0.769 and train accuracy = 0.822
+
 75.  T1:  Experiment 75
 Thu Jan 19 05:27:00 2017
 Neural net params:
@@ -899,6 +901,7 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 4
 Process ID = 14199
 
+After 297 epochs, val accuracy = 0.340 and train accuracy = 0.352
 
 77.  T1  Repeat expt 70 but with snapshots enabled
 
@@ -926,6 +929,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 2
 Process ID = 2639
+
+After 378 epochs, val accuracy = 0.466 and train accuracy = 0.497
 
 ---------------------
 Titan 3:
@@ -955,6 +960,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 2
 Process ID = 30663
 
+After 378 epochs, val accuracy = 0.535 and train accuracy = 0.571
+
 78.  T3.  Repeat expt 69 with snapshots enabled
 
 Experiment 78
@@ -981,6 +988,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 2
 Process ID = 16755
 
+After 369 epochs, val accuracy = 0.506 and train accuracy = 0.538
+
 79.  T3:  Experiment 79  snapshots enabled
 Thu Jan 19 07:58:05 2017
 Neural net params:
@@ -1005,6 +1014,8 @@ Max n_training_epochs = 10000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 16792
+
+After 222 epochs, val accuracy = 0.278 and train accuracy = 0.299
 
 
 ---------------------
@@ -1037,8 +1048,9 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 35017
 
-After 713 epochs, test accuracy = 0.328 and train accuracy = 0.365
+After 713 epochs, val accuracy = 0.328 and train accuracy = 0.365
   Both curves are continuing to head upwards
+After 1040 epochs, val accuracy = 0.368 and train accuracy = 0.406
 
 73.  TM Experiment 73
 Wed Jan 18 15:29:08 2017
@@ -1066,6 +1078,7 @@ Process ID = 35163
 
 After 460 epochs, test accuracy = 0.381 and train accuracy = 0.419
   Both curves are slowly heading upwards
+After 690 epochs, val accuracy = 0.405 and train accuracy = 0.445
 
 ---------------------
 m6700
