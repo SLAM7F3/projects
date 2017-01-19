@@ -1318,6 +1318,7 @@ void neural_net::plot_accuracies_history()
    double max_accuracy = 1;
 
    curr_metafile.set_legend_flag(true);
+   curr_metafile.set_thickness(3);
    curr_metafile.set_parameters(
       meta_filename, title, x_label, y_label, 0, xmax, 
       min_accuracy, max_accuracy);
