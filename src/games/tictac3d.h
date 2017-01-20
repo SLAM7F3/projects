@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 12/8/16; 1/15/17; 1/16/17; 1/19/17
+// Last modified on 1/15/17; 1/16/17; 1/19/17; 1/20/17
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -56,6 +56,7 @@ class tictac3d
    void set_recursive_depth(int d);
 
    int get_cell(int px, int py, int pz);
+   void get_cell_coords(int cell, int& px, int& py, int& pz);
    void set_game_over(bool flag);
    bool get_game_over() const;
    genvector* update_board_state_ptr();

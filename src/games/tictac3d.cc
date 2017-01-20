@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 1/10/17; 1/15/17; 1/16/17; 1/19/17
+// Last modified on 1/15/17; 1/16/17; 1/19/17; 1/20/17
 // ==========================================================================
 
 #include <iostream>
@@ -122,6 +122,19 @@ ostream& operator<< (ostream& outstream,const tictac3d& T)
 }
 
 // ==========================================================================
+
+// Member function get_cell_coords() returns the integer XYZ
+// coordinates corresponding to the input cell index.
+
+void tictac3d::get_cell_coords(int cell, int& px, int& py, int& pz)
+{
+   int nsqr = n_size * n_size;
+   pz = cell / nsqr;
+   cell -= nsqr * pz;
+   py = cell / n_size;
+   cell -= n_size * py;
+   px = cell;
+}
 
 void tictac3d::set_recursive_depth(int d)
 {
