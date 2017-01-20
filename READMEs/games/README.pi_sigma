@@ -1166,14 +1166,35 @@ After 470 epochs, val accuracy = 0.384 and train accuracy = 0.403
 Curves slowly decreasing
 TERMINATED
 
+84.  T3:  Experiment 84
+Thu Jan 19 12:05:09 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 64
+   n_weights = 57344 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 89004
+n_validation_samples = 9998
+mini_batch_size = 100
+n_mini_batches per epoch = 891
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 2
+Process ID = 4958
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
+After 90 epochs, val accuracy = 0.462 and train accuracy = 0.527
+After 90 epochs, val accuracy = 0.578 and train accuracy = 0.642
+Curves peaked around epoch 300 and heading downwards afterwards
 
----------------------
-Titan 1:
----------------------
+TERMINATED.
 
 85.  T1 Experiment 85
 Thu Jan 19 12:07:03 2017
@@ -1201,7 +1222,17 @@ Process ID = 29152
 
 After 67 epochs, val accuracy = 0.367 and train accuracy = 0.416
 After 326 epochs, val accuracy = 0.493 and train accuracy = 0.525
-  Curves nearl asymptoted
+  Curves nearly asymptoted
+
+TERMINATED.
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
 
 86.  T1 Experiment 86
 Thu Jan 19 12:07:56 2017
@@ -1286,6 +1317,30 @@ After 30 epochs, val accuracy = 0.337 and train accuracy = 0.396
 After 178 epochs, val accuracy = 0.477 and train accuracy = 0.530
   Curves slowly rising
 
+91.  T1  Experiment 91
+Fri Jan 20 06:46:19 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 321008
+n_validation_samples = 35848
+mini_batch_size = 100
+n_mini_batches per epoch = 3211
+Max n_training_epochs = 5000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 4
+Process ID = 5458
+
 ---------------------
 Titan 3:
 ---------------------
@@ -1317,38 +1372,131 @@ Process ID = 4946
 After 179 epochs, val accuracy = 0.586 and train accuracy = 0.739
 After 1044 epochs, val accuracy = 0.682 and train accuracy = 0.794
 
-
-84.  T3:  Experiment 84
-Thu Jan 19 12:05:09 2017
+92.  T3:  Experiment 92
+Fri Jan 20 06:40:40 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 64
    layer = 1 n_nodes = 256
-   layer = 2 n_nodes = 128
+   layer = 2 n_nodes = 256
    layer = 3 n_nodes = 64
-   n_weights = 57344 (FC)
+   n_weights = 98304 (FC)
 include_bias_terms = 1
 base_learning_rate = 0.0003
 solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.0001
-n_training_samples = 89004
-n_validation_samples = 9998
+n_training_samples = 321008
+n_validation_samples = 35848
 mini_batch_size = 100
-n_mini_batches per epoch = 891
-Max n_training_epochs = 10000
+n_mini_batches per epoch = 3211
+Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
-Maximum move relative to game end = 2
-Process ID = 4958
+Maximum move relative to game end = 4
+Process ID = 28469
 
-After 90 epochs, val accuracy = 0.462 and train accuracy = 0.527
-After 90 epochs, val accuracy = 0.578 and train accuracy = 0.642
-Curves peaked aaround epoch 300 and heading downwards afterwards
+93.  T3.  Experiment 93
+Fri Jan 20 06:41:49 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 401181
+n_validation_samples = 44822
+mini_batch_size = 100
+n_mini_batches per epoch = 4012
+Max n_training_epochs = 5000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 5
+Process ID = 28485
+
+94.  T3  Experiment 94
+Fri Jan 20 06:42:51 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 401181
+n_validation_samples = 44822
+mini_batch_size = 100
+n_mini_batches per epoch = 4012
+Max n_training_epochs = 5000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 5
+Process ID = 28498
+
 
 ---------------------
 Thinkmate
 ---------------------
+
+89.  TM  Experiment 89
+Fri Jan 20 06:46:38 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 80197
+n_validation_samples = 9040
+mini_batch_size = 100
+n_mini_batches per epoch = 802
+Max n_training_epochs = 5000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 2131
+
+90.  TM   Experiment 90
+Fri Jan 20 06:48:09 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 240820
+n_validation_samples = 26930
+mini_batch_size = 100
+n_mini_batches per epoch = 2409
+Max n_training_epochs = 5000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 3
+Process ID = 2284
+
 
 ---------------------
 m6700
@@ -1374,3 +1522,52 @@ accuracies for max move rel to game end = 2 & 3 than H1 = 128, H2 = 64; H1
 
 *.  As of 5:40 am on Fri Jan 20, it looks like having hidden layers with
 256 nodes yields better results than having just 128 nodes.
+
+
+
+
+89. TM
+H1 = H2 = 256
+1 end move
+
+90.  TM
+H1 = H2 = 256 
+3 end moves
+
+91.  T1
+H1 = H2 = 256
+4 end moves
+
+92.  T3
+H1 = H2 = 256
+4 end moves
+
+93.  T3
+H1 = H2 = 256
+5 end moves
+
+94.  T3
+H1 = H2 = 256
+5 end moves
+
+
+Interesting experiments:
+
+H1 = 256, H2 = 128
+
+83.  end moves = 1
+84.  end moves = 2
+85.  end moves = 3
+86.  end moves = 4
+
+H1 = 256, H2 = 256
+
+87.  end moves = 2
+88.  end moves = 3
+89.  end moves = 1
+90.  end moves = 3
+91.  end moves = 4
+92.  end moves = 4
+93.  end moves = 5
+94.  end moves = 5
+
