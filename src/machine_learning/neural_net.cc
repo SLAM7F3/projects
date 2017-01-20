@@ -594,7 +594,8 @@ void neural_net::train_network(int n_epochs)
 
    for(int e = 0; e < n_epochs; e++)
    {
-      cout << "Starting epoch e = " << e << " of " << n_epochs << endl;      
+      cout << "Starting training epoch e = " << e << " of " << n_epochs 
+           << " epochs for experiment " << expt_number << endl;      
       
       vector<DATA_PAIR> shuffled_training_data = 
          randomly_shuffle_training_data();
@@ -619,13 +620,13 @@ void neural_net::train_network(int n_epochs)
                evaluate_model_on_validation_set());
             cout << "Epoch e = " << epoch_history.back() 
                  << " of " << n_epochs << endl;
-            cout << "   Correct prediction fracs: " << endl;
-            cout << "   validation samples = " 
+            cout << "   validation accuracy frac =  " 
                  << validation_accuracy_history.back() 
-                 << " training samples = " << training_accuracy_history.back()
+                 << " training accuracy frac = " 
+                 << training_accuracy_history.back()
                  << endl;
-            cout << "   n_training_samples = " << training_data.size() 
-                 << "  n_validation_samples = " << validation_data.size()
+            cout << "  n_validation_samples = " << validation_data.size()
+                 << "   n_training_samples = " << training_data.size() 
                  << endl;
          }
          if(update_counter % n_export_metafiles == 0)
