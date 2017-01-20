@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 1/16/17; 1/17/17; 1/18/17; 1/19/17
+// Last modified on 1/17/17; 1/18/17; 1/19/17; 1/20/17
 // ==========================================================================
 
 #include <iostream>
@@ -37,6 +37,7 @@ void neural_net::initialize_member_objects(
    const vector<int>& n_nodes_per_layer)
 {
    expt_number = -1;
+   extrainfo = layer_label = "";
    include_bias_terms = true;
    n_weights = 0;
    n_layers = n_nodes_per_layer.size();
@@ -629,14 +630,13 @@ void neural_net::train_network(int n_epochs)
          }
          if(update_counter % n_export_metafiles == 0)
          {
-            string extrainfo = "";
             if(include_bias_terms)
             {
                compute_bias_distributions();
             }
             compute_weight_distributions();
             store_quasirandom_weight_values();
-            generate_summary_plots(extrainfo);
+            generate_summary_plots();
          }
 
          if(update_counter % n_export_snapshot == 0)
@@ -1184,15 +1184,23 @@ string neural_net::init_subtitle()
 
 bool neural_net::generate_metafile_plot(
    const vector<double>& values, string metafile_basename, string title,
-   string y_label, string extrainfo, 
-   bool plot_smoothed_values_flag, bool zero_min_value_flag)
+   string y_label, bool plot_smoothed_values_flag, bool zero_min_value_flag)
 {
    if(epoch_history.size() < 3 || values.size() < 3) return false;
 
    metafile curr_metafile;
    string meta_filename=output_subdir+metafile_basename;
-   title += "; nweights="+stringfunc::number_to_string(count_weights());
-   string subtitle=init_subtitle() + extrainfo;
+
+   if(extrainfo.size() > 0)
+   {
+      title += "; "+extrainfo;
+   }
+   string subtitle=init_subtitle();
+   if(layer_label.size() > 0)
+   {
+      subtitle += "; "+layer_label;
+   }
+   
    string x_label="Epoch";
    double xmax = epoch_history.back();
 
@@ -1264,15 +1272,13 @@ void neural_net::plot_loss_history()
 {
    string metafile_basename="loss";
    string title="Loss vs model training";
-   string extrainfo = "";
    string y_label="Averaged minibatch loss";
    bool plot_smoothed_values_flag = true;
    bool zero_min_value_flag = true;
 
    generate_metafile_plot(
       avg_minibatch_loss, metafile_basename, 
-      title, y_label, extrainfo, 
-      plot_smoothed_values_flag, zero_min_value_flag);
+      title, y_label, plot_smoothed_values_flag, zero_min_value_flag);
 }
 
 // ---------------------------------------------------------------------
@@ -1291,11 +1297,11 @@ void neural_net::plot_log10_lr_mean_abs_nabla_weight_ratios()
    {
       string metafile_basename = "lr_nabla_weight_ratios_"+
          stringfunc::number_to_string(l);
-      string extrainfo = "; Layer "+stringfunc::number_to_string(l);
+      layer_label = "Layer "+stringfunc::number_to_string(l);
       generate_metafile_plot(
          log10_lr_mean_abs_nabla_weight_ratios[l], metafile_basename, 
-         title, y_label, extrainfo, 
-         plot_smoothed_values_flag, zero_min_value_flag);
+         title, y_label, plot_smoothed_values_flag, zero_min_value_flag);
+      layer_label = "";
    }
 }
 
@@ -1309,7 +1315,11 @@ void neural_net::plot_accuracies_history()
 
    metafile curr_metafile;
    string meta_filename=output_subdir + "accuracies";
-   string title="Training and validation samples accuracy vs training epoch";
+   string title="Training and validation samples accuracy";
+   if(extrainfo.size() > 0)
+   {
+      title += "; "+extrainfo;
+   }
    string subtitle=init_subtitle();
    string x_label="Epoch";
    string y_label="Model accuracy";
@@ -1347,7 +1357,7 @@ void neural_net::plot_accuracies_history()
 // ---------------------------------------------------------------------
 // Generate metafile plot of bias distributions versus episode number.
 
-bool neural_net::plot_bias_distributions(string extrainfo)
+bool neural_net::plot_bias_distributions()
 {
    if(bias_50[0].size() < 5) return false;
    
@@ -1361,9 +1371,14 @@ bool neural_net::plot_bias_distributions(string extrainfo)
       string meta_filename=output_subdir + basename;
       string jpg_filename=basename+".jpg";
 
-      string title="Bias dists for layer "+stringfunc::number_to_string(l);
-      string subtitle=init_subtitle();
-      subtitle += ";"+extrainfo;
+      string title="Bias dists";
+      if(extrainfo.size() > 0)
+      {
+         title += "; "+extrainfo;
+      }
+      string subtitle=init_subtitle() + "; Layer "+
+         stringfunc::number_to_string(l);
+
       string x_label="Epoch";
       double xmax = epoch_history.back();
       string y_label="Bias distributions";
@@ -1424,7 +1439,7 @@ bool neural_net::plot_bias_distributions(string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of weight distributions versus episode number.
 
-bool neural_net::plot_weight_distributions(string extrainfo)
+bool neural_net::plot_weight_distributions()
 {
    if(weight_50[0].size() < 5) return false;
 
@@ -1438,9 +1453,13 @@ bool neural_net::plot_weight_distributions(string extrainfo)
       string basename="weight_dists_"+stringfunc::number_to_string(l);
       string meta_filename=output_subdir + basename;
 
-      string title="Weight dists for layer "+stringfunc::number_to_string(l);
-      string subtitle=init_subtitle();
-      subtitle += ";"+extrainfo;
+      string title="Weight dists";
+      if(extrainfo.size() > 0)
+      {
+         title += "; "+extrainfo;
+      }
+      string subtitle=init_subtitle() + "; Layer "+
+         stringfunc::number_to_string(l);
       string x_label="Epoch";
       double xmax = epoch_history.back();
       string y_label="Weight distributions";
@@ -1503,7 +1522,7 @@ bool neural_net::plot_weight_distributions(string extrainfo)
 // ---------------------------------------------------------------------
 // Generate metafile plot of quasi-random weight values versus episode number.
 
-bool neural_net::plot_quasirandom_weight_values(string extrainfo)
+bool neural_net::plot_quasirandom_weight_values()
 {
    if(weight_1[0].size() < 5) return false;
 
@@ -1516,11 +1535,14 @@ bool neural_net::plot_quasirandom_weight_values(string extrainfo)
       metafile curr_metafile;
       string basename="weight_values_"+stringfunc::number_to_string(l);
       string meta_filename=output_subdir + basename;
-      string title="Quasi random weight values for layer "
-         +stringfunc::number_to_string(l);
 
-      string subtitle=init_subtitle();
-      subtitle += ";"+extrainfo;
+      string title="Quasi random weight values";
+      if(extrainfo.size() > 0)
+      {
+         title += "; "+extrainfo;
+      }
+      string subtitle=init_subtitle() + "; Layer "+
+         stringfunc::number_to_string(l);
       string x_label="Epoch";
       double xmax = epoch_history.back();
       string y_label="Weight values";
@@ -1613,19 +1635,19 @@ bool neural_net::plot_quasirandom_weight_values(string extrainfo)
 // loss, training/validation accuracies, bias and weight distribution,
 // and random weight value histories.
 
-void neural_net::generate_summary_plots(string extrainfo)
+void neural_net::generate_summary_plots()
 {
-//   plot_lr_history(output_subdir, extrainfo, epoch_indep_var);
+//   plot_lr_history(output_subdir, epoch_indep_var);
 
    plot_loss_history();
    plot_log10_lr_mean_abs_nabla_weight_ratios();
    plot_accuracies_history();
    if(include_bias_terms)
    {
-      plot_bias_distributions(extrainfo);
+      plot_bias_distributions();
    }
-   plot_weight_distributions(extrainfo);
-   plot_quasirandom_weight_values(extrainfo);
+   plot_weight_distributions();
+   plot_quasirandom_weight_values();
    generate_view_metrics_script();
 }
 

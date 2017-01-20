@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 1/16/17; 1/17/17; 1/18/17; 1/19/17
+// Last modified on 1/17/17; 1/18/17; 1/19/17; 1/20/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -54,6 +54,7 @@ class neural_net
    void set_expt_number(int n);
    int get_expt_number() const;
    void set_output_subdir(std::string subdir);
+   void set_extrainfo(std::string info);
    std::string get_params_filename() const;
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
@@ -104,16 +105,16 @@ class neural_net
    bool generate_metafile_plot(
       const std::vector<double>& values,
       std::string metafile_basename, 
-      std::string title, std::string y_label, std::string extrainfo, 
+      std::string title, std::string y_label, 
       bool plot_smoothed_values_flag, bool zero_min_value_flag);
 
    void plot_loss_history();
    void plot_log10_lr_mean_abs_nabla_weight_ratios();
    void plot_accuracies_history();
-   bool plot_bias_distributions(std::string extrainfo);
-   bool plot_weight_distributions(std::string extrainfo);
-   bool plot_quasirandom_weight_values(std::string extrainfo);
-   void generate_summary_plots(std::string extrainfo);
+   bool plot_bias_distributions();
+   bool plot_weight_distributions();
+   bool plot_quasirandom_weight_values();
+   void generate_summary_plots();
    void generate_view_metrics_script();
 
    void create_snapshots_subdir();
@@ -169,6 +170,8 @@ class neural_net
    std::vector<double> test_accuracy_history;
    std::vector<std::vector<double> > log10_lr_mean_abs_nabla_weight_ratios;
    std::string output_subdir;
+   std::string extrainfo;
+   std::string layer_label;
    std::string params_filename;
    std::string snapshots_subdir;
 
@@ -227,6 +230,11 @@ inline void neural_net::set_output_subdir(std::string subdir)
    output_subdir = subdir;
    filefunc::dircreate(output_subdir);
    create_snapshots_subdir();
+}
+
+inline void neural_net::set_extrainfo(std::string info)
+{
+   extrainfo = info;
 }
 
 inline std::string neural_net::get_params_filename() const

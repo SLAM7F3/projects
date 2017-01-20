@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_PI_SIGMA
 // ==========================================================================
-// Last updated on 1/16/17; 1/17/17; 1/18/17; 1/19/17
+// Last updated on 1/17/17; 1/18/17; 1/19/17; 1/20/17
 // ==========================================================================
 
 #include <iostream>
@@ -103,7 +103,8 @@ int main (int argc, char* argv[])
    int n_validation_samples = 0;
 
    string input_subdir = "./afterstate_action_pairs/";
-   string input_filename = input_subdir + "afterstate_action_pairs.txt";
+   string input_filename = input_subdir + 
+      "train_val_afterstate_action_pairs.txt";
    filefunc::ReadInfile(input_filename);
 
    vector<vector<string> > line_substrings = 
@@ -186,7 +187,7 @@ int main (int argc, char* argv[])
    NN.import_training_data(training_samples);
    NN.import_validation_data(validation_samples);
 //   int n_epochs = 1 * 1000;
-   int n_epochs = 10 * 1000;
+   int n_epochs = 5 * 1000;
 
 // Generate text file summary of parameter values:
 
@@ -204,6 +205,8 @@ int main (int argc, char* argv[])
    params_stream << "Process ID = " << getpid() << endl;
    filefunc::closefile(NN.get_params_filename(), params_stream);
 
+   NN.set_extrainfo(stringfunc::number_to_string(max_move_rel_to_game_end)
+                    + " end moves");
    NN.train_network(n_epochs);
 
    vector<int> incorrect_classifications = NN.get_incorrect_classifications();
