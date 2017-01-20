@@ -1,7 +1,7 @@
 j============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 11/2/16; 11/9/16; 11/14/16; 1/18/17
+Last updated on 11/9/16; 11/14/16; 1/18/17; 1/20/17
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -149,5 +149,31 @@ pwin command to run sigma_tagger:
 
 p -vv -do "c3 lab_weiyu mfile verify /gpfs/ssdws11/data/sigma/a7_expanded/pr_road_signs_a7_expanded_2016-11-28__09:25:09/verification_v1/chunks/000_000003/data"
 
+*.  On 1/20/2017, Weiyu told us to reuse his sigma_tagger() command in
+order to avoid having to make any changes to tagger2 C++ code.  He also
+showed us his sigma_create_project() method inside sigma_project.c.
 
+Weiyu confirmed that we should NOT need to write any tagger2 C++ module
+such as Mikael's tg_editor_module_sigma.cpp provided we follow utililze his
+sigma_tagger() interface.
 
+Examples of Weiyu's data chunks for sigma are sitting in
+
+/pv40-gpfs/ssdws11/data/sigma/kh_drive_002004_Douglas_County/pr_road_signs_kh_drive_002004_Douglas_County_2016-12-16__14:57:12/streetname/10_504_516
+
+Nomenclature convention:
+
+/pv40-gpfs/ssdws11/data/sigma/pwin_project_name/run_ID/
+
+To conform with Weiyu's project generation paradigm, we need to add a
+task-specific entry into taskname_to_folder() and into taskname_to_fname()
+inside sigma_project.c.  In particular, we have added a "hn_pano_recall"
+taskname to the former method and a "hn_pano.json" data filename to the
+latter.  And on 1/20/17, we manually copied a "hn_pano.json" file into
+
+/pv40-gpfs/ssdws11/data/sigma/t300_sf_collect_2016/
+pr_house_numbers_t300_sf_collect_2016_2016-12-09__16:12:32/hn_pano_recall
+
+*.  New URL for PR Admin jobs
+
+https://pr-admin-staging.usspk02.orchard.apple.com/admin/job/

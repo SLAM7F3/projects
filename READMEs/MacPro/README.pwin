@@ -1,7 +1,7 @@
 =============================================================================
 PWIN notes
 =============================================================================
-Last updated on 8/9/16; 11/30/16; 12/7/16; 1/19/17
+Last updated on 11/30/16; 12/7/16; 1/19/17; 1/20/17
 =============================================================================
 
 *.  In order to avoid having to chant "c3 lab_pcho" at a pwin command
@@ -910,3 +910,94 @@ binaries locally on Thinkmate.  libjpeg.so.62 was then installed into
 
 We also followed the C3 Wiki instructions under the Common issues/questions
  section on the "Ubuntu installation and common issues" page.
+
+*.  On 1/19/17, Gustav Hanning told us that to 
+ “activate” mfiles, we need to define MFILE_NAME_WRAP before including
+mfile.h:
+
+#define MFILE_NAME_WRAP
+#include "mfile.h"
+
+All instances of fopen are then replaced by mfile_open, fgets -->
+mfile_fgets, fclose --> mfile_fclose, etc.  The mfile_XXX methods are not
+meant to be called directly.
+
+*.  On 1/20/17, we asked Andreas Bockert for help with fixing several
+memory problems related to hash maps and dynamic arrays in the hn panorama
+gui tool:
+
+static void initialize_hn_metadata(hn_metadata_t* hn_metadata)
+{
+  int c;
+  hn_metadata->max_rig_cams = 10;
+  hn_metadata->max_polygons_per_cam = 100;
+  hash_map_create(&hn_metadata->semseg_polygon_map, sizeof(int), sizeof(g_pos2_lists_t));
+  for(c = 0; c < hn_metadata->max_rig_cams; c++){
+
+// Andreas said that we can initialize the hash map with vertex_lists
+// containing zeros.  Actual vertex_lists with then be dynamically created
+// later as needed:
+
+    g_pos2_lists_t vertex_lists = {};      // list of multiple polygons per rig camera
+    hash_map_add(&hn_metadata->semseg_polygon_map, &c, &vertex_lists);
+    da_free(&vertex_lists);
+
+// Alternatively, we could use da_create() to generate vertex_lists here:
+
+//    g_pos2_lists_t vertex_lists;      // list of multiple polygons per rig camera
+//    da_create(&vertex_lists, hn_metadata->max_polygons_per_cam);
+
+// But then we must NOT call da_free(&verttex_lists) at this point !!
+
+  }
+}
+
+/***** clear_cam_polygon_vertex_lists *****************************************
+ * Description :  Iterate over all cameras within a rig.  For each camera, 
+ *                retrieve list of semantic segmentation polygons.  Free each 
+ *                polygon's g_pos2_list of vertices.  Then clear list of polygons 
+ *                so that it can be repopulated for a new rig.
+ *******************************************************************************/
+static void clear_cam_polygon_vertex_lists(hn_metadata_t *hn_metadata)
+{
+  int c;
+  for(c = 0; c < hn_metadata->max_rig_cams; c++){
+    g_pos2_lists_t *vertex_lists = hash_map_find(&hn_metadata->semseg_polygon_map, &c);
+
+    if(vertex_lists != NULL){
+      da_foreach(vertex_lists, da_free(_x));
+      da_clear(vertex_lists);
+    }
+  }
+}
+
+
+static void load_raw_rig_semsegs(int rig_id, hn_gui_group_t *gui_group)
+{
+.
+.
+.
+
+  clear_cam_polygon_vertex_lists(&gui_group->hn_metadata);
+
+  for(d = 0; d < da_size(&gui_group->raw_detections); d++){
+    pr_ebbox_t *ebbox = da_get(&gui_group->raw_detections, d);
+    g_pos2_list_t *polygon = &ebbox->polygon;
+    int cam_id = ebbox->local_rig_list_index;
+    int corrected_cam_id = cam_id;
+    g_pos2_lists_t *vertex_lists;
+    g_pos2_list_t *curr_vertex_list;
+.
+.
+.
+    vertex_lists = (g_pos2_lists_t *) hash_map_find(semseg_polygon_map, &corrected_cam_id);
+    if(da_size(vertex_lists) >= gui_group->hn_metadata.max_polygons_per_cam) break;
+
+    curr_vertex_list = da_add_empty(vertex_lists);
+    da_clone(curr_vertex_list, polygon);
+    
+  } // loop over index d labeling raw detections
+.
+.
+.
+}
