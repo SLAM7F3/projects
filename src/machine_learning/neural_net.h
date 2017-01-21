@@ -44,6 +44,10 @@ class neural_net
    neural_net(
       int mini_batch_size, double lambda, double rmsprop_decay_rate, 
       const std::vector<int>& n_nodes_per_layer);
+   neural_net(
+      int mini_batch_size, double lambda, double rmsprop_decay_rate, 
+      const std::vector<int>& n_nodes_per_layer, 
+      environment* env_ptr, bool sym_weights_biases_flag = false);
 
    neural_net(const neural_net& NN);
    ~neural_net();

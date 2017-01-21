@@ -1,7 +1,7 @@
 ==========================================================================
 Training pi_sigma for TTT
 ==========================================================================
-Last updated on 1/17/17; 1/18/17; 1/19/17; 1/20/17
+Last updated on 1/18/17; 1/19/17; 1/20/17; 1/21/17
 ==========================================================================
 
 Best results so far:
@@ -1135,8 +1135,6 @@ After 1226 epochs, val accuracy = 0.750 and train accuracy = 0.814
 
 TERMINATED
 
-
-
 82.  T3:  Experiment 82
 Thu Jan 19 12:03:05 2017
 Neural net params:
@@ -1166,6 +1164,35 @@ After 470 epochs, val accuracy = 0.384 and train accuracy = 0.403
 Curves slowly decreasing
 TERMINATED
 
+83.  T3:  Experiment 83
+Thu Jan 19 12:04:23 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 128
+   layer = 3 n_nodes = 64
+   n_weights = 57344 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 44589
+n_validation_samples = 4912
+mini_batch_size = 100
+n_mini_batches per epoch = 446
+Max n_training_epochs = 10000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 1
+Process ID = 4946
+
+After 179 epochs, val accuracy = 0.586 and train accuracy = 0.739
+After 1044 epochs, val accuracy = 0.682 and train accuracy = 0.794
+After 2295 epochs, val accuracy = 0.705 and train accuracy = 0.816
+
+TERMINATED.
 84.  T3:  Experiment 84
 Thu Jan 19 12:05:09 2017
 Neural net params:
@@ -1226,13 +1253,6 @@ After 326 epochs, val accuracy = 0.493 and train accuracy = 0.525
 
 TERMINATED.
 
-------------------------------------------------------
-RUNNING EXPERIMENTS
-------------------------------------------------------
-
----------------------
-Titan 1:
----------------------
 
 86.  T1 Experiment 86
 Thu Jan 19 12:07:56 2017
@@ -1261,6 +1281,8 @@ Process ID = 29168
 After 50 epochs, val accuracy = 0.317 and train accuracy = 0.347
 After 239 epochs, val accuracy = 0.512 and train accuracy = 0.544
   Curves both rising nontrivially
+After 667 epochs, val accuracy = 0.457 and train accuracy = 0.486
+TERMINATED.
 
 87.  T1 Experiment 87
 Thu Jan 19 12:10:03 2017
@@ -1316,6 +1338,8 @@ Process ID = 29204
 After 30 epochs, val accuracy = 0.337 and train accuracy = 0.396
 After 178 epochs, val accuracy = 0.477 and train accuracy = 0.530
   Curves slowly rising
+After 764 epochs, val accuracy = 0.647 and train accuracy = 0.718
+
 
 91.  T1  Experiment 91
 Fri Jan 20 06:46:19 2017
@@ -1341,36 +1365,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 4
 Process ID = 5458
 
----------------------
-Titan 3:
----------------------
+After 121 epochs, val accuracy = 0.545 and train accuracy = 0.565
 
-83.  T3:  Experiment 83
-Thu Jan 19 12:04:23 2017
-Neural net params:
-   n_layers = 4
-   layer = 0 n_nodes = 64
-   layer = 1 n_nodes = 256
-   layer = 2 n_nodes = 128
-   layer = 3 n_nodes = 64
-   n_weights = 57344 (FC)
-include_bias_terms = 1
-base_learning_rate = 0.0003
-solver type = RMSPROP
-   rmsprop_decay_rate = 0.95
-   rmsprop_denom_const = 1e-05
-L2 regularization lambda coeff = 0.0001
-n_training_samples = 44589
-n_validation_samples = 4912
-mini_batch_size = 100
-n_mini_batches per epoch = 446
-Max n_training_epochs = 10000
-Leaky ReLU small slope = 0.01
-Maximum move relative to game end = 1
-Process ID = 4946
-
-After 179 epochs, val accuracy = 0.586 and train accuracy = 0.739
-After 1044 epochs, val accuracy = 0.682 and train accuracy = 0.794
 
 92.  T3:  Experiment 92
 Fri Jan 20 06:40:40 2017
@@ -1396,6 +1392,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 4
 Process ID = 28469
 
+After 77 epochs, val accuracy = 0.531 and train accuracy = 0.555
+
 93.  T3.  Experiment 93
 Fri Jan 20 06:41:49 2017
 Neural net params:
@@ -1419,6 +1417,9 @@ Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 5
 Process ID = 28485
+
+After 64 epochs, val accuracy = 0.533 and train accuracy = 0.546
+
 
 94.  T3  Experiment 94
 Fri Jan 20 06:42:51 2017
@@ -1444,10 +1445,7 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 5
 Process ID = 28498
 
-
----------------------
-Thinkmate
----------------------
+After 64 epochs, val accuracy = 0.533 and train accuracy = 0.546
 
 89.  TM  Experiment 89
 Fri Jan 20 06:46:38 2017
@@ -1473,6 +1471,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
 Process ID = 2131
 
+After 395 epochs, valiation accuracy = 0.785 and training accuracy = 0.832
+
 90.  TM   Experiment 90
 Fri Jan 20 06:48:09 2017
 Neural net params:
@@ -1496,6 +1496,32 @@ Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
 Process ID = 2284
+
+After 123 epochs, valiation accuracy = 0.529 and training accuracy = 0.543
+
+------------------------------------------------------
+RUNNING EXPERIMENTS
+------------------------------------------------------
+
+---------------------
+Titan 1:
+---------------------
+
+95.  T1
+
+96.  T1
+
+
+
+
+---------------------
+Titan 3:
+---------------------
+
+
+---------------------
+Thinkmate
+---------------------
 
 
 ---------------------
@@ -1523,51 +1549,22 @@ accuracies for max move rel to game end = 2 & 3 than H1 = 128, H2 = 64; H1
 *.  As of 5:40 am on Fri Jan 20, it looks like having hidden layers with
 256 nodes yields better results than having just 128 nodes.
 
+*.  As of Sat Jan 21, we definitely see that H1 = H2 = 256 yields better
+validation accuracies than H1 = 256, H2 = 128 for max move rel to game end
+= 1, 2, 3, 4, 5!
 
-
-
-89. TM
-H1 = H2 = 256
-1 end move
-
-90.  TM
-H1 = H2 = 256 
-3 end moves
-
-91.  T1
-H1 = H2 = 256
-4 end moves
-
-92.  T3
-H1 = H2 = 256
-4 end moves
-
-93.  T3
-H1 = H2 = 256
-5 end moves
-
-94.  T3
-H1 = H2 = 256
-5 end moves
 
 
 Interesting experiments:
 
-H1 = 256, H2 = 128
+H1 = 256, H2 = 256 with no symmetrization of weights or biases
 
-83.  end moves = 1
-84.  end moves = 2
-85.  end moves = 3
-86.  end moves = 4
-
-H1 = 256, H2 = 256
-
-87.  end moves = 2
-88.  end moves = 3
-89.  end moves = 1
-90.  end moves = 3
-91.  end moves = 4
-92.  end moves = 4
-93.  end moves = 5
-94.  end moves = 5
+  87.  end moves = 2
+  88.  end moves = 3
+  89.  end moves = 1
+  90.  end moves = 3
+  91.  end moves = 4
+  92.  end moves = 4
+  93.  end moves = 5
+  94.  end moves = 5
 
