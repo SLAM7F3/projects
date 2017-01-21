@@ -131,6 +131,11 @@ class tictac3d
 
    std::vector<genvector*>& compute_all_afterstates(int player_value);
 
+// Permutation symmetry member functions:
+
+   void generate_permutation_matrices();
+
+
   private: 
 
    bool game_over;
@@ -190,6 +195,8 @@ class tictac3d
 // renormalized trained weight values:
 
    std::vector<twoDarray*> wtwoDarray_ptrs;
+
+   std::vector<genmatrix*> permutation_matrices;
 
    void allocate_member_objects();
    void initialize_member_objects();

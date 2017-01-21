@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 1/15/17; 1/16/17; 1/19/17; 1/20/17
+// Last modified on 1/16/17; 1/19/17; 1/20/17; 1/21/17
 // ==========================================================================
 
 #include <iostream>
@@ -109,6 +109,11 @@ tictac3d::~tictac3d()
    for(int s = 0; s < n_cells; s++)
    {
       delete afterstate_ptrs[s];
+   }
+
+   for(unsigned int p = 0; p < permutation_matrices.size(); p++)
+   {
+      delete permutation_matrices[p];
    }
 }
 
@@ -1867,4 +1872,49 @@ vector<genvector*>& tictac3d::compute_all_afterstates(int player_value)
    } // loop over index p labeling cells
 
    return afterstate_ptrs;
+}
+
+// =====================================================================
+// Permutation symmetry member functions
+// =====================================================================
+
+void tictac3d::generate_permutation_matrices()
+{
+   for(int i = 0; i < 3; i++)
+   {
+      for(int s0 = 0; s0 < 2; s0++)
+      {
+         int v0 = pow(-1, s0);
+
+         for(int j = 0; j < 3; j++)
+         {
+            if (j == i) continue;
+
+            for(int s1 = 0; s1 < 2; s1++)
+            {
+               int v1 = pow(-1, s1);
+               for(int k = 0; k < 3; k++)
+               {
+                  if(k == i || k == j) continue;
+
+                  for(int s2 = 0; s2 < 2; s2++)
+                  {
+                     int v2 = pow(-1, s2);
+
+                     genmatrix* P = new genmatrix(3,3);
+                     P->clear_values();
+                     P->put(0, i, v0);
+                     P->put(1, j, v1);
+                     P->put(2, k, v2);
+                     cout << "Permutation matrix " 
+                          << permutation_matrices.size() << endl;
+                     cout << *P << endl;
+                     permutation_matrices.push_back(P);
+                  } // loop over index s2
+               } // loop over index k 
+            } // loop over index s1
+         } // loop over index j 
+      } // loop over index s0
+   } // loop over index i 
+   
 }
