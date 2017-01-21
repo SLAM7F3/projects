@@ -1508,8 +1508,7 @@ Titan 1:
 ---------------------
 
 95.  T1 Experiment 95  with weight/bias symmetrization
-
-Sat Jan 21 14:46:11 2017
+Sat Jan 21 14:57:49 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 64
@@ -1523,18 +1522,22 @@ solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.0001
-n_training_samples = 80300
-n_validation_samples = 8937
+n_training_samples = 80258
+n_validation_samples = 8979
 mini_batch_size = 100
-n_mini_batches per epoch = 804
+n_mini_batches per epoch = 803
+perm_symmetrize_weights_and_biases = 1
 Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 1
-Random seed = -38757
-Process ID = 28523
+Random seed = -39455
+Process ID = 31039
+
 
 96.  T1 Experiment 96 with weight/bias symmetrization
-Sat Jan 21 14:47:17 2017
+
+Experiment 96
+Sat Jan 21 14:58:20 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 64
@@ -1548,18 +1551,19 @@ solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.0001
-n_training_samples = 160598
-n_validation_samples = 17748
+n_training_samples = 160459
+n_validation_samples = 17887
 mini_batch_size = 100
-n_mini_batches per epoch = 1606
+n_mini_batches per epoch = 1605
+perm_symmetrize_weights_and_biases = 1
 Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 2
-Random seed = -38826
-Process ID = 29267
+Random seed = -39485
+Process ID = 31050
 
 97.  T1: Experiment 97 with weight/bias symmetrization
-Sat Jan 21 14:47:54 2017
+Sat Jan 21 14:58:53 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 64
@@ -1568,23 +1572,24 @@ Neural net params:
    layer = 3 n_nodes = 64
    n_weights = 98304 (FC)
 include_bias_terms = 1
-base_learning_rate = 0.0003
+base_learning_rate = 0.0001
 solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.0001
-n_training_samples = 241013
-n_validation_samples = 26737
+n_training_samples = 241020
+n_validation_samples = 26730
 mini_batch_size = 100
 n_mini_batches per epoch = 2411
+perm_symmetrize_weights_and_biases = 1
 Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 3
-Random seed = -38861
-Process ID = 29279
+Random seed = -39520
+Process ID = 31063
 
 98.  T1 Experiment 98 with weight/bias symmetrization
-Sat Jan 21 14:48:56 2017
+Sat Jan 21 14:59:02 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 64
@@ -1598,18 +1603,19 @@ solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.0001
-n_training_samples = 320867
-n_validation_samples = 35989
+n_training_samples = 321114
+n_validation_samples = 35742
 mini_batch_size = 100
-n_mini_batches per epoch = 3209
+n_mini_batches per epoch = 3212
+perm_symmetrize_weights_and_biases = 1
 Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 4
-Random seed = -38923
-Process ID = 29294
+Random seed = -39527
+Process ID = 31071
 
 99.  T1  Experiment 99 with weight/bias symmetrization
-Sat Jan 21 14:49:45 2017
+Sat Jan 21 14:59:14 2017
 Neural net params:
    n_layers = 4
    layer = 0 n_nodes = 64
@@ -1623,15 +1629,15 @@ solver type = RMSPROP
    rmsprop_decay_rate = 0.95
    rmsprop_denom_const = 1e-05
 L2 regularization lambda coeff = 0.0001
-n_training_samples = 401594
-n_validation_samples = 44409
+n_training_samples = 401466
+n_validation_samples = 44537
 mini_batch_size = 100
-n_mini_batches per epoch = 4016
+n_mini_batches per epoch = 4015
+perm_symmetrize_weights_and_biases = 1
 Max n_training_epochs = 5000
 Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 5
-Random seed = -38968
-Process ID = 29308
+Random seed = -39538
 
 ---------------------
 Titan 3:

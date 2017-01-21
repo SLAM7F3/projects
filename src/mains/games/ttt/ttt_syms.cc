@@ -32,9 +32,6 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_cells = ttt_ptr->get_n_total_cells();
 
-   ttt_ptr->generate_permutation_matrices();
-   ttt_ptr->compute_cell_permutations();
-
    ttt_ptr->reset_board_state();
 
    int input_cell;

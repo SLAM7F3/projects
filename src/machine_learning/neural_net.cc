@@ -197,8 +197,8 @@ void neural_net::initialize_weights_and_biases()
 
          if(perm_symmetrize_weights_and_biases)
          {
-            environment_ptr->permutation_symmetrize_biases(
-               curr_biases, permuted_biases[l], sym_biases[l]);
+//            environment_ptr->permutation_symmetrize_biases(
+//               curr_biases, permuted_biases[l], sym_biases[l]);
          }
       }  // loop over index l labeling layers
    } // include_bias_terms conditional
@@ -221,8 +221,8 @@ void neural_net::initialize_weights_and_biases()
 
       if(perm_symmetrize_weights_and_biases)
       {
-         environment_ptr->permutation_symmetrize_weights(
-            curr_weights, permuted_weights[l], sym_weights[l]);
+//         environment_ptr->permutation_symmetrize_weights(
+//            curr_weights, permuted_weights[l], sym_weights[l]);
       }
    } // loop over index l labeling neural net layers
 }
@@ -786,8 +786,11 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
       if(perm_symmetrize_weights_and_biases)
       {
-         environment_ptr->permutation_symmetrize_biases(
-            biases[l], permuted_biases[l], sym_biases[l]);
+         if(nrfunc::ran1() < 0.01)
+         {
+            environment_ptr->permutation_symmetrize_biases(
+               biases[l], permuted_biases[l], sym_biases[l]);
+         }
       }
    }
 
@@ -811,8 +814,11 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
       if(perm_symmetrize_weights_and_biases)
       {
-         environment_ptr->permutation_symmetrize_weights(
-            weights[l], permuted_weights[l], sym_weights[l]);
+         if(nrfunc::ran1() < 0.01)
+         {
+            environment_ptr->permutation_symmetrize_weights(
+               weights[l], permuted_weights[l], sym_weights[l]);
+         }
       }
 
 // Record average |nabla_weight / weight| to monitor network learning:

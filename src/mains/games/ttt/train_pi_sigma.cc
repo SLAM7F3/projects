@@ -84,6 +84,7 @@ int main (int argc, char* argv[])
    double rmsprop_decay_rate = 0.95;
 
    bool sym_weights_biases_flag = true;
+//   bool sym_weights_biases_flag = false;
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims,
                  &game_world, sym_weights_biases_flag);
 
@@ -207,7 +208,7 @@ int main (int argc, char* argv[])
    NN.import_training_data(training_samples);
    NN.import_validation_data(validation_samples);
 //   int n_epochs = 1 * 1000;
-   int n_epochs = 5 * 1000;
+   int n_epochs = 3 * 1000;
 
 // Generate text file summary of parameter values:
 

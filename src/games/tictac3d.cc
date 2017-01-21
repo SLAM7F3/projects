@@ -84,6 +84,8 @@ tictac3d::tictac3d(int n_size, int n_zlevels)
    initialize_member_objects();
 
    reset_board_state();
+   generate_permutation_matrices();
+   compute_cell_permutations();
 }
 
 // Copy constructor:
@@ -1911,9 +1913,9 @@ void tictac3d::generate_permutation_matrices()
                      P->put(0, i, v0);
                      P->put(1, j, v1);
                      P->put(2, k, v2);
-                     cout << "Permutation matrix " 
-                          << permutation_matrices.size() << endl;
-                     cout << *P << endl;
+//                     cout << "Permutation matrix " 
+//                          << permutation_matrices.size() << endl;
+//                     cout << *P << endl;
                      permutation_matrices.push_back(P);
                   } // loop over index s2
                } // loop over index k 
@@ -1921,6 +1923,8 @@ void tictac3d::generate_permutation_matrices()
          } // loop over index j 
       } // loop over index s0
    } // loop over index i 
+
+
 }
 
 // ---------------------------------------------------------------------
@@ -1945,7 +1949,7 @@ void tictac3d::compute_cell_permutations()
    const double offset = (n_size - 1) * 0.5;
    for(unsigned int s = 0; s < permutation_matrices.size(); s++)
    {
-      cout << "Permutation s = " << s << endl;
+//      cout << "Permutation s = " << s << endl;
       vector<int> curr_cell_permutations;
       genmatrix* curr_perm = permutation_matrices[s];
 
@@ -1973,7 +1977,7 @@ void tictac3d::compute_cell_permutations()
    } // loop over index s labeling permutation matrices
 
    cell_union_find_ptr->fill_parent_nodes_map();
-   cout << "union_find = " << *cell_union_find_ptr << endl;
+//   cout << "union_find = " << *cell_union_find_ptr << endl;
 
 /*
 // Visually display cell orbits in 4x4x4 grids:
@@ -2079,7 +2083,7 @@ void tictac3d::symmetrize_weight_matrix(
 {
    int n_cell_permutations = cell_permutations.size();
    double alpha = 1.0 / n_cell_permutations;
-   
+
    Wsym->clear_values();
    for(int s = 0; s < n_cell_permutations; s++)
    {
@@ -2093,7 +2097,7 @@ void tictac3d::symmetrize_bias_vector(
 {
    int n_cell_permutations = cell_permutations.size();
    double alpha = 1.0 / n_cell_permutations;
-   
+
    bsym->clear_values();
    for(int s = 0; s < n_cell_permutations; s++)
    {
