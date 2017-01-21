@@ -135,7 +135,7 @@ class tictac3d
 // Permutation symmetry member functions:
 
    void generate_permutation_matrices();
-   void compute_cell_orbits();
+   void compute_cell_permutations();
    void permute_board_state(int s);
    void permute_weight_matrix(int s, genmatrix* W, genmatrix* Wpermuted);
    void permute_bias_vector(int s, genvector* b, genvector* bpermuted);

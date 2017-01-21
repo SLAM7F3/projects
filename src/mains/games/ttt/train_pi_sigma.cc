@@ -1,13 +1,14 @@
 // ==========================================================================
 // Program TRAIN_PI_SIGMA
 // ==========================================================================
-// Last updated on 1/17/17; 1/18/17; 1/19/17; 1/20/17
+// Last updated on 1/18/17; 1/19/17; 1/20/17; 1/21/17
 // ==========================================================================
 
 #include <iostream>
 #include <string>
 #include <unistd.h>     // needed for getpid()
 #include <vector>
+#include "machine_learning/environment.h"
 #include "general/filefuncs.h"
 #include "machine_learning/machinelearningfuncs.h"
 #include "machine_learning/neural_net.h"
@@ -29,9 +30,18 @@ int main (int argc, char* argv[])
 
    timefunc::initialize_timeofday_clock();
 
-   int n_cells = 64;
-   int Din = n_cells;   	// Number of input layer nodes
-//   int Din = n_cells + 1;   	// Number of input layer nodes
+   int nsize = 4;
+   int n_zlevels = 4;
+   tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
+
+// Construct environment which acts as interface between reinforcement
+// agent and particular game:
+
+   environment game_world(environment::TTT);
+   game_world.set_tictac3d(ttt_ptr);
+
+   int n_cells = ttt_ptr->get_n_total_cells();
+   int Din = n_cells;
    int H1 = 64;			// Number of first hidden layer nodes
    int H2 = 32;			// Number of 2nd hidden layer nodes
    int H3 = 0;			// Number of 3rd hidden layer nodes
@@ -66,6 +76,8 @@ int main (int argc, char* argv[])
    double rmsprop_decay_rate = 0.95;
 
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
+   NN.set_environment(&game_world);
+   NN.set_perm_symmetrize_weight_matrices_and_bias_vectors(true);
    machinelearning_func::set_leaky_ReLU_small_slope(0.01);    
 
    double blr;

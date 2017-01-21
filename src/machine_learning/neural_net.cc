@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 1/17/17; 1/18/17; 1/19/17; 1/20/17
+// Last modified on 1/18/17; 1/19/17; 1/20/17; 1/21/17
 // ==========================================================================
 
 #include <iostream>
@@ -38,7 +38,9 @@ void neural_net::initialize_member_objects(
 {
    expt_number = -1;
    extrainfo = layer_label = "";
+   environment_ptr = NULL;
    include_bias_terms = true;
+   perm_symmetrize_weight_matrices_and_bias_vectors = false;
    n_weights = 0;
    n_layers = n_nodes_per_layer.size();
    for(int l = 0; l < n_layers; l++)
@@ -75,6 +77,26 @@ void neural_net::instantiate_weights_and_biases()
       {
          genvector *curr_biases = new genvector(layer_dims[l]);
          biases.push_back(curr_biases);
+      }  // loop over index l labeling layers
+   } // include_bias_terms conditional
+
+// Weights link layer l with layer l+1:
+   
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      genmatrix *curr_weights = new genmatrix(layer_dims[l+1], layer_dims[l]);
+      weights.push_back(curr_weights);
+   } // loop over index l labeling neural net layers
+}
+
+// ---------------------------------------------------------------------
+void neural_net::initialize_weights_and_biases()
+{
+   if(include_bias_terms)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         genvector *curr_biases = biases[l];
 
 // Initialize bias for each network node in layers 1, 2, ... to be
 // gaussian random var distributed according to N(0,1).  Recall input
@@ -92,15 +114,17 @@ void neural_net::instantiate_weights_and_biases()
             }
          } // loop over index i labeling node in current layer
 
+         if(perm_symmetrize_weight_matrices_and_bias_vectors)
+         {
+            environment_ptr->permutation_symmetrize_biases(
+               curr_biases, permuted_biases[l], sym_biases[l]);
+         }
       }  // loop over index l labeling layers
    } // include_bias_terms conditional
 
-// Weights link layer l with layer l+1:
-   
    for(int l = 0; l < n_layers - 1; l++)
    {
-      genmatrix *curr_weights = new genmatrix(layer_dims[l+1], layer_dims[l]);
-      weights.push_back(curr_weights);
+      genmatrix *curr_weights = weights[l];
 
 // Xavier initialize weights connecting network layers l and l+1 to be
 // gaussian random vars distributed according to N(0,1/sqrt(n_in)):
@@ -114,6 +138,11 @@ void neural_net::instantiate_weights_and_biases()
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
+      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      {
+         environment_ptr->permutation_symmetrize_weights(
+            curr_weights, permuted_weights[l], sym_weights[l]);
+      }
    } // loop over index l labeling neural net layers
 }
 
@@ -126,10 +155,13 @@ void neural_net::instantiate_training_variables()
    {
       for(int l = 0; l < n_layers; l++)
       {
-         genvector *curr_nabla_biases = new genvector(layer_dims[l]);
-         nabla_biases.push_back(curr_nabla_biases);
-         genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
-         delta_nabla_biases.push_back(curr_delta_nabla_biases);
+         nabla_biases.push_back(new genvector(layer_dims[l]));
+         delta_nabla_biases.push_back(new genvector(layer_dims[l]));
+         if(perm_symmetrize_weight_matrices_and_bias_vectors)
+         {
+            permuted_biases.push_back(new genvector(layer_dims[l]));
+            sym_biases.push_back(new genvector(layer_dims[l]));
+         }
 
          bias_01.push_back(dummy_dist);
          bias_05.push_back(dummy_dist);
@@ -149,16 +181,22 @@ void neural_net::instantiate_training_variables()
    
    for(int l = 0; l < n_layers - 1; l++)
    {
-      genmatrix *curr_weights_transpose = new genmatrix(
-         layer_dims[l], layer_dims[l+1]);
-      weights_transpose.push_back(curr_weights_transpose);
+      weights_transpose.push_back(
+         new genmatrix(layer_dims[l], layer_dims[l+1]));
 
-      genmatrix *curr_nabla_weights = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);
-      nabla_weights.push_back(curr_nabla_weights);
-      genmatrix *curr_delta_nabla_weights = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);
-      delta_nabla_weights.push_back(curr_delta_nabla_weights);
+      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      {
+         permuted_weights.push_back(
+            new genmatrix(layer_dims[l+1], layer_dims[l]));
+         sym_weights.push_back(
+            new genmatrix(layer_dims[l+1], layer_dims[l]));
+      }
+
+      nabla_weights.push_back(
+         new genmatrix(layer_dims[l+1], layer_dims[l]));
+      delta_nabla_weights.push_back(
+         new genmatrix(layer_dims[l+1], layer_dims[l]));
+
       genmatrix *curr_rmsprop_weights = new genmatrix(
          layer_dims[l+1], layer_dims[l]);
       curr_rmsprop_weights->clear_values();
@@ -206,6 +244,7 @@ neural_net::neural_net(
 
    instantiate_weights_and_biases();
    instantiate_training_variables();
+   initialize_weights_and_biases();
 }
 
 // Copy constructor:
@@ -254,6 +293,11 @@ neural_net::~neural_net()
       {
          delete nabla_biases[l];
          delete delta_nabla_biases[l];
+         if(perm_symmetrize_weight_matrices_and_bias_vectors)
+         {
+            delete permuted_biases[l];
+            delete sym_biases[l];
+         }
       }
    } // include_bias_terms conditional
    
@@ -263,6 +307,11 @@ neural_net::~neural_net()
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
+      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      {
+         delete permuted_weights[l];
+         delete sym_weights[l];
+      }
    }
 }
 
@@ -709,6 +758,12 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
    {
       *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
+
+      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      {
+         environment_ptr->permutation_symmetrize_biases(
+            biases[l], permuted_biases[l], sym_biases[l]);
+      }
    }
 
    for(int l = 0; l < n_layers - 1; l++)
@@ -726,6 +781,12 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
          *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
       }
 //      cout << "l = " << l << " weights[l] = " << *weights[l] << endl;
+
+      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      {
+         environment_ptr->permutation_symmetrize_weights(
+            weights[l], permuted_weights[l], sym_weights[l]);
+      }
 
 // Record average |nabla_weight / weight| to monitor network learning:
 

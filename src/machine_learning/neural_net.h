@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 1/17/17; 1/18/17; 1/19/17; 1/20/17
+// Last modified on 1/18/17; 1/19/17; 1/20/17; 1/21/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -10,8 +10,10 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "machine_learning/environment.h"
 #include "general/filefuncs.h"
 
+class environment;
 class genmatrix;
 class genvector;
 
@@ -58,6 +60,8 @@ class neural_net
    std::string get_params_filename() const;
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
+   void set_environment(environment* e_ptr);   
+   void set_perm_symmetrize_weight_matrices_and_bias_vectors(bool flag);
    int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
@@ -124,17 +128,21 @@ class neural_net
   private: 
 
    bool include_bias_terms;
+   bool perm_symmetrize_weight_matrices_and_bias_vectors;
    int n_layers, n_training_samples, n_validation_samples, n_test_samples;
    int n_classes;
    int expt_number;
    int solver_type;
    int n_weights;
    std::vector<int> layer_dims;
+   environment* environment_ptr;
 
    std::vector<genvector*> biases, nabla_biases, delta_nabla_biases;
+   std::vector<genvector*> permuted_biases, sym_biases;
 //	Bias STL vectors are nonzero for layers 1 thru n_layers-1
 
    std::vector<genmatrix*> weights, weights_transpose;
+   std::vector<genmatrix*> permuted_weights, sym_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
    std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
@@ -206,6 +214,8 @@ class neural_net
    void docopy(const neural_net& N);
    void instantiate_weights_and_biases();
    void instantiate_training_variables();
+   void initialize_weights_and_biases();
+
    void delete_weights_and_biases();
 };
 
@@ -250,6 +260,17 @@ inline void neural_net::set_include_bias_terms(bool flag)
 inline bool neural_net::get_include_bias_terms() const
 {
    return include_bias_terms;
+}
+
+inline void neural_net::set_environment(environment* e_ptr)
+{
+   environment_ptr = e_ptr;
+}
+
+inline void neural_net::set_perm_symmetrize_weight_matrices_and_bias_vectors(
+   bool flag)
+{
+   perm_symmetrize_weight_matrices_and_bias_vectors = flag;
 }
 
 inline int neural_net::get_layer_dim(int l) const

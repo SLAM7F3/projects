@@ -1924,18 +1924,18 @@ void tictac3d::generate_permutation_matrices()
 }
 
 // ---------------------------------------------------------------------
-// Member function compute_cell_orbits() loops over 48 permutation
-// symmetries.  For each permutation, it loops over all cells and
-// converts their indices into (px,py,pz) coordinates.  Each cell
-// integer coordinate is then transformed into a corresponding
-// body-centered lattice coordinate {-3/2, -1/2, 1/2, 3/2}.  The
-// lattice vector is then transformed by the current permutation
-// symmetry matrices.  The orbits for all 64 cells are stored within
-// member fields cell_permutations and *cell_union_find_ptr.
-// Using this method, we find the 4x4x4 TTT lattice contains 4 orbits
-// containing 8, 8, 24 and 24 cells.
+// Member function compute_cell_permutations() loops over all
+// permutation symmetries.  For each permutation, it loops over all
+// cells and converts their indices into (px,py,pz) coordinates.  Each
+// cell integer coordinate is then transformed into a corresponding
+// body-centered lattice coordinate.  The lattice vector is then
+// transformed by the current permutation symmetry matrices.  The
+// orbits for all 64 cells are stored within member fields
+// cell_permutations and *cell_union_find_ptr. Using this method, we
+// find the 4x4x4 TTT lattice contains 4 orbits containing 8, 8, 24
+// and 24 cells.
 
-void tictac3d::compute_cell_orbits()
+void tictac3d::compute_cell_permutations()
 {
    for(int n = 0; n < n_cells; n++)
    {

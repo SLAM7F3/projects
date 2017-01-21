@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for environment class 
 // ==========================================================================
-// Last modified on 12/8/16; 12/10/16; 12/30/16; 1/2/17
+// Last modified on 12/10/16; 12/30/16; 1/2/17; 1/21/17
 // ==========================================================================
 
 #ifndef ENVIRONMENT_H
@@ -81,6 +81,10 @@ class environment
    void append_wtwoDarray(twoDarray* wtwoDarray_ptr);
 
    std::vector<genvector*>* get_all_afterstates(int player_value);
+   void permutation_symmetrize_weights(
+      genmatrix* W, genmatrix* Wpermuted, genmatrix* Wsym);
+   void permutation_symmetrize_biases(
+      genvector* b, genvector* bpermuted, genvector* bsym);
 
   private:
 

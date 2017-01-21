@@ -435,3 +435,24 @@ vector<genvector*>* environment::get_all_afterstates(int player_value)
    return NULL;
 }
 
+// ---------------------------------------------------------------------
+void environment::permutation_symmetrize_weights(
+   genmatrix* W, genmatrix* Wpermuted, genmatrix* Wsym)
+{
+   if(world_type == TTT)
+   {
+      tictac3d_ptr->symmetrize_weight_matrix(W, Wpermuted, Wsym);
+      *W = *Wsym;
+   }
+}
+
+// ---------------------------------------------------------------------
+void environment::permutation_symmetrize_biases(
+   genvector* b, genvector* bpermuted, genvector* bsym)
+{
+   if(world_type == TTT)
+   {
+      tictac3d_ptr->symmetrize_bias_vector(b, bpermuted, bsym);
+      *b = *bsym;
+   }
+}
