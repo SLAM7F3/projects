@@ -84,6 +84,23 @@ ostream& operator<< (ostream& outstream,union_find& uf)
                 << endl;
    }
 
+   uf.fill_parent_nodes_map();
+   for(uf.parent_nodes_map_iter = uf.parent_nodes_map_ptr->begin();
+       uf.parent_nodes_map_iter != uf.parent_nodes_map_ptr->end();
+       uf.parent_nodes_map_iter++)
+   {
+      int parent_ID = uf.parent_nodes_map_iter->first;
+      vector<int> children_node_IDs = 
+         uf.get_children_nodes_corresponding_to_parent(parent_ID);
+      cout << "Parent node ID = " << parent_ID << endl;
+      cout << children_node_IDs.size() << " children IDs:" << endl;
+      for(unsigned int c = 0; c < children_node_IDs.size(); c++)
+      {
+         cout << children_node_IDs[c] << "  ";
+      }
+      cout << endl;
+   }
+   
    return outstream;
 }
 

@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 1/15/17; 1/16/17; 1/19/17; 1/20/17
+// Last modified on 1/16/17; 1/19/17; 1/20/17; 1/21/17
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -13,6 +13,7 @@
 #include "math/lttriple.h"
 #include "math/threevector.h"
 #include "image/TwoDarray.h"
+#include "datastructures/union_find.h"
 
 class tictac3d
 {
@@ -134,7 +135,9 @@ class tictac3d
 // Permutation symmetry member functions:
 
    void generate_permutation_matrices();
-
+   void compute_cell_orbits();
+   void permute_board_state(int s);
+   void permute_weight_matrix(int s, genmatrix* W, genmatrix* Wpermuted);
 
   private: 
 
@@ -143,7 +146,7 @@ class tictac3d
    int recursive_depth;
    int n_human_turns, n_AI_turns, n_agent_turns;
    std::vector<double> n_total_game_turns;
-   int* curr_board_state;
+   int *curr_board_state, *permuted_board_state;
    std::vector<int*> Genuine_Board_states;
    int** genuine_board_state_ptrs;
 
@@ -196,7 +199,11 @@ class tictac3d
 
    std::vector<twoDarray*> wtwoDarray_ptrs;
 
+// TTT symmetry members:
+
    std::vector<genmatrix*> permutation_matrices;
+   union_find* cell_union_find_ptr;
+   std::vector<std::vector<int> > permuted_cell_indices;
 
    void allocate_member_objects();
    void initialize_member_objects();

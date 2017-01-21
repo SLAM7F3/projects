@@ -17,6 +17,7 @@
 #include "games/tictac3d.h"
 #include "time/timefuncs.h"
 
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -37,12 +38,14 @@ void tictac3d::allocate_member_objects()
    n_size_sqr = n_size * n_size;
    n_cells = n_size_sqr * n_zlevels;
    curr_board_state = new int[n_cells];
+   permuted_board_state = new int[n_cells];
    board_state_ptr = new genvector(n_cells);
    inverse_board_state_ptr = new genvector(n_cells);
    for(int s = 0; s < n_cells; s++)
    {
       afterstate_ptrs.push_back(new genvector(n_cells));
    }
+   cell_union_find_ptr = new union_find();
 }		       
 
 void tictac3d::initialize_member_objects()
@@ -94,6 +97,7 @@ tictac3d::tictac3d(const tictac3d& T)
 tictac3d::~tictac3d()
 {
    delete [] curr_board_state;
+   delete [] permuted_board_state;
    delete board_state_ptr;
    delete inverse_board_state_ptr;
 
@@ -115,6 +119,7 @@ tictac3d::~tictac3d()
    {
       delete permutation_matrices[p];
    }
+   delete cell_union_find_ptr;
 }
 
 // ---------------------------------------------------------------------
@@ -1916,5 +1921,132 @@ void tictac3d::generate_permutation_matrices()
          } // loop over index j 
       } // loop over index s0
    } // loop over index i 
+}
+
+// ---------------------------------------------------------------------
+// Member function compute_cell_orbits() loops over 48 permutation
+// symmetries.  For each permutation, it loops over all cells and
+// converts their indices into (px,py,pz) coordinates.  Each cell
+// integer coordinate is then transformed into a corresponding
+// body-centered lattice coordinate {-3/2, -1/2, 1/2, 3/2}.  The
+// lattice vector is then transformed by the current permutation
+// symmetry matrices.  The orbits for all 64 cells are stored within
+// member fields permuted_cell_indices and *cell_union_find_ptr.
+// Using this method, we find the 4x4x4 TTT lattice contains 4 orbits
+// containing 8, 8, 24 and 24 cells.
+
+void tictac3d::compute_cell_orbits()
+{
+   for(int n = 0; n < n_cells; n++)
+   {
+      cell_union_find_ptr->MakeSet(n);
+   }
+
+   for(unsigned int s = 0; s < permutation_matrices.size(); s++)
+   {
+      cout << "Permutation s = " << s << endl;
+      vector<int> curr_permuted_cell_indices;
+      genmatrix* curr_perm = permutation_matrices[s];
+
+      for(int n = 0; n < n_cells; n++)
+      {
+         int px, py, pz;
+         get_cell_coords(n, px, py, pz);
+         double lx = px - 1.5;
+         double ly = py - 1.5;
+         double lz = pz - 1.5;
+         threevector l(lx, ly, lz);
+
+         threevector l_permuted = *curr_perm * l;
+         int qx = l_permuted.get(0) + 1.5;
+         int qy = l_permuted.get(1) + 1.5;
+         int qz = l_permuted.get(2) + 1.5;
+         int n_permuted = get_cell(qx, qy, qz);
+         curr_permuted_cell_indices.push_back(n_permuted);
+
+         cell_union_find_ptr->Link(n, n_permuted);
+      } // loop over index n labeling TTT cells
+
+
+      permuted_cell_indices.push_back(curr_permuted_cell_indices);
+   } // loop over index s labeling permutation matrices
+
+   cell_union_find_ptr->fill_parent_nodes_map();
+   cout << "union_find = " << *cell_union_find_ptr << endl;
+
+/*
+// Visually display cell orbits in 4x4x4 grids:
+
+   genvector p_action(n_cells);
+   for(int n = 0; n < n_cells; n++)
+   {
+      int parent_ID = cell_union_find_ptr->get_parent_ID(n);
+      p_action.put(n, parent_ID);
+   }
+   display_p_action(&p_action);
+*/
+}
+
+// ---------------------------------------------------------------------
+
+void tictac3d::permute_board_state(int s)
+{
+   cout << "Permutation s = " << s << endl;
+   vector<int> curr_cell_permutation = permuted_cell_indices[s];
+
+   for(int n = 0; n < n_cells; n++)
+   {
+      cout << "n = " << n << " --> " << curr_cell_permutation[n] << endl;
+   }
+   cout << endl;
+
+   for(int p = 0; p < n_cells; p++)
+   {
+      int q = curr_cell_permutation[p];
+      permuted_board_state[p] = curr_board_state[q];
+   } 
+   for(int p = 0; p < n_cells; p++)
+   {
+      curr_board_state[p] = permuted_board_state[p];
+   }
+}
+
+
+// ---------------------------------------------------------------------
+// Member function permute_weight_matrix() takes in weight matrix W.
+// Numbers of rows and columns within W are assumed to be integer
+// multiples of n_cells.  It applies permutation labeled by input
+// index s to each n_cell x n_cell submatrix of W.  The permuted
+// result is returned in *Wpermuted.
+
+void tictac3d::permute_weight_matrix(int s, genmatrix* W, genmatrix* Wpermuted)
+{
+   cout << "Permutation s = " << s << endl;
+   vector<int> curr_cell_permutation = permuted_cell_indices[s];
    
+   int R_submatrices = W->get_mdim() / n_cells;
+   int C_submatrices = W->get_ndim() / n_cells;
+   
+   for(int R = 0; R < R_submatrices; R++)
+   {
+      for(int C = 0; C < C_submatrices; C++)
+      {
+         int rstart = R * n_cells;
+         int rstop = rstart + n_cells;
+         int cstart = C * n_cells;
+         int cstop = cstart + n_cells;
+
+         for(int r = rstart; r < rstop; r++)
+         {
+            int rperm = rstart + curr_cell_permutation[r - rstart];
+            for(int c = cstart; c < cstop; c++)
+            {
+               int cperm = cstart + curr_cell_permutation[c - cstart];    
+               Wpermuted->put(rperm, cperm, W->get(r,c));
+            } // loop over index c labeling columns of curr submatrix
+         } // loop over index r labeling rows of curr submatrix
+
+      } // loop over index C labeling submatrix columns
+   } // loop over index R labeling submatrix rows
+
 }
