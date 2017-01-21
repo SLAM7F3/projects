@@ -660,8 +660,8 @@ void neural_net::decrease_learning_rate()
 void neural_net::train_network(int n_epochs)
 {
    int n_update = 1 * 1000;
-   int n_export_metafiles = 10 * 1000;
-   int n_export_snapshot = 100 * 1000;
+   int n_export_metafiles = 2 * 1000;
+   int n_export_snapshot =  10 * 1000;
    int n_max = basic_math::max(n_update,n_export_metafiles,n_export_snapshot);
 
    for(int e = 0; e < n_epochs; e++)
