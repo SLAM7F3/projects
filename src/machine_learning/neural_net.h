@@ -65,7 +65,7 @@ class neural_net
    void set_include_bias_terms(bool flag);
    bool get_include_bias_terms() const;
    void set_environment(environment* e_ptr);   
-   void set_perm_symmetrize_weight_matrices_and_bias_vectors(bool flag);
+   void set_perm_symmetrize_weights_and_biases(bool flag);
    int get_layer_dim(int l) const;
    genvector* get_biases(int l) const;
    genmatrix* get_weights(int l) const;
@@ -132,7 +132,7 @@ class neural_net
   private: 
 
    bool include_bias_terms;
-   bool perm_symmetrize_weight_matrices_and_bias_vectors;
+   bool perm_symmetrize_weights_and_biases;
    int n_layers, n_training_samples, n_validation_samples, n_test_samples;
    int n_classes;
    int expt_number;
@@ -271,10 +271,9 @@ inline void neural_net::set_environment(environment* e_ptr)
    environment_ptr = e_ptr;
 }
 
-inline void neural_net::set_perm_symmetrize_weight_matrices_and_bias_vectors(
-   bool flag)
+inline void neural_net::set_perm_symmetrize_weights_and_biases(bool flag)
 {
-   perm_symmetrize_weight_matrices_and_bias_vectors = flag;
+   perm_symmetrize_weights_and_biases = flag;
 }
 
 inline int neural_net::get_layer_dim(int l) const

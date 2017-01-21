@@ -99,7 +99,7 @@ void neural_net::instantiate_training_variables()
       {
          nabla_biases.push_back(new genvector(layer_dims[l]));
          delta_nabla_biases.push_back(new genvector(layer_dims[l]));
-         if(perm_symmetrize_weight_matrices_and_bias_vectors)
+         if(perm_symmetrize_weights_and_biases)
          {
             permuted_biases.push_back(new genvector(layer_dims[l]));
             sym_biases.push_back(new genvector(layer_dims[l]));
@@ -126,7 +126,7 @@ void neural_net::instantiate_training_variables()
       weights_transpose.push_back(
          new genmatrix(layer_dims[l], layer_dims[l+1]));
 
-      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      if(perm_symmetrize_weights_and_biases)
       {
          permuted_weights.push_back(
             new genmatrix(layer_dims[l+1], layer_dims[l]));
@@ -195,7 +195,7 @@ void neural_net::initialize_weights_and_biases()
             }
          } // loop over index i labeling node in current layer
 
-         if(perm_symmetrize_weight_matrices_and_bias_vectors)
+         if(perm_symmetrize_weights_and_biases)
          {
             environment_ptr->permutation_symmetrize_biases(
                curr_biases, permuted_biases[l], sym_biases[l]);
@@ -219,7 +219,7 @@ void neural_net::initialize_weights_and_biases()
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
 
-      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      if(perm_symmetrize_weights_and_biases)
       {
          environment_ptr->permutation_symmetrize_weights(
             curr_weights, permuted_weights[l], sym_weights[l]);
@@ -237,7 +237,7 @@ neural_net::neural_net(
    this->mini_batch_size = mini_batch_size;
    this->lambda = lambda;
    this->rmsprop_decay_rate = rmsprop_decay_rate;
-   perm_symmetrize_weight_matrices_and_bias_vectors = false;
+   perm_symmetrize_weights_and_biases = false;
    environment_ptr = NULL;
 
    initialize_member_objects(n_nodes_per_layer);
@@ -259,7 +259,7 @@ neural_net::neural_net(
    this->mini_batch_size = mini_batch_size;
    this->lambda = lambda;
    this->rmsprop_decay_rate = rmsprop_decay_rate;
-   perm_symmetrize_weight_matrices_and_bias_vectors = sym_weights_biases_flag;
+   perm_symmetrize_weights_and_biases = sym_weights_biases_flag;
    environment_ptr = env_ptr;
 
    initialize_member_objects(n_nodes_per_layer);
@@ -316,7 +316,7 @@ neural_net::~neural_net()
       {
          delete nabla_biases[l];
          delete delta_nabla_biases[l];
-         if(perm_symmetrize_weight_matrices_and_bias_vectors)
+         if(perm_symmetrize_weights_and_biases)
          {
             delete permuted_biases[l];
             delete sym_biases[l];
@@ -330,7 +330,7 @@ neural_net::~neural_net()
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
       delete rmsprop_weights_cache[l];
-      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      if(perm_symmetrize_weights_and_biases)
       {
          delete permuted_weights[l];
          delete sym_weights[l];
@@ -659,7 +659,7 @@ void neural_net::decrease_learning_rate()
 
 void neural_net::train_network(int n_epochs)
 {
-   int n_update = 1 * 1000;
+   int n_update = 200;
    int n_export_metafiles = 2 * 1000;
    int n_export_snapshot =  10 * 1000;
    int n_max = basic_math::max(n_update,n_export_metafiles,n_export_snapshot);
@@ -784,7 +784,7 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 //           << " biases[l] = " << *biases[l] 
 //           << endl;
 
-      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      if(perm_symmetrize_weights_and_biases)
       {
          environment_ptr->permutation_symmetrize_biases(
             biases[l], permuted_biases[l], sym_biases[l]);
@@ -809,7 +809,7 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 //           << " weights[l] = " << *weights[l] 
 //           << endl;
 
-      if(perm_symmetrize_weight_matrices_and_bias_vectors)
+      if(perm_symmetrize_weights_and_biases)
       {
          environment_ptr->permutation_symmetrize_weights(
             weights[l], permuted_weights[l], sym_weights[l]);
@@ -1075,6 +1075,8 @@ void neural_net::summarize_parameters()
    params_stream << "mini_batch_size = " << mini_batch_size << endl;
    params_stream << "n_mini_batches per epoch = " 
                  << n_training_samples / mini_batch_size + 1 << endl;
+   params_stream << "perm_symmetrize_weights_and_biases = " 
+                 << perm_symmetrize_weights_and_biases << endl;
    filefunc::closefile(params_filename, params_stream);
 }
 
