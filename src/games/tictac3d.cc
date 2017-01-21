@@ -1931,7 +1931,7 @@ void tictac3d::generate_permutation_matrices()
 // body-centered lattice coordinate {-3/2, -1/2, 1/2, 3/2}.  The
 // lattice vector is then transformed by the current permutation
 // symmetry matrices.  The orbits for all 64 cells are stored within
-// member fields permuted_cell_indices and *cell_union_find_ptr.
+// member fields cell_permutations and *cell_union_find_ptr.
 // Using this method, we find the 4x4x4 TTT lattice contains 4 orbits
 // containing 8, 8, 24 and 24 cells.
 
@@ -1942,33 +1942,34 @@ void tictac3d::compute_cell_orbits()
       cell_union_find_ptr->MakeSet(n);
    }
 
+   const double offset = (n_size - 1) * 0.5;
    for(unsigned int s = 0; s < permutation_matrices.size(); s++)
    {
       cout << "Permutation s = " << s << endl;
-      vector<int> curr_permuted_cell_indices;
+      vector<int> curr_cell_permutations;
       genmatrix* curr_perm = permutation_matrices[s];
 
       for(int n = 0; n < n_cells; n++)
       {
          int px, py, pz;
          get_cell_coords(n, px, py, pz);
-         double lx = px - 1.5;
-         double ly = py - 1.5;
-         double lz = pz - 1.5;
+         double lx = px - offset;
+         double ly = py - offset;
+         double lz = pz - offset;
          threevector l(lx, ly, lz);
 
          threevector l_permuted = *curr_perm * l;
-         int qx = l_permuted.get(0) + 1.5;
-         int qy = l_permuted.get(1) + 1.5;
-         int qz = l_permuted.get(2) + 1.5;
+         int qx = l_permuted.get(0) + offset;
+         int qy = l_permuted.get(1) + offset;
+         int qz = l_permuted.get(2) + offset;
          int n_permuted = get_cell(qx, qy, qz);
-         curr_permuted_cell_indices.push_back(n_permuted);
+         curr_cell_permutations.push_back(n_permuted);
 
          cell_union_find_ptr->Link(n, n_permuted);
       } // loop over index n labeling TTT cells
 
 
-      permuted_cell_indices.push_back(curr_permuted_cell_indices);
+      cell_permutations.push_back(curr_cell_permutations);
    } // loop over index s labeling permutation matrices
 
    cell_union_find_ptr->fill_parent_nodes_map();
@@ -1992,7 +1993,7 @@ void tictac3d::compute_cell_orbits()
 void tictac3d::permute_board_state(int s)
 {
    cout << "Permutation s = " << s << endl;
-   vector<int> curr_cell_permutation = permuted_cell_indices[s];
+   vector<int> curr_cell_permutation = cell_permutations[s];
 
    for(int n = 0; n < n_cells; n++)
    {
@@ -2011,7 +2012,6 @@ void tictac3d::permute_board_state(int s)
    }
 }
 
-
 // ---------------------------------------------------------------------
 // Member function permute_weight_matrix() takes in weight matrix W.
 // Numbers of rows and columns within W are assumed to be integer
@@ -2021,8 +2021,7 @@ void tictac3d::permute_board_state(int s)
 
 void tictac3d::permute_weight_matrix(int s, genmatrix* W, genmatrix* Wpermuted)
 {
-   cout << "Permutation s = " << s << endl;
-   vector<int> curr_cell_permutation = permuted_cell_indices[s];
+   vector<int> curr_cell_permutation = cell_permutations[s];
    
    int R_submatrices = W->get_mdim() / n_cells;
    int C_submatrices = W->get_ndim() / n_cells;
@@ -2048,5 +2047,57 @@ void tictac3d::permute_weight_matrix(int s, genmatrix* W, genmatrix* Wpermuted)
 
       } // loop over index C labeling submatrix columns
    } // loop over index R labeling submatrix rows
+}
 
+void tictac3d::permute_bias_vector(int s, genvector* b, genvector* bpermuted)
+{
+   vector<int> curr_cell_permutation = cell_permutations[s];
+   
+   int R_subvectors = b->get_mdim() / n_cells;
+   for(int R = 0; R < R_subvectors; R++)
+   {
+      int rstart = R * n_cells;
+      int rstop = rstart + n_cells;
+      for(int r = rstart; r < rstop; r++)
+      {
+         int rperm = rstart + curr_cell_permutation[r - rstart];
+         bpermuted->put(rperm, b->get(r));
+      } // loop over index r labeling rows of curr submatrix
+   } // loop over index R labeling submatrix rows
+}
+
+// ---------------------------------------------------------------------
+// Member function symmetrize_weight_matrix() takes in weight matrix
+// *W whose numbers of rows and columns are assumed to equal integer
+// multiples of n_cells.  It also imports a same-sized, temporary
+// working matrix *Wpermuted.  Looping over all cell permutations, it
+// computes and returns the average of all permuted versions of *W
+// within *Wsym.
+
+void tictac3d::symmetrize_weight_matrix(
+   genmatrix* W, genmatrix* Wpermuted, genmatrix* Wsym)
+{
+   int n_cell_permutations = cell_permutations.size();
+   double alpha = 1.0 / n_cell_permutations;
+   
+   Wsym->clear_values();
+   for(int s = 0; s < n_cell_permutations; s++)
+   {
+      permute_weight_matrix(s, W, Wpermuted);
+      Wsym->matrix_increment(alpha, *Wpermuted);
+   } // loop over index s labeling cell permutations
+}
+
+void tictac3d::symmetrize_bias_vector(
+   genvector* b, genvector* bpermuted, genvector* bsym)
+{
+   int n_cell_permutations = cell_permutations.size();
+   double alpha = 1.0 / n_cell_permutations;
+   
+   bsym->clear_values();
+   for(int s = 0; s < n_cell_permutations; s++)
+   {
+      permute_bias_vector(s, b, bpermuted);
+      bsym->vector_increment(alpha, *bpermuted);
+   } // loop over index s labeling cell permutations
 }

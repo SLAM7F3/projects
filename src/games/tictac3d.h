@@ -138,6 +138,11 @@ class tictac3d
    void compute_cell_orbits();
    void permute_board_state(int s);
    void permute_weight_matrix(int s, genmatrix* W, genmatrix* Wpermuted);
+   void permute_bias_vector(int s, genvector* b, genvector* bpermuted);
+   void symmetrize_weight_matrix(
+      genmatrix* W, genmatrix* Wpermuted, genmatrix* Wsym);
+   void symmetrize_bias_vector(
+      genvector* b, genvector* bpermuted, genvector* bsym);
 
   private: 
 
@@ -203,7 +208,7 @@ class tictac3d
 
    std::vector<genmatrix*> permutation_matrices;
    union_find* cell_union_find_ptr;
-   std::vector<std::vector<int> > permuted_cell_indices;
+   std::vector<std::vector<int> > cell_permutations;
 
    void allocate_member_objects();
    void initialize_member_objects();
