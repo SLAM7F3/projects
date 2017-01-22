@@ -44,12 +44,6 @@ int main (int argc, char* argv[])
    int H1 = 256;			// Number of first hidden layer nodes
    int H2 = 256;			// Number of 2nd hidden layer nodes
    int H3 = 0;				// Number of 3rd hidden layer nodes
-//   cout << "Enter H1:" << endl;
-//   cin >> H1;
-//   cout << "Enter H2:" << endl;
-//   cin >> H2;
-//   cout << "Enter H3:" << endl;
-//   cin >> H3;
    int Dout = n_cells;   	// Number of output layer nodes
 
    vector<int> layer_dims;
@@ -134,12 +128,10 @@ int main (int argc, char* argv[])
 
          if(AI_move_first || ttt_ptr->get_n_agent_turns() > 0)
          {
-
-
-            int best_move = ttt_ptr->get_random_legal_player_move(AI_value);
-//            int best_move = ttt_ptr->get_recursive_minimax_move(AI_value);
-//            ttt_ptr->set_player_move(best_move, AI_value);
-            ttt_ptr->record_latest_move(AI_value, best_move);
+            int AI_move = ttt_ptr->get_random_legal_player_move(AI_value);
+//            int AI_move = ttt_ptr->get_recursive_minimax_move(AI_value);
+//            ttt_ptr->set_player_move(AI_move, AI_value);
+            ttt_ptr->record_latest_move(AI_value, AI_move);
 
 //             ttt_ptr->display_board_state();
             ttt_ptr->increment_n_AI_turns();
@@ -153,22 +145,30 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-
          genvector* input_state_ptr = ttt_ptr->update_board_state_ptr();
-
-         NN.get_class_probabilities(input_state_ptr, class_probs, class_IDs);
-         int best_move = -1;
+         bool sort_probs_flag = false;
+         NN.get_class_probabilities(
+            input_state_ptr, sort_probs_flag, class_probs, class_IDs);
+         double prob_sum = 0;
          for(unsigned int c = 0; c < class_IDs.size(); c++)
          {
-            int p = class_IDs[c];
-            if(ttt_ptr->legal_player_move(p))
+            if(!ttt_ptr->legal_player_move(c))
             {
-               best_move = p;
-               break;
+               class_probs[c] = 0;
             }
+            prob_sum += class_probs[c];
          }
-         ttt_ptr->set_player_move(best_move, agent_value);
-         ttt_ptr->record_latest_move(agent_value, best_move);
+
+// Renormalize legal moves' probability distribution:
+
+         for(unsigned int c = 0; c < class_IDs.size(); c++)
+         {
+            class_probs[c] /= prob_sum;
+         }
+
+         int agent_move = NN.get_class_prediction_given_probs(class_probs);
+         ttt_ptr->set_player_move(agent_move, agent_value);
+         ttt_ptr->record_latest_move(agent_value, agent_move);
 //         ttt_ptr->display_board_state();
          ttt_ptr->increment_n_agent_turns();
 
@@ -203,9 +203,16 @@ int main (int argc, char* argv[])
            << endl;
       cout << "n_AI_wins = " << n_AI_wins 
            << " n_agent_wins = " << n_agent_wins << endl;
-      cout << "Winning game fractions: AI = " << AI_win_frac
-           << " agent = " << agent_win_frac << endl;
    } // loop over index g labeling games
+
+   cout << endl << endl;
+   cout << "======================================================== " << endl;
+   cout << "n_games = " << n_games 
+        << " n_AI_wins = " << n_AI_wins 
+        << " n_agent_wins = " << n_agent_wins << endl;
+   cout << "Winning game fractions: AI = " << AI_win_frac
+        << " agent = " << agent_win_frac << endl;
+   cout << "======================================================== " << endl;
 
    delete ttt_ptr;
 }

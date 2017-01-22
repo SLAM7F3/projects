@@ -488,20 +488,26 @@ double neural_net::L2_loss_contribution()
 // sorted in descending order and associated class_IDs.
 
 void neural_net::get_class_probabilities(
-   genvector* input_state, 
+   genvector* input_state, bool sort_probs_flag, 
    vector<double>& class_probabilities, vector<int>& class_IDs)
 {
    feedforward(input_state);
    genvector* softmax_probs = get_softmax_class_probs();
 
+   double prob_sum = 0;
    class_probabilities.clear();
    class_IDs.clear();
    for(int i = 0; i < n_classes; i++)
    {
       class_IDs.push_back(i);
       class_probabilities.push_back(softmax_probs->get(i));
+      prob_sum += class_probabilities.back();
    }
-   templatefunc::Quicksort_descending(class_probabilities, class_IDs);
+
+   if(sort_probs_flag)
+   {
+      templatefunc::Quicksort_descending(class_probabilities, class_IDs);
+   }
 }
 
 // ---------------------------------------------------------------------
@@ -526,6 +532,35 @@ int neural_net::get_class_prediction(genvector* input_state)
       }
    }
    return predicted_class;
+}
+
+// ---------------------------------------------------------------------
+// Member function get_class_prediction_given_probs() returns integer
+// index for the class which is stochastically sampled from the
+// probability distribution class_probs.
+
+int neural_net::get_class_prediction_given_probs(
+   const vector<double>& class_probs)
+{
+   double ran_val = nrfunc::ran1();
+   double cum_p = 0;
+   for(unsigned int c = 0; c < class_probs.size(); c++)
+   {
+      double class_prob = class_probs[c];
+      if(ran_val >= cum_p && ran_val <= cum_p + class_prob)
+      {
+         return c;
+      }
+      else
+      {
+         cum_p += class_prob;
+      }
+   }
+
+   cout << "Error in neural_net::get_class_prediction_given_pi()" << endl;
+   cout << "Should not have reached this point" << endl;
+   exit(-1);
+   return -1;
 }
 
 // ---------------------------------------------------------------------
