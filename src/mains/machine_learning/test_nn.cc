@@ -80,21 +80,23 @@ int main (int argc, char* argv[])
       n_testing_samples, testing_samples);
    NN.import_test_data(testing_samples);
 
+// Import neural network snapshot:
+
    string nn_subdir = "./nn_output/snapshots/2017-01-19_07_44/";
    string snapshot_filename = nn_subdir + "snapshot_199.984.txt";
    NN.import_snapshot(snapshot_filename);
-
-// Generate metafile plot of training samples, testing samples and
-// classification predictions:
-
-   vector<int> labels;
-   vector<double> X, Y;
 
    double test_accuracy = NN.evaluate_model_on_test_set();
    cout << "Test accuracy = " << test_accuracy << endl;
    vector<int> incorrect_test_classifications = 
       NN.get_incorrect_classifications();
 
+// Generate metafile plot of training samples, testing samples and
+// classification predictions.  Markers are colored according to 
+// class labels:
+
+   vector<int> labels;
+   vector<double> X, Y;
    for(unsigned int i = 0; i < testing_samples.size(); i++)
    {
       X.push_back(testing_samples[i].first->get(0));
@@ -111,9 +113,6 @@ int main (int argc, char* argv[])
       }
       labels.push_back(testing_samples[i].second + color_offset);
    } // loop over index i labeling data samples
-
-// Generate metafile output whose markers are colored according to
-// class labels:
 
    metafile curr_metafile;
 

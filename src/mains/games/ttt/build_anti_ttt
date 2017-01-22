@@ -1,5 +1,6 @@
 /bin/rm ./human_minimax
 /bin/rm ./qtrain_ttt_network
+/bin/rm ./test_pi_sigma
 /bin/rm ./test_ttt_network
 /bin/rm ./train_pi_sigma
 /bin/rm ./train_ttt_network

@@ -3167,7 +3167,6 @@ void reinforce::P_forward_propagate(genvector* s_input)
 //   cout << "s_input = " << s_input << endl;
    
    *A_Prime[0] = *s_input;
- 
    for(int l = 0; l < n_layers-1; l++)
    {
       if(include_biases)

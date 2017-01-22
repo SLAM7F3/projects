@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 1/18/17; 1/19/17; 1/20/17; 1/21/17
+// Last modified on 1/19/17; 1/20/17; 1/21/17; 1/22/17
 // ==========================================================================
 
 #include <iostream>
@@ -394,20 +394,16 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
 
 void neural_net::feedforward(genvector* a_input)
 {
-   a[0] = a_input;
-//    cout << "inside feedforward, a_input = " << *a_input << endl;
-
+   *a[0] = *a_input;
    for(int l = 0; l < n_layers-1; l++)
    {
       if(include_bias_terms)
       {
          z[l+1]->matrix_vector_mult_sum(*weights[l], *a[l], *biases[l+1]);
-//         *z[l+1] = (*weights[l]) * (*a[l]) + *biases[l+1];
       }
       else
       {
          z[l+1]->matrix_vector_mult(*weights[l], *a[l]);
-//         *z[l+1] = (*weights[l]) * (*a[l]);
       }
 
 //      cout << "l = " << l << endl;
