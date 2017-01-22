@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for tictac3d class 
 // ==========================================================================
-// Last modified on 1/16/17; 1/19/17; 1/20/17; 1/21/17
+// Last modified on 1/19/17; 1/20/17; 1/21/17; 1/22/17
 // ==========================================================================
 
 #ifndef TICTAC3D_H
@@ -95,7 +95,7 @@ class tictac3d
    double get_random_player_move(int agent_value);
    bool legal_player_move(int p);
    bool set_player_move(int p, int player_value);
-   void get_random_legal_player_move(int player_value);
+   int get_random_legal_player_move(int player_value);
    void record_latest_move(int player_value, int p);
    void record_n_total_game_turns();
    void plot_total_game_turns_dist(std::string output_subdir);

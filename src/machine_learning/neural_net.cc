@@ -386,7 +386,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
 }
 
 // ==========================================================================
-// Network training methods
+// Network training member functions
 // ==========================================================================
 
 // Member function feedforward returns the output of the network given
@@ -478,6 +478,33 @@ double neural_net::L2_loss_contribution()
    return L2_loss;
 }
 
+// ==========================================================================
+// Network evaluation member functions
+// ==========================================================================
+
+// Member function get_class_prediction() takes in an input state for
+// the neural network.  After forward propagating the state through
+// the network, this method returns the index for the output class
+// whose softmax probability is maximal.
+
+int neural_net::get_class_prediction(genvector* input_state)
+{
+   feedforward(input_state);
+   genvector* class_probs = get_softmax_class_probs();
+
+   double max_prob = NEGATIVEINFINITY;
+   int predicted_class = -1;
+   for(int i = 0; i < n_classes; i++)
+   {
+      if(class_probs->get(i) > max_prob)
+      {
+         predicted_class = i;
+         max_prob = class_probs->get(i);
+      }
+   }
+   return predicted_class;
+}
+
 // ---------------------------------------------------------------------
 double neural_net::evaluate_model_on_data_set(
    const vector<DATA_PAIR>& sample_data)
@@ -487,20 +514,7 @@ double neural_net::evaluate_model_on_data_set(
    incorrect_classifications.clear();
    for(int t = 0; t < n_data_samples; t++)
    {
-      feedforward( sample_data[t].first );
-      genvector* class_probs = get_softmax_class_probs();
-
-      double max_prob = NEGATIVEINFINITY;
-      int predicted_class = -1;
-      for(int i = 0; i < n_classes; i++)
-      {
-         if(class_probs->get(i) > max_prob)
-         {
-            predicted_class = i;
-            max_prob = class_probs->get(i);
-         }
-      }
-
+      int predicted_class = get_class_prediction(sample_data[t].first);
       if(predicted_class == sample_data[t].second)
       {
          n_correct_predictions++;
@@ -1021,9 +1035,8 @@ void neural_net::numerically_check_derivs(const DATA_PAIR& curr_data_pair)
    } // loop over index l labeling network layers
 }
 
-
 // ==========================================================================
-// Monitoring network training methods
+// Monitoring network training member functions
 // ==========================================================================
 
 // Member function count_weights() sums up the total number of weights

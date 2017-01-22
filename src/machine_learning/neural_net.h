@@ -84,7 +84,7 @@ class neural_net
          const std::vector<DATA_PAIR>& shuffled_training_data);
    void print_data_pair(int t, const DATA_PAIR& curr_data);
 
-// Network training methods:
+// Network training member functions:
 
    void feedforward(genvector* a_input);
    genvector* get_softmax_class_probs() const;
@@ -93,8 +93,9 @@ class neural_net
    void decrease_learning_rate();
    void train_network(int n_epochs);
 
-// Network evaluation methods:
+// Network evaluation member functions:
 
+   int get_class_prediction(genvector* input_state);
    double evaluate_model_on_data_set(
       const std::vector<DATA_PAIR>& sample_data);
    double evaluate_model_on_training_set();
@@ -102,7 +103,7 @@ class neural_net
    double evaluate_model_on_test_set();
    std::vector<int>& get_incorrect_classifications();
 
-// Monitoring network training methods:
+// Monitoring network training member functions:
 
    void summarize_parameters();
    void compute_bias_distributions();

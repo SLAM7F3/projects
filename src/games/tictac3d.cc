@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 1/16/17; 1/19/17; 1/20/17; 1/21/17
+// Last modified on 1/19/17; 1/20/17; 1/21/17; 1/22/17
 // ==========================================================================
 
 #include <iostream>
@@ -462,7 +462,7 @@ bool tictac3d::set_player_move(int p, int player_value)
 }
 
 // ---------------------------------------------------------------------
-void tictac3d::get_random_legal_player_move(int player_value)
+int tictac3d::get_random_legal_player_move(int player_value)
 {
    bool legal_move_flag = false;
    while(!legal_move_flag)
@@ -472,8 +472,10 @@ void tictac3d::get_random_legal_player_move(int player_value)
       {
          set_cell_value(p, player_value);
          legal_move_flag = true;
+         return p;
       }
    }
+   return -1;
 }
 
 // ---------------------------------------------------------------------

@@ -40,19 +40,11 @@ int main (int argc, char* argv[])
 //   cin >> seed;
 //   nrfunc::init_default_seed(seed);
 
-   timefunc::initialize_timeofday_clock();
-
    int nsize = 4;
    int n_zlevels = 4;
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
-
-// Construct environment which acts as interface between reinforcement
-// agent and particular game:
-
-   environment game_world(environment::TTT);
-   game_world.set_tictac3d(ttt_ptr);
-
    int n_cells = ttt_ptr->get_n_total_cells();
+
    int Din = n_cells;
    int H1 = 256;			// Number of first hidden layer nodes
    int H2 = 256;			// Number of 2nd hidden layer nodes
@@ -88,7 +80,6 @@ int main (int argc, char* argv[])
    double rmsprop_decay_rate = 0.95;
 
    neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
-//    NN.set_training_flag(false);
 
    int min_move_rel_to_game_end = 1;
    cout << "Enter minimum move relative to game end:" << endl;
@@ -181,6 +172,7 @@ int main (int argc, char* argv[])
 
    NN.set_extrainfo(stringfunc::number_to_string(max_move_rel_to_game_end)
                     + " end moves");
+
 // Import neural network snapshot:
 
    string snapshots_subdir = output_subdir + "snapshots/";
