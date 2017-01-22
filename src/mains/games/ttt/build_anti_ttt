@@ -1,6 +1,7 @@
 /bin/rm ./human_minimax
 /bin/rm ./play_trained_nn
 /bin/rm ./qtrain_ttt_network
+/bin/rm ./self_play
 /bin/rm ./test_pi_sigma
 /bin/rm ./test_ttt_network
 /bin/rm ./train_pi_sigma
