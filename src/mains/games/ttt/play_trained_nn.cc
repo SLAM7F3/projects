@@ -99,7 +99,15 @@ int main (int argc, char* argv[])
    ttt_ptr->set_recursive_depth(2);  // machine plays offensively
 //   ttt_ptr->set_recursive_depth(3);  // machine plays defensively (very slowly)
 
-   int n_games = 3;
+   int AI_value = -1;   // "X"
+   int agent_value = 1;   // "O"
+   int n_AI_wins = 0;
+   int n_agent_wins = 0;
+   double AI_win_frac = 0;
+   double agent_win_frac = 0;
+   vector<double> class_probs;
+   vector<int> class_IDs;
+   int n_games = 100;
    for(int g = 0; g < n_games; g++)
    {
       cout << "************************************************************" 
@@ -111,6 +119,11 @@ int main (int argc, char* argv[])
       if(nrfunc::ran1() < 0.5)
       {
          AI_move_first = true;
+         cout << "AI moves first" << endl;
+      }
+      else
+      {
+         cout << "Agent moves first" << endl;
       }
 
       ttt_ptr->reset_board_state();
@@ -121,7 +134,7 @@ int main (int argc, char* argv[])
 
          if(AI_move_first || ttt_ptr->get_n_agent_turns() > 0)
          {
-            int AI_value = -1;   // "X"
+
 
             int best_move = ttt_ptr->get_random_legal_player_move(AI_value);
 //            int best_move = ttt_ptr->get_recursive_minimax_move(AI_value);
@@ -140,11 +153,22 @@ int main (int argc, char* argv[])
 
 // Agent move:
 
-         int agent_value = 1;   // "O"
-         int best_move = ttt_ptr->get_recursive_minimax_move(agent_value);
+
+         genvector* input_state_ptr = ttt_ptr->update_board_state_ptr();
+
+         NN.get_class_probabilities(input_state_ptr, class_probs, class_IDs);
+         int best_move = -1;
+         for(unsigned int c = 0; c < class_IDs.size(); c++)
+         {
+            int p = class_IDs[c];
+            if(ttt_ptr->legal_player_move(p))
+            {
+               best_move = p;
+               break;
+            }
+         }
          ttt_ptr->set_player_move(best_move, agent_value);
          ttt_ptr->record_latest_move(agent_value, best_move);
-
 //         ttt_ptr->display_board_state();
          ttt_ptr->increment_n_agent_turns();
 
@@ -159,13 +183,28 @@ int main (int argc, char* argv[])
          int n_completed_turns = ttt_ptr->get_n_completed_turns();
 //         cout << "n_completed_turns = " << n_completed_turns << endl;
       } // !game_over while loop
+
+      if(ttt_ptr->check_player_win(AI_value) > 0)
+      {
+         n_AI_wins++;
+         AI_win_frac = double(n_AI_wins) / n_games;
+      }
+      else if (ttt_ptr->check_player_win(agent_value) > 0)
+      {
+         n_agent_wins++;
+         agent_win_frac = double(n_agent_wins) / n_games;
+      }
       ttt_ptr->record_n_total_game_turns();
 
-      ttt_ptr->print_winning_pattern();
-      cout << "n_AI_turns = " << ttt_ptr->get_n_AI_turns() << endl;
-      cout << "n_agent_turns = " << ttt_ptr->get_n_agent_turns() << endl;
+//      ttt_ptr->print_winning_pattern();
+//      cout << "n_AI_turns = " << ttt_ptr->get_n_AI_turns() << endl;
+//      cout << "n_agent_turns = " << ttt_ptr->get_n_agent_turns() << endl;
       cout << "n_total_game_turns = " << ttt_ptr->get_n_total_game_turns() 
            << endl;
+      cout << "n_AI_wins = " << n_AI_wins 
+           << " n_agent_wins = " << n_agent_wins << endl;
+      cout << "Winning game fractions: AI = " << AI_win_frac
+           << " agent = " << agent_win_frac << endl;
    } // loop over index g labeling games
 
    delete ttt_ptr;

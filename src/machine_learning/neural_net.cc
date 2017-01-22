@@ -437,10 +437,10 @@ genvector* neural_net::get_softmax_class_probs() const
 
 double neural_net::get_sample_loss(const DATA_PAIR& curr_data)
 {
-   genvector* class_probs = get_softmax_class_probs();
+   genvector* softmax_probs = get_softmax_class_probs();
    int class_label = curr_data.second;
 
-   double curr_prob = class_probs->get(class_label);
+   double curr_prob = softmax_probs->get(class_label);
    double curr_loss = 15;
    double exp_neg_15 = 3.05902321E-7;
    if(curr_prob > exp_neg_15)
@@ -482,6 +482,29 @@ double neural_net::L2_loss_contribution()
 // Network evaluation member functions
 // ==========================================================================
 
+// Member function get_class_probabilities() takes in an input state for
+// the neural network.  After forward propagating the state through
+// the network, this method returns STL vectors class_probabilities
+// sorted in descending order and associated class_IDs.
+
+void neural_net::get_class_probabilities(
+   genvector* input_state, 
+   vector<double>& class_probabilities, vector<int>& class_IDs)
+{
+   feedforward(input_state);
+   genvector* softmax_probs = get_softmax_class_probs();
+
+   class_probabilities.clear();
+   class_IDs.clear();
+   for(int i = 0; i < n_classes; i++)
+   {
+      class_IDs.push_back(i);
+      class_probabilities.push_back(softmax_probs->get(i));
+   }
+   templatefunc::Quicksort_descending(class_probabilities, class_IDs);
+}
+
+// ---------------------------------------------------------------------
 // Member function get_class_prediction() takes in an input state for
 // the neural network.  After forward propagating the state through
 // the network, this method returns the index for the output class
@@ -490,16 +513,16 @@ double neural_net::L2_loss_contribution()
 int neural_net::get_class_prediction(genvector* input_state)
 {
    feedforward(input_state);
-   genvector* class_probs = get_softmax_class_probs();
+   genvector* softmax_probs = get_softmax_class_probs();
 
    double max_prob = NEGATIVEINFINITY;
    int predicted_class = -1;
    for(int i = 0; i < n_classes; i++)
    {
-      if(class_probs->get(i) > max_prob)
+      if(softmax_probs->get(i) > max_prob)
       {
          predicted_class = i;
-         max_prob = class_probs->get(i);
+         max_prob = softmax_probs->get(i);
       }
    }
    return predicted_class;

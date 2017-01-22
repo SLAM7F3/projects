@@ -95,6 +95,10 @@ class neural_net
 
 // Network evaluation member functions:
 
+   void get_class_probabilities(
+      genvector* input_state, 
+      std::vector<double>& class_probabilities, 
+      std::vector<int>& class_IDs);
    int get_class_prediction(genvector* input_state);
    double evaluate_model_on_data_set(
       const std::vector<DATA_PAIR>& sample_data);
