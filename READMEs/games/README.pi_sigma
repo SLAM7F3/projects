@@ -1,7 +1,7 @@
 ==========================================================================
 Training pi_sigma for TTT
 ==========================================================================
-Last updated on 1/18/17; 1/19/17; 1/20/17; 1/21/17
+Last updated on 1/19/17; 1/20/17; 1/21/17; 1/22/17
 ==========================================================================
 
 Best results so far:
@@ -2189,6 +2189,58 @@ Maximum move relative to game end = 6
 Random seed = -14150
 Process ID = 11836
 
+124.  T3  Experiment 124 with weight/bias symmetrizatization; no L2 reg
+Sun Jan 22 12:56:28 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.001
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+n_training_samples = 641939
+n_validation_samples = 71198
+mini_batch_size = 100
+n_mini_batches per epoch = 6420
+perm_symmetrize_weights_and_biases = 1
+Max n_training_epochs = 3000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 8
+Random seed = -18564
+Process ID = 15123
+
+125.  T3  Experiment 124 with weight/bias symmetrizatization; no L2 reg
+Sun Jan 22 12:56:47 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.001
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+n_training_samples = 962857
+n_validation_samples = 106703
+mini_batch_size = 100
+n_mini_batches per epoch = 9629
+perm_symmetrize_weights_and_biases = 1
+Max n_training_epochs = 3000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 12
+Random seed = -18582
+Process ID = 15131
+
 
 ---------------------
 Thinkmate
@@ -2245,6 +2297,111 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 6
 Random seed = -13593
 Process ID = 35849
+
+120.  TM  Experiment 120 with no symmetrization
+Sun Jan 22 12:49:37 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 401365
+n_validation_samples = 44638
+mini_batch_size = 100
+n_mini_batches per epoch = 4014
+perm_symmetrize_weights_and_biases = 1
+Max n_training_epochs = 3000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 5
+Random seed = -18155
+
+121.  TM  Experiment 121 with no symmetrization
+
+Sun Jan 22 12:49:54 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.0003
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 481397
+n_validation_samples = 53608
+mini_batch_size = 100
+n_mini_batches per epoch = 4814
+perm_symmetrize_weights_and_biases = 1
+Max n_training_epochs = 3000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 6
+Random seed = -18177
+Process ID = 11980
+
+122.  TM  Experiment 122 with no symmetrization
+Sun Jan 22 12:50:56 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.001
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 401267
+n_validation_samples = 44736
+mini_batch_size = 100
+n_mini_batches per epoch = 4013
+perm_symmetrize_weights_and_biases = 1
+Max n_training_epochs = 3000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 5
+Random seed = -18238
+Process ID = 12043
+
+123.  TM  Experiment 123 with no symmetrization
+Sun Jan 22 12:51:07 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_bias_terms = 1
+base_learning_rate = 0.001
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.95
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.0001
+n_training_samples = 481849
+n_validation_samples = 53156
+mini_batch_size = 100
+n_mini_batches per epoch = 4819
+perm_symmetrize_weights_and_biases = 1
+Max n_training_epochs = 3000
+Leaky ReLU small slope = 0.01
+Maximum move relative to game end = 6
+Random seed = -18250
+Process ID = 12051
+
 
 ---------------------
 m6700
