@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_PI_SIGMA
 // ==========================================================================
-// Last updated on 1/18/17; 1/19/17; 1/20/17; 1/21/17
+// Last updated on 1/19/17; 1/20/17; 1/21/17; 1/22/17
 // ==========================================================================
 
 #include <iostream>
@@ -79,8 +79,8 @@ int main (int argc, char* argv[])
    int mini_batch_size = 100;
 //   double lambda = 0;  // L2 regularization coefficient
    double lambda = 1E-4;  // L2 regularization coefficient
-//   cout << "Enter L2 regularization coefficient lambda:" << endl;
-//   cin >> lambda;
+   cout << "Enter L2 regularization coefficient lambda:" << endl;
+   cin >> lambda;
    double rmsprop_decay_rate = 0.95;
 
    bool sym_weights_biases_flag = true;
