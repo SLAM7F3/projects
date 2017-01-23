@@ -29,8 +29,8 @@ int main (int argc, char* argv[])
    std::set_new_handler(sysfunc::out_of_memory); 
 
    timefunc::initialize_timeofday_clock();
-   long seed = nrfunc::init_time_based_seed();
-//   long seed = -11;
+//   long seed = nrfunc::init_time_based_seed();
+   long seed = -11;
 //   cout << "Enter negative seed:" << endl;
 //   cin >> seed;
    nrfunc::init_default_seed(seed);
@@ -129,7 +129,7 @@ int main (int argc, char* argv[])
 
 //   int n_update = 100;
    int n_update = 1000;
-   int n_progress = 20 * 1000;
+   int n_progress = 100 * 1000;
    double Qmap_score = -1;
 
    string basename = "maze";
@@ -335,8 +335,7 @@ int main (int argc, char* argv[])
       reinforce_agent_ptr->get_learning_rate());
    reinforce_agent_ptr->plot_Qmap_score_history(extrainfo);
    bool epoch_indep_var = false;
-   reinforce_agent_ptr->generate_summary_plots(
-      extrainfo, epoch_indep_var);
+   reinforce_agent_ptr->generate_summary_plots(extrainfo, epoch_indep_var);
    reinforce_agent_ptr->generate_view_metrics_script(true, false);
 
 // Export trained weights in neural network's zeroth layer as
