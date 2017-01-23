@@ -159,7 +159,10 @@ class neural_net
 //      {n_layers-2, n_layers-1}
    std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 
+   std::vector<genvector*> rmsprop_biases_cache;
+   std::vector<genvector*> rms_biases_denom;
    std::vector<genmatrix*> rmsprop_weights_cache;
+   std::vector<genmatrix*> rms_weights_denom;
 
    std::vector<DATA_PAIR> training_data;
    std::vector<DATA_PAIR> validation_data;
@@ -215,6 +218,8 @@ class neural_net
    std::vector<std::vector<double> > weight_7, weight_8, weight_9;
 
    int count_weights();
+   void update_rmsprop_biases_cache(double decay_rate);
+   void update_rmsprop_weights_cache(double decay_rate);
    double update_nn_params(std::vector<DATA_PAIR>& mini_batch);
    void clear_delta_nablas();
    void backpropagate(const DATA_PAIR& curr_data_pair);
@@ -226,7 +231,6 @@ class neural_net
    void instantiate_weights_and_biases();
    void instantiate_training_variables();
    void initialize_weights_and_biases();
-
    void delete_weights_and_biases();
 };
 

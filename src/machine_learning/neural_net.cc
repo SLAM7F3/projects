@@ -51,6 +51,7 @@ void neural_net::initialize_member_objects(
    solver_type = RMSPROP;
 }		       
 
+// ---------------------------------------------------------------------
 void neural_net::allocate_member_objects()
 {
    for(int l = 0; l < n_layers; l++)
@@ -107,6 +108,17 @@ void neural_net::instantiate_training_variables()
             sym_biases.push_back(new genvector(layer_dims[l]));
          }
 
+         if(solver_type == RMSPROP)
+         {
+            genvector *curr_rmsprop_biases = new genvector(layer_dims[l]);
+            curr_rmsprop_biases->clear_values();
+            rmsprop_biases_cache.push_back(curr_rmsprop_biases);
+         
+            genvector *curr_rms_biases_denom = new genvector(layer_dims[l]);
+            curr_rms_biases_denom->clear_values();
+            rms_biases_denom.push_back(curr_rms_biases_denom);
+         }
+
          bias_01.push_back(dummy_dist);
          bias_05.push_back(dummy_dist);
          bias_10.push_back(dummy_dist);
@@ -141,10 +153,18 @@ void neural_net::instantiate_training_variables()
       delta_nabla_weights.push_back(
          new genmatrix(layer_dims[l+1], layer_dims[l]));
 
-      genmatrix *curr_rmsprop_weights = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);
-      curr_rmsprop_weights->clear_values();
-      rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+      if(solver_type == RMSPROP)
+      {
+         genmatrix *curr_rmsprop_weights = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);
+         curr_rmsprop_weights->clear_values();
+         rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+         
+         genmatrix *curr_rms_weights_denom = 
+            new genmatrix(layer_dims[l+1], layer_dims[l]);
+         curr_rms_weights_denom->clear_values();
+         rms_weights_denom.push_back(curr_rms_weights_denom);
+      }
 
       log10_lr_mean_abs_nabla_weight_ratios.push_back(dummy_dist);
 
@@ -322,6 +342,8 @@ void neural_net::delete_weights_and_biases()
 // ---------------------------------------------------------------------
 neural_net::~neural_net()
 {
+   delete_weights_and_biases();
+
    for(int l = 0; l < n_layers; l++)
    {
       delete z[l];
@@ -330,8 +352,6 @@ neural_net::~neural_net()
       delete a[l];
       delete delta[l];
    }
-
-   delete_weights_and_biases();
    
    if(include_biases)
    {
@@ -820,6 +840,42 @@ void neural_net::train_network(int n_epochs)
    export_snapshot();
 }
 
+
+/*
+// ---------------------------------------------------------------------
+// Member function update_rmsprop_biases_cache()
+
+void neural_net::update_rmsprop_biases_cache(double decay_rate)
+{
+   for(int l = 0; l < n_layers; l++)
+   {
+      for(unsigned int i=0; i < rmsprop_biases_cache[l]->get_mdim(); i++) 
+      {
+         double curr_val = decay_rate * rmsprop_biases_cache[l]->get(i)
+            + (1 - decay_rate) * sqr(nabla_biases[l]->get(i));
+         rmsprop_biases_cache[l]->put(i,curr_val);
+      } // loop over index i
+   } // loop over index l labeling network layers
+}
+
+void neural_net::update_rmsprop_weights_cache(double decay_rate)
+{
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      for(unsigned int i=0; i < rmsprop_weights_cache[l]->get_mdim(); i++) 
+      {
+         for(unsigned int j=0; j<rmsprop_weights_cache[l]->get_ndim(); j++)
+         {
+            double curr_val = 
+               decay_rate * rmsprop_weights_cache[l]->get(i,j)
+               + (1 - decay_rate) * sqr(nabla_weights[l]->get(i,j));
+            rmsprop_weights_cache[l]->put(i,j,curr_val);
+         } // loop over index j labeling columns
+      } // loop over index i labeling rows
+   } // loop over index l labeling network layers
+}
+*/
+
 // ---------------------------------------------------------------------
 // Member function update_nn_params() updates the network's weights
 // and biases by applying gradient descent using backpropagation to a
@@ -855,6 +911,9 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
       for(int l = 0; l < n_layers; l++)
       {
          *nabla_biases[l] += *delta_nabla_biases[l] / mini_batch_size;
+         *rmsprop_biases_cache[l] = 
+            rmsprop_decay_rate * (*rmsprop_biases_cache[l])
+            + (1 - rmsprop_decay_rate) * nabla_biases[l]->hadamard_power(2);
       }
       for(int l = 0; l < n_layers - 1; l++)
       {
@@ -865,13 +924,23 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
       }
    } // loop over index i labeling training samples within mini batch
    avg_minibatch_loss /= mini_batch_size;
-   
-// Update weights and biases for eacy network layer by their nabla
+
+// Update weights and biases for each network layer by their nabla
 // values averaged over the current mini-batch:
 
    for(int l = 0; l < n_layers; l++)
    {
-      *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
+      if(solver_type == SGD)
+      {
+         *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
+      }
+      else if (solver_type == RMSPROP)
+      {
+         rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+         rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
+         *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
+      }
 //      cout << "l = " << l 
 //           << " biases[l] = " << *biases[l] 
 //           << endl;
@@ -888,18 +957,18 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
    for(int l = 0; l < n_layers - 1; l++)
    {
-      genmatrix denom = rmsprop_weights_cache[l]->hadamard_power(0.5);
-      denom.hadamard_sum(rmsprop_denom_const);
-      
-      if(solver_type == RMSPROP)
-      {
-         nabla_weights[l]->hadamard_division(denom);
-         *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
-      }
-      else if (solver_type == SGD)
+      if (solver_type == SGD)
       {
          *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
       }
+      else if(solver_type == RMSPROP)
+      {
+         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
+         *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
+      }
+
 //      cout << "l = " << l 
 //           << " weights[l] = " << *weights[l] 
 //           << endl;

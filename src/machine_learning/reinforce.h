@@ -396,14 +396,15 @@ class reinforce
    double curr_beta1_pow, curr_beta2_pow;
 
    void compute_cumulative_action_dist();
-   void update_biases_cache(double decay_rate);
-   void update_rmsprop_cache(double decay_rate);
+   void update_rmsprop_biases_cache(double decay_rate);
+   void update_rmsprop_weights_cache(double decay_rate);
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
    void instantiate_weights_and_biases();
    void instantiate_training_variables();
    void initialize_weights_and_biases();
+   void delete_weights_and_biases();
 };
 
 // ==========================================================================
