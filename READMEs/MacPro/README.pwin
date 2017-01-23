@@ -309,7 +309,6 @@ holding down shift key and dragging mouse.
 a few days.  Viktor taught us that we need to chant the following in order
 to kill hung pwin jobs once startown connectivity returns:
 
-
 		pkill -9 sshfs  [ Should free up unix commands which previously were locked
 				  waiting for startown I/O ]
 

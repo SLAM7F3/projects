@@ -1,7 +1,7 @@
 ===============================================================================
 PV40 cluster notes
 ===============================================================================
-Last updated on 6/15/16; 6/16/16; 11/15/16; 11/16/16
+Last updated on 6/16/16; 11/15/16; 11/16/16; 1/23/17
 ===============================================================================
 
 *.  Eufori configuration file on PV40 is located in 
@@ -111,7 +111,11 @@ our local machine's mountpoint:
 prj = kitty_hawk_boston
 resource = kitty_hawk_boston
 
-
-
-
 /gpfs/mercury11/supersize/bin/pwin/pwin_master/latest -vv -nogpfs -cfg /home/pcho/hn_pano/peter_flyover-eufori.dcfg -da hn_pano_gui -prjdb /gpfs/mercury11/distrib_batch_prj/prjdb_khara-desktop_t300_sf_collect_2016_161209_161116.xml -prj t300_sf_collect_2016 -runid pr_house_numbers_t300_sf_collect_2016_2016-12-09__16:12:32 -shp /gpfs/mercury11/distrib_batch_shape/shape_khara_t300_sf_collect_2016_161209_161117.shape -bucket_id maps001_debug -build_id 58547c943ee4438cce17be08 -output_folder /home/pcho/hn_pano/
+
+
+*.  On 1/23/17, Daniel Ragnarsson told us that PV40 has O(20) different
+machines.  So if Erik Soderval's script below fails, we can try to change
+"pv40-04" --> "pv40-05", "pv40-10", "pv40-20", etc.
+
+sshfs -F ~/.ssh/pv40_config -o StrictHostKeyChecking=no -o idmap=user pv40-04:/gpfs /pv40-gpfs/
