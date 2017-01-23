@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PMAZE solves a maze via policy gradient learning
 // ==========================================================================
-// Last updated on 1/2/17; 1/10/17; 1/11/17; 1/18/17
+// Last updated on 1/10/17; 1/11/17; 1/18/17; 1/23/17
 // ==========================================================================
 
 #include <iostream>
@@ -117,11 +117,12 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_output_subdir(output_subdir);
 
 //   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
-//   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
-   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
+   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
+//   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
+   reinforce_agent_ptr->set_max_mean_KL_divergence(POSITIVEINFINITY);
 
    int n_max_episodes = 1 * 1000 * 1000;
    int n_lr_episodes_period = 1000 * 1000;
@@ -175,8 +176,8 @@ int main (int argc, char* argv[])
          Qmap_score < 0.999999)
    {
       int curr_episode_number = reinforce_agent_ptr->get_episode_number();
-      outputfunc::update_progress_and_remaining_time(
-         curr_episode_number, n_progress, n_max_episodes);
+//      outputfunc::update_progress_and_remaining_time(
+//         curr_episode_number, n_progress, n_max_episodes);
 
       bool random_turtle_start = true;
       game_world.start_new_episode(random_turtle_start);
@@ -309,6 +310,7 @@ int main (int argc, char* argv[])
             extrainfo, epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(true, false);
       }
+      reinforce_agent_ptr->increment_episode_number();
    } // n_episodes < n_max_episodes while loop
 
 // Reinforcement training loop ends here

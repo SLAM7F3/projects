@@ -3617,7 +3617,7 @@ void reinforce::numerically_check_P_derivs(int d, double ran_value)
 
 double reinforce::update_P_network(bool verbose_flag)
 {
-   cout << "inside update_P_network()" << endl;
+//   cout << "inside update_P_network()" << endl;
 
    compute_renormalized_discounted_eventual_rewards();
 
