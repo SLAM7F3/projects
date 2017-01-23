@@ -1,7 +1,7 @@
 j============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 11/9/16; 11/14/16; 1/18/17; 1/20/17
+Last updated on 11/14/16; 1/18/17; 1/20/17; 1/23/17
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -177,3 +177,15 @@ pr_house_numbers_t300_sf_collect_2016_2016-12-09__16:12:32/hn_pano_recall
 *.  New URL for PR Admin jobs
 
 https://pr-admin-staging.usspk02.orchard.apple.com/admin/job/
+We have bookmarked this URL within Flyover --> PR Admin Jobs
+
+*.  On 1/23/17, Weiyu created a "sigma_hn_pano_recall" (category = sigma,
+subcategory = hn_pano_recall) assignment under
+https://pr-admin-staging.usspk02.orchard.apple.com/admin/assignment/ .  He
+then added the PR Admin job
+"pr_house_numbers_t300_sf_collect_2016_2016-12-09__16:12:32_hn_pano_recall"
+to this new assignment.
+
+Weiyu added "pcho" as a new User under the User List tab of
+the https://pr-admin-staging.usspk02.orchard.apple.com/admin/user/ .  The
+pcho user belongs to the "sigma_hn_pano_recall" assignment.
