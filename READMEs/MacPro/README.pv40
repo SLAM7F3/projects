@@ -119,3 +119,15 @@ machines.  So if Erik Soderval's script below fails, we can try to change
 "pv40-04" --> "pv40-05", "pv40-10", "pv40-20", etc.
 
 sshfs -F ~/.ssh/pv40_config -o StrictHostKeyChecking=no -o idmap=user pv40-04:/gpfs /pv40-gpfs/
+
+On 1/23/17, Erik Sodervall told us that we need to make sure our
+~/.ssh/pv40_config/ file contains an entry correspond to whatever pv40-XX
+node we use inside his mount script.  In particular, he told us to add 
+
+Host pv40-01
+  Hostname pv40m01ls-geo07060101.geo.apple.com
+  ProxyCommand ssh -q pv40 -W %h:%p
+
+
+We could then switch pv40-04:/gpfs --> pv40-01:/gpfs in Erik's mount script
+and access pv40 again!
