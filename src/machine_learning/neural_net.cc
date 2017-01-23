@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 1/19/17; 1/20/17; 1/21/17; 1/22/17
+// Last modified on 1/20/17; 1/21/17; 1/22/17; 1/23/17
 // ==========================================================================
 
 #include <iostream>
@@ -38,18 +38,20 @@ void neural_net::initialize_member_objects(
 {
    expt_number = -1;
    extrainfo = layer_label = "";
+
    include_bias_terms = true;
-   n_weights = 0;
    n_layers = n_nodes_per_layer.size();
    for(int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
    } 
+
    n_classes = layer_dims.back();
-   update_counter = 0;
+   rmsprop_denom_const = 1E-5;
+   solver_type = RMSPROP;
 }		       
 
-void neural_net::allocate_training_member_objects()
+void neural_net::allocate_member_objects()
 {
    for(int l = 0; l < n_layers; l++)
    {
@@ -64,8 +66,6 @@ void neural_net::allocate_training_member_objects()
       a.push_back(curr_a);
       delta.push_back(curr_delta);
    } // loop over index l labeling neural network layers
-   rmsprop_denom_const = 1E-5;
-   solver_type = RMSPROP;
 }		       
 
 // ---------------------------------------------------------------------
@@ -87,6 +87,7 @@ void neural_net::instantiate_weights_and_biases()
       genmatrix *curr_weights = new genmatrix(layer_dims[l+1], layer_dims[l]);
       weights.push_back(curr_weights);
    } // loop over index l labeling neural net layers
+   count_weights();
 }
 
 // ---------------------------------------------------------------------
@@ -242,7 +243,7 @@ neural_net::neural_net(
    environment_ptr = NULL;
 
    initialize_member_objects(n_nodes_per_layer);
-   allocate_training_member_objects();
+   allocate_member_objects();
 
    instantiate_weights_and_biases();
    instantiate_training_variables();
@@ -264,7 +265,7 @@ neural_net::neural_net(
    environment_ptr = env_ptr;
 
    initialize_member_objects(n_nodes_per_layer);
-   allocate_training_member_objects();
+   allocate_member_objects();
    
    instantiate_weights_and_biases();
    instantiate_training_variables();
@@ -274,16 +275,18 @@ neural_net::neural_net(
 // ---------------------------------------------------------------------
 // Neural network class constructor
 
-neural_net::neural_net(
-   int mini_batch_size, double lambda, double rmsprop_decay_rate, 
-   string snapshot_filename)
+neural_net::neural_net(string snapshot_filename)
 {
-   this->mini_batch_size = mini_batch_size;
-   this->lambda = lambda;
-   this->rmsprop_decay_rate = rmsprop_decay_rate;
+//   this->mini_batch_size = mini_batch_size;
+//   this->lambda = lambda;
+//   this->rmsprop_decay_rate = rmsprop_decay_rate;
 
 //   initialize_member_objects(n_nodes_per_layer);
    import_snapshot(snapshot_filename);
+   allocate_member_objects();
+
+   expt_number = -1;
+   extrainfo = layer_label = "";
 }
 
 // ---------------------------------------------------------------------
@@ -748,6 +751,7 @@ void neural_net::train_network(int n_epochs)
    int n_export_metafiles = 2 * 1000;
    int n_export_snapshot =  10 * 1000;
    int n_max = basic_math::max(n_update,n_export_metafiles,n_export_snapshot);
+   int update_counter = 0;
 
    for(int e = 0; e < n_epochs; e++)
    {
@@ -1119,12 +1123,10 @@ void neural_net::numerically_check_derivs(const DATA_PAIR& curr_data_pair)
 
 int neural_net::count_weights()
 {
-   if(n_weights == 0)
+   n_weights = 0;
+   for(int l = 0; l < n_layers - 1; l++)
    {
-      for(int l = 0; l < n_layers - 1; l++)
-      {
-         n_weights += layer_dims[l] * layer_dims[l+1];
-      }
+      n_weights += layer_dims[l] * layer_dims[l+1];
    }
    return n_weights;
 }
@@ -1148,8 +1150,7 @@ void neural_net::summarize_parameters()
       params_stream << "   layer = " << l << " n_nodes = " 
                     << layer_dims[l] << endl;
    }
-   params_stream << "   n_weights = " << count_weights() << " (FC)" 
-                 << endl;
+   params_stream << "   n_weights = " << n_weights << " (FC)" << endl;
    params_stream << "include_bias_terms = " << include_bias_terms 
                  << endl;
    params_stream << "base_learning_rate = " << base_learning_rate << endl;
@@ -1882,7 +1883,10 @@ string neural_net::export_snapshot()
       stringfunc::number_to_string(epoch_history.back(), 3)+".txt";
    ofstream outstream;
    
-   filefunc::open_binaryfile(snapshot_filename,outstream);
+   filefunc::openfile(snapshot_filename,outstream);
+   outstream << expt_number << endl;   // Added at 3:40 am on Mon Jan 23
+   outstream << output_subdir << endl;  // Added at 3:40 am on Mon Jan 23
+   outstream << include_bias_terms << endl; // Added at 3 am on Mon Jan 23
    outstream << n_layers << endl;
    for(unsigned int i = 0; i < layer_dims.size(); i++)
    {
@@ -1930,16 +1934,20 @@ string neural_net::export_snapshot()
 void neural_net::import_snapshot(string snapshot_filename)
 {
    ifstream instream;
-   filefunc::open_binaryfile(snapshot_filename,instream);
+   filefunc::openfile(snapshot_filename,instream);
+
+   instream >> expt_number;    		// Added early on Mon Jan 23
+   instream >> output_subdir;  		// Added early on Mon Jan 23
+   instream >> include_bias_terms;	// Added early on Mon Jan 23
    instream >> n_layers;
 
-   vector<int> n_nodes_per_layer;
    for(int i = 0; i < n_layers; i++)
    {
       int curr_layer_dim;
       instream >> curr_layer_dim;
-      n_nodes_per_layer.push_back(curr_layer_dim);
+      layer_dims.push_back(curr_layer_dim);
    }
+   n_classes = layer_dims.back();
 
    delete_weights_and_biases();
    instantiate_weights_and_biases();

@@ -42,49 +42,17 @@ int main (int argc, char* argv[])
 //   cin >> seed;
 //   nrfunc::init_default_seed(seed);
 
-   int Din = 2;   	// Number of input layer nodes
-//   int H1 = 3;		// Number of first hidden layer nodes
-   int H1 = 10;		// Number of first hidden layer nodes
-//   int H2 = 0;
-   int H2 = 10;
-   int H3 = 0;
-//   int H3 = 4;
-   int Dout = 2;   	// Number of output layer nodes
+// Import neural network snapshot:
 
-   vector<int> layer_dims;
-   layer_dims.push_back(Din);
-   layer_dims.push_back(H1);
-   if(H2 > 0)
-   {
-      layer_dims.push_back(H2);
-   }
-   if(H3 > 0)
-   {
-      layer_dims.push_back(H3);
-   }
-   layer_dims.push_back(Dout);
-
-   int mini_batch_size = 32;
-   double lambda = 0;  // L2 regularization coefficient
-//   double lambda = 1E-3;  // L2 regularization coefficient
-   double rmsprop_decay_rate = 0.95;
-
-   neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
-   NN.set_include_bias_terms(true);
-   NN.set_output_subdir("./nn_output/");
+   string snapshot_subdir = "./nn_output/snapshots/";
+   string snapshot_filename = snapshot_subdir + "snapshot.txt";
+   neural_net NN(snapshot_filename);
 
    int n_testing_samples = 1500;
    vector<neural_net::DATA_PAIR> testing_samples;
-
    machinelearning_func::generate_2d_spiral_data_samples(
       n_testing_samples, testing_samples);
    NN.import_test_data(testing_samples);
-
-// Import neural network snapshot:
-
-   string nn_subdir = "./nn_output/snapshots/";
-   string snapshot_filename = nn_subdir + "snapshot.txt";
-   NN.import_snapshot(snapshot_filename);
 
    double test_accuracy = NN.evaluate_model_on_test_set();
    cout << "Test accuracy = " << test_accuracy << endl;
