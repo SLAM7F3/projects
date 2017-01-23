@@ -39,7 +39,7 @@ void neural_net::initialize_member_objects(
    expt_number = -1;
    extrainfo = layer_label = "";
 
-   include_bias_terms = true;
+   include_biases = true;
    n_layers = n_nodes_per_layer.size();
    for(int l = 0; l < n_layers; l++)
    {
@@ -71,14 +71,14 @@ void neural_net::allocate_member_objects()
 // ---------------------------------------------------------------------
 void neural_net::instantiate_weights_and_biases()
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
          genvector *curr_biases = new genvector(layer_dims[l]);
          biases.push_back(curr_biases);
       }  // loop over index l labeling layers
-   } // include_bias_terms conditional
+   } // include_biases conditional
 
 // Weights link layer l with layer l+1:
    
@@ -95,7 +95,7 @@ void neural_net::instantiate_training_variables()
 {
    vector<double> dummy_dist;
 
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -119,7 +119,7 @@ void neural_net::instantiate_training_variables()
          bias_95.push_back(dummy_dist);
          bias_99.push_back(dummy_dist);
       } // loop over index l labeling layers
-   } // include_bias_terms conditional
+   } // include_biases conditional
 
 // Weights link layer l with layer l+1:
    
@@ -175,7 +175,7 @@ void neural_net::instantiate_training_variables()
 // ---------------------------------------------------------------------
 void neural_net::initialize_weights_and_biases()
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -203,7 +203,7 @@ void neural_net::initialize_weights_and_biases()
 //               curr_biases, permuted_biases[l], sym_biases[l]);
          }
       }  // loop over index l labeling layers
-   } // include_bias_terms conditional
+   } // include_biases conditional
 
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -248,6 +248,7 @@ neural_net::neural_net(
    instantiate_weights_and_biases();
    instantiate_training_variables();
    initialize_weights_and_biases();
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 // ---------------------------------------------------------------------
@@ -270,6 +271,7 @@ neural_net::neural_net(
    instantiate_weights_and_biases();
    instantiate_training_variables();
    initialize_weights_and_biases();
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 // ---------------------------------------------------------------------
@@ -287,6 +289,7 @@ neural_net::neural_net(string snapshot_filename)
 
    expt_number = -1;
    extrainfo = layer_label = "";
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 // ---------------------------------------------------------------------
@@ -300,7 +303,7 @@ neural_net::neural_net(const neural_net& NN)
 // ---------------------------------------------------------------------
 void neural_net::delete_weights_and_biases()
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(unsigned int l = 0; l < biases.size(); l++)
       {
@@ -330,7 +333,7 @@ neural_net::~neural_net()
 
    delete_weights_and_biases();
    
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(unsigned int l = 0; l < biases.size(); l++)
       {
@@ -342,7 +345,7 @@ neural_net::~neural_net()
             delete sym_biases[l];
          }
       }
-   } // include_bias_terms conditional
+   } // include_biases conditional
    
    for(unsigned int l = 0; l < weights.size(); l++)
    {
@@ -383,7 +386,7 @@ ostream& operator<< (ostream& outstream, neural_net& NN)
          outstream << "Layer: l = " << l << endl;
       }
       cout << "  N_nodes = " << NN.layer_dims[l] << endl;
-      if(NN.get_include_bias_terms())
+      if(NN.get_include_biases())
       {
          genvector* curr_biases = NN.get_biases(l);
          cout << "biases = " << *curr_biases << endl;
@@ -417,7 +420,7 @@ void neural_net::feedforward(genvector* a_input)
    *a[0] = *a_input;
    for(int l = 0; l < n_layers-1; l++)
    {
-      if(include_bias_terms)
+      if(include_biases)
       {
          z[l+1]->matrix_vector_mult_sum(*weights[l], *a[l], *biases[l+1]);
       }
@@ -792,7 +795,7 @@ void neural_net::train_network(int n_epochs)
          }
          if(update_counter % n_export_metafiles == 0)
          {
-            if(include_bias_terms)
+            if(include_biases)
             {
                compute_bias_distributions();
             }
@@ -949,7 +952,7 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
 
 void neural_net::clear_delta_nablas()
 {
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -1024,7 +1027,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 
 
 // Eqn BP3:   
-      if(include_bias_terms)
+      if(include_biases)
       {
          *(delta_nabla_biases[curr_layer]) = *delta[curr_layer];
       }
@@ -1152,8 +1155,7 @@ void neural_net::summarize_parameters()
                     << layer_dims[l] << endl;
    }
    params_stream << "   n_weights = " << n_weights << " (FC)" << endl;
-   params_stream << "include_bias_terms = " << include_bias_terms 
-                 << endl;
+   params_stream << "include_biases = " << include_biases << endl;
    params_stream << "base_learning_rate = " << base_learning_rate << endl;
    params_stream << "solver type = RMSPROP" << endl;
    params_stream << "   rmsprop_decay_rate = " << rmsprop_decay_rate
@@ -1825,7 +1827,7 @@ void neural_net::generate_summary_plots()
    plot_loss_history();
    plot_log10_lr_mean_abs_nabla_weight_ratios();
    plot_accuracies_history();
-   if(include_bias_terms)
+   if(include_biases)
    {
       plot_bias_distributions();
    }
@@ -1896,14 +1898,14 @@ string neural_net::export_snapshot()
    filefunc::openfile(snapshot_filename,outstream);
    outstream << expt_number << endl;   // Added at 3:40 am on Mon Jan 23
    outstream << output_subdir << endl;  // Added at 3:40 am on Mon Jan 23
-   outstream << include_bias_terms << endl; // Added at 3 am on Mon Jan 23
+   outstream << include_biases << endl; // Added at 3 am on Mon Jan 23
    outstream << n_layers << endl;
    for(unsigned int i = 0; i < layer_dims.size(); i++)
    {
       outstream << layer_dims[i] << endl;
    }
    
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(unsigned int l = 0; l < biases.size(); l++)
       {
@@ -1948,7 +1950,7 @@ void neural_net::import_snapshot(string snapshot_filename)
 
    instream >> expt_number;    		// Added early on Mon Jan 23
    instream >> output_subdir;  		// Added early on Mon Jan 23
-   instream >> include_bias_terms;	// Added early on Mon Jan 23
+   instream >> include_biases;	// Added early on Mon Jan 23
    instream >> n_layers;
 
    for(int i = 0; i < n_layers; i++)
@@ -1962,7 +1964,7 @@ void neural_net::import_snapshot(string snapshot_filename)
    delete_weights_and_biases();
    instantiate_weights_and_biases();
 
-   if(include_bias_terms)
+   if(include_biases)
    {
       for(int l = 0; l < n_layers; l++)
       {
@@ -1976,7 +1978,7 @@ void neural_net::import_snapshot(string snapshot_filename)
             biases[l]->put(row, curr_bias);
          }
       }
-   } // include_bias_terms conditional
+   } // include_biases conditional
 
    for(int l = 0; l < n_layers-1; l++)
    {

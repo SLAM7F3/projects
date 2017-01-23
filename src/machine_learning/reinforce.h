@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/10/17; 1/11/17; 1/13/17; 1/18/17
+// Last modified on 1/11/17; 1/13/17; 1/18/17; 1/23/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -248,6 +248,7 @@ class reinforce
   private:
 
    bool include_biases;
+   bool perm_symmetrize_weights_and_biases;
    bool debug_flag;
    int expt_number;
    int learning_type;
@@ -270,10 +271,12 @@ class reinforce
    double rmsprop_denom_const;  // const added to denom in RMSProp
 
    std::vector<genvector*> biases, old_biases;
+   std::vector<genvector*> permuted_biases, sym_biases;
 //	Bias STL vectors are nonzero for layers 1 thru n_layers-1
    std::vector<genvector*> nabla_biases, delta_nabla_biases;
 
    std::vector<genmatrix*> weights, weights_transpose;
+   std::vector<genmatrix*> permuted_weights, sym_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
    std::vector<genmatrix*> old_weights;
@@ -398,6 +401,9 @@ class reinforce
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
+   void instantiate_weights_and_biases();
+   void instantiate_training_variables();
+   void initialize_weights_and_biases();
 };
 
 // ==========================================================================

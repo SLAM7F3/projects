@@ -63,8 +63,8 @@ class neural_net
    void set_output_subdir(std::string subdir);
    void set_extrainfo(std::string info);
    std::string get_params_filename() const;
-   void set_include_bias_terms(bool flag);
-   bool get_include_bias_terms() const;
+   void set_include_biases(bool flag);
+   bool get_include_biases() const;
    void set_environment(environment* e_ptr);   
    void set_perm_symmetrize_weights_and_biases(bool flag);
    int get_layer_dim(int l) const;
@@ -139,7 +139,7 @@ class neural_net
 
   private: 
 
-   bool include_bias_terms;
+   bool include_biases;
    bool perm_symmetrize_weights_and_biases;
    int n_layers, n_training_samples, n_validation_samples, n_test_samples;
    int n_classes;
@@ -256,14 +256,14 @@ inline std::string neural_net::get_params_filename() const
    return params_filename;
 }
 
-inline void neural_net::set_include_bias_terms(bool flag)
+inline void neural_net::set_include_biases(bool flag)
 {
-   include_bias_terms = flag;
+   include_biases = flag;
 }
 
-inline bool neural_net::get_include_bias_terms() const
+inline bool neural_net::get_include_biases() const
 {
-   return include_bias_terms;
+   return include_biases;
 }
 
 inline void neural_net::set_environment(environment* e_ptr)
