@@ -160,9 +160,9 @@ class neural_net
    std::vector<genmatrix*> nabla_weights, delta_nabla_weights;
 
    std::vector<genvector*> rmsprop_biases_cache;
-   std::vector<genvector*> rms_biases_denom;
+   std::vector<genvector*> rmsprop_biases_denom;
    std::vector<genmatrix*> rmsprop_weights_cache;
-   std::vector<genmatrix*> rms_weights_denom;
+   std::vector<genmatrix*> rmsprop_weights_denom;
 
    std::vector<DATA_PAIR> training_data;
    std::vector<DATA_PAIR> validation_data;

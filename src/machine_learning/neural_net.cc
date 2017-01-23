@@ -114,9 +114,9 @@ void neural_net::instantiate_training_variables()
             curr_rmsprop_biases->clear_values();
             rmsprop_biases_cache.push_back(curr_rmsprop_biases);
          
-            genvector *curr_rms_biases_denom = new genvector(layer_dims[l]);
-            curr_rms_biases_denom->clear_values();
-            rms_biases_denom.push_back(curr_rms_biases_denom);
+            genvector *curr_rmsprop_biases_denom = new genvector(layer_dims[l]);
+            curr_rmsprop_biases_denom->clear_values();
+            rmsprop_biases_denom.push_back(curr_rmsprop_biases_denom);
          }
 
          bias_01.push_back(dummy_dist);
@@ -160,10 +160,10 @@ void neural_net::instantiate_training_variables()
          curr_rmsprop_weights->clear_values();
          rmsprop_weights_cache.push_back(curr_rmsprop_weights);
          
-         genmatrix *curr_rms_weights_denom = 
+         genmatrix *curr_rmsprop_weights_denom = 
             new genmatrix(layer_dims[l+1], layer_dims[l]);
-         curr_rms_weights_denom->clear_values();
-         rms_weights_denom.push_back(curr_rms_weights_denom);
+         curr_rmsprop_weights_denom->clear_values();
+         rmsprop_weights_denom.push_back(curr_rmsprop_weights_denom);
       }
 
       log10_lr_mean_abs_nabla_weight_ratios.push_back(dummy_dist);
@@ -936,9 +936,9 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
       }
       else if (solver_type == RMSPROP)
       {
-         rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
-         rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
-         nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
+         rmsprop_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+         rmsprop_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_biases[l]->hadamard_ratio(*rmsprop_biases_denom[l]);
          *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
       }
 //      cout << "l = " << l 
@@ -963,9 +963,9 @@ double neural_net::update_nn_params(vector<DATA_PAIR>& mini_batch)
       }
       else if(solver_type == RMSPROP)
       {
-         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
-         nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
+         rmsprop_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rmsprop_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_weights[l]->hadamard_division(*rmsprop_weights_denom[l]);
          *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
       }
 

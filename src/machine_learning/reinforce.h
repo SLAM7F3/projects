@@ -285,9 +285,9 @@ class reinforce
    std::vector<genmatrix*> adam_m, adam_v;
 
    std::vector<genvector*> rmsprop_biases_cache;
-   std::vector<genvector*> rms_biases_denom;
+   std::vector<genvector*> rmsprop_biases_denom;
    std::vector<genmatrix*> rmsprop_weights_cache;
-   std::vector<genmatrix*> rms_weights_denom;
+   std::vector<genmatrix*> rmsprop_weights_denom;
 
 // STL vector index ranges over layers l = 0, 1, ..., n_layers
 // row index ranges over lth layer nodes j = 0, 1, ... n_nodes_in_lth_layer
