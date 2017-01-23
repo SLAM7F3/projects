@@ -48,6 +48,9 @@ class neural_net
       int mini_batch_size, double lambda, double rmsprop_decay_rate, 
       const std::vector<int>& n_nodes_per_layer, 
       environment* env_ptr, bool sym_weights_biases_flag = false);
+   neural_net(
+      int mini_batch_size, double lambda, double rmsprop_decay_rate, 
+      std::string snapshot_filename);
 
    neural_net(const neural_net& NN);
    ~neural_net();
@@ -220,8 +223,8 @@ class neural_net
    void backpropagate(const DATA_PAIR& curr_data_pair);
    void numerically_check_derivs(const DATA_PAIR& curr_data_pair);
 
-   void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
+   void allocate_training_member_objects();
    void docopy(const neural_net& N);
    void instantiate_weights_and_biases();
    void instantiate_training_variables();

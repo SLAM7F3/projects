@@ -38,33 +38,34 @@ void neural_net::initialize_member_objects(
 {
    expt_number = -1;
    extrainfo = layer_label = "";
-
    include_bias_terms = true;
    n_weights = 0;
    n_layers = n_nodes_per_layer.size();
    for(int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
-      genvector *curr_z = new genvector(layer_dims.back());
-      genvector *curr_gamma = new genvector(layer_dims.back());
-      genvector *curr_beta = new genvector(layer_dims.back());
-      genvector *curr_a = new genvector(layer_dims.back());
-      genvector *curr_delta = new genvector(layer_dims.back());
+   } 
+   n_classes = layer_dims.back();
+   update_counter = 0;
+}		       
+
+void neural_net::allocate_training_member_objects()
+{
+   for(int l = 0; l < n_layers; l++)
+   {
+      genvector *curr_z = new genvector(layer_dims[l]);
+      genvector *curr_gamma = new genvector(layer_dims[l]);
+      genvector *curr_beta = new genvector(layer_dims[l]);
+      genvector *curr_a = new genvector(layer_dims[l]);
+      genvector *curr_delta = new genvector(layer_dims[l]);
       z.push_back(curr_z);
       gammas.push_back(curr_gamma);
       betas.push_back(curr_beta);
       a.push_back(curr_a);
       delta.push_back(curr_delta);
    } // loop over index l labeling neural network layers
-   n_classes = layer_dims.back();
-
    rmsprop_denom_const = 1E-5;
    solver_type = RMSPROP;
-   update_counter = 0;
-}		       
-
-void neural_net::allocate_member_objects()
-{
 }		       
 
 // ---------------------------------------------------------------------
@@ -241,7 +242,7 @@ neural_net::neural_net(
    environment_ptr = NULL;
 
    initialize_member_objects(n_nodes_per_layer);
-   allocate_member_objects();
+   allocate_training_member_objects();
 
    instantiate_weights_and_biases();
    instantiate_training_variables();
@@ -263,13 +264,29 @@ neural_net::neural_net(
    environment_ptr = env_ptr;
 
    initialize_member_objects(n_nodes_per_layer);
-   allocate_member_objects();
-
+   allocate_training_member_objects();
+   
    instantiate_weights_and_biases();
    instantiate_training_variables();
    initialize_weights_and_biases();
 }
 
+// ---------------------------------------------------------------------
+// Neural network class constructor
+
+neural_net::neural_net(
+   int mini_batch_size, double lambda, double rmsprop_decay_rate, 
+   string snapshot_filename)
+{
+   this->mini_batch_size = mini_batch_size;
+   this->lambda = lambda;
+   this->rmsprop_decay_rate = rmsprop_decay_rate;
+
+//   initialize_member_objects(n_nodes_per_layer);
+   import_snapshot(snapshot_filename);
+}
+
+// ---------------------------------------------------------------------
 // Copy constructor:
 
 neural_net::neural_net(const neural_net& NN)
@@ -952,7 +969,7 @@ void neural_net::clear_delta_nablas()
 
 void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 {
-//    cout << "inside neural_net::backpropagate()" << endl;
+//   cout << "inside neural_net::backpropagate()" << endl;
 
    int y = basic_math::round(curr_data_pair.second);
    clear_delta_nablas();
@@ -965,7 +982,7 @@ void neural_net::backpropagate(const DATA_PAIR& curr_data_pair)
 //   cout << "curr_layer = num-layers - 1 = " << n_layers - 1 << endl;
 
 //   double curr_cost = -log(a[curr_layer]->get(y));
-//    cout << "  Current training sample cost = " << curr_cost << endl;
+//   cout << "  Current training sample cost = " << curr_cost << endl;
 
    for(int j = 0; j < layer_dims[curr_layer]; j++)
    {

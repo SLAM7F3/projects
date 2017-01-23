@@ -2,7 +2,7 @@
 // Program TEST_NN is a playground for performing inference on trained
 // neural nets using simulated spiral data.
 // ==========================================================================
-// Last updated on 1/15/17; 1/16/17; 1/18/17; 1/19/17
+// Last updated on 1/16/17; 1/18/17; 1/19/17; 1/23/17
 // ==========================================================================
 
 #include <stdint.h>
@@ -43,10 +43,10 @@ int main (int argc, char* argv[])
 //   nrfunc::init_default_seed(seed);
 
    int Din = 2;   	// Number of input layer nodes
-   int H1 = 3;		// Number of first hidden layer nodes
-//   int H1 = 10;		// Number of first hidden layer nodes
-   int H2 = 0;
-//   int H2 = 10;
+//   int H1 = 3;		// Number of first hidden layer nodes
+   int H1 = 10;		// Number of first hidden layer nodes
+//   int H2 = 0;
+   int H2 = 10;
    int H3 = 0;
 //   int H3 = 4;
    int Dout = 2;   	// Number of output layer nodes
@@ -82,8 +82,8 @@ int main (int argc, char* argv[])
 
 // Import neural network snapshot:
 
-   string nn_subdir = "./nn_output/snapshots/2017-01-19_07_44/";
-   string snapshot_filename = nn_subdir + "snapshot_199.984.txt";
+   string nn_subdir = "./nn_output/snapshots/";
+   string snapshot_filename = nn_subdir + "snapshot.txt";
    NN.import_snapshot(snapshot_filename);
 
    double test_accuracy = NN.evaluate_model_on_test_set();
