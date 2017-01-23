@@ -246,13 +246,6 @@ inline int neural_net::get_expt_number() const
    return expt_number;
 }
 
-inline void neural_net::set_output_subdir(std::string subdir)
-{
-   output_subdir = subdir;
-   filefunc::dircreate(output_subdir);
-   create_snapshots_subdir();
-}
-
 inline void neural_net::set_extrainfo(std::string info)
 {
    extrainfo = info;

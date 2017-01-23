@@ -1143,6 +1143,7 @@ void neural_net::summarize_parameters()
 
    params_stream << "Experiment " << expt_number << endl;
    params_stream << timefunc::getcurrdate() << endl;
+   params_stream << "output_subdir = " << output_subdir << endl;
    params_stream << "Neural net params:" << endl;
    params_stream << "   n_layers = " << n_layers << endl;
    for(int l = 0; l < n_layers; l++)
@@ -1855,6 +1856,15 @@ void neural_net::generate_view_metrics_script()
 
    filefunc::closefile(script_filename, script_stream);
    filefunc::make_executable(script_filename);
+}
+
+// ---------------------------------------------------------------------
+void neural_net::set_output_subdir(std::string subdir)
+{
+   output_subdir = subdir;
+   filefunc::dircreate(output_subdir);
+   create_snapshots_subdir();
+
 }
 
 // ---------------------------------------------------------------------
