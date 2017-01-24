@@ -1,7 +1,7 @@
 // ==========================================================================
 // neural_net class member function definitions
 // ==========================================================================
-// Last modified on 1/20/17; 1/21/17; 1/22/17; 1/23/17
+// Last modified on 1/21/17; 1/22/17; 1/23/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -213,7 +213,14 @@ void neural_net::initialize_weights_and_biases()
             }
             else
             {
-               curr_biases->put(i, nrfunc::gasdev());
+// On 1/24/17, we empirically observed that initializing ALL biases to
+// zero within our reinforce class appears to yield noticeably better
+// PMAZE results (for leaky ReLU nonlinearities) than initializing
+// biases either by nrfunc::ran1() or nrfunc::gasdev().  So we follow
+// initialize all biases in this neural_net class to zero as well...
+
+               curr_biases->put(i, 0);
+//                curr_biases->put(i, nrfunc::gasdev());
             }
          } // loop over index i labeling node in current layer
 
