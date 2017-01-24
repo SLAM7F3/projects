@@ -1,7 +1,7 @@
 =============================================================================
 Pano notes
 =============================================================================
-Last updated on 7/21/15; 7/22/15; 11/29/16; 11/30/16
+Last updated on 7/22/15; 11/29/16; 11/30/16; 1/24/17
 =============================================================================
 
 /home/pcho/sputnik/pwin/build/linux64/pwin -vv -do "pano_gui \
@@ -72,3 +72,12 @@ build_ID = 58179f1c26e07d4d85faa2ce
 run_id = pr_house_numbers_a7_test2_2016-10-31__15:04:18
 
 shape file = /gpfs/ssdws11/conf/shapes/a7_test2/entire_area.shape
+
+*.  On 1/24/17, we learned from Danile Ragnarsson that whatever eufori
+configuration file that we use to access Cleversafe blobs must contain 
+
+blob/cleversafe/keyfile     /gpfs/ssdws11/conf/clvrsf
+
+or
+
+blob/cleversafe/keyfile    /startown-gpfs/ssdws01/conf/clvrsf 

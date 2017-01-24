@@ -1,7 +1,7 @@
 j============================================================================
 Tagger 2 and S2D editor notes
 ============================================================================
-Last updated on 11/14/16; 1/18/17; 1/20/17; 1/23/17
+Last updated on 1/18/17; 1/20/17; 1/23/17; 1/24/17
 ============================================================================
 
 . There's also an event for changing the image, which typically causes
@@ -189,3 +189,8 @@ to this new assignment.
 Weiyu added "pcho" as a new User under the User List tab of
 the https://pr-admin-staging.usspk02.orchard.apple.com/admin/user/ .  The
 pcho user belongs to the "sigma_hn_pano_recall" assignment.
+
+*.  On 1/24/17, Weiyu recommended that we check out his
+"sigma_sn_write_chunk()" method inside sigma_sn.c which he uses to generate
+data chunk zip files.  It has examples of appending image chips and json
+files to a chunk zip file.
