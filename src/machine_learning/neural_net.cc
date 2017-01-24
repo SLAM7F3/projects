@@ -1935,23 +1935,8 @@ void neural_net::set_output_subdir(std::string subdir)
 {
    output_subdir = subdir;
    filefunc::dircreate(output_subdir);
-   create_snapshots_subdir();
-
-}
-
-// ---------------------------------------------------------------------
-// Member function create_snapshots_subdir() generates a date-stamped
-// folder into which a network snapshots can be exported.
-
-void neural_net::create_snapshots_subdir()
-{
-   Clock clock;
-   clock.set_time_based_on_local_computer_clock();
-   string timestamp_str = clock.YYYY_MM_DD_H_M_S("_","_",false,0);
-   string timestamp_substr = timestamp_str.substr(0,16);
-
-   snapshots_subdir = output_subdir+"snapshots/"+timestamp_substr+"/";
-   filefunc::dircreate(snapshots_subdir);
+   snapshots_subdir = 
+      machinelearning_func::create_snapshots_subdir(output_subdir);
 }
 
 // ---------------------------------------------------------------------
@@ -1959,7 +1944,13 @@ void neural_net::create_snapshots_subdir()
 
 string neural_net::export_snapshot()
 {
-   if(snapshots_subdir.size() == 0) create_snapshots_subdir();
+   if(snapshots_subdir.size() == 0) 
+   {
+      cout << "Trouble in neural_net::export_snapshot()" << endl;
+      cout << "snapshots_subdir.size = 0" << endl;
+      snapshots_subdir = "./snapshots/";
+      filefunc::dircreate(snapshots_subdir);
+   }
    
    string snapshot_filename=snapshots_subdir+"snapshot_"+
       stringfunc::number_to_string(epoch_history.back(), 3)+".txt";

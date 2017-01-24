@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program TRAIN_TTT_NETWORK trains a neural network via V-learning.
 // ==========================================================================
-// Last updated on 12/7/16; 12/13/16; 1/10/17; 1/18/17
+// Last updated on 12/13/16; 1/10/17; 1/18/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -412,7 +412,7 @@ int main (int argc, char* argv[])
       {
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->generate_summary_plots(extrainfo);
+         reinforce_agent_ptr->generate_summary_plots();
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }

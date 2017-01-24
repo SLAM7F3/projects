@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QTRAIN_TTT_NETWORK trains a neural network via Q-learning.
 // ==========================================================================
-// Last updated on 1/11/17; 1/13/17; 1/14/17; 1/18/17
+// Last updated on 1/13/17; 1/14/17; 1/18/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -86,10 +86,12 @@ int main (int argc, char* argv[])
 
 //   int H1 = 32;
 //   int H1 = 64;
-   int H1 = 128;
+//   int H1 = 128;
+   int H1 = 256;
 
 //   int H2 = 32;
-   int H2 = 64;
+//   int H2 = 64;
+   int H2 = 256;
 
    int H3 = 0;
 //   int H3 = 32;
@@ -589,10 +591,8 @@ int main (int argc, char* argv[])
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
          bool epoch_indep_var = false;
-         reinforce_agent_ptr->generate_summary_plots(
-            extrainfo, epoch_indep_var);
-         reinforce_agent_ptr->generate_view_metrics_script(
-            false, false);
+         reinforce_agent_ptr->generate_summary_plots(epoch_indep_var);
+         reinforce_agent_ptr->generate_view_metrics_script(false, false);
          ttt_ptr->plot_game_frac_histories(
             output_subdir, curr_episode_number, extrainfo);
       }

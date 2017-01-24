@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for neural_net class 
 // ==========================================================================
-// Last modified on 1/20/17; 1/21/17; 1/22/17; 1/23/17
+// Last modified on 1/21/17; 1/22/17; 1/23/17; 1/24/17
 // ==========================================================================
 
 #ifndef NEURAL_NET_H
@@ -133,7 +133,7 @@ class neural_net
    void generate_summary_plots();
    void generate_view_metrics_script();
 
-   void create_snapshots_subdir();
+//    void create_snapshots_subdir();
    std::string export_snapshot();
    void import_snapshot(std::string snapshot_filename);
 
