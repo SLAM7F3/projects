@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program QMAZE solves a maze via Q-learning.
 // ==========================================================================
-// Last updated on 12/28/16; 1/10/17; 1/11/17; 1/18/17
+// Last updated on 1/10/17; 1/11/17; 1/18/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -356,10 +356,9 @@ int main (int argc, char* argv[])
            reinforce_agent_ptr->compute_bias_distributions();
          }
          reinforce_agent_ptr->compute_weight_distributions();
-         reinforce_agent_ptr->plot_Qmap_score_history(extrainfo);
+         reinforce_agent_ptr->plot_Qmap_score_history();
          bool epoch_indep_var = false;
-         reinforce_agent_ptr->generate_summary_plots(
-            extrainfo, epoch_indep_var);
+         reinforce_agent_ptr->generate_summary_plots(epoch_indep_var);
          reinforce_agent_ptr->generate_view_metrics_script(true, false);
       }
       reinforce_agent_ptr->increment_episode_number();
@@ -385,9 +384,9 @@ int main (int argc, char* argv[])
 
    reinforce_agent_ptr->push_back_learning_rate(
       reinforce_agent_ptr->get_learning_rate());
-   reinforce_agent_ptr->plot_Qmap_score_history(extrainfo);
+   reinforce_agent_ptr->plot_Qmap_score_history();
    bool epoch_indep_var = false;
-   reinforce_agent_ptr->generate_summary_plots(extrainfo, epoch_indep_var);
+   reinforce_agent_ptr->generate_summary_plots(epoch_indep_var);
    reinforce_agent_ptr->generate_view_metrics_script(true, false);
 
 // Export trained weights in neural network's zeroth layer as

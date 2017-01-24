@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PBREAK solves the BreakOut atari game via policy gradient learning
 // ==========================================================================
-// Last updated on 1/1/17; 1/2/17; 1/10/17; 1/18/17
+// Last updated on 1/2/17; 1/10/17; 1/18/17; 1/24/17
 // ==========================================================================
 
 // Note: On 12/17/16, we learned the hard and painful way that left
@@ -432,7 +432,7 @@ int main(int argc, char** argv)
             reinforce_agent_ptr->get_learning_rate());
          reinforce_agent_ptr->compute_weight_distributions();
          reinforce_agent_ptr->store_quasirandom_weight_values();
-         reinforce_agent_ptr->generate_summary_plots(extrainfo);
+         reinforce_agent_ptr->generate_summary_plots();
          reinforce_agent_ptr->generate_view_metrics_script(false, true);
          breakout_ptr->plot_paddle_x_dist(output_subdir, extrainfo);
          breakout_ptr->plot_tracks(
