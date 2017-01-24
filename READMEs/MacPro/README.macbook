@@ -1,7 +1,7 @@
 ==============================================================================
 Apple MacBook Pro Laptop notes
 ==============================================================================
-Last updated on 9/20/16; 10/10/16; 10/17/16; 12/21/16
+Last updated on 10/10/16; 10/17/16; 12/21/16; 1/23/17
 ==============================================================================
 
 *.  As of 1/26/15, we have updated all software on our MacBook.
@@ -144,3 +144,7 @@ we need to install command line tools in mac OS X by chanting
 *.  On 12/21/16, Tho and Daniel Ragnarsson told us to install XQuartz onto
 our MacBook.  We can then forward at least some X content from our ubuntu
 machine and view it on our MacBook.
+
+*.  On 1/23/17, Tomas Petterson taught us that we can right click on a Mac
+app (e.g. tagger2) and open it even if it's not "trusted".  
+

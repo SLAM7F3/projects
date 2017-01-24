@@ -49,7 +49,9 @@ class reinforce
    reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer,
              int batch_size, int replay_memory_capacity, 
              int eval_memory_capacity, int solver_type = RMSPROP);
-   reinforce(std::string snapshot_filename);
+   reinforce(std::string snapshot_filename, int replay_memory_capacity,
+             int eval_memory_capacity, int solver_type);
+
    ~reinforce();
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
@@ -136,7 +138,7 @@ class reinforce
    void generate_summary_plots(bool epoch_indep_var = true);
    void generate_view_metrics_script(bool maze_flag, bool atari_flag);
 
-   void export_snapshot();
+   std::string export_snapshot();
    void import_snapshot(std::string snapshot_filename);
 
 // General learning methods:
@@ -223,6 +225,7 @@ class reinforce
    void compute_next_pi_given_replay_index(int d);
    double compute_mean_KL_divergence_between_curr_and_next_pi();
 
+   int get_P_action_given_pi(genvector *curr_pi);
    int get_P_action_given_pi(
       genvector *curr_pi, double ran_val, double& action_prob);
    double compute_curr_P_loss(int d, double action_prob);

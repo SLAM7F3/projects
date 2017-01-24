@@ -133,7 +133,6 @@ class neural_net
    void generate_summary_plots();
    void generate_view_metrics_script();
 
-//    void create_snapshots_subdir();
    std::string export_snapshot();
    void import_snapshot(std::string snapshot_filename);
 

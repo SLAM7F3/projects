@@ -1,7 +1,7 @@
 ==========================================================================
 Deep Q learning notes for TTT
 ==========================================================================
-Last updated on 1/13/17; 1/14/17; 1/18/17; 1/19/17
+Last updated on 1/14/17; 1/18/17; 1/19/17; 1/24/17
 ==========================================================================
 
 Best results so far:
@@ -2660,8 +2660,6 @@ After 428K episodes, win frac = 0.586
 
 After 998 episodes, win frac = 0.749
 
-
-
 ------------------------------------------------------
 RUNNING EXPERIMENTS
 ------------------------------------------------------
@@ -2669,6 +2667,75 @@ RUNNING EXPERIMENTS
 ---------------------
 Titan 1:
 ---------------------
+
+105.  Experiment 105
+Tue Jan 24 08:07:40 2017
+output_subdir = ./experiments/qtrain/expt105/
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_biases = 1
+base_learning_rate = 0.0003
+batch_size = 1
+perm_symmetrize_weights_and_biases = 0
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 10000 episodes
+n_max_episodes = 1000000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 500000
+Randomly switch starting player = 0
+Random seed = -74056
+Process ID = 11345
+
+106.  Experiment 106
+Tue Jan 24 08:09:38 2017
+output_subdir = ./experiments/qtrain/expt106/
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 64
+   layer = 1 n_nodes = 256
+   layer = 2 n_nodes = 256
+   layer = 3 n_nodes = 64
+   n_weights = 98304 (FC)
+include_biases = 1
+base_learning_rate = 0.0003
+batch_size = 1
+perm_symmetrize_weights_and_biases = 0
+Q learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0
+Replay memory capacity = 10000
+Number random samples drawn from replay memory Nd = 32
+Discount factor gamma = 0.95
+n_actions = 64
+Leaky ReLU small slope = 0.01
+Learning rate decrease period = 150000 episodes
+Old weights period = 10000 episodes
+n_max_episodes = 1000000
+Frame skip = -1
+Starting episode for linear epsilon decay = 100
+Stopping episode for linear epsilon decay = 500000
+Randomly switch starting player = 0
+Random seed = -74159
+Process ID = 11461
+
 ---------------------
 Titan 3:
 ---------------------

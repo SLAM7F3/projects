@@ -1,7 +1,7 @@
 // ==========================================================================
 // tictac3d class member function definitions
 // ==========================================================================
-// Last modified on 1/19/17; 1/20/17; 1/21/17; 1/22/17
+// Last modified on 1/20/17; 1/21/17; 1/22/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -431,6 +431,31 @@ double tictac3d::get_random_player_move(int player_value)
 {
    int p = mathfunc::getRandomInteger(n_cells);
    return set_player_move(p, player_value);
+}
+
+// ---------------------------------------------------------------------
+// Member function renormalize_action_probs() takes in policy pi(a).
+// It resets to zero any probability corresponding to an illegal move.
+// The modified policy is then renormalized so that it has unit
+// integral.
+
+void tictac3d::renormalize_action_probs(genvector* pi_ptr)
+{
+   int n_actions = get_n_total_cells();
+   double prob_sum = 0;
+   for(int a = 0; a < n_actions; a++)
+   {
+      if(legal_player_move(a))
+      {
+         pi_ptr->put(a, 0);
+      }
+      prob_sum += pi_ptr->get(a);
+   }
+
+   for(int a = 0; a < n_actions; a++)
+   {
+      pi_ptr->put(a, pi_ptr->get(a) / prob_sum);
+   }
 }
 
 // ---------------------------------------------------------------------

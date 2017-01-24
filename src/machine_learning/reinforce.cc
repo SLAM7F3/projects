@@ -446,8 +446,13 @@ reinforce::reinforce(
 // ---------------------------------------------------------------------
 // Reinforce class constructor
 
-reinforce::reinforce(string snapshot_filename)
+reinforce::reinforce(string snapshot_filename, int replay_memory_capacity,
+                     int eval_memory_capacity, int solver_type)
 {
+   this->replay_memory_capacity = replay_memory_capacity;
+   this->eval_memory_capacity = eval_memory_capacity;
+   this->solver_type = solver_type;   
+
    import_snapshot(snapshot_filename);
    allocate_member_objects();
 
@@ -1940,7 +1945,7 @@ void reinforce::set_output_subdir(std::string subdir)
 // ---------------------------------------------------------------------
 // Member function export_snapshot()
 
-void reinforce::export_snapshot()
+string reinforce::export_snapshot()
 {
    if(snapshots_subdir.size() == 0) 
    {
@@ -1949,57 +1954,54 @@ void reinforce::export_snapshot()
       snapshots_subdir = "./snapshots/";
       filefunc::dircreate(snapshots_subdir);
    }
-   
+
    string snapshot_filename=snapshots_subdir+"snapshot_"+
-      stringfunc::integer_to_string(episode_number, 5)+".binary";
+      stringfunc::number_to_string(epoch_history.back(), 3)+".txt";
    ofstream outstream;
    
-//   cout << "inside reinforce::export_snapshot()" << endl;
-//   cout << "n_layers = " << n_layers << " n_actions = " << n_actions
-//        << endl;
-
-   filefunc::open_binaryfile(snapshot_filename,outstream);
+   filefunc::openfile(snapshot_filename,outstream);
+   outstream << expt_number << endl;   // Added at 3:40 am on Mon Jan 23
+   outstream << output_subdir << endl;  // Added at 3:40 am on Mon Jan 23
+   outstream << include_biases << endl; // Added at 3 am on Mon Jan 23
    outstream << n_layers << endl;
-   outstream << n_actions << endl;
    for(unsigned int i = 0; i < layer_dims.size(); i++)
    {
       outstream << layer_dims[i] << endl;
-//      cout << "i = " << i << " layer_dim = " << layer_dims[i] << endl;
    }
    
-   outstream << batch_size << endl;
-   outstream << base_learning_rate << endl;
-   outstream << lambda << endl;
-   outstream << gamma << endl;
-   outstream << rmsprop_decay_rate << endl;
-
-//   cout << "batch_size = " << batch_size << endl;
-//   cout << "base_learning_rate = " << base_learning_rate << endl;
-//   cout << "lambda = " << lambda << endl;
-//   cout << "gamma = " << gamma << endl;
-//   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
+   if(include_biases)
+   {
+      for(unsigned int l = 0; l < biases.size(); l++)
+      {
+         genvector *curr_bias_ptr = biases[l];
+         outstream << curr_bias_ptr->get_mdim() << endl;
+         for(unsigned int row = 0; row < curr_bias_ptr->get_mdim(); row++)
+         {
+            outstream << curr_bias_ptr->get(row) << endl;
+         }
+      }
+   }
 
    for(unsigned int l = 0; l < weights.size(); l++)
    {
       genmatrix* curr_weights_ptr = weights[l];
       outstream << curr_weights_ptr->get_mdim() << endl;
       outstream << curr_weights_ptr->get_ndim() << endl;
-//      cout << "l = " << l << " mdim = " << curr_weights_ptr->get_mdim()
-//           << " ndim = " << curr_weights_ptr->get_ndim() << endl;
-//      cout << "*curr_weights_ptr = " << *curr_weights_ptr << endl;
 
       for(unsigned int row = 0; row < curr_weights_ptr->get_mdim(); row++)
       {
          for(unsigned int col = 0; col < curr_weights_ptr->get_ndim(); col++)
          {
             outstream << curr_weights_ptr->get(row,col) << endl;
-//            cout << "row = " << row << " col = " << col
-//                 << " weights[l] = " << curr_weights_ptr->get(row,col) << endl;
          }
       }
    } // loop over index l labeling weight matrices
+
    filefunc::closefile(snapshot_filename,outstream);
+   cout << "======================================================" << endl;
    cout << "Exported " << snapshot_filename << endl;
+   cout << "======================================================" << endl;
+   return snapshot_filename;
 }
 
 // ---------------------------------------------------------------------
@@ -2008,7 +2010,7 @@ void reinforce::export_snapshot()
 void reinforce::import_snapshot(string snapshot_filename)
 {
    cout << "inside reinforce::import_snapshot()" << endl;
-
+   
    ifstream instream;
    filefunc::openfile(snapshot_filename,instream);
 
@@ -2017,11 +2019,14 @@ void reinforce::import_snapshot(string snapshot_filename)
    instream >> include_biases;		// Added early on Mon Jan 23
    instream >> n_layers;
 
-   for(int i = 0; i < n_layers; i++)
+   for(int l = 0; l < n_layers; l++)
    {
       int curr_layer_dim;
       instream >> curr_layer_dim;
       layer_dims.push_back(curr_layer_dim);
+
+      cout << "l = " << l << " layer_dim = " << layer_dims[l]
+           << endl;
    }
    n_actions = layer_dims.back();
 
@@ -3390,6 +3395,13 @@ double reinforce::compute_mean_KL_divergence_between_curr_and_next_pi()
 // a for the action which is stochastically sampled from the
 // probability distribution encoded in the P-network's final layer.
 // It also returns the probability associated with the sampled action.
+
+int reinforce::get_P_action_given_pi(genvector *curr_pi)
+{
+   double ran_val = nrfunc::ran1();
+   double action_prob;
+   return get_P_action_given_pi(curr_pi, ran_val, action_prob);
+}
 
 int reinforce::get_P_action_given_pi(
    genvector *curr_pi, double ran_val, double& action_prob)

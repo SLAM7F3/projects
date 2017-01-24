@@ -1,7 +1,7 @@
 =============================================================================
 G3D ("Ground 3D") notes
 =============================================================================
-Last updated on 7/3/14; 7/14/14; 8/1/14; 8/5/14; 12/5/14
+Last updated on 8/1/14; 8/5/14; 12/5/14; 1/24/17
 =============================================================================
 
 *.  New "G3D" section of C3 wiki contains information about directories and
@@ -287,4 +287,15 @@ selected rig.
 - Press "esc-x rig" to activate rig variable.  Then press "+" or "-" on
 number pad in order to move through rigs near currently selected rig.
 
+
+*.  On 1/24/17, Tiago and Brian James told us that we can run the g3d gui
+by chanting
+
+/home/pcho/sputnik/pwin/build/release/pwin -vv \
+-cfg /startown-gpfs/ssdws01/conf/flyover-eufori.dcfg \
+-da g3d_gui 
+
+Tiago suggests checking out the relatively small project M5_q3d_dev_02.  We
+also need to ensure we're using the startown rather than pv40
+flyover-eufori configuration file.
 

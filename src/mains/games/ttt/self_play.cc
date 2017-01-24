@@ -13,6 +13,7 @@
 #include "machine_learning/neural_net.h"
 #include "numrec/nrfuncs.h"
 #include "general/outputfuncs.h"
+#include "machine_learning/reinforce.h"
 #include "general/sysfuncs.h"
 #include "games/tictac3d.h"
 #include "time/timefuncs.h"
@@ -38,6 +39,9 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_cells = ttt_ptr->get_n_total_cells();
 
+   int n_actions = n_cells;
+   genvector *pi_ptr = new genvector(n_actions);
+
 // Import snapshot for previously trained neural network snapshot:
 
    string experiments_subdir="./experiments/";
@@ -50,7 +54,11 @@ int main (int argc, char* argv[])
 
    string snapshots_subdir = output_subdir + "snapshots/";
    string snapshot_filename = snapshots_subdir + "snapshot.txt";
-   neural_net NN(snapshot_filename);
+   int replay_memory_capacity = 10 * 1000;
+   int eval_memory_capacity = 0.1 * replay_memory_capacity;
+   reinforce* reinforce_agent_ptr = new reinforce(
+      snapshot_filename, replay_memory_capacity, 
+      eval_memory_capacity, reinforce::RMSPROP);
 
    int AI_value = -1;   // "X"
    int agent_value = 1;   // "O"
@@ -89,27 +97,11 @@ int main (int argc, char* argv[])
          {
             genvector* input_state_ptr = 
                ttt_ptr->update_inverse_board_state_ptr();
-            bool sort_probs_flag = false;
-            NN.get_class_probabilities(
-               input_state_ptr, sort_probs_flag, class_probs, class_IDs);
-            double prob_sum = 0;
-            for(unsigned int c = 0; c < class_IDs.size(); c++)
-            {
-               if(!ttt_ptr->legal_player_move(c))
-               {
-                  class_probs[c] = 0;
-               }
-               prob_sum += class_probs[c];
-            }
-
-// Renormalize legal moves' probability distribution:
-
-            for(unsigned int c = 0; c < class_IDs.size(); c++)
-            {
-               class_probs[c] /= prob_sum;
-            }
-
-            int AI_move = NN.get_class_prediction_given_probs(class_probs);
+            reinforce_agent_ptr->compute_pi_given_state(
+               input_state_ptr, pi_ptr);
+            ttt_ptr->renormalize_action_probs(pi_ptr);
+            int AI_move = reinforce_agent_ptr->get_P_action_given_pi(pi_ptr);
+          
             ttt_ptr->set_player_move(AI_move, AI_value);
             ttt_ptr->record_latest_move(AI_value, AI_move);
 
@@ -125,27 +117,10 @@ int main (int argc, char* argv[])
 // Agent move:
 
          genvector* input_state_ptr = ttt_ptr->update_board_state_ptr();
-         bool sort_probs_flag = false;
-         NN.get_class_probabilities(
-            input_state_ptr, sort_probs_flag, class_probs, class_IDs);
-         double prob_sum = 0;
-         for(unsigned int c = 0; c < class_IDs.size(); c++)
-         {
-            if(!ttt_ptr->legal_player_move(c))
-            {
-               class_probs[c] = 0;
-            }
-            prob_sum += class_probs[c];
-         }
+         reinforce_agent_ptr->compute_pi_given_state(input_state_ptr, pi_ptr);
+         ttt_ptr->renormalize_action_probs(pi_ptr);
+         int agent_move = reinforce_agent_ptr->get_P_action_given_pi(pi_ptr);
 
-// Renormalize legal moves' probability distribution:
-
-         for(unsigned int c = 0; c < class_IDs.size(); c++)
-         {
-            class_probs[c] /= prob_sum;
-         }
-
-         int agent_move = NN.get_class_prediction_given_probs(class_probs);
          ttt_ptr->set_player_move(agent_move, agent_value);
          ttt_ptr->record_latest_move(agent_value, agent_move);
          ttt_ptr->display_board_state();
@@ -160,9 +135,6 @@ int main (int argc, char* argv[])
          }
 
          if(ttt_ptr->check_filled_board()) break;
-
-         int n_completed_turns = ttt_ptr->get_n_completed_turns();
-//         cout << "n_completed_turns = " << n_completed_turns << endl;
       } // !game_over while loop
 
       if(ttt_ptr->check_player_win(AI_value) > 0)
@@ -196,6 +168,7 @@ int main (int argc, char* argv[])
    cout << "======================================================== " << endl;
 
    delete ttt_ptr;
+   delete reinforce_agent_ptr;
 }
 
 
