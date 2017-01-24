@@ -398,6 +398,8 @@ class reinforce
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
+
+   void initialize_weights_and_biases();
 };
 
 // ==========================================================================

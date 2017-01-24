@@ -96,6 +96,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
          delta_nabla_biases.push_back(curr_delta_nabla_biases);
 
+/*
 // Initialize bias for each network node in layers 1, 2, ... to be
 // zero.  Recall input layer has no biases:
 
@@ -104,6 +105,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
             curr_biases->put(i, 0);
             curr_old_biases->put(i, curr_biases->get(i));
          } // loop over index i labeling node in current layer
+*/
 
          vector<double> dummy_dist;
          bias_01.push_back(dummy_dist);
@@ -217,6 +219,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          rms_weights_denom.push_back(curr_rms_weights_denom);
       }
 
+/*
 // Xavier initialize weights connecting network layers l and l+1 to be
 // gaussian random vars distributed according to N(0,1/sqrt(n_in)):
 
@@ -229,6 +232,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
             curr_old_weights->put(i, j, curr_weights->get(i, j));
          } // loop over index j labeling node in next layer
       } // loop over index i labeling node in current layer
+*/
 
       vector<double> dummy_dist;
       weight_01.push_back(dummy_dist);
@@ -278,7 +282,6 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 // ---------------------------------------------------------------------
 void reinforce::allocate_member_objects()
 {
-
    s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
    a_curr = new genvector(replay_memory_capacity);
    r_curr = new genvector(replay_memory_capacity);
@@ -312,6 +315,69 @@ void reinforce::allocate_member_objects()
 }		       
 
 // ---------------------------------------------------------------------
+void reinforce::initialize_weights_and_biases()
+{
+   if(include_biases)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         genvector *curr_biases = biases[l];
+         genvector *curr_old_biases = old_biases[l];
+
+// Initialize bias for each network node in layers 1, 2, ... to be
+// gaussian random var distributed according to N(0,1).  Recall input
+// layer has no biases:
+
+         for(int i = 0; i < layer_dims[l]; i++)
+         {
+//            if(l == 0)
+            {
+               curr_biases->put(i, 0);
+            }
+//            else
+//            {
+//               curr_biases->put(i, nrfunc::gasdev());
+            //           }
+            curr_old_biases->put(i, curr_biases->get(i));
+         } // loop over index i labeling node in current layer
+
+//         if(perm_symmetrize_weights_and_biases)
+         {
+//            environment_ptr->permutation_symmetrize_biases(
+//               curr_biases, permuted_biases[l], sym_biases[l]);
+         }
+      }  // loop over index l labeling layers
+   } // include_bias_terms conditional
+
+   for(int l = 0; l < n_layers - 1; l++)
+   {
+      genmatrix *curr_weights = weights[l];
+      genmatrix *curr_old_weights = old_weights[l];
+
+// Xavier initialize weights connecting network layers l and l+1 to be
+// gaussian random vars distributed according to N(0,1/sqrt(n_in)):
+
+      for(int i = 0; i < layer_dims[l+1]; i++)
+      {
+         for(int j = 0; j < layer_dims[l]; j++)
+         {
+            curr_weights->put(
+               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
+            curr_old_weights->put(i, j, curr_weights->get(i, j));
+         } // loop over index j labeling node in next layer
+      } // loop over index i labeling node in current layer
+
+//      if(perm_symmetrize_weights_and_biases)
+      {
+//         environment_ptr->permutation_symmetrize_weights(
+//            curr_weights, permuted_weights[l], sym_weights[l]);
+      }
+   } // loop over index l labeling neural net layers
+
+}
+
+
+// ---------------------------------------------------------------------
 reinforce::reinforce(bool include_biases, const vector<int>& n_nodes_per_layer)
 {
    this->include_biases = include_biases;
@@ -319,6 +385,8 @@ reinforce::reinforce(bool include_biases, const vector<int>& n_nodes_per_layer)
    this->eval_memory_capacity = 1;
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
+
+   initialize_weights_and_biases();
 }
 
 reinforce::reinforce(
@@ -333,6 +401,7 @@ reinforce::reinforce(
 
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
+   initialize_weights_and_biases();
    this->batch_size = -1;
 }
 
@@ -349,6 +418,7 @@ reinforce::reinforce(
 
    initialize_member_objects(n_nodes_per_layer);
    allocate_member_objects();
+   initialize_weights_and_biases();
    this->batch_size = batch_size;
 }
 
