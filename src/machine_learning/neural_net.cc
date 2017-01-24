@@ -2011,7 +2011,7 @@ void neural_net::import_snapshot(string snapshot_filename)
 
    instream >> expt_number;    		// Added early on Mon Jan 23
    instream >> output_subdir;  		// Added early on Mon Jan 23
-   instream >> include_biases;	// Added early on Mon Jan 23
+   instream >> include_biases;	        // Added early on Mon Jan 23
    instream >> n_layers;
 
    for(int i = 0; i < n_layers; i++)

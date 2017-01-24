@@ -1,11 +1,9 @@
 // ==========================================================================
-// Program SELF_PLAY allows a minimax AI to play again a minimax
-// It periodically exports afterstate-action pairs for both players to
-// output text files for later supervised learning policy training
-// purposes.  It also can export a frequency histogram for the total
-// number of turns (AI + agent) played per game.
+// Program SELF_PLAY allows a partially trained agent to play against
+// itself.  It expects to find a "snapshot.txt" soft link sitting
+// within ./experiments/pi_sigma/exptXXX/snapshots/ .
 // ==========================================================================
-// Last updated on 1/22/17
+// Last updated on 1/22/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -40,54 +38,19 @@ int main (int argc, char* argv[])
    tictac3d* ttt_ptr = new tictac3d(nsize, n_zlevels);
    int n_cells = ttt_ptr->get_n_total_cells();
 
-   int Din = n_cells;
-   int H1 = 256;			// Number of first hidden layer nodes
-   int H2 = 256;			// Number of 2nd hidden layer nodes
-   int H3 = 0;				// Number of 3rd hidden layer nodes
-   int Dout = n_cells;   	// Number of output layer nodes
-
-   vector<int> layer_dims;
-   layer_dims.push_back(Din);
-   layer_dims.push_back(H1);
-   if(H2 > 0)
-   {
-      layer_dims.push_back(H2);
-   }
-   if(H3 > 0)
-   {
-      layer_dims.push_back(H3);
-   }
-   layer_dims.push_back(Dout);
-
-// Set up neural network:
-
-   int mini_batch_size = 100;
-   double lambda = 1E-4;  // L2 regularization coefficient
-//   cout << "Enter L2 regularization coefficient lambda:" << endl;
-//   cin >> lambda;
-   double rmsprop_decay_rate = 0.95;
-   neural_net NN(mini_batch_size, lambda, rmsprop_decay_rate, layer_dims);
-
-// Initialize output subdirectory within an experiments folder:
+// Import snapshot for previously trained neural network snapshot:
 
    string experiments_subdir="./experiments/";
-   filefunc::dircreate(experiments_subdir);
    string pi_sigma_subdir = experiments_subdir + "pi_sigma/";
-   filefunc::dircreate(pi_sigma_subdir);
-
    int expt_number;
    cout << "Enter experiment number:" << endl;
    cin >> expt_number;
-   NN.set_expt_number(expt_number);
    string output_subdir=pi_sigma_subdir+
       "expt"+stringfunc::integer_to_string(expt_number,3)+"/";
-   NN.set_output_subdir(output_subdir);
-
-// Import neural network snapshot:
 
    string snapshots_subdir = output_subdir + "snapshots/";
    string snapshot_filename = snapshots_subdir + "snapshot.txt";
-   NN.import_snapshot(snapshot_filename);
+   neural_net NN(snapshot_filename);
 
    int AI_value = -1;   // "X"
    int agent_value = 1;   // "O"
