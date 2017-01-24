@@ -1,0 +1,96 @@
+
+
+
+Good pmaze results
+------------------
+   Dec 28 branch 53a7132:  seed --> -11 ===> Maze solved in 86K episodes
+                    grid size = 6
+   Dec 29: branch 2b33ded yields identical results to branch 53a7132
+   Dec 29: branch 2dff0a2 yields identical results to branch 53a7132
+   Dec 30: branch 0eef787 yields identical results to branch 53a7132
+             once reinforce::get_advantage() is reset (reconfirmed)
+   Dec 30: branch 15fe17d 
+             Need to reset reinforce::get_advantage().
+	     Also inside pmaze.cc, need to add 3rd action_prob arg t
+         int curr_a = reinforce_agent_ptr->get_P_action_for_curr_state(
+            ran_value, curr_s, action_prob);
+
+   Dec 30: branch 68972d8  gets different but comparably good results
+             to branch 53a7132
+   Dec 30:  branch 49e13a9 gets identical results to branch 53a7132
+            after we make above changes
+   Dec 31:  branch a2bbf1e gets identical results to branch 53a7132
+            after we make above changes
+   Jan 1:  branch dcd7b46 gets identical results to branch 53a7132
+           after we make above changes
+   Jan 1: branch 33f44db  " "  (confirmed also on m6700)
+   Jan 1: branch a60ca30  (confirmed on m6700)
+   Jan 2: branch a366eda  (confirmed on m6700)
+   Jan 2: breanch 572c4ad (above changes + blr --> 1E-3) on m6700
+   Jan 2:  d286c7f  (above changes + blr--> 1E-3 + max KL diver = infinity)
+   Jan 3:  6a496ef  (above changes + blr --> 1E-3 + max KL diver = infinity)
+
+   Jan 5:  e8436ad  (above changes + blr --> 1E-3 + max KL diver =
+     infinity)  yields reasonable results given sqrt(2) Xavier init alteration
+   Jan 10 877722f : " "
+   Jan 11 acf63be:  " "; add increment_episode_number()
+   Jan 13 : 13a832a: " "
+   Jan 16  cde4c90: " "
+
+Mon Jan 23 08:42:09 2017
+Neural net params:
+   n_layers = 4
+   layer = 0 n_nodes = 121
+   layer = 1 n_nodes = 32
+   layer = 2 n_nodes = 16
+   layer = 3 n_nodes = 4
+   n_weights = 4448 (FC)
+base_learning_rate = 0.001; batch_size = -1
+P learning
+solver type = RMSPROP
+   rmsprop_decay_rate = 0.9
+   rmsprop_denom_const = 1e-05
+L2 regularization lambda coeff = 0.01
+Replay memory capacity = 100
+Number random samples drawn from replay memory Nd = 0
+Discount factor gamma = 0.99
+minimum epsilon = 0
+n_actions = 4
+Leaky ReLU small slope = 0.01
+Random seed = -11
+
+Suspect pmaze results
+----------------------
+
+Dec 29: branch 64a11f1   :  This branch does solve a 6x6 maze.  But it
+99K episodes rather than 86K episodes like Dec 28 branch 53a7132...
+
+To recover good results (Dec 28 branch 53a7132), need to change
+
+double reinforce::get_advantage(int d) const
+if(curr_R > 0)
+   {
+      curr_advantage = 1;
+   }
+   else
+   {
+      curr_advantage = -1;
+   }
+
+Bad pmaze results
+------------------
+
+
+
+Jan 23 master
+
+
+Not-yet-computed pmaze results
+------------------------------
+
+Jan 19: fd85299  Definitely generates different output than 
+   OK Jan 16 branch cde4c90 !!!
+
+Perhaps problem crept in Explicitly pass include_bias bool arg to reinforce
+constructor or Trying to streamline regularization matrix in backprop for
+both neural net and reinforce classes.
