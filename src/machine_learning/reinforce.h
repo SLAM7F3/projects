@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/11/17; 1/13/17; 1/18/17; 1/23/17
+// Last modified on 1/13/17; 1/18/17; 1/23/17; 1/24/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -45,11 +45,11 @@ class reinforce
 
    reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer);
    reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer,
-             int replay_memory_capacity, int solver_type = SGD);
+             int replay_memory_capacity, int solver_type = RMSPROP);
    reinforce(bool include_biases, const std::vector<int>& n_nodes_per_layer,
              int batch_size, int replay_memory_capacity, 
-             int eval_memory_capacity, int solver_type = SGD);
-   reinforce();
+             int eval_memory_capacity, int solver_type = RMSPROP);
+   reinforce(std::string snapshot_filename);
    ~reinforce();
    friend std::ostream& operator<< 
       (std::ostream& outstream,const reinforce& R);
@@ -147,7 +147,7 @@ class reinforce
 
    void create_snapshots_subdir();
    void export_snapshot();
-   void import_snapshot();
+   void import_snapshot(std::string snapshot_filename);
 
 // General learning methods:
 

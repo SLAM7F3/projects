@@ -61,7 +61,7 @@ int main (int argc, char* argv[])
 // Set up neural network:
 
    int mini_batch_size = 100;
-   double lambda = 1E-4;  // L2 regularization coefficient
+   double lambda = 0;  // L2 regularization coefficient
 //   cout << "Enter L2 regularization coefficient lambda:" << endl;
 //   cin >> lambda;
    double rmsprop_decay_rate = 0.95;

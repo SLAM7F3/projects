@@ -1,7 +1,7 @@
 ==========================================================================
 Training pi_sigma for TTT
 ==========================================================================
-Last updated on 1/20/17; 1/21/17; 1/22/17; 1/23/17
+Last updated on 1/21/17; 1/22/17; 1/23/17; 1/24/17
 ==========================================================================
 
 Best results so far:
@@ -2371,6 +2371,8 @@ Maximum move relative to game end = 8
 Random seed = -15291
 Process ID = 2279
 
+After 45.7 epochs, val & train accuracies are around 0.519
+
 118.  T1  Experiment 118 with NO symmetrization
 Sun Jan 22 12:02:09 2017
 Neural net params:
@@ -2397,6 +2399,8 @@ Maximum move relative to game end = 12
 Random seed = -15310
 Process ID = 2288
 
+After 24 epochs, val & train accuracies are around 0.519
+
 119.  T1  Experiment 119 with NO symmetrization
 Sun Jan 22 12:02:50 2017
 Neural net params:
@@ -2422,6 +2426,8 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 16
 Random seed = -15337
 Process ID = 2301
+
+After 15.1 epochs, val & train accuracies are around 0.483
 
 ---------------------
 Titan 3:
@@ -2455,6 +2461,9 @@ Maximum move relative to game end = 10
 Random seed = -79814
 Process ID = 11319
 
+After 17.9 epochs, val and train accuracies are around 0.390 and steadily
+rising
+
 127.  T3  Experiment 127 with perm symmetrization and no L2 reg
 Experiment 127
 Mon Jan 23 05:57:15 2017
@@ -2482,6 +2491,10 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 10
 Random seed = -79823
 Process ID = 11327
+
+After 17.9 epochs, val and train accuracies are around 0.393 and slowly
+rising
+
 
 128.  T3.  No Sym and no L2 reg
 Experiment 128
@@ -2511,6 +2524,9 @@ Maximum move relative to game end = 10
 Random seed = -79905
 Process ID = 12119
 
+After 17.9 epochs, val and train accuracies are around 0.472 and steadily
+rising
+
 129.  T3.  No Sym and no L2 reg
 Experiment 129
 Mon Jan 23 05:58:47 2017
@@ -2538,6 +2554,10 @@ Leaky ReLU small slope = 0.01
 Maximum move relative to game end = 10
 Random seed = -79914
 Process ID = 12127
+
+After 17.9 epochs, val and train accuracies are around 0.473 and steadily
+rising
+
 
 ---------------------
 Thinkmate
@@ -2584,6 +2604,9 @@ roughly 0.4 accuracy.  blr = 3E-4, lambda = 1E-4.  Should set lambda --> 0.
 
 Training/validation curves for 8 and 12 end moves with perm symm, blr =
 1E-3, lambda = 0 do not look nearly so good as those for blr = 3E-4!
+
+*.  Permutation symmetrization definitely appears to slow down training and
+yield worse validation results than training with no perm sym.
 
 
 Interesting experiments:

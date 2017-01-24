@@ -1,7 +1,7 @@
 // ==========================================================================
 // Stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 11/8/16; 12/13/16; 12/14/16; 1/17/17
+// Last updated on 12/13/16; 12/14/16; 1/17/17; 1/24/17
 // ==========================================================================
 
 #include <vector>
@@ -66,6 +66,7 @@ namespace machinelearning_func
       const std::vector<neural_net::DATA_PAIR>& samples);
    void remove_data_samples_mean(std::vector<neural_net::DATA_PAIR>& samples);
 
+   std::string create_snapshots_subdir(std::string output_subdir);
 
 } // machine_learning_func namespace
 

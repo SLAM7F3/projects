@@ -397,6 +397,9 @@ reinforce::reinforce(bool include_biases, const vector<int>& n_nodes_per_layer)
    machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
+// ---------------------------------------------------------------------
+// Reinforce class constructor
+
 reinforce::reinforce(
    bool include_biases, const vector<int>& n_nodes_per_layer, 
    int replay_memory_capacity, int solver_type)
@@ -416,6 +419,9 @@ reinforce::reinforce(
    this->batch_size = -1;
    machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
+
+// ---------------------------------------------------------------------
+// Reinforce class constructor
 
 reinforce::reinforce(
    bool include_biases, const vector<int>& n_nodes_per_layer, 
@@ -439,10 +445,15 @@ reinforce::reinforce(
 }
 
 // ---------------------------------------------------------------------
-reinforce::reinforce()
+// Reinforce class constructor
+
+reinforce::reinforce(string snapshot_filename)
 {
+   import_snapshot(snapshot_filename);
    allocate_member_objects();
-   import_snapshot();
+
+//   extrainfo = layer_label = "";
+   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 // ---------------------------------------------------------------------
@@ -1992,45 +2003,44 @@ void reinforce::export_snapshot()
 // ---------------------------------------------------------------------
 // Member function import_snapshot()
 
-void reinforce::import_snapshot()
+void reinforce::import_snapshot(string snapshot_filename)
 {
    cout << "inside reinforce::import_snapshot()" << endl;
 
-   string snapshots_subdir = "./snapshots/";
-   filefunc::dircreate(snapshots_subdir);
-
-   string snapshot_filename=snapshots_subdir+"snapshot.binary";
    ifstream instream;
-   
-   filefunc::open_binaryfile(snapshot_filename,instream);
-   instream >> n_layers;
-   instream >> n_actions;
-   cout << "n_layers = " << n_layers << " n_actions = " << n_actions 
-        << endl;
+   filefunc::openfile(snapshot_filename,instream);
 
-   vector<int> n_nodes_per_layer;
+   instream >> expt_number;    		// Added early on Mon Jan 23
+   instream >> output_subdir;  		// Added early on Mon Jan 23
+   instream >> include_biases;		// Added early on Mon Jan 23
+   instream >> n_layers;
+
    for(int i = 0; i < n_layers; i++)
    {
       int curr_layer_dim;
       instream >> curr_layer_dim;
-      n_nodes_per_layer.push_back(curr_layer_dim);
-      cout << "i = " << i << " n_nodes_per_layer = " << n_nodes_per_layer[i] 
-           << endl;
+      layer_dims.push_back(curr_layer_dim);
    }
+   n_actions = layer_dims.back();
 
-   initialize_member_objects(n_nodes_per_layer);
+   delete_weights_and_biases();
+   instantiate_weights_and_biases();
 
-   instream >> batch_size;
-   instream >> base_learning_rate;
-   instream >> lambda;
-   instream >> gamma;
-   instream >> rmsprop_decay_rate;
+   if(include_biases)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         int mdim;
+         instream >> mdim;
 
-   cout << "batch_size = " << batch_size << endl;
-   cout << "base_learning_rate = " << base_learning_rate << endl;
-   cout << "lambda = " << lambda << endl;
-   cout << "gamma = " << gamma << endl;
-   cout << "rmsprop_decay_rate = " << rmsprop_decay_rate << endl;
+         for(int row = 0; row < mdim; row++)
+         {
+            double curr_bias;
+            instream >> curr_bias;
+            biases[l]->put(row, curr_bias);
+         }
+      }
+   } // include_biases conditional
 
    for(int l = 0; l < n_layers-1; l++)
    {
@@ -2038,21 +2048,12 @@ void reinforce::import_snapshot()
       instream >> mdim;
       instream >> ndim;
 
-//      cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
-//           << endl;
-
       for(int row = 0; row < mdim; row++)
       {
          for(int col = 0; col < ndim; col++)
          {
             double curr_weight;
             instream >> curr_weight;
-//            cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
-//                 << " col = " << col << " row = " << row << endl;
-//            cout << "  curr_weight = " << curr_weight << endl;
-//            cout << "  weights[l].mdim = " << weights[l]->get_mdim()
-//                 << " weights[l].ndim = " << weights[l]->get_ndim()
-//                 << endl;
             weights[l]->put(row, col, curr_weight);
          }
       }
@@ -2060,7 +2061,8 @@ void reinforce::import_snapshot()
    } // loop over index l labeling weight matrices
    
    filefunc::closefile(snapshot_filename,instream);
-   cout << "Imported " << snapshot_filename << endl;
+   cout << "Imported trained neural network from " << snapshot_filename 
+        << endl;
 }
 
 // ==========================================================================

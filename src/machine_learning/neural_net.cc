@@ -306,15 +306,9 @@ neural_net::neural_net(
 
 neural_net::neural_net(string snapshot_filename)
 {
-//   this->mini_batch_size = mini_batch_size;
-//   this->lambda = lambda;
-//   this->rmsprop_decay_rate = rmsprop_decay_rate;
-
-//   initialize_member_objects(n_nodes_per_layer);
    import_snapshot(snapshot_filename);
    allocate_member_objects();
 
-   expt_number = -1;
    extrainfo = layer_label = "";
    machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }

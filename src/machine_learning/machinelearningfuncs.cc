@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for stand-alone machinelearning methods
 // ==========================================================================
-// Last updated on 11/17/16; 12/13/16; 12/14/16; 1/17/17
+// Last updated on 12/13/16; 12/14/16; 1/17/17; 1/24/17
 // ==========================================================================
 
 #ifndef MACHINELEARNING_H
@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "astro_geo/Clock.h"
 #include "machine_learning/machinelearningfuncs.h"
 #include "math/mathfuncs.h"
 #include "numrec/nrfuncs.h"
@@ -22,6 +23,7 @@ namespace machinelearning_func
 
    using std::cout;
    using std::endl;
+   using std::string;
    using std::vector;
 
 // ==========================================================================
@@ -642,6 +644,23 @@ namespace machinelearning_func
 
       delete mean;
       delete sqrmean;
+   }
+
+// ---------------------------------------------------------------------
+// Method function create_snapshots_subdir() generates a date-stamped
+// folder into which a network snapshots can be exported.
+
+   string create_snapshots_subdir(string output_subdir)
+   {
+      Clock clock;
+      clock.set_time_based_on_local_computer_clock();
+      string timestamp_str = clock.YYYY_MM_DD_H_M_S("_","_",false,0);
+      string timestamp_substr = timestamp_str.substr(0,16);
+      
+      string snapshots_subdir = 
+         output_subdir+"snapshots/"+timestamp_substr+"/";
+      filefunc::dircreate(snapshots_subdir);
+      return snapshots_subdir;
    }
 
    
