@@ -1473,8 +1473,8 @@ bool reinforce::plot_bias_distributions(string extrainfo, bool epoch_indep_var)
    for(unsigned int l = 1; l < bias_50.size(); l++)
    {
       metafile curr_metafile;
-      string meta_filename=output_subdir + "/bias_dists_"+
-         stringfunc::number_to_string(l);
+      string basename="bias_dists_"+stringfunc::number_to_string(l);
+      string meta_filename=output_subdir + basename;
 
       string title="Bias dists for layer "+stringfunc::number_to_string(l);
       title += "; lambda="+stringfunc::number_to_string(lambda);
@@ -1562,6 +1562,8 @@ bool reinforce::plot_bias_distributions(string extrainfo, bool epoch_indep_var)
 
       string unix_cmd="meta_to_jpeg "+meta_filename;
       sysfunc::unix_command(unix_cmd);
+      string jpg_filename=basename+".jpg";
+      script_stream << "view "+jpg_filename << endl;
    } // loop over index l labeling network layers
 
    filefunc::closefile(script_filename, script_stream);
@@ -1674,10 +1676,8 @@ void reinforce::plot_weight_distributions(
 
       string unix_cmd="meta_to_jpeg "+meta_filename;
       sysfunc::unix_command(unix_cmd);
-
       string jpg_filename=basename+".jpg";
       script_stream << "view "+jpg_filename << endl;
-
    } // loop over index l labeling network layers
 
    filefunc::closefile(script_filename, script_stream);

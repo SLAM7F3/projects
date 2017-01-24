@@ -1,7 +1,7 @@
 // ==========================================================================
 // Program PMAZE solves a maze via policy gradient learning
 // ==========================================================================
-// Last updated on 1/10/17; 1/11/17; 1/18/17; 1/23/17
+// Last updated on 1/11/17; 1/18/17; 1/23/17; 1/24/17
 // ==========================================================================
 
 #include <iostream>
@@ -117,8 +117,8 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_output_subdir(output_subdir);
 
 //   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
-   //   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
-   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
+   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
+//   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
@@ -263,9 +263,6 @@ int main (int argc, char* argv[])
 
 // -----------------------------------------------------------------------
     
-      reinforce_agent_ptr->update_episode_history();
-      reinforce_agent_ptr->update_cumulative_reward(cum_reward);
-
       if(total_loss > 0)
       {
          reinforce_agent_ptr->push_back_log10_loss(log10(total_loss));
@@ -275,6 +272,9 @@ int main (int argc, char* argv[])
       {
          cout << "Episode number = " << curr_episode_number 
               << endl;
+
+         reinforce_agent_ptr->update_episode_history();
+         reinforce_agent_ptr->update_cumulative_reward(cum_reward);
 
          if(reinforce_agent_ptr->get_include_biases()){
            reinforce_agent_ptr->compute_bias_distributions();
