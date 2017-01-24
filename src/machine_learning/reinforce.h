@@ -1,7 +1,7 @@
 // ==========================================================================
 // Header file for reinforce class 
 // ==========================================================================
-// Last modified on 1/11/17; 1/13/17; 1/18/17; 1/23/17
+// Last modified on 1/10/17; 1/11/17; 1/13/17; 1/18/17
 // ==========================================================================
 
 #ifndef REINFORCE_H
@@ -248,7 +248,6 @@ class reinforce
   private:
 
    bool include_biases;
-   bool perm_symmetrize_weights_and_biases;
    bool debug_flag;
    int expt_number;
    int learning_type;
@@ -271,12 +270,10 @@ class reinforce
    double rmsprop_denom_const;  // const added to denom in RMSProp
 
    std::vector<genvector*> biases, old_biases;
-   std::vector<genvector*> permuted_biases, sym_biases;
 //	Bias STL vectors are nonzero for layers 1 thru n_layers-1
    std::vector<genvector*> nabla_biases, delta_nabla_biases;
 
    std::vector<genmatrix*> weights, weights_transpose;
-   std::vector<genmatrix*> permuted_weights, sym_weights;
 //	Weight STL vectors connect layer pairs {0,1}, {1,2}, ... , 
 //      {n_layers-2, n_layers-1}
    std::vector<genmatrix*> old_weights;
@@ -285,9 +282,9 @@ class reinforce
    std::vector<genmatrix*> adam_m, adam_v;
 
    std::vector<genvector*> rmsprop_biases_cache;
-   std::vector<genvector*> rmsprop_biases_denom;
+   std::vector<genvector*> rms_biases_denom;
    std::vector<genmatrix*> rmsprop_weights_cache;
-   std::vector<genmatrix*> rmsprop_weights_denom;
+   std::vector<genmatrix*> rms_weights_denom;
 
 // STL vector index ranges over layers l = 0, 1, ..., n_layers
 // row index ranges over lth layer nodes j = 0, 1, ... n_nodes_in_lth_layer
@@ -396,15 +393,11 @@ class reinforce
    double curr_beta1_pow, curr_beta2_pow;
 
    void compute_cumulative_action_dist();
-   void update_rmsprop_biases_cache(double decay_rate);
-   void update_rmsprop_weights_cache(double decay_rate);
+   void update_biases_cache(double decay_rate);
+   void update_rmsprop_cache(double decay_rate);
 
    void allocate_member_objects();
    void initialize_member_objects(const std::vector<int>& n_nodes_per_layer);
-   void instantiate_weights_and_biases();
-   void instantiate_training_variables();
-   void initialize_weights_and_biases();
-   void delete_weights_and_biases();
 };
 
 // ==========================================================================

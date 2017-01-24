@@ -1,7 +1,7 @@
 // ==========================================================================
 // reinforce class member function definitions
 // ==========================================================================
-// Last modified on 1/13/17; 1/17/17; 1/18/17; 1/23/17
+// Last modified on 1/11/17; 1/13/17; 1/17/17; 1/18/17
 // ==========================================================================
 
 #include <string>
@@ -43,8 +43,12 @@ using std::vector;
 void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 {
    expt_number = -1;
-   perm_symmetrize_weights_and_biases = false;
    debug_flag = false;
+
+// This particular set of hyperparameters yields perfect reinforcement
+// learning for an agent not to place any of its pieces into already
+// occupied cells within a 4x4 grid !
+
    batch_size = 1;	// Perform parameter update after this many episodes
    mu = 0.9;		// Coefficient for momentum solver type
    lambda = 0.0;	// L2 regularization coefficient 
@@ -58,17 +62,86 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
    for(int l = 0; l < n_layers; l++)
    {
       layer_dims.push_back(n_nodes_per_layer[l]);
+      genvector *curr_Z_Prime = new genvector(layer_dims.back());
+      genvector *curr_gamma = new genvector(layer_dims.back());
+      genvector *curr_beta = new genvector(layer_dims.back());
+      genvector *curr_A_Prime = new genvector(layer_dims.back());
+      genvector *curr_Delta_Prime = new genvector(layer_dims.back());
+      Z_Prime.push_back(curr_Z_Prime);
+      gammas.push_back(curr_gamma);
+      betas.push_back(curr_beta);
+      A_Prime.push_back(curr_A_Prime);
+      Delta_Prime.push_back(curr_Delta_Prime);
    }
-   n_actions = layer_dims.back();
 
+   n_weights = 0;
+   n_weights = count_weights();
+   n_actions = layer_dims.back();
    hardwired_output_action = -1;
    n_backprops = 0;
+
+// Biases for all network layers:
+
+   if(include_biases)
+   {
+      for(int l = 0; l < n_layers; l++)
+      {
+         genvector *curr_biases = new genvector(layer_dims[l]);
+         biases.push_back(curr_biases);
+         genvector *curr_old_biases = new genvector(layer_dims[l]);
+         old_biases.push_back(curr_old_biases);
+
+         genvector *curr_nabla_biases = new genvector(layer_dims[l]);
+         nabla_biases.push_back(curr_nabla_biases);
+         genvector *curr_delta_nabla_biases = new genvector(layer_dims[l]);
+         delta_nabla_biases.push_back(curr_delta_nabla_biases);
+
+// Initialize bias for each network node in layers 1, 2, ... to be
+// zero.  Recall input layer has no biases:
+
+         for(int i = 0; i < layer_dims[l]; i++)
+         {
+            curr_biases->put(i, 0);
+            curr_old_biases->put(i, curr_biases->get(i));
+         } // loop over index i labeling node in current layer
+
+         vector<double> dummy_dist;
+         bias_01.push_back(dummy_dist);
+         bias_05.push_back(dummy_dist);
+         bias_10.push_back(dummy_dist);
+         bias_25.push_back(dummy_dist);
+         bias_35.push_back(dummy_dist);
+         bias_50.push_back(dummy_dist);
+         bias_65.push_back(dummy_dist);
+         bias_75.push_back(dummy_dist);
+         bias_90.push_back(dummy_dist);
+         bias_95.push_back(dummy_dist);
+         bias_99.push_back(dummy_dist);
+      } // loop over index l labeling network layers
+
+      for(int l = 0; l < n_layers; l++)
+      {
+         genvector *curr_rmsprop_biases = new genvector(layer_dims[l]);
+         curr_rmsprop_biases->clear_values();
+         rmsprop_biases_cache.push_back(curr_rmsprop_biases);
+         
+         genvector *curr_rms_biases_denom = new genvector(layer_dims[l]);
+         curr_rms_biases_denom->clear_values();
+         rms_biases_denom.push_back(curr_rms_biases_denom);
+      }
+   } // include_biases conditional
+
+// Weights link layer l with layer l+1:
 
 // Only instantiate genmatrices which are needed depending upon
 // selected solver type:
     
    for(int l = 0; l < n_layers - 1; l++)
    {
+      genmatrix *curr_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      genmatrix *curr_old_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
       genmatrix *curr_velocity = NULL;
       if(solver_type == MOMENTUM || solver_type == NESTEROV)
       {
@@ -96,6 +169,12 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
       cout << "l = " << l << " mdim = " << mdim << " ndim = " << ndim
            << endl;
       
+      weights.push_back(curr_weights);
+      old_weights.push_back(curr_old_weights);
+      genmatrix *curr_weights_transpose = new genmatrix(
+         layer_dims[l], layer_dims[l+1]);
+      weights_transpose.push_back(curr_weights_transpose);
+
       if(curr_velocity != NULL)
       {
          curr_velocity->clear_values();
@@ -106,6 +185,7 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          prev_velocity->clear_values();
          prev_velocities.push_back(prev_velocity);
       }
+      
       if(curr_adam_m != NULL)
       {
          curr_adam_m->clear_values();
@@ -113,6 +193,66 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
          curr_adam_v->clear_values();
          adam_v.push_back(curr_adam_v);
       }
+      
+      genmatrix *curr_nabla_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      curr_nabla_weights->clear_values();
+      nabla_weights.push_back(curr_nabla_weights);
+
+      genmatrix *curr_delta_nabla_weights = new genmatrix(
+         layer_dims[l+1], layer_dims[l]);
+      curr_delta_nabla_weights->clear_values();
+      delta_nabla_weights.push_back(curr_delta_nabla_weights);
+
+      if(solver_type == RMSPROP)
+      {
+         genmatrix *curr_rmsprop_weights = new genmatrix(
+            layer_dims[l+1], layer_dims[l]);
+         curr_rmsprop_weights->clear_values();
+         rmsprop_weights_cache.push_back(curr_rmsprop_weights);
+
+         genmatrix *curr_rms_weights_denom = 
+            new genmatrix(layer_dims[l+1], layer_dims[l]);
+         curr_rms_weights_denom->clear_values();
+         rms_weights_denom.push_back(curr_rms_weights_denom);
+      }
+
+// Xavier initialize weights connecting network layers l and l+1 to be
+// gaussian random vars distributed according to N(0,1/sqrt(n_in)):
+
+      for(int i = 0; i < layer_dims[l+1]; i++)
+      {
+         for(int j = 0; j < layer_dims[l]; j++)
+         {
+            curr_weights->put(
+               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
+            curr_old_weights->put(i, j, curr_weights->get(i, j));
+         } // loop over index j labeling node in next layer
+      } // loop over index i labeling node in current layer
+
+      vector<double> dummy_dist;
+      weight_01.push_back(dummy_dist);
+      weight_05.push_back(dummy_dist);
+      weight_10.push_back(dummy_dist);
+      weight_25.push_back(dummy_dist);
+      weight_35.push_back(dummy_dist);
+      weight_50.push_back(dummy_dist);
+      weight_65.push_back(dummy_dist);
+      weight_75.push_back(dummy_dist);
+      weight_90.push_back(dummy_dist);
+      weight_95.push_back(dummy_dist);
+      weight_99.push_back(dummy_dist);
+
+      weight_1.push_back(dummy_dist);
+      weight_2.push_back(dummy_dist);
+      weight_3.push_back(dummy_dist);
+      weight_4.push_back(dummy_dist);
+      weight_5.push_back(dummy_dist);
+      weight_6.push_back(dummy_dist);
+      weight_7.push_back(dummy_dist);
+      weight_8.push_back(dummy_dist);
+      weight_9.push_back(dummy_dist);
+      
    } // loop over index l labeling neural net layers
 
    snapshots_subdir="";
@@ -136,210 +276,8 @@ void reinforce::initialize_member_objects(const vector<int>& n_nodes_per_layer)
 }
 
 // ---------------------------------------------------------------------
-void reinforce::instantiate_weights_and_biases()
-{
-   if(include_biases)
-   {
-      for(int l = 0; l < n_layers; l++)
-      {
-         genvector *curr_biases = new genvector(layer_dims[l]);
-         biases.push_back(curr_biases);
-         genvector *curr_old_biases = new genvector(layer_dims[l]);
-         old_biases.push_back(curr_old_biases);
-      }  
-   } // include_biases conditional
-
-// Weights link layer l with layer l+1:
-   
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      genmatrix *curr_weights = new genmatrix(layer_dims[l+1], layer_dims[l]);
-      weights.push_back(curr_weights);
-      genmatrix *curr_old_weights = new genmatrix(
-         layer_dims[l+1], layer_dims[l]);
-      old_weights.push_back(curr_old_weights);
-   } // loop over index l labeling neural net layers
-   n_weights = count_weights();
-}
-
-// ---------------------------------------------------------------------
-void reinforce::instantiate_training_variables()
-{
-   vector<double> dummy_dist;
-
-   if(include_biases)
-   {
-      for(int l = 0; l < n_layers; l++)
-      {
-         nabla_biases.push_back(new genvector(layer_dims[l]));
-         delta_nabla_biases.push_back(new genvector(layer_dims[l]));
-         if(perm_symmetrize_weights_and_biases)
-         {
-            permuted_biases.push_back(new genvector(layer_dims[l]));
-            sym_biases.push_back(new genvector(layer_dims[l]));
-         }
-
-         if(solver_type == RMSPROP)
-         {
-            genvector *curr_rmsprop_biases = new genvector(layer_dims[l]);
-            curr_rmsprop_biases->clear_values();
-            rmsprop_biases_cache.push_back(curr_rmsprop_biases);
-            
-            genvector *curr_rmsprop_biases_denom = new genvector(layer_dims[l]);
-            curr_rmsprop_biases_denom->clear_values();
-            rmsprop_biases_denom.push_back(curr_rmsprop_biases_denom);
-         }
-
-         bias_01.push_back(dummy_dist);
-         bias_05.push_back(dummy_dist);
-         bias_10.push_back(dummy_dist);
-         bias_25.push_back(dummy_dist);
-         bias_35.push_back(dummy_dist);
-         bias_50.push_back(dummy_dist);
-         bias_65.push_back(dummy_dist);
-         bias_75.push_back(dummy_dist);
-         bias_90.push_back(dummy_dist);
-         bias_95.push_back(dummy_dist);
-         bias_99.push_back(dummy_dist);
-      } // loop over index l labeling layers
-   } // include_bias_terms conditional
-
-// Weights link layer l with layer l+1:
-   
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      weights_transpose.push_back(
-         new genmatrix(layer_dims[l], layer_dims[l+1]));
-
-      if(perm_symmetrize_weights_and_biases)
-      {
-         permuted_weights.push_back(
-            new genmatrix(layer_dims[l+1], layer_dims[l]));
-         sym_weights.push_back(
-            new genmatrix(layer_dims[l+1], layer_dims[l]));
-      }
-
-      nabla_weights.push_back(
-         new genmatrix(layer_dims[l+1], layer_dims[l]));
-      delta_nabla_weights.push_back(
-         new genmatrix(layer_dims[l+1], layer_dims[l]));
-
-      if(solver_type == RMSPROP)
-      {
-         genmatrix *curr_rmsprop_weights = new genmatrix(
-            layer_dims[l+1], layer_dims[l]);
-         curr_rmsprop_weights->clear_values();
-         rmsprop_weights_cache.push_back(curr_rmsprop_weights);
-         
-         genmatrix *curr_rmsprop_weights_denom = 
-            new genmatrix(layer_dims[l+1], layer_dims[l]);
-         curr_rmsprop_weights_denom->clear_values();
-         rmsprop_weights_denom.push_back(curr_rmsprop_weights_denom);
-      }
-
-//      log10_lr_mean_abs_nabla_weight_ratios.push_back(dummy_dist);
-
-      weight_01.push_back(dummy_dist);
-      weight_05.push_back(dummy_dist);
-      weight_10.push_back(dummy_dist);
-      weight_25.push_back(dummy_dist);
-      weight_35.push_back(dummy_dist);
-      weight_50.push_back(dummy_dist);
-      weight_65.push_back(dummy_dist);
-      weight_75.push_back(dummy_dist);
-      weight_90.push_back(dummy_dist);
-      weight_95.push_back(dummy_dist);
-      weight_99.push_back(dummy_dist);
-
-      weight_1.push_back(dummy_dist);
-      weight_2.push_back(dummy_dist);
-      weight_3.push_back(dummy_dist);
-      weight_4.push_back(dummy_dist);
-      weight_5.push_back(dummy_dist);
-      weight_6.push_back(dummy_dist);
-      weight_7.push_back(dummy_dist);
-      weight_8.push_back(dummy_dist);
-      weight_9.push_back(dummy_dist);
-   } // loop over index l labeling neural net layers
-}
-
-// ---------------------------------------------------------------------
-void reinforce::initialize_weights_and_biases()
-{
-   if(include_biases)
-   {
-      for(int l = 0; l < n_layers; l++)
-      {
-         genvector *curr_biases = biases[l];
-         genvector *curr_old_biases = old_biases[l];
-
-// Initialize bias for each network node in layers 1, 2, ... to be
-// gaussian random var distributed according to N(0,1).  Recall input
-// layer has no biases:
-
-         for(int i = 0; i < layer_dims[l]; i++)
-         {
-            if(l == 0)
-            {
-               curr_biases->put(i, 0);
-            }
-            else
-            {
-               curr_biases->put(i, nrfunc::gasdev());
-            }
-            curr_old_biases->put(i, curr_biases->get(i));
-         } // loop over index i labeling node in current layer
-
-         if(perm_symmetrize_weights_and_biases)
-         {
-//            environment_ptr->permutation_symmetrize_biases(
-//               curr_biases, permuted_biases[l], sym_biases[l]);
-         }
-      }  // loop over index l labeling layers
-   } // include_bias_terms conditional
-
-   for(int l = 0; l < n_layers - 1; l++)
-   {
-      genmatrix *curr_weights = weights[l];
-      genmatrix *curr_old_weights = old_weights[l];
-
-// Xavier initialize weights connecting network layers l and l+1 to be
-// gaussian random vars distributed according to N(0,1/sqrt(n_in)):
-
-      for(int i = 0; i < layer_dims[l+1]; i++)
-      {
-         for(int j = 0; j < layer_dims[l]; j++)
-         {
-            curr_weights->put(
-               i, j, sqrt(2.0) * nrfunc::gasdev() / sqrt(layer_dims[l]) );
-            curr_old_weights->put(i, j, curr_weights->get(i, j));
-         } // loop over index j labeling node in next layer
-      } // loop over index i labeling node in current layer
-
-      if(perm_symmetrize_weights_and_biases)
-      {
-//         environment_ptr->permutation_symmetrize_weights(
-//            curr_weights, permuted_weights[l], sym_weights[l]);
-      }
-   } // loop over index l labeling neural net layers
-}
-
-// ---------------------------------------------------------------------
 void reinforce::allocate_member_objects()
 {
-   for(int l = 0; l < n_layers; l++)
-   {
-      genvector *curr_Z_Prime = new genvector(layer_dims[l]);
-      genvector *curr_gamma = new genvector(layer_dims[l]);
-      genvector *curr_beta = new genvector(layer_dims[l]);
-      genvector *curr_A_Prime = new genvector(layer_dims[l]);
-      genvector *curr_Delta_Prime = new genvector(layer_dims[l]);
-      Z_Prime.push_back(curr_Z_Prime);
-      gammas.push_back(curr_gamma);
-      betas.push_back(curr_beta);
-      A_Prime.push_back(curr_A_Prime);
-      Delta_Prime.push_back(curr_Delta_Prime);
-   } // loop over index l labeling neural network layers
 
    s_curr = new genmatrix(replay_memory_capacity, layer_dims.front());
    a_curr = new genvector(replay_memory_capacity);
@@ -380,12 +318,7 @@ reinforce::reinforce(bool include_biases, const vector<int>& n_nodes_per_layer)
    this->replay_memory_capacity = 1;
    this->eval_memory_capacity = 1;
    initialize_member_objects(n_nodes_per_layer);
-   instantiate_weights_and_biases();
-   instantiate_training_variables();
-   initialize_weights_and_biases();
    allocate_member_objects();
-
-   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 reinforce::reinforce(
@@ -399,13 +332,8 @@ reinforce::reinforce(
    this->learning_type = PLEARNING;
 
    initialize_member_objects(n_nodes_per_layer);
-   instantiate_weights_and_biases();
-   instantiate_training_variables();
-   initialize_weights_and_biases();
    allocate_member_objects();
-
    this->batch_size = -1;
-   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 reinforce::reinforce(
@@ -420,13 +348,8 @@ reinforce::reinforce(
    this->learning_type = QLEARNING;
 
    initialize_member_objects(n_nodes_per_layer);
-   instantiate_weights_and_biases();
-   instantiate_training_variables();
-   initialize_weights_and_biases();
    allocate_member_objects();
-
    this->batch_size = batch_size;
-   machinelearning_func::set_leaky_ReLU_small_slope(0.01);
 }
 
 // ---------------------------------------------------------------------
@@ -437,33 +360,8 @@ reinforce::reinforce()
 }
 
 // ---------------------------------------------------------------------
-void reinforce::delete_weights_and_biases()
-{
-   if(include_biases)
-   {
-      for(unsigned int l = 0; l < biases.size(); l++)
-      {
-         delete biases[l];
-         delete old_biases[l];
-      }
-   } 
-   biases.clear();
-   old_biases.clear();
-
-   for(unsigned int l = 0; l < weights.size(); l++)
-   {
-      delete weights[l];
-      delete old_weights[l];
-   }
-   weights.clear();
-   old_weights.clear();
-}
-
-// ---------------------------------------------------------------------
 reinforce::~reinforce()
 {
-   delete_weights_and_biases();
-
    for(int l = 0; l < n_layers; l++)
    {
       delete Z_Prime[l];
@@ -477,33 +375,21 @@ reinforce::~reinforce()
    {
       for(int l = 0; l < n_layers; l++)
       {
+         delete biases[l];
+         delete old_biases[l];
          delete nabla_biases[l];
          delete delta_nabla_biases[l];
-
-         if(perm_symmetrize_weights_and_biases)
-         {
-            delete permuted_biases[l];
-            delete sym_biases[l];
-         }
-         if(solver_type == RMSPROP)
-         {
-            delete rmsprop_biases_cache[l];
-            delete rmsprop_biases_denom[l];
-         }
+         delete rms_biases_denom[l];
       }
    } // include_biases flag
 
    for(int l = 0; l < n_layers - 1; l++)
    {
+      delete weights[l];
+      delete old_weights[l];
       delete weights_transpose[l];
       delete nabla_weights[l];
       delete delta_nabla_weights[l];
-
-      if(perm_symmetrize_weights_and_biases)
-      {
-         delete permuted_weights[l];
-         delete sym_weights[l];
-      }
       if(velocities.size() > 0)
       {
          delete velocities[l];
@@ -515,7 +401,7 @@ reinforce::~reinforce()
       if(rmsprop_weights_cache.size() > 0)
       {
          delete rmsprop_weights_cache[l];
-         delete rmsprop_weights_denom[l];
+         delete rms_weights_denom[l];
       }
       if(adam_m.size() > 0)
       {
@@ -604,7 +490,6 @@ void reinforce::summarize_parameters()
 
    params_stream << "Experiment " << expt_number << endl;
    params_stream << timefunc::getcurrdate() << endl;
-   params_stream << "output_subdir = " << output_subdir << endl;
    params_stream << "Neural net params:" << endl;
    params_stream << "   n_layers = " << n_layers << endl;
    for(int l = 0; l < n_layers; l++)
@@ -612,14 +497,14 @@ void reinforce::summarize_parameters()
       params_stream << "   layer = " << l << " n_nodes = " 
                     << layer_dims[l] << endl;
    }
-   params_stream << "   n_weights = " << n_weights << " (FC)" << endl;
-   params_stream << "include_biases = " << include_biases << endl;
+   params_stream << "   n_weights = " << count_weights() << " (FC)" 
+                 << endl;
+   params_stream << "   include_biases = " << include_biases 
+                 << endl;
 
-   params_stream << "base_learning_rate = " << base_learning_rate << endl;
-   params_stream << "batch_size = " << batch_size << endl;
-   params_stream << "perm_symmetrize_weights_and_biases = " 
-                 << perm_symmetrize_weights_and_biases << endl;
-
+   params_stream << "base_learning_rate = " << base_learning_rate 
+                 << "; batch_size = " << batch_size
+                 << endl;
    if(learning_type == QLEARNING)
    {
       params_stream << "Q learning" << endl;
@@ -629,11 +514,6 @@ void reinforce::summarize_parameters()
       params_stream << "P learning" << endl;
       params_stream << "max mean KL divergence between pi(curr) and pi(next) = " 
                     << max_mean_KL_divergence << endl;
-      if(epsilon_tau > 0)
-      {
-         params_stream << "Epsilon time constant = " << epsilon_tau << endl;
-      }
-      params_stream << "minimum epsilon = " << min_epsilon << endl;
    }
    else if(learning_type == VLEARNING)
    {
@@ -671,7 +551,13 @@ void reinforce::summarize_parameters()
                  << endl;
    params_stream << "Number random samples drawn from replay memory Nd = "
                  << Nd << endl;
-   params_stream << "Discount factor gamma = " << gamma << endl;
+   params_stream << "Discount factor gamma = " << gamma 
+                 << endl;
+   if(epsilon_tau > 0)
+   {
+      params_stream << "Epsilon time constant = " << epsilon_tau << endl;
+   }
+   params_stream << "minimum epsilon = " << min_epsilon << endl;
          
    filefunc::closefile(params_filename, params_stream);
 }
@@ -682,10 +568,14 @@ void reinforce::summarize_parameters()
 
 int reinforce::count_weights()
 {
-   for(int l = 0; l < n_layers - 1; l++)
+   if(n_weights == 0)
    {
-      n_weights += layer_dims[l] * layer_dims[l+1];
+      for(int l = 0; l < n_layers - 1; l++)
+      {
+         n_weights += layer_dims[l] * layer_dims[l+1];
+      }
    }
+   
    return n_weights;
 }
 
@@ -2629,9 +2519,9 @@ double reinforce::compute_target(double curr_r, genvector* next_s,
 }
 
 // ---------------------------------------------------------------------
-// Member function update_rmsprop_biases_cache()
+// Member function update_biases_cache()
 
-void reinforce::update_rmsprop_biases_cache(double decay_rate)
+void reinforce::update_biases_cache(double decay_rate)
 {
    for(int l = 0; l < n_layers; l++)
    {
@@ -2644,7 +2534,7 @@ void reinforce::update_rmsprop_biases_cache(double decay_rate)
    } // loop over index l labeling network layers
 }
 
-void reinforce::update_rmsprop_weights_cache(double decay_rate)
+void reinforce::update_rmsprop_cache(double decay_rate)
 {
    for(int l = 0; l < n_layers - 1; l++)
    {
@@ -2684,17 +2574,17 @@ double reinforce::update_Q_network(bool verbose_flag)
    {
       if(include_biases)
       {
-         update_rmsprop_biases_cache(rmsprop_decay_rate);
+         update_biases_cache(rmsprop_decay_rate);
       }
-      update_rmsprop_weights_cache(rmsprop_decay_rate);
+      update_rmsprop_cache(rmsprop_decay_rate);
    }
    else if (solver_type == ADAM)
    {
       if(include_biases)
       {
-         update_rmsprop_biases_cache(beta2);
+         update_biases_cache(beta2);
       }
-      update_rmsprop_weights_cache(beta2);
+      update_rmsprop_cache(beta2);
    }
    
 // Update weights and biases for each network layer by their nabla
@@ -2706,14 +2596,14 @@ double reinforce::update_Q_network(bool verbose_flag)
       {
          if(solver_type == SGD)
          {
-            *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
+            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
          else if (solver_type == RMSPROP)
          {
-            rmsprop_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
-            rmsprop_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
-            nabla_biases[l]->hadamard_ratio(*rmsprop_biases_denom[l]);
-            *biases[l] -= get_learning_rate() * (*nabla_biases[l]);
+            rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+            rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
+            nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
+            *biases[l] -= learning_rate.back() * (*nabla_biases[l]);
          }
          else if (solver_type == ADAM)
          {
@@ -2730,10 +2620,10 @@ double reinforce::update_Q_network(bool verbose_flag)
             curr_beta2_pow *= beta2;
             *rmsprop_biases_cache[l] /= (1 - curr_beta2_pow);
          
-            rmsprop_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+            rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
             const double TINY = 1E-8;
-            rmsprop_biases_denom[l]->hadamard_sum(TINY);
-            adam_m_biases[l]->hadamard_ratio(*rmsprop_biases_denom[l]);
+            rms_biases_denom[l]->hadamard_sum(TINY);
+            adam_m_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
             *biases[l] -= learning_rate.back() * (*adam_m_biases[l]);
             */
 
@@ -2746,7 +2636,7 @@ double reinforce::update_Q_network(bool verbose_flag)
    {
       if (solver_type == SGD)
       {
-         *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
+         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       else if (solver_type == MOMENTUM)
       {
@@ -2764,10 +2654,10 @@ double reinforce::update_Q_network(bool verbose_flag)
       }
       else if(solver_type == RMSPROP)
       {
-         rmsprop_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         rmsprop_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
-         nabla_weights[l]->hadamard_division(*rmsprop_weights_denom[l]);
-         *weights[l] -= get_learning_rate() * (*nabla_weights[l]);
+         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
+         *weights[l] -= learning_rate.back() * (*nabla_weights[l]);
       }
       else if(solver_type == ADAM)
       {
@@ -2778,10 +2668,10 @@ double reinforce::update_Q_network(bool verbose_flag)
          curr_beta2_pow *= beta2;
          *rmsprop_weights_cache[l] /= (1 - curr_beta2_pow);
          
-         rmsprop_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
          const double TINY = 1E-8;
-         rmsprop_weights_denom[l]->hadamard_sum(TINY);
-         adam_m[l]->hadamard_division(*rmsprop_weights_denom[l]);
+         rms_weights_denom[l]->hadamard_sum(TINY);
+         adam_m[l]->hadamard_division(*rms_weights_denom[l]);
          *weights[l] -= learning_rate.back() * (*adam_m[l]);
       }
       
@@ -3617,8 +3507,6 @@ void reinforce::numerically_check_P_derivs(int d, double ran_value)
 
 double reinforce::update_P_network(bool verbose_flag)
 {
-//   cout << "inside update_P_network()" << endl;
-
    compute_renormalized_discounted_eventual_rewards();
 
 // Compute total loss = -sum_i advantage_i * log(action prob_i)
@@ -3626,7 +3514,6 @@ double reinforce::update_P_network(bool verbose_flag)
    double total_loss = 0;
    for(int d = 0; d < replay_memory_capacity; d++)
    {
-//      outputfunc::update_progress_fraction(d, 2500, replay_memory_capacity);
       double curr_loss = P_backward_propagate(
          d, replay_memory_capacity, verbose_flag);
       total_loss += curr_loss;
@@ -3638,9 +3525,9 @@ double reinforce::update_P_network(bool verbose_flag)
    {
       if(include_biases)
       {
-         update_rmsprop_biases_cache(rmsprop_decay_rate);
+         update_biases_cache(rmsprop_decay_rate);
       }
-      update_rmsprop_weights_cache(rmsprop_decay_rate);
+      update_rmsprop_cache(rmsprop_decay_rate);
    }
    
    if(include_biases)
@@ -3652,9 +3539,9 @@ double reinforce::update_P_network(bool verbose_flag)
          }
          else if (solver_type == RMSPROP)
          {
-            rmsprop_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
-            rmsprop_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
-            nabla_biases[l]->hadamard_ratio(*rmsprop_biases_denom[l]);
+            rms_biases_denom[l]->hadamard_sqrt(*rmsprop_biases_cache[l]);
+            rms_biases_denom[l]->hadamard_sum(rmsprop_denom_const);
+            nabla_biases[l]->hadamard_ratio(*rms_biases_denom[l]);
          }
 //      cout << "l = " << l << " biases[l] = " << *biases[l] << endl;
       } // loop over index l labeling network layers
@@ -3667,9 +3554,9 @@ double reinforce::update_P_network(bool verbose_flag)
       }
       else if(solver_type == RMSPROP)
       {
-         rmsprop_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
-         rmsprop_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
-         nabla_weights[l]->hadamard_division(*rmsprop_weights_denom[l]);
+         rms_weights_denom[l]->hadamard_sqrt(*rmsprop_weights_cache[l]);
+         rms_weights_denom[l]->hadamard_sum(rmsprop_denom_const);
+         nabla_weights[l]->hadamard_division(*rms_weights_denom[l]);
       }
       
       int mdim = nabla_weights[l]->get_mdim();

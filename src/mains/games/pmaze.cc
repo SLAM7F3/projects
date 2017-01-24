@@ -117,12 +117,12 @@ int main (int argc, char* argv[])
    reinforce_agent_ptr->set_output_subdir(output_subdir);
 
 //   reinforce_agent_ptr->set_gamma(0.9);  // reward discount factor
-   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
-//   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
+   //   reinforce_agent_ptr->set_gamma(0.95);  // reward discount factor
+   reinforce_agent_ptr->set_gamma(0.99);  // reward discount factor
    reinforce_agent_ptr->set_rmsprop_decay_rate(0.90);
 //   reinforce_agent_ptr->set_base_learning_rate(1E-2);
    reinforce_agent_ptr->set_base_learning_rate(1E-3);
-   reinforce_agent_ptr->set_max_mean_KL_divergence(POSITIVEINFINITY);
+   reinforce_agent_ptr->set_max_mean_KL_divergence(1E32);
 
    int n_max_episodes = 1 * 1000 * 1000;
    int n_lr_episodes_period = 1000 * 1000;
